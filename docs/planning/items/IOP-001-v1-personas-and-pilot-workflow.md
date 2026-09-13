@@ -1,8 +1,8 @@
-# IOP-001 — Validar personas y workflows de v1
+# IOP-001 — Validate v1 personas and pilot workflow
 
 ## Status
 
-Proposed
+In progress — workflow priority confirmed; detailed validation pending.
 
 ## Milestone
 
@@ -10,88 +10,105 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal
 
-Validar personas y workflows de v1. Resultado esperado: Existe un escenario end-to-end concreto para Technician, Team Leader y Admin
+Validate the v1 personas and define one concrete end-to-end pilot scenario covering
+Technician, Team Leader and Administrator.
 
 ## User / business value
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+The team needs a shared, reviewable operational scenario to prioritize a reusable
+platform and assess pilot value before implementation.
 
 ## Context
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Read [modules](../../architecture/modules.md), [vision](../../product/vision.md)
+and [planning workflow](../workflow.md). The expanded backlog is an inventory of
+proposals, not an agreement to deliver all 138 tasks in v1.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. The
+[persona/workflow proposal](../../product/personas-and-pilot-workflow.md) follows
+the owner-confirmed CSV events → analysis → locate the asset priority. Detailed
+responsibilities, pilot data and numeric targets remain unvalidated.
 
 ## Desired state
 
-Existe un escenario end-to-end concreto para Technician, Team Leader y Admin
+An agreed scenario explains each persona's actions, expected outcomes, scope and
+observable acceptance evidence without choosing implementation technologies.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-001.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+- Deliver only the persona, pilot-workflow and acceptance baseline for IOP-001.
+- Keep identity, permissions, customer/site context and providers distinct.
+- Separate documented assumptions from validated stakeholder requirements.
 
 ## Acceptance criteria
 
-- [ ] Existe un escenario end-to-end concreto para Technician, Team Leader y Admin
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] A concrete end-to-end scenario covers Technician, Team Leader and Administrator.
+- [ ] The plan records scenarios and necessary decisions without expanding scope.
+- [ ] Validation evidence and synchronized documentation exist.
+
+The proposed scenario is not considered validated until the owner confirms the
+workflow/persona assumptions and agrees the pilot's acceptance measures.
 
 ## Domain considerations
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+Personas describe user needs, not fixed RBAC roles. Asset identity, physical
+placement, shifts, handover and maintenance remain separate domain concepts.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
+[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md) apply.
+ADR-0006 remains Proposed; this task cannot accept it by implication.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Describe scoped access and denial scenarios. Use fictional examples, no production
+secrets or maps. Industrial integration stays read-only; material changes require
+traceability in the future workflow.
 
 ## Data considerations
 
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
+Document evidence and source-grain limits without creating schemas or imports.
+Do not infer occurrence timestamps, asset identity or downtime from insufficient data.
 
 ## API considerations
 
-Especificar contratos cuando corresponda; no crear endpoints.
+Describe operational outcomes and module interactions; no endpoints or API style choice.
 
 ## UI considerations
 
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
+Describe user needs, visible states and recovery from ambiguity; no UI implementation
+or frontend selection.
 
 ## Dependencies
 
-Sin dependencias de tareas; partir de la visión y ADRs fundacionales.
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+No implementation prerequisites. Start from the vision and foundational ADRs;
+stakeholder input is needed to validate priorities, responsibilities and targets.
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Application code, migrations, infrastructure, detailed RBAC, stack selection,
+production connectivity and delivery of the entire backlog.
 
 ## Validation
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+Review persona coverage, main/failure scenarios, scope and measurable outcomes.
+Check documentation links and consistency. Record stakeholder answers separately
+from agent assumptions; do not invent test commands or user-validation results.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+This item, [backlog](../backlog.md),
+[active plan](../active/IOP-001-v1-personas-and-pilot-workflow-plan.md),
+[product proposal](../../product/personas-and-pilot-workflow.md) and the scope-v1
+navigation link. Revise accepted product scope only after its validation.
 
 ## Open questions
 
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+Pilot priority is confirmed. Validate persona responsibilities, initial data source, required
+workflow depth and success targets. See the proposal's decision register.

@@ -4,8 +4,10 @@ Este archivo indica **qué trabajo existe**; cada enlace abre su contexto perman
 Los criterios y dependencias viven en `items/`, los pasos actuales en `active/` y
 la evidencia de ejecución terminada en `completed/`. Ver [workflow](workflow.md).
 
-Status: IOP-002 In progress (backend evaluado; ADR-0006 Proposed). IOP-139 Completed
-(documentación de este workflow). Las demás tareas están Proposed, sin implementar.
+Status: IOP-001 In progress (pilot priority confirmed; detailed validation pending);
+IOP-002 In progress (backend evaluation; ADR-0006 Proposed). IOP-139 Completed
+(planning migration). IOP-140 Completed (English project-language rule).
+All other tasks are Proposed; no application implementation exists.
 El alcance final de v1 se valida con IOP-001; este inventario no promete las 138
 entregas en v1 ni autoriza ejecución automática. Hitos son agrupaciones, no waterfall.
 
@@ -18,7 +20,7 @@ IOP-040 es asset search; la release es IOP-138.
 
 | Contexto de tarea | Estado |
 | --- | --- |
-| [IOP-001 — Validar personas y workflows de v1](items/IOP-001-v1-personas-and-pilot-workflow.md) | Proposed |
+| [IOP-001 — Validate v1 personas and pilot workflow](items/IOP-001-v1-personas-and-pilot-workflow.md) | In progress |
 | [IOP-002 — Elegir backend, frontend y tooling](items/IOP-002-technology-stack.md) | In progress |
 | [IOP-003 — Definir estilo API y contratos](items/IOP-003-api-contract-strategy.md) | Proposed |
 | [IOP-004 — Diseñar scope Organization/Site](items/IOP-004-platform-scope-model.md) | Proposed |
@@ -242,3 +244,4 @@ IOP-040 es asset search; la release es IOP-138.
 | Contexto de tarea | Estado |
 | --- | --- |
 | [IOP-139 — Planning workflow](items/IOP-139-planning-workflow.md) | Completed |
+| [IOP-140 — English project language](items/IOP-140-english-project-language.md) | Completed |

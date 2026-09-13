@@ -46,3 +46,9 @@ decision before implementation. Provider-specific integrations may initially be
 contracts and clearly labelled test doubles, never claims of real connectivity.
 Local authentication is a candidate pending IOP-007; no provider/session model is
 accepted through the backlog. The existing v1 exclusions continue to apply.
+
+## Persona and workflow validation
+
+[IOP-001's persona and pilot workflow proposal](personas-and-pilot-workflow.md)
+provides a concrete scenario for review. It does not yet approve a pilot scope,
+permission matrix or numeric success targets.
