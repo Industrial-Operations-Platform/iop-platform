@@ -4,7 +4,8 @@ Source specification: [IOP-002](../items/IOP-002-technology-stack.md).
 
 ## Status and authorization
 
-In progress — awaiting backend decision. The prior user request authorized backend
+Completed — backend evaluation and acceptance slice only.
+Earlier Proposed-status notes below are retained as execution history. The prior user request authorized backend
 evaluation and an ADR, with documentation updates conditional on acceptance. This
 plan was created during IOP-139 to separate preserved research from future work;
 it does not claim a plan existed before the original evaluation.
@@ -41,8 +42,8 @@ None. No scaffolding, ORM, identity provider or frontend decision is included.
 
 - [x] Eight criteria compared with sources and assumptions.
 - [x] Proposed ADR produced; readable comparison preserved.
-- [ ] User's backend decision recorded and corresponding documentation synchronized.
-- [ ] Recheck links/statuses and move finished slice plan to completed/.
+- [x] User's backend decision recorded and corresponding documentation synchronized.
+- [x] Recheck links/statuses and move finished slice plan to completed/.
 
 ## Evidence
 
@@ -93,3 +94,21 @@ eight criteria, ADR-0006 has the required sections and remains Proposed, and no
 application directories contain code. Git diff --check passed. Remote verification
 confirmed the five approved branch tips; this story starts at 881daf2 and remains
 unpublished until separately authorized. No merge or runtime tests performed.
+
+
+## Owner acceptance and closure steps
+
+The owner explicitly accepted TypeScript + NestJS in response to the backend
+acceptance question. Before final edits: set ADR-0006 Accepted; synchronize the
+current review, architecture, README, roadmap/milestone status and backlog; archive
+this backend-only plan to completed/ and fix its links. Keep IOP-002 In progress
+for frontend/tooling. No implementation or publication of this new branch authorized.
+
+
+## Final backend-slice result
+
+Owner accepted TypeScript + NestJS explicitly. ADR-0006, current review, architecture,
+README and planning navigation now agree. The parent IOP-002 remains In progress
+because frontend/tooling and corresponding commands are not complete. No runtime
+code or tests were created. Archive location is completed/; no additional active
+plan is created for unrequested frontend work. Validate links again after archival.

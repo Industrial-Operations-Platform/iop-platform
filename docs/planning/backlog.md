@@ -5,8 +5,8 @@ Los criterios y dependencias viven en `items/`, los pasos actuales en `active/` 
 la evidencia de ejecución terminada en `completed/`. Ver [workflow](workflow.md).
 
 Status: IOP-001 In progress (pilot priority confirmed; detailed validation pending);
-IOP-002 In progress (analytics-only backend review: NestJS recommended;
-ADR-0006 Proposed; acceptance and frontend/tooling remain open). IOP-139 Completed
+IOP-002 In progress (backend complete: TypeScript + NestJS accepted in ADR-0006;
+frontend/tooling remain open). IOP-139 Completed
 (planning migration). IOP-140 Completed (English project-language rule).
 All other tasks are Proposed; no application implementation exists.
 The owner has narrowed v1 to CSV → preparation → analysis → presentation.

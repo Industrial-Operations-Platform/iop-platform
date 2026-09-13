@@ -6,7 +6,7 @@ platform. Asset surveys/locator, meeting and shift workflows are not v1 gates.
 Evaluate only the selected v1 slices when planning release validation.
 
 
-M0 (baseline) completed. M1 in progress: backend evaluated, not accepted.
+M0 (baseline) completed. M1 in progress: backend accepted (ADR-0006); frontend/tooling remain open.
 M2–M17 Proposed. La migración de planificación IOP-139 es un follow-up de M0.
 Los hitos organizan capacidades; no obligan a completar cada bloque antes del
 siguiente. Seguridad y testing acompañan cada slice desde el inicio.
@@ -17,7 +17,7 @@ Ver [backlog](backlog.md), [workflow](workflow.md) y [equivalencias](legacy-back
 
 Tareas: IOP-001–IOP-014.
 
-Salida: Personas, workflow y decisiones necesarias para el siguiente slice están documentados y aceptados; ADR-0006 aún pendiente.
+Salida: Personas, workflow and decisions needed for the next slice are documented and accepted; ADR-0006 is Accepted, while other design work remains open.
 
 ## M2 — Development Platform Foundation
 

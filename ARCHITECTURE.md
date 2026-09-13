@@ -11,6 +11,7 @@ only; the following decisions guide future implementation.
 - [ADR-0003](docs/architecture/adr/ADR-0003-postgresql.md): PostgreSQL is the primary relational database.
 - [ADR-0004](docs/architecture/adr/ADR-0004-authentication-abstraction.md): provider-independent authentication boundary.
 - [ADR-0005](docs/architecture/adr/ADR-0005-customer-isolation.md): generic domain with customer-scoped configuration and data.
+- [ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md): TypeScript/Node.js with NestJS for the backend.
 
 ## Boundaries and flow
 
@@ -48,18 +49,17 @@ work from a requested backlog item, write its execution plan before changes and
 preserve completion evidence. See [workflow](docs/planning/workflow.md).
 This does not accept any pending technology choice.
 
-## Backend proposal under review
+## Accepted backend
 
-The [current IOP-002 review](docs/planning/items/IOP-002-backend-review.md) recommends
-TypeScript + NestJS for the solo-team, analytics-only v1 in
-[ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md), still Proposed. It
-retains the earlier recommendation with updated reasoning: the owner confirmed
-TypeScript/Node.js experience. Acceptance remains open; no backend is selected
-or scaffolded.
+The owner accepted TypeScript on Node.js with NestJS under ADR-0006. The
+[current IOP-002 review](docs/planning/items/IOP-002-backend-review.md) covers both
+options against the analytics-only v1 scope and confirmed maintainer experience.
+Future API/worker composition follows explicit module contracts. No framework
+scaffold or application code exists yet. Frontend and tooling remain open.
 
 ## Intentionally undecided
 
-Languages, frontend/backend frameworks, build tooling, API style, ORM and migration
+Frontend language/framework, build tooling, API style, ORM and migration
 tooling; module code layout; identity provider, protocols and session handling;
 physical tenancy and database enforcement; hosting and network topology; job and
 cross-module delivery mechanisms; map storage/rendering; event grain and source

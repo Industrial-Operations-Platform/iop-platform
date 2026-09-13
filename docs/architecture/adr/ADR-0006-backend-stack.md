@@ -2,10 +2,11 @@
 
 ## Status
 
-Proposed
+Accepted
 
 Revised under [IOP-002's current backend review](../../planning/items/IOP-002-backend-review.md).
-No backend decision has been accepted. The earlier NestJS proposal remains available
+The owner explicitly accepted TypeScript + NestJS after confirming stronger
+TypeScript/Node.js experience. The earlier proposal remains available
 in [historical evaluation](../../planning/items/IOP-002-backend-evaluation.md) and Git.
 
 ## Context
@@ -23,8 +24,7 @@ No performance or productivity benchmark has been run.
 
 ## Decision
 
-Recommend TypeScript on Node.js with NestJS for the v1 backend, pending owner
-acceptance. For a solo maintainer, the confirmed TypeScript/Node experience and
+Use TypeScript on Node.js with NestJS for the v1 backend. For a solo maintainer, the confirmed TypeScript/Node experience and
 Nest's explicit module/provider conventions outweigh FastAPI's closer fit to the
 existing Python script, whose reuse benefit has not been established.
 
@@ -68,6 +68,6 @@ coordination for a solo team without a demonstrated need. Not proposed.
 
 The original NestJS proposal emphasized broad workflow scope. This review retains
 the recommendation primarily because of confirmed maintainer experience; it does
-not pull deferred modules into v1. Accept or revise explicitly before implementation.
+not pull deferred modules into v1. This decision does not authorize implementation.
 See the [current comparison](../../planning/items/IOP-002-backend-review.md) for
-sources and tradeoffs. A commit or branch merge alone does not accept this ADR.
+sources and tradeoffs. Acceptance came from the owner's explicit decision, not from a commit or branch merge.

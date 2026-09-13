@@ -11,7 +11,8 @@ No implementation or delivery date is committed.
 
 1. Validate persona responsibilities and report/acceptance requirements in IOP-001.
 2. Resolve stack and essential API, scope, identity, ingestion and operational
-   decisions. ADR-0006 remains Proposed.
+   decisions. TypeScript/Node.js + NestJS is accepted in ADR-0006; frontend and
+   detailed tooling remain open.
 3. Plan minimal vertical slices for authorized CSV import, reconciled analysis and
    reporting. Use source-provided equipment/sector references without requiring a
    fully surveyed physical asset registry.

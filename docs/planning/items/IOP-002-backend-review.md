@@ -1,6 +1,6 @@
 # IOP-002 — Backend review for analytics-only v1
 
-Status: evaluation complete; recommendation Proposed, awaiting owner review.
+Status: backend evaluation complete; TypeScript + NestJS accepted by the owner.
 Source: [IOP-002](IOP-002-technology-stack.md). The original
 [NestJS evaluation](IOP-002-backend-evaluation.md) is retained as historical evidence.
 
@@ -12,7 +12,7 @@ Asset Locator, surveys, shifts and maintenance are future scope. PostgreSQL,
 modular-monolith boundaries, Docker local development and provider-independent
 identity remain constraints. Individual login is required; Entra is a future need.
 
-Recommend **TypeScript + NestJS**, subject to owner acceptance. The owner confirmed
+Accepted choice: **TypeScript + NestJS**. The owner confirmed
 TypeScript/Node.js as the stronger maintenance/debugging background. The narrower
 analytics scope increases FastAPI's appeal, but for this solo-maintainer project
 that does not outweigh the confirmed experience and Nest's structural conventions.
@@ -132,17 +132,17 @@ FastAPI remains viable and deserves reconsideration if code review establishes a
 important Python-only workload or prohibitive translation cost. Neither is currently
 verified. Do not add a second backend/runtime solely to preserve hypothetical reuse.
 
-If accepted, use TypeScript/Node.js with NestJS for the API and consistent backend
+Use TypeScript/Node.js with NestJS for the API and consistent backend
 module composition for later workers. Heavy analytics and durable ingestion still
 need explicit execution/retry design. No queue, ORM, frontend, identity library,
 API style, tool version or deployment topology is selected here.
 
-ADR-0006 remains Proposed pending explicit acceptance. The backend evaluation is
+ADR-0006 is Accepted following explicit owner confirmation. The backend slice is
 complete; the broader IOP-002 frontend/tooling criteria remain unmet. Do not close
 the parent task or invent runnable commands to satisfy those criteria.
 
 ## Owner input recorded
 
 The owner explicitly answered **TypeScript/Node.js** when asked which language/runtime
-they know better for maintenance and debugging. This confirms experience, not acceptance
-of NestJS itself. API-framework acceptance is the remaining backend decision.
+they know better for maintenance and debugging. The owner subsequently
+explicitly accepted TypeScript + NestJS in the separate backend decision question.
