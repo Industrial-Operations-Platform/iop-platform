@@ -25,6 +25,26 @@ An item is not a plan. A plan is not an architectural decision. A completed plan
 can finish one slice while the parent item remains open. Preserve research as a
 linked supporting document with a distinct filename, not a second canonical item.
 
+## Branches and remote publication
+
+[ADR-0008](../architecture/adr/ADR-0008-story-branches.md) records the owner-requested
+local branch workflow. Use a story branch from develop before changes, including
+plans and documentation, and record its name in the plan. At least one branch per
+story; additional slices may use distinct names. Do not mix unrelated stories.
+
+The owner reviews and merges story → develop → stage → master. Stage is the chosen
+name for the intermediate branch. These refs alone do not create deployment or
+branch-protection configuration. Keep each pending review branch intact.
+
+Commit validated increments locally without a reminder. At session end ask whether
+to push and identify the exact refs and remote. Never push or change the remote
+default branch without authorization. The local main → master rename preserves
+history; existing baseline commits are not retroactively split into story branches.
+
+If another unmerged story is a prerequisite, report it and wait for the owner's
+integration, or obtain explicit authorization for a dependent branch. Do not merge
+it silently to make its files appear. Independent stories can branch from develop.
+
 ## Start work
 
 1. Resolve the requested ID through backlog.md and read its permanent context,
