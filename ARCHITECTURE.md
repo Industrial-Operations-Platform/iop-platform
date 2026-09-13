@@ -50,9 +50,12 @@ This does not accept any pending technology choice.
 
 ## Backend proposal under review
 
-[IOP-002](docs/planning/items/IOP-002-technology-stack.md) recommends TypeScript +
-NestJS in [ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md), currently
-Proposed. The backend remains undecided until acceptance; no code is scaffolded.
+The [current IOP-002 review](docs/planning/items/IOP-002-backend-review.md) recommends
+TypeScript + NestJS for the solo-team, analytics-only v1 in
+[ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md), still Proposed. It
+retains the earlier recommendation with updated reasoning: the owner confirmed
+TypeScript/Node.js experience. Acceptance remains open; no backend is selected
+or scaffolded.
 
 ## Intentionally undecided
 
