@@ -1,5 +1,11 @@
 # Milestones and exit evidence
 
+Current v1 is CSV preparation, analysis and presentation; see the
+[release scope](../product/scope-v1.md). The groupings below describe the broader
+platform. Asset surveys/locator, meeting and shift workflows are not v1 gates.
+Evaluate only the selected v1 slices when planning release validation.
+
+
 M0 (baseline) completed. M1 in progress: backend evaluated, not accepted.
 M2–M17 Proposed. La migración de planificación IOP-139 es un follow-up de M0.
 Los hitos organizan capacidades; no obligan a completar cada bloque antes del

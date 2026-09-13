@@ -5,6 +5,9 @@ Source specification: [IOP-001](../items/IOP-001-v1-personas-and-pilot-workflow.
 ## Status and authorization
 
 In progress. The user requested IOP-001, an execution plan and no implementation.
+Current branch: docs/IOP-001-v1-analysis-scope. The latest owner-confirmed scope
+is analytics-only v1, as recorded in the final execution-slice section below.
+Earlier locator statements are retained as superseded decision history.
 All new project content is written in English. The separately requested language
 rule is tracked by IOP-140; it does not change this item's product scope.
 
@@ -110,3 +113,31 @@ The owner also explicitly requests committing authorized, validated changes with
 waiting for a separate commit request. Add that working preference to AGENTS.md;
 include prior pending IOP-001 documentation in the commits. Do not push or infer
 acceptance of Proposed ADRs. Continue one responsibility question at a time.
+
+
+## Current execution slice: analytics-only v1
+
+Branch: docs/IOP-001-v1-analysis-scope, independently based on develop at 7009d40.
+The owner revised v1 to reproduce the current Power BI analytical workflow because
+surveying the entire plant and locating every sensor is substantial separate work.
+This supersedes earlier locator-as-v1 confirmations in this plan's history.
+
+Before edits, record the authorized changes: update personas/workflow, scope-v1,
+this item and plan, roadmap, backlog overview and milestone scope notice. V1 is
+CSV → preparation/normalization → analysis → presentation. Keep individual login
+and authorized views; use source-provided sector/equipment references when available.
+Do not require a surveyed asset registry, sensor coordinates, maps or Asset Locator.
+Precise location/3D visualization is a future goal without selected technology.
+Meetings, shifts and other platform workflows are later scope; their order is open.
+
+Validation: local links, whitespace, consistent current v1 boundary and no application
+changes. Commit this slice without merging or pushing. IOP-001 remains open for
+responsibilities, reporting requirements and acceptance targets. The independent
+IOP-141 governance branch is awaiting owner review; it is not merged into this branch.
+
+
+Latest slice verification: all local Markdown links resolve; git diff --check passes;
+ADR-0006 remains Proposed and future application directories contain only .gitkeep.
+Current product scope, workflow proposal, item, roadmap and index consistently defer
+Asset Locator/surveys. Historical plan notes and future backlog contexts are preserved.
+No merge, push, application implementation or runtime test was performed.

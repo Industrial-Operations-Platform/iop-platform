@@ -28,14 +28,13 @@ proposals, not an agreement to deliver all 138 tasks in v1.
 
 ## Current state
 
-Only the documentation baseline exists. The
-[persona/workflow proposal](../../product/personas-and-pilot-workflow.md) follows
-the owner-confirmed CSV events → analysis → locate the asset priority. The owner has described the existing Python/local-database/Power BI workflow,
-individual login needs and the responsibilities of the uploader, Team Leader and
-Taskforce. Management has no direct v1 login. Taskforce and Team Leaders need automated
-analysis and location investigation down to sensors within their authorized scope.
-Import review and asset/map administration responsibilities remain open.
-Other platform workflows are explicitly outside v1.
+Only the documentation baseline exists. The owner narrowed v1 to reproduce the
+existing Python → local database → Power BI analytical workflow from CSV.
+Individual logins remain required. Team Leaders analyze/present, Taskforce
+investigates and management receives presentations only, without a login.
+Precise sensor location and Asset Locator/3D are deferred because they require a
+substantial plant survey. Source-provided sector/equipment context may still be
+used in analytics. Import-quality and account/configuration ownership remain open.
 
 ## Desired state
 
@@ -50,14 +49,12 @@ observable acceptance evidence without choosing implementation technologies.
 
 ## Acceptance criteria
 
-- [ ] A concrete end-to-end scenario covers data operations, Team Leader analysis/presentation and Taskforce investigation,
-with management receiving Team Leader presentations only and administration
-responsibilities still to clarify.
-- [ ] The plan records scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [ ] A concrete CSV → preparation → analysis → presentation scenario covers the
+  confirmed personas and resolves import-review/configuration ownership.
+- [ ] Report/KPI needs and observable acceptance measures are agreed.
+- [ ] Validation evidence and documentation reflect the narrowed scope consistently.
 
-The proposed scenario is not considered validated until the owner confirms the
-workflow/persona assumptions and agrees the pilot's acceptance measures.
+Physical asset surveys, maps and 3D are not criteria or dependencies of this v1 task.
 
 ## Domain considerations
 
@@ -102,7 +99,8 @@ stakeholder input is needed to validate priorities, responsibilities and targets
 ## Non-goals
 
 Application code, migrations, infrastructure, detailed RBAC, stack selection,
-production connectivity and delivery of the entire backlog.
+production connectivity, plant surveys, precise asset location/3D and delivery
+of the entire backlog.
 
 ## Validation
 

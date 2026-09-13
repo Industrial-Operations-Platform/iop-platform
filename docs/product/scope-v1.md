@@ -1,62 +1,64 @@
 # IOP v1 scope
 
-## Owner-confirmed release boundary
+## Current owner-confirmed release boundary
 
-**CSV events → analysis → locate the asset.**
+**CSV events → preparation and normalization → analysis → presentation.**
 
-The owner explicitly limits v1 to this workflow. Other modules remain part of the
-long-term IOP vision, not v1 delivery commitments. Detailed feature depth, persona
-permissions and measurable acceptance targets are still being defined in
-[IOP-001](../planning/items/IOP-001-v1-personas-and-pilot-workflow.md).
+The owner narrowed v1 to reproduce the current local Power BI workflow. A full
+plant survey and precise sensor location would delay that delivery and are deferred.
+This decision supersedes the earlier v1 workflow ending in Asset Locator.
+Individual login and appropriate customer/site-scoped views remain required.
 No application functionality is implemented yet.
 
 ## V1 capabilities to specify
 
-- Individual login and customer/site-scoped access to the views each user needs;
-  provider, session model and detailed RBAC remain separate decisions.
-- Import the stable-format WinCC CSV used in the current process through a generic
-  ingestion boundary, preserving RAW provenance, validation and reconciliation.
-- Reproduce the useful reporting-template, chart and KPI behavior of the current
-  Python/local-database/Power BI workflow. Exact report parity remains to be defined;
-  this does not select Python, Power BI embedding or reuse of the existing code.
-- Support Team Leader analysis and presentation to management, with source evidence
-  and context showing where faults occurred. Management receives presentations only;
-  a management login is not required in v1.
-- Give Taskforce and Team Leaders access to automated analysis and location
-  investigation within their authorized scope, from configured sectors to individual
-  sensors where validated data supports it. Taskforce handles serious operational
-  problems; these viewing needs do not imply asset/map editing permissions.
-- Provide the minimal asset identity, alias validation, map placement, configuration
-  and import/configuration audit capabilities needed for that workflow.
+- Import the consistent WinCC CSV format through a source adapter; preserve RAW
+  provenance, validation, normalized data, idempotency and reconciliation.
+- Reproduce the useful report templates, charts and KPIs of the current Python →
+  local database → Power BI process. Exact feature parity and presentation/export
+  format remain to be agreed; no Power BI embedding or existing-code reuse is selected.
+- Provide Team Leaders with analysis they can interpret and present to management.
+  Management receives these presentations and does not need a v1 login.
+- Provide Taskforce and Team Leaders with automated analytical views for investigating
+  recurring/serious faults within their authorized scope.
+- Preserve source-provided sector, equipment and event identifiers where available
+  for filtering and context. These do not prove a sensor's physical position.
+- Provide the minimal configuration, access control and traceability needed by
+  that workflow. Authentication provider and detailed RBAC remain separate decisions.
 
-The existing fixed export format is a source-adapter concern, not a customer-specific
-schema or vocabulary imposed on the generic platform core.
+Neither a complete surveyed asset inventory nor validated sensor-to-map placement
+is a prerequisite for v1 analytics. Distinguish source equipment references from
+future surveyed physical assets. Local names and CSV fields belong in configuration
+and adapters, not the generic core.
 
 ## Outside v1
 
-Workforce/shift planning, shift handover, maintenance workflows, improvement tracking,
-advanced workforce optimization/payroll, predictive analytics, automated root-cause
-claims, real-time tracking and direct WinCC/vendor connectivity. Industrial control
-and source-system write-back are excluded. No ERP/CMMS replacement or microservices.
+Plant-wide surveys, precise sensor positioning, map upload/placement, Asset Locator,
+3D visualization, workforce/shift planning, meeting/handover workflows, maintenance
+management, improvement tracking, predictive analytics and real-time ingestion.
+Direct WinCC/vendor connectivity and industrial control/write-back are excluded.
+No ERP/CMMS replacement or microservice decomposition.
 
-Future read-only ingestion directly from the system/database behind WinCC Viewer
-requires source/interface discovery and authorized access. It is not needed to
-complete the CSV-based v1 and no particular interface is promised.
+Future work may connect directly to an authorized source behind WinCC Viewer, add
+meeting/shift functions and provide precise asset location, potentially in 3D.
+Source interfaces, location capture, representation and delivery sequence remain
+undecided. These goals do not impose dependencies on the CSV-based v1.
 
 ## Release conditions still to finalize
 
-Demonstrate import → explainable analysis → correct asset lookup using the agreed
-reports and test data, with individual access, scope isolation and traceable data.
-Reconcile source measures and preserve ambiguity/missing-data states. Agree role
-responsibilities, reporting requirements, targets and operational criteria before
-claiming release readiness. Handover or maintenance is not a v1 release gate.
+Demonstrate import → reconciled analysis → useful presentation with the agreed CSV,
+reports and test cases. Verify individual access, scope isolation, source traceability
+and truthful data-quality states. Agree responsibilities, report/KPI definitions,
+performance/value targets and operating criteria before claiming release readiness.
+Maps, 3D, complete asset surveys and operational workflows are not v1 release gates.
 
 ## Planning inventory
 
-The [backlog](../planning/backlog.md) includes future platform capabilities as well
-as possible v1 work. Its M1–M17 structure is a product inventory, not a mandatory
-v1 checklist. Refine each selected slice against this boundary before activation;
-future items are not authorized by their presence in the index.
+The [backlog](../planning/backlog.md) and M1–M17 milestones include the longer-term
+platform. They are not a mandatory v1 checklist. Select and refine only slices needed
+for this boundary before implementation; do not require all asset/locator stories
+or later workflows as prerequisites.
 
-[Personas and workflow](personas-and-pilot-workflow.md) records owner confirmations,
-remaining responsibility questions and the existing workflow reported in chat.
+[Personas and pilot workflow](personas-and-pilot-workflow.md) records the current
+scope and remaining questions. IOP-001 is still In progress; narrowing the release
+does not complete persona or acceptance validation.
