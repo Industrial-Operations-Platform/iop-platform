@@ -42,3 +42,13 @@ not select a programming language or require a repository-wide historical rewrit
 Translate prose being revised within the requested scope; plan bulk translation
 as a separate requested task. Never add new Spanish project prose merely because
 the conversation is Spanish.
+
+## Commit completion
+
+After completing and validating a coherent set of authorized changes, create small,
+logical commits without waiting for a separate commit request. Use English commit
+messages and report the resulting hashes and working-tree status. Commit a completed
+documentation increment even when the parent task remains open for user input.
+Do not include unrelated user changes, infer acceptance of Proposed ADRs, or push,
+publish or deploy without authorization. If validation or Git access blocks a commit,
+report the pending changes and reason instead of silently leaving them uncommitted.
