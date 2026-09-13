@@ -1,6 +1,7 @@
 # Milestone exit criteria
 
-Status: M0 is delivered by this repository task; M1-M6 are not started. These are
+Status: M0 is delivered; M1 is in progress with the IOP-002 backend evaluation
+proposed for acceptance; M2-M6 are not started. These are
 planning gates, not fixed delivery dates. See [backlog](backlog.md) for work items.
 
 | Milestone | Exit evidence |
@@ -16,4 +17,5 @@ planning gates, not fixed delivery dates. See [backlog](backlog.md) for work ite
 For each implementation slice, place a plan in `active/` with scope, dependencies,
 acceptance criteria, relevant ADRs and verification steps. Keep its status current;
 move completed plans out of `active/` into a historical planning location when
-needed. The directory is intentionally empty apart from `.gitkeep` today.
+needed. The active IOP-002 backend evaluation is documentation-only and remains
+in `active/` while its proposed decision awaits acceptance.

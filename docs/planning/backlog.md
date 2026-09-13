@@ -1,13 +1,15 @@
 # Initial backlog
 
-All items are proposed and not started. Ordering follows the
+IOP-002 backend evaluation is complete with a proposed ADR awaiting acceptance;
+other items are proposed and not started. Ordering follows the
 [roadmap](../../ROADMAP.md); split items into small reviewable plans before coding.
-No active implementation plan exists yet.
+The [active IOP-002 evaluation](active/IOP-002-backend-stack.md) contains the
+comparison and recommendation. No implementation has started.
 
 | ID | Milestone | Work and acceptance evidence |
 | --- | --- | --- |
 | IOP-001 | M1 | Validate v1 personas and workflows; agree a concrete end-to-end scenario and measurable pilot targets. |
-| IOP-002 | M1 | Select languages/frameworks/tooling and host/module layout; record rationale and development/test commands. |
+| IOP-002 | M1 | Backend evaluated: [ADR-0006](../architecture/adr/ADR-0006-backend-stack.md) proposes TypeScript + NestJS, awaiting acceptance. Frontend, tooling, detailed host/module layout and development/test commands remain open. |
 | IOP-003 | M1 | Design customer/site scope, physical tenancy and access matrix; document enforcement across database, jobs, files and exports. |
 | IOP-004 | M1 | Select identity integration and principal mapping; define sessions, provisioning, revocation and RBAC semantics. |
 | IOP-005 | M1 | Discover one industrial source, version, read-only interface and event grain; define source contract, access limits and sample-data approach. |

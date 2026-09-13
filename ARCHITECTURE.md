@@ -40,6 +40,12 @@ The historical PDFs named in [README](README.md) inform the analytics and locato
 model. Their SQL, deployment examples and pilot-specific choices are not adopted
 as platform implementation requirements. The five ADRs record accepted choices.
 
+## Backend proposal under review
+
+[IOP-002](docs/planning/active/IOP-002-backend-stack.md) recommends TypeScript +
+NestJS in [ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md), currently
+Proposed. The backend remains undecided until acceptance; no code is scaffolded.
+
 ## Intentionally undecided
 
 Languages, frontend/backend frameworks, build tooling, API style, ORM and migration
