@@ -17,8 +17,10 @@ Explicitly distinguish proposed assumptions from stakeholder-validated requireme
 ## Files expected to change
 
 - This plan and the permanent IOP-001 context (translate it into English).
+- AGENTS.md: explicitly requested commit-completion preference, recorded before editing.
 - docs/product/personas-and-pilot-workflow.md (new proposed baseline).
-- docs/product/scope-v1.md (link to the proposal, without claiming scope approval).
+- docs/product/scope-v1.md (record the owner-confirmed v1 boundary).
+- ROADMAP.md and backlog overview (distinguish v1 from future product inventory).
 - docs/planning/backlog.md (IOP-001 status and English task label).
 
 ## Dependencies and decisions
@@ -73,3 +75,38 @@ ADR-0006 stays Proposed; future code directories still contain only .gitkeep.
 Reviewed all three personas, CSV/source-grain limits, ambiguity, missing placement
 and scope-denial scenarios. These checks are not stakeholder acceptance or runtime
 tests. The plan stays active pending detailed validation.
+
+
+## Owner clarification: current workflow and v1 responsibilities
+
+Before further edits, record the authorized refinement: the owner is the sole
+project developer and currently uploads a stable-format WinCC CSV. An existing
+Python script formats it and loads a local database for local Power BI reports.
+IOP v1 must reproduce the import → analysis → asset-location workflow with
+individual logins and appropriate views. Team Leaders analyze/present to a superior
+and also need location context; Taskforce investigates faults and exact locations.
+Workforce, maintenance and handover are outside v1, not merely outside a first demo.
+Future direct WinCC-source access remains a read-only integration to investigate.
+
+Update personas, current-state evidence and release-scope documentation accordingly.
+Do not inspect or alter the existing Python/database/Power BI workflow in this step.
+Continue responsibility questions one at a time before discussing data or metrics.
+The superior's access was subsequently clarified: receives Team Leader presentations
+only, with no direct IOP login in v1. Map/asset maintenance ownership remains open. This clarification does not accept an RBAC matrix or backend stack.
+
+
+## Latest authorized refinement and commit workflow
+
+The owner clarified that Taskforce handles the most serious operational problems
+and needs the full automated analysis and location drill-down, from a configured
+sector to an individual sensor. Team Leaders need the same analysis/location
+capability to help with investigation. This is shared read/investigation capability,
+not permission to edit assets or bypass customer/site scope. Sector and sensor are
+configurable location/asset concepts, not mandatory fixed hierarchy levels.
+
+Management consumes Team Leader presentations only; no management login is needed
+for v1. Reflect these confirmations in the product proposal, item and scope.
+The owner also explicitly requests committing authorized, validated changes without
+waiting for a separate commit request. Add that working preference to AGENTS.md;
+include prior pending IOP-001 documentation in the commits. Do not push or infer
+acceptance of Proposed ADRs. Continue one responsibility question at a time.

@@ -1,5 +1,14 @@
 # IOP roadmap
 
+## Current v1 boundary
+
+The owner has confirmed CSV events → analysis → locate the asset as the entire
+v1 workflow, with individual login and appropriate views. The milestone inventory
+below describes the longer-term platform; workforce, handover, maintenance and
+direct vendor connections are future scope, not v1 gates. See
+[the current scope](docs/product/scope-v1.md) before selecting a planned slice.
+
+
 IOP avanza mediante tareas identificadas y slices verticales planificados.
 La baseline documental está completada; IOP-002 tiene una recomendación de backend
 pendiente de aceptación. No existe implementación ni calendario comprometido.

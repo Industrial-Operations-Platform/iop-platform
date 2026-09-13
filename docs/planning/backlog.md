@@ -8,6 +8,9 @@ Status: IOP-001 In progress (pilot priority confirmed; detailed validation pendi
 IOP-002 In progress (backend evaluation; ADR-0006 Proposed). IOP-139 Completed
 (planning migration). IOP-140 Completed (English project-language rule).
 All other tasks are Proposed; no application implementation exists.
+The owner has limited v1 to CSV events → analysis → locate the asset. The broader
+inventory includes future platform work, not v1 commitments. Use the current
+[v1 scope](../product/scope-v1.md) before activating any item.
 El alcance final de v1 se valida con IOP-001; este inventario no promete las 138
 entregas en v1 ni autoriza ejecución automática. Hitos son agrupaciones, no waterfall.
 

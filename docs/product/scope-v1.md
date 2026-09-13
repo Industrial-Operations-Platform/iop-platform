@@ -1,54 +1,62 @@
-# Proposed v1 scope
+# IOP v1 scope
 
-This is an initial planning baseline, not a claim of implemented capabilities.
-Validate workflow depth and acceptance criteria with pilot stakeholders before
-implementation. The current repository task delivers documentation only.
+## Owner-confirmed release boundary
 
-## Intended first release
+**CSV events → analysis → locate the asset.**
 
-- Platform Core: customer and site context, configuration and module composition.
-- Authentication and Users/RBAC: an abstract identity boundary, user membership,
-  roles and permission checks scoped to the relevant customer and site.
-- Workforce and Shift Management: basic teams, shift definitions and assignments.
-- Shift Handover: structured notes, open issues and asset references between shifts.
-- Maintenance Management: basic maintenance records, status and asset links;
-  external maintenance-system references through adapters where needed.
-- Asset Management: canonical identity, hierarchy and external identifier mappings.
-- Asset Locator: search by canonical or mapped identifiers and show configured
-  physical location and functional context; surface ambiguous or missing matches.
-- Operational Intelligence (OIP): normalize imported events, browse history and
-  compare event frequency and duration where source data supports them.
-- Integrations: a read-only industrial ingestion pilot with provenance and
-  repeatable imports; select the actual source and access method separately.
-- Audit/activity: trace security-relevant actions and material business changes.
+The owner explicitly limits v1 to this workflow. Other modules remain part of the
+long-term IOP vision, not v1 delivery commitments. Detailed feature depth, persona
+permissions and measurable acceptance targets are still being defined in
+[IOP-001](../planning/items/IOP-001-v1-personas-and-pilot-workflow.md).
+No application functionality is implemented yet.
+
+## V1 capabilities to specify
+
+- Individual login and customer/site-scoped access to the views each user needs;
+  provider, session model and detailed RBAC remain separate decisions.
+- Import the stable-format WinCC CSV used in the current process through a generic
+  ingestion boundary, preserving RAW provenance, validation and reconciliation.
+- Reproduce the useful reporting-template, chart and KPI behavior of the current
+  Python/local-database/Power BI workflow. Exact report parity remains to be defined;
+  this does not select Python, Power BI embedding or reuse of the existing code.
+- Support Team Leader analysis and presentation to management, with source evidence
+  and context showing where faults occurred. Management receives presentations only;
+  a management login is not required in v1.
+- Give Taskforce and Team Leaders access to automated analysis and location
+  investigation within their authorized scope, from configured sectors to individual
+  sensors where validated data supports it. Taskforce handles serious operational
+  problems; these viewing needs do not imply asset/map editing permissions.
+- Provide the minimal asset identity, alias validation, map placement, configuration
+  and import/configuration audit capabilities needed for that workflow.
+
+The existing fixed export format is a source-adapter concern, not a customer-specific
+schema or vocabulary imposed on the generic platform core.
 
 ## Outside v1
 
-Industrial control or source-system write-back; full ERP/CMMS replacement;
-advanced workforce optimization or payroll; predictive maintenance and automated
-root-cause claims; real-time indoor tracking; arbitrary customer custom code in
-core; microservice decomposition. Additional integrations require explicit scope.
+Workforce/shift planning, shift handover, maintenance workflows, improvement tracking,
+advanced workforce optimization/payroll, predictive analytics, automated root-cause
+claims, real-time tracking and direct WinCC/vendor connectivity. Industrial control
+and source-system write-back are excluded. No ERP/CMMS replacement or microservices.
 
-## Release conditions
+Future read-only ingestion directly from the system/database behind WinCC Viewer
+requires source/interface discovery and authorized access. It is not needed to
+complete the CSV-based v1 and no particular interface is promised.
 
-Demonstrate one representative end-to-end operational workflow, customer-scoped
-access and data isolation, reproducible event normalization, usable asset lookup
-and an auditable handover/maintenance trail. Agree source data, performance,
-retention, availability and recovery targets before committing to release dates.
+## Release conditions still to finalize
 
-## Expanded planning inventory
+Demonstrate import → explainable analysis → correct asset lookup using the agreed
+reports and test data, with individual access, scope isolation and traceable data.
+Reconcile source measures and preserve ambiguity/missing-data states. Agree role
+responsibilities, reporting requirements, targets and operational criteria before
+claiming release readiness. Handover or maintenance is not a v1 release gate.
 
-The [backlog index](../planning/backlog.md) now expands this proposal into M1–M17.
-It is not a commitment to deliver every listed item in v1. IOP-001 must identify
-the pilot's required slices and explicitly defer the rest. Asset history is a
-cross-module read view; improvement tracking (M12) needs a scope and ownership
-decision before implementation. Provider-specific integrations may initially be
-contracts and clearly labelled test doubles, never claims of real connectivity.
-Local authentication is a candidate pending IOP-007; no provider/session model is
-accepted through the backlog. The existing v1 exclusions continue to apply.
+## Planning inventory
 
-## Persona and workflow validation
+The [backlog](../planning/backlog.md) includes future platform capabilities as well
+as possible v1 work. Its M1–M17 structure is a product inventory, not a mandatory
+v1 checklist. Refine each selected slice against this boundary before activation;
+future items are not authorized by their presence in the index.
 
-[IOP-001's persona and pilot workflow proposal](personas-and-pilot-workflow.md)
-provides a concrete scenario for review. It does not yet approve a pilot scope,
-permission matrix or numeric success targets.
+[Personas and workflow](personas-and-pilot-workflow.md) records owner confirmations,
+remaining responsibility questions and the existing workflow reported in chat.

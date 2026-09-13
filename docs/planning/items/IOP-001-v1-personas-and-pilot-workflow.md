@@ -11,7 +11,9 @@ M1 — Product & Architecture Definition. Documentation/design only.
 ## Goal
 
 Validate the v1 personas and define one concrete end-to-end pilot scenario covering
-Technician, Team Leader and Administrator.
+data operations, Team Leader analysis/presentation and Taskforce investigation,
+with management receiving Team Leader presentations only and administration
+responsibilities still to clarify.
 
 ## User / business value
 
@@ -28,8 +30,12 @@ proposals, not an agreement to deliver all 138 tasks in v1.
 
 Only the documentation baseline exists. The
 [persona/workflow proposal](../../product/personas-and-pilot-workflow.md) follows
-the owner-confirmed CSV events → analysis → locate the asset priority. Detailed
-responsibilities, pilot data and numeric targets remain unvalidated.
+the owner-confirmed CSV events → analysis → locate the asset priority. The owner has described the existing Python/local-database/Power BI workflow,
+individual login needs and the responsibilities of the uploader, Team Leader and
+Taskforce. Management has no direct v1 login. Taskforce and Team Leaders need automated
+analysis and location investigation down to sensors within their authorized scope.
+Import review and asset/map administration responsibilities remain open.
+Other platform workflows are explicitly outside v1.
 
 ## Desired state
 
@@ -44,7 +50,9 @@ observable acceptance evidence without choosing implementation technologies.
 
 ## Acceptance criteria
 
-- [ ] A concrete end-to-end scenario covers Technician, Team Leader and Administrator.
+- [ ] A concrete end-to-end scenario covers data operations, Team Leader analysis/presentation and Taskforce investigation,
+with management receiving Team Leader presentations only and administration
+responsibilities still to clarify.
 - [ ] The plan records scenarios and necessary decisions without expanding scope.
 - [ ] Validation evidence and synchronized documentation exist.
 
@@ -54,7 +62,8 @@ workflow/persona assumptions and agrees the pilot's acceptance measures.
 ## Domain considerations
 
 Personas describe user needs, not fixed RBAC roles. Asset identity, physical
-placement, shifts, handover and maintenance remain separate domain concepts.
+placement and source events remain separate concepts. Team Leader and Taskforce
+labels do not imply fixed customer-specific domain types.
 
 ## Architecture constraints
 
