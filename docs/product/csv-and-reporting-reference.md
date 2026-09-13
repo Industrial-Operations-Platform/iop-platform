@@ -12,7 +12,8 @@ are external vocabulary; generic contracts use English and configurable mappings
 The administrator currently prepares/imports CSV data through a Python script into
 a local database; Power BI presents the results. The owner intends to port the
 transformation behavior to JavaScript, using the accepted TypeScript/Node.js backend.
-The script has not been inspected. Later implementation must reconcile outputs
+The owner supplied loader and repository excerpts, reviewed as historical evidence;
+the complete pipeline has not been inspected or executed. Later implementation must reconcile outputs
 on the same representative input before replacing the existing process.
 Team Leaders and Taskforce consume analytics with limited permissions. Team Leaders
 present results to their superior, who does not need a v1 account.
@@ -20,7 +21,8 @@ present results to their superior, who does not need a v1 account.
 ## Observed source structure
 
 The owner reports a stable export format. The excerpt uses semicolon delimiters,
-quoted headers and seven columns. Encoding and full quoting rules remain unverified.
+quoted headers and seven columns. The supplied loader explicitly reads UTF-16;
+full exporter quoting rules remain unverified.
 
 | External column | Observed purpose | Interpretation to verify |
 | --- | --- | --- |
@@ -37,9 +39,48 @@ occurrences. Do not expand a row into synthetic events. Frequency must use the
 reported counts, not the number of CSV rows, after defining duplicate handling.
 
 There is no date, reporting period, explicit hall, separate sensor identity or
-parent-equipment column. The source of day/month metadata and hall/sector mappings
-must be identified in the existing process. Do not invent timestamps or derive
+parent-equipment column. The owner confirmed that the date comes from the manually
+prepared filename, while a Python mapping list supplies additional area relationships.
+That list and its exact mapping direction have not been supplied. Do not invent timestamps or derive
 physical relationships from equipment-code patterns without validated rules.
+
+## Confirmed legacy import behavior
+
+Evidence: owner-provided `hitliste_loader` and `hitliste_repository` excerpts.
+These observations describe the existing process, not an accepted IOP schema or
+complete importer specification.
+
+- `Hitliste-20260626.csv` supplies the date `2026-06-26`. The loader removes
+  `Hitliste-` from the filename stem and parses `%Y%m%d`; every row receives that
+  same date. It is a date value, not an event timestamp. Exact reporting-window
+  coverage, timezone and whether files always represent a full day remain open.
+- The existing operator selects a file through `CSV_FILE` configuration. The loader
+  checks its existence and reads UTF-16. This does not prescribe an IOP upload UI
+  or require storing environment configuration in the repository.
+- Parsing skips blank lines, strips surrounding quotes, replaces doubled quotes
+  and splits lines on semicolons. This is not evidence of general CSV quoting
+  support: embedded delimiters and multiline fields need representative validation
+  before a port. Preserve valid source behavior without copying parsing defects.
+- Frequency is converted numerically with invalid values coerced to missing values;
+  the repository subsequently casts it to an integer. This is not a defined reject
+  policy for invalid or fractional counts. IOP validation must make such cases explicit.
+- The original duration text is preserved and a minutes value is produced by
+  `dauer_to_minutes`. That function was not supplied; parsing rules, precision and
+  invalid-value behavior remain unverified.
+- Empty dataframes return zero inserts. For nonempty data, the repository checks
+  whether any row already exists for the first row's date; if so, it rejects the
+  import. Otherwise it bulk-inserts rows and commits, rolling back on insertion
+  errors. The loader assigns one date, but the repository itself does not validate
+  that every supplied row has the same date.
+- The duplicate-date check and insert use separate connections. The excerpt alone
+  does not establish concurrency-safe uniqueness; database constraints were not
+  supplied. Do not claim exactly-once ingestion or adopt a global date-only key
+  for a customer/source-scoped platform. Correction, replacement and retry policies
+  remain future contract decisions.
+
+The owner reports a mapping list in the Python analysis. Its keys, outputs,
+unknown-value handling and any equipment/sensor relationships remain to be reviewed.
+Keep those mappings in customer-scoped configuration or adapters, outside core code.
 
 ## Reports visible in the supplied screenshots
 
@@ -92,9 +133,11 @@ requirement. The backend remains TypeScript + NestJS; no supplied evidence chang
 
 ## Open validation points
 
-1. Where does each import obtain its date/reporting period and timezone?
+1. What reporting window does the filename date represent, and in which timezone?
+   Date origin is confirmed; full-day coverage is not.
 2. How does the existing script map areas/equipment to hall/sector and sensor detail?
-3. What is the exact aggregate grain, duration meaning and repeated-import policy?
+3. What is the exact aggregate grain and duration meaning, and how should IOP
+   handle corrections/retries beyond the observed legacy duplicate-date rejection?
 4. Which reports, KPI formulas, targets and filters are required for pilot acceptance?
 5. What data volumes and presentation/export outputs must the selected tools support?
 

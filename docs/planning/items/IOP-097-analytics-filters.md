@@ -98,7 +98,7 @@ Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice a
 
 ## Owner-supplied CSV and reporting context
 
-The screenshots show period, hall/sector, area, equipment and message inclusion/exclusion filters. Preserve and display active filters consistently across overview, rankings and drill-down. Resolve date origin and customer mappings first; screenshot exclusions are examples, not generic defaults.
+The screenshots show period, hall/sector, area, equipment and message inclusion/exclusion filters. Preserve and display active filters consistently across overview, rankings and drill-down. Date origin is confirmed as `Hitliste-YYYYMMDD.csv`; resolve reporting-window semantics and customer mappings first; screenshot exclusions are examples, not generic defaults.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
 under IOP-002 at the owner's request. This is context for future planning; this

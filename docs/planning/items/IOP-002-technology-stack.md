@@ -74,8 +74,8 @@ credentials or production data are needed to evaluate the framework options.
 ## Data considerations
 
 The owner intends to port the existing Python CSV preparation behavior to
-TypeScript/Node.js. The script is not inspected; correctness and effort remain
-unverified and require output reconciliation before replacement. ORM, transaction patterns and physical tenancy remain open.
+TypeScript/Node.js. Loader/repository excerpts have been reviewed; the complete pipeline has not
+been inspected or executed. Correctness and porting effort remain unverified and require output reconciliation before replacement. ORM, transaction patterns and physical tenancy remain open.
 
 ## API considerations
 
@@ -128,3 +128,6 @@ v1 to physical location/3D. IOP-001 report/KPI acceptance remains open.
 
 Evidence capture: [completed plan](../completed/IOP-002-reporting-context-plan.md).
 The parent stays In progress; proposed ingestion/analytics items are not activated.
+
+Follow-up evidence: [legacy import review plan](../completed/IOP-002-import-evidence-plan.md).
+Filename dates and UTF-16 reading are confirmed; coverage and mapping details remain open.

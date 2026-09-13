@@ -98,7 +98,7 @@ Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice a
 
 ## Owner-supplied CSV and reporting context
 
-The observed source has seven semicolon-delimited columns. Preserve equipment designations as text and validate duration parsing, encoding and quoting against the actual exporter and existing Python script. The owner intends a TypeScript/Node.js port of the preparation behavior; compare normalized outputs with Python on identical input. Reporting-period origin, rejected rows and repeat-import semantics still require definition.
+The observed source has seven semicolon-delimited columns. Preserve equipment designations as text and validate duration parsing, encoding and quoting against the actual exporter and existing Python script. The owner intends a TypeScript/Node.js port of the preparation behavior; compare normalized outputs with Python on identical input. The supplied loader reads UTF-16 and assigns every row a date parsed from `Hitliste-YYYYMMDD.csv`. The repository rejects dates already present. Reporting-window coverage, invalid-row handling and future scoped retry/correction semantics still require definition; the legacy date check alone does not establish concurrency-safe uniqueness.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
 under IOP-002 at the owner's request. This is context for future planning; this
