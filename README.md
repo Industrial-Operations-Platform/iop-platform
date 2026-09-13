@@ -20,7 +20,10 @@ there is no runnable application or selected frontend/backend framework.
 | --- | --- |
 | `docs/product/` | Vision, scope and domain language |
 | `docs/architecture/` | Context, modules, conceptual data model and ADRs |
-| `docs/planning/active/` | Plans for work currently being implemented |
+| `docs/planning/items/` | Permanent task contexts and acceptance criteria |
+| `docs/planning/active/` | Current execution plans, written before changes |
+| `docs/planning/completed/` | Completed plans with verification evidence |
+| `docs/planning/templates/` | Item and execution-plan templates |
 | `apps/web/` | Future user interface |
 | `apps/api/` | Future application API |
 | `apps/worker/` | Future background processing host |
@@ -32,6 +35,12 @@ there is no runnable application or selected frontend/backend framework.
 
 Empty future directories use `.gitkeep`. No installation, build or test commands
 exist yet. Do not infer a language, framework or deployment topology from paths.
+
+## Planned work
+
+Start from an ID in the [backlog index](docs/planning/backlog.md). Read its context
+and relevant ADRs, then create/update its plan before changes. Follow the
+[required workflow](docs/planning/workflow.md); no unrelated or unplanned edits.
 
 ## Design lineage
 

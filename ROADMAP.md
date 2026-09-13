@@ -1,24 +1,34 @@
 # IOP roadmap
 
-The repository baseline is the only work completed here. All implementation is
-future work. Sequence is dependency-driven; dates and staffing are not committed.
-The [v1 scope](docs/product/scope-v1.md) is a proposal to validate.
+IOP avanza mediante tareas identificadas y slices verticales planificados.
+La baseline documental está completada; IOP-002 tiene una recomendación de backend
+pendiente de aceptación. No existe implementación ni calendario comprometido.
 
-| Milestone | Outcome | Dependencies |
-| --- | --- | --- |
-| M0: Repository baseline | Documentation, accepted foundational ADRs and logical Git history | Current task |
-| M1: Delivery design | Validate workflows, stack, tenancy, identity and source contracts | M0 |
-| M2: Platform foundation | Customer/site context, authentication boundary, RBAC and audit foundation | M1 |
-| M3: Assets and data foundation | Canonical assets, validated mappings and repeatable read-only imports | M2 |
-| M4: Operational workflows | Basic workforce/shifts, handover and maintenance | M2; M3 asset references |
-| M5: Locator and intelligence | Versioned map lookup and traceable event analytics with workflow context | M3; M4 for shift/work context |
-| M6: v1 pilot readiness | End-to-end validation, isolation, operations and agreed pilot measures | M4, M5 |
+## Sequence
 
-After v1, evaluate additional connectors, richer maintenance workflows, reporting,
-advanced analytics and deployment scale based on evidence. None is authorized
-for implementation by this document.
+1. M1: validar personas/workflow (IOP-001), stack (IOP-002), contratos API (IOP-003)
+   y decisiones de scope, seguridad, datos y operación (IOP-004–014).
+2. M2–M5: entorno y hosts reproducibles, core autorizado, activos e ingesta.
+3. Construir slices que conecten login → site → asset → CSV event → historial →
+   locator → analytics, según contratos y dependencias de cada item.
+4. Ampliar workforce, handover y maintenance según valor del piloto (M6–M8), con
+   locator, historial y OIP (M9–M11). M12 es extensión propuesta de mejoras.
+5. Seleccionar integraciones (M13), verificar seguridad/fiabilidad (M14), UX (M15)
+   y demo (M16), hasta los gates de validación y release (M17).
 
-See [milestone exit criteria](docs/planning/milestones.md) and the
-[initial backlog](docs/planning/backlog.md). Put a scoped plan in
-[active planning](docs/planning/active/) before beginning a planned implementation
-slice, linking its acceptance criteria and relevant ADRs.
+Los números no son un orden obligatorio. M14/M15 no retrasan controles básicos
+hasta el final. No terminar todo el backend antes de integrar frontend y datos.
+M12 y conectores específicos requieren inclusión explícita en el alcance de v1;
+no son compromisos de entrega por aparecer en el índice.
+
+## Navigation
+
+- [Backlog index](docs/planning/backlog.md): qué tareas existen.
+- [Permanent contexts](docs/planning/items/): alcance y aceptación por ID.
+- [Milestones](docs/planning/milestones.md): evidencia de salida por agrupación.
+- [Workflow](docs/planning/workflow.md): cómo activar y cerrar trabajo.
+- [Active plans](docs/planning/active/) y [completed plans](docs/planning/completed/).
+- [Proposed v1 scope](docs/product/scope-v1.md).
+
+No iniciar tareas siguientes automáticamente por completar una tarea. Las fechas,
+objetivos y release scope se acuerdan con evidencia durante la planificación.

@@ -1,4 +1,8 @@
-# IOP-002 Backend Technology Decision
+# IOP-002 — Backend evaluation evidence
+
+Source specification: [IOP-002 technology stack](IOP-002-technology-stack.md).
+
+This preserves the prior backend evaluation; it is evidence, not an execution plan.
 
 ## Goal
 Choose the backend technology for IOP v1.

@@ -35,3 +35,14 @@ Demonstrate one representative end-to-end operational workflow, customer-scoped
 access and data isolation, reproducible event normalization, usable asset lookup
 and an auditable handover/maintenance trail. Agree source data, performance,
 retention, availability and recovery targets before committing to release dates.
+
+## Expanded planning inventory
+
+The [backlog index](../planning/backlog.md) now expands this proposal into M1–M17.
+It is not a commitment to deliver every listed item in v1. IOP-001 must identify
+the pilot's required slices and explicitly defer the rest. Asset history is a
+cross-module read view; improvement tracking (M12) needs a scope and ownership
+decision before implementation. Provider-specific integrations may initially be
+contracts and clearly labelled test doubles, never claims of real connectivity.
+Local authentication is a candidate pending IOP-007; no provider/session model is
+accepted through the backlog. The existing v1 exclusions continue to apply.

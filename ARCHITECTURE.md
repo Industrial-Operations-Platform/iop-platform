@@ -38,11 +38,19 @@ hard-coded hierarchy levels belong in the generic domain.
 
 The historical PDFs named in [README](README.md) inform the analytics and locator
 model. Their SQL, deployment examples and pilot-specific choices are not adopted
-as platform implementation requirements. The five ADRs record accepted choices.
+as platform implementation requirements. The foundational ADRs record accepted choices; ADR-0007 records the repository
+workflow required by the owner.
+
+## Required repository workflow
+
+[ADR-0007](docs/architecture/adr/ADR-0007-planned-workflow.md) is Accepted:
+work from a requested backlog item, write its execution plan before changes and
+preserve completion evidence. See [workflow](docs/planning/workflow.md).
+This does not accept any pending technology choice.
 
 ## Backend proposal under review
 
-[IOP-002](docs/planning/active/IOP-002-backend-stack.md) recommends TypeScript +
+[IOP-002](docs/planning/items/IOP-002-technology-stack.md) recommends TypeScript +
 NestJS in [ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md), currently
 Proposed. The backend remains undecided until acceptance; no code is scaffolded.
 

@@ -4,7 +4,7 @@
 
 Proposed
 
-Evaluated 2026-09-13 under [IOP-002](../../planning/active/IOP-002-backend-stack.md).
+Evaluated 2026-09-13 under [IOP-002](../../planning/items/IOP-002-backend-evaluation.md).
 Awaiting acceptance; this recommendation does not yet select the backend.
 
 ## Context
@@ -16,7 +16,7 @@ Intelligence. The five accepted foundational ADRs remain binding.
 
 The task compares Python + FastAPI and TypeScript + NestJS for maintainability,
 speed, ecosystem, testing, persistence, authentication, jobs and Codex-assisted
-work. The [comparison and sources](../../planning/active/IOP-002-backend-stack.md)
+work. The [comparison and sources](../../planning/items/IOP-002-backend-evaluation.md)
 record the evidence. Assume comparable language experience; productivity and
 Codex-friendliness assessments are judgments, not measured results.
 

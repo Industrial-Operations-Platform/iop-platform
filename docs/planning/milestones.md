@@ -1,21 +1,110 @@
-# Milestone exit criteria
+# Milestones and exit evidence
 
-Status: M0 is delivered; M1 is in progress with the IOP-002 backend evaluation
-proposed for acceptance; M2-M6 are not started. These are
-planning gates, not fixed delivery dates. See [backlog](backlog.md) for work items.
+M0 (baseline) completed. M1 in progress: backend evaluated, not accepted.
+M2–M17 Proposed. La migración de planificación IOP-139 es un follow-up de M0.
+Los hitos organizan capacidades; no obligan a completar cada bloque antes del
+siguiente. Seguridad y testing acompañan cada slice desde el inicio.
 
-| Milestone | Exit evidence |
-| --- | --- |
-| M0 | Requested layout and concise documentation exist; five ADRs are Accepted; seven logical commits contain no application implementation. |
-| M1 | Validated v1 workflow and targets; documented stack, identity, isolation, integration and operational decisions sufficient for the next implementation slice. |
-| M2 | Reproducible foundation; customer/site context and permission checks work; relevant tests cover denial paths and audited changes. |
-| M3 | Canonical assets and aliases are validated; import replay is idempotent; normalized counts/metrics reconcile with RAW inputs and explained exclusions. |
-| M4 | A representative shift can transfer open issues; basic maintenance links to assets and records ownership, status and outcomes with audit history. |
-| M5 | An authorized user can trace an analytical result to source data and locate its validated asset on the correct map version; ambiguities remain visible. |
-| M6 | Agreed end-to-end acceptance, isolation and operational checks pass; pilot integration is read-only and agreed value/performance measures are evaluated. |
+Ver [backlog](backlog.md), [workflow](workflow.md) y [equivalencias](legacy-backlog-map.md).
 
-For each implementation slice, place a plan in `active/` with scope, dependencies,
-acceptance criteria, relevant ADRs and verification steps. Keep its status current;
-move completed plans out of `active/` into a historical planning location when
-needed. The active IOP-002 backend evaluation is documentation-only and remains
-in `active/` while its proposed decision awaits acceptance.
+## M1 — Product & Architecture Definition
+
+Tareas: IOP-001–IOP-014.
+
+Salida: Personas, workflow y decisiones necesarias para el siguiente slice están documentados y aceptados; ADR-0006 aún pendiente.
+
+## M2 — Development Platform Foundation
+
+Tareas: IOP-015–IOP-024.
+
+Salida: Entorno reproducible, hosts, migraciones, tests y CI verificables; jobs y audit según contratos aceptados.
+
+## M3 — Platform Core
+
+Tareas: IOP-025–IOP-031.
+
+Salida: Organization/site, identidad, memberships y RBAC funcionan con denegación cross-scope.
+
+## M4 — Asset Domain
+
+Tareas: IOP-032–IOP-040.
+
+Salida: Assets, relaciones, aliases y validación permiten búsqueda sin niveles locales rígidos.
+
+## M5 — Industrial Data Foundation
+
+Tareas: IOP-041–IOP-049.
+
+Salida: RAW, imports y normalización trazables; reimportación idempotente y totales reconciliados.
+
+## M6 — Workforce & Shift Management
+
+Tareas: IOP-050–IOP-059.
+
+Salida: Equipos, turnos y asignaciones muestran quién trabaja dónde/cuándo con reglas temporales comprobadas.
+
+## M7 — Shift Handover
+
+Tareas: IOP-060–IOP-067.
+
+Salida: Handover conserva autoría, issues abiertos y contexto de turno; cierre e historial verificables.
+
+## M8 — Maintenance Management
+
+Tareas: IOP-068–IOP-075.
+
+Salida: Trabajo de mantenimiento vincula asset, estado, prioridad y responsable con historial.
+
+## M9 — Asset Locator
+
+Tareas: IOP-076–IOP-083.
+
+Salida: Asset lookup abre la versión correcta del mapa; ambigüedades y activos sin posición son visibles.
+
+## M10 — Asset History / Digital Asset Record
+
+Tareas: IOP-084–IOP-088.
+
+Salida: Detalle de activo une historial desde contratos propietarios, sin duplicar dominios ni inventar timestamps.
+
+## M11 — OIP / Operational Intelligence
+
+Tareas: IOP-089–IOP-097.
+
+Salida: Métricas OIP tienen definiciones, filtros y trazabilidad; no confundir duración de alarmas con downtime.
+
+## M12 — Improvement Tracking
+
+Tareas: IOP-098–IOP-101.
+
+Salida: Solo si entra en v1: acciones y objetivos tienen propietario definido, evidencia y comparación con límites explícitos.
+
+## M13 — External Integrations
+
+Tareas: IOP-102–IOP-107.
+
+Salida: Contratos/adaptadores seleccionados verificables; distinguir integración real de dobles de prueba y diferir fuentes sin acceso.
+
+## M14 — Security & Reliability
+
+Tareas: IOP-108–IOP-115.
+
+Salida: Autorización, secretos, validación, auditoría, backup/restore, rendimiento y recuperación tienen evidencia.
+
+## M15 — UX & Operational Experience
+
+Tareas: IOP-116–IOP-122.
+
+Salida: Navegación y vistas seleccionadas son utilizables por rol, con estados y accesibilidad verificadas.
+
+## M16 — Demo / Pilot Dataset
+
+Tareas: IOP-123–IOP-128.
+
+Salida: Dataset ficticio representativo y reset seguro/reproducible sin acceso a producción.
+
+## M17 — v1 Validation & Release
+
+Tareas: IOP-129–IOP-138.
+
+Salida: Workflow, métricas, permisos, reconciliación y objetivos aprobados; guías, revisión y release trazables.
