@@ -12,11 +12,17 @@ No application functionality is implemented yet.
 
 ## V1 capabilities to specify
 
+- The owner's Administrator profile handles import/error review and account/source
+  configuration. Team Leader and Taskforce profiles consult and analyze.
+- Port the existing Python CSV transformation behavior to TypeScript/Node.js under
+  accepted ADR-0006, validating equivalent outputs on representative identical inputs.
+  The script is not yet inspected and no conversion is implemented.
 - Import the consistent WinCC CSV format through a source adapter; preserve RAW
   provenance, validation, normalized data, idempotency and reconciliation.
 - Reproduce the useful report templates, charts and KPIs of the current Python →
   local database → Power BI process. Exact feature parity and presentation/export
-  format remain to be agreed; no Power BI embedding or existing-code reuse is selected.
+  format remain to be agreed; no Power BI embedding is selected. The planned port
+  must preserve reviewed behavior, not copy source-specific logic into core.
 - Provide Team Leaders with analysis they can interpret and present to management.
   Management receives these presentations and does not need a v1 login.
 - Provide Taskforce and Team Leaders with automated analytical views for investigating

@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress — workflow priority confirmed; detailed validation pending.
+In progress — scope and responsibilities confirmed; reports/acceptance pending.
 
 ## Milestone
 
@@ -13,7 +13,7 @@ M1 — Product & Architecture Definition. Documentation/design only.
 Validate the v1 personas and define one concrete end-to-end pilot scenario covering
 data operations, Team Leader analysis/presentation and Taskforce investigation,
 with management receiving Team Leader presentations only and administration
-responsibilities still to clarify.
+responsibilities confirmed for the owner's Administrator profile.
 
 ## User / business value
 
@@ -34,7 +34,10 @@ Individual logins remain required. Team Leaders analyze/present, Taskforce
 investigates and management receives presentations only, without a login.
 Precise sensor location and Asset Locator/3D are deferred because they require a
 substantial plant survey. Source-provided sector/equipment context may still be
-used in analytics. Import-quality and account/configuration ownership remain open.
+used in analytics. The owner's Administrator profile manages imports/error review
+and user/configuration administration; other profiles consult/analyze. The existing
+Python processing behavior is to be ported to TypeScript/Node.js and checked for
+equivalent outputs, without implementation in this documentation task.
 
 ## Desired state
 
@@ -49,7 +52,7 @@ observable acceptance evidence without choosing implementation technologies.
 
 ## Acceptance criteria
 
-- [ ] A concrete CSV → preparation → analysis → presentation scenario covers the
+- [x] A concrete CSV → preparation → analysis → presentation scenario covers the
   confirmed personas and resolves import-review/configuration ownership.
 - [ ] Report/KPI needs and observable acceptance measures are agreed.
 - [ ] Validation evidence and documentation reflect the narrowed scope consistently.
@@ -69,7 +72,7 @@ labels do not imply fixed customer-specific domain types.
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
 [ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md) apply.
-ADR-0006 remains Proposed; this task cannot accept it by implication.
+ADR-0006 is Accepted following the owner's explicit TypeScript + NestJS decision.
 
 ## Security considerations
 
@@ -117,5 +120,6 @@ navigation link. Revise accepted product scope only after its validation.
 
 ## Open questions
 
-Pilot priority is confirmed. Validate persona responsibilities, initial data source, required
-workflow depth and success targets. See the proposal's decision register.
+Scope and persona responsibilities are confirmed. Agree report/KPI needs, reference
+inputs/outputs, presentation expectations and measurable success targets. The script
+has not been reviewed; transformation details require evidence, not assumptions.

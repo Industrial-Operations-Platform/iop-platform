@@ -15,24 +15,30 @@ artifacts have not been inspected in this task; exact transformations, reports a
 KPI parity remain to be documented.
 
 IOP v1 should reproduce the useful analytical behavior inside the product with
-individual logins and appropriate views. Python, Power BI embedding, source-code
-reuse and the future IOP database schema are not selected by this requirement.
+individual logins and appropriate views. The owner requests porting the existing
+Python CSV transformation behavior to the TypeScript/Node.js backend accepted in
+ADR-0006 (TypeScript compiles to JavaScript). The script remains uninspected: use
+it as a behavioral reference, review source-specific rules and verify equivalent
+outputs on representative identical inputs before replacing the current process.
+No conversion is implemented here. Power BI embedding and database schema details
+are not selected by this requirement.
 
 ## Responsibilities
 
-### Data operator — initially the owner
+### Administrator — initially the owner
 
-Confirmed: currently uploads and prepares the CSV. The platform must support that
-function without depending on one named person. Who reviews failed imports and
-maintains mapping/configuration still needs confirmation. Being the developer does
-not automatically define all administrative permissions.
+Confirmed: uploads/prepares CSV, reviews failed imports and manages user accounts,
+memberships and source configuration. The owner explicitly assigned these duties
+to their Administrator profile; they are not inferred from being the developer.
+Keep this a reusable platform responsibility, not a dependency on a named person.
 
 ### Team Leader
 
 Confirmed: interprets analysis and presents results to a superior. Needs report
 views/templates, charts, KPIs and source-provided sector/equipment context where
 available. Shares analytical investigation capability with Taskforce within the
-permitted scope. Import, configuration and editing rights are not yet assigned.
+permitted scope. Confirmed v1 baseline: consultation and analysis, without
+administrative import, user-management or configuration duties.
 
 ### Taskforce investigator
 
@@ -41,19 +47,20 @@ analysis to investigate faults and recurrence. In v1, available source identifie
 and context support investigation; exact physical sensor location is not promised.
 The longer-term need is sector-to-sensor location, potentially in 3D after suitable
 survey/mapping data exists. Taskforce is the current group label, not a hard-coded
-customer-specific core type.
+customer-specific core type. Like Team Leaders, this profile consults/analyzes
+within its permitted scope and does not perform administrative duties in v1.
 
 ### Management recipient
 
 Confirmed: receives information presented by Team Leaders only. No direct IOP login
 or management dashboard role is required for v1. Presentation format remains open.
 
-### Administration — ownership still open
+### Responsibility boundary
 
-Accounts, memberships, source configuration and import-quality review need owners.
-One person may perform several responsibilities. Map/asset survey administration
-is deferred with Asset Locator and does not block this v1 responsibility discussion.
-Personas are not an accepted RBAC matrix or an authentication-provider choice.
+The owner confirmed the Administrator versus analytical-profile responsibility
+split. Exact permission identifiers and scope enforcement belong to IOP-006; this
+baseline does not select an authentication provider. Map/asset survey administration
+is deferred with Asset Locator and does not block v1.
 
 ## Proposed acceptance preconditions
 
@@ -68,11 +75,11 @@ No full plant inventory, survey, map or sensor coordinates are required.
 
 ## End-to-end scenario
 
-1. **Configure — responsible administrator to confirm:** define the permitted site
+1. **Configure — Administrator:** define the permitted site
    and CSV mapping using the agreed format. Keep source vocabulary outside core.
-2. **Upload — data operator:** submit CSV and receive a traceable import result;
+2. **Upload — Administrator:** submit CSV and receive a traceable import result;
    preserve original input, validate and normalize it.
-3. **Review — import-quality owner to confirm:** inspect rejected/unresolved rows
+3. **Review — Administrator:** inspect rejected/unresolved rows
    and reconciliation. Explain corrections and ensure repeat input does not double
    count facts under the agreed idempotency contract.
 4. **Analyze — Team Leader or Taskforce:** use the agreed templates, charts, filters
@@ -104,6 +111,7 @@ require a live WinCC database connection in v1.
 | --- | --- |
 | Workflow coverage | Owner can supply CSV; authorized users analyze it; Team Leader presents the agreed results. |
 | Import integrity | Known counts and measures reconcile with documented rejection/correction handling; replay does not duplicate facts. |
+| Transformation parity | The TypeScript/Node.js port matches reviewed Python transformation outputs for identical representative CSV inputs, including agreed edge cases and explained intentional corrections. |
 | Analytical parity | Agreed reports/KPIs match independently checked outputs of the existing workflow at the same grain and period. |
 | Usability/value | Users can answer selected operational questions and prepare results with measured effort against the current manual baseline. |
 | Isolation/traceability | Unauthorized scopes are denied and results/material changes retain their agreed provenance and audit evidence. |
@@ -117,8 +125,12 @@ reviewers remain open. No measured improvement or acceptance is claimed.
   precise location and 3D are future scope, not first-release prerequisites.
 - Confirmed: owner uploads; Team Leader analyzes/presents; Taskforce investigates;
   management only receives presentations. Application users have individual logins.
-- Responsibilities still open: import-error review, configuration/account ownership
-  and whether analysts have any editing duties. Resolve these one question at a time.
+- Confirmed: the owner's Administrator profile owns import/error review and
+  user/configuration administration. Team Leader and Taskforce consult/analyze.
+- Confirmed: port the existing Python CSV transformation behavior to the accepted
+  TypeScript/Node.js backend; verify output equivalence before replacement.
+- Persona responsibility validation is complete at this task's level; detailed
+  RBAC remains separate work.
 - Later discussion: representative data/script/report evidence, exact templates and
   KPIs, presentation mechanism, operating constraints and measurable acceptance.
 - Future direction: meetings, shifts and other platform functions; precise asset

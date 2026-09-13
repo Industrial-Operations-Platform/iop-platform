@@ -5,7 +5,7 @@ Source specification: [IOP-001](../items/IOP-001-v1-personas-and-pilot-workflow.
 ## Status and authorization
 
 In progress. The user requested IOP-001, an execution plan and no implementation.
-Current branch: docs/IOP-001-v1-analysis-scope. The latest owner-confirmed scope
+Current branch: docs/IOP-001-persona-validation (from develop at 87e9325). The latest owner-confirmed scope
 is analytics-only v1, as recorded in the final execution-slice section below.
 Earlier locator statements are retained as superseded decision history.
 All new project content is written in English. The separately requested language
@@ -29,7 +29,8 @@ Explicitly distinguish proposed assumptions from stakeholder-validated requireme
 ## Dependencies and decisions
 
 Read AGENTS.md, ARCHITECTURE.md, ADR-0001–0007, vision and v1 scope.
-ADR-0006 remains Proposed. No technology or identity-provider selection is needed.
+ADR-0006 is now Accepted: TypeScript/Node.js + NestJS. Identity-provider selection
+remains separate; earlier Proposed-status notes below are historical.
 Stakeholder workflow priority, persona responsibilities and measurable targets
 need validation; draft independent documentation while those answers are pending. The owner has confirmed CSV events → analysis → locate the asset as
 the first pilot priority.
@@ -60,7 +61,8 @@ the accepted ADRs. No runtime tests or implementation are authorized.
 
 - [x] Persona and scenario proposal drafted with assumptions identified.
 - [x] Owner confirms workflow priority: CSV events → analysis → locate the asset.
-- [ ] Owner validates detailed persona responsibilities.
+- [x] Owner validates v1 responsibility split: Administrator manages imports, errors,
+  accounts and configuration; Team Leader/Taskforce consult and analyze.
 - [ ] Pilot acceptance measures and release scope agreed or explicitly deferred.
 - [x] Documentation checked and actual review evidence recorded.
 - [ ] Item/backlog synchronized; archive only after stakeholder validation.
@@ -141,3 +143,23 @@ ADR-0006 remains Proposed and future application directories contain only .gitke
 Current product scope, workflow proposal, item, roadmap and index consistently defer
 Asset Locator/surveys. Historical plan notes and future backlog contexts are preserved.
 No merge, push, application implementation or runtime test was performed.
+
+
+## Current slice: responsibility confirmation and transformation parity
+
+The owner explicitly confirmed that their Administrator profile reviews import
+errors and manages users/configuration; Team Leader and Taskforce have limited
+consultation/analysis capabilities. Record this as the confirmed v1 responsibility
+baseline, not a detailed RBAC permission matrix. Responsibilities are now resolved
+at IOP-001 level; report/KPI requirements and measurable acceptance remain open.
+
+The owner requests porting the existing Python CSV-processing behavior to JavaScript.
+Within accepted ADR-0006, capture this as TypeScript for Node.js (compiled to JavaScript),
+not a second backend-language decision. Review the script in a later planned slice
+and verify equivalent outputs on the same inputs before replacing the current process.
+No script has been supplied or inspected; do not claim exact parity or implement it now.
+
+Before edits, scope this increment to the active plan, IOP-001 item, product workflow,
+scope-v1 and the backlog status summary. Fix the current IOP-001 ADR-0006 status
+reference to match the accepted decision. Validate links, status and whitespace;
+commit on this story branch, without merge or push.

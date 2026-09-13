@@ -4,7 +4,7 @@ Este archivo indica **qué trabajo existe**; cada enlace abre su contexto perman
 Los criterios y dependencias viven en `items/`, los pasos actuales en `active/` y
 la evidencia de ejecución terminada en `completed/`. Ver [workflow](workflow.md).
 
-Status: IOP-001 In progress (pilot priority confirmed; detailed validation pending);
+Status: IOP-001 In progress (scope/responsibilities confirmed; reports and acceptance pending);
 IOP-002 In progress (backend complete: TypeScript + NestJS accepted in ADR-0006;
 frontend/tooling remain open). IOP-139 Completed
 (planning migration). IOP-140 Completed (English project-language rule).
