@@ -3,6 +3,8 @@
 Source specification: [IOP-002 technology stack](IOP-002-technology-stack.md).
 
 This preserves the prior backend evaluation; it is evidence, not an execution plan.
+Its recommendation is historical. The [current review](IOP-002-backend-review.md)
+reassesses the clarified solo-team, analytics-only v1 and records the accepted choice.
 
 ## Goal
 Choose the backend technology for IOP v1.
@@ -41,9 +43,10 @@ Choose the backend technology for IOP v1.
 
 ## Evaluation status
 
-Evaluated on 2026-09-13. Recommendation: TypeScript + NestJS.
-[ADR-0006](../../architecture/adr/ADR-0006-backend-stack.md) is Proposed,
-pending acceptance. No implementation or framework selection is effective yet.
+Original evaluation on 2026-09-13. Historical recommendation: TypeScript + NestJS.
+At the time of this original evaluation ADR-0006 was Proposed. It is now Accepted;
+see the current review for the later owner confirmation. The remaining text below
+preserves the original reasoning and pre-acceptance instructions as history.
 This evaluates the backend portion of IOP-002; frontend, detailed tooling,
 host/module layout and executable development/test commands remain follow-up work.
 

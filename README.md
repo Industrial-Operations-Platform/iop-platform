@@ -3,7 +3,9 @@
 IOP is a reusable industrial operations platform connecting people, shifts,
 maintenance, assets and operational insight. This is the single main repository
 for the platform. It currently contains documentation and directory placeholders;
-there is no runnable application or selected frontend/backend framework.
+there is no runnable application. TypeScript/Node.js with NestJS is the accepted
+backend ([ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md)); the frontend
+and detailed tooling remain undecided.
 
 ## Start here
 

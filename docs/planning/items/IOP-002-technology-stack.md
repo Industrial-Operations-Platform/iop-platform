@@ -1,8 +1,8 @@
-# IOP-002 — Elegir backend, frontend y tooling
+# IOP-002 — Select backend, frontend and tooling
 
 ## Status
 
-In progress — backend recommendation awaiting acceptance
+In progress — backend accepted; frontend and tooling remain open.
 
 ## Milestone
 
@@ -10,95 +10,108 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal
 
-Elegir backend, frontend y tooling. Resultado esperado: ADRs aprobados + comandos de dev/test definidos
+Select backend, frontend and tooling with accepted rationale and documented
+setup/development/test commands when the corresponding tooling exists.
 
 ## User / business value
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+The sole maintainer needs a reviewable, supportable stack that delivers CSV analytics
+first and preserves the generic platform's future module boundaries.
 
 ## Context
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Read [architecture](../../../ARCHITECTURE.md), [v1 scope](../../product/scope-v1.md)
+and [planning workflow](../workflow.md). The current user request evaluates the
+backend options only: Python + FastAPI and TypeScript + NestJS.
 
 ## Current state
 
-Existe una evaluación de backend y ADR-0006 Proposed; frontend y tooling siguen abiertos.
+No application/tooling exists. The [current backend review](IOP-002-backend-review.md)
+records explicit owner acceptance of TypeScript + NestJS after the owner confirmed
+TypeScript/Node.js experience. The analytics-only v1 scope is retained.
+The earlier NestJS recommendation is retained as historical evidence. Frontend,
+tooling, commands and detailed module layout remain undecided.
 
 ## Desired state
 
-ADRs aprobados + comandos de dev/test definidos
+Accepted technology decisions and documented workflow appropriate to the selected
+stack, with no invented commands or implicit implementation authorization.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-002.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
-- Preservar ADR-0006 como Proposed hasta aceptación explícita. Evaluar frontend y tooling por separado; no inferir elección por la recomendación de NestJS.
+- Evaluate the requested backend options against all eight original criteria.
+- Preserve generic modules, PostgreSQL, identity abstraction and customer isolation.
+- Obtain explicit decision acceptance before documenting a selected backend.
+- Evaluate frontend/tooling as separately requested slices; do not infer their choices.
 
 ## Acceptance criteria
 
-- [ ] ADRs aprobados + comandos de dev/test definidos
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] Backend decision accepted with documented rationale (ADR-0006).
+- [ ] Frontend and tooling decisions accepted with documented rationale.
+- [ ] Development/test commands defined when supported by selected tooling.
+- [ ] Execution plans and verification evidence reflect the delivered slices.
+
+Completing the backend comparison alone does not complete this parent task.
 
 ## Domain considerations
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+Backend choice must not make analytics source schemas or customer concepts core
+entities. Future module breadth does not authorize implementing those modules now.
 
 ## Architecture constraints
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Read ADR-0001–0005 and ADR-0007 in the [ADR directory](../../architecture/adr/).
+[ADR-0006](../../architecture/adr/ADR-0006-backend-stack.md) is Accepted.
+The branch workflow is recorded in IOP-141's separate review branch; the user
+explicitly authorized this branch to depend on the current IOP-001 commit.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Provider verification and scoped authorization remain distinct. No source access,
+credentials or production data are needed to evaluate the framework options.
 
 ## Data considerations
 
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
+The existing Python script is reported, not inspected; no reuse or migration is
+assumed. ORM, transaction patterns and physical tenancy remain open.
 
 ## API considerations
 
-Especificar contratos cuando corresponda; no crear endpoints.
+API-first capability is required; API style/contracts and endpoints are separate work.
 
 ## UI considerations
 
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
+Frontend is undecided. Backend choice does not select reporting or 3D libraries.
 
 ## Dependencies
 
-[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md): current scope is confirmed;
+detailed reports and targets remain open. Review uses that known scope and records
+remaining assumptions rather than claiming IOP-001 is complete.
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Code, dependency manifests, database migrations, framework scaffolds, production
+connectivity or closing unanswered architectural decisions by inference.
 
 ## Validation
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+Official capability sources; documented tradeoffs and unknowns; local links,
+ADR structure/status and reviewable branch diff. No runtime tests exist.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Item, review evidence, [completed backend plan](../completed/IOP-002-technology-stack-plan.md),
+ADR-0006 and architecture proposal navigation. Update selected-stack documentation
+only after acceptance. Keep backlog state consistent.
 
 ## Open questions
 
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+Nest-specific learning needs;
+frontend/tooling decisions and actual setup commands in subsequent work.
 
-## Existing evidence
+## Evidence
 
-[Backend comparison](IOP-002-backend-evaluation.md) and
-[active decision plan](../active/IOP-002-technology-stack-plan.md).
-Backend evaluation complete; acceptance and the rest of the stack remain open.
+[Historical evaluation](IOP-002-backend-evaluation.md),
+[current review](IOP-002-backend-review.md) and
+[decision plan](../completed/IOP-002-technology-stack-plan.md).
