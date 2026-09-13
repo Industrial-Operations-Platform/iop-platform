@@ -27,3 +27,18 @@ This repository currently contains documentation and placeholders, not an app.
 Use the [glossary](docs/product/glossary.md), [modules](docs/architecture/modules.md)
 and [data model](docs/architecture/data-model.md). See [templates](docs/planning/templates/)
 for task contexts and execution plans.
+
+## Project language
+
+Write all new or revised project-authored content in English, regardless of the
+conversation language: code and identifiers, comments, documentation, task contexts,
+plans, ADRs, tests, default UI text, errors/log messages, commit messages and PRs.
+Conversation with the user may remain in their preferred language.
+
+Preserve proper names, external source fields and customer-provided data faithfully;
+these are data, not core terminology. Explicit localization resources may contain
+their target languages; English remains the source/default language. This rule does
+not select a programming language or require a repository-wide historical rewrite.
+Translate prose being revised within the requested scope; plan bulk translation
+as a separate requested task. Never add new Spanish project prose merely because
+the conversation is Spanish.

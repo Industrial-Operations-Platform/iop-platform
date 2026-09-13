@@ -4,6 +4,12 @@ Decision: [ADR-0007](../architecture/adr/ADR-0007-planned-workflow.md), Accepted
 the user's explicit request on 2026-09-13. Applies to future repository changes,
 including code, infrastructure, refactors and substantive documentation work.
 
+## Project language
+
+Follow the [English project-language rule](../../AGENTS.md#project-language) for
+items, plans, evidence and all other authored deliverables. Conversation language
+does not determine project language. IOP-140 records the owner's explicit request.
+
 ## Sources of truth
 
 | Document | Responsibility |
