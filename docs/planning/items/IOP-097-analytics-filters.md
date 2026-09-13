@@ -95,3 +95,11 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+
+## Owner-supplied CSV and reporting context
+
+The screenshots show period, hall/sector, area, equipment and message inclusion/exclusion filters. Preserve and display active filters consistently across overview, rankings and drill-down. Resolve date origin and customer mappings first; screenshot exclusions are examples, not generic defaults.
+
+See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
+under IOP-002 at the owner's request. This is context for future planning; this
+item remains Proposed and no implementation or metric formula is accepted here.

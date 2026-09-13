@@ -21,8 +21,9 @@ first and preserves the generic platform's future module boundaries.
 ## Context
 
 Read [architecture](../../../ARCHITECTURE.md), [v1 scope](../../product/scope-v1.md)
-and [planning workflow](../workflow.md). The current user request evaluates the
-backend options only: Python + FastAPI and TypeScript + NestJS.
+and [planning workflow](../workflow.md). The backend comparison covered Python + FastAPI and TypeScript + NestJS.
+The latest requested slice captures CSV and Power BI reporting evidence to inform
+the remaining frontend/tooling evaluation.
 
 ## Current state
 
@@ -62,8 +63,8 @@ entities. Future module breadth does not authorize implementing those modules no
 
 Read ADR-0001–0005 and ADR-0007 in the [ADR directory](../../architecture/adr/).
 [ADR-0006](../../architecture/adr/ADR-0006-backend-stack.md) is Accepted.
-The branch workflow is recorded in IOP-141's separate review branch; the user
-explicitly authorized this branch to depend on the current IOP-001 commit.
+Follow Accepted [ADR-0008](../../architecture/adr/ADR-0008-story-branches.md).
+Record each slice branch and its base in its execution plan.
 
 ## Security considerations
 
@@ -72,8 +73,9 @@ credentials or production data are needed to evaluate the framework options.
 
 ## Data considerations
 
-The existing Python script is reported, not inspected; no reuse or migration is
-assumed. ORM, transaction patterns and physical tenancy remain open.
+The owner intends to port the existing Python CSV preparation behavior to
+TypeScript/Node.js. The script is not inspected; correctness and effort remain
+unverified and require output reconciliation before replacement. ORM, transaction patterns and physical tenancy remain open.
 
 ## API considerations
 
@@ -115,3 +117,14 @@ frontend/tooling decisions and actual setup commands in subsequent work.
 [Historical evaluation](IOP-002-backend-evaluation.md),
 [current review](IOP-002-backend-review.md) and
 [decision plan](../completed/IOP-002-technology-stack-plan.md).
+
+## CSV and reporting evidence slice
+
+Read the [source and reporting reference](../../product/csv-and-reporting-reference.md)
+before evaluating frontend/reporting tools. It records the seven-column aggregate
+CSV, four observed report pages, analytical drill-down and unresolved period/mapping
+semantics. This refines evaluation inputs without choosing a frontend or extending
+v1 to physical location/3D. IOP-001 report/KPI acceptance remains open.
+
+Evidence capture: [completed plan](../completed/IOP-002-reporting-context-plan.md).
+The parent stays In progress; proposed ingestion/analytics items are not activated.

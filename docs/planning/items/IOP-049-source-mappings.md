@@ -95,3 +95,11 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+
+## Owner-supplied CSV and reporting context
+
+The export has area labels and equipment designations but no explicit hall, parent or sensor field. Recover hall/sector and equipment-to-sensor mappings from verified source rules or customer configuration. Preserve ambiguous/unmapped records; do not infer physical hierarchy from code punctuation or hard-code pilot labels.
+
+See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
+under IOP-002 at the owner's request. This is context for future planning; this
+item remains Proposed and no implementation or metric formula is accepted here.

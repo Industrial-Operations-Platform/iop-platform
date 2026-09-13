@@ -95,3 +95,11 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+
+## Owner-supplied CSV and reporting context
+
+The observed source has seven semicolon-delimited columns. Preserve equipment designations as text and validate duration parsing, encoding and quoting against the actual exporter and existing Python script. The owner intends a TypeScript/Node.js port of the preparation behavior; compare normalized outputs with Python on identical input. Reporting-period origin, rejected rows and repeat-import semantics still require definition.
+
+See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
+under IOP-002 at the owner's request. This is context for future planning; this
+item remains Proposed and no implementation or metric formula is accepted here.

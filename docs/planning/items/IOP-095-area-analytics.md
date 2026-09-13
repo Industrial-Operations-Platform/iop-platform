@@ -95,3 +95,11 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+
+## Owner-supplied CSV and reporting context
+
+Support configurable higher-level hall/sector and area comparisons with frequency/duration rankings and drill-down context. These are source/customer dimensions, not fixed core hierarchy levels. Confirm mappings and preserve unknown groups in reconciliation.
+
+See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
+under IOP-002 at the owner's request. This is context for future planning; this
+item remains Proposed and no implementation or metric formula is accepted here.

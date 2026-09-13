@@ -95,3 +95,11 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+
+## Owner-supplied CSV and reporting context
+
+The screenshots show daily trends and month comparisons, but the supplied CSV has no date field. Resolve period metadata and comparable coverage before implementing trend calculations. Missing imports must not appear as zero incidents; targets and improvement formulas remain unvalidated.
+
+See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
+under IOP-002 at the owner's request. This is context for future planning; this
+item remains Proposed and no implementation or metric formula is accepted here.
