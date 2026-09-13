@@ -130,4 +130,8 @@ Evidence capture: [completed plan](../completed/IOP-002-reporting-context-plan.m
 The parent stays In progress; proposed ingestion/analytics items are not activated.
 
 Follow-up evidence: [legacy import review plan](../completed/IOP-002-import-evidence-plan.md).
-Filename dates and UTF-16 reading are confirmed; coverage and mapping details remain open.
+Filename dates and UTF-16 reading are confirmed. The subsequent Power BI DAX
+evidence confirms area-to-sector classification with an unclassified fallback;
+replicating analytics requires this transformation as well as Python preparation.
+Exact reporting boundaries and equipment-to-sensor relationships remain open.
+See the [mapping evidence plan](../completed/IOP-002-sector-mapping-evidence-plan.md).

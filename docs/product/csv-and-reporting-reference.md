@@ -40,8 +40,8 @@ reported counts, not the number of CSV rows, after defining duplicate handling.
 
 There is no date, reporting period, explicit hall, separate sensor identity or
 parent-equipment column. The owner confirmed that the date comes from the manually
-prepared filename, while a Python mapping list supplies additional area relationships.
-That list and its exact mapping direction have not been supplied. Do not invent timestamps or derive
+prepared filename. The subsequently supplied Power BI calculated column maps
+area labels to reporting sectors; the earlier attribution to Python is corrected below. Do not invent timestamps or derive
 physical relationships from equipment-code patterns without validated rules.
 
 ## Confirmed legacy import behavior
@@ -53,7 +53,8 @@ complete importer specification.
 - `Hitliste-20260626.csv` supplies the date `2026-06-26`. The loader removes
   `Hitliste-` from the filename stem and parses `%Y%m%d`; every row receives that
   same date. It is a date value, not an event timestamp. Exact reporting-window
-  coverage, timezone and whether files always represent a full day remain open.
+  boundaries and timezone remain unverified. The owner selects the corresponding
+  date when exporting: this is the date of the reported data, not the import date.
 - The existing operator selects a file through `CSV_FILE` configuration. The loader
   checks its existence and reads UTF-16. This does not prescribe an IOP upload UI
   or require storing environment configuration in the repository.
@@ -78,9 +79,30 @@ complete importer specification.
   for a customer/source-scoped platform. Correction, replacement and retry policies
   remain future contract decisions.
 
-The owner reports a mapping list in the Python analysis. Its keys, outputs,
-unknown-value handling and any equipment/sensor relationships remain to be reviewed.
-Keep those mappings in customer-scoped configuration or adapters, outside core code.
+## Confirmed Power BI area classification
+
+The owner supplied the DAX calculated column `Arbeit Sektor`. It reads `bereich`
+from the imported table, applies `TRIM`, then uses `SWITCH(TRUE(), ...)` with five
+explicit area-membership lists to assign one reporting sector. The fallback is
+`Nicht klassifiziert` (unclassified). This classification lives in Power BI, not
+in the supplied Python loader/repository. The five labels describe customer hall/
+sector groups; they do not establish five generic hierarchy levels.
+
+The mapping direction is area label → reporting sector. It does not identify a
+sensor, equipment parent or physical coordinate. Classifications rely on explicit
+membership, not substring guesses from area names or equipment designations.
+Customer lists are not copied into generic core code or seed data in this review.
+
+For the future port, capture the lists as customer-scoped mapping configuration
+with an explicit unclassified outcome. Preserve unmapped records in totals and
+make them visible for administrator review. Verify text-normalization/comparison
+behavior against the current report rather than assuming a replacement language's
+string trimming is identical. Conflicting mappings and changes to historical
+classification need a defined policy before implementation.
+
+Reproducing the current analytics requires both Python data preparation and this
+Power BI transformation. Porting the loader alone would omit sector classification.
+The backend remains accepted; mapping storage and execution location are undecided.
 
 ## Reports visible in the supplied screenshots
 
@@ -134,8 +156,9 @@ requirement. The backend remains TypeScript + NestJS; no supplied evidence chang
 ## Open validation points
 
 1. What reporting window does the filename date represent, and in which timezone?
-   Date origin is confirmed; full-day coverage is not.
-2. How does the existing script map areas/equipment to hall/sector and sensor detail?
+   The owner selects the corresponding date at export; exact boundaries are unverified.
+2. Area-to-sector classification is confirmed in DAX. What source identity or
+   mapping, if any, supports equipment-to-sensor detail?
 3. What is the exact aggregate grain and duration meaning, and how should IOP
    handle corrections/retries beyond the observed legacy duplicate-date rejection?
 4. Which reports, KPI formulas, targets and filters are required for pilot acceptance?

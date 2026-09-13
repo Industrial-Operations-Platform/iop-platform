@@ -98,7 +98,7 @@ Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice a
 
 ## Owner-supplied CSV and reporting context
 
-The export has area labels and equipment designations but no explicit hall, parent or sensor field. The owner confirms a mapping list in the Python analysis, but its contents and mapping direction have not been supplied. Recover hall/sector and any equipment-to-sensor mappings from verified source rules or customer configuration. Preserve ambiguous/unmapped records; do not infer physical hierarchy from code punctuation or hard-code pilot labels.
+The export has area labels and equipment designations but no explicit hall, parent or sensor field. The supplied Power BI DAX column applies `TRIM` to the area label and classifies it through five explicit membership lists into a reporting sector, with an unclassified fallback. This corrects the earlier Python attribution. Preserve this behavior as customer-scoped configuration, including visible unmapped records; validate text comparison, conflicting mappings and historical changes. Equipment-to-sensor mappings are still unverified. Preserve ambiguous/unmapped records; do not infer physical hierarchy from code punctuation or hard-code pilot labels.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
 under IOP-002 at the owner's request. This is context for future planning; this
