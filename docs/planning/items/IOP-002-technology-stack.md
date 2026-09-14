@@ -148,3 +148,14 @@ proposed tools and implementation ownership.
 [ADR-0009](../../architecture/adr/ADR-0009-local-delivery-tooling.md) is Proposed;
 frontend and remaining tooling evaluation are still open. No hooks or containers
 have been implemented by this documentation slice.
+
+## Frontend, charting and testing recommendation
+
+The [completed evaluation](IOP-002-frontend-testing-review.md) recommends React +
+TypeScript + Vite, Apache ECharts, Vitest, React Testing Library, Supertest,
+Playwright and Testcontainers PostgreSQL.
+[ADR-0010](../../architecture/adr/ADR-0010-frontend-charting-testing.md) remains
+Proposed alongside ADR-0009. NestJS was accepted for the backend only.
+Parent status remains In progress pending owner review and synchronized closure.
+The evaluation explicitly maps the conditional command criterion to future
+bootstrap evidence; no runnable commands or runtime validation are claimed.

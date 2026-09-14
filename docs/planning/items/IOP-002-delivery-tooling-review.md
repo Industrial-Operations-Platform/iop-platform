@@ -73,4 +73,5 @@ The following are required behaviors, not runnable repository commands today:
 
 These ownership links are planning assignments, not activation of those stories.
 No scaffolds, fake commands or Docker deployment are part of this completed review.
-Frontend/chart libraries and test-runner choices still need their own evaluation.
+The subsequent [frontend/testing evaluation](IOP-002-frontend-testing-review.md)
+provides the remaining recommendations under Proposed ADR-0010.

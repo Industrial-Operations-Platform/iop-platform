@@ -9,7 +9,9 @@ IOP-002 In progress (backend complete: TypeScript + NestJS accepted in ADR-0006;
 frontend/tooling remain open; [CSV/reporting evidence](../product/csv-and-reporting-reference.md)
 is captured for that evaluation and linked ingestion/analytics contexts;
 [local delivery/tooling review](items/IOP-002-delivery-tooling-review.md) records
-confirmed requirements and Proposed ADR-0009). IOP-139 Completed
+confirmed requirements and Proposed ADR-0009;
+[frontend/testing evaluation](items/IOP-002-frontend-testing-review.md) recommends
+the remaining stack under Proposed ADR-0010). IOP-139 Completed
 (planning migration). IOP-140 Completed (English project-language rule).
 All other tasks are Proposed; no application implementation exists.
 The owner has narrowed v1 to CSV → preparation → analysis → presentation.
