@@ -1,13 +1,13 @@
 # IOP-002 — Frontend, charting and testing review
 
-Status: evaluation complete; recommendation Proposed in
+Status: accepted with the owner-selected Jest adjustment in
 [ADR-0010](../../architecture/adr/ADR-0010-frontend-charting-testing.md).
 Companion: [delivery tooling](IOP-002-delivery-tooling-review.md).
 Reviewed official documentation on 2026-09-14; no prototype or benchmark executed.
 
 ## Requirements and decision boundary
 
-NestJS is the accepted backend. No frontend was previously accepted. The owner
+NestJS is the accepted backend. No frontend was accepted before this evaluation. The owner
 requested a recommendation for a solo developer with strong backend experience,
 limited frontend experience, local Docker execution and later server deployment.
 V1 replaces Power BI with an executive overview and filtered analysis. Report
@@ -54,12 +54,12 @@ Sources: [ECharts features](https://echarts.apache.org/en/feature.html),
 Verify release licenses and dependency notices when pinning packages; no commercial
 reporting service or Power BI embedding dependency is proposed.
 
-## Testing options and recommendation
+## Testing options and accepted selection
 
 | Layer | Options | Recommendation |
 | --- | --- | --- |
-| Unit/module | Vitest; Jest | Vitest across web and backend with separate configurations. It fits Vite and current Nest testing guidance; Jest remains viable but provides no established advantage for this new repository. |
-| React behavior | Testing Library; implementation-oriented component snapshots | React Testing Library with Vitest: test visible states and user interactions. Avoid snapshots as the principal correctness evidence. |
+| Unit/module | Vitest; Jest | Jest across web and backend with separate configurations, selected by the owner for existing experience. Vitest was the initial recommendation for Vite alignment. |
+| React behavior | Testing Library; implementation-oriented component snapshots | React Testing Library with Jest: test visible states and user interactions. Avoid snapshots as the principal correctness evidence. |
 | HTTP API | Supertest with Nest testing utilities; browser-only tests | Supertest with @nestjs/testing for validation, errors and scoped access checks. |
 | Browser journeys | Playwright; Cypress | Playwright for automated browser journeys and trace-based failure inspection. Cypress is a viable interactive alternative; one browser suite is sufficient. |
 | PostgreSQL integration | Testcontainers; manually shared test database | Testcontainers for disposable PostgreSQL with real migrations, isolation and cleanup. Requires Docker in local/CI test environments. |
@@ -70,9 +70,11 @@ Sources: [Vitest](https://vitest.dev/guide/), [Jest](https://jestjs.io/docs/gett
 [Playwright](https://playwright.dev/docs/intro/),
 [Cypress](https://docs.cypress.io/app/get-started/why-cypress),
 [Testcontainers PostgreSQL](https://node.testcontainers.org/modules/postgresql/).
-Nest's current documentation uses Vitest; compatibility with the chosen pinned
-Nest/TypeScript release and decorator transformation must still be verified at
-bootstrap. Do not assume frontend transpilation settings work for Nest injection.
+Nest's current documentation illustrates Vitest, but its testing utilities are
+runner-independent. Jest requires its own TS/JSX, module, alias and asset handling;
+it does not execute Vite plugins. Use DOM and Node environments separately and
+verify Nest decorator metadata at bootstrap. Keep TypeScript checks separate.
+Maintainer familiarity justifies this configuration cost; no integration was run.
 
 Prioritize synthetic fixtures with independently calculated frequency/duration
 results, invalid inputs, duplicate/correction behavior once defined, customer
@@ -83,12 +85,12 @@ in CI. Formatting/lint/type hooks from ADR-0009 remain separate from functional 
 
 ## Closure mapping
 
-Backend acceptance is already recorded in ADR-0006. Owner acceptance of ADR-0009
-and ADR-0010 would complete frontend/tool selection for this design story.
-Then synchronize ARCHITECTURE.md, README, item/backlog and milestone/roadmap status.
+Backend acceptance is already recorded in ADR-0006. The owner accepted ADR-0009
+and ADR-0010 with Jest replacing Vitest, completing frontend/tool selection.
+ARCHITECTURE.md, README, item/backlog and milestone/roadmap status are synchronized.
 
-The command criterion is conditional on tooling existence. At design closure,
-record it as not yet applicable with explicit handoff to IOP-015/016/017/020, rather
+The command criterion is conditional on tooling existence. At design closure it is
+recorded as not yet applicable with explicit handoff to IOP-015/016/017/020, rather
 than claim executable commands passed. These stories must implement and verify
 install, dev, build, lint, typecheck, unit/integration/browser test and Docker
 start/log/stop commands. Command names/versions are finalized with real manifests.

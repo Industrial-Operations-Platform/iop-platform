@@ -1,6 +1,6 @@
 # IOP-002 — Local delivery and tooling review
 
-Status: requirements confirmed; tooling recommendation Proposed in
+Status: requirements and tooling accepted in
 [ADR-0009](../../architecture/adr/ADR-0009-local-delivery-tooling.md).
 Source: [IOP-002](IOP-002-technology-stack.md). No runtime tooling is installed.
 
@@ -74,4 +74,4 @@ The following are required behaviors, not runnable repository commands today:
 These ownership links are planning assignments, not activation of those stories.
 No scaffolds, fake commands or Docker deployment are part of this completed review.
 The subsequent [frontend/testing evaluation](IOP-002-frontend-testing-review.md)
-provides the remaining recommendations under Proposed ADR-0010.
+records the accepted remaining stack under ADR-0010, with owner-selected Jest.

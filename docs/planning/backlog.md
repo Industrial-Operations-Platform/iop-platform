@@ -5,13 +5,8 @@ Los criterios y dependencias viven en `items/`, los pasos actuales en `active/` 
 la evidencia de ejecución terminada en `completed/`. Ver [workflow](workflow.md).
 
 Status: IOP-001 In progress (pilot priority confirmed; detailed validation pending);
-IOP-002 In progress (backend complete: TypeScript + NestJS accepted in ADR-0006;
-frontend/tooling remain open; [CSV/reporting evidence](../product/csv-and-reporting-reference.md)
-is captured for that evaluation and linked ingestion/analytics contexts;
-[local delivery/tooling review](items/IOP-002-delivery-tooling-review.md) records
-confirmed requirements and Proposed ADR-0009;
-[frontend/testing evaluation](items/IOP-002-frontend-testing-review.md) recommends
-the remaining stack under Proposed ADR-0010). IOP-139 Completed
+IOP-002 Completed (stack accepted under ADR-0006/0009/0010, including Jest for
+frontend/backend; runnable commands await bootstrap). IOP-139 Completed
 (planning migration). IOP-140 Completed (English project-language rule).
 All other tasks are Proposed; no application implementation exists.
 The owner has narrowed v1 to CSV → preparation → analysis → presentation.
@@ -31,7 +26,7 @@ IOP-040 es asset search; la release es IOP-138.
 | Contexto de tarea | Estado |
 | --- | --- |
 | [IOP-001 — Validate v1 personas and pilot workflow](items/IOP-001-v1-personas-and-pilot-workflow.md) | In progress |
-| [IOP-002 — Select backend, frontend and tooling](items/IOP-002-technology-stack.md) | In progress |
+| [IOP-002 — Select backend, frontend and tooling](items/IOP-002-technology-stack.md) | Completed |
 | [IOP-003 — Definir estilo API y contratos](items/IOP-003-api-contract-strategy.md) | Proposed |
 | [IOP-004 — Diseñar scope Organization/Site](items/IOP-004-platform-scope-model.md) | Proposed |
 | [IOP-005 — Diseñar tenancy/data isolation](items/IOP-005-tenancy-and-data-isolation.md) | Proposed |

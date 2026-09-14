@@ -2,8 +2,8 @@
 
 ## Status
 
-Proposed. The owner requested the behavior below; named tooling choices await
-review. This ADR does not accept a frontend framework or authorize scaffolding.
+Accepted on 2026-09-14 by explicit owner confirmation. Frontend/testing choices
+are recorded in ADR-0010. This decision does not implement scaffolding.
 
 ## Context
 
@@ -14,7 +14,7 @@ ADR-0001/0002/0006 already establish a modular monolith, monorepo and NestJS bac
 
 ## Decision
 
-Propose npm workspaces with a root lockfile and per-component scripts. Use Husky
+Use npm workspaces with a root lockfile and per-component scripts. Use Husky
 for versioned Git hooks, lint-staged for staged-file checks, Prettier for formatting,
 ESLint for code linting and TypeScript project checks for types. Pin compatible
 versions during implementation. Local Git hooks run in the developer checkout;
@@ -60,8 +60,8 @@ checks rather than silently skip them. Hooks improve local feedback and can be
 bypassed; CI remains necessary. Scope validation labels intent, not file ownership.
 
 No scripts or hooks exist yet. Record actual commands and validation in bootstrap
-stories; do not close IOP-002 by inventing executable evidence. The frontend,
-charting, test runners, ORM and migrations remain separate unresolved choices.
+stories; do not close IOP-002 by inventing executable evidence. Frontend,
+charting and tests are accepted under ADR-0010. ORM and migrations remain open.
 
 ## Alternatives considered
 
