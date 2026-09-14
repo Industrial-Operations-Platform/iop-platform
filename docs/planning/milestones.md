@@ -7,7 +7,7 @@ Evaluate only the selected v1 slices when planning release validation.
 
 
 M0 (baseline) completed. M1 in progress: IOP-002 stack selection completed
-(ADR-0006/0009/0010 Accepted); other product and architecture work remains open.
+(ADR-0006/0009/0010 Accepted); IOP-001 personas/workflow baseline also completed; other architecture work remains open.
 M2–M17 Proposed. La migración de planificación IOP-139 es un follow-up de M0.
 Los hitos organizan capacidades; no obligan a completar cada bloque antes del
 siguiente. Seguridad y testing acompañan cada slice desde el inicio.
@@ -19,7 +19,7 @@ Ver [backlog](backlog.md), [workflow](workflow.md) y [equivalencias](legacy-back
 Tareas: IOP-001–IOP-014.
 
 Exit: Personas, workflow and decisions needed for the next slice are documented
-and accepted. IOP-002 is complete under Accepted ADR-0006/0009/0010; the other
+and accepted. IOP-001 baseline and IOP-002 stack selection are complete with stack decisions under Accepted ADR-0006/0009/0010; the other
 M1 design work remains open.
 
 ## M2 — Development Platform Foundation

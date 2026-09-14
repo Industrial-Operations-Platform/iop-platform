@@ -90,9 +90,9 @@ React + TypeScript + Vite and Apache ECharts are accepted. No 3D library is sele
 
 ## Dependencies
 
-[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md): current scope is confirmed;
-detailed reports and targets remain open. Review uses that known scope and records
-remaining assumptions rather than claiming IOP-001 is complete.
+[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md): personas, reporting baseline and
+acceptance measures are now agreed and IOP-001 is Completed. Detailed contracts and
+release targets remain follow-up work under its explicit deferrals.
 
 ## Non-goals
 
@@ -127,7 +127,7 @@ Read the [source and reporting reference](../../product/csv-and-reporting-refere
 before evaluating frontend/reporting tools. It records the seven-column aggregate
 CSV, four observed report pages, analytical drill-down and unresolved period/mapping
 semantics. This refines evaluation inputs without choosing a frontend or extending
-v1 to physical location/3D. IOP-001 report/KPI acceptance remains open.
+v1 to physical location/3D. IOP-001 report/KPI baseline is now accepted with explicit follow-up deferrals.
 
 Evidence capture: [completed plan](../completed/IOP-002-reporting-context-plan.md).
 That evidence slice left the parent In progress; ingestion/analytics items were not activated.

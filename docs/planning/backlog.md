@@ -4,7 +4,8 @@ Este archivo indica **qué trabajo existe**; cada enlace abre su contexto perman
 Los criterios y dependencias viven en `items/`, los pasos actuales en `active/` y
 la evidencia de ejecución terminada en `completed/`. Ver [workflow](workflow.md).
 
-Status: IOP-001 In progress (pilot priority confirmed; detailed validation pending);
+Status: IOP-001 Completed (personas, analytical workflow and acceptance baseline agreed;
+export and numerical performance targets explicitly deferred);
 IOP-002 Completed (stack accepted under ADR-0006/0009/0010, including Jest for
 frontend/backend; runnable commands await bootstrap). IOP-139 Completed
 (planning migration). IOP-140 Completed (English project-language rule).
@@ -25,7 +26,7 @@ IOP-040 es asset search; la release es IOP-138.
 
 | Contexto de tarea | Estado |
 | --- | --- |
-| [IOP-001 — Validate v1 personas and pilot workflow](items/IOP-001-v1-personas-and-pilot-workflow.md) | In progress |
+| [IOP-001 — Validate v1 personas and pilot workflow](items/IOP-001-v1-personas-and-pilot-workflow.md) | Completed |
 | [IOP-002 — Select backend, frontend and tooling](items/IOP-002-technology-stack.md) | Completed |
 | [IOP-003 — Definir estilo API y contratos](items/IOP-003-api-contract-strategy.md) | Proposed |
 | [IOP-004 — Diseñar scope Organization/Site](items/IOP-004-platform-scope-model.md) | Proposed |
