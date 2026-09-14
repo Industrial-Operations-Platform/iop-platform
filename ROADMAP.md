@@ -4,12 +4,13 @@
 
 CSV events → preparation/normalization → analysis → presentation, with individual
 login and authorized views. Reproduce the useful behavior of the current local
-Power BI workflow. Exact reports, KPIs and acceptance targets remain under IOP-001.
+Power BI workflow. IOP-001 defines the accepted two-view frequency/duration baseline; detailed metric
+contracts, export and numerical performance targets remain delivery/validation work.
 No implementation or delivery date is committed.
 
 ## Delivery direction
 
-1. Validate persona responsibilities and report/acceptance requirements in IOP-001.
+1. IOP-001 persona responsibilities and report/acceptance baseline are complete.
 2. Resolve stack and essential API, scope, identity, ingestion and operational
    decisions. IOP-002 stack selection is complete under Accepted ADR-0006/0009/0010,
    including React/Vite, ECharts, Jest and local delivery tooling. Bootstrap and

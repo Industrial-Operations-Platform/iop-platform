@@ -4,8 +4,8 @@ Source specification: [IOP-001](../items/IOP-001-v1-personas-and-pilot-workflow.
 
 ## Status and authorization
 
-In progress. The user requested IOP-001, an execution plan and no implementation.
-Current branch: docs/IOP-001-v1-analysis-scope. The latest owner-confirmed scope
+Completed. The user requested IOP-001, an execution plan and no implementation.
+Current branch: docs/IOP-001-closure-review (from develop at f7fee72). The latest owner-confirmed scope
 is analytics-only v1, as recorded in the final execution-slice section below.
 Earlier locator statements are retained as superseded decision history.
 All new project content is written in English. The separately requested language
@@ -60,10 +60,10 @@ the accepted ADRs. No runtime tests or implementation are authorized.
 
 - [x] Persona and scenario proposal drafted with assumptions identified.
 - [x] Owner confirms workflow priority: CSV events → analysis → locate the asset.
-- [ ] Owner validates detailed persona responsibilities.
-- [ ] Pilot acceptance measures and release scope agreed or explicitly deferred.
+- [x] Owner validates detailed persona responsibilities.
+- [x] Pilot acceptance measures and release scope agreed or explicitly deferred.
 - [x] Documentation checked and actual review evidence recorded.
-- [ ] Item/backlog synchronized; archive only after stakeholder validation.
+- [x] Item/backlog synchronized and archived after explicit stakeholder validation.
 
 ## Evidence and deviations
 
@@ -141,3 +141,23 @@ ADR-0006 remains Proposed and future application directories contain only .gitke
 Current product scope, workflow proposal, item, roadmap and index consistently defer
 Asset Locator/surveys. Historical plan notes and future backlog contexts are preserved.
 No merge, push, application implementation or runtime test was performed.
+
+## Current closure review
+
+The owner requested closure review after IOP-002. Current responsibilities are
+confirmed by prior evidence at 830b943; the new story branch preserves that pending
+review branch without merging it. Administrator owns imports/error review and
+user/configuration administration; analysts consult/filter. Executive/detail views
+and administrator-owned versioned report configuration are confirmed in IOP-002.
+ADR-0006/0009/0010 are now Accepted; earlier status notes above are historical.
+The final KPI acceptance baseline and explicit deferrals are proposed for owner
+confirmation in the product workflow. Keep the parent active until confirmed.
+See [closure review plan](IOP-001-closure-review-plan.md).
+
+## Final owner acceptance
+
+On 2026-09-14 the owner explicitly accepted the final pilot baseline and export/
+performance deferrals. All design acceptance criteria are met. The item, workflow,
+scope and planning navigation are synchronized. Earlier pending questions/statuses
+in this execution history are superseded by this result. No runtime results are
+claimed. See the closure review plan for documentation validation.

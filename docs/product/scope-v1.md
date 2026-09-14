@@ -15,8 +15,9 @@ No application functionality is implemented yet.
 - Import the consistent WinCC CSV format through a source adapter; preserve RAW
   provenance, validation, normalized data, idempotency and reconciliation.
 - Reproduce the useful report templates, charts and KPIs of the current Python →
-  local database → Power BI process. Exact feature parity and presentation/export
-  format remain to be agreed; no Power BI embedding or existing-code reuse is selected.
+  local database → Power BI process. Executive and detail views cover frequency and accumulated alarm duration.
+  Present directly from IOP; PDF/image export is deferred. No Power BI embedding
+  or existing-code reuse is selected.
 - Provide Team Leaders with analysis they can interpret and present to management.
   Management receives these presentations and does not need a v1 login.
 - Provide Taskforce and Team Leaders with automated analytical views for investigating
@@ -48,8 +49,9 @@ undecided. These goals do not impose dependencies on the CSV-based v1.
 
 Demonstrate import → reconciled analysis → useful presentation with the agreed CSV,
 reports and test cases. Verify individual access, scope isolation, source traceability
-and truthful data-quality states. Agree responsibilities, report/KPI definitions,
-performance/value targets and operating criteria before claiming release readiness.
+and truthful data-quality states. The design baseline is accepted in IOP-001. Validate detailed metric contracts,
+reference outputs, performance/value targets and operating criteria before claiming
+release readiness.
 Maps, 3D, complete asset surveys and operational workflows are not v1 release gates.
 
 ## Planning inventory
@@ -59,6 +61,6 @@ platform. They are not a mandatory v1 checklist. Select and refine only slices n
 for this boundary before implementation; do not require all asset/locator stories
 or later workflows as prerequisites.
 
-[Personas and pilot workflow](personas-and-pilot-workflow.md) records the current
-scope and remaining questions. IOP-001 is still In progress; narrowing the release
-does not complete persona or acceptance validation.
+[Personas and pilot workflow](personas-and-pilot-workflow.md) records the accepted
+baseline and explicit deferrals. IOP-001 is Completed as design; implementation
+and release validation remain open.
