@@ -2,7 +2,7 @@
 
 ## Status
 
-Blocked — evaluation complete; explicit owner acceptance of Proposed ADR-0011 is pending.
+Completed — API contract strategy accepted on 2026-09-14; implementation remains separately scoped.
 
 ## Milestone
 
@@ -28,9 +28,9 @@ See [modules](../../architecture/modules.md) and [workflow](../workflow.md).
 ## Current state
 
 IOP-002 is Completed: NestJS, React and the testing baseline are accepted.
-No API or executable contract exists. The evaluation recommends REST/JSON,
+No API or executable contract exists. The owner accepted REST/JSON,
 OpenAPI generated from dedicated Nest transport DTOs/metadata, URI major versions
-and RFC 9457 Problem Details. ADR-0011 is Proposed, not an accepted baseline.
+and RFC 9457 Problem Details. ADR-0011 is Accepted and the architecture/module guidance is synchronized.
 
 ## Desired state
 
@@ -46,10 +46,10 @@ documentation, ready to guide separately authorized implementation stories.
 
 ## Acceptance criteria
 
-- [ ] API style, versioning, errors and contract strategy explicitly accepted.
+- [x] API style, versioning, errors and contract strategy explicitly accepted.
 - [x] Plan and ADR document relevant options, scenarios and decisions without scope expansion.
 - [x] Evaluation validation evidence and planning status are synchronized.
-- [ ] Accepted architecture documentation synchronized after owner acceptance.
+- [x] Accepted architecture documentation synchronized after owner acceptance.
 
 ## Domain considerations
 
@@ -65,7 +65,8 @@ Accepted [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0006](../../architecture/adr/ADR-0006-backend-stack.md),
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md),
 [ADR-0008](../../architecture/adr/ADR-0008-story-branches.md) and
-[ADR-0010](../../architecture/adr/ADR-0010-frontend-charting-testing.md).
+[ADR-0010](../../architecture/adr/ADR-0010-frontend-charting-testing.md) and
+[ADR-0011](../../architecture/adr/ADR-0011-api-contract-strategy.md).
 Proposed ADRs are not permission to implement a decision.
 
 ## Security considerations
@@ -106,12 +107,12 @@ statuses and diff consistency. No runner or runtime contract exists yet.
 
 ## Documentation impact
 
-This item, its [backlog](../backlog.md) row, ADR-0011 and the evaluation plan.
-Update accepted architecture/module guidance only after explicit acceptance.
+This item, its [backlog](../backlog.md) row, ADR-0011, architecture/module guidance
+and the completed evaluation/closure plans are synchronized.
 
 ## Open questions
 
-Does the owner accept ADR-0011's proposed strategy? Exact generator/dialect versions
+No API strategy acceptance blockers remain. Exact generator/dialect versions
 and endpoint-specific schemas/limits require future implementation/design work;
 they are explicitly deferred and are not claimed as verified by this ADR.
 
@@ -120,4 +121,7 @@ they are explicitly deferred and are not claimed as verified by this ADR.
 [Completed evaluation plan](../completed/IOP-003-api-contract-strategy-plan.md).
 The requested historical `active/IOP-002-backend-stack.md` path is absent; the
 permanent IOP-002 context and Accepted ADR-0006 provide the current decision.
-The evaluation is complete, but IOP-003 remains open pending acceptance.
+The owner explicitly accepted ADR-0011 on 2026-09-14. See the
+[completed closure plan](../completed/IOP-003-api-contract-closure-plan.md) for
+validation evidence. All design acceptance criteria are satisfied; no runtime
+implementation or compatibility verification is claimed.

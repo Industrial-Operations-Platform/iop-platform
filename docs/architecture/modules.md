@@ -35,3 +35,18 @@ entities. `packages/shared` is for small domain-neutral utilities, not a second
 core. Module code placement, invocation mechanisms, transaction coordination and
 reliable audit/event delivery need design before implementation; a broker or
 microservices are not implied.
+
+
+## Contract strategy
+
+Accepted [ADR-0011](adr/ADR-0011-api-contract-strategy.md) defines REST/JSON and
+OpenAPI for the HTTP boundary. Dedicated transport DTOs map into owner-published
+TypeScript interfaces and data structures; internal contracts remain independent
+of HTTP and provider tokens. Sharing a process does not require internal HTTP calls.
+
+Browser bindings derive from the reviewed OpenAPI artifact and must not import
+Nest DTO classes, persistence entities or server internals. Transport validation
+checks untrusted input; each receiving module still enforces domain invariants and
+scoped references. Source adapters continue to translate vendor data into
+receiver-owned ingestion contracts. Exact module placement, invocation and
+transaction/delivery mechanisms remain undecided.
