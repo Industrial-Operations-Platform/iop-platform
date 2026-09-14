@@ -55,12 +55,11 @@ The owner accepted TypeScript on Node.js with NestJS under ADR-0006. The
 [current IOP-002 review](docs/planning/items/IOP-002-backend-review.md) covers both
 options against the analytics-only v1 scope and confirmed maintainer experience.
 Future API/worker composition follows explicit module contracts. No framework
-scaffold or application code exists yet. Frontend and tooling remain open.
+scaffold or application code exists yet. Frontend and tooling are accepted under ADR-0009/0010.
 
 ## Intentionally undecided
 
-Frontend language/framework, build tooling, API style, ORM and migration
-tooling; module code layout; identity provider, protocols and session handling;
+API style, ORM and migration tooling; module code layout; identity provider, protocols and session handling;
 physical tenancy and database enforcement; hosting and network topology; job and
 cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
@@ -68,3 +67,14 @@ contracts; retention, performance, availability and recovery targets.
 Resolve these with scoped plans and ADRs where they affect boundaries. No
 application scaffolding, database schema, containers or dependency manifests are
 part of this baseline.
+
+## Accepted frontend and development tooling
+
+[ADR-0009](docs/architecture/adr/ADR-0009-local-delivery-tooling.md) selects npm
+workspaces, scoped Conventional Commits, Husky/lint-staged, Prettier/ESLint and
+TypeScript checks, plus Compose and multi-stage local container builds.
+[ADR-0010](docs/architecture/adr/ADR-0010-frontend-charting-testing.md) selects
+React + TypeScript + Vite, Apache ECharts, Jest for frontend/backend, React Testing
+Library, Supertest, Playwright and Testcontainers PostgreSQL. Jest has independent
+configuration from Vite. IOP-002 is complete as design; commands and runtime
+verification belong to bootstrap stories. No tooling is implemented yet.

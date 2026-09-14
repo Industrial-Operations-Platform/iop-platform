@@ -4,8 +4,12 @@ IOP is a reusable industrial operations platform connecting people, shifts,
 maintenance, assets and operational insight. This is the single main repository
 for the platform. It currently contains documentation and directory placeholders;
 there is no runnable application. TypeScript/Node.js with NestJS is the accepted
-backend ([ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md)); the frontend
-and detailed tooling remain undecided.
+backend ([ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md)). React +
+TypeScript + Vite, ECharts and Jest for frontend/backend are accepted in
+[ADR-0010](docs/architecture/adr/ADR-0010-frontend-charting-testing.md). Workspace,
+hook and Docker tooling are accepted in
+[ADR-0009](docs/architecture/adr/ADR-0009-local-delivery-tooling.md). IOP-002 stack
+selection is complete; implementation and runnable commands remain bootstrap work.
 
 ## Start here
 

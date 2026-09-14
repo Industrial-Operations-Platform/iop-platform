@@ -96,3 +96,11 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+
+## Owner-supplied CSV and reporting context
+
+The current export supplies accumulated duration without individual event intervals. Separate accumulated alarm duration from elapsed plant downtime; overlapping alarms cannot be deduplicated into downtime from this excerpt alone. Verify duration units and parsing, and label charts honestly.
+
+See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
+under IOP-002 at the owner's request. This is context for future planning; this
+item remains Proposed and no implementation or metric formula is accepted here.

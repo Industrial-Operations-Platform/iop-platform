@@ -95,3 +95,11 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+
+## Owner-supplied CSV and reporting context
+
+Model the supplied input as aggregate alarm statistics with frequency, duration, source dimensions and explicit reporting coverage. Do not synthesize individual event timestamps. Resolve exact grain and distinguish aggregate facts from future occurrence-level sources before defining the canonical contract.
+
+See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
+under IOP-002 at the owner's request. This is context for future planning; this
+item remains Proposed and no implementation or metric formula is accepted here.

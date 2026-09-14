@@ -95,3 +95,11 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+
+## Owner-supplied CSV and reporting context
+
+The requested path is overview → configured hall/sector → area → equipment → fault message or verified sensor identity. Retain scope, period and filters and expose contributing aggregate records. A collective fault is not a proven root cause. Physical maps, coordinates, plant surveying and 3D remain deferred.
+
+See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
+under IOP-002 at the owner's request. This is context for future planning; this
+item remains Proposed and no implementation or metric formula is accepted here.
