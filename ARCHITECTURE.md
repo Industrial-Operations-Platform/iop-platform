@@ -59,7 +59,7 @@ scaffold or application code exists yet. Frontend and tooling are accepted under
 
 ## Intentionally undecided
 
-API style, ORM and migration tooling; module code layout; identity provider, protocols and session handling;
+ORM and migration tooling; module code layout; identity provider, protocols and session handling;
 physical tenancy and database enforcement; hosting and network topology; job and
 cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
@@ -78,3 +78,22 @@ React + TypeScript + Vite, Apache ECharts, Jest for frontend/backend, React Test
 Library, Supertest, Playwright and Testcontainers PostgreSQL. Jest has independent
 configuration from Vite. IOP-002 is complete as design; commands and runtime
 verification belong to bootstrap stories. No tooling is implemented yet.
+
+
+## Accepted API strategy
+
+[ADR-0011](docs/architecture/adr/ADR-0011-api-contract-strategy.md) selects REST/JSON,
+major versions in business API paths starting at `/api/v1`, and RFC 9457 Problem
+Details errors. Dedicated Nest transport DTOs and explicit metadata generate a
+reviewed OpenAPI artifact; browser bindings derive from that artifact. Runtime
+validation and owning-module invariants remain necessary.
+
+Internal module contracts are independent of HTTP and identity providers. Every
+operation documents and enforces its permissions and customer/site scope. Detail
+collections use bounded cursor pagination; analytical responses preserve metric,
+period, unit and coverage semantics. Breaking contract changes require explicit
+compatibility review and normally a new major version.
+
+IOP-003 is complete as design. OpenAPI dialect/tool versions, endpoint schemas and
+limits, exact error catalogs and runtime conformance checks remain implementation
+work. No API or generated contract exists yet.
