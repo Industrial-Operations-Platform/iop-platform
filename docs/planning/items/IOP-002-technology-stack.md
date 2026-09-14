@@ -135,3 +135,16 @@ evidence confirms area-to-sector classification with an unclassified fallback;
 replicating analytics requires this transformation as well as Python preparation.
 Exact reporting boundaries and equipment-to-sensor relationships remain open.
 See the [mapping evidence plan](../completed/IOP-002-sector-mapping-evidence-plan.md).
+
+## Confirmed reporting and local delivery requirements
+
+The owner confirmed predefined executive/detail views, administrator-owned report
+configuration files and selection of implemented metrics, groupings and charts.
+New metric formulas require code changes; a configuration UI is deferred.
+Local frontend/backend/PostgreSQL containers, portable component builds, scoped
+commits and automatic commit checks are required. Read the
+[delivery/tooling review](IOP-002-delivery-tooling-review.md) for the full requirements,
+proposed tools and implementation ownership.
+[ADR-0009](../../architecture/adr/ADR-0009-local-delivery-tooling.md) is Proposed;
+frontend and remaining tooling evaluation are still open. No hooks or containers
+have been implemented by this documentation slice.
