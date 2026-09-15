@@ -1,7 +1,8 @@
 # Conceptual data model
 
 This is a conceptual baseline, not DDL or a migration plan. PostgreSQL is accepted;
-physical schemas, ID encoding/generation, constraints and indexing remain to be designed.
+shared-table isolation is accepted under ADR-0013. Physical module schemas, ID
+encoding/generation, detailed constraints and indexing remain to be designed.
 Module ownership is defined in [modules](modules.md).
 
 ## Relationships
@@ -62,9 +63,8 @@ Trace every analytical result back to its contributing normalized and RAW record
 
 Customer scope applies to records, aliases, joins, map access and derived views.
 References must not cross customer boundaries; site-scoped operations also check
-site access. Technical enforcement (shared tables, separate schemas/databases,
-row-level policies or a combination) is intentionally undecided under
-[ADR-0005](adr/ADR-0005-customer-isolation.md). Historical globally unique labels
+site access. Accepted [ADR-0013](adr/ADR-0013-tenancy-data-isolation.md) selects shared tables,
+application authorization, scoped relational constraints and row-level security. Historical globally unique labels
 and customer-specific table names are not imported as generic constraints.
 
 
@@ -94,5 +94,23 @@ subject to temporal and metric design.
 
 Scope must survive queries, jobs, audit, caches, files and derived views. Current
 authorization policy applies at job execution and result retrieval; stored context
-is not a permanent grant. Physical enforcement and storage representation remain
-with IOP-005, and detailed membership/grant policy with IOP-006.
+is not a permanent grant. Physical enforcement follows Accepted ADR-0013; detailed schema implementation
+remains future work, and membership/grant policy remains with IOP-006.
+
+
+## Accepted storage requirements
+
+Organization-owned rows carry non-null `organizationId`; site-owned rows also carry
+non-null `siteId`. Classify platform-global identity/reference data explicitly and
+expose it only through narrow owner contracts. Missing site is never a wildcard.
+Constrain site ownership and use scoped candidate keys/composite foreign keys for
+same-organization and site-local references. Source aliases and idempotency keys
+include their owning scope and source namespace. Ordinary writes cannot reassign
+scope ownership.
+
+Customer base tables require enabled/forced RLS with visibility and write checks
+against validated transaction-local scope. Application queries and authorization
+remain scoped too. Derived views/projections and other access paths require their
+own review before runtime grants. Verify pool reuse, rollback, concurrency and
+foreign-reference rejection against actual runtime credentials before claiming
+isolation; this document provides no DDL or executed security evidence.

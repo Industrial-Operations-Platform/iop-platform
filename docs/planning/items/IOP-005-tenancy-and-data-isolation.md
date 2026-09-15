@@ -1,97 +1,91 @@
-# IOP-005 — Diseñar tenancy/data isolation
+# IOP-005 — Design tenancy and data isolation
 
 ## Status
 
-Proposed
+Completed — design accepted by the owner on 2026-09-15 under
+[ADR-0013](../../architecture/adr/ADR-0013-tenancy-data-isolation.md).
+Baseline documentation is synchronized; runtime implementation remains future work.
 
 ## Milestone
 
 M1 — Product & Architecture Definition. Documentation/design only.
 
-## Goal
+## Goal and business value
 
-Diseñar tenancy/data isolation. Resultado esperado: Definida la forma en que datos de diferentes clientes/sites se aíslan
+Define how data belonging to different organizations and sites is isolated before
+building the reusable platform. Keep identity, permission, scope and identity
+providers separate.
 
-## User / business value
+## Context and current state
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+Only documentation and placeholders exist. Accepted ADR-0012 establishes
+Organization as the customer boundary and Site as its operational scope. PostgreSQL
+and NestJS are accepted; ADR-0013 now selects shared-table layout and enforcement.
+The requested historical `active/IOP-002-backend-stack.md` path is absent; the
+permanent [backend review](IOP-002-backend-review.md) and ADR-0006 hold current context.
 
-## Context
+The original task contained no enumerated alternatives. The requested evaluation
+covers shared tables, schemas per organization, databases per organization,
+dedicated deployments and hybrid routing, plus application-only versus combined
+database enforcement. ADR-0013 selects shared tables with explicit scope,
+scoped constraints and RLS for the current solo-maintainer analytics v1.
+The owner explicitly accepted the recommendation on 2026-09-15.
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+## Desired state and requirements
 
-## Current state
-
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Definida la forma en que datos de diferentes clientes/sites se aíslan
-
-## Requirements
-
-- Entregar únicamente el resultado descrito para IOP-005.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+- An accepted, reviewable physical tenancy and enforcement decision.
+- Scope preserved across reads, writes, relationships, imports, jobs, analytics,
+  caches, files and exports when implemented.
+- Concrete failure/concurrency scenarios and explicit operational limitations.
+- Generic core terminology; customer/source logic stays in configuration/adapters.
 
 ## Acceptance criteria
 
-- [ ] Definida la forma en que datos de diferentes clientes/sites se aíslan
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] Organization/site data isolation design explicitly accepted by the owner.
+- [x] Options, recommendation, scenarios and decision boundaries documented.
+- [x] Proposal documentation checked and evidence recorded.
+- [x] Accepted architecture, module guidance, data model and glossary synchronized.
 
-## Domain considerations
+## Architecture constraints and dependencies
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
+[IOP-004](IOP-004-platform-scope-model.md) is complete as design and integrated.
+Follow Accepted [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md),
+[ADR-0006](../../architecture/adr/ADR-0006-backend-stack.md),
+[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md),
+[ADR-0008](../../architecture/adr/ADR-0008-story-branches.md),
+[ADR-0011](../../architecture/adr/ADR-0011-api-contract-strategy.md) and
+[ADR-0012](../../architecture/adr/ADR-0012-organization-site-scope.md).
+Proposed ADRs are not binding. RBAC, identity/session and detailed ingestion/job
+mechanics remain separate work; no adjacent story is activated.
 
-## Security considerations
+## Security, data and API considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
-
-## Data considerations
-
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
-
-## API considerations
-
-Especificar contratos cuando corresponda; no crear endpoints.
-
-## UI considerations
-
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
-
-## Dependencies
-
-[IOP-004](IOP-004-platform-scope-model.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Validate action permission and explicit organization/site ownership independently.
+Prevent foreign references, missing-scope broadening and pooled context leakage.
+Document privileged-role, shared-resource and backup limitations. Keep diagnostics
+free of foreign data under ADR-0011. Industrial sources remain read-only.
+No secrets, production records or customer maps belong in this repository.
+No schemas, policies, endpoints or UI are implemented by this task.
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Application scaffolding, migrations, infrastructure, ORM selection, identity
+providers, RBAC grant definitions, hosting or adjacent product capabilities.
 
-## Validation
+## Validation and evidence
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+The [completed proposal plan](../completed/IOP-005-tenancy-evaluation-plan.md)
+records official-source review, design walkthroughs, links, IDs, status consistency
+and whitespace checks. No runtime isolation or performance tests ran; no runner
+exists. The [acceptance plan](../completed/IOP-005-tenancy-acceptance-plan.md)
+records the completed baseline synchronization and its validation.
 
-## Documentation impact
+## Documentation impact and remaining implementation
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+ADR-0013, ARCHITECTURE.md, modules, data model, glossary and affected ADR references
+reflect acceptance. Item and backlog are complete as design. Future implementation
+must verify the ADR scenarios with real policies, schema and runtime credentials.
+No application, migration, deployment or adjacent story is authorized by closure.

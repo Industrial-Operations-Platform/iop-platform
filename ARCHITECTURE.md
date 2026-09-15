@@ -60,7 +60,7 @@ scaffold or application code exists yet. Frontend and tooling are accepted under
 ## Intentionally undecided
 
 ORM and migration tooling; module code layout; identity provider, protocols and session handling;
-physical tenancy and database enforcement; hosting and network topology; job and
+hosting and network topology; job and
 cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
 
@@ -114,5 +114,26 @@ Core owns scope identity and each receiving module enforces scoped references.
 Scope follows imports, jobs, derived results and other data paths. Organization
 membership alone does not grant all-site access.
 
-IOP-004 is complete as design. Physical tenancy, permission inheritance, HTTP scope
+IOP-004 is complete as design. Permission inheritance, HTTP scope
 transport and detailed temporal/lifecycle behavior remain separate decisions.
+
+
+## Accepted tenancy and data isolation
+
+[ADR-0013](docs/architecture/adr/ADR-0013-tenancy-data-isolation.md) selects shared
+PostgreSQL tables with explicit Organization/Site scope, application authorization,
+scoped relational constraints and row-level security (RLS). Organization-owned rows
+have non-null organization identity; site-owned rows also have non-null site identity.
+Scoped references prevent inconsistent organization/site ownership.
+
+Customer tables require enabled/forced RLS and a non-owner runtime role without
+bypass privileges. Each scoped database unit uses a pinned transaction connection
+with validated transaction-local context; missing scope denies access. Organization
+scope never grants all-site access. Imports, jobs, analytics and any future caches,
+files or exports preserve scope and enforce access independently of row policies.
+
+Shared storage shares resources and recovery impact. Application-set RLS context
+does not protect against compromised backend credentials or privileged operators.
+IOP-005 is complete as design; schema, policy SQL, driver/pool verification and
+runtime isolation tests remain implementation work. Hosting, ORM and RBAC grants
+are not selected by this decision.

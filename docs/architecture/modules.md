@@ -68,4 +68,21 @@ configured mappings and pass validated scope to receiving modules. Derived resul
 files and caches preserve scope and cannot substitute for access checks.
 
 These are logical responsibilities, not implemented interfaces. Exact grant
-inheritance, scope transport and persistence enforcement remain undecided.
+inheritance and scope transport remain undecided. Persistence enforcement follows
+Accepted [ADR-0013](adr/ADR-0013-tenancy-data-isolation.md).
+
+
+## Persistence isolation responsibilities
+
+Under ADR-0013, each owning module classifies tables and derived data by scope,
+constrains reads/writes and validates scoped references. Customer tables use shared
+storage with scoped constraints and enabled/forced RLS. A trusted persistence
+boundary installs validated transaction-local context on one pinned connection;
+participating repositories must use that transaction handle. Module ownership and
+business authorization remain necessary even when database policies filter rows.
+
+API and workers use non-owner runtime credentials without RLS bypass; migration
+and backup credentials are separate. Integrations retain scope through RAW and
+normalization, and jobs revalidate access at execution and result retrieval.
+Derived read paths, files and caches require explicit access review. The decision
+does not select module layout, transaction coordination across modules or job tooling.

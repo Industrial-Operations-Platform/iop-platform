@@ -196,3 +196,10 @@ Review found these expectations consistent with Accepted ADR-0001/0003/0004/0005
 ADR-0006's module boundary and ADR-0011's scope/error semantics. Future implementation
 must exercise direct IDs, lists, joins, imports, jobs and derived results using actual
 persistence and authorization mechanisms. No isolation/performance claim is made.
+
+## Subsequent tenancy decision
+
+Physical tenancy and database enforcement, left open when this record was accepted,
+are now selected by Accepted [ADR-0013](ADR-0013-tenancy-data-isolation.md). It adopts
+shared tables, scoped constraints and RLS alongside application authorization.
+This does not select RBAC grants, identity/session handling, ORM or hosting.
