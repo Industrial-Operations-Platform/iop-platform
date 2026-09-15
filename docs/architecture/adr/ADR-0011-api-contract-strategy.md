@@ -222,3 +222,14 @@ Physical tenancy and database enforcement, left open when this record was accept
 are now selected by Accepted [ADR-0013](ADR-0013-tenancy-data-isolation.md). It adopts
 shared tables, scoped constraints and RLS alongside application authorization.
 This does not select RBAC grants, identity/session handling, ORM or hosting.
+
+
+## Subsequent temporal decision
+
+Accepted [ADR-0016](ADR-0016-time-and-timezone-model.md) defines UTC instants with
+millisecond precision, explicit IANA site/source zones, separate calendar intent,
+half-open resolved periods and explicit clock-change ambiguity handling. Reports
+retain period/coverage context; historical interpretation is preserved. Site zones
+cannot be ordinarily replaced after temporal use without a reviewed correction plan.
+The source CSV window remains unverified; this does not implement shifts, select
+a date library or add cross-site reports.

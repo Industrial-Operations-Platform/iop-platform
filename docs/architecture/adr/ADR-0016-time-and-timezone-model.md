@@ -2,9 +2,10 @@
 
 ## Status
 
-Proposed — prepared on 2026-09-15 for
+Accepted — explicitly approved by the owner following proposal review for
 [IOP-008](../../planning/items/IOP-008-time-and-timezone-model.md).
-Owner acceptance is pending. ADR-0015 is allocated on the separate IOP-007 branch;
+Acceptance is recorded in the [closure plan](../../planning/completed/IOP-008-time-and-timezone-acceptance-plan.md).
+ADR-0015 is allocated on the separate IOP-007 branch;
 this proposal is independent of its authentication choice.
 
 ## Context
@@ -38,7 +39,7 @@ timestamps. A generic temporal model must preserve that uncertainty.
 | Overnight shifts | Select local schedule intent plus resolved start/end instants. Fixed UTC recurrence changes local hours across DST; fixed elapsed duration cannot represent every wall-clock shift. |
 | Historical context | Preserve applied configuration and resolved bounds. Reinterpreting history from the current site zone makes prior reports unstable. |
 
-## Proposed decision
+## Decision
 
 ### Distinct temporal concepts
 
@@ -215,15 +216,15 @@ No runner, library, schema or performance measurement exists in this task.
 The model preserves human calendar intent and chronological comparison while
 making incomplete source evidence visible. Its costs are explicit metadata,
 validation and care with time-zone updates. Millisecond precision is sufficient as
-a proposed v1 contract, not a measured source capability; revisit if validated
+an accepted v1 contract, not a measured source capability; revisit if validated
 source requirements need finer resolution. No silent precision reduction is allowed.
 
-Accepting this proposal settles generic temporal semantics, not the CSV reporting
+This decision settles generic temporal semantics, not the CSV reporting
 window. Source owners must confirm that window and zone before exact period-based
 metrics can rely on it. Integration contracts, detailed shift design, audit clocks,
 ORM/library selection and runtime implementation remain separate work.
 
-After explicit acceptance, synchronize ARCHITECTURE.md, modules, data model,
-glossary and ADR-0011/0012 follow-up references and close IOP-008 as design. Until
-then these documents retain their accepted baseline and IOP-008 remains open.
+ARCHITECTURE.md, modules, data model, glossary and ADR-0011/0012 follow-up
+references are synchronized. IOP-008 is Completed as design; runtime verification
+and confirmation of source-specific reporting windows remain future work.
 Official sources linked above were consulted on 2026-09-15.

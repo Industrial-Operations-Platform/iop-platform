@@ -2,9 +2,8 @@
 
 ## Status
 
-In progress — option evaluation is complete;
-[ADR-0016](../../architecture/adr/ADR-0016-time-and-timezone-model.md) is Proposed
-and awaits explicit owner acceptance. No runtime implementation exists.
+Completed — the owner explicitly accepted
+[ADR-0016](../../architecture/adr/ADR-0016-time-and-timezone-model.md) and the architecture guidance is synchronized. No runtime implementation exists.
 
 ## Milestone
 
@@ -38,7 +37,7 @@ The requested historical `active/IOP-002-backend-stack.md` was migrated to
 ## Current state
 
 PostgreSQL and TypeScript/NestJS are accepted, and each site requires explicit
-zone context under ADR-0012. Detailed temporal contracts are not yet accepted.
+zone context under ADR-0012. Detailed temporal contracts are accepted under ADR-0016.
 V1 is CSV normalization and analytics; shift scheduling is deferred.
 The [CSV evidence](../../product/csv-and-reporting-reference.md) confirms a
 filename reporting date but not its exact window, time zone or event timestamps.
@@ -60,11 +59,11 @@ Unknown source facts remain explicit rather than being guessed.
 
 ## Acceptance criteria
 
-- [x] Time zones, UTC, overnight shifts and timestamps evaluated in Proposed ADR-0016.
+- [x] Time zones, UTC, overnight shifts and timestamps defined in Accepted ADR-0016.
 - [x] Plan and ADR document options, scenarios and decisions without scope expansion.
 - [x] Documentation validation evidence recorded; proposal item/backlog synchronized.
-- [ ] Owner explicitly accepts the temporal decision.
-- [ ] Accepted architecture, module, data-model and glossary guidance synchronized.
+- [x] Owner explicitly accepts the temporal decision.
+- [x] Accepted architecture, module, data-model and glossary guidance synchronized.
 
 ## Domain considerations
 
@@ -95,13 +94,13 @@ No secrets, production records or industrial write-back are required.
 
 ## Data considerations
 
-Propose UTC instants plus explicit zone/provenance, calendar dates and resolved
+Use UTC instants plus explicit zone/provenance, calendar dates and resolved
 half-open periods. Preserve RAW values and unresolved interpretation. No schema
 or migration is created; no rounding, fabricated midnight or source window is assumed.
 
 ## API considerations
 
-Propose an explicit RFC 3339 instant profile, separate local-date contracts and
+Use the accepted RFC 3339 instant profile, separate local-date contracts and
 period/coverage metadata. No endpoint or generated schema is implemented.
 
 ## UI considerations
@@ -131,13 +130,16 @@ runtime tests. See the [evaluation plan](../completed/IOP-008-time-and-timezone-
 
 ## Documentation impact
 
-This item, its [backlog](../backlog.md) row, ADR-0016 and the evaluation plan form
-the completed proposal slice. Accepted guidance is updated only after acceptance,
-under a subsequent plan; the parent item remains In progress.
+This item, its [backlog](../backlog.md) row, ADR-0016 and the evaluation plan preserve
+the proposal evidence. Accepted architecture, modules, data model, glossary and
+ADR-0011/0012 follow-up notes are synchronized under the
+[acceptance plan](../completed/IOP-008-time-and-timezone-acceptance-plan.md).
+IOP-008 is complete as design; no adjacent implementation is activated.
 
 ## Open questions and implementation handoff
 
-- Does the owner accept ADR-0016's proposed temporal contract?
+- The owner explicitly accepted ADR-0016 and authorized publication of the story
+  branch to origin. No decision acceptance remains pending for IOP-008.
 - Source contract work must confirm the CSV filename date's exact reporting window
   and zone before exact period/shift/rate semantics can be used. This unknown does
   not prevent accepting a generic model that represents unresolved source periods.
