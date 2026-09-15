@@ -97,3 +97,22 @@ compatibility review and normally a new major version.
 IOP-003 is complete as design. OpenAPI dialect/tool versions, endpoint schemas and
 limits, exact error catalogs and runtime conformance checks remain implementation
 work. No API or generated contract exists yet.
+
+
+## Accepted Organization/Site scope
+
+[ADR-0012](docs/architecture/adr/ADR-0012-organization-site-scope.md) names
+Organization as the canonical customer data/configuration boundary. An organization
+owns zero or more sites; each site has exactly one organization, a stable opaque
+identity, a configurable name and explicit time-zone context. Locations and source
+labels are configurable data, not additional authorization scopes.
+
+Operations explicitly require organization scope (`organizationId`) or site scope
+(`organizationId`, `siteId`). Validate ownership and permission independently;
+missing site scope never broadens access. Users/RBAC owns authorization, Platform
+Core owns scope identity and each receiving module enforces scoped references.
+Scope follows imports, jobs, derived results and other data paths. Organization
+membership alone does not grant all-site access.
+
+IOP-004 is complete as design. Physical tenancy, permission inheritance, HTTP scope
+transport and detailed temporal/lifecycle behavior remain separate decisions.

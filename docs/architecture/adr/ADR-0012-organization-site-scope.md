@@ -2,9 +2,10 @@
 
 ## Status
 
-Proposed — 2026-09-14. Prepared under
+Accepted — explicitly approved by the owner on 2026-09-15. Prepared under
 [IOP-004](../../planning/items/IOP-004-platform-scope-model.md).
-Owner acceptance is pending; this document does not amend the accepted baseline.
+The original evaluation was proposed on 2026-09-14; acceptance updates the logical
+scope baseline without selecting physical tenancy or detailed RBAC.
 
 ## Context
 
@@ -31,7 +32,7 @@ Read [architecture](../../../ARCHITECTURE.md), [modules](../modules.md),
 Physical shared tables, schemas, databases and dedicated deployments are a
 separate axis, owned by IOP-005. None is selected by this logical model.
 
-## Proposed decision
+## Decision
 
 ### Vocabulary, identity and ownership
 
@@ -53,7 +54,7 @@ codes are mutable data and cannot serve as authorization keys. Even an unambiguo
 site ID is not proof of its organization or permission to access it.
 
 A Location is a configurable subdivision within a Site, not an additional access
-scope in this proposal. Hall, area and equipment labels from a source do not create
+scope in this decision. Hall, area and equipment labels from a source do not create
 sites or locations automatically. Mappings belong in configuration/adapters, and
 source groupings need not match surveyed physical locations.
 
@@ -65,7 +66,7 @@ archival, retention and time-zone change semantics remain separate lifecycle wor
 
 ### Module responsibilities and logical contracts
 
-| Owner | Responsibility under this proposal |
+| Owner | Responsibility under this decision |
 | --- | --- |
 | Platform Core | Organization/Site identities, ownership and scoped configuration; publish site lookup/ownership contracts. |
 | Authentication | Map verified provider identities to platform principals under ADR-0004. |
@@ -123,7 +124,7 @@ interpret absent scope as all sites or silently drop requested unauthorized site
 and present the result as complete. A site's permission does not authorize
 organization-wide configuration or another site's records. Cross-organization
 business queries and platform-wide administrator bypasses are not introduced.
-The proposed model permits later multi-site analysis; it does not add it to v1.
+The model permits later multi-site analysis; it does not add it to v1.
 
 Results must retain applied site/period/coverage context under ADR-0011. Different
 site time zones cannot be silently collapsed into one local reporting day; detailed
@@ -166,13 +167,14 @@ IOP-009 audit design. None of those stories is activated here. HTTP scope transp
 concrete DTOs, lifecycle operations and ingestion/job mechanics remain unselected.
 No database, endpoint, UI or operational integration is implemented.
 
-After explicit acceptance, synchronize Organization vocabulary and these logical
-contracts in ARCHITECTURE.md, modules, data model and glossary, then close IOP-004's
-design criteria with an acceptance record. Until then the accepted docs remain intact.
+Acceptance is reflected in ARCHITECTURE.md, modules, data model and glossary.
+IOP-004 is complete as design; the
+[acceptance plan](../../planning/completed/IOP-004-scope-acceptance-plan.md)
+records documentation validation. No runtime isolation claim follows from acceptance.
 
 ## Design walkthroughs and future verification
 
-These are conceptual checks of the proposal, not executed runtime/security tests.
+These are conceptual checks of the decision, not executed runtime/security tests.
 Fictional organizations A/B and sites A1/A2/B1 are identifiers for these examples.
 
 | Scenario | Expected result under the proposal |

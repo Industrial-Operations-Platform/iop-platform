@@ -5,7 +5,7 @@ See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary
 
 | Module | Owns | Uses through explicit contracts |
 | --- | --- | --- |
-| Platform Core | Customer/site context, generic configuration, module composition | No customer adapter or business-module internals |
+| Platform Core | Organization/Site identities and ownership, scoped configuration, module composition | No customer adapter or business-module internals |
 | Users and RBAC | Users, memberships, roles, scoped permissions | Core context; authenticated principal |
 | Authentication | Identity-provider boundary and identity-to-principal mapping | Provider adapters; user identity mapping contract |
 | Workforce and Shift Management | Teams, shift definitions, assignments | Core sites; user references |
@@ -15,14 +15,14 @@ See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary
 | Asset Locator | Versioned maps, placements and location search views | Asset and site contracts; no duplicate asset registry |
 | Operational Intelligence (OIP) | Canonical event occurrences/aggregates, message definitions, asset/message associations and analytical projections | Normalized input contracts, assets, shifts and maintenance context |
 | Integrations | Source adapters, import runs, RAW provenance, source mapping and validation | Receiving modules' ingestion contracts |
-| Audit and activity tracking | Audit records and activity projections | Explicit records emitted by modules, with actor and customer context |
+| Audit and activity tracking | Audit records and activity projections | Explicit records emitted by modules, with actor and organization/site context |
 
 ## Collaboration rules
 
 Each module owns writes to its data. Other modules use published interfaces and
 purpose-built read contracts; sharing PostgreSQL does not grant access to another
 module's internal tables. Cross-module references carry canonical identifiers and
-customer scope. Composition wires modules together without adding their business
+organization/site scope. Composition wires modules together without adding their business
 rules to Platform Core.
 
 Adapters normalize source formats into receiver-owned contracts. The receiving
@@ -50,3 +50,22 @@ checks untrusted input; each receiving module still enforces domain invariants a
 scoped references. Source adapters continue to translate vendor data into
 receiver-owned ingestion contracts. Exact module placement, invocation and
 transaction/delivery mechanisms remain undecided.
+
+
+## Scope ownership
+
+Accepted [ADR-0012](adr/ADR-0012-organization-site-scope.md) defines Organization
+as the customer boundary and Site as its operational scope. Platform Core publishes
+site identity/ownership contracts. Authentication supplies the platform principal;
+Users/RBAC evaluates permission for the action and explicit target. A user's
+membership is separate from permission and may span organizations/sites.
+
+Each operation declares organization scope (`organizationId`) or site scope
+(`organizationId`, `siteId`). The receiving module validates ownership, access and
+all referenced records; internal calls and jobs follow the same rules. Missing
+site scope never implies all sites. Integrations resolve source labels through
+configured mappings and pass validated scope to receiving modules. Derived results,
+files and caches preserve scope and cannot substitute for access checks.
+
+These are logical responsibilities, not implemented interfaces. Exact grant
+inheritance, scope transport and persistence enforcement remain undecided.

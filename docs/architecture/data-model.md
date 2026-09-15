@@ -1,15 +1,15 @@
 # Conceptual data model
 
 This is a conceptual baseline, not DDL or a migration plan. PostgreSQL is accepted;
-physical schemas, identifiers, constraints and indexing remain to be designed.
+physical schemas, ID encoding/generation, constraints and indexing remain to be designed.
 Module ownership is defined in [modules](modules.md).
 
 ## Relationships
 
 | Area | Concepts and relationships |
 | --- | --- |
-| Core | Customer owns sites and scoped configuration; a site has time-zone context and configurable physical locations. |
-| Identity/access | Provider identity maps to a platform user; membership relates users to customers/sites and scoped roles. Workforce membership is separate from authentication. |
+| Core | Organization owns zero or more Sites and scoped configuration; each Site belongs to exactly one Organization and has explicit time-zone context. |
+| Identity/access | Provider identity maps to a platform user; membership relates users to organizations/sites and scoped roles; membership alone grants no access. Workforce membership is separate from authentication. |
 | Workforce | Teams and users are assigned to shifts at sites; handovers reference shifts, authors and open issues. |
 | Assets | A site has assets with types, optional parent assets and separately typed relationships such as controller links. Physical location is independent of composition. |
 | Mapping | External references relate source identity and local scope to canonical assets; source codes alone are not global keys. |
@@ -17,7 +17,7 @@ Module ownership is defined in [modules](modules.md).
 | Maintenance | A maintenance record references an asset, responsible users, status and outcomes; handovers can link it. |
 | Ingestion | A source has import runs and preserved RAW records; normalized records retain source/run/record references and mapping version. |
 | Intelligence | Event occurrences or aggregates reference message definitions, source context and resolved assets where known. Assets and message definitions have an explicit many-to-many association. |
-| Audit | Records reference customer, actor, action, subject, time and correlation context; activity views are derived separately. |
+| Audit | Records reference organization/site scope, actor, action, subject, time and correlation context; activity views are derived separately. |
 
 ## Asset identity and locator
 
@@ -66,3 +66,33 @@ site access. Technical enforcement (shared tables, separate schemas/databases,
 row-level policies or a combination) is intentionally undecided under
 [ADR-0005](adr/ADR-0005-customer-isolation.md). Historical globally unique labels
 and customer-specific table names are not imported as generic constraints.
+
+
+## Organization/Site identity and scope
+
+Accepted [ADR-0012](adr/ADR-0012-organization-site-scope.md) uses Organization for
+the existing customer isolation boundary, without requiring correspondence to a
+legal entity or provider tenant. Organization and Site IDs are stable, opaque and
+unambiguous within the platform; names and external codes are mutable scoped data.
+Rename preserves identity. A site transfer between organizations requires a
+separately approved migration design and is not an ordinary update.
+
+A Location is a configurable subdivision within a site, not an authorization node.
+Source hierarchies do not automatically create sites or physical locations. Each
+module classifies data as organization-owned or site-owned; a missing site is not
+an unexplained wildcard. Site facts, import runs and RAW provenance resolve to one
+organization/site context before admission as site data. Ambiguous or conflicting
+mappings remain visible and prevent affected input from entering normalized site data.
+
+Site operations validate both IDs and all references, including references to
+another site within the same organization. Organization scope is valid only for
+operations explicitly declared at that level. Any future cross-site analysis needs
+an explicit nonempty authorized site set within one organization, with no silent
+omission of unauthorized sites and no cross-organization query implied. Results
+retain site, period and coverage context; multi-time-zone aggregation remains
+subject to temporal and metric design.
+
+Scope must survive queries, jobs, audit, caches, files and derived views. Current
+authorization policy applies at job execution and result retrieval; stored context
+is not a permanent grant. Physical enforcement and storage representation remain
+with IOP-005, and detailed membership/grant policy with IOP-006.

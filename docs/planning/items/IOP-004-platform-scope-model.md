@@ -2,7 +2,7 @@
 
 ## Status
 
-Blocked — evaluation complete; awaiting owner acceptance of
+Completed — owner accepted the logical scope model on 2026-09-15 under
 [ADR-0012](../../architecture/adr/ADR-0012-organization-site-scope.md).
 
 ## Milestone
@@ -30,8 +30,8 @@ ADR-0012 compares organization-only, Organization/Site and a generic scope tree.
 ## Current state
 
 Only the documentation baseline exists. Customer-owned sites and isolation are
-accepted foundations, but the detailed Organization/Site proposal is not accepted
-or implemented. The evaluation recommends explicit Organization → Site ownership,
+accepted foundations, and the detailed Organization/Site model is accepted under ADR-0012. No runtime
+implementation exists. The decision uses explicit Organization → Site ownership,
 with configurable locations outside the authorization scope hierarchy.
 
 ## Desired state
@@ -49,17 +49,17 @@ operation scope and module responsibilities, with synchronized architecture docs
 
 ## Acceptance criteria
 
-- [ ] Generic Organization/Site model accepted without customer-specific dependencies.
+- [x] Generic Organization/Site model accepted without customer-specific dependencies.
 - [x] Evaluation plan and ADR document options, scenarios and necessary decisions
   without expanding the task.
-- [ ] Accepted architecture/model/glossary documentation synchronized with validation
-  evidence. Proposal-stage item/backlog/evaluation evidence is complete.
+- [x] Accepted architecture/model/glossary documentation synchronized with validation
+  evidence. Acceptance evidence is recorded in the completed closure plan.
 
 ## Domain considerations
 
-ADR-0012 proposes Organization as the existing customer boundary; each Site belongs
+ADR-0012 defines Organization as the existing customer boundary; each Site belongs
 to exactly one Organization. Source labels and configurable locations are data,
-not identity or additional permission scopes. Proposed is not Accepted.
+not identity or additional permission scopes. Physical tenancy and detailed RBAC remain separate decisions.
 
 ## Architecture constraints
 
@@ -112,19 +112,20 @@ for evidence and limitations. No runtime or security tests have been executed.
 
 ## Documentation impact
 
-Proposal: this item, its [backlog](../backlog.md) row, ADR-0012 and evaluation plan.
-After acceptance: architecture baseline, modules, data model and glossary, through
-a subsequent execution plan. Keep the permanent item here after closure.
+This item, its [backlog](../backlog.md) row, ADR-0012, architecture baseline, modules,
+data model and glossary are synchronized. The
+[completed acceptance plan](../completed/IOP-004-scope-acceptance-plan.md) records
+closure evidence; the earlier evaluation remains historical evidence.
 
 ## Open questions
 
-Does the owner accept ADR-0012's explicit Organization/Site logical model and its
-boundaries? Physical enforcement, RBAC grant inheritance and temporal mechanics
-remain with their existing stories; they do not need to be resolved to review this ADR.
+No design-closure questions remain. Physical enforcement, RBAC grant inheritance
+and temporal mechanics remain with their existing stories and are not implemented here.
 
 ## Evaluation evidence
 
 On 2026-09-14 the requested evaluation produced Proposed ADR-0012 with three
 alternatives, logical contracts, consequences and twelve design walkthroughs.
-The accepted architecture remains unchanged pending explicit acceptance. The
-completed evaluation slice does not complete the parent design item.
+The owner explicitly accepted the ADR on 2026-09-15 and authorized merge to develop
+and push to origin. The acceptance slice synchronizes the baseline and completes
+the parent as design only; no runtime isolation or pilot measurement is claimed.
