@@ -32,7 +32,7 @@ IOP-040 es asset search; la release es IOP-138.
 | [IOP-004 — Design Organization/Site scope](items/IOP-004-platform-scope-model.md) | Completed |
 | [IOP-005 — Design tenancy and data isolation](items/IOP-005-tenancy-and-data-isolation.md) | Completed |
 | [IOP-006 — Design the RBAC model](items/IOP-006-rbac-model.md) | Completed |
-| [IOP-007 — Diseñar autenticación](items/IOP-007-authentication-model.md) | Proposed |
+| [IOP-007 — Design authentication](items/IOP-007-authentication-model.md) | In progress |
 | [IOP-008 — Definir manejo temporal](items/IOP-008-time-and-timezone-model.md) | Proposed |
 | [IOP-009 — Diseñar audit trail](items/IOP-009-audit-model.md) | Proposed |
 | [IOP-010 — Diseñar background jobs](items/IOP-010-background-job-model.md) | Proposed |
