@@ -1,8 +1,10 @@
-# IOP-006 — Diseñar modelo RBAC
+# IOP-006 — Design the RBAC model
 
 ## Status
 
-Proposed
+Blocked — evaluation complete; explicit owner acceptance of
+[ADR-0014](../../architecture/adr/ADR-0014-scoped-rbac.md) is pending.
+The proposed matrix is not yet part of the accepted architecture baseline.
 
 ## Milestone
 
@@ -10,88 +12,122 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal
 
-Diseñar modelo RBAC. Resultado esperado: Matriz Role → Permission → Scope documentada
+Document the Role → Permission → Scope matrix and its authorization rules.
 
 ## User / business value
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+The team needs reviewable decisions before building a reusable business platform.
+The pilot should deliver basic individual access with a small permission model,
+leaving room for enterprise integration without implementing that integration now.
 
 ## Context
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: product and cross-module architecture. See [modules](../../architecture/modules.md)
+and [planning workflow](../workflow.md). The original seed requests a matrix but
+contains no enumerated alternatives. ADR-0014 compares global roles, scoped roles,
+direct grants, attribute/relationship engines and provider-driven permissions.
+The owner authorized evaluation and translation of items through IOP-006; later
+items are translated when worked on. IOP-001–005 and IOP-002 supporting reviews
+are already English and need no translation edits.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. ADR-0004 separates authentication from
+permission decisions; ADR-0012 establishes Organization/Site and ADR-0013 establishes
+persistence isolation. Detailed RBAC is not implemented or accepted.
+The requested historical `active/IOP-002-backend-stack.md` is absent; use the
+permanent [backend review](IOP-002-backend-review.md) and Accepted ADR-0006.
 
 ## Desired state
 
-Matriz Role → Permission → Scope documentada
+An accepted matrix and authorization contract describe pilot operations, scope,
+role composition, delegation and denial behavior without selecting identity/session
+implementation or building enterprise policy tooling.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-006.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+- Deliver only the IOP-006 matrix and related authorization decisions.
+- Keep identity, permissions, scope and identity providers separate.
+- Preserve the confirmed analytics-only pilot responsibilities and ADR-0013 controls.
+- Evaluate alternatives and record the recommendation without inferring acceptance.
 
 ## Acceptance criteria
 
-- [ ] Matriz Role → Permission → Scope documentada
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] Proposed Role → Permission → Scope matrix documented.
+- [x] Plan/ADR cover options, failure scenarios and decisions without scope expansion.
+- [x] Evaluation and translation evidence recorded; proposal documentation synchronized.
+- [ ] Owner explicitly accepts the RBAC decision.
+- [ ] Accepted architecture guidance synchronized after acceptance.
 
 ## Domain considerations
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+Use generic roles and module-owned permissions. Team Leader and Taskforce are
+personas with the same analytical access, not customer-specific core role types.
+One person can hold several explicit assignments at different scopes.
 
 ## Architecture constraints
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
+Accepted [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md),
+[ADR-0006](../../architecture/adr/ADR-0006-backend-stack.md),
+[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md),
+[ADR-0008](../../architecture/adr/ADR-0008-story-branches.md),
+[ADR-0011](../../architecture/adr/ADR-0011-api-contract-strategy.md),
+[ADR-0012](../../architecture/adr/ADR-0012-organization-site-scope.md) and
+[ADR-0013](../../architecture/adr/ADR-0013-tenancy-data-isolation.md).
+Proposed ADRs are proposals, not permission to treat a decision as accepted.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permission, current membership/assignments and explicit organization/site
+ownership independently. Cover escalation, foreign references, revocation and
+concurrent access changes. Trace material grant changes. No secrets, customer maps
+or production records are required. Industrial integrations remain read-only.
 
 ## Data considerations
 
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
+Describe membership/assignment ownership and integrity without creating a schema.
+RLS filters scoped rows; it does not determine which business operations are granted.
 
 ## API considerations
 
-Especificar contratos cuando corresponda; no crear endpoints.
+Specify provider-independent permission checks and safe denial behavior. No endpoints.
 
 ## UI considerations
 
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
+Describe permitted actions without introducing a role editor or administration UI.
+Preserve the accepted file-based report configuration workflow.
 
 ## Dependencies
 
-[IOP-004](IOP-004-platform-scope-model.md), [IOP-005](IOP-005-tenancy-and-data-isolation.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+[IOP-004](IOP-004-platform-scope-model.md) and
+[IOP-005](IOP-005-tenancy-and-data-isolation.md) are accepted as design.
+The owner authorized a dependent IOP-006 branch from the unmerged IOP-005 branch.
+Dependencies identify required contracts, not numeric implementation order.
+Authentication/session selection remains IOP-007 and is not activated by this task.
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Applications, migrations, endpoints, infrastructure, credential/session selection,
+enterprise federation, arbitrary policy engines, custom-role UI or customer logic
+in the generic core. No implementation of later modules or translation of later items.
 
 ## Validation
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+Review consistency, relative links, IDs, statuses, English prose and design scenarios.
+Do not invent runnable tests or claim executed authorization/security evidence.
+See the [completed evaluation plan](../completed/IOP-006-rbac-evaluation-plan.md).
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+This item, its [backlog](../backlog.md) row, the proposal ADR and execution plan.
+After explicit acceptance, synchronize architecture, modules, data model, glossary
+and affected ADR references in a planned documentation increment.
 
-## Open questions
+## Open decision
 
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+Accept or revise ADR-0014's fixed scoped roles, permission matrix and explicit
+organization-admin delegation authority. The proposal keeps basic pilot access
+separate from future identity integration; no new authentication choice is implied.
