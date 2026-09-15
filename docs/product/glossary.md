@@ -25,8 +25,10 @@
 | Maintenance record | Work concerning an asset, with status, responsibility and outcome. |
 | Authentication | Verification of identity; distinct from permission decisions. |
 | Scope | Explicit operation target: Organization or Organization/Site; target identity does not grant permission. |
-| Membership | Relationship between a platform user and organizations/sites; distinct from permission and provider identity. |
-| RBAC | Role-based access control; roles grant permissions within an explicit scope. |
+| Membership | Relationship between a platform user and an organization; active membership is required but grants no permission by itself under ADR-0014. |
+| RBAC | Role-based access control; fixed permission bundles are assigned at explicit organization or site scope under ADR-0014, without inheritance. |
+| Permission | Module-owned operation identifier with a required scope and bounded behavior. |
+| Role assignment | Association of a user with a known role and one explicit organization or site target; assignments compose only at matching scope. |
 | Audit record | Trace of actor, action, scope, subject and time for a material change or security event. |
 | Integration adapter | Translation boundary between a source system and platform contracts. |
 
@@ -39,3 +41,5 @@ WinCC is an example integration source, not a platform domain dependency.
 Organization/Site semantics are accepted in [ADR-0012](../architecture/adr/ADR-0012-organization-site-scope.md).
 
 Tenancy and persistence isolation are accepted in [ADR-0013](../architecture/adr/ADR-0013-tenancy-data-isolation.md).
+
+The fixed pilot authorization matrix is accepted in [ADR-0014](../architecture/adr/ADR-0014-scoped-rbac.md).

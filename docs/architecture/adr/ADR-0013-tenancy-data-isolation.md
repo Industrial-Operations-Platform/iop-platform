@@ -204,3 +204,11 @@ identity, HTTP scope transport and deployment remain separate decisions.
 
 Official PostgreSQL 18 documentation linked above was consulted on 2026-09-15.
 The documentation version is a reference, not selection of IOP's database version.
+
+## Subsequent RBAC decision
+
+Accepted [ADR-0014](ADR-0014-scoped-rbac.md) defines the pilot permission matrix,
+explicit organization/site role assignments without inheritance, delegation and
+revocation semantics. Users/RBAC evaluates current permissions independently of
+authentication and RLS. Identity/session mechanisms and detailed persistence
+implementation remain separate work.

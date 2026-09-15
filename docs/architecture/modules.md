@@ -6,7 +6,7 @@ See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary
 | Module | Owns | Uses through explicit contracts |
 | --- | --- | --- |
 | Platform Core | Organization/Site identities and ownership, scoped configuration, module composition | No customer adapter or business-module internals |
-| Users and RBAC | Users, memberships, roles, scoped permissions | Core context; authenticated principal |
+| Users and RBAC | Users, organization memberships, scoped role assignments and authorization evaluation | Core context; authenticated principal |
 | Authentication | Identity-provider boundary and identity-to-principal mapping | Provider adapters; user identity mapping contract |
 | Workforce and Shift Management | Teams, shift definitions, assignments | Core sites; user references |
 | Shift Handover | Handover notes, open issues, acknowledgements | Shifts, users, asset and maintenance references |
@@ -58,7 +58,8 @@ Accepted [ADR-0012](adr/ADR-0012-organization-site-scope.md) defines Organizatio
 as the customer boundary and Site as its operational scope. Platform Core publishes
 site identity/ownership contracts. Authentication supplies the platform principal;
 Users/RBAC evaluates permission for the action and explicit target. A user's
-membership is separate from permission and may span organizations/sites.
+organization membership is separate from permission; role assignments target
+explicit organizations or sites under ADR-0014.
 
 Each operation declares organization scope (`organizationId`) or site scope
 (`organizationId`, `siteId`). The receiving module validates ownership, access and
@@ -67,9 +68,10 @@ site scope never implies all sites. Integrations resolve source labels through
 configured mappings and pass validated scope to receiving modules. Derived results,
 files and caches preserve scope and cannot substitute for access checks.
 
-These are logical responsibilities, not implemented interfaces. Exact grant
-inheritance and scope transport remain undecided. Persistence enforcement follows
-Accepted [ADR-0013](adr/ADR-0013-tenancy-data-isolation.md).
+These are logical responsibilities, not implemented interfaces. Scope transport
+remains undecided. Accepted [ADR-0014](adr/ADR-0014-scoped-rbac.md) defines grants
+without inheritance. Persistence enforcement follows Accepted
+[ADR-0013](adr/ADR-0013-tenancy-data-isolation.md).
 
 
 ## Persistence isolation responsibilities
@@ -86,3 +88,22 @@ and backup credentials are separate. Integrations retain scope through RAW and
 normalization, and jobs revalidate access at execution and result retrieval.
 Derived read paths, files and caches require explicit access review. The decision
 does not select module layout, transaction coordination across modules or job tooling.
+
+
+## Authorization responsibilities
+
+Under ADR-0014, modules own named business permissions and resource invariants;
+Users/RBAC owns the fixed role bundles, organization memberships, assignments and
+current authorization decisions. Authentication supplies the platform principal,
+while Platform Core validates organization/site identity and ownership.
+
+OIP owns `analytics.read`; Integrations owns `imports.submit` and `imports.review`.
+Owning configuration modules enforce `site-configuration.manage`; Users/RBAC owns
+`access.manage`. The ADR's matrix defines each permission's bounded behavior and
+scope. HTTP guards, internal callers, workers and configuration commands must all
+use equivalent actor/action/target checks; RLS does not replace business permission.
+
+Access changes require organization-scoped delegation checks, traceable mutations
+and concurrency protection for authority revocation and last-admin removal.
+Identity bootstrap/recovery, concrete transaction coordination and audit delivery
+remain implementation contracts; no administrative UI or provider is selected.
