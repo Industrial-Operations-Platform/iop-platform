@@ -2,8 +2,25 @@
 
 ## Status
 
-Proposed — prepared on 2026-09-15 for [IOP-009](../../planning/items/IOP-009-audit-model.md).
-Owner acceptance is pending. No implementation or accepted baseline is changed.
+Accepted — explicitly approved by the owner for future implementation under
+[IOP-009](../../planning/items/IOP-009-audit-model.md). The owner clarified that
+this audit capability is unnecessary for the pilot and should remain designed
+for later. See the [acceptance record](../../planning/completed/IOP-009-audit-acceptance-plan.md).
+
+## Applicability: deferred beyond the pilot
+
+This is an accepted future design, not a pilot delivery requirement. The pilot
+does not need Audit storage, atomic audit appends, the security-event sink,
+operator inspection or retention/purge infrastructure. Their absence does not
+block pilot writes, login, analytics or release. The 365/90-day periods are design
+defaults for later activation, not retention obligations imposed on the pilot.
+
+The requirements below apply when audit implementation is separately authorized.
+Recheck volume, customer retention needs and operating constraints at that point.
+Existing source provenance, import reconciliation, authorization and scope
+requirements remain owned by their respective decisions; they do not require
+implementing this Audit subsystem. IOP-023 remains future work. This decision
+changes no authentication choice or enterprise-login implementation scope.
 
 ## Context
 
@@ -15,7 +32,7 @@ information for access changes. Audit owns records, not the underlying workflows
 
 The seed task defines auditable events and retention as its outcome but lists no
 options. The comparisons below make those decisions explicit. They are project
-judgments for a solo-maintained pilot, not benchmarks. No contractual retention,
+judgments for a solo-maintained initial implementation, not benchmarks. No contractual retention,
 audit-volume estimate or independent tamper-proof evidence requirement is known.
 Authentication remains separate under IOP-007; this design uses ADR-0004's platform
 principal boundary without depending on the unmerged ADR-0015 proposal.
@@ -46,10 +63,10 @@ Constraints: Accepted ADR-0001/0003/0004/0005/0006, explicit scope in
 | --- | --- |
 | Indefinite retention | Easy initial policy but unbounded exposure and storage; reject as default. |
 | One short period for everything | Simple but erases low-volume change evidence as quickly as high-volume security attempts. |
-| Bounded periods by event class | Recommend 365 days for material changes and audit maintenance; 90 days for security attempts/session events. Explicit, reviewable pilot defaults. |
+| Bounded periods by event class | Recommend 365 days for material changes and audit maintenance; 90 days for security attempts/session events. Explicit, reviewable initial defaults. |
 | Immediate archive then delete online records | Adds storage/retrieval and deletion coordination before a demonstrated need; defer. |
 
-## Proposed decision
+## Decision
 
 ### Ownership and record contract
 
@@ -134,7 +151,7 @@ not make a business command idempotent; verify both in implementation.
 
 Security attempts have no successful business transaction to join. Persist them
 independently after the denial/observation; audit failure must never convert denial
-into authorization. For the pilot, a security-sink outage does not itself block
+into authorization. For the initial implementation, a security-sink outage does not itself block
 otherwise valid authentication or read-only analytics. Emit a sanitized operational
 failure signal and mark the evidence gap; do not claim lossless collection or use
 an unbounded in-memory queue. Mandatory mutation auditing still fails closed.
@@ -152,7 +169,7 @@ records. Platform security storage must not become a bypass for business payload
 
 No current pilot role automatically gains general audit browsing. Do not broaden
 `access.manage`, `imports.review` or `analytics.read` to expose Audit tables.
-For v1, inspection is an explicitly authorized operator procedure using separate
+When implemented, inspection is an explicitly authorized operator procedure using separate
 read-only credentials, an explicit target and purpose, and a recorded inspection
 event before releasing results. Customer inspection must enforce the same exact
 scope with forced RLS and no bypass role; platform-security inspection is separately
@@ -175,12 +192,12 @@ hash chains are deferred; local hash chains alone would not establish an externa
 trust anchor. Before/after data is explicitly limited to safe fields; exclude
 passwords, tokens, cookies, secrets, full request bodies, RAW CSV contents, personal
 names/emails, arbitrary filenames/paths and stack traces. Raw IP addresses are not
-part of the pilot audit contract. Apply length limits, structured encoding and
+part of the audit contract. Apply length limits, structured encoding and
 sanitization before persistence; escape data when presenting it.
 
 ### Retention and disposal
 
-Propose fixed, version-controlled pilot defaults: 365 elapsed UTC days for material
+Use fixed, version-controlled initial defaults: 365 elapsed UTC days for material
 changes/maintenance and 90 elapsed UTC days for security events. These balance a
 year of change investigations against shorter retention of higher-volume attempts;
 they are recommendations, not legal requirements or verified sizing results.
@@ -244,11 +261,11 @@ availability as a prerequisite for mutations. Security-attempt collection has an
 explicit outage gap; privileged tampering remains outside the assurance offered.
 Retention and backup operations require implementation before production claims.
 
-Acceptance must explicitly cover capture/atomicity, the initial event catalog,
-restricted inspection and the 365/90-day defaults. Until then this ADR is Proposed,
-IOP-009 remains open, and architecture/modules/data-model/glossary stay unchanged.
-Acceptance authorizes synchronizing design documentation, not scaffolding IOP-023
-or implementing identity, jobs, retention workers or hosting.
+The owner accepted capture/atomicity, the initial event catalog, restricted
+inspection and the 365/90-day defaults as a future design, explicitly excluding
+implementation from the pilot. IOP-009 is complete as design; architecture and
+planning now record this distinction. No audit implementation, identity work,
+jobs, retention workers or hosting are authorized by acceptance.
 
 ## Sources
 
@@ -263,6 +280,6 @@ judgments, not requirements stated by these sources.
   policy enforcement and owner/superuser bypass limitations inform privilege review.
 - [OWASP logging guidance](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html):
   application context, security-event coverage, sensitive-data exclusion, protected
-  access, sanitization and retention/disposal inform this proposal. Mandatory
+  access, sanitization and retention/disposal inform this design. Mandatory
   business-change rollback on audit failure is our explicit integrity tradeoff;
   optional diagnostics and security observations use different failure behavior.

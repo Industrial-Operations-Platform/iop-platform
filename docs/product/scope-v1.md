@@ -64,3 +64,13 @@ or later workflows as prerequisites.
 [Personas and pilot workflow](personas-and-pilot-workflow.md) records the accepted
 baseline and explicit deferrals. IOP-001 is Completed as design; implementation
 and release validation remain open.
+
+## Audit design retained for later
+
+The owner accepted [ADR-0017](../architecture/adr/ADR-0017-audit-model.md) as a
+future design while explicitly stating that the pilot does not need this audit
+capability. Audit tables, atomic audit capture, security-event collection,
+operator inspection and 365/90-day retention/purge infrastructure are outside the
+pilot release gates. This does not remove import provenance, reconciliation or
+existing scope/access requirements. It does not select or expand login mechanisms.
+IOP-009 is complete as design; IOP-023 remains future implementation work.

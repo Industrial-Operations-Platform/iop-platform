@@ -95,3 +95,10 @@ Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta
 ## Open questions
 
 Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+
+## Delivery boundary after IOP-009 acceptance
+
+The owner accepted [ADR-0017](../../architecture/adr/ADR-0017-audit-model.md) as a
+future design and explicitly excluded audit implementation from the pilot.
+This item remains Proposed future work, not a pilot prerequisite. Activate it only
+through a separate request; recheck retention and operating assumptions then.

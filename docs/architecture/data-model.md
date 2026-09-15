@@ -166,3 +166,18 @@ provenance. Retain historical resolved periods through rule updates. Future cros
 reports explicitly distinguish common instant windows from per-site local dates and
 expose each site's bounds while preserving authorization. Physical tables, libraries,
 source-window confirmation and runtime round-trip checks remain future work.
+
+## Future audit records
+
+Accepted [ADR-0017](adr/ADR-0017-audit-model.md) defines versioned records with
+stable event identity, explicit scope, actor/initiator, subject, outcome, safe
+before/after fields, UTC observation/recording times and operation correlation.
+Organization, site and restricted platform-security records remain distinct.
+Ordinary runtime writes append; corrections link new records and subject deletion
+does not cascade into audit history. No RAW payloads or secrets are copied.
+
+Future retention defaults are 365 days for material changes/maintenance and
+90 days for security events, measured from recording time. Online expiry/purge
+does not promise simultaneous backup erasure. These are conceptual requirements
+for later implementation: the owner explicitly excluded Audit infrastructure and
+its retention obligations from the pilot. No physical schema is selected.

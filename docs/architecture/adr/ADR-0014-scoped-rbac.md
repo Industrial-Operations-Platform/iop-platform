@@ -245,3 +245,11 @@ modules, data model, glossary and affected ADR follow-up notes are synchronized.
 IOP-006 is complete as design; no implementation or adjacent story is activated.
 Official OWASP and Nest sources informed the evaluation; acceptance came from the
 owner's explicit confirmation. Runtime authorization verification remains future work.
+
+## Subsequent audit applicability decision
+
+Accepted [ADR-0017](ADR-0017-audit-model.md) defines the future audit record and
+atomic delivery contract for access changes. The owner explicitly deferred this
+Audit subsystem beyond the pilot; the traceability requirement above does not
+make Audit storage/delivery a pilot prerequisite. Permission, scope and authority
+checks remain part of the accepted RBAC design.

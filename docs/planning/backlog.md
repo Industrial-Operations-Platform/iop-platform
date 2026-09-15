@@ -9,7 +9,8 @@ export and numerical performance targets explicitly deferred);
 IOP-002 Completed (stack accepted under ADR-0006/0009/0010, including Jest for
 frontend/backend; runnable commands await bootstrap). IOP-139 Completed
 (planning migration). IOP-140 Completed (English project-language rule).
-All other tasks are Proposed; no application implementation exists.
+The item rows below record current statuses; no application implementation exists.
+IOP-009 is Completed as design, with audit implementation deferred beyond the pilot.
 The owner has narrowed v1 to CSV → preparation → analysis → presentation.
 Asset Locator, maps and plant surveys are deferred, not v1 prerequisites. The broader
 inventory includes future platform work, not v1 commitments. Use the current
@@ -34,7 +35,7 @@ IOP-040 es asset search; la release es IOP-138.
 | [IOP-006 — Design the RBAC model](items/IOP-006-rbac-model.md) | Completed |
 | [IOP-007 — Diseñar autenticación](items/IOP-007-authentication-model.md) | Proposed |
 | [IOP-008 — Define the time and time-zone model](items/IOP-008-time-and-timezone-model.md) | Completed |
-| [IOP-009 — Design the audit trail](items/IOP-009-audit-model.md) | Blocked |
+| [IOP-009 — Design the audit trail](items/IOP-009-audit-model.md) | Completed |
 | [IOP-010 — Diseñar background jobs](items/IOP-010-background-job-model.md) | Proposed |
 | [IOP-011 — Definir file/map storage](items/IOP-011-file-storage-model.md) | Proposed |
 | [IOP-012 — Definir source integration contract](items/IOP-012-source-integration-contract.md) | Proposed |
