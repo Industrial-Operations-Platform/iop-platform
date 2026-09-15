@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M11 — OIP / Operational Intelligence. Proposed delivery slice.
 
 ## Goal
 
-Analytics query layer. Resultado esperado: Metrics desacopladas de UI
+Query verified frequency and duration independently of UI.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Metrics desacopladas de UI
+Query verified frequency and duration independently of UI.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-089.
-- OIP es un módulo de IOP; métricas desacopladas de UI y de esquemas de WinCC.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Use the aggregate and configured-label slices. Share metric/filter semantics between
+  overview and detail; preserve scope before aggregation. No generic analytics engine,
+  materialized projection platform or physical asset dependency.
 
 ## Acceptance criteria
 
-- [ ] Metrics desacopladas de UI
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Query verified frequency and duration independently of UI.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,11 @@ Mostrar definición y límites de la métrica; no presentar correlación como ca
 
 ## Dependencies
 
-[IOP-043](IOP-043-canonical-event-model.md), [IOP-048](IOP-048-data-reconciliation.md), [IOP-049](IOP-049-source-mappings.md)
+[IOP-043](IOP-043-canonical-event-model.md), [IOP-048](IOP-048-data-reconciliation.md), [IOP-049](IOP-049-source-mappings.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

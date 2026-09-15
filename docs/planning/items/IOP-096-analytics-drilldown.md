@@ -1,8 +1,16 @@
-# IOP-096 — Drill-down
+# IOP-096 — Analytical drill-down
 
 ## Status
 
 Proposed
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M11 — OIP / Operational Intelligence. Proposed delivery slice.
 
 ## Goal
 
-Drill-down. Resultado esperado: KPI → eventos → asset
+Drill down from overview to contributing aggregate records.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-KPI → eventos → asset
+Drill down from overview to contributing aggregate records.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-096.
-- OIP es un módulo de IOP; métricas desacopladas de UI y de esquemas de WinCC.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Retain filters through sector, area, source equipment and message/detail navigation.
+  Show scope, date/coverage and provenance. KPI-to-physical-asset navigation is
+  deferred; aggregate rows are not individual occurrences.
 
 ## Acceptance criteria
 
-- [ ] KPI → eventos → asset
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Drill down from overview to contributing aggregate records.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,11 @@ Mostrar definición y límites de la métrica; no presentar correlación como ca
 
 ## Dependencies
 
-[IOP-094](IOP-094-asset-analytics.md), [IOP-095](IOP-095-area-analytics.md)
+[IOP-094](IOP-094-asset-analytics.md), [IOP-095](IOP-095-area-analytics.md), [IOP-097](IOP-097-analytics-filters.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

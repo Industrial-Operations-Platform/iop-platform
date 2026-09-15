@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M5 — Industrial Data Foundation. Documentation/design only.
 
 ## Goal
 
-RAW ingestion model. Resultado esperado: Input original preservado
+Preserve scoped original CSV input and import provenance.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Input original preservado
+Preserve scoped original CSV input and import provenance.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-041.
-- RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Consume only the CSV-specific storage/contract slices. Preserve source/site identity
+  and original values for reconciliation. No map/attachment platform or external
+  provider registry is required.
 
 ## Acceptance criteria
 
-- [ ] Input original preservado
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Preserve scoped original CSV input and import provenance.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,11 @@ Exponer estados, errores y resultados de importación solo si lo pide esta tarea
 
 ## Dependencies
 
-[IOP-011](IOP-011-file-storage-model.md), [IOP-012](IOP-012-source-integration-contract.md), [IOP-019](IOP-019-database-bootstrap.md)
+[IOP-011](IOP-011-file-storage-model.md), [IOP-012](IOP-012-source-integration-contract.md), [IOP-019](IOP-019-database-bootstrap.md), [IOP-026](IOP-026-site-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

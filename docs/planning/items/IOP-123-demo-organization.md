@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M16 — Demo / Pilot Dataset. Proposed delivery slice.
 
 ## Goal
 
-Synthetic organization. Resultado esperado: Cliente ficticio
+Seed a fictional organization and site for the analytical POC.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Cliente ficticio
+Seed a fictional organization and site for the analytical POC.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-123.
-- Usar organizaciones, nombres, activos y relaciones ficticios; las fixtures no definen niveles rígidos del dominio.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Use configurable fictional labels, stable IDs and a zone. No physical asset hierarchy.
+  Any local principal/grants follow an accepted execution-context mechanism, not implied
+  access from organization membership.
 
 ## Acceptance criteria
 
-- [ ] Cliente ficticio
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Seed a fictional organization and site for the analytical POC.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,11 @@ El usuario debe distinguir demo y datos reales; el alcance no incluye diseñar n
 
 ## Dependencies
 
-[IOP-025](IOP-025-organization-model.md)
+[IOP-025](IOP-025-organization-model.md), [IOP-026](IOP-026-site-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

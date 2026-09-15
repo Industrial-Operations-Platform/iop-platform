@@ -2,7 +2,15 @@
 
 ## Status
 
-Proposed
+Deferred
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M3 — Platform Core. Proposed delivery slice.
 
 ## Goal
 
-Admin foundation. Resultado esperado: Admin puede gestionar configuración base
+Deliver administration after the analytical POC.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Admin puede gestionar configuración base
+Deliver administration after the analytical POC.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-031.
-- Organization representa el customer/tenant genérico; identidad, membership y permisos tienen responsabilidades distintas.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- User/configuration administration screens are later work. The POC uses versioned
+  configuration/seed data and has no dependency on this administration foundation for
+  navigation or import.
 
 ## Acceptance criteria
 
-- [ ] Admin puede gestionar configuración base
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Deliver administration after the analytical POC.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,10 @@ Mostrar solo scopes permitidos y errores de acceso claros; ocultar controles no 
 
 ## Dependencies
 
-[IOP-028](IOP-028-local-authentication.md), [IOP-029](IOP-029-rbac-enforcement.md), [IOP-030](IOP-030-membership-model.md)
+[IOP-028](IOP-028-local-authentication.md), [IOP-029](IOP-029-rbac-enforcement.md), [IOP-030](IOP-030-membership-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+These are future parent dependencies, not POC gates. Any minimal local seed slice
+uses an accepted execution-context contract rather than requiring the full parent.
 
 ## Non-goals
 

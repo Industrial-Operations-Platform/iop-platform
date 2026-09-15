@@ -4,6 +4,23 @@ IOP is a generic industrial operations platform. OIP is its Operational
 Intelligence module, not the product boundary. This repository is documentation
 only; the following decisions guide future implementation.
 
+## Immediate delivery boundary
+
+The owner-approved [local analytical POC](docs/product/scope-poc.md) precedes
+shared-use v1. Deliver manual CSV preparation, verified analysis and presentation;
+login, external connections, full audit, workers and operational modules are later
+work. An accepted design does not require building every future capability now.
+Keep the accepted stack, module ownership, source adapter, organization/site IDs,
+scoped constraints/RLS and temporal semantics for the implemented slices.
+
+[ADR-0018](docs/architecture/adr/ADR-0018-local-poc-execution-context.md) is Proposed:
+it describes a bounded local execution adapter without human login. The product
+scope is approved, but this mechanism and its narrow exception to verified identity
+are not yet accepted. Do not disable authorization/RLS or treat an implicit pilot
+site as trusted context. Dependent runtime business access waits for an accepted
+mechanism; independent bootstrap/parser/UI work may proceed under its own plans.
+See the [delivery map](docs/planning/poc-delivery.md) for exact slices and deferrals.
+
 ## Accepted foundations
 
 - [ADR-0001](docs/architecture/adr/ADR-0001-modular-monolith.md): modular monolith with explicit module ownership.

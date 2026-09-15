@@ -1,13 +1,21 @@
 # IOP v1 scope
 
-## Current owner-confirmed release boundary
+## Delivery order: local POC before shared-use v1
+
+On 2026-09-15 the owner prioritized the [local analytical POC](scope-poc.md):
+manual CSV → verified analysis → presentation, with login and external integrations
+deferred. Its [delivery map](../planning/poc-delivery.md) is the immediate planning
+baseline. The requirements below describe later shared use, not POC prerequisites.
+
+## Shared-use v1 boundary
 
 **CSV events → preparation and normalization → analysis → presentation.**
 
 The owner narrowed v1 to reproduce the current local Power BI workflow. A full
 plant survey and precise sensor location would delay that delivery and are deferred.
 This decision supersedes the earlier v1 workflow ending in Asset Locator.
-Individual login and appropriate customer/site-scoped views remain required.
+Individual login and appropriate customer/site-scoped views remain required for
+shared use, after the local POC.
 No application functionality is implemented yet.
 
 ## V1 capabilities to specify
@@ -45,7 +53,7 @@ meeting/shift functions and provide precise asset location, potentially in 3D.
 Source interfaces, location capture, representation and delivery sequence remain
 undecided. These goals do not impose dependencies on the CSV-based v1.
 
-## Release conditions still to finalize
+## Shared-use release conditions still to finalize
 
 Demonstrate import → reconciled analysis → useful presentation with the agreed CSV,
 reports and test cases. Verify individual access, scope isolation, source traceability

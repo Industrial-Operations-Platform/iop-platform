@@ -1,8 +1,16 @@
-# IOP-010 — Diseñar background jobs
+# IOP-010 — Design background jobs for later delivery
 
 ## Status
 
-Proposed
+Deferred
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal
 
-Diseñar background jobs. Resultado esperado: Estrategia de workers, retry e idempotencia definida
+Define background execution only when needed beyond the direct CSV POC.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Estrategia de workers, retry e idempotencia definida
+Define background execution only when needed beyond the direct CSV POC.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-010.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Workers, queues, retries and orchestration are deferred. A bounded direct import does
+  not require this story. Revisit when measured file size or execution time makes direct
+  processing unsuitable.
 
 ## Acceptance criteria
 
-- [ ] Estrategia de workers, retry e idempotencia definida
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Define background execution only when needed beyond the direct CSV POC.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,10 @@ Documentar necesidades de los usuarios; no seleccionar ni construir UI por infer
 
 ## Dependencies
 
-[IOP-002](IOP-002-technology-stack.md), [IOP-009](IOP-009-audit-model.md)
+[IOP-002](IOP-002-technology-stack.md), [IOP-009](IOP-009-audit-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+These are future parent dependencies, not POC gates. Any minimal local seed slice
+uses an accepted execution-context contract rather than requiring the full parent.
 
 ## Non-goals
 

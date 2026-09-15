@@ -1,8 +1,16 @@
-# IOP-013 — Definir observability baseline
+# IOP-013 — Define local health and diagnostic logging
 
 ## Status
 
 Proposed
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal
 
-Definir observability baseline. Resultado esperado: Logging, metrics, health checks y correlation IDs definidos
+Define health and diagnostic logging for the local POC.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Logging, metrics, health checks y correlation IDs definidos
+Define health and diagnostic logging for the local POC.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-013.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Provide startup/health visibility and useful bounded error/import identifiers without
+  secrets or RAW payloads. A metrics platform, distributed tracing and operational
+  dashboards are later work.
 
 ## Acceptance criteria
 
-- [ ] Logging, metrics, health checks y correlation IDs definidos
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Define health and diagnostic logging for the local POC.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,11 @@ Documentar necesidades de los usuarios; no seleccionar ni construir UI por infer
 
 ## Dependencies
 
-[IOP-002](IOP-002-technology-stack.md), [IOP-003](IOP-003-api-contract-strategy.md)
+[IOP-002](IOP-002-technology-stack.md), [IOP-003](IOP-003-api-contract-strategy.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

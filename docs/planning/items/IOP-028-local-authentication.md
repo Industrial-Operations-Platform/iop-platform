@@ -2,7 +2,15 @@
 
 ## Status
 
-Proposed
+Deferred
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M3 — Platform Core. Proposed delivery slice.
 
 ## Goal
 
-Local authentication adapter. Resultado esperado: Si IOP-007 acepta autenticación local, login/logout/session verificables detrás de la abstracción; en otro caso, diferimiento documentado.
+Implement local login only if selected for later shared use.
 
 ## User / business value
 
@@ -28,19 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Si IOP-007 acepta autenticación local, login/logout/session verificables detrás de la abstracción; en otro caso, diferimiento documentado.
+Implement local login only if selected for later shared use.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-028.
-- Organization representa el customer/tenant genérico; identidad, membership y permisos tienen responsabilidades distintas.
-- Implementar el adaptador local solo si IOP-007 lo selecciona y se acepta la decisión correspondiente; si se descarta, marcar esta tarea Deferred con motivo y enlace a la alternativa.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- No login/logout/session implementation is required for the POC. A later accepted
+  authentication decision must select this adapter before implementation; the POC does
+  not force a temporary password system.
 
 ## Acceptance criteria
 
-- [ ] Si IOP-007 acepta autenticación local, login/logout/session verificables detrás de la abstracción; en otro caso, diferimiento documentado.
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Implement local login only if selected for later shared use.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -75,10 +85,10 @@ Mostrar solo scopes permitidos y errores de acceso claros; ocultar controles no 
 
 ## Dependencies
 
-[IOP-007](IOP-007-authentication-model.md), [IOP-027](IOP-027-user-model.md), [IOP-018](IOP-018-configuration-management.md)
+[IOP-007](IOP-007-authentication-model.md), [IOP-027](IOP-027-user-model.md), [IOP-018](IOP-018-configuration-management.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+These are future parent dependencies, not POC gates. Any minimal local seed slice
+uses an accepted execution-context contract rather than requiring the full parent.
 
 ## Non-goals
 

@@ -1,8 +1,16 @@
-# IOP-009 — Diseñar audit trail
+# IOP-009 — Retain future audit design
 
 ## Status
 
 Proposed
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal
 
-Diseñar audit trail. Resultado esperado: Eventos auditables y retención definidos
+Retain audit design for later delivery.
 
 ## User / business value
 
@@ -28,18 +36,22 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Eventos auditables y retención definidos
+Retain audit design for later delivery.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-009.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Full Audit storage, atomic appends, security-event collection and retention/purge
+  infrastructure are outside the POC. Import provenance and reconciliation remain
+  required. The separate IOP-009 review branch records accepted future design and pilot
+  deferral; this branch does not merge or restate that design as integrated.
 
 ## Acceptance criteria
 
-- [ ] Eventos auditables y retención definidos
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Retain audit design for later delivery.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +86,10 @@ Documentar necesidades de los usuarios; no seleccionar ni construir UI por infer
 
 ## Dependencies
 
-[IOP-005](IOP-005-tenancy-and-data-isolation.md), [IOP-006](IOP-006-rbac-model.md)
+[IOP-005](IOP-005-tenancy-and-data-isolation.md), [IOP-006](IOP-006-rbac-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+These are future parent dependencies, not POC gates. Any minimal local seed slice
+uses an accepted execution-context contract rather than requiring the full parent.
 
 ## Non-goals
 

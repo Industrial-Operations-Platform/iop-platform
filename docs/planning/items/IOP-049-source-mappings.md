@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M5 — Industrial Data Foundation. Proposed delivery slice.
 
 ## Goal
 
-Source aliases/mappings. Resultado esperado: Valores externos → dominio canónico
+Map source area and sector labels through scoped configuration.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Valores externos → dominio canónico
+Map source area and sector labels through scoped configuration.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-049.
-- RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Preserve the evidenced area-to-sector classification, unclassified records and mapping
+  revision. No physical asset alias dependency. IOP-037 is relevant only to a future
+  surveyed-asset mapping slice.
 
 ## Acceptance criteria
 
-- [ ] Valores externos → dominio canónico
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Map source area and sector labels through scoped configuration.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,11 @@ Exponer estados, errores y resultados de importación solo si lo pide esta tarea
 
 ## Dependencies
 
-[IOP-012](IOP-012-source-integration-contract.md), [IOP-043](IOP-043-canonical-event-model.md), [IOP-037](IOP-037-asset-aliases.md)
+[IOP-012](IOP-012-source-integration-contract.md), [IOP-043](IOP-043-canonical-event-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

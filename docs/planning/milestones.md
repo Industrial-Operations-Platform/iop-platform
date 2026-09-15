@@ -1,26 +1,31 @@
 # Milestones and exit evidence
 
-Current v1 is CSV preparation, analysis and presentation; see the
-[release scope](../product/scope-v1.md). The groupings below describe the broader
-platform. Asset surveys/locator, meeting and shift workflows are not v1 gates.
-Evaluate only the selected v1 slices when planning release validation.
+## Immediate delivery milestone
 
+The owner-approved [POC](../product/scope-poc.md) is complete when a local operator
+can import a representative CSV, inspect quality/duplicate outcomes, obtain verified
+frequency/duration in overview and detail, and present the result. The dedicated
+demo is reproducible. Follow the [five delivery increments](poc-delivery.md).
 
-M0 (baseline) completed. M1 in progress: IOP-002 stack selection completed
-(ADR-0006/0009/0010 Accepted); IOP-001 personas/workflow baseline also completed; other architecture work remains open.
-M2–M17 Proposed. La migración de planificación IOP-139 es un follow-up de M0.
-Los hitos organizan capacidades; no obligan a completar cada bloque antes del
-siguiente. Seguridad y testing acompañan cada slice desde el inicio.
+Login, external connections, workers, full audit and the broader operational
+platform are not POC exit gates. The local runtime context still requires its
+own accepted mechanism; ADR-0018 is Proposed. No implementation exists yet.
 
-Ver [backlog](backlog.md), [workflow](workflow.md) y [equivalencias](legacy-backlog-map.md).
+## Longer-term capability groups
+
+M0 is complete. IOP-001–006 and IOP-008 are completed design baselines on this
+branch; other designs and all implementation remain as recorded in the
+[backlog](backlog.md). The M1–M17 exits below describe future capability groups,
+not a sequential checklist or extra POC requirements. Select only relevant slices;
+security checks, testing and usable UI accompany each delivery.
 
 ## M1 — Product & Architecture Definition
 
 Tareas: IOP-001–IOP-014.
 
 Exit: Personas, workflow and decisions needed for the next slice are documented
-and accepted. IOP-001 baseline and IOP-002 stack selection are complete with stack decisions under Accepted ADR-0006/0009/0010; the other
-M1 design work remains open.
+and accepted. IOP-001–006 and IOP-008 are completed design baselines on this
+branch; pending or deferred designs do not all gate the next analytical slice.
 
 ## M2 — Development Platform Foundation
 

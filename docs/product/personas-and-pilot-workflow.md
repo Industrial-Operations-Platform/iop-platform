@@ -6,6 +6,15 @@ The owner explicitly deferred precise asset location because surveying the plant
 and identifying every sensor requires substantial work. This supersedes the earlier
 CSV → analysis → locator pilot. No implementation is claimed.
 
+## Current delivery precedence
+
+The owner-approved [POC scope](scope-poc.md), recorded in IOP-142 on 2026-09-15,
+prioritizes a local single-operator demonstration without login. The individual
+accounts, role administration and shared-user access scenarios below remain the
+accepted baseline for later shared use, not POC gates. Analytical responsibilities,
+source integrity and the two-view reporting baseline remain applicable now.
+This preserves the IOP-001 acceptance history without repeating its design work.
+
 ## Current process reported by the owner
 
 The owner is the only project developer and currently uploads a consistent-format

@@ -1,8 +1,16 @@
-# IOP-007 — Diseñar autenticación
+# IOP-007 — Design authentication for later shared use
 
 ## Status
 
-Proposed
+Deferred
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal
 
-Diseñar autenticación. Resultado esperado: Modelo de autenticación y sesión documentado; decisión explícita sobre login local POC y contrato para futuro Entra ID.
+Define authentication for later shared use.
 
 ## User / business value
 
@@ -28,19 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Modelo de autenticación y sesión documentado; decisión explícita sobre login local POC y contrato para futuro Entra ID.
+Define authentication for later shared use.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-007.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
-- El login local POC del outline es una opción a evaluar, no una excepción ya aprobada a ADR-0004. Comparar necesidades locales y futura integración Entra antes de elegir credenciales/sesiones.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Login, passwords and sessions are deferred beyond the POC. Preserve the
+  provider-independent boundary. The older local-login proposal on the separate review
+  branch is not a POC prerequisite; its technical decisions remain unaccepted here.
 
 ## Acceptance criteria
 
-- [ ] Modelo de autenticación y sesión documentado; decisión explícita sobre login local POC y contrato para futuro Entra ID.
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Define authentication for later shared use.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -75,10 +85,10 @@ Documentar necesidades de los usuarios; no seleccionar ni construir UI por infer
 
 ## Dependencies
 
-[IOP-002](IOP-002-technology-stack.md), [IOP-006](IOP-006-rbac-model.md)
+[IOP-002](IOP-002-technology-stack.md), [IOP-006](IOP-006-rbac-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+These are future parent dependencies, not POC gates. Any minimal local seed slice
+uses an accepted execution-context contract rather than requiring the full parent.
 
 ## Non-goals
 
