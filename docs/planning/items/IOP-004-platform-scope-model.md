@@ -1,8 +1,9 @@
-# IOP-004 — Diseñar scope Organization/Site
+# IOP-004 — Design Organization/Site scope
 
 ## Status
 
-Proposed
+Blocked — evaluation complete; awaiting owner acceptance of
+[ADR-0012](../../architecture/adr/ADR-0012-organization-site-scope.md).
 
 ## Milestone
 
@@ -10,88 +11,120 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal
 
-Diseñar scope Organization/Site. Resultado esperado: Modelo genérico sin dependencias de Galaxus
+Define a generic Organization/Site scope model without customer-specific domain
+logic, keeping identity, permission, operational scope and providers separate.
 
 ## User / business value
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+The team needs reviewable ownership and scope contracts before building a reusable
+platform with customer/site access isolation.
 
 ## Context
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Read [modules](../../architecture/modules.md), [data model](../../architecture/data-model.md),
+[glossary](../../product/glossary.md) and [workflow](../workflow.md).
+The owner requested evaluation and an ADR, with dependent documentation updated
+if the decision is accepted. The original seed names no specific alternatives;
+ADR-0012 compares organization-only, Organization/Site and a generic scope tree.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. Customer-owned sites and isolation are
+accepted foundations, but the detailed Organization/Site proposal is not accepted
+or implemented. The evaluation recommends explicit Organization → Site ownership,
+with configurable locations outside the authorization scope hierarchy.
 
 ## Desired state
 
-Modelo genérico sin dependencias de Galaxus
+An accepted generic model documents canonical identity, site ownership, explicit
+operation scope and module responsibilities, with synchronized architecture docs.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-004.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+- Deliver only the logical Organization/Site design for IOP-004.
+- Evaluate alternatives and explain the recommendation and its consequences.
+- Keep provider identity, membership, permission and target scope distinct.
+- Describe positive and negative scope/reference scenarios without implementing them.
+- Preserve the boundaries of physical tenancy, detailed RBAC and temporal design.
 
 ## Acceptance criteria
 
-- [ ] Modelo genérico sin dependencias de Galaxus
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Generic Organization/Site model accepted without customer-specific dependencies.
+- [x] Evaluation plan and ADR document options, scenarios and necessary decisions
+  without expanding the task.
+- [ ] Accepted architecture/model/glossary documentation synchronized with validation
+  evidence. Proposal-stage item/backlog/evaluation evidence is complete.
 
 ## Domain considerations
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+ADR-0012 proposes Organization as the existing customer boundary; each Site belongs
+to exactly one Organization. Source labels and configurable locations are data,
+not identity or additional permission scopes. Proposed is not Accepted.
 
 ## Architecture constraints
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
+Accepted [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md),
+[ADR-0006](../../architecture/adr/ADR-0006-backend-stack.md),
+[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md),
+[ADR-0008](../../architecture/adr/ADR-0008-story-branches.md) and
+[ADR-0011](../../architecture/adr/ADR-0011-api-contract-strategy.md) apply.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Scope selectors are not grants. Check organization/site access and relevant
+references, including indirect data paths. Use fictional examples and no production
+data or secrets. Industrial integrations remain read-only.
 
 ## Data considerations
 
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
+Logical ownership and propagation only; physical tenancy and database enforcement
+belong to [IOP-005](IOP-005-tenancy-and-data-isolation.md).
 
 ## API considerations
 
-Especificar contratos cuando corresponda; no crear endpoints.
+Describe transport-independent scope contracts under ADR-0011; no endpoints or
+scope transport selected. Missing scope must not mean unrestricted access.
 
 ## UI considerations
 
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
+Keep applied report scope visible; no selector UI or frontend behavior implemented.
 
 ## Dependencies
 
-[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md) is Completed and establishes the
+analytical v1 and individual scoped access. The accepted backend/API baselines are
+available on develop. No other story integration is required for this evaluation.
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Application code, schemas, migrations, endpoints, infrastructure, physical tenancy,
+role/permission matrix, identity providers, detailed time semantics, arbitrary
+scope trees, site-transfer workflows or new v1 reporting capabilities.
 
 ## Validation
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+Review links, IDs, statuses, scope consistency and ADR scenarios. See the
+[completed evaluation plan](../completed/IOP-004-platform-scope-model-plan.md)
+for evidence and limitations. No runtime or security tests have been executed.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Proposal: this item, its [backlog](../backlog.md) row, ADR-0012 and evaluation plan.
+After acceptance: architecture baseline, modules, data model and glossary, through
+a subsequent execution plan. Keep the permanent item here after closure.
 
 ## Open questions
 
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+Does the owner accept ADR-0012's explicit Organization/Site logical model and its
+boundaries? Physical enforcement, RBAC grant inheritance and temporal mechanics
+remain with their existing stories; they do not need to be resolved to review this ADR.
+
+## Evaluation evidence
+
+On 2026-09-14 the requested evaluation produced Proposed ADR-0012 with three
+alternatives, logical contracts, consequences and twelve design walkthroughs.
+The accepted architecture remains unchanged pending explicit acceptance. The
+completed evaluation slice does not complete the parent design item.
