@@ -136,3 +136,33 @@ site data. Ordinary access changes preserve at least one active access admin and
 serialize relevant authority checks with mutations. Global identity disablement
 still stops access and can require operator recovery. Detailed constraints, locking,
 bootstrap/recovery and RLS lookup policies need implementation verification.
+
+
+## Accepted temporal semantics
+
+[ADR-0016](adr/ADR-0016-time-and-timezone-model.md) separates exact instants from
+calendar dates and local schedule intent. Persist known instants as `timestamptz(3)`
+and dates as `date`; keep site/source IANA zone and interpretation provenance
+separately. Preserve RAW values, applied configuration revision and converter
+rule/build identity with resolved bounds, offsets and relevant local labels.
+System receipt/creation times do not replace source occurrence times. Missing or
+ambiguous event times remain explicit quality states; timestamps are not unique IDs.
+
+Known periods are half-open `[start, end)` with end after start. Derive elapsed
+duration from instants, keeping it distinct from accumulated alarm duration.
+Calendar days and months resolve in an explicit zone; do not assume fixed elapsed
+length. Source date-only aggregates retain unknown window/zone semantics and cannot
+be split into shifts, fabricated occurrences or proportional partial-period totals.
+
+Future shift instances retain definition revision, local start-date label, zone,
+local boundary intent including end-day offset, resolved UTC bounds and any explicit
+disambiguation. Nonexistent local times are rejected/unresolved; repeated times
+need an evidenced offset or recorded scheduling choice. Planned/actual intervals
+remain distinct. This defines semantics without implementing workforce scheduling.
+
+Configure site zones before temporal use; ordinary replacement after use is
+unsupported. Corrections require reviewed reprocessing/migration and preserve old
+provenance. Retain historical resolved periods through rule updates. Future cross-site
+reports explicitly distinguish common instant windows from per-site local dates and
+expose each site's bounds while preserving authorization. Physical tables, libraries,
+source-window confirmation and runtime round-trip checks remain future work.

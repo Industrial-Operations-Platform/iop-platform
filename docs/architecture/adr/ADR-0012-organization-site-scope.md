@@ -211,3 +211,14 @@ explicit organization/site role assignments without inheritance, delegation and
 revocation semantics. Users/RBAC evaluates current permissions independently of
 authentication and RLS. Identity/session mechanisms and detailed persistence
 implementation remain separate work.
+
+
+## Subsequent temporal decision
+
+Accepted [ADR-0016](ADR-0016-time-and-timezone-model.md) defines UTC instants with
+millisecond precision, explicit IANA site/source zones, separate calendar intent,
+half-open resolved periods and explicit clock-change ambiguity handling. Reports
+retain period/coverage context; historical interpretation is preserved. Site zones
+cannot be ordinarily replaced after temporal use without a reviewed correction plan.
+The source CSV window remains unverified; this does not implement shifts, select
+a date library or add cross-site reports.

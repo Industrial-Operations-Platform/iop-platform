@@ -163,3 +163,24 @@ IOP-006 is complete as design. The pilot uses a small fixed catalog and explicit
 assignments; no custom-role UI, policy engine or enterprise identity integration
 is required. Authentication/session implementation remains IOP-007. No runtime
 authorization or concurrency tests have run.
+
+
+## Accepted temporal model
+
+[ADR-0016](docs/architecture/adr/ADR-0016-time-and-timezone-model.md) distinguishes
+UTC instants, local calendar values, periods and durations. Sites have explicit
+IANA zones; source interpretation belongs in scoped adapter configuration.
+Instant contracts use an RFC 3339 profile with millisecond precision and UTC `Z`
+output; persistence uses `timestamptz(3)` with separate zone/provenance metadata.
+
+Resolved intervals use `[start, end)`. Reports retain site calendar context across
+viewer devices; gaps and repeated local times require explicit resolution or remain
+unresolved. Future overnight shifts retain local intent and independently resolved
+UTC bounds, so elapsed hours can vary across clock changes. Historical periods are
+not silently reinterpreted after zone/rule changes; ordinary site-zone replacement
+is disallowed after temporal use pending an explicit correction plan.
+
+IOP-008 is complete as design. CSV filename dates remain source labels until their
+window and zone are confirmed; no occurrence timestamps, shift assignments or
+24-hour coverage are inferred. Runtime/library validation, source contracts and
+shift implementation remain separate work.

@@ -107,3 +107,21 @@ Access changes require organization-scoped delegation checks, traceable mutation
 and concurrency protection for authority revocation and last-admin removal.
 Identity bootstrap/recovery, concrete transaction coordination and audit delivery
 remain implementation contracts; no administrative UI or provider is selected.
+
+
+## Temporal responsibilities
+
+Accepted [ADR-0016](adr/ADR-0016-time-and-timezone-model.md) assigns site IANA zone
+configuration to Platform Core, source interpretation/RAW provenance to Integrations,
+event/aggregate and reporting-period semantics to OIP, and future shift intent and
+instances to Workforce. Each module validates its temporal invariants and preserves
+explicit organization/site scope; shared conversion helpers do not own business rules.
+
+Contracts distinguish millisecond UTC instants from local dates and schedules.
+Resolved intervals are half-open; local boundary ambiguity is explicit. Reports
+preserve site zone, period, grain, coverage and interpretation context across API,
+workers and any future caches/exports. Unknown source windows remain visible.
+Receiving modules must not infer occurrence/shift evidence from date-only aggregates.
+Site-zone corrections after use require reviewed reprocessing; completed periods
+retain their interpretation. Library choice and runtime verification remain future
+work; this decision does not activate scheduling or cross-site reports.

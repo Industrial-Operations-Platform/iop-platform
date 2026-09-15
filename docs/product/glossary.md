@@ -43,3 +43,21 @@ Organization/Site semantics are accepted in [ADR-0012](../architecture/adr/ADR-0
 Tenancy and persistence isolation are accepted in [ADR-0013](../architecture/adr/ADR-0013-tenancy-data-isolation.md).
 
 The fixed pilot authorization matrix is accepted in [ADR-0014](../architecture/adr/ADR-0014-scoped-rbac.md).
+
+
+## Temporal vocabulary
+
+Accepted [ADR-0016](../architecture/adr/ADR-0016-time-and-timezone-model.md) defines:
+
+| Term | Meaning in IOP |
+| --- | --- |
+| Instant | Exact point on the timeline; canonical contracts use millisecond precision and UTC output. |
+| Local date | Calendar date without time or offset; a reporting label does not imply an occurrence at midnight. |
+| Local date-time | Wall-clock value requiring a zone and ambiguity resolution before identifying an instant. |
+| IANA time zone | Named civil-time rules used by a site or source; stored separately from exact instants. |
+| UTC offset | Difference from UTC at a particular instant; not a regional time-zone identity. |
+| Reporting period | Known half-open interval with interpretation metadata, or an explicitly unresolved source period label. |
+| Half-open interval | Includes its start and excludes its end: `[start, end)`. |
+| Elapsed duration | Difference between resolved instants in a stated unit; distinct from accumulated alarm duration. |
+| Shift business date | Local start date labeling a future shift instance, including overnight shifts. |
+| Time ambiguity | A local clock value is missing or repeated because of an offset change; requires explicit handling. |
