@@ -19,3 +19,11 @@ Identity providers can change without rewriting operational workflows. Identity 
 ## Alternatives considered
 
 Embedding a provider SDK across modules would couple business logic to one provider. Implementing a bespoke identity system now would add unsupported scope. Treating provider claims directly as domain permissions would mix authentication with authorization.
+
+## Subsequent RBAC decision
+
+Accepted [ADR-0014](ADR-0014-scoped-rbac.md) defines the pilot permission matrix,
+explicit organization/site role assignments without inheritance, delegation and
+revocation semantics. Users/RBAC evaluates current permissions independently of
+authentication and RLS. Identity/session mechanisms and detailed persistence
+implementation remain separate work.

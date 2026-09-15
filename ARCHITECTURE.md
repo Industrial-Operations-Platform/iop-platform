@@ -114,8 +114,8 @@ Core owns scope identity and each receiving module enforces scoped references.
 Scope follows imports, jobs, derived results and other data paths. Organization
 membership alone does not grant all-site access.
 
-IOP-004 is complete as design. Permission inheritance, HTTP scope
-transport and detailed temporal/lifecycle behavior remain separate decisions.
+IOP-004 is complete as design. HTTP scope transport and detailed temporal/lifecycle
+behavior remain separate decisions. ADR-0014 defines explicit grants without inheritance.
 
 
 ## Accepted tenancy and data isolation
@@ -135,5 +135,31 @@ files or exports preserve scope and enforce access independently of row policies
 Shared storage shares resources and recovery impact. Application-set RLS context
 does not protect against compromised backend credentials or privileged operators.
 IOP-005 is complete as design; schema, policy SQL, driver/pool verification and
-runtime isolation tests remain implementation work. Hosting, ORM and RBAC grants
-are not selected by this decision.
+runtime isolation tests remain implementation work. Hosting and ORM remain undecided;
+RBAC grants are defined separately by ADR-0014.
+
+
+## Accepted scoped authorization
+
+[ADR-0014](docs/architecture/adr/ADR-0014-scoped-rbac.md) selects explicit module-owned
+permissions in three fixed role bundles: site-scoped `analytics-reader` and
+`site-operator`, and organization-scoped `organization-access-admin`. Assignments
+combine only at the matching target; no role hierarchy, wildcard or automatic site
+inheritance exists. Active users and organization membership are prerequisites,
+not grants. Team Leader and Taskforce share the reader bundle.
+
+The access administrator may delegate the fixed roles within its organization,
+including explicit site access to itself, but has no implicit site data access,
+cross-organization authority or RLS bypass. Ordinary administration must preserve
+an active organization access admin. Removing membership revokes its assignments;
+rejoining does not restore them automatically.
+
+Users/RBAC evaluates current permission on each operation; receiving modules enforce
+resource scope and domain conditions. New job chunks/retries and result retrieval
+recheck access. A login token is not a permission snapshot. Already-authorized work
+may finish; access mutations must serialize authority checks with changes.
+
+IOP-006 is complete as design. The pilot uses a small fixed catalog and explicit
+assignments; no custom-role UI, policy engine or enterprise identity integration
+is required. Authentication/session implementation remains IOP-007. No runtime
+authorization or concurrency tests have run.

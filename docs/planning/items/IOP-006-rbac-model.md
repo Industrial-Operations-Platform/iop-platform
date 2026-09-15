@@ -2,9 +2,9 @@
 
 ## Status
 
-Blocked — evaluation complete; explicit owner acceptance of
-[ADR-0014](../../architecture/adr/ADR-0014-scoped-rbac.md) is pending.
-The proposed matrix is not yet part of the accepted architecture baseline.
+Completed — the owner explicitly accepted
+[ADR-0014](../../architecture/adr/ADR-0014-scoped-rbac.md).
+The matrix and architecture guidance are synchronized; implementation remains future work.
 
 ## Milestone
 
@@ -34,7 +34,7 @@ are already English and need no translation edits.
 
 Only the documentation baseline exists. ADR-0004 separates authentication from
 permission decisions; ADR-0012 establishes Organization/Site and ADR-0013 establishes
-persistence isolation. Detailed RBAC is not implemented or accepted.
+persistence isolation. The RBAC design is accepted under ADR-0014; no runtime implementation exists.
 The requested historical `active/IOP-002-backend-stack.md` is absent; use the
 permanent [backend review](IOP-002-backend-review.md) and Accepted ADR-0006.
 
@@ -53,11 +53,11 @@ implementation or building enterprise policy tooling.
 
 ## Acceptance criteria
 
-- [x] Proposed Role → Permission → Scope matrix documented.
+- [x] Accepted Role → Permission → Scope matrix documented.
 - [x] Plan/ADR cover options, failure scenarios and decisions without scope expansion.
 - [x] Evaluation and translation evidence recorded; proposal documentation synchronized.
-- [ ] Owner explicitly accepts the RBAC decision.
-- [ ] Accepted architecture guidance synchronized after acceptance.
+- [x] Owner explicitly accepts the RBAC decision.
+- [x] Accepted architecture guidance synchronized after acceptance.
 
 ## Domain considerations
 
@@ -118,16 +118,19 @@ in the generic core. No implementation of later modules or translation of later 
 
 Review consistency, relative links, IDs, statuses, English prose and design scenarios.
 Do not invent runnable tests or claim executed authorization/security evidence.
-See the [completed evaluation plan](../completed/IOP-006-rbac-evaluation-plan.md).
+See the [completed evaluation plan](../completed/IOP-006-rbac-evaluation-plan.md)
+and [acceptance plan](../completed/IOP-006-rbac-acceptance-plan.md).
 
 ## Documentation impact
 
-This item, its [backlog](../backlog.md) row, the proposal ADR and execution plan.
-After explicit acceptance, synchronize architecture, modules, data model, glossary
-and affected ADR references in a planned documentation increment.
+This item, its [backlog](../backlog.md) row, ADR-0014 and execution records are
+synchronized with architecture, modules, data model, glossary and affected ADR
+follow-up notes. Prior proposal evidence remains historical.
 
-## Open decision
+## Closure and implementation boundaries
 
-Accept or revise ADR-0014's fixed scoped roles, permission matrix and explicit
-organization-admin delegation authority. The proposal keeps basic pilot access
-separate from future identity integration; no new authentication choice is implied.
+The owner accepted the fixed scoped roles, permission matrix and explicit
+organization-admin delegation authority. Basic pilot access remains separate from
+future identity integration. No new authentication choice is implied. Schema,
+authorization enforcement, revocation/concurrency tests and bootstrap/recovery
+remain implementation work; no adjacent story is activated by this closure.

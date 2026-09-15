@@ -10,7 +10,7 @@ Module ownership is defined in [modules](modules.md).
 | Area | Concepts and relationships |
 | --- | --- |
 | Core | Organization owns zero or more Sites and scoped configuration; each Site belongs to exactly one Organization and has explicit time-zone context. |
-| Identity/access | Provider identity maps to a platform user; membership relates users to organizations/sites and scoped roles; membership alone grants no access. Workforce membership is separate from authentication. |
+| Identity/access | Provider identity maps to a platform user; membership relates users to organizations; role assignments target an organization or its site. Active membership alone grants no access. Workforce membership is separate from authentication. |
 | Workforce | Teams and users are assigned to shifts at sites; handovers reference shifts, authors and open issues. |
 | Assets | A site has assets with types, optional parent assets and separately typed relationships such as controller links. Physical location is independent of composition. |
 | Mapping | External references relate source identity and local scope to canonical assets; source codes alone are not global keys. |
@@ -95,7 +95,7 @@ subject to temporal and metric design.
 Scope must survive queries, jobs, audit, caches, files and derived views. Current
 authorization policy applies at job execution and result retrieval; stored context
 is not a permanent grant. Physical enforcement follows Accepted ADR-0013; detailed schema implementation
-remains future work, and membership/grant policy remains with IOP-006.
+remains future work, and membership/grant policy follows Accepted ADR-0014.
 
 
 ## Accepted storage requirements
@@ -114,3 +114,25 @@ remain scoped too. Derived views/projections and other access paths require thei
 own review before runtime grants. Verify pool reuse, rollback, concurrency and
 foreign-reference rejection against actual runtime credentials before claiming
 isolation; this document provides no DDL or executed security evidence.
+
+
+## Accepted membership and role assignments
+
+[ADR-0014](adr/ADR-0014-scoped-rbac.md) requires an active platform user and active
+organization membership, plus current role assignments at the exact operation
+scope. Assignments identify user, known role and organization; site-role assignments
+also identify a site owned by that organization. Validate role/scope compatibility.
+The pilot does not require a separate site-membership flag.
+
+Role definitions are controlled application configuration with explicit permission
+bundles. Memberships and assignments are organization-owned data; client/provider
+strings cannot define arbitrary permissions. No assignment inherits to another site
+or a newly created site. Removing membership revokes its assignments; restoration
+requires new explicit grants. Other organizations' memberships remain independent.
+
+An organization access administrator can delegate the fixed bundles within its own
+organization, including explicit site access to itself, without implicit access to
+site data. Ordinary access changes preserve at least one active access admin and
+serialize relevant authority checks with mutations. Global identity disablement
+still stops access and can require operator recovery. Detailed constraints, locking,
+bootstrap/recovery and RLS lookup policies need implementation verification.

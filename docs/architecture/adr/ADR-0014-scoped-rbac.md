@@ -2,8 +2,9 @@
 
 ## Status
 
-Proposed. Prepared under [IOP-006](../../planning/items/IOP-006-rbac-model.md).
-Owner acceptance is pending; the accepted authorization baseline is unchanged.
+Accepted — explicitly approved by the owner following the proposal review. Prepared under [IOP-006](../../planning/items/IOP-006-rbac-model.md).
+The accepted authorization baseline is synchronized under the
+[acceptance plan](../../planning/completed/IOP-006-rbac-acceptance-plan.md).
 
 ## Context
 
@@ -44,7 +45,7 @@ choose IOP policy or cover non-HTTP execution. See
 [Nest authorization](https://docs.nestjs.com/security/authorization).
 No authorization library or policy service is selected.
 
-## Proposed decision
+## Decision
 
 ### Permission and assignment contract
 
@@ -79,7 +80,7 @@ must validate the full explicit site set under ADR-0012 before executing it.
 
 ### Pilot Role → Permission → Scope matrix
 
-These identifiers are proposed semantic contract names, not implemented schemas.
+These identifiers are accepted semantic contract names, not implemented schemas.
 Each permission has one scope kind; `manage` is bounded by its described operation,
 not permission to execute arbitrary actions. Permission additions require review.
 
@@ -96,7 +97,7 @@ when they need both responsibilities. `organization-access-admin` does not inclu
 site data access or site configuration. The scope type is part of each permission's
 contract, not something inferred from a null site field.
 
-| Confirmed pilot responsibility | Proposed assignments |
+| Confirmed pilot responsibility | Accepted assignments |
 | --- | --- |
 | Team Leader | `analytics-reader` for each explicitly authorized site. |
 | Taskforce investigator | The same `analytics-reader` bundle for each explicitly authorized site. No separate role solely because the job label differs. |
@@ -239,8 +240,8 @@ Access administration is powerful within one organization; its delegation behavi
 must be understood when assigning the role. This proposal deliberately avoids
 custom policies and their conflict rules for the pilot.
 
-On explicit owner acceptance, synchronize ARCHITECTURE.md, modules, data model,
-glossary and affected ADR follow-up notes under an active acceptance plan, then
-close IOP-006 as design. Until then this matrix remains Proposed. No implementation
-or adjacent story is activated. Official OWASP and Nest sources were consulted
-during this evaluation; their recommendations do not constitute owner acceptance.
+The owner explicitly accepted this matrix and its delegation rules. ARCHITECTURE.md,
+modules, data model, glossary and affected ADR follow-up notes are synchronized.
+IOP-006 is complete as design; no implementation or adjacent story is activated.
+Official OWASP and Nest sources informed the evaluation; acceptance came from the
+owner's explicit confirmation. Runtime authorization verification remains future work.
