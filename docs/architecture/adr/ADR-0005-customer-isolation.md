@@ -14,7 +14,7 @@ Keep the platform domain generic. Store customer names, site/location labels, as
 
 ## Consequences
 
-Reuse requires explicit configuration contracts and isolation checks. No fixed local hierarchy or globally unique external equipment code is assumed. Physical tenancy, database enforcement and deployment configuration storage remain open; this decision does not mandate shared-table SaaS. Future tests must cover cross-customer access attempts and reference validation.
+Reuse requires explicit configuration contracts and isolation checks. No fixed local hierarchy or globally unique external equipment code is assumed. Physical tenancy and enforcement are subsequently selected by Accepted [ADR-0013](ADR-0013-tenancy-data-isolation.md): shared tables, scoped constraints and RLS alongside application authorization. Deployment configuration storage and hosting remain open. Future tests must cover cross-customer access attempts and reference validation.
 
 ## Alternatives considered
 

@@ -71,3 +71,10 @@ the recommendation primarily because of confirmed maintainer experience; it does
 not pull deferred modules into v1. This decision does not authorize implementation.
 See the [current comparison](../../planning/items/IOP-002-backend-review.md) for
 sources and tradeoffs. Acceptance came from the owner's explicit decision, not from a commit or branch merge.
+
+## Subsequent tenancy decision
+
+Physical tenancy and database enforcement, left open when this record was accepted,
+are now selected by Accepted [ADR-0013](ADR-0013-tenancy-data-isolation.md). It adopts
+shared tables, scoped constraints and RLS alongside application authorization.
+This does not select RBAC grants, identity/session handling, ORM or hosting.

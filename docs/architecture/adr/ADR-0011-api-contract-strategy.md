@@ -215,3 +215,10 @@ exercise actual success/error responses with Supertest, check the generated
 consumer and verify cross-customer cases. Use the accepted testing stack from
 ADR-0010; exact commands and pinned-tool compatibility require bootstrap.
 Sources above were consulted on 2026-09-14. No runtime or performance checks ran.
+
+## Subsequent tenancy decision
+
+Physical tenancy and database enforcement, left open when this record was accepted,
+are now selected by Accepted [ADR-0013](ADR-0013-tenancy-data-isolation.md). It adopts
+shared tables, scoped constraints and RLS alongside application authorization.
+This does not select RBAC grants, identity/session handling, ORM or hosting.

@@ -2,9 +2,9 @@
 
 ## Status
 
-Blocked — proposal evaluation is complete; explicit owner acceptance of
-[ADR-0013](../../architecture/adr/ADR-0013-tenancy-data-isolation.md) is pending.
-The accepted architecture still leaves physical tenancy undecided.
+Completed — design accepted by the owner on 2026-09-15 under
+[ADR-0013](../../architecture/adr/ADR-0013-tenancy-data-isolation.md).
+Baseline documentation is synchronized; runtime implementation remains future work.
 
 ## Milestone
 
@@ -20,16 +20,16 @@ providers separate.
 
 Only documentation and placeholders exist. Accepted ADR-0012 establishes
 Organization as the customer boundary and Site as its operational scope. PostgreSQL
-and NestJS are accepted; physical layout and enforcement are not yet accepted.
+and NestJS are accepted; ADR-0013 now selects shared-table layout and enforcement.
 The requested historical `active/IOP-002-backend-stack.md` path is absent; the
 permanent [backend review](IOP-002-backend-review.md) and ADR-0006 hold current context.
 
 The original task contained no enumerated alternatives. The requested evaluation
 covers shared tables, schemas per organization, databases per organization,
 dedicated deployments and hybrid routing, plus application-only versus combined
-database enforcement. ADR-0013 recommends shared tables with explicit scope,
+database enforcement. ADR-0013 selects shared tables with explicit scope,
 scoped constraints and RLS for the current solo-maintainer analytics v1.
-This is a recommendation, not inferred owner acceptance.
+The owner explicitly accepted the recommendation on 2026-09-15.
 
 ## Desired state and requirements
 
@@ -41,10 +41,10 @@ This is a recommendation, not inferred owner acceptance.
 
 ## Acceptance criteria
 
-- [ ] Organization/site data isolation design explicitly accepted by the owner.
+- [x] Organization/site data isolation design explicitly accepted by the owner.
 - [x] Options, recommendation, scenarios and decision boundaries documented.
 - [x] Proposal documentation checked and evidence recorded.
-- [ ] Accepted architecture, module guidance, data model and glossary synchronized.
+- [x] Accepted architecture, module guidance, data model and glossary synchronized.
 
 ## Architecture constraints and dependencies
 
@@ -80,12 +80,12 @@ providers, RBAC grant definitions, hosting or adjacent product capabilities.
 The [completed proposal plan](../completed/IOP-005-tenancy-evaluation-plan.md)
 records official-source review, design walkthroughs, links, IDs, status consistency
 and whitespace checks. No runtime isolation or performance tests ran; no runner
-exists. Acceptance-dependent documentation updates remain outstanding.
+exists. The [acceptance plan](../completed/IOP-005-tenancy-acceptance-plan.md)
+records the completed baseline synchronization and its validation.
 
-## Documentation impact and next decision
+## Documentation impact and remaining implementation
 
-Proposal updates this context, backlog, ADR-0013 and its execution record.
-If the owner accepts ADR-0013, update an active acceptance plan before synchronizing
-ARCHITECTURE.md, modules, data model, glossary and affected ADR references; then
-close the item with evidence. Do not mark it complete merely because the proposal
-was committed. The owner may instead select an alternative or request revisions.
+ADR-0013, ARCHITECTURE.md, modules, data model, glossary and affected ADR references
+reflect acceptance. Item and backlog are complete as design. Future implementation
+must verify the ADR scenarios with real policies, schema and runtime credentials.
+No application, migration, deployment or adjacent story is authorized by closure.

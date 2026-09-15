@@ -6,7 +6,7 @@
 | OIP | Historical Operational Insights Platform; now the Operational Intelligence module within IOP. |
 | Organization | Canonical customer data/configuration boundary with stable opaque identity; owns zero or more Sites under ADR-0012. |
 | Customer | Business vocabulary for an Organization, not a separate domain entity. |
-| Tenant | Isolation/deployment vocabulary; physical tenancy is undecided and does not add another ownership hierarchy. |
+| Tenant | Isolation/deployment vocabulary; maps to Organization in the shared-table layout accepted by ADR-0013, without adding another ownership hierarchy. |
 | Site | Operational scope with stable opaque identity, exactly one owning Organization, configurable name and explicit time-zone context. |
 | Location | Configurable physical subdivision of a site; local names are data, not additional authorization scopes. |
 | Asset | Canonically identified equipment or component, validated independently of imported message text. |
@@ -37,3 +37,5 @@ aggregates. Neither their names nor their hierarchy depths are core requirements
 WinCC is an example integration source, not a platform domain dependency.
 
 Organization/Site semantics are accepted in [ADR-0012](../architecture/adr/ADR-0012-organization-site-scope.md).
+
+Tenancy and persistence isolation are accepted in [ADR-0013](../architecture/adr/ADR-0013-tenancy-data-isolation.md).

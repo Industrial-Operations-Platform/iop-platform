@@ -2,8 +2,8 @@
 
 ## Status
 
-Proposed — 2026-09-15. Prepared for [IOP-005](../../planning/items/IOP-005-tenancy-and-data-isolation.md).
-Owner acceptance is pending. This proposal does not change the accepted baseline.
+Accepted — explicitly approved by the owner on 2026-09-15. Prepared for [IOP-005](../../planning/items/IOP-005-tenancy-and-data-isolation.md).
+Acceptance is reflected in the architecture baseline and the completed IOP-005 item.
 
 ## Context
 
@@ -43,7 +43,7 @@ boundary. See [PostgreSQL schemas](https://www.postgresql.org/docs/18/ddl-schema
 | RLS only | Cannot establish business permission or protect files/caches; reject as the sole defense. |
 | Application checks + scoped constraints + RLS | Recommend: business authorization, reference integrity and row filtering address different failures. Requires verification against the actual runtime role and transaction mechanism. |
 
-## Proposed decision
+## Decision
 
 ### Storage and reference integrity
 
@@ -196,11 +196,11 @@ not proof of runtime isolation.
 
 ## Acceptance boundary and sources
 
-On explicit owner acceptance, synchronize architecture, modules, data model,
-glossary and IOP-005 status in a planned documentation increment. Until then,
-physical tenancy remains undecided in the accepted baseline. No other story is
-activated. ORM/migrations, RBAC, identity, HTTP scope transport and deployment are
-not selected by this proposal.
+The owner explicitly accepted this decision. Architecture, modules, data model,
+glossary and IOP-005 status are synchronized under the
+[acceptance plan](../../planning/completed/IOP-005-tenancy-acceptance-plan.md).
+IOP-005 is complete as design. No other story is activated. ORM/migrations, RBAC,
+identity, HTTP scope transport and deployment remain separate decisions.
 
 Official PostgreSQL 18 documentation linked above was consulted on 2026-09-15.
 The documentation version is a reference, not selection of IOP's database version.
