@@ -145,3 +145,17 @@ IOP-008 is complete as design; no adjacent implementation is activated.
   not prevent accepting a generic model that represents unresolved source periods.
 - Bootstrap must verify the chosen runtime/driver's parsing, millisecond round trips
   and time-zone-data provenance. Fine precision needs a reviewed contract change.
+
+
+## Owner clarification: CSV reporting date
+
+The owner manually dates the filename and requires the pilot to reject dates that
+already have imported data for the same configured source and organization/site.
+A second check against a date selected at upload is a suggested option; if adopted,
+values must agree before admission. No automatic overwrite or replacement is implied.
+See the [source evidence](../../product/csv-and-reporting-reference.md#confirmed-pilot-reporting-date-input-and-duplicate-rejection)
+and [clarification plan](../completed/IOP-008-csv-date-clarification-plan.md).
+
+This confirms date-entry and duplicate-rejection intent, not exact reporting hours
+or time zone. ADR-0016 remains Accepted and IOP-008 remains Completed as design;
+import concurrency, retries and UI contracts remain future ingestion work.

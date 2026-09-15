@@ -153,6 +153,38 @@ for one developer. Data volume, response targets, accessibility, licensing and
 export needs must be evaluated before choosing tools. A 3D renderer is not a v1
 requirement. The backend remains TypeScript + NestJS; no supplied evidence changes it.
 
+## Confirmed pilot reporting-date input and duplicate rejection
+
+In the IOP-008 follow-up, the owner confirmed manually writing the reporting date
+into the CSV filename. The date identifies the reported data, not upload time.
+For the current file-based pilot, reject an import if that reporting date already
+has imported data for the same configured source and organization/site. Do not
+append, overwrite or replace those facts automatically. Renaming another file to
+an already loaded date must not bypass the check. Existing scope boundaries mean
+another site's/source's date is not a global duplicate.
+
+The owner also suggested a second check through an independently selected date.
+This is an optional upload-flow design for later work, not an implemented or
+mandatory date-selector UI. If adopted, parse a valid calendar date from the
+configured filename format and compare it with the selected date before admission:
+matching dates continue to duplicate validation; missing/invalid required values
+or mismatched dates stop admission with a clear correction request. Neither value
+silently overrides the other. Agreement catches inconsistent entry, but does not
+prove that the operator chose the correct reporting date.
+
+The duplicate rule is confirmed product intent. Concurrency-safe enforcement,
+failed/partial-import retry handling and explicit correction/replacement semantics
+belong to [IOP-047](../planning/items/IOP-047-import-idempotency.md) and import
+contracts; this note does not activate those stories or copy the legacy check/insert
+implementation. Future simultaneous submissions for one source/site/date must not
+both admit duplicate facts; filename/selector validation alone cannot ensure that.
+
+This clarification does not establish reporting start/end hours, source zone or
+individual event times. Preserve the filename date as a local reporting label under
+[ADR-0016](../architecture/adr/ADR-0016-time-and-timezone-model.md). The exact-window
+question below remains open. See the
+[clarification plan](../planning/completed/IOP-008-csv-date-clarification-plan.md).
+
 ## Open validation points
 
 1. What reporting window does the filename date represent, and in which timezone?
