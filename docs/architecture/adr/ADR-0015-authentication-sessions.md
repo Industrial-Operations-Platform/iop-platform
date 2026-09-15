@@ -3,11 +3,18 @@
 ## Status
 
 Proposed — 2026-09-15. Prepared for [IOP-007](../../planning/items/IOP-007-authentication-model.md).
-Owner acceptance is pending; this does not change the accepted architecture.
+The owner explicitly selected basic local login and a replaceable provider boundary
+for an independent prototype. The session details below remain Proposed; this is
+not acceptance of the earlier full credential-lifecycle proposal.
 
 ## Context
 
-The pilot requires individual login for a same-origin React/NestJS application,
+The owner is building an independent working prototype and currently has no access
+to the company Azure/Entra tenant. Authentication should provide a basic working
+login while preserving a future third-party integration boundary. Building an
+identity-management product is not a prototype objective.
+
+The prototype requires individual login for a same-origin React/NestJS application,
 with PostgreSQL and one maintainer. Entra is a future integration. ADR-0004 requires
 provider-independent identity; ADR-0014 requires current scoped authorization on
 every operation. Neither decision selects credentials or sessions. The seed task
@@ -20,7 +27,7 @@ These are project fit judgments, not measured cost or security results.
 
 | Identity option | Benefit | Cost / limitation | Assessment |
 | --- | --- | --- | --- |
-| Local username/password adapter | Independent pilot setup; no corporate tenant or additional identity service required. | IOP owns credential protection, provisioning, recovery and abuse controls. | Recommend for the bounded pilot. |
+| Local username/password adapter | Independent pilot setup; no corporate tenant or additional identity service required. | IOP retains basic credential/session protection; prototype accounts are created manually. | Owner-selected direction for the prototype; detailed session mechanism remains proposed. |
 | Separate OIDC provider for pilot accounts | Moves credential lifecycle to a dedicated identity system; can later federate. | Adds provider selection, configuration, availability and operating responsibilities. | Reconsider if managed identity is available or MFA/self-service is required now. |
 | Entra from the start | Corporate sign-in and provider-managed authentication policy. | Requires tenant access, registration and corporate onboarding; these prerequisites are not established. | Define the future contract; defer implementation. |
 | Shared login or bypass | Minimal demonstration setup. | Loses individual attribution and cannot establish the accepted user/RBAC boundary. | Reject. |
@@ -41,12 +48,24 @@ membership and assignments. Domain modules receive a trusted principal with `use
 and authentication context; they receive no password, provider token or provider
 role as a grant. Only the authentication boundary can construct that context.
 
-An adapter verifies proof and supplies a namespaced identity: configured provider
-instance, verified issuer and stable subject. A unique binding maps that identity
-to one platform user. Local subjects are immutable opaque account IDs; usernames
-are lookup labels. Multiple explicitly linked identities may map to one user.
-Email/name equality never creates a binding. Unknown, ambiguous, disabled or
-unlinked identities cannot obtain a business session.
+The minimal flow is:
+
+`login UI → Authentication → local adapter → platform user → IOP session`
+
+The UI submits credentials only to Authentication. The local adapter verifies them
+and returns its stable, namespaced subject; Authentication resolves that subject
+to a platform `userId`. Session resolution supplies that principal to Users/RBAC.
+Domain modules never import an authentication provider or receive credentials.
+The browser needs only sign-in, current-session lookup and sign-out behavior.
+
+For the prototype, each manually created account has one local identity mapping.
+Keep provider identity distinct from platform user identity, so a future Entra
+adapter can authenticate and resolve the same user without rewriting business
+modules or role assignments. Do not build a provider registry, simultaneous login
+methods, account-linking UI or generic federation framework now. Third-party
+integration will need its own redirect/callback flow; replaceability does not mean
+all providers implement a username/password interface. Email equality never proves
+that two identities belong to the same person.
 
 Identity bindings, local credentials and sessions are explicitly platform-global
 security data, accessible through narrow Authentication/Users contracts. They are
@@ -64,23 +83,20 @@ procedure with actor, reason and target evidence, separate from organization
 `access.manage`. Bind the initial user and grant each organization/site role
 explicitly; identity creation alone grants nothing.
 
-Use a maintained password-hashing library with Argon2id and unique salts. Select
-and benchmark parameters in implementation against current guidance; do not build
-cryptography. Adopt a minimum 15-character password for this single-factor pilot,
-support at least 64 characters, allow password managers/paste, reject common or
-compromised passwords, and avoid arbitrary composition rules or periodic rotation.
-Never log passwords or store plaintext/reversible credentials. See
+Use a maintained password-hashing library; Argon2id remains the proposed choice.
+Do not store plaintext passwords, commit account secrets or build cryptography.
+Use generic login failures and basic login throttling. Library settings and
+password-input limits belong to the IOP-028 implementation review. See
 [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 and [authentication guidance](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html).
 
-Unknown-user, disabled-user and wrong-password login failures use a generic public
-response and comparable verification work. Apply bounded per-account and source
-throttling, with deployment-wide consistency; specify thresholds in IOP-028.
-Recovery uses verified operator assistance and a short-lived, single-use secret
-with restricted password-setup authority, delivered outside repository/logs. No
-normal business session is issued until setup completes. Password reset/change
-revokes existing sessions. Define secure delivery, expiry and atomic consumption
-before implementation; no recovery UI or email service is selected here.
+Create the small set of prototype accounts through a local operator command or
+seed procedure with externally supplied credentials and explicit role assignments.
+No registration, invitation, password-reset token, email delivery, account-management
+UI, MFA or compromised-password service is a prototype prerequisite. If credentials
+need replacement, a restricted operator procedure can replace the hash and revoke
+that user's sessions. This is not an organization administrator's global privilege.
+A user-facing recovery lifecycle belongs to a later identity integration/design.
 
 ### Session contract and lifecycle
 
@@ -121,7 +137,7 @@ control, not the sole defense. GET must not mutate business state. Validate uplo
 as unsafe operations too. OIDC callbacks use the separate correlated protocol
 state described below. See [OWASP CSRF guidance](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
 
-Login, current-session lookup, logout and password setup are semantic contracts,
+Login, current-session lookup and logout are semantic contracts,
 not selected endpoint paths. Business APIs retain ADR-0011 errors: invalid sessions
 return 401, valid but disallowed operations 403 or scoped 404, throttling 429;
 infrastructure failure returns a safe service error and never grants access.
@@ -130,6 +146,11 @@ Session responses expose only necessary user/display and expiry information, wit
 or expiry. Exact DTOs, authentication challenge and error types belong to IOP-028.
 
 ### Future Entra adapter contract
+
+This section describes the future integration boundary, not prototype work or a
+requirement to obtain corporate access now. IOP-106 must review these details
+against the actual tenant and provider configuration when access becomes available.
+No Entra SDK, app registration, callback endpoint or test tenant is needed now.
 
 Use server-mediated OIDC authorization code flow with PKCE S256 and a maintained
 library. Correlate a short-lived, single-use login transaction with the initiating
@@ -162,6 +183,8 @@ password login for a federated-only account after provider failure.
 ## Design walkthroughs and future tests
 
 These are expected outcomes reviewed on paper, not executed security tests.
+Provider email, callback and Entra-outage cases belong to future IOP-106 validation;
+they are not prototype acceptance gates.
 
 | Scenario | Expected result |
 | --- | --- |
@@ -181,19 +204,24 @@ These are expected outcomes reviewed on paper, not executed security tests.
 | Worker starts after actor loses access | Recheck current actor/action/scope; never copy browser credentials into jobs. |
 
 Verify these with Jest, Supertest, Playwright and PostgreSQL integration tests in
-implementation, including cookie/proxy behavior, fixation, reset replay and races.
+implementation, including cookie/proxy behavior, fixation, logout replay and races.
+Verify provider-specific cases only when the corresponding adapter is implemented.
 Background service identities and durable job execution remain IOP-010 contracts;
 a browser session is not a machine credential.
 
 ## Consequences and acceptance boundary
 
-This keeps pilot setup small and preserves future federation, while taking on
-real password/recovery/session responsibilities. It does not provide MFA, corporate
+The prototype scope is basic login/logout, current-user resolution, manually
+created accounts and a replaceable identity boundary. Essential password/session
+protection and accepted scoped permissions remain required. Enterprise account
+lifecycle, self-service recovery and multi-provider linking are deferred. It does not provide MFA, corporate
 lifecycle synchronization or proof of production readiness. Reconsider a dedicated
 provider if those become immediate requirements. Libraries, schema, hashing costs,
 throttle thresholds and deployment configuration remain implementation choices.
 
-On explicit acceptance, synchronize ARCHITECTURE.md, modules, data model, glossary
+The owner clarification selects the prototype direction, not every technical
+choice in this proposal. PostgreSQL session persistence, cookie policy and timeout
+defaults remain recommendations for review. On explicit acceptance, synchronize ARCHITECTURE.md, modules, data model, glossary
 and ADR-0004 follow-up notes and close IOP-007 as design. IOP-028 and IOP-106 remain
 separately authorized implementation work. Official sources above were consulted
 on 2026-09-15; the recommendation and timeout defaults are IOP design judgments.

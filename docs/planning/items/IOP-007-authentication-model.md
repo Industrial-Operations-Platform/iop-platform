@@ -2,7 +2,8 @@
 
 ## Status
 
-In progress — evaluation complete; ADR-0015 awaits explicit owner acceptance.
+In progress — basic prototype login and provider independence confirmed; revised
+ADR-0015 session details remain Proposed.
 
 ## Milestone
 
@@ -10,15 +11,16 @@ M1 — Product & Architecture Definition. Documentation/design only.
 
 ## Goal and business value
 
-Document the authentication/session model, explicitly evaluate local POC login,
-and define a future Entra ID contract. Provide a reviewable decision before
-implementation of a reusable platform.
+Define a basic working login for the owner's independent prototype and retain a
+replaceable authentication boundary for future corporate Azure/Entra integration.
+Corporate tenant access is currently unavailable. Prioritize the functional
+prototype; an identity-management product is not required.
 
 ## Context and current state
 
 The repository contains documentation only. Individual login, the TypeScript/NestJS
-backend and scoped RBAC are accepted. Identity provider, credentials and sessions
-are not yet selected. See [modules](../../architecture/modules.md), the
+backend and scoped RBAC are accepted. The owner selected basic local login as the prototype direction. Detailed session
+mechanisms remain proposed; no authentication implementation exists. See [modules](../../architecture/modules.md), the
 [backend review](IOP-002-backend-review.md) and [workflow](../workflow.md).
 The obsolete active backend-stack document is now preserved as
 [backend evaluation](IOP-002-backend-evaluation.md).
@@ -27,27 +29,31 @@ The obsolete active backend-stack document is now preserved as
 
 - Deliver only IOP-007's authentication/session design and decision.
 - Keep identity, permissions, organization/site scope and provider concerns separate.
-- Evaluate local credentials against an OIDC provider and early Entra integration;
-  local POC login is not an already-approved exception to ADR-0004.
-- Define identity mapping, provisioning/recovery, disabled-user behavior, session
-  expiry/revocation and the future provider boundary.
+- Use basic local login behind ADR-0004's provider boundary for the prototype;
+  corporate provider access must not block it.
+- Require login/logout, current-user resolution, manually provisioned accounts,
+  password hashing, session validation and existing scoped permission checks.
+- Preserve a local subject-to-platform-user mapping and a future provider boundary.
+  Defer registration, recovery-token/email flows, MFA and account-linking UI.
 - Update the accepted architecture only after explicit decision acceptance.
 
 ## Evaluation result
 
 [Proposed ADR-0015](../../architecture/adr/ADR-0015-authentication-sessions.md)
-recommends an explicitly enabled local password adapter for the pilot, opaque
+records the owner-selected local prototype adapter and recommends opaque
 server-side sessions in PostgreSQL and a future server-mediated Entra OIDC adapter.
 The ADR compares identity and session alternatives, records tradeoffs and negative
 scenarios, and keeps platform permissions outside provider tokens. This is a
-recommendation, not an accepted design or implemented security guarantee.
+partially owner-confirmed direction with proposed session details, not an
+implemented security guarantee.
 
 ## Acceptance criteria
 
 - [x] Authentication/session model and local/Entra alternatives documented.
 - [x] Evaluation plan records scenarios, dependencies and validation within scope.
 - [x] Proposal, item/backlog and completed evaluation evidence are synchronized.
-- [ ] Owner explicitly accepts or revises ADR-0015.
+- [x] Owner clarifies basic prototype login and future third-party direction.
+- [ ] Remaining ADR-0015 technical choices are explicitly accepted or revised.
 - [ ] Accepted architecture documentation is synchronized after acceptance.
 
 ## Domain and architecture constraints
@@ -93,9 +99,13 @@ for link, status, whitespace and scenario-review evidence. No runtime tests exis
 The permanent item and [backlog](../backlog.md) remain In progress pending the
 owner's decision. Baseline synchronization requires a subsequent acceptance slice.
 
-## Open decision
+## Owner clarification and remaining decision
 
-Accept or revise ADR-0015, including local pilot credentials, operator-assisted
-recovery, server sessions with proposed 30-minute idle/8-hour absolute limits,
-and the future Entra contract. Acceptance has not been inferred from branch merges
-or remote synchronization.
+The owner wants a working independent prototype with basic login as a temporary
+adapter; the preferred later provider is the company's Azure/Entra system, currently
+unavailable. This selects the local-first direction and defers enterprise identity
+features. See the [scope revision plan](../completed/IOP-007-prototype-scope-plan.md).
+
+The revised ADR retains proposed server-side cookie sessions, PostgreSQL persistence
+and 30-minute idle/8-hour absolute limits. These details are not inferred to be
+accepted from the scope clarification. Implementation remains separately scoped.
