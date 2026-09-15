@@ -1,8 +1,16 @@
-# IOP-129 — End-to-end scenario
+# IOP-129 — POC end-to-end demonstration
 
 ## Status
 
 Proposed
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M17 — v1 Validation & Release. Proposed delivery slice.
 
 ## Goal
 
-End-to-end scenario. Resultado esperado: Workflow completo funciona
+Demonstrate the local CSV-to-presentation POC.
 
 ## User / business value
 
@@ -28,18 +36,22 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Workflow completo funciona
+Demonstrate the local CSV-to-presentation POC.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-129.
-- Verificar el alcance de v1 acordado, no exigir todas las ideas futuras del backlog.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Import a known fixture, inspect errors/duplicates, verify overview/detail filters and
+  totals, and present from IOP. Login, memberships UI, surveys, maps, shifts and
+  maintenance are not gates. Validate the accepted local context mechanism separately
+  before runtime access; completion is POC evidence, not shared-use release acceptance.
 
 ## Acceptance criteria
 
-- [ ] Workflow completo funciona
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Demonstrate the local CSV-to-presentation POC.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +86,11 @@ Validar el workflow acordado y documentación por persona; registrar limitacione
 
 ## Dependencies
 
-[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md), [IOP-028](IOP-028-local-authentication.md), [IOP-030](IOP-030-membership-model.md), [IOP-040](IOP-040-asset-search.md), [IOP-048](IOP-048-data-reconciliation.md), [IOP-067](IOP-067-previous-shift-overview.md), [IOP-075](IOP-075-maintenance-history.md), [IOP-083](IOP-083-unmapped-assets.md), [IOP-088](IOP-088-asset-detail-page.md), [IOP-096](IOP-096-analytics-drilldown.md), [IOP-128](IOP-128-demo-reset.md)
+[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md), [IOP-048](IOP-048-data-reconciliation.md), [IOP-096](IOP-096-analytics-drilldown.md), [IOP-103](IOP-103-csv-integration.md), [IOP-128](IOP-128-demo-reset.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M3 — Platform Core. Proposed delivery slice.
 
 ## Goal
 
-User/site membership. Resultado esperado: Usuario puede pertenecer a scopes concretos
+Retain membership lifecycle and administration for later shared use.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Usuario puede pertenecer a scopes concretos
+Retain membership lifecycle and administration for later shared use.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-030.
-- Organization representa el customer/tenant genérico; identidad, membership y permisos tienen responsabilidades distintas.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Interactive membership/grant administration is deferred. If ADR-0018 is accepted, only
+  the explicit seeded membership and fixed grants needed by local operations are a POC
+  slice. This does not require lifecycle UI or delegation workflows.
 
 ## Acceptance criteria
 
-- [ ] Usuario puede pertenecer a scopes concretos
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Retain membership lifecycle and administration for later shared use.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,10 @@ Mostrar solo scopes permitidos y errores de acceso claros; ocultar controles no 
 
 ## Dependencies
 
-[IOP-027](IOP-027-user-model.md), [IOP-026](IOP-026-site-model.md), [IOP-029](IOP-029-rbac-enforcement.md)
+[IOP-027](IOP-027-user-model.md), [IOP-026](IOP-026-site-model.md), [IOP-029](IOP-029-rbac-enforcement.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+These are future parent dependencies, not POC gates. Any minimal local seed slice
+uses an accepted execution-context contract rather than requiring the full parent.
 
 ## Non-goals
 

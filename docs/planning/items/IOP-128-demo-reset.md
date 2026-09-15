@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M16 — Demo / Pilot Dataset. Proposed delivery slice.
 
 ## Goal
 
-Demo reset. Resultado esperado: Demo reproducible
+Recreate only the dedicated analytical demo dataset.
 
 ## User / business value
 
@@ -28,19 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Demo reproducible
+Recreate only the dedicated analytical demo dataset.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-128.
-- Usar organizaciones, nombres, activos y relaciones ficticios; las fixtures no definen niveles rígidos del dominio.
-- Definir una barrera verificable de entorno demo antes de ejecutar reset; nunca borrar datos fuera del scope autorizado.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Reset only a verified demo environment and explicit scoped dataset. Include a refusal
+  check outside that target. No workforce, maintenance or physical asset fixtures are
+  prerequisites.
 
 ## Acceptance criteria
 
-- [ ] Demo reproducible
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Recreate only the dedicated analytical demo dataset.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -75,10 +85,11 @@ El usuario debe distinguir demo y datos reales; el alcance no incluye diseñar n
 
 ## Dependencies
 
-[IOP-123](IOP-123-demo-organization.md), [IOP-124](IOP-124-demo-assets.md), [IOP-125](IOP-125-demo-events.md), [IOP-126](IOP-126-demo-workforce.md), [IOP-127](IOP-127-demo-maintenance.md)
+[IOP-123](IOP-123-demo-organization.md), [IOP-125](IOP-125-demo-events.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

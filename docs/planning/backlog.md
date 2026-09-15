@@ -1,26 +1,26 @@
 # IOP backlog index
 
-Este archivo indica **qué trabajo existe**; cada enlace abre su contexto permanente.
-Los criterios y dependencias viven en `items/`, los pasos actuales en `active/` y
-la evidencia de ejecución terminada en `completed/`. Ver [workflow](workflow.md).
+This index records existing work; permanent contexts own scope and status.
+Execution plans live in `active/`, and completed evidence in `completed/`.
+See the [workflow](workflow.md).
 
-Status: IOP-001 Completed (personas, analytical workflow and acceptance baseline agreed;
-export and numerical performance targets explicitly deferred);
-IOP-002 Completed (stack accepted under ADR-0006/0009/0010, including Jest for
-frontend/backend; runnable commands await bootstrap). IOP-139 Completed
-(planning migration). IOP-140 Completed (English project-language rule).
-All other tasks are Proposed; no application implementation exists.
-The owner has narrowed v1 to CSV → preparation → analysis → presentation.
-Asset Locator, maps and plant surveys are deferred, not v1 prerequisites. The broader
-inventory includes future platform work, not v1 commitments. Use the current
-[v1 scope](../product/scope-v1.md) before activating any item.
-El alcance final de v1 se valida con IOP-001; este inventario no promete las 138
-entregas en v1 ni autoriza ejecución automática. Hitos son agrupaciones, no waterfall.
+## Immediate target: analytical POC
 
-La numeración ampliada sustituye la baseline inicial de 15 tareas:
-[tabla de equivalencias e historial](legacy-backlog-map.md). No reutilizar IDs a
-partir de esta migración. IOP-017 es frontend; IOP-032 es asset hierarchy;
-IOP-040 es asset search; la release es IOP-138.
+The owner approved a local single-operator CSV → analysis → presentation POC,
+with login and external connections deferred. Follow [POC scope](../product/scope-poc.md)
+and the [complete delivery map](poc-delivery.md) before activating a story.
+Only relevant slices are prerequisites; M1–M17 are a future capability inventory.
+The proposed local execution mechanism does not implicitly waive accepted RLS/RBAC.
+
+IOP-001–006 and IOP-008 are Completed as design on this branch. No application
+implementation exists. IOP-007, IOP-010, IOP-028 and IOP-031 are Deferred beyond
+the POC. Other Proposed implementation stories are selected only through their
+POC slices or remain future work as mapped. Completed governance work is listed
+below. The IOP-009 future audit acceptance remains on its separate review branch;
+this change does not merge it or change that acceptance history.
+
+The [legacy map](legacy-backlog-map.md) preserves the original task numbering.
+IDs are never reused. Completing a POC slice does not close unfinished parent work.
 
 ## M1 — Product & Architecture Definition
 
@@ -32,14 +32,14 @@ IOP-040 es asset search; la release es IOP-138.
 | [IOP-004 — Design Organization/Site scope](items/IOP-004-platform-scope-model.md) | Completed |
 | [IOP-005 — Design tenancy and data isolation](items/IOP-005-tenancy-and-data-isolation.md) | Completed |
 | [IOP-006 — Design the RBAC model](items/IOP-006-rbac-model.md) | Completed |
-| [IOP-007 — Diseñar autenticación](items/IOP-007-authentication-model.md) | Proposed |
+| [IOP-007 — Design authentication for later shared use](items/IOP-007-authentication-model.md) | Deferred |
 | [IOP-008 — Define the time and time-zone model](items/IOP-008-time-and-timezone-model.md) | Completed |
-| [IOP-009 — Diseñar audit trail](items/IOP-009-audit-model.md) | Proposed |
-| [IOP-010 — Diseñar background jobs](items/IOP-010-background-job-model.md) | Proposed |
-| [IOP-011 — Definir file/map storage](items/IOP-011-file-storage-model.md) | Proposed |
-| [IOP-012 — Definir source integration contract](items/IOP-012-source-integration-contract.md) | Proposed |
-| [IOP-013 — Definir observability baseline](items/IOP-013-observability-baseline.md) | Proposed |
-| [IOP-014 — Definir security baseline](items/IOP-014-security-baseline.md) | Proposed |
+| [IOP-009 — Retain future audit design](items/IOP-009-audit-model.md) | Proposed |
+| [IOP-010 — Design background jobs for later delivery](items/IOP-010-background-job-model.md) | Deferred |
+| [IOP-011 — Define CSV preservation for the POC](items/IOP-011-file-storage-model.md) | Proposed |
+| [IOP-012 — Define the CSV source contract](items/IOP-012-source-integration-contract.md) | Proposed |
+| [IOP-013 — Define local health and diagnostic logging](items/IOP-013-observability-baseline.md) | Proposed |
+| [IOP-014 — Define the local POC security baseline](items/IOP-014-security-baseline.md) | Proposed |
 
 ## M2 — Development Platform Foundation
 
@@ -48,7 +48,7 @@ IOP-040 es asset search; la release es IOP-138.
 | [IOP-015 — Crear Docker development environment](items/IOP-015-local-development-environment.md) | Proposed |
 | [IOP-016 — Bootstrap backend](items/IOP-016-backend-bootstrap.md) | Proposed |
 | [IOP-017 — Bootstrap frontend](items/IOP-017-frontend-bootstrap.md) | Proposed |
-| [IOP-018 — Configuración y environments](items/IOP-018-configuration-management.md) | Proposed |
+| [IOP-018 — Local configuration and environments](items/IOP-018-configuration-management.md) | Proposed |
 | [IOP-019 — PostgreSQL + migrations](items/IOP-019-database-bootstrap.md) | Proposed |
 | [IOP-020 — Testing foundation](items/IOP-020-testing-foundation.md) | Proposed |
 | [IOP-021 — CI baseline](items/IOP-021-ci-baseline.md) | Proposed |
@@ -63,10 +63,10 @@ IOP-040 es asset search; la release es IOP-138.
 | [IOP-025 — Organization model](items/IOP-025-organization-model.md) | Proposed |
 | [IOP-026 — Site model](items/IOP-026-site-model.md) | Proposed |
 | [IOP-027 — User model](items/IOP-027-user-model.md) | Proposed |
-| [IOP-028 — Local authentication adapter](items/IOP-028-local-authentication.md) | Proposed |
+| [IOP-028 — Local authentication adapter](items/IOP-028-local-authentication.md) | Deferred |
 | [IOP-029 — Authorization/RBAC](items/IOP-029-rbac-enforcement.md) | Proposed |
 | [IOP-030 — User/site membership](items/IOP-030-membership-model.md) | Proposed |
-| [IOP-031 — Admin foundation](items/IOP-031-administration-foundation.md) | Proposed |
+| [IOP-031 — Admin foundation](items/IOP-031-administration-foundation.md) | Deferred |
 
 ## M4 — Asset Domain
 
@@ -166,12 +166,12 @@ IOP-040 es asset search; la release es IOP-138.
 | --- | --- |
 | [IOP-089 — Analytics query layer](items/IOP-089-analytics-query-layer.md) | Proposed |
 | [IOP-090 — Event frequency KPI](items/IOP-090-event-frequency.md) | Proposed |
-| [IOP-091 — Downtime KPI](items/IOP-091-downtime.md) | Proposed |
+| [IOP-091 — Accumulated alarm duration (POC)](items/IOP-091-downtime.md) | Proposed |
 | [IOP-092 — Trend analysis](items/IOP-092-event-trends.md) | Proposed |
 | [IOP-093 — Pareto analysis](items/IOP-093-pareto.md) | Proposed |
-| [IOP-094 — Asset analytics](items/IOP-094-asset-analytics.md) | Proposed |
+| [IOP-094 — Source equipment analytics (POC)](items/IOP-094-asset-analytics.md) | Proposed |
 | [IOP-095 — Area analytics](items/IOP-095-area-analytics.md) | Proposed |
-| [IOP-096 — Drill-down](items/IOP-096-analytics-drilldown.md) | Proposed |
+| [IOP-096 — Analytical drill-down](items/IOP-096-analytics-drilldown.md) | Proposed |
 | [IOP-097 — Date/filter model](items/IOP-097-analytics-filters.md) | Proposed |
 
 ## M12 — Improvement Tracking
@@ -188,7 +188,7 @@ IOP-040 es asset search; la release es IOP-138.
 | Contexto de tarea | Estado |
 | --- | --- |
 | [IOP-102 — Integration registry](items/IOP-102-integration-registry.md) | Proposed |
-| [IOP-103 — CSV integration](items/IOP-103-csv-integration.md) | Proposed |
+| [IOP-103 — Manual CSV delivery validation](items/IOP-103-csv-integration.md) | Proposed |
 | [IOP-104 — WinCC adapter contract](items/IOP-104-wincc-adapter.md) | Proposed |
 | [IOP-105 — Ultimo adapter contract](items/IOP-105-ultimo-adapter.md) | Proposed |
 | [IOP-106 — Entra identity adapter](items/IOP-106-entra-adapter.md) | Proposed |
@@ -225,7 +225,7 @@ IOP-040 es asset search; la release es IOP-138.
 | --- | --- |
 | [IOP-123 — Synthetic organization](items/IOP-123-demo-organization.md) | Proposed |
 | [IOP-124 — Synthetic asset structure](items/IOP-124-demo-assets.md) | Proposed |
-| [IOP-125 — Synthetic event history](items/IOP-125-demo-events.md) | Proposed |
+| [IOP-125 — Synthetic analytical CSV fixtures](items/IOP-125-demo-events.md) | Proposed |
 | [IOP-126 — Synthetic workforce](items/IOP-126-demo-workforce.md) | Proposed |
 | [IOP-127 — Synthetic maintenance](items/IOP-127-demo-maintenance.md) | Proposed |
 | [IOP-128 — Demo reset](items/IOP-128-demo-reset.md) | Proposed |
@@ -234,7 +234,7 @@ IOP-040 es asset search; la release es IOP-138.
 
 | Contexto de tarea | Estado |
 | --- | --- |
-| [IOP-129 — End-to-end scenario](items/IOP-129-end-to-end-scenario.md) | Proposed |
+| [IOP-129 — POC end-to-end demonstration](items/IOP-129-end-to-end-scenario.md) | Proposed |
 | [IOP-130 — Pilot metrics](items/IOP-130-pilot-metrics.md) | Proposed |
 | [IOP-131 — Permission validation](items/IOP-131-permission-validation.md) | Proposed |
 | [IOP-132 — Data reconciliation](items/IOP-132-final-reconciliation.md) | Proposed |
@@ -252,3 +252,4 @@ IOP-040 es asset search; la release es IOP-138.
 | [IOP-139 — Planning workflow](items/IOP-139-planning-workflow.md) | Completed |
 | [IOP-140 — English project language](items/IOP-140-english-project-language.md) | Completed |
 | [IOP-141 — Story branches and review workflow](items/IOP-141-branch-workflow.md) | Completed |
+| [IOP-142 — Align delivery with a fast analytical POC](items/IOP-142-poc-delivery-scope.md) | Completed |

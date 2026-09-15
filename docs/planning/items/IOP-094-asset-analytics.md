@@ -1,8 +1,16 @@
-# IOP-094 — Asset analytics
+# IOP-094 — Source equipment analytics (POC)
 
 ## Status
 
 Proposed
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M11 — OIP / Operational Intelligence. Proposed delivery slice.
 
 ## Goal
 
-Asset analytics. Resultado esperado: Métricas específicas del asset
+Analyze source equipment references without a physical asset registry.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Métricas específicas del asset
+Analyze source equipment references without a physical asset registry.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-094.
-- OIP es un módulo de IOP; métricas desacopladas de UI y de esquemas de WinCC.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Group the two measures by source-scoped equipment designation and retain contributing
+  messages. Do not create surveyed assets from text. IOP-044 becomes relevant only when
+  physical asset linkage is separately delivered.
 
 ## Acceptance criteria
 
-- [ ] Métricas específicas del asset
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Analyze source equipment references without a physical asset registry.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,11 @@ Mostrar definición y límites de la métrica; no presentar correlación como ca
 
 ## Dependencies
 
-[IOP-090](IOP-090-event-frequency.md), [IOP-091](IOP-091-downtime.md), [IOP-044](IOP-044-event-asset-mapping.md)
+[IOP-090](IOP-090-event-frequency.md), [IOP-091](IOP-091-downtime.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

@@ -1,40 +1,46 @@
 # IOP roadmap
 
-## Current v1 boundary
+## Immediate target: local analytical POC
 
-CSV events → preparation/normalization → analysis → presentation, with individual
-login and authorized views. Reproduce the useful behavior of the current local
-Power BI workflow. IOP-001 defines the accepted two-view frequency/duration baseline; detailed metric
-contracts, export and numerical performance targets remain delivery/validation work.
-No implementation or delivery date is committed.
+**Manual CSV → preparation/normalization → verified analysis → presentation.**
+The owner approved this priority on 2026-09-15 under IOP-142. Start with one local
+operator, one configured organization/site/source and no login or external connections.
+Preserve the accepted stack and domain boundaries. No delivery date is committed.
 
 ## Delivery direction
 
-1. IOP-001 persona responsibilities and report/acceptance baseline are complete.
-2. Resolve stack and essential API, scope, identity, ingestion and operational
-   decisions. IOP-002 stack selection is complete under Accepted ADR-0006/0009/0010,
-   including React/Vite, ECharts, Jest and local delivery tooling. Bootstrap and
-   the other architectural decisions remain separate work.
-3. Plan minimal vertical slices for authorized CSV import, reconciled analysis and
-   reporting. Use source-provided equipment/sector references without requiring a
-   fully surveyed physical asset registry.
-4. Validate the agreed outputs against the current workflow, including isolation,
-   data quality and operational requirements, before release.
-5. Evaluate meeting, shift and other operational functions after v1. Survey-backed
-   asset location, potentially in 3D, and direct source integration are future work
-   with separate prerequisites and undecided sequencing.
+1. Run the local frontend, API and PostgreSQL with reproducible migrations and configuration.
+2. Import a representative CSV with provenance, visible validation, configured source
+   mappings, scoped duplicate rejection and reconciled frequency/duration.
+3. Show Executive Overview with consistent filters and known reference totals.
+4. Add analytical detail through sector, area, source equipment and message records.
+5. Demonstrate import → analysis → presentation and safe reproducibility of the demo.
 
-Asset Locator, maps, sensor coordinates and a full plant survey are outside v1.
-M1–M17 remain a longer-term capability inventory, not a sequence of mandatory v1
-gates. Security, testing and UX belong in each selected slice, not only late milestones.
+Use the [delivery map](docs/planning/poc-delivery.md) for existing story slices.
+Make a small plan and branch for the selected story. Do not complete all architecture,
+platform or future-module stories before delivering useful analytics.
+
+## Decisions and later capabilities
+
+Reuse Accepted stack, API, scope, isolation and temporal decisions. The bounded local
+execution mechanism without login is Proposed in ADR-0018; dependent runtime access
+waits for an accepted mechanism. Independent bootstrap, parsing and UI work can proceed.
+Login deferral does not silently remove authorization or RLS.
+
+After demonstrating analytical value, deliver authentication and operational controls
+for shared use. External connections, full audit, workers, maps/surveys, workforce,
+handovers, maintenance and improvements require their own scope and evidence.
+Manual CSV ingestion does not require a general integration registry. Full surveyed
+assets are not prerequisites for source-equipment analytics. Additional charts and
+performance optimization follow demonstrated needs.
 
 ## Navigation
 
-- [Current scope](docs/product/scope-v1.md).
-- [Backlog index](docs/planning/backlog.md) and [contexts](docs/planning/items/).
-- [Milestones](docs/planning/milestones.md): broader capability groupings.
+- [Current POC scope](docs/product/scope-poc.md).
+- [Later shared-use v1](docs/product/scope-v1.md).
+- [Backlog](docs/planning/backlog.md), [delivery map](docs/planning/poc-delivery.md)
+  and [milestones](docs/planning/milestones.md).
 - [Workflow](docs/planning/workflow.md), [active plans](docs/planning/active/)
   and [completed plans](docs/planning/completed/).
 
-Do not start adjacent tasks automatically. Scope and sequence require explicit
-selection and recorded execution plans.
+No adjacent implementation, merge, push or deployment is authorized by this roadmap.

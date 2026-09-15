@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M3 — Platform Core. Proposed delivery slice.
 
 ## Goal
 
-Site model. Resultado esperado: Organization → Site funciona
+Persist one configured site with explicit organization ownership and time zone.
 
 ## User / business value
 
@@ -28,18 +36,21 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Organization → Site funciona
+Persist one configured site with explicit organization ownership and time zone.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-026.
-- Organization representa el customer/tenant genérico; identidad, membership y permisos tienen responsabilidades distintas.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Use the organization seed slice and validate the site relationship and IANA zone. Site
+  selectors and lifecycle administration are not required. Do not infer scope from
+  source labels or treat missing site as all sites.
 
 ## Acceptance criteria
 
-- [ ] Organization → Site funciona
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Persist one configured site with explicit organization ownership and time zone.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +85,11 @@ Mostrar solo scopes permitidos y errores de acceso claros; ocultar controles no 
 
 ## Dependencies
 
-[IOP-025](IOP-025-organization-model.md), [IOP-008](IOP-008-time-and-timezone-model.md)
+[IOP-025](IOP-025-organization-model.md), [IOP-008](IOP-008-time-and-timezone-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M5 — Industrial Data Foundation. Proposed delivery slice.
 
 ## Goal
 
-Import batch model. Resultado esperado: Cada import tiene status y trazabilidad
+Record a bounded direct import and its outcome.
 
 ## User / business value
 
@@ -28,18 +36,22 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Cada import tiene status y trazabilidad
+Record a bounded direct import and its outcome.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-042.
-- RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Track original input, configured scope, reporting date, status and accepted/rejected
+  counts. No worker/job dependency. Define atomic admission and failure/retry behavior
+  with the importer: a failed attempt must not silently publish partial analytical facts
+  or block a valid retry forever.
 
 ## Acceptance criteria
 
-- [ ] Cada import tiene status y trazabilidad
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Record a bounded direct import and its outcome.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +86,11 @@ Exponer estados, errores y resultados de importación solo si lo pide esta tarea
 
 ## Dependencies
 
-[IOP-041](IOP-041-raw-ingestion-model.md), [IOP-010](IOP-010-background-job-model.md)
+[IOP-041](IOP-041-raw-ingestion-model.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

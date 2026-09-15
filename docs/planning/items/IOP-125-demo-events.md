@@ -1,8 +1,16 @@
-# IOP-125 — Synthetic event history
+# IOP-125 — Synthetic analytical CSV fixtures
 
 ## Status
 
 Proposed
+
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
 
 ## Milestone
 
@@ -10,7 +18,7 @@ M16 — Demo / Pilot Dataset. Proposed delivery slice.
 
 ## Goal
 
-Synthetic event history. Resultado esperado: Datos históricos suficientes
+Provide representative CSV aggregates and independent expected totals.
 
 ## User / business value
 
@@ -28,18 +36,22 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Datos históricos suficientes
+Provide representative CSV aggregates and independent expected totals.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-125.
-- Usar organizaciones, nombres, activos y relaciones ficticios; las fixtures no definen niveles rígidos del dominio.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- Fixtures cover valid, invalid, duplicate and unclassified examples with source
+  equipment references, without asset surveys or external connections. Author fixtures
+  before importer completion; validate them through IOP-103 when available. Preserve
+  unknown windows and do not fabricate individual events.
 
 ## Acceptance criteria
 
-- [ ] Datos históricos suficientes
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Provide representative CSV aggregates and independent expected totals.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +86,11 @@ El usuario debe distinguir demo y datos reales; el alcance no incluye diseñar n
 
 ## Dependencies
 
-[IOP-124](IOP-124-demo-assets.md), [IOP-103](IOP-103-csv-integration.md)
+[IOP-123](IOP-123-demo-organization.md), [IOP-012](IOP-012-source-integration-contract.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 

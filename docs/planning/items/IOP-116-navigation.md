@@ -4,13 +4,21 @@
 
 Proposed
 
+## POC delivery applicability
+
+Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
+2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
+control the selected slice; older general platform prose is future context, not
+an additional POC gate. See [POC scope](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). No implementation is claimed.
+
 ## Milestone
 
 M15 — UX & Operational Experience. Proposed delivery slice.
 
 ## Goal
 
-App navigation. Resultado esperado: Navegación principal consistente
+Navigate between import, Executive Overview and analytical detail.
 
 ## User / business value
 
@@ -28,18 +36,20 @@ Solo existe la baseline documental. Esta capacidad no está implementada ni su d
 
 ## Desired state
 
-Navegación principal consistente
+Navigate between import, Executive Overview and analytical detail.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-116.
-- Componer módulos existentes según rol; navegación visible no concede permisos de servidor.
+- Deliver only the selected POC slice or explicitly deferred future scope below.
+- No administration or role-specific landing page prerequisite. Keep controls
+  understandable and scope/filters visible; navigation does not grant server permission.
 
 ## Acceptance criteria
 
-- [ ] Navegación principal consistente
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Navigate between import, Executive Overview and analytical detail.
+- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+  unfinished future scope.
 
 ## Domain considerations
 
@@ -74,10 +84,11 @@ Evaluar teclado, etiquetas, contraste y estados vacíos/error/carga en laptop y 
 
 ## Dependencies
 
-[IOP-017](IOP-017-frontend-bootstrap.md), [IOP-031](IOP-031-administration-foundation.md)
+[IOP-017](IOP-017-frontend-bootstrap.md).
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies require only their relevant POC contracts/slices, not completion of
+all future parent capabilities. Runtime business access also requires an accepted
+local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 
