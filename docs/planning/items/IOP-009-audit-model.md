@@ -1,97 +1,107 @@
-# IOP-009 — Diseñar audit trail
+# IOP-009 — Design the audit trail
 
 ## Status
 
-Proposed
+Blocked — proposal complete; explicit owner acceptance of
+[ADR-0017](../../architecture/adr/ADR-0017-audit-model.md) is pending.
 
 ## Milestone
 
 M1 — Product & Architecture Definition. Documentation/design only.
 
-## Goal
+## Goal and business value
 
-Diseñar audit trail. Resultado esperado: Eventos auditables y retención definidos
+Define auditable events and retention so operators can investigate material
+changes and security events without exposing customer data or collecting an
+unbounded duplicate of operational history.
 
-## User / business value
+## Context and current state
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+The platform has a documentation baseline, with no implemented audit capability.
+Accepted tenancy and RBAC decisions establish scope enforcement and traceable
+access changes. V1 is CSV ingestion and analytics; future transactional modules
+are not activated by this task. The original seed listed an outcome but no named
+alternatives. The owner requested evaluation, an ADR and documentation updates
+conditional on acceptance.
 
-## Context
+## Desired state and requirements
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+- Define audit-event categories, ownership, safe record fields and retention.
+- Compare capture and delivery options against module boundaries and PostgreSQL.
+- Separate identity, permission, scope and provider details.
+- Define failure, retry, inspection, disposal and isolation behavior without DDL.
+- Keep proposed policy distinct from accepted architecture and runtime evidence.
 
-## Current state
+## Evaluation and recommendation
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+[ADR-0017](../../architecture/adr/ADR-0017-audit-model.md) compares operational logs,
+database triggers, explicit module records, event sourcing and external storage;
+it also compares same-transaction append, an outbox and post-commit delivery.
+Recommend explicit Audit-owned PostgreSQL records committed atomically with material
+changes. Security observations have separately documented failure behavior.
 
-## Desired state
-
-Eventos auditables y retención definidos
-
-## Requirements
-
-- Entregar únicamente el resultado descrito para IOP-009.
-- Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+Propose 365-day retention for material changes/maintenance and 90 days for security
+events, with scoped expiry/purge and separately bounded backup handling before
+production. These are reviewable defaults, not established customer requirements.
+General audit browsing is not added to existing roles; inspection is restricted to
+an explicitly authorized operator procedure. No new identity mechanism is chosen.
 
 ## Acceptance criteria
 
-- [ ] Eventos auditables y retención definidos
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] Auditable events and retention options evaluated with a concrete recommendation.
+- [x] Plan and ADR document required decisions, scenarios and boundaries.
+- [x] Proposal validation evidence and planning documentation synchronized.
+- [ ] Owner accepts or revises the audit model and retention policy.
+- [ ] Accepted architecture, modules, data model and glossary synchronized afterward.
 
-## Domain considerations
+The parent remains open until the decision and dependent documentation are complete.
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+## Domain, security and data considerations
 
-## Architecture constraints
+Audit receives explicit records from owning modules; it does not coordinate their
+workflows. Customer records preserve validated organization/site scope and RLS.
+Platform security events cannot contain unscoped business payloads. Keep safe
+before/after grant information, stable identities and correlation; exclude secrets,
+RAW data and unrestricted serialized objects. Retention does not imply tamper-proof
+storage or physical erasure from backups at online expiry.
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+## API and UI considerations
 
-## Security considerations
+No endpoint or UI is selected. Any future audit browsing requires reviewed access
+permissions and the accepted API contract strategy. Current product roles gain no
+implicit audit permission from this proposal.
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+## Dependencies and architecture constraints
 
-## Data considerations
+- [IOP-005](IOP-005-tenancy-and-data-isolation.md) and
+  [IOP-006](IOP-006-rbac-model.md): accepted prerequisites.
+- [IOP-008](IOP-008-time-and-timezone-model.md): accepted instant semantics.
+- [IOP-007](IOP-007-authentication-model.md): authentication integration remains
+  separate; this proposal relies only on the accepted provider-independent boundary.
+- [IOP-023](IOP-023-audit-infrastructure.md): future implementation consumer,
+  not authorized by this design task.
 
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
-
-## API considerations
-
-Especificar contratos cuando corresponda; no crear endpoints.
-
-## UI considerations
-
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
-
-## Dependencies
-
-[IOP-005](IOP-005-tenancy-and-data-isolation.md), [IOP-006](IOP-006-rbac-model.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Follow Accepted ADR-0001/0003/0004/0005/0006/0007/0008/0011/0012/0013/0014/0016.
+ADR-0017 remains Proposed; neither a local commit nor branch merge accepts it.
+See [architecture](../../../ARCHITECTURE.md), [modules](../../architecture/modules.md)
+and [workflow](../workflow.md).
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Application code, migrations, endpoints, infrastructure, general event sourcing,
+queue selection, self-service audit UI, enterprise identity integration or
+customer-specific core logic. Do not start adjacent implementation stories.
 
-## Validation
+## Validation and evidence
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+The [completed proposal plan](../completed/IOP-009-audit-model-plan.md) records
+sources, scenario review, local link/status checks and limitations. ADR walkthroughs
+cover atomicity, retries, partial imports, scope denial, inspection, secret
+exclusion, clock ordering and retention. No runtime tests have run.
 
-## Documentation impact
+## Documentation impact and open decision
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+Proposal updates are confined to this item, its backlog row, ADR-0017 and the
+execution record. On explicit acceptance, plan and synchronize ARCHITECTURE.md,
+modules, data model and glossary, then close the item. The owner must accept or
+revise the proposed capture/failure/access model and 365/90-day retention defaults.
