@@ -29,7 +29,7 @@ IOP-040 es asset search; la release es IOP-138.
 | [IOP-001 — Validate v1 personas and pilot workflow](items/IOP-001-v1-personas-and-pilot-workflow.md) | Completed |
 | [IOP-002 — Select backend, frontend and tooling](items/IOP-002-technology-stack.md) | Completed |
 | [IOP-003 — Define API style and contracts](items/IOP-003-api-contract-strategy.md) | Completed |
-| [IOP-004 — Diseñar scope Organization/Site](items/IOP-004-platform-scope-model.md) | Proposed |
+| [IOP-004 — Design Organization/Site scope](items/IOP-004-platform-scope-model.md) | Completed |
 | [IOP-005 — Diseñar tenancy/data isolation](items/IOP-005-tenancy-and-data-isolation.md) | Proposed |
 | [IOP-006 — Diseñar modelo RBAC](items/IOP-006-rbac-model.md) | Proposed |
 | [IOP-007 — Diseñar autenticación](items/IOP-007-authentication-model.md) | Proposed |
