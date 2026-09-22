@@ -22,6 +22,10 @@ platform. Add basic CI (IOP-021) when runnable checks exist; it does not gate th
 first local demonstration. Measure representative performance during validation;
 workers/caches/optimization need evidence, not anticipatory infrastructure.
 
+IOP-014 has completed the [local security baseline](../architecture/security-baseline-poc.md)
+as design. Configuration, input limits and scope controls still require executable
+evidence in their delivery slices; ADR-0018 remains Proposed.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context
