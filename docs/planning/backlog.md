@@ -40,7 +40,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-011 — Define CSV preservation for the POC](items/IOP-011-file-storage-model.md) | Proposed |
 | [IOP-012 — Define the CSV source contract](items/IOP-012-source-integration-contract.md) | Proposed |
 | [IOP-013 — Define local health and diagnostic logging](items/IOP-013-observability-baseline.md) | Proposed |
-| [IOP-014 — Define the local POC security baseline](items/IOP-014-security-baseline.md) | Proposed |
+| [IOP-014 — Define the local POC security baseline](items/IOP-014-security-baseline.md) | Completed |
 
 ## M2 — Development Platform Foundation
 

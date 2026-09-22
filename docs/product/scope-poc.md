@@ -82,3 +82,7 @@ operating controls relevant to that deployment. Reassess audit and recovery need
 at that stage. The POC neither chooses a future provider nor removes those obligations.
 
 See the [delivery map](../planning/poc-delivery.md) for story slices and sequencing.
+
+The [local POC security baseline](../architecture/security-baseline-poc.md) defines
+IOP-014 control requirements and verification handoffs. It is completed design,
+not runtime security evidence or acceptance of the local execution mechanism.
