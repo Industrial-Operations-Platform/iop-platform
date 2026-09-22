@@ -1,7 +1,7 @@
 # Agent navigation
 
 IOP is a generic modular platform. OIP is its Operational Intelligence module.
-This repository includes a minimal API health host; business modules remain placeholders.
+This repository includes minimal API and web health hosts; business modules remain placeholders.
 
 1. Read [ARCHITECTURE.md](ARCHITECTURE.md) before architectural changes and relevant
    [ADRs](docs/architecture/adr/) before modifying boundaries. Proposed is not Accepted.

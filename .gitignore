@@ -19,3 +19,7 @@ tmp/
 # Node workspace dependencies and compiled output
 node_modules/
 dist/
+
+# Browser test artifacts
+test-results/
+playwright-report/

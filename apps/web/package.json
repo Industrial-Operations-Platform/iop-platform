@@ -1,0 +1,31 @@
+{
+  "name": "@iop/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --runInBand",
+    "test:e2e": "playwright test",
+    "contract": "openapi-typescript ../api/contracts/openapi.json -o src/api/schema.d.ts",
+    "contract:check": "node scripts/check-contract.mjs"
+  },
+  "dependencies": { "react": "19.3.0", "react-dom": "19.3.0" },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "jest": "30.5.1",
+    "jest-environment-jsdom": "30.5.2",
+    "openapi-typescript": "7.13.0",
+    "ts-jest": "29.4.12",
+    "typescript": "5.9.3",
+    "vite": "8.3.0"
+  }
+}

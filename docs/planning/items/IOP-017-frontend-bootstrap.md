@@ -2,96 +2,115 @@
 
 ## Status
 
-Proposed
+Completed — local POC health UI validated on 2026-09-22.
 
 ## Milestone
 
-M2 — Development Platform Foundation. Proposed delivery slice.
+M2 — Development Platform Foundation.
 
 ## Goal
 
-Bootstrap frontend. Resultado esperado: Aplicación web corre y consume health API
+Run the accepted React/TypeScript/Vite web host and consume the public health API
+within the [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 
 ## User / business value
 
-Los desarrolladores necesitan un entorno reproducible y validación ejecutable.
+The maintainer can reproduce local UI startup and verify API connectivity before
+adding CSV ingestion and analytical presentation.
 
 ## Context
 
-Ámbito: Development infrastructure and application hosts. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+The owner requested IOP-017 using [IOP-016](IOP-016-backend-bootstrap.md) as context.
+See the [execution plan](../completed/IOP-017-frontend-bootstrap-plan.md),
+[module boundaries](../../architecture/modules.md) and [workflow](../workflow.md).
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+The React/Vite host consumes the existing API through a loopback proxy. Generated
+browser types, Jest/RTL behavior checks and built-app Playwright journeys are
+validated from a clean npm installation. Business functionality remains future work.
 
 ## Desired state
 
-Aplicación web corre y consume health API
+Reproducible web startup, verified same-origin API health connectivity and clear
+loading, success and failure states with manual retry.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-017.
-- Aplicar únicamente el stack y los contratos aceptados; los hosts no son microservicios de negocio.
+- Use accepted React, TypeScript, Vite, npm workspaces and Jest/RTL/Playwright.
+- Consume public `/health` using relative routing and a local proxy.
+- Derive browser types from the reviewed OpenAPI artifact and validate responses.
+- Bound pending requests, abort on unmount, and show safe failure/retry behavior.
+- Bind development and preview listeners to loopback; no browser secrets.
+- Document commands and actual executable evidence without business-readiness claims.
 
 ## Acceptance criteria
 
-- [ ] Aplicación web corre y consume health API
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] The web application runs and consumes the health API.
+- [x] The plan records dependencies, scenarios and bounded implementation choices.
+- [x] Executable checks pass and documentation/evidence are synchronized.
 
 ## Domain considerations
 
-Aplicar únicamente el stack y los contratos aceptados; los hosts no son microservicios de negocio.
+Host bootstrap only; no business modules, customer labels or source schemas.
 
 ## Architecture constraints
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Accepted ADR-0001–0011 in the [ADR directory](../../architecture/adr/) retain
+host, isolation, workspace, frontend/testing and HTTP contract boundaries.
+[ADR-0010](../../architecture/adr/ADR-0010-frontend-charting-testing.md) explicitly
+assigns proxy implementation to frontend/configuration stories.
+[ADR-0011](../../architecture/adr/ADR-0011-api-contract-strategy.md) requires
+browser contracts derived from OpenAPI, without server-internal imports.
+Proposed [ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md)
+remains unaccepted and is not implemented here.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Public process liveness needs no principal or organization/site selector. No
+business access, RLS change, login bypass, credentials or production data.
+Network/HTTP/payload errors never render raw server diagnostics.
 
 ## Data considerations
 
-PostgreSQL es la referencia; configuración de prueba y datos sintéticos separados.
+No persistence, schema, migrations or seed data.
 
 ## API considerations
 
-Aplicar contratos de salud/error aceptados sin añadir funcionalidades de negocio.
+Consume existing `GET /health` with `200 {"status":"ok"}`; no API changes.
+Generated types and runtime response validation preserve the consumer boundary.
 
 ## UI considerations
 
-Solo lo necesario para verificar el host o entorno; no crear pantallas de negocio.
+A single host status page with accessible status text, keyboard retry and readable
+narrow layout. CSV, overview/detail navigation and charts remain later slices.
 
 ## Dependencies
 
-[IOP-002](IOP-002-technology-stack.md), [IOP-003](IOP-003-api-contract-strategy.md), [IOP-016](IOP-016-backend-bootstrap.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+- [IOP-002](IOP-002-technology-stack.md), [IOP-003](IOP-003-api-contract-strategy.md)
+  and [IOP-016](IOP-016-backend-bootstrap.md) are Completed and present in develop.
+- IOP-015/018/020 retain broader containers, configuration and testing; their full
+  delivery is not a prerequisite for this minimum local host.
+- ADR-0018 blocks dependent business access, not independent public-health UI.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Adjacent stories, Docker, CI, hooks/lint platform, charts, CSV ingestion, analytics,
+navigation across business views, authentication, permissions, persistence or
+accepting Proposed decisions. This story does not complete POC increment 1.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+Clean npm installation, build/typecheck, existing API tests, Jest/RTL loading,
+failure/retry/timeout/cleanup checks, OpenAPI consumer drift and Playwright against
+the built UI plus actual API. Review package licenses, audit and documentation links.
+See [web instructions](../../../apps/web/README.md) and the execution plan for results.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+This item, backlog, execution plan, web README and current-host statements in the
+root README, architecture baseline and agent navigation.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+No architecture decision blocks this bounded host bootstrap.

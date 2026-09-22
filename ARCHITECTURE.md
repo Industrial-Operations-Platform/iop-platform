@@ -2,7 +2,7 @@
 
 IOP is a generic industrial operations platform. OIP is its Operational
 Intelligence module, not the product boundary. The repository includes the minimal
-[IOP-016 API host](apps/api/README.md); the following decisions also guide future
+[IOP-016 API host](apps/api/README.md) and [IOP-017 web host](apps/web/README.md); the following decisions also guide future
 implementation. Business modules and persistence remain unimplemented.
 
 ## Immediate delivery boundary
@@ -33,7 +33,7 @@ See the [delivery map](docs/planning/poc-delivery.md) for exact slices and defer
 
 ## Boundaries and flow
 
-Future web, API and worker directories represent delivery/processing hosts for
+Web, API and future worker directories represent delivery/processing hosts for
 one modular platform. They do not establish independently owned microservices.
 Modules own business behavior and persistence; hosts compose them. Workers may
 execute background jobs using the same module contracts and release baseline.
@@ -97,8 +97,9 @@ React + TypeScript + Vite, Apache ECharts, Jest for frontend/backend, React Test
 Library, Supertest, Playwright and Testcontainers PostgreSQL. Jest has independent
 configuration from Vite. IOP-002 is complete as design; commands and runtime
 verification belong to bootstrap stories. IOP-016 supplies npm workspace build,
-type checks and Jest/Supertest coverage; hooks, lint/format checks and containers
-remain future scoped implementation.
+type checks and Jest/Supertest coverage. IOP-017 adds the React/Vite health UI,
+generated browser types and Jest/RTL/Playwright checks. Hooks, lint/format checks
+and containers remain future scoped implementation.
 
 
 ## Accepted API strategy
