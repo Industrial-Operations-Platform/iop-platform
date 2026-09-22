@@ -16,9 +16,9 @@ function close(server: Server): Promise<void> {
   return new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
 }
 
-function launch(port: string) {
+function launch(port: string, host = '127.0.0.1') {
   const child = spawn(process.execPath, [join(__dirname, '../dist/main.js')], {
-    env: { ...process.env, PORT: port }, stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, PORT: port, HOST: host }, stdio: ['ignore', 'pipe', 'pipe'],
   });
   let output = '';
   child.stdout.on('data', data => { output += data.toString(); });
@@ -59,11 +59,18 @@ describe('compiled entrypoint', () => {
     } finally { await stop(process.child); }
   });
 
+  it('rejects an invalid listen address without exposing it', async () => {
+    const process = launch('3000', 'private-secret');
+    const [code] = await process.exited;
+    expect(code).toBe(1);
+    expect(process.output()).toBe('API startup failed. Check HOST, PORT and local port availability.\n');
+  });
+
   it('fails safely before listening when configuration is invalid', async () => {
     const process = launch('private-secret');
     const [code] = await process.exited;
     expect(code).toBe(1);
-    expect(process.output()).toBe('API startup failed. Check PORT and local port availability.\n');
+    expect(process.output()).toBe('API startup failed. Check HOST, PORT and local port availability.\n');
   });
 
   it('fails safely when the configured port is occupied', async () => {
@@ -72,7 +79,7 @@ describe('compiled entrypoint', () => {
     try {
       const [code] = await process.exited;
       expect(code).toBe(1);
-      expect(process.output()).toBe('API startup failed. Check PORT and local port availability.\n');
+      expect(process.output()).toBe('API startup failed. Check HOST, PORT and local port availability.\n');
     } finally {
       await stop(process.child);
       await close(reserved.server);

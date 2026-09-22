@@ -27,7 +27,8 @@ A reachable API does not establish storage or business readiness. When the API i
 stopped, the page displays a safe unavailable message; start it and retry.
 
 `dist/` is the static build output. Vite preview is for local verification only;
-future container/server routing belongs to IOP-015/018. Do not expose these local
+the [IOP-015 container environment](../../infra/docker/README.md) serves the
+static artifact with Nginx and proxies `/health` to the internal API. Do not expose these local
 hosts as a shared deployment.
 
 ## Validate
@@ -53,5 +54,5 @@ artifact, never from Nest classes. After an authorized API contract change, run
 The health consumer validates runtime data and tolerates additional response fields.
 
 Dependencies are pinned in the root lockfile. Preserve their distributed license
-and third-party notices when packaging. Broader Docker, hooks, CI and business
+and third-party notices when packaging. Broader configuration, hooks, CI and business
 access checks remain separate delivery slices.

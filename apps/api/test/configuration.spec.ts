@@ -1,4 +1,15 @@
-import { readPort } from '../src/application';
+import { readHost, readPort } from '../src/application';
+
+describe('listen address configuration', () => {
+  it('defaults to loopback and permits explicit container binding', () => {
+    expect(readHost(undefined)).toBe('127.0.0.1');
+    expect(readHost('127.0.0.1')).toBe('127.0.0.1');
+    expect(readHost('0.0.0.0')).toBe('0.0.0.0');
+  });
+  it.each(['', 'localhost', '::', '192.168.1.1', 'private-secret'])('rejects unsupported HOST %j', host => {
+    expect(() => readHost(host)).toThrow('Invalid HOST');
+  });
+});
 
 describe('local port configuration', () => {
   it('uses a default only when PORT is absent', () => {

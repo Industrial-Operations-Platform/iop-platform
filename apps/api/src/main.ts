@@ -1,12 +1,13 @@
-import { createApplication, readPort } from './application';
+import { createApplication, readHost, readPort } from './application';
 
 async function bootstrap(): Promise<void> {
   const port = readPort(process.env.PORT);
+  const host = readHost(process.env.HOST);
   const app = await createApplication();
   app.enableShutdownHooks();
   try {
-    await app.listen(port, '127.0.0.1');
-    console.info(`API listening on http://127.0.0.1:${port}`);
+    await app.listen(port, host);
+    console.info(`API listening on http://${host}:${port}`);
   } catch (error) {
     await app.close();
     throw error;
@@ -14,6 +15,6 @@ async function bootstrap(): Promise<void> {
 }
 
 void bootstrap().catch(() => {
-  console.error('API startup failed. Check PORT and local port availability.');
+  console.error('API startup failed. Check HOST, PORT and local port availability.');
   process.exitCode = 1;
 });

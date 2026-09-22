@@ -11,7 +11,8 @@ hook and Docker tooling are accepted in
 [ADR-0009](docs/architecture/adr/ADR-0009-local-delivery-tooling.md). IOP-002 stack
 selection is complete. See [API startup and checks](apps/api/README.md) for the
 implemented backend bootstrap and [web startup and checks](apps/web/README.md)
-for the frontend.
+for the frontend. [Local Compose instructions](infra/docker/README.md) cover
+the three-host container environment and its validation status.
 
 ## Start here
 
@@ -37,7 +38,7 @@ for the frontend.
 | `apps/worker/` | Future background processing host |
 | `packages/contracts/` | Future explicit API and module contracts |
 | `packages/shared/` | Future minimal, domain-neutral utilities |
-| `infra/docker/` | Future container configuration |
+| `infra/docker/` | Local Compose instructions and validation boundary |
 | `infra/database/` | Future PostgreSQL migrations and non-sensitive seeds |
 | `scripts/`, `tests/` | Future development tooling and tests |
 
