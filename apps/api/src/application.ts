@@ -1,0 +1,25 @@
+import 'reflect-metadata';
+import { INestApplication } from '@nestjs/common';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { BootstrapErrorFilter } from './bootstrap-error.filter';
+
+export function configureApplication(app: INestApplication): void {
+  app.useGlobalFilters(new BootstrapErrorFilter(app.get(HttpAdapterHost)));
+}
+
+export async function createApplication(): Promise<INestApplication> {
+  const app = await NestFactory.create(AppModule, { logger: false, abortOnError: false });
+  configureApplication(app);
+  return app;
+}
+
+export function readPort(value: string | undefined): number {
+  if (value === undefined) return 3000;
+  if (!/^[0-9]+$/.test(value)) throw new Error('Invalid PORT');
+  const port = Number(value);
+  if (!Number.isSafeInteger(port) || port < 1 || port > 65535) {
+    throw new Error('Invalid PORT');
+  }
+  return port;
+}

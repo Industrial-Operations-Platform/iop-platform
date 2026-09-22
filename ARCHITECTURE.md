@@ -1,8 +1,9 @@
 # Architecture baseline
 
 IOP is a generic industrial operations platform. OIP is its Operational
-Intelligence module, not the product boundary. This repository is documentation
-only; the following decisions guide future implementation.
+Intelligence module, not the product boundary. The repository includes the minimal
+[IOP-016 API host](apps/api/README.md); the following decisions also guide future
+implementation. Business modules and persistence remain unimplemented.
 
 ## Immediate delivery boundary
 
@@ -71,8 +72,9 @@ This does not accept any pending technology choice.
 The owner accepted TypeScript on Node.js with NestJS under ADR-0006. The
 [current IOP-002 review](docs/planning/items/IOP-002-backend-review.md) covers both
 options against the analytics-only v1 scope and confirmed maintainer experience.
-Future API/worker composition follows explicit module contracts. No framework
-scaffold or application code exists yet. Frontend and tooling are accepted under ADR-0009/0010.
+Future API/worker composition follows explicit module contracts. IOP-016 implements
+the NestJS host with process health only. Frontend and tooling are accepted under
+ADR-0009/0010.
 
 ## Intentionally undecided
 
@@ -81,9 +83,9 @@ hosting and network topology; job and
 cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
 
-Resolve these with scoped plans and ADRs where they affect boundaries. No
-application scaffolding, database schema, containers or dependency manifests are
-part of this baseline.
+Resolve these with scoped plans and ADRs where they affect boundaries. IOP-016 adds
+API scaffolding and dependency manifests only; database schemas and containers
+remain future work.
 
 ## Accepted frontend and development tooling
 
@@ -94,7 +96,9 @@ TypeScript checks, plus Compose and multi-stage local container builds.
 React + TypeScript + Vite, Apache ECharts, Jest for frontend/backend, React Testing
 Library, Supertest, Playwright and Testcontainers PostgreSQL. Jest has independent
 configuration from Vite. IOP-002 is complete as design; commands and runtime
-verification belong to bootstrap stories. No tooling is implemented yet.
+verification belong to bootstrap stories. IOP-016 supplies npm workspace build,
+type checks and Jest/Supertest coverage; hooks, lint/format checks and containers
+remain future scoped implementation.
 
 
 ## Accepted API strategy
@@ -113,7 +117,9 @@ compatibility review and normally a new major version.
 
 IOP-003 is complete as design. OpenAPI dialect/tool versions, endpoint schemas and
 limits, exact error catalogs and runtime conformance checks remain implementation
-work. No API or generated contract exists yet.
+work. IOP-016 supplies a generated OpenAPI 3.0.0 health contract and bootstrap error
+responses; business contracts, browser bindings and the full error catalog remain
+future work.
 
 
 ## Accepted Organization/Site scope

@@ -1,7 +1,7 @@
 # Agent navigation
 
 IOP is a generic modular platform. OIP is its Operational Intelligence module.
-This repository currently contains documentation and placeholders, not an app.
+This repository includes a minimal API health host; business modules remain placeholders.
 
 1. Read [ARCHITECTURE.md](ARCHITECTURE.md) before architectural changes and relevant
    [ADRs](docs/architecture/adr/) before modifying boundaries. Proposed is not Accepted.
@@ -18,7 +18,7 @@ This repository currently contains documentation and placeholders, not an app.
 6. Keep customer-specific logic, labels and source schemas in scoped configuration
    or integration adapters, outside the generic core.
 7. Prefer small reviewable changes; preserve unrelated work and synchronize docs.
-8. Run relevant tests before implementation is complete. No runner exists yet;
+8. Run relevant tests before implementation is complete (`npm test` for the API);
    documentation work checks links, IDs, statuses and consistency.
 9. Record evidence, update the item/backlog and move finished plans to
    `docs/planning/completed/`. Keep permanent contexts in `items/`; an unfinished

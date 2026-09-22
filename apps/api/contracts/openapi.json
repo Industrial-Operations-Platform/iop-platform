@@ -1,0 +1,90 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "description": "Owned by the API host. Public; no identity, permission or organization/site scope required. No inputs. Does not check database readiness or business access.",
+        "operationId": "getProcessHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The API process responds.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected host failure; no internal details are exposed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "title",
+                    "status"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "about:blank"
+                      ]
+                    },
+                    "title": {
+                      "type": "string",
+                      "enum": [
+                        "Internal Server Error"
+                      ]
+                    },
+                    "status": {
+                      "type": "integer",
+                      "enum": [
+                        500
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Check API process liveness",
+        "tags": [
+          "Host"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "IOP local API host",
+    "description": "Process liveness only. No business operations or database readiness.",
+    "version": "0.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ],
+            "example": "ok"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      }
+    }
+  }
+}

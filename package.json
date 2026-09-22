@@ -1,0 +1,15 @@
+{
+  "name": "iop-platform",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": ["apps/api"],
+  "engines": { "node": ">=24.21.0 <25", "npm": ">=10 <11" },
+  "packageManager": "npm@10.9.2",
+  "scripts": {
+    "build": "npm run build --workspace @iop/api",
+    "start": "npm run start --workspace @iop/api",
+    "typecheck": "npm run typecheck --workspace @iop/api",
+    "test": "npm run build && npm test --workspace @iop/api",
+    "openapi": "npm run build && npm run openapi --workspace @iop/api"
+  }
+}

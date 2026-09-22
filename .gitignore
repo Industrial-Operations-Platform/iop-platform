@@ -15,3 +15,7 @@ Thumbs.db
 coverage/
 *.log
 tmp/
+
+# Node workspace dependencies and compiled output
+node_modules/
+dist/
