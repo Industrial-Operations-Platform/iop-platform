@@ -84,8 +84,9 @@ cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
 
 Resolve these with scoped plans and ADRs where they affect boundaries. IOP-016 adds
-API scaffolding and dependency manifests only; database schemas and containers
-remain future work.
+API scaffolding and dependency manifests only; database schemas remain future work.
+IOP-015 adds local container definitions;
+see [startup instructions and validation status](infra/docker/README.md).
 
 ## Accepted frontend and development tooling
 
@@ -98,8 +99,8 @@ Library, Supertest, Playwright and Testcontainers PostgreSQL. Jest has independe
 configuration from Vite. IOP-002 is complete as design; commands and runtime
 verification belong to bootstrap stories. IOP-016 supplies npm workspace build,
 type checks and Jest/Supertest coverage. IOP-017 adds the React/Vite health UI,
-generated browser types and Jest/RTL/Playwright checks. Hooks, lint/format checks
-and containers remain future scoped implementation.
+generated browser types and Jest/RTL/Playwright checks. IOP-015 adds Compose and
+multi-stage container definitions with a static Nginx frontend proxy. Hooks and lint/format checks remain future scoped implementation.
 
 
 ## Accepted API strategy

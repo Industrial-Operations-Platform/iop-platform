@@ -46,7 +46,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 | Contexto de tarea | Estado |
 | --- | --- |
-| [IOP-015 — Crear Docker development environment](items/IOP-015-local-development-environment.md) | Proposed |
+| [IOP-015 — Local Docker development environment](items/IOP-015-local-development-environment.md) | Completed |
 | [IOP-016 — Bootstrap backend](items/IOP-016-backend-bootstrap.md) | Completed |
 | [IOP-017 — Bootstrap frontend](items/IOP-017-frontend-bootstrap.md) | Completed |
 | [IOP-018 — Local configuration and environments](items/IOP-018-configuration-management.md) | Proposed |

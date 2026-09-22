@@ -22,8 +22,9 @@ In a second terminal:
 curl --fail http://127.0.0.1:3000/health
 ```
 
-Expected: HTTP 200, `application/json`, `{"status":"ok"}`. The listener is fixed
-to IPv4 loopback. Set `PORT=3001 npm start` to use another port. PORT must be an
+Expected: HTTP 200, `application/json`, `{"status":"ok"}`. The listener defaults
+to IPv4 loopback. HOST accepts only `127.0.0.1` or `0.0.0.0`; the latter is for
+the private Compose network, never native shared/LAN operation. Set `PORT=3001 npm start` to use another port. PORT must be an
 integer from 1 to 65535; absence defaults to 3000, an empty value is invalid.
 No `.env` file is loaded, no database or secret configuration is needed. Stop with
 Ctrl-C or SIGTERM. Startup failures exit nonzero with a fixed diagnostic message;
@@ -55,7 +56,7 @@ Bootstrap errors use `about:blank`, `title`, and matching HTTP/body `status` wit
 
 ## Boundaries and follow-up
 
-IOP-013 remains open for broader health/logging contracts. IOP-015 owns Compose
+IOP-013 remains open for broader health/logging contracts. See [IOP-015 container instructions](../../infra/docker/README.md) for Compose
 integration; IOP-018/019 own broader configuration/database bootstrap. No frontend,
 worker, migrations, database readiness, authentication, principal, authorization
 bypass or business routes are implemented. ADR-0018 remains Proposed; business
