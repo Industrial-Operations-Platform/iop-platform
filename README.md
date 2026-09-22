@@ -2,14 +2,15 @@
 
 IOP is a reusable industrial operations platform connecting people, shifts,
 maintenance, assets and operational insight. This is the single main repository
-for the platform. It currently contains documentation and directory placeholders;
-there is no runnable application. TypeScript/Node.js with NestJS is the accepted
-backend ([ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md)). React +
+for the platform. It includes a runnable local API health host under IOP-016;
+business functionality and the remaining hosts are not implemented. TypeScript/Node.js
+with NestJS is the accepted backend ([ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md)). React +
 TypeScript + Vite, ECharts and Jest for frontend/backend are accepted in
 [ADR-0010](docs/architecture/adr/ADR-0010-frontend-charting-testing.md). Workspace,
 hook and Docker tooling are accepted in
 [ADR-0009](docs/architecture/adr/ADR-0009-local-delivery-tooling.md). IOP-002 stack
-selection is complete; implementation and runnable commands remain bootstrap work.
+selection is complete. See [API startup and checks](apps/api/README.md) for the
+implemented backend bootstrap.
 
 ## Start here
 
@@ -31,7 +32,7 @@ selection is complete; implementation and runnable commands remain bootstrap wor
 | `docs/planning/completed/` | Completed plans with verification evidence |
 | `docs/planning/templates/` | Item and execution-plan templates |
 | `apps/web/` | Future user interface |
-| `apps/api/` | Future application API |
+| `apps/api/` | Local NestJS API health host |
 | `apps/worker/` | Future background processing host |
 | `packages/contracts/` | Future explicit API and module contracts |
 | `packages/shared/` | Future minimal, domain-neutral utilities |
@@ -39,8 +40,10 @@ selection is complete; implementation and runnable commands remain bootstrap wor
 | `infra/database/` | Future PostgreSQL migrations and non-sensitive seeds |
 | `scripts/`, `tests/` | Future development tooling and tests |
 
-Empty future directories use `.gitkeep`. No installation, build or test commands
-exist yet. Do not infer a language, framework or deployment topology from paths.
+Empty future directories use `.gitkeep`. From the root, use Node 24.21.0 and
+`npm ci`, `npm run build`, `npm start`; `npm test` runs backend checks.
+The local POC currently exposes only `GET http://127.0.0.1:3000/health`.
+See [API instructions](apps/api/README.md) for configuration, contracts and limits.
 
 ## Planned work
 
