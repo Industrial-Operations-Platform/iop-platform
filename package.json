@@ -12,13 +12,31 @@
   },
   "packageManager": "npm@10.9.2",
   "scripts": {
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspaces && npm run db:build",
     "start": "npm run start --workspace @iop/api",
-    "typecheck": "npm run typecheck --workspaces",
-    "test": "npm run build && npm run contract:check --workspace @iop/web && npm test --workspaces",
+    "typecheck": "npm run typecheck --workspaces && tsc --noEmit -p infra/database/tsconfig.json",
+    "test": "npm run build && npm run contract:check --workspace @iop/web && npm test --workspaces && npm run db:test:unit",
     "openapi": "npm run build && npm run openapi --workspace @iop/api",
     "dev:web": "npm run dev --workspace @iop/web",
     "preview:web": "npm run preview --workspace @iop/web",
-    "test:e2e": "npm run build && npm run test:e2e --workspace @iop/web"
+    "test:e2e": "npm run build && npm run test:e2e --workspace @iop/web",
+    "db:build": "tsc -p infra/database/tsconfig.json",
+    "db:provision": "npm run db:build && node infra/database/dist/cli.js provision",
+    "db:migrate": "npm run db:build && node infra/database/dist/cli.js migrate",
+    "db:test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand --testPathPatterns configuration",
+    "test:database": "npm run db:build && node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand"
+  },
+  "dependencies": {
+    "node-pg-migrate": "9.0.0",
+    "pg": "8.23.0"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "12.1.0",
+    "@types/jest": "30.0.0",
+    "@types/node": "22.20.3",
+    "@types/pg": "8.18.0",
+    "jest": "30.5.1",
+    "ts-jest": "29.4.12",
+    "typescript": "5.9.3"
   }
 }

@@ -18,3 +18,10 @@
 !apps/web/src/**
 !apps/web/Dockerfile
 !apps/web/nginx.conf
+!infra/
+!infra/database/
+!infra/database/Dockerfile
+!infra/database/tsconfig.json
+!infra/database/*.ts
+!infra/database/migrations/
+!infra/database/migrations/*.sql

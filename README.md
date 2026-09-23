@@ -13,6 +13,8 @@ selection is complete. See [API startup and checks](apps/api/README.md) for the
 implemented backend bootstrap and [web startup and checks](apps/web/README.md)
 for the frontend. [Local Compose instructions](infra/docker/README.md) cover
 the three-host container environment and its validation status.
+[Local database commands](infra/database/README.md) provide IOP-019 role provisioning
+and versioned migrations without adding business persistence.
 
 ## Start here
 
@@ -39,13 +41,14 @@ the three-host container environment and its validation status.
 | `packages/contracts/` | Future explicit API and module contracts |
 | `packages/shared/` | Future minimal, domain-neutral utilities |
 | `infra/docker/` | Local Compose instructions and validation boundary |
-| `infra/database/` | Future PostgreSQL migrations and non-sensitive seeds |
+| `infra/database/` | Local PostgreSQL provisioning, migrations and checks |
 | `scripts/`, `tests/` | Future development tooling and tests |
 
 Empty future directories use `.gitkeep`. From the root, use Node 24.21.0 and
 `npm ci` and `npm run build`, then follow the
 [local configuration startup](docs/development/local-configuration.md).
-`npm test` builds and checks both hosts.
+`npm test` builds and checks both hosts and database configuration.
+`npm run test:database` verifies migration behavior in disposable PostgreSQL containers.
 The API exposes only `GET http://127.0.0.1:3000/health`. Run `npm run dev:web`
 in another terminal for the UI at `http://127.0.0.1:5173`.
 See [API instructions](apps/api/README.md) for configuration, contracts and limits.

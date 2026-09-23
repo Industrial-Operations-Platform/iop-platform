@@ -25,3 +25,11 @@ Other relational databases remain technically viable but offer no established re
 Accepted [ADR-0013](ADR-0013-tenancy-data-isolation.md) selects shared tables with
 scoped constraints and RLS alongside application authorization. Detailed schema,
 policy implementation and database tooling remain future work.
+
+## Subsequent local migration decision
+
+Accepted [ADR-0019](ADR-0019-local-database-migrations.md) selects node-pg-migrate
+without an ORM for local POC migrations. IOP-019 supplies role provisioning and
+migration infrastructure on the PostgreSQL 17.6 local image introduced by IOP-015.
+Business schemas, ORM, application transactions and production database support
+remain separate work; this does not accept the Proposed local execution adapter.
