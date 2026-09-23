@@ -2,96 +2,80 @@
 
 ## Status
 
-Proposed
+Blocked — migration tooling decision awaiting owner acceptance. Planning/proposal
+increment prepared on 2026-09-23; no database implementation is claimed.
 
-## Milestone
+## Milestone and goal
 
-M2 — Development Platform Foundation. Proposed delivery slice.
+M2 — Development Platform Foundation. Reproduce the local POC database from an
+empty database using documented provisioning and versioned migrations.
 
-## Goal
+## Authorization and scope
 
-PostgreSQL + migrations. Resultado esperado: DB reproducible desde cero mediante migraciones
+The owner requested IOP-019 on 2026-09-23 within the
+[POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
+Deliver only local migration infrastructure and separate runtime privileges.
+No worker, login, business schema, organization/site seed or full platform delivery.
 
-## User / business value
+## Current and desired state
 
-Los desarrolladores necesitan un entorno reproducible y validación ejecutable.
+IOP-015 supplies PostgreSQL 17.6 in Compose with a dedicated local volume. The API
+and web hosts exist; IOP-018 validates explicit local configuration. There are no
+migrations or application database connections. The bootstrap administrative
+credential must not be used by future runtime business operations.
 
-## Context
+The desired slice has repeatable role provisioning, ordered migrations, separate
+migration/runtime credentials and disposable-database verification. Migration
+metadata is infrastructure data, not an unscoped container for customer records.
 
-Ámbito: Development infrastructure and application hosts. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+## Requirements and acceptance criteria
 
-## Current state
+- [ ] Reproduce the local database from empty using documented commands/migrations.
+- [ ] Verify unchanged reruns, transactional failure and concurrent migration safety.
+- [ ] Verify separate non-owner runtime credentials and denied elevated operations.
+- [x] Plan scenarios and dependencies without extending the POC scope.
+- [ ] Record implementation evidence and synchronize documentation.
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+## Dependencies and architecture constraints
 
-## Desired state
+[IOP-002](IOP-002-technology-stack.md), [IOP-005](IOP-005-tenancy-and-data-isolation.md)
+and [IOP-018](IOP-018-configuration-management.md) are integrated on develop.
+IOP-002/005 are completed design; they do not prove executable persistence isolation.
+IOP-015 provides the current database container. Reuse Accepted ADR-0001/0003/0004/
+0005/0006/0007/0008 and the npm/Jest/Testcontainers decisions in ADR-0009/0010
+from the [ADR directory](../../architecture/adr/).
 
-DB reproducible desde cero mediante migraciones
+[ADR-0019](../../architecture/adr/ADR-0019-local-database-migrations.md) proposes
+node-pg-migrate without an ORM and an explicit privilege model. It is not Accepted.
+[ADR-0013](../../architecture/adr/ADR-0013-tenancy-data-isolation.md) remains binding
+for future customer tables, constraints, RLS and transaction-local scope.
+[ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md) remains
+Proposed; it gates business execution, not this infrastructure bootstrap.
+IOP-025/026/123 own persisted organization/site identity and seed; configuration
+references are not a substitute. No adjacent story is activated.
 
-## Requirements
+## Security, data, API and UI
 
-- Entregar únicamente el resultado descrito para IOP-019.
-- Aplicar únicamente el stack y los contratos aceptados; los hosts no son microservicios de negocio.
-
-## Acceptance criteria
-
-- [ ] DB reproducible desde cero mediante migraciones
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
-
-## Domain considerations
-
-Aplicar únicamente el stack y los contratos aceptados; los hosts no son microservicios de negocio.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
-
-## Security considerations
-
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
-
-## Data considerations
-
-PostgreSQL es la referencia; configuración de prueba y datos sintéticos separados.
-
-## API considerations
-
-Aplicar contratos de salud/error aceptados sin añadir funcionalidades de negocio.
-
-## UI considerations
-
-Solo lo necesario para verificar el host o entorno; no crear pantallas de negocio.
-
-## Dependencies
-
-[IOP-002](IOP-002-technology-stack.md), [IOP-005](IOP-005-tenancy-and-data-isolation.md), [IOP-018](IOP-018-configuration-management.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Keep credentials private and out of error output; use disposable test databases.
+Do not reset existing operator data or change the public health contract. No API
+connection, browser configuration secret, business endpoint or screen is added.
+Future customer data keeps explicit scope, owning modules and forced RLS; this
+slice neither implements nor waives those requirements.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+ORM/repository architecture, business schema/seed, login/grants, production hosting,
+backup/restore, full demo reset, general integration platform and historical SQL reuse.
 
-## Validation
+## Validation and documentation impact
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The [active implementation plan](../active/IOP-019-database-bootstrap-plan.md)
+records files, sequencing and post-acceptance test scenarios. The
+[completed proposal increment](../completed/IOP-019-database-bootstrap-proposal-plan.md)
+records documentation evidence. Keep item/backlog status aligned. Complete the
+parent only after actual bootstrap and privilege tests pass.
 
-## Documentation impact
+## Open decision
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Owner acceptance of Proposed ADR-0019 is required before dependent implementation
+under AGENTS.md rule 5. No runtime result is inferred from this proposal or its commit.
