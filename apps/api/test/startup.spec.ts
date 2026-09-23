@@ -16,9 +16,9 @@ function close(server: Server): Promise<void> {
   return new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
 }
 
-function launch(port: string, host = '127.0.0.1') {
+function launch(port: string, host = '127.0.0.1', config = join(__dirname, '../../../config/poc.example.json')) {
   const child = spawn(process.execPath, [join(__dirname, '../dist/main.js')], {
-    env: { ...process.env, PORT: port, HOST: host }, stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, PORT: port, HOST: host, IOP_TRANSPORT: 'native', IOP_CONFIG_FILE: config }, stdio: ['ignore', 'pipe', 'pipe'],
   });
   let output = '';
   child.stdout.on('data', data => { output += data.toString(); });
@@ -63,14 +63,21 @@ describe('compiled entrypoint', () => {
     const process = launch('3000', 'private-secret');
     const [code] = await process.exited;
     expect(code).toBe(1);
-    expect(process.output()).toBe('API startup failed. Check HOST, PORT and local port availability.\n');
+    expect(process.output()).toBe('Invalid configuration: HOST.\n');
   });
 
   it('fails safely before listening when configuration is invalid', async () => {
     const process = launch('private-secret');
     const [code] = await process.exited;
     expect(code).toBe(1);
-    expect(process.output()).toBe('API startup failed. Check HOST, PORT and local port availability.\n');
+    expect(process.output()).toBe('Invalid configuration: PORT.\n');
+  });
+
+  it('rejects a missing configuration file without exposing its path', async () => {
+    const process = launch('3000', '127.0.0.1', '/private-secret/missing.json');
+    const [code] = await process.exited;
+    expect(code).toBe(1);
+    expect(process.output()).toBe('Invalid configuration: IOP_CONFIG_FILE (readable UTF-8 JSON, maximum 16384 bytes).\n');
   });
 
   it('fails safely when the configured port is occupied', async () => {
@@ -79,7 +86,7 @@ describe('compiled entrypoint', () => {
     try {
       const [code] = await process.exited;
       expect(code).toBe(1);
-      expect(process.output()).toBe('API startup failed. Check HOST, PORT and local port availability.\n');
+      expect(process.output()).toBe('API startup failed. Check local port availability.\n');
     } finally {
       await stop(process.child);
       await close(reserved.server);

@@ -1,8 +1,8 @@
-import { createApplication, readHost, readPort } from './application';
+import { createApplication } from './application';
+import { ConfigurationError, readStartupConfiguration } from './configuration';
 
 async function bootstrap(): Promise<void> {
-  const port = readPort(process.env.PORT);
-  const host = readHost(process.env.HOST);
+  const { host, port } = readStartupConfiguration(process.env);
   const app = await createApplication();
   app.enableShutdownHooks();
   try {
@@ -14,7 +14,9 @@ async function bootstrap(): Promise<void> {
   }
 }
 
-void bootstrap().catch(() => {
-  console.error('API startup failed. Check HOST, PORT and local port availability.');
+void bootstrap().catch((error: unknown) => {
+  console.error(error instanceof ConfigurationError
+    ? error.message
+    : 'API startup failed. Check local port availability.');
   process.exitCode = 1;
 });

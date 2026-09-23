@@ -1,0 +1,13 @@
+{
+  "organization": { "id": "org-demo" },
+  "site": {
+    "id": "site-demo",
+    "organizationId": "org-demo",
+    "timeZone": "Europe/Zurich"
+  },
+  "source": {
+    "id": "source-demo",
+    "organizationId": "org-demo",
+    "siteId": "site-demo"
+  }
+}

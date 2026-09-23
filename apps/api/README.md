@@ -13,7 +13,9 @@ bundles a different npm major, select the verified version with
 ```sh
 npm ci
 npm run build
-npm start
+cp config/poc.example.json config/poc.local.json
+chmod 600 config/poc.local.json
+IOP_CONFIG_FILE="$PWD/config/poc.local.json" npm start
 ```
 
 In a second terminal:
@@ -24,10 +26,13 @@ curl --fail http://127.0.0.1:3000/health
 
 Expected: HTTP 200, `application/json`, `{"status":"ok"}`. The listener defaults
 to IPv4 loopback. HOST accepts only `127.0.0.1` or `0.0.0.0`; the latter is for
-the private Compose network, never native shared/LAN operation. Set `PORT=3001 npm start` to use another port. PORT must be an
+the private Compose network with explicit `IOP_TRANSPORT=container`, never native
+shared/LAN operation. Add `PORT=3001` to the configured startup command to use another port. PORT must be an
 integer from 1 to 65535; absence defaults to 3000, an empty value is invalid.
-No `.env` file is loaded, no database or secret configuration is needed. Stop with
-Ctrl-C or SIGTERM. Startup failures exit nonzero with a fixed diagnostic message;
+No `.env` file is loaded and no database or secret configuration is needed.
+IOP-018 requires explicit, validated local scope configuration; see the
+[configuration contract](../../docs/development/local-configuration.md). Stop with
+Ctrl-C or SIGTERM. Startup failures exit nonzero with a sanitized field or listener diagnostic;
 configuration values and exception details are not logged.
 
 ## Checks and contract
@@ -57,7 +62,7 @@ Bootstrap errors use `about:blank`, `title`, and matching HTTP/body `status` wit
 ## Boundaries and follow-up
 
 IOP-013 remains open for broader health/logging contracts. See [IOP-015 container instructions](../../infra/docker/README.md) for Compose
-integration; IOP-018/019 own broader configuration/database bootstrap. No frontend,
+integration; IOP-018 supplies local scope validation; IOP-019 owns database bootstrap. No frontend,
 worker, migrations, database readiness, authentication, principal, authorization
 bypass or business routes are implemented. ADR-0018 remains Proposed; business
 access waits for an accepted mechanism. Loopback binding is a local host choice,

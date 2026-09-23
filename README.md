@@ -43,7 +43,9 @@ the three-host container environment and its validation status.
 | `scripts/`, `tests/` | Future development tooling and tests |
 
 Empty future directories use `.gitkeep`. From the root, use Node 24.21.0 and
-`npm ci`, `npm run build`, `npm start`; `npm test` builds and checks both hosts.
+`npm ci` and `npm run build`, then follow the
+[local configuration startup](docs/development/local-configuration.md).
+`npm test` builds and checks both hosts.
 The API exposes only `GET http://127.0.0.1:3000/health`. Run `npm run dev:web`
 in another terminal for the UI at `http://127.0.0.1:5173`.
 See [API instructions](apps/api/README.md) for configuration, contracts and limits.
