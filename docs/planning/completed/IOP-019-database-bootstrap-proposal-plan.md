@@ -2,7 +2,7 @@
 
 Source: [permanent item](../items/IOP-019-database-bootstrap.md).
 Execution was planned before edits in the
-[active implementation plan](../active/IOP-019-database-bootstrap-plan.md).
+[implementation plan](IOP-019-database-bootstrap-plan.md).
 
 ## Status and authorization
 
@@ -49,3 +49,10 @@ created the branch before file edits. No scope expansion, merge, rebase or push.
 Owner acceptance of ADR-0019 is the next required decision under AGENTS.md rule 5.
 After acceptance, refine exact implementation files/commands in the active plan
 before code changes. No additional decision about login is requested for this slice.
+
+## Subsequent implementation
+
+The owner subsequently accepted ADR-0019 and authorized publication/integration.
+The [implementation plan](IOP-019-database-bootstrap-plan.md) now records completed
+bootstrap verification. The Blocked status above describes this earlier proposal
+increment, not the current parent status.

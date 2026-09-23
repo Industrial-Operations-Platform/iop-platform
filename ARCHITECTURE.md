@@ -3,7 +3,8 @@
 IOP is a generic industrial operations platform. OIP is its Operational
 Intelligence module, not the product boundary. The repository includes the minimal
 [IOP-016 API host](apps/api/README.md) and [IOP-017 web host](apps/web/README.md); the following decisions also guide future
-implementation. Business modules and persistence remain unimplemented.
+implementation. Business modules and business persistence remain unimplemented.
+IOP-019 supplies local database role provisioning and versioned migrations only.
 
 ## Immediate delivery boundary
 
@@ -78,7 +79,7 @@ ADR-0009/0010.
 
 ## Intentionally undecided
 
-ORM and migration tooling; module code layout; identity provider, protocols and session handling;
+ORM; module code layout; identity provider, protocols and session handling;
 hosting and network topology; job and
 cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
@@ -209,3 +210,13 @@ IOP-008 is complete as design. CSV filename dates remain source labels until the
 window and zone are confirmed; no occurrence timestamps, shift assignments or
 24-hour coverage are inferred. Runtime/library validation, source contracts and
 shift implementation remain separate work.
+
+## Accepted local database migration tooling
+
+[ADR-0019](docs/architecture/adr/ADR-0019-local-database-migrations.md) selects
+node-pg-migrate without an ORM for the local POC. IOP-019 supplies explicit one-shot
+provision/migrate commands, a private history schema and separate bootstrap,
+migrator and non-owner runtime roles. Migrations do not run during API startup.
+See [commands and evidence](infra/database/README.md). Runtime currently has CONNECT
+only; business tables, scoped grants/RLS, organization/site seed and application
+transaction handling belong to later owning stories. ADR-0018 remains Proposed.

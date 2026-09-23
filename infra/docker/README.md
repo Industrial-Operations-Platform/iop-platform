@@ -1,8 +1,8 @@
 # Local POC containers
 
 IOP-015 starts the existing React UI, public-health API and an empty PostgreSQL
-service. It does not implement migrations, application database access, seed data,
-CSV ingestion or analytics. See the [execution plan](../../docs/planning/completed/IOP-015-local-development-environment-plan.md)
+service. IOP-019 adds opt-in [role provisioning and migrations](../database/README.md).
+Application database access, seed data, CSV ingestion and analytics remain future work. See the [execution plan](../../docs/planning/completed/IOP-015-local-development-environment-plan.md)
 for validation status and limitations. This is not completion of POC increment 1.
 
 ## First startup
@@ -56,14 +56,16 @@ This story supplies no demo dataset reset; that belongs to IOP-128.
 
 The bootstrap database user is an owner, used only for database initialization and
 local operator inspection. No database credentials reach API or frontend images.
-IOP-019 must provide migrations and separate non-owner runtime credentials with
-the accepted scoped constraints/RLS before business persistence is connected.
+IOP-019 provides migrations and separate non-owner runtime credentials through an
+explicit tooling overlay. Future business persistence must add scoped constraints,
+forced RLS and reviewed runtime grants in its owning migrations.
 IOP-018 supplies local target configuration and startup validation; future business
 consumers must still enforce persisted ownership and authorization.
 
 Images pin Node 24.21.0, PostgreSQL 17.6 and Nginx 1.28.0 patch tags. These are
 local packaging choices, not a production support/security certification or a
-commitment to an ORM, migration framework or server topology. Patch tags may be
+commitment to an ORM or server topology. ADR-0019 selects node-pg-migrate for
+local migration tooling. Patch tags may be
 rebuilt upstream; digest pinning/update policy remains future release work.
 Build inputs use an allowlist, excluding local `.env`, data, Git and host modules.
 API/web run as non-root image users. API dependencies retain distributed notices;

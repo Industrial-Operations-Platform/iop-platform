@@ -2,8 +2,8 @@
 
 ## Status
 
-Proposed — prepared under [IOP-019](../../planning/items/IOP-019-database-bootstrap.md)
-on 2026-09-23. Owner acceptance is required before dependent implementation.
+Accepted — explicitly approved by the owner on 2026-09-23 under [IOP-019](../../planning/items/IOP-019-database-bootstrap.md).
+Implementation is authorized within the local POC boundary below.
 
 ## Context
 
@@ -13,7 +13,7 @@ accepted. ADR-0003 leaves migration tooling open; ADR-0013 requires separate run
 credentials. IOP-018 configuration does not establish persisted scope or permission.
 A migration runner does not require a business ORM or acceptance of ADR-0018.
 
-## Proposed decision
+## Decision
 
 Use `node-pg-migrate` for ordered, versioned migrations under
 `infra/database/migrations/`, with explicit SQL where appropriate. Use its
@@ -96,8 +96,9 @@ This establishes local migration mechanics only. It does not provide production
 backup/restore, shared hosting, seeds, reset tooling for the complete demo, an ORM,
 authentication or business access. ADR-0018 remains Proposed and independent.
 Acceptance enables the planned IOP-019 implementation, not adjacent stories.
-No package has been installed and no migration or runtime test has run in this
-proposal increment.
+IOP-019 implements node-pg-migrate 9.0.0 with pg 8.23.0; see the
+[local commands and validation](../../../infra/database/README.md). Infrastructure
+tests are executable evidence, not proof of business authorization or tenant RLS.
 
 ## Sources
 

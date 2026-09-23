@@ -1,0 +1,35 @@
+# Opt-in one-shot tooling. Normal health-only startup needs no migration secrets.
+services:
+  database-provision:
+    profiles: [database-tools]
+    build:
+      context: .
+      dockerfile: infra/database/Dockerfile
+    command: [provision]
+    environment:
+      IOP_DATABASE_MODE: local
+      IOP_DATABASE_HOST: database
+      IOP_DATABASE_PORT: '5432'
+      IOP_DATABASE_NAME: iop_local
+      IOP_POSTGRES_PASSWORD: ${IOP_POSTGRES_PASSWORD:?Set IOP_POSTGRES_PASSWORD}
+      IOP_MIGRATOR_PASSWORD: ${IOP_MIGRATOR_PASSWORD:?Set IOP_MIGRATOR_PASSWORD}
+      IOP_RUNTIME_PASSWORD: ${IOP_RUNTIME_PASSWORD:?Set IOP_RUNTIME_PASSWORD}
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database-migrate:
+    profiles: [database-tools]
+    build:
+      context: .
+      dockerfile: infra/database/Dockerfile
+    command: [migrate]
+    environment:
+      IOP_DATABASE_MODE: local
+      IOP_DATABASE_HOST: database
+      IOP_DATABASE_PORT: '5432'
+      IOP_DATABASE_NAME: iop_local
+      IOP_MIGRATOR_PASSWORD: ${IOP_MIGRATOR_PASSWORD:?Set IOP_MIGRATOR_PASSWORD}
+    depends_on:
+      database:
+        condition: service_healthy
