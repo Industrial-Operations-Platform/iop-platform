@@ -18,6 +18,12 @@ The empty example intentionally fails. Shell environment overrides Compose `.env
 native npm commands do not load this file. Avoid sharing `docker compose config`
 output because it can contain the password; use `config --quiet` to validate.
 
+Copy `config/poc.example.json` to `config/poc.local.json` and restrict it with
+`chmod 600 config/poc.local.json` before startup. The API validates this read-only
+mount; see the [configuration contract](../../docs/development/local-configuration.md).
+It contains fictional scope IDs and no credentials. Missing or invalid configuration
+prevents API health and web startup.
+
 ```sh
 docker compose up --build --wait --wait-timeout 120
 ```
@@ -52,7 +58,8 @@ The bootstrap database user is an owner, used only for database initialization a
 local operator inspection. No database credentials reach API or frontend images.
 IOP-019 must provide migrations and separate non-owner runtime credentials with
 the accepted scoped constraints/RLS before business persistence is connected.
-IOP-018 retains business configuration and startup validation responsibilities.
+IOP-018 supplies local target configuration and startup validation; future business
+consumers must still enforce persisted ownership and authorization.
 
 Images pin Node 24.21.0, PostgreSQL 17.6 and Nginx 1.28.0 patch tags. These are
 local packaging choices, not a production support/security certification or a

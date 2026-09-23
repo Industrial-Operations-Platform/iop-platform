@@ -11,7 +11,9 @@ From the repository root:
 ```sh
 npm ci
 npm run build
-npm start
+cp config/poc.example.json config/poc.local.json
+chmod 600 config/poc.local.json
+IOP_CONFIG_FILE="$PWD/config/poc.local.json" npm start
 ```
 
 In a second terminal, run `npm run dev:web` and open `http://127.0.0.1:5173`.

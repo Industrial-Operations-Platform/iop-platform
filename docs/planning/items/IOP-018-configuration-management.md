@@ -2,109 +2,91 @@
 
 ## Status
 
-Proposed
+Completed — local POC configuration slice, 2026-09-23. No production profiles,
+persisted ownership checks or business execution mechanism are claimed.
 
 ## POC delivery applicability
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+Owner-approved refinement under [IOP-142](IOP-142-poc-delivery-scope.md) selects
+[POC scope](../../product/scope-poc.md) and the [delivery map](../poc-delivery.md).
+The owner requested implementation on 2026-09-22 and continuation on 2026-09-23.
+Completion covers local application/test configuration only, not deferred platform
+capabilities or full POC increment 1.
 
-## Milestone
+## Milestone and goal
 
-M2 — Development Platform Foundation. Proposed delivery slice.
+M2 — Development Platform Foundation. Validate configuration for the local
+application and tests, with reproducible documented startup and safe failures.
 
-## Goal
+## Current and desired state
 
-Validate configuration for the local application and tests.
+The API now validates a required bounded JSON file before creating the host.
+One organization, one site with an explicit IANA zone and one source are declared;
+site/source ownership references must agree. Unsupported fields and absent scope
+fail closed. See the [configuration contract](../../development/local-configuration.md)
+for exact fields, sources, precedence, limits, examples and startup commands.
 
-## User / business value
-
-Los desarrolladores necesitan un entorno reproducible y validación ejecutable.
-
-## Context
-
-Ámbito: Development infrastructure and application hosts. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
-
-## Current state
-
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Validate configuration for the local application and tests.
+Compose mounts private configuration read-only. Native API startup uses an explicit
+path; tests supply synthetic configuration independently of local files. Frontend
+configuration remains public and receives no server secrets or scope document.
 
 ## Requirements
 
-- Deliver only the selected POC slice or explicitly deferred future scope below.
-- Provide documented example configuration without secrets, explicit
-  organization/site/source targets and startup validation. Production deployment
-  profiles are later work. POC configuration consumes only the local safety slice of
-  IOP-014, not login/session design.
+- Deliver only the selected local POC configuration slice.
+- Provide secret-free example configuration, explicit organization/site/source
+  targets, bounded validation and safe startup failure.
+- Consume IOP-014 local safety requirements without implementing login/session or
+  accepting Proposed ADR-0018. Production deployment profiles remain later work.
 
 ## Acceptance criteria
 
-- [ ] Validate configuration for the local application and tests.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
-  unfinished future scope.
+- [x] Validate configuration for the local application and tests.
+- [x] Validate the slice-specific outcomes and limitations in Requirements.
+- [x] Record evidence and synchronize the story/plan without closing future scope.
 
-## Domain considerations
+## Architecture, security and data considerations
 
-Aplicar únicamente el stack y los contratos aceptados; los hosts no son microservicios de negocio.
+Reuse Accepted ADR-0001/0003/0004/0005/0006/0007/0008/0009/0012/0013/0016 in the
+[ADR directory](../../architecture/adr/). No new architectural pattern is introduced.
+Names/source schemas remain scoped data or adapter concerns. No credentials,
+production records, schema, migration, seed or database connection is added.
+Only exact supported fields are admitted, with a 16 KiB file bound and bounded IDs.
+Errors name fixed fields/reasons without echoing values, paths or exception detail.
 
-## Architecture constraints
+Ownership validation covers references within the configuration document. Future
+consumers must additionally validate persisted references, permissions, RLS and
+historical site-zone constraints. No source mapping fields are supported: reject
+them until CSV adapter/mapping contracts define their bounded shape and references.
+This story does not infer source reporting windows or apply mappings.
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+## API and UI considerations
 
-## Security considerations
-
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
-
-## Data considerations
-
-PostgreSQL es la referencia; configuración de prueba y datos sintéticos separados.
-
-## API considerations
-
-Aplicar contratos de salud/error aceptados sin añadir funcionalidades de negocio.
-
-## UI considerations
-
-Solo lo necesario para verificar el host o entorno; no crear pantallas de negocio.
+The public health contract is unchanged and returns no configuration. Configuration
+validation precedes listening; health still does not prove database/business readiness.
+The frontend continues same-origin health access; browser tests provide explicit
+synthetic API configuration. No business screens or operations are added.
 
 ## Dependencies
 
-[IOP-002](IOP-002-technology-stack.md), [IOP-014](IOP-014-security-baseline.md).
+[IOP-002](IOP-002-technology-stack.md) and
+[IOP-014](IOP-014-security-baseline.md) are completed design integrated on develop.
+IOP-015/016/017 supplied the existing hosts. Relevant POC contracts suffice; no
+login/session dependency is introduced. Runtime business access remains dependent
+on acceptance of [ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md)
+or another accepted mechanism.
 
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+## Non-goals and deferred scope
 
-## Non-goals
+Production/shared hosting, login, runtime authorization, general integration or
+mapping registry, database bootstrap, reset and broader environment profiles.
+Configuration transport selection is not local execution identity. Future importer
+mapping admission and persisted ownership checks remain with their delivery stories;
+no neighboring item is activated or completed.
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+## Validation and documentation impact
 
-## Validation
-
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+The [completed execution plan](../completed/IOP-018-configuration-management-plan.md)
+records type checks, unit/integration/startup and browser tests, Compose model
+validation, documentation checks and limitations. Startup instructions, the
+configuration contract, item and backlog are synchronized. No open decision blocks
+this completed local configuration slice.
