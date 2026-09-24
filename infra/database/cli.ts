@@ -1,6 +1,7 @@
 import { configuration, DatabaseError, provisioningConfiguration } from './configuration';
 import { migrate } from './migrate';
 import { provision } from './provision';
+import { seedOrganization } from './seed-organization';
 
 async function main(): Promise<void> {
   const [command, ...extra] = process.argv.slice(2);
@@ -11,8 +12,11 @@ async function main(): Promise<void> {
   } else if (command === 'migrate') {
     const count = await migrate(configuration(process.env, 'migrator'));
     console.log(`Local database migrations complete: ${count} applied.`);
+  } else if (command === 'seed-organization') {
+    const result = await seedOrganization(process.env);
+    console.log(`Local organization seed complete: ${result}.`);
   } else {
-    throw new DatabaseError('Expected database command: provision or migrate.');
+    throw new DatabaseError('Expected database command: provision, migrate or seed-organization.');
   }
 }
 

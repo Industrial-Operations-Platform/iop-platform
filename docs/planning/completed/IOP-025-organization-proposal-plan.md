@@ -2,7 +2,7 @@
 
 Source: [permanent item](../items/IOP-025-organization-model.md).
 Execution was planned before content edits in the
-[active implementation plan](../active/IOP-025-organization-model-plan.md).
+[implementation plan, now completed](IOP-025-organization-model-plan.md).
 
 ## Status and authorization
 
@@ -48,3 +48,11 @@ Branch creation required sandbox escalation and then succeeded before edits.
 No scope expansion, merge, rebase, deployment or push. AGENTS.md rule 5 requires
 acceptance of the new seed authority before dependent code/DDL. Owner review of
 ADR-0020 is the next input; no approval of login or adjacent stories is requested.
+
+
+## Subsequent acceptance and implementation
+
+On 2026-09-24 the owner accepted ADR-0020 and authorized this branch's push to
+origin. The [completed implementation plan](IOP-025-organization-model-plan.md)
+records the delivered POC slice and tests. Blocked/Proposed descriptions above
+preserve the earlier increment; the current parent is Deferred for future scope.

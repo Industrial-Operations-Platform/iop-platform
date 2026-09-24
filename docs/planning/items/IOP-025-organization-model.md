@@ -2,9 +2,9 @@
 
 ## Status
 
-Blocked — POC implementation awaits explicit acceptance of
-[ADR-0020](../../architecture/adr/ADR-0020-local-organization-bootstrap.md).
-The proposal increment is complete; organization persistence is not implemented.
+Deferred — selected POC persistence/seed slice completed on 2026-09-24.
+The broader parent remains open for organization CRUD, lifecycle and administrative
+screens, explicitly deferred beyond the POC. ADR-0020 is Accepted.
 
 ## Authorization and POC applicability
 
@@ -23,19 +23,19 @@ and Users/RBAC retain their separate responsibilities. See the
 and [glossary](../../product/glossary.md).
 
 IOP-018 validates configuration references but does not persist them. IOP-019
-provides local role provisioning and migrations, with no business tables. There is
-no organization table, seed, runtime connection or organization endpoint.
+provides local role provisioning and migrations. IOP-025 now adds `platform_core.organizations`, forced RLS and a scoped initial
+seed command. There is no runtime connection or organization endpoint.
 
 ## Requirements and acceptance criteria
 
-- [ ] Persist an explicitly configured organization with a stable opaque identity
+- [x] Persist an explicitly configured organization with a stable opaque identity
   and configurable display name; support zero sites.
-- [ ] Deliver only a local seed/configuration path, preserving constraints and
+- [x] Deliver only a local seed/configuration path, preserving constraints and
   forced RLS. Validate the organization scope on that path. Site relationship
   validation belongs to IOP-026; no site is implicitly created here.
-- [ ] Verify fresh creation, unchanged repeat, invalid/conflicting input,
+- [x] Verify fresh creation, unchanged repeat, invalid/conflicting input,
   concurrency, rollback and denial of missing/foreign scope and runtime access.
-- [ ] Record actual evidence and synchronize the story/plan without closing the
+- [x] Record actual evidence and synchronize the story/plan without closing the
   broader parent while future CRUD, lifecycle and administration scope remains.
 
 ## Dependencies and architecture constraints
@@ -50,8 +50,8 @@ customer isolation. ADR-0012/0013 define logical scope and physical isolation;
 ADR-0019 supplies migration tooling. See the [ADR directory](../../architecture/adr/).
 Follow Accepted ADR-0007/0008 for plans, story branches and owner review.
 
-Proposed ADR-0020 supplies the missing initial seed authority and concrete storage
-contract. Dependent implementation waits for acceptance. Proposed ADR-0018 separately
+Accepted ADR-0020 supplies the missing initial seed authority and concrete storage
+contract. Implementation is authorized by the owner on 2026-09-24. Proposed ADR-0018 separately
 gates runtime business access; accepting the seed proposal would not accept that
 mechanism. No unmerged prerequisite branch needs to be integrated for this proposal.
 
@@ -71,16 +71,20 @@ acceptance of Proposed decisions or activate adjacent stories.
 
 ## Validation and documentation impact
 
-The [active plan](../active/IOP-025-organization-model-plan.md) maps the proposed
-implementation to executable scenarios and expected files. This documentation
-increment checks links, IDs, statuses and consistency only. No runtime tests or
-persistence/isolation evidence exist for IOP-025.
+The [completed implementation plan](../completed/IOP-025-organization-model-plan.md)
+records the files and executable evidence: typecheck, npm tests, 54 database tests
+and disposable Compose build/provision/migrate/seed/rerun all passed. Tests cover
+constraints, actual-role RLS and access denial, rollback, concurrent inputs,
+conflict rejection and reproduction on a second empty database. This is initial
+seed evidence, not site isolation or runtime business authorization evidence.
 
 The [completed proposal record](../completed/IOP-025-organization-proposal-plan.md)
-records the dependency review and documentation checks. The item, backlog and plan
-are synchronized. POC scope/delivery documents remain authoritative and unchanged.
+preserves the earlier decision preparation. Commands and limits are documented in
+the [database guide](../../../infra/database/README.md). POC scope/delivery remain
+unchanged. No adjacent story was activated.
 
-## Open decision
+## Remaining scope
 
-Accept, amend or reject ADR-0020's bounded initial organization seed. Implementation
-is paused under AGENTS.md rule 5, not because login or a full platform is required.
+No open decision blocks the completed organization POC slice. CRUD, lifecycle and
+administrative UI remain future parent scope. ADR-0018 remains Proposed and gates
+later runtime business access independently. Site ownership implementation is IOP-026.

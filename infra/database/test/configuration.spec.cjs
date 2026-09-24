@@ -36,7 +36,7 @@ test('provisioning requires separate passwords; migration needs only its own', (
   expect(configuration({ ...env, IOP_POSTGRES_PASSWORD: undefined, IOP_RUNTIME_PASSWORD: undefined }, 'migrator').user).toBe('iop_migrator');
 });
 
-test.each(['provision', 'migrate', 'unknown'])('CLI rejects incomplete input safely: %s', (command) => {
+test.each(['provision', 'migrate', 'seed-organization', 'unknown'])('CLI rejects incomplete input safely: %s', (command) => {
   const result = spawnSync(process.execPath, [resolve(__dirname, '../dist/cli.js'), command], {
     env: { PATH: process.env.PATH, IOP_DATABASE_NAME: 'do-not-print-this-value' }, encoding: 'utf8',
   });
@@ -53,5 +53,19 @@ test('CLI rejects extra arguments and unavailable database without diagnostics',
     });
     expect(result.status).toBe(1);
     expect(result.stderr).not.toMatch(/synthetic|ECONNREFUSED| at /);
+  }
+});
+
+const { organizationConfiguration } = require('../dist/seed-organization.js');
+const seed = { IOP_SEED_ORGANIZATION_ID: 'org-test', IOP_SEED_ORGANIZATION_NAME: 'Fictional Organization' };
+test.each([undefined, '', ' ', '-org', 'a/b', 'a'.repeat(65), 'org\n'])('invalid seed ID fails safely: %p', value => {
+  expect(() => organizationConfiguration({ ...seed, IOP_SEED_ORGANIZATION_ID: value })).toThrow('organization ID');
+});
+test.each([undefined, '', ' ', ' leading', 'trailing ', '\u00a0name', 'name\uFEFF', 'a\nname', 'a\u0085name', 'a'.repeat(201), '\ud800'])('invalid name fails safely: %p', value => {
+  expect(() => organizationConfiguration({ ...seed, IOP_SEED_ORGANIZATION_NAME: value })).toThrow('display name');
+});
+test('seed names preserve Unicode and SQL punctuation as data', () => {
+  for (const name of ["O'Brien; SELECT 1", 'Fictional Zürich', '🏭'.repeat(200)]) {
+    expect(organizationConfiguration({ ...seed, IOP_SEED_ORGANIZATION_NAME: name })).toEqual({ id: 'org-test', name });
   }
 });

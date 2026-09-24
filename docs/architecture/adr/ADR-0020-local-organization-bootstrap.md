@@ -2,8 +2,8 @@
 
 ## Status
 
-Proposed — prepared on 2026-09-24 under [IOP-025](../../planning/items/IOP-025-organization-model.md).
-Dependent DDL and seed implementation wait for explicit acceptance. This does not
+Accepted — explicitly approved by the owner on 2026-09-24 under [IOP-025](../../planning/items/IOP-025-organization-model.md).
+Acceptance authorizes the bounded DDL and seed implementation. This does not
 accept [ADR-0018](ADR-0018-local-poc-execution-context.md).
 
 ## Context
@@ -11,13 +11,13 @@ accept [ADR-0018](ADR-0018-local-poc-execution-context.md).
 The [POC](../../product/scope-poc.md) requires a configured organization without
 administration screens. Accepted ADR-0012 permits zero sites; ADR-0013 requires
 scoped constraints and forced RLS; ADR-0019 supplies separate infrastructure roles
-and migration tooling. No organization table or initial seed authority exists.
+and migration tooling. At proposal time, no organization table or initial seed authority existed.
 Ordinary configuration operations require actor/action/target checks, but initial
 creation precedes users and grants. Reusing privileged infrastructure credentials
 for this initial data creation therefore needs an explicit, bounded exception;
 it cannot silently become a business configuration command.
 
-## Proposed decision
+## Decision
 
 ### Organization storage
 
@@ -98,7 +98,7 @@ repositories and actor verification require their own accepted context and tests
 | Runtime organization CRUD with users/grants | Defer: exceeds the selected POC slice and depends on an accepted execution mechanism. |
 | A new permanent seed role or generic seed framework | Defer: adds credentials and infrastructure for one initial record without an established need. |
 
-## Validation required after acceptance
+## Validation contract
 
 Use actual role logins against disposable PostgreSQL 17.6. Verify fresh migration
 and seed on two empty databases, unchanged reruns, matching/differing concurrent
@@ -112,12 +112,12 @@ native/one-shot Compose commands with safe failure output.
 
 ## Acceptance boundary and consequences
 
-Accepting this ADR authorizes only IOP-025's organization migration and initial
+This ADR authorizes only IOP-025's organization migration and initial
 local seed implementation under its plan. It leaves ADR-0018 Proposed, business
 access closed and IOP-026/123 unactivated. Organization CRUD, lifecycle and admin
 screens remain future parent scope. No ORM, application repository/pool, general
-module schema convention or full demo reset is selected. No code or tests have
-been implemented by this proposal.
+module schema convention or full demo reset is selected. IOP-025 now implements this bounded seed and its tests; see the
+[completed execution evidence](../../planning/completed/IOP-025-organization-model-plan.md).
 
 ## Sources
 
@@ -128,5 +128,5 @@ Official PostgreSQL 17 documentation consulted on 2026-09-24:
 - [SET](https://www.postgresql.org/docs/17/sql-set.html): transaction-local setting
   lifetime and rollback behavior.
 
-The bootstrap authority and storage contract above are project proposals, not
+The bootstrap authority and storage contract above are project decisions, not
 requirements prescribed by PostgreSQL.
