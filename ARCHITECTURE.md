@@ -3,8 +3,9 @@
 IOP is a generic industrial operations platform. OIP is its Operational
 Intelligence module, not the product boundary. The repository includes the minimal
 [IOP-016 API host](apps/api/README.md) and [IOP-017 web host](apps/web/README.md); the following decisions also guide future
-implementation. Business modules and business persistence remain unimplemented.
-IOP-019 supplies local database role provisioning and versioned migrations only.
+implementation. Operational business modules remain unimplemented. IOP-019 supplies local database
+role provisioning and versioned migrations; IOP-025 adds the Platform Core
+organization table and explicit local seed. Runtime business access stays closed.
 
 ## Immediate delivery boundary
 
@@ -85,7 +86,7 @@ cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
 
 Resolve these with scoped plans and ADRs where they affect boundaries. IOP-016 adds
-API scaffolding and dependency manifests only; database schemas remain future work.
+API scaffolding and dependency manifests only; organization persistence is now supplied separately by IOP-025.
 IOP-015 adds local container definitions;
 see [startup instructions and validation status](infra/docker/README.md).
 
@@ -218,5 +219,18 @@ node-pg-migrate without an ORM for the local POC. IOP-019 supplies explicit one-
 provision/migrate commands, a private history schema and separate bootstrap,
 migrator and non-owner runtime roles. Migrations do not run during API startup.
 See [commands and evidence](infra/database/README.md). Runtime currently has CONNECT
-only; business tables, scoped grants/RLS, organization/site seed and application
-transaction handling belong to later owning stories. ADR-0018 remains Proposed.
+only. IOP-025 adds organization storage, forced seed RLS and an explicit privileged
+initial seed; site storage, runtime grants and application transaction handling
+belong to later owning stories. ADR-0018 remains Proposed.
+
+
+## Accepted initial organization bootstrap
+
+[ADR-0020](docs/architecture/adr/ADR-0020-local-organization-bootstrap.md) permits
+an explicit insert-only local organization seed using the separate migrator login.
+IOP-025 implements `platform_core.organizations`, preserving existing opaque text
+IDs, scoped SELECT/INSERT policies and forced RLS. Repeated matching inputs leave
+data unchanged; conflicting names fail. Runtime retains CONNECT only. This bounded
+installation authority does not provide business authorization, sites, users,
+grants or administrative CRUD. ADR-0018 remains Proposed; see
+[commands and limitations](infra/database/README.md#initial-organization-seed-iop-025).

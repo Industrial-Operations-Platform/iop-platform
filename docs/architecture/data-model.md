@@ -10,9 +10,10 @@ operational modules are deferred; the local execution mechanism remains Proposed
 in [ADR-0018](adr/ADR-0018-local-poc-execution-context.md), without changing accepted
 identity, authorization or RLS requirements by implication.
 
-This is a conceptual baseline, not DDL or a migration plan. PostgreSQL is accepted;
-shared-table isolation is accepted under ADR-0013. Physical module schemas, ID
-encoding/generation, detailed constraints and indexing remain to be designed.
+This is primarily a conceptual baseline. The IOP-025 organization storage slice
+is implemented as described below. PostgreSQL is accepted;
+shared-table isolation is accepted under ADR-0013. Beyond that organization slice, physical module schemas, ID encoding/generation,
+detailed constraints and indexing remain to be designed.
 Module ownership is defined in [modules](modules.md).
 
 ## Relationships
@@ -176,3 +177,18 @@ provenance. Retain historical resolved periods through rule updates. Future cros
 reports explicitly distinguish common instant windows from per-site local dates and
 expose each site's bounds while preserving authorization. Physical tables, libraries,
 source-window confirmation and runtime round-trip checks remain future work.
+
+
+## Implemented organization storage (POC)
+
+Accepted [ADR-0020](adr/ADR-0020-local-organization-bootstrap.md) supplies
+`platform_core.organizations`: `organization_id` is a non-null, case-sensitive,
+opaque text primary key and root scope; `display_name` is validated non-null text
+and is not unique. Platform Core owns this table. IDs retain the existing bounded
+configuration format. Zero sites are supported without creating implicit scope.
+
+The initial local seed uses the migrator login with transaction-local scope and
+forced SELECT/INSERT RLS; runtime has no business access. A matching rerun is a
+no-op; a conflicting name is rejected. There is no update/delete path or policy.
+Site constraints, ordinary runtime authorization and scoped cross-module references
+remain later implementation. See [commands and evidence](../../infra/database/README.md).
