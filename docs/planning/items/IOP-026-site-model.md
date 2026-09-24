@@ -2,9 +2,9 @@
 
 ## Status
 
-Blocked — initial site bootstrap authority awaits owner acceptance of
+In progress — the owner accepted the initial site bootstrap authority in
 [ADR-0021](../../architecture/adr/ADR-0021-local-site-bootstrap.md).
-Proposal prepared on 2026-09-24; site persistence is not implemented.
+Accepted on 2026-09-24; site persistence is not implemented.
 
 ## Authorization and POC applicability
 
@@ -24,7 +24,7 @@ and [glossary](../../product/glossary.md).
 IOP-018 validates configuration references and zones. IOP-019 provides migrations;
 IOP-025 persists organizations through an explicit initial seed. No site table,
 seed or runtime site access exists. ADR-0020 limits its authority to organizations;
-ADR-0021 proposes its bounded extension to the site's initial installation.
+Accepted ADR-0021 extends it to the site's initial installation.
 
 ## Requirements and acceptance criteria
 
@@ -52,8 +52,8 @@ ADR-0012/0013 define ownership and RLS; ADR-0016 temporal semantics; ADR-0019/00
 supply existing database/bootstrap patterns. Follow ADR-0007/0008 workflow.
 See the [ADR directory](../../architecture/adr/).
 
-ADR-0021 is Proposed, not authorization for the site seed. Proposed ADR-0018
-separately gates runtime business access; accepting ADR-0021 would not accept it.
+ADR-0021 is Accepted and authorizes the bounded site seed implementation. Proposed
+ADR-0018 separately gates runtime business access and remains unaccepted.
 
 ## Security, data, API and UI boundaries
 
@@ -62,7 +62,7 @@ from them. Require both organization and site for site-owned records; preserve
 foreign keys and enabled/forced RLS. Privileged installation credentials must stay
 outside API/web containers, repository content and logs. No production data.
 
-The proposal rejects changes to an existing site's identity, owner, name or zone.
+The accepted decision rejects changes to an existing site's identity, owner, name or zone.
 Transfers and zone corrections require separately reviewed work; source dates do
 not become occurrence timestamps or known 24-hour windows. No API, UI, runtime
 repository, authentication, user/grant seed, source seed or generic seed engine.
@@ -75,9 +75,9 @@ scenarios. Proposal review is not runtime test evidence. Update database instruc
 and accepted architecture only when implementation/acceptance warrants it.
 POC scope and delivery map remain unchanged; no adjacent story is activated.
 
-## Open decision
+## Implementation handoff
 
-Accept or revise ADR-0021's explicit local migrator authority for initial site
-creation, with site storage, zone validation, two-part seed scope and conflict rules.
-Dependent implementation pauses under AGENTS.md rule 5; the documentation increment
-can be validated and committed independently.
+ADR-0021 is Accepted. The owner authorized committing and merging this design into
+`develop` and publishing to `origin`. Site migration, seed, tests and runtime evidence
+remain pending under the active plan. No decision blocks this bounded bootstrap;
+runtime business access still depends independently on an accepted mechanism.

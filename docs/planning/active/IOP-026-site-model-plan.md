@@ -4,7 +4,7 @@ Source: [IOP-026](../items/IOP-026-site-model.md).
 
 ## Status and authorization
 
-Blocked pending ADR-0021 acceptance — owner requested IOP-026 on 2026-09-24, limited to
+In progress — owner requested IOP-026 on 2026-09-24, limited to
 [POC scope](../../product/scope-poc.md) and [delivery](../poc-delivery.md).
 Branch: `docs/IOP-026-site-model`, created from clean `develop` before edits.
 
@@ -52,7 +52,7 @@ retains CONNECT only. No endpoint, application DB connection or UI is planned.
 ## Completion checklist
 
 - [x] Proposal and documentation checks completed; local commit prepared.
-- [ ] Owner accepts the site bootstrap authority.
+- [x] Owner accepts the site bootstrap authority.
 - [ ] Site migration/seed and relevant positive/negative tests pass.
 - [ ] Item/backlog synchronized and finished plan moved to completed.
 
@@ -72,3 +72,14 @@ zone/name mutation rejection. These are design expectations, not executed tests.
 No runtime tests were run because this increment changes documentation only.
 The plan remains active because implementation awaits the explicit site bootstrap
 decision; the parent and POC slice are not complete. No scope deviation.
+
+## Owner acceptance and integration increment
+
+On 2026-09-24 the owner answered yes to ADR-0021 acceptance and explicitly requested
+commit, merge into the integration branch and publication to origin. `dev` resolves
+to the existing `develop` branch. Record Accepted status in ADR-0021, synchronize
+item/backlog to In progress, and add the accepted boundary to ARCHITECTURE.md.
+Validate links, statuses and whitespace, commit on the story branch, fetch origin,
+then merge and publish the story and develop without force or branch deletion.
+This increment integrates the accepted design; implementation remains pending and
+the plan stays active. ADR-0018 remains Proposed. No runtime tests are applicable.

@@ -2,9 +2,9 @@
 
 ## Status
 
-Proposed — prepared on 2026-09-24 under
-[IOP-026](../../planning/items/IOP-026-site-model.md). No acceptance is inferred
-from the request to work on the story. ADR-0018 remains Proposed.
+Accepted — explicitly approved by the owner on 2026-09-24 under
+[IOP-026](../../planning/items/IOP-026-site-model.md). The owner also authorized
+commit, integration into develop and publication to origin. ADR-0018 remains Proposed.
 
 ## Context and decision boundary
 
@@ -14,7 +14,7 @@ Accepted. ADR-0020 explicitly limits its privileged creation exception to
 organizations. This proposal extends that installation pattern only to an initial
 site, without granting ordinary `site-configuration.manage` business access.
 
-## Proposed decision
+## Decision
 
 ### Storage and ownership
 
@@ -113,7 +113,7 @@ Use actual role logins on disposable PostgreSQL 17.6 and the existing test tooli
 
 ## Consequences and acceptance
 
-Acceptance would authorize only IOP-026's planned site migration, initial seed,
+Acceptance authorizes only IOP-026's planned site migration, initial seed,
 checks and documentation. No organization/site administration, selectors, users,
 grants, source seed, ORM, runtime repository or endpoint. ADR-0018 acceptance is
 independent. IOP-123 demo fixtures and adjacent stories remain unactivated; broader
@@ -124,4 +124,4 @@ site lifecycle/admin requirements stay deferred after the POC slice is delivered
 Official PostgreSQL 17 references consulted on 2026-09-24:
 [recognized zone names](https://www.postgresql.org/docs/17/view-pg-timezone-names.html)
 and [row security policies](https://www.postgresql.org/docs/17/ddl-rowsecurity.html).
-The storage, seed authority and validation rules above are project proposals.
+The storage, seed authority and validation rules above are accepted project decisions.
