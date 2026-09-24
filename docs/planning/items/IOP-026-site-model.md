@@ -2,108 +2,82 @@
 
 ## Status
 
-Proposed
+Blocked — initial site bootstrap authority awaits owner acceptance of
+[ADR-0021](../../architecture/adr/ADR-0021-local-site-bootstrap.md).
+Proposal prepared on 2026-09-24; site persistence is not implemented.
 
-## POC delivery applicability
+## Authorization and POC applicability
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+The owner requested IOP-026 on 2026-09-24, limited to
+[POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
+M3 — Platform Core. Persist one configured site with explicit organization ownership
+and IANA time zone. CRUD, selectors, lifecycle and administration screens remain
+future parent scope; their deferral must not be reported as completed implementation.
 
-## Milestone
+## Value and current state
 
-M3 — Platform Core. Proposed delivery slice.
+The analytical POC needs a persisted site boundary for later scoped imports and
+reports. Platform Core owns site identity/configuration; Users/RBAC owns permission.
+See [modules](../../architecture/modules.md), [data model](../../architecture/data-model.md)
+and [glossary](../../product/glossary.md).
 
-## Goal
+IOP-018 validates configuration references and zones. IOP-019 provides migrations;
+IOP-025 persists organizations through an explicit initial seed. No site table,
+seed or runtime site access exists. ADR-0020 limits its authority to organizations;
+ADR-0021 proposes its bounded extension to the site's initial installation.
 
-Persist one configured site with explicit organization ownership and time zone.
+## Requirements and acceptance criteria
 
-## User / business value
+- [ ] Persist one explicitly configured site with stable opaque identity, display
+  name, existing organization owner and validated IANA time zone.
+- [ ] Enforce ownership, scoped references and forced RLS; missing site scope never
+  means all sites. Source labels cannot choose scope.
+- [ ] Provide an explicit insert-only seed with unchanged identical reruns, safe
+  rejection of conflicting owner/name/zone and no runtime business grants.
+- [ ] Verify positive creation and negative input/ownership/scope cases, concurrent
+  seeds, rollback and runtime denial using actual roles on disposable databases.
+- [ ] Record executable evidence and synchronize item/backlog/plan, leaving future
+  lifecycle and administration scope deferred.
 
-Administradores y usuarios necesitan acceso a organizaciones y sitios autorizados.
+## Dependencies and decisions
 
-## Context
+IOP-025's [organization POC slice](IOP-025-organization-model.md) is implemented and
+integrated on develop, although its broader parent is Deferred.
+[IOP-008](IOP-008-time-and-timezone-model.md) is Completed as design under Accepted
+ADR-0016. IOP-018/019 configuration/migration foundations are also integrated.
+No unmerged prerequisite needs owner integration.
 
-Ámbito: Platform Core, Authentication and Users/RBAC. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Accepted ADR-0001/0003/0004/0005 preserve module, identity and customer boundaries;
+ADR-0012/0013 define ownership and RLS; ADR-0016 temporal semantics; ADR-0019/0020
+supply existing database/bootstrap patterns. Follow ADR-0007/0008 workflow.
+See the [ADR directory](../../architecture/adr/).
 
-## Current state
+ADR-0021 is Proposed, not authorization for the site seed. Proposed ADR-0018
+separately gates runtime business access; accepting ADR-0021 would not accept it.
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+## Security, data, API and UI boundaries
 
-## Desired state
+Keep customer names/source labels in configuration. Never infer scope or permission
+from them. Require both organization and site for site-owned records; preserve
+foreign keys and enabled/forced RLS. Privileged installation credentials must stay
+outside API/web containers, repository content and logs. No production data.
 
-Persist one configured site with explicit organization ownership and time zone.
+The proposal rejects changes to an existing site's identity, owner, name or zone.
+Transfers and zone corrections require separately reviewed work; source dates do
+not become occurrence timestamps or known 24-hour windows. No API, UI, runtime
+repository, authentication, user/grant seed, source seed or generic seed engine.
 
-## Requirements
+## Validation and documentation
 
-- Deliver only the selected POC slice or explicitly deferred future scope below.
-- Use the organization seed slice and validate the site relationship and IANA zone. Site
-  selectors and lifecycle administration are not required. Do not infer scope from
-  source labels or treat missing site as all sites.
+The [active execution plan](../active/IOP-026-site-model-plan.md) records the branch,
+proposal checks and implementation handoff. ADR-0021 specifies concrete validation
+scenarios. Proposal review is not runtime test evidence. Update database instructions
+and accepted architecture only when implementation/acceptance warrants it.
+POC scope and delivery map remain unchanged; no adjacent story is activated.
 
-## Acceptance criteria
+## Open decision
 
-- [ ] Persist one configured site with explicit organization ownership and time zone.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
-  unfinished future scope.
-
-## Domain considerations
-
-Organization representa el customer/tenant genérico; identidad, membership y permisos tienen responsabilidades distintas.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
-
-## Security considerations
-
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
-
-## Data considerations
-
-Conservar scope en entidades y relaciones; definir unicidad y lifecycle antes de migrar.
-
-## API considerations
-
-Operaciones públicas deben verificar identidad, permiso y scope; no exponer operaciones sin autorización durante el bootstrap.
-
-## UI considerations
-
-Mostrar solo scopes permitidos y errores de acceso claros; ocultar controles no sustituye autorización.
-
-## Dependencies
-
-[IOP-025](IOP-025-organization-model.md), [IOP-008](IOP-008-time-and-timezone-model.md).
-
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
-
-## Non-goals
-
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
-
-## Validation
-
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Accept or revise ADR-0021's explicit local migrator authority for initial site
+creation, with site storage, zone validation, two-part seed scope and conflict rules.
+Dependent implementation pauses under AGENTS.md rule 5; the documentation increment
+can be validated and committed independently.
