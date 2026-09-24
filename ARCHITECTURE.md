@@ -234,3 +234,13 @@ data unchanged; conflicting names fail. Runtime retains CONNECT only. This bound
 installation authority does not provide business authorization, sites, users,
 grants or administrative CRUD. ADR-0018 remains Proposed; see
 [commands and limitations](infra/database/README.md#initial-organization-seed-iop-025).
+
+## Accepted initial site bootstrap
+
+[ADR-0021](docs/architecture/adr/ADR-0021-local-site-bootstrap.md) extends the explicit
+local migrator bootstrap to initial site creation under IOP-026. It requires an
+existing organization, stable site identity, explicit validated IANA zone, scoped
+constraints and forced RLS with both organization and site selectors. Identical
+seeds leave data unchanged; conflicting owner, name or zone fails. Runtime keeps
+CONNECT only. The decision is Accepted; site storage and seed implementation remain
+pending. ADR-0018 remains Proposed, independently gating runtime business access.
