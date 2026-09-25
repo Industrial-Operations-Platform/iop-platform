@@ -6,6 +6,21 @@ increments selecting existing story slices, not five new mandatory architecture
 phases. Start a small plan/branch for the selected story; do not activate all IDs.
 A completed slice leaves a parent open when future requirements remain.
 
+## Delivery preference — 2026-09-25
+
+The owner prioritizes seeing the intended platform experience before substantial
+backend functionality. Start with a reviewable visual flow for upload, reporting
+dates, Executive Overview and analytical detail; identify fixture-backed states.
+Connect persistence and import/read operations progressively alongside the UI so
+that the final POC works end to end. A visual prototype alone is not completion.
+
+Views use predefined calculations and filters within the accepted metric scope;
+additional formulas require explicit definitions and reconciliation evidence.
+Reporting dates and duplicate rejection retain the existing source-date semantics.
+This sequencing preference does not add general organization/site CRUD, a formula
+editor or administration screens to the [POC scope](../product/scope-poc.md).
+Select implementation stories separately; IOP-026 remains the bounded site seed.
+
 ## Five observable increments
 
 | Increment | Existing story slices | Exit evidence |

@@ -1,49 +1,18 @@
 # IOP-NNN — Execution plan
 
-Source specification: link the permanent item under ../items/.
+Status, authorization, story branch and link to the permanent item.
 
-## Status and authorization
+## Changes and steps
 
-Planned. Record the user request and any accepted decisions; no inferred approval.
+List expected files, bounded steps and unresolved prerequisites. Link existing
+scope/decisions instead of copying them. Include schema/API/UI impacts when relevant.
 
-## Proposed implementation
+## Validation and evidence
 
-Selected scope/slice and acceptance criteria addressed.
+Specify relevant commands or review scenarios. Record actual results, limitations
+and authorized deviations. Do not invent tests or repeat a progress diary.
 
-## Files expected to change
+## Closure
 
-Explicit paths or justified areas.
-
-## Dependencies and decisions
-
-Verified prerequisites; unresolved decisions and independent work that can proceed.
-
-## Database changes
-
-Schema/migration impact or none.
-
-## API and UI changes
-
-Contracts and behavior or none.
-
-## Tests and validation
-
-Commands/scenarios mapped to acceptance criteria, including relevant failure paths.
-
-## Implementation steps
-
-1. Verify prerequisites.
-2. Make the scoped changes.
-3. Validate and synchronize documentation.
-
-## Completion checklist
-
-- [ ] Planned acceptance criteria verified with actual results.
-- [ ] Relevant tests/reviews completed; limitations recorded.
-- [ ] Scope deviations authorized and recorded before dependent work.
-- [ ] Item/backlog updated and plan moved to completed/ with links fixed.
-
-## Evidence and deviations
-
-Record actual files, commands/results and limitations. Do not claim the parent item
-is complete when only this slice has finished.
+Verify acceptance, synchronize item/backlog, move finished plan to completed/ and
+fix links. Keep decision-pending plans active and unfinished parent tasks open.
