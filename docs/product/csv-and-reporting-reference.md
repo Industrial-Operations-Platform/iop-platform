@@ -209,3 +209,13 @@ question below remains open. See the
 5. What data volumes and presentation/export outputs must the selected tools support?
 
 These questions are inputs to subsequent discussion, not inferred decisions.
+
+## Original CSV files retained in the repository
+
+On 2026-09-25 the owner explicitly requested adding three original examples of
+future imports: `Hitliste-20260701.csv`, `Hitliste-20260705.csv` and
+`Hitliste-20260707.csv`. See the [reference files and integrity manifest](reference-data/hitliste/README.md)
+for byte-preserved copies, provenance, checksums and structural observations.
+These are owner-supplied source data, distinct from the fictional analytical
+fixtures. Their inclusion does not establish runtime import acceptance, metric
+reconciliation, exact reporting windows or acceptance of pending ADRs.

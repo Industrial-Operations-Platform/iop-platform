@@ -255,3 +255,9 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-141 — Story branches and review workflow](items/IOP-141-branch-workflow.md) | Completed |
 | [IOP-142 — Align delivery with a fast analytical POC](items/IOP-142-poc-delivery-scope.md) | Completed |
 | [IOP-143 — Local agent instructions and concise documentation](items/IOP-143-concise-workflow.md) | Completed |
+
+## Owner-supplied reference data
+
+| Task context | Status |
+| --- | --- |
+| [IOP-145 — Preserve owner-supplied CSV reference files](items/IOP-145-csv-reference-files.md) | Completed |
