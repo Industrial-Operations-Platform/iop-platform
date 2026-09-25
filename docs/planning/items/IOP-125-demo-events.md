@@ -22,17 +22,17 @@ Provide representative CSV aggregates and independent expected totals.
 
 ## User / business value
 
-El equipo necesita demostrar IOP sin infraestructura o información empresarial.
+The team needs to demonstrate IOP without enterprise infrastructure or information.
 
 ## Context
 
-Ámbito: Synthetic demo and pilot fixtures. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Synthetic demo and pilot fixtures. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; backlog membership does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
 
 ## Desired state
 
@@ -55,34 +55,34 @@ Provide representative CSV aggregates and independent expected totals.
 
 ## Domain considerations
 
-Usar organizaciones, nombres, activos y relaciones ficticios; las fixtures no definen niveles rígidos del dominio.
+Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt their decisions.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify customer/site permissions and scope for relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Datos reproducibles, scope y procedencia explícitos; incluir casos inválidos/ambiguos útiles sin secretos.
+Use reproducible data with explicit scope and provenance; include useful invalid/ambiguous cases without secrets.
 
 ## API considerations
 
-Usar mecanismos de carga acordados; impedir que reset de demo pueda afectar producción.
+Use agreed loading mechanisms; prevent demo reset from affecting production.
 
 ## UI considerations
 
-El usuario debe distinguir demo y datos reales; el alcance no incluye diseñar nuevas pantallas.
+The user must be able to distinguish demo data from real data; designing new screens is outside scope.
 
 ## Dependencies
 
@@ -94,17 +94,17 @@ local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must specify executable commands and scenarios for the following criteria using the accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictitious tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.

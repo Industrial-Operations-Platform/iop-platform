@@ -10,91 +10,91 @@ M11 — OIP / Operational Intelligence. Proposed delivery slice.
 
 ## Goal
 
-Date/filter model. Resultado esperado: Filtros consistentes
+Date/filter model. Expected result: Consistent filters
 
 ## User / business value
 
-Operación y responsables necesitan métricas explicables para priorizar problemas.
+Operations staff and managers need explainable metrics to prioritize problems.
 
 ## Context
 
-Ámbito: Operational Intelligence (OIP). Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Operational Intelligence (OIP). See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; backlog membership does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
 
 ## Desired state
 
-Filtros consistentes
+Consistent filters
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-097.
-- OIP es un módulo de IOP; métricas desacopladas de UI y de esquemas de WinCC.
+- Deliver only the result described for IOP-097.
+- OIP is an IOP module; metrics are decoupled from the UI and WinCC schemas.
 
 ## Acceptance criteria
 
-- [ ] Filtros consistentes
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Consistent filters
+- [ ] The plan documents scenarios and required decisions without expanding scope.
+- [ ] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
-OIP es un módulo de IOP; métricas desacopladas de UI y de esquemas de WinCC.
+OIP is an IOP module; metrics are decoupled from the UI and WinCC schemas.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt their decisions.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify customer/site permissions and scope for relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Definir grano, cobertura, unidades y periodos; duración acumulada de alarmas no equivale automáticamente a downtime.
+Define grain, coverage, units and periods; accumulated alarm duration does not automatically equal downtime.
 
 ## API considerations
 
-Consultas con filtros de scope verificados y trazabilidad a registros contribuyentes.
+Queries use verified scope filters and traceability to contributing records.
 
 ## UI considerations
 
-Mostrar definición y límites de la métrica; no presentar correlación como causa raíz.
+Show the metric definition and limits; do not present correlation as root cause.
 
 ## Dependencies
 
 [IOP-089](IOP-089-analytics-query-layer.md), [IOP-008](IOP-008-time-and-timezone-model.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies indicate required contracts/capabilities, not numerical implementation
+order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must specify executable commands and scenarios for the following criteria using the accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictitious tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.
 
 ## Owner-supplied CSV and reporting context
 
