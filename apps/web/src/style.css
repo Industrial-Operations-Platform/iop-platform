@@ -1,13 +1,34 @@
 :root { font-family: system-ui, sans-serif; color: #172b3a; background: #f2f5f7; font-synthesis: none; }
 * { box-sizing: border-box; }
 body { margin: 0; }
-main { max-width: 48rem; margin: 10vh auto; padding: 1.5rem; }
-.eyebrow { color: #435c6b; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; }
-h1 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: .5rem; }
-.intro { line-height: 1.6; }
-section { margin-top: 2rem; padding: 1.5rem; background: white; border: 1px solid #ccd6dc; border-radius: .75rem; }
+.app-shell { max-width: 76rem; margin: auto; padding: 2rem; }
+header { border-bottom: 1px solid #ccd6dc; }
+.eyebrow { color: #435c6b; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+.product-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0; }
+.intro, p { line-height: 1.6; }
+nav { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 2rem; }
+nav a { padding: 1rem; text-decoration: none; border-bottom: 3px solid transparent; }
+nav a span { margin-right: .5rem; font-size: .8rem; }
+nav a[aria-current] { color: #123d51; border-color: #174e69; background: #e1edf1; font-weight: 700; }
+a { color: #174e69; text-underline-offset: .2em; }
+a:hover { color: #092738; text-decoration: underline; }
+main { padding: 2rem 0; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); margin: .5rem 0 1.5rem; }
+.preview-label { color: #684511; font-size: .85rem; }
+.context { padding: .5rem 1rem; border-left: 3px solid #829ba8; }
+.context p { margin: .4rem 0; font-size: .9rem; }
+section { margin-top: 1.5rem; padding: 2rem; background: white; border: 1px solid #ccd6dc; border-radius: .75rem; }
 h2 { margin-top: 0; font-size: 1.25rem; }
-button { background: #174e69; color: white; border: 0; border-radius: .35rem; padding: .8rem 1.1rem; font: inherit; cursor: pointer; }
+button, .action { display: inline-block; background: #174e69; color: white; border: 0; border-radius: .35rem; padding: .8rem 1.1rem; font: inherit; cursor: pointer; text-decoration: none; }
+.action:hover { background: #123d51; color: white; }
 button:disabled { background: #526976; cursor: wait; }
-button:focus-visible { outline: 3px solid #9c5700; outline-offset: 4px; }
-.note { color: #435563; line-height: 1.6; font-size: .9rem; margin-bottom: 0; }
+:focus-visible { outline: 3px solid #9c5700; outline-offset: 4px; }
+h1:focus { outline: none; }
+.note { color: #435563; line-height: 1.6; font-size: .9rem; }
+.actions { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem; }
+.health-panel section { background: transparent; padding: 1rem 1.5rem; }
+.health-panel h2 { font-size: 1rem; }
+footer { padding: 1rem 0; color: #435563; font-size: .8rem; border-top: 1px solid #ccd6dc; }
+.skip-link { position: absolute; top: -5rem; padding: 1rem; background: white; }
+.skip-link:focus { top: .5rem; }
+@media (max-width: 600px) { .app-shell { padding: 1rem; } nav { flex-direction: column; gap: 0; margin-top: 1rem; } nav a { padding: .75rem; } section { padding: 1.25rem; } }

@@ -1,7 +1,9 @@
 # Local web host
 
-IOP-017 supplies a React/TypeScript/Vite page that checks API process liveness.
-No CSV import, analytical views, authentication or database readiness is implemented.
+IOP-017 supplies the React/TypeScript/Vite host and API process-liveness check.
+IOP-116 adds navigation between Import CSV, Executive Overview and analytical
+detail. These destinations show explicit empty states; CSV submission, analytical
+results, filters and business access are not connected yet.
 
 ## Run locally
 
@@ -48,7 +50,8 @@ npm run test:e2e
 existing API suite and Jest/React Testing Library checks in a separate DOM config.
 The browser suite starts the compiled API and Vite preview itself; ports 3000 and
 4173 must be free. It checks actual proxy connectivity, narrow layout and keyboard
-error recovery. Browser artifacts are ignored by Git.
+error recovery, navigation history/reload, direct links, unknown destinations,
+focus and narrow/tablet layouts. Browser artifacts are ignored by Git.
 
 Browser types in `src/api/schema.d.ts` derive from the reviewed API OpenAPI 3.0.0
 artifact, never from Nest classes. After an authorized API contract change, run
@@ -58,3 +61,17 @@ The health consumer validates runtime data and tolerates additional response fie
 Dependencies are pinned in the root lockfile. Preserve their distributed license
 and third-party notices when packaging. Broader configuration, hooks, CI and business
 access checks remain separate delivery slices.
+
+## POC navigation
+
+Open `/#import` (the default), `/#overview` or `/#detail`. Native fragment links
+preserve browser back/forward and reload without server rewrite rules or a router
+dependency. Unknown fragments show a recovery link. Navigation moves keyboard
+focus to the page heading; a skip link bypasses the header. Scope and filter
+availability stay visible on each page. Only `/health` is requested; navigation
+never grants business permission or selects a trusted actor/scope.
+
+There are no fixture metrics or simulated imports. Real import/analytics and shared
+filters remain their own delivery slices; ADR-0018 remains Proposed. This completes
+only [IOP-116 navigation](../../docs/planning/items/IOP-116-navigation.md), not the
+end-to-end POC.

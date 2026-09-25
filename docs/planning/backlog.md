@@ -212,7 +212,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 | Contexto de tarea | Estado |
 | --- | --- |
-| [IOP-116 — App navigation](items/IOP-116-navigation.md) | Proposed |
+| [IOP-116 — App navigation](items/IOP-116-navigation.md) | Completed |
 | [IOP-117 — Role-aware home](items/IOP-117-role-home.md) | Proposed |
 | [IOP-118 — Area overview](items/IOP-118-area-overview.md) | Proposed |
 | [IOP-119 — Global search](items/IOP-119-global-search.md) | Proposed |
