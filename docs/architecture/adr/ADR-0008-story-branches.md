@@ -40,3 +40,12 @@ new work from this point forward, not retroactively.
 - One shared temporary branch: mixes stories and complicates isolated review.
 - Automatic merges or pushes: removes the owner's requested control.
 - Rewrite existing history into story branches: unnecessary and not requested.
+
+## Owner-approved publication convention — 2026-09-25
+
+An affirmative answer to a publication request authorizes the agent to merge the
+reviewed story into develop and push both refs to origin, unless the owner narrows
+the request. State that complete destination when asking. This supersedes the
+owner-performed merge requirement for that approved step only; stage/master,
+force pushes, history rewrites and branch deletion need separate authorization.
+See the [workflow](../../planning/workflow.md).

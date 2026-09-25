@@ -14,5 +14,7 @@ Also record the requested visual-first approach to the functional POC.
 - [x] POC delivery preference is recorded without expanding accepted functionality.
 
 Follow [workflow](../workflow.md) and Accepted ADR-0007/0008. No code, schema,
-bulk translation, CRUD implementation, merge or publication in this increment.
+bulk translation or CRUD implementation. The owner subsequently authorized merge
+and publication, and defined affirmative publication approval as delivery to
+origin/develop through the story branch; see the workflow.
 Evidence: [plan](../completed/IOP-143-concise-workflow-plan.md).

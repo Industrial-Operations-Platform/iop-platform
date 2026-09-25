@@ -51,7 +51,12 @@ local branch workflow. Use a story branch from develop before changes, including
 plans and documentation, and record its name in the plan. At least one branch per
 story; additional slices may use distinct names. Do not mix unrelated stories.
 
-The owner reviews and merges story → develop → stage → master. Stage is the chosen
+The owner controls promotion through story → develop → stage → master.
+When asking to publish, state that approval includes merging the reviewed story
+into develop and pushing both the story branch and develop to origin. An affirmative
+answer authorizes that full sequence; a narrower instruction takes precedence.
+This owner-approved convention (2026-09-25) does not authorize promotion to stage
+or master, force pushes, history rewrites or deleting branches. Stage is the chosen
 name for the intermediate branch. These refs alone do not create deployment or
 branch-protection configuration. Keep each pending review branch intact.
 
