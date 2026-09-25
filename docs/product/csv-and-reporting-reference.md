@@ -24,10 +24,21 @@ The owner reports a stable export format. The excerpt uses semicolon delimiters,
 quoted headers and seven columns. The supplied loader explicitly reads UTF-16;
 full exporter quoting rules remain unverified.
 
+IOP-012 subsequently inspected the complete owner-supplied `Hitliste-20260701.csv`
+on 2026-09-25: UTF-16 LE with BOM, CRLF, seven ordered columns and 681 data records.
+Only header fields are quoted; data fields are unquoted. Durations use `d h:mm:ss`,
+not a decimal-day or timestamp representation. All data records have seven nonempty
+cells and unsigned integer frequencies; no embedded delimiters/quotes, multiline
+cells or repeated five-dimension tuples were observed. This one file does not prove
+exporter uniqueness or all possible quoting/precision variants. Production rows
+and operational totals remain outside Git. See the bounded
+[POC CSV source contract](../architecture/csv-source-contract-poc.md) for supported
+syntax, exact-second conversion, neutral fields, mapping and rejection outcomes.
+
 | External column | Observed purpose | Interpretation to verify |
 | --- | --- | --- |
 | Häufigkeit | Integer frequency | Count of occurrences represented by a row; exact grouping and coverage remain open. |
-| Dauer | Duration text | Appears to be days plus hours:minutes:seconds; verify against the exporter/script. |
+| Dauer | Duration text | Full sample matches `d h:mm:ss`; the POC contract defines exact-second conversion. Legacy helper parity remains unverified. |
 | Bereich | Area label | Customer-scoped grouping, not a generic hierarchy level. |
 | Betriebsmittelkennzeichen | Equipment designation | Preserve as opaque text, including leading equals signs and punctuation. |
 | Meldetext | Alarm/message description | Includes both collective faults and more specific fault descriptions. |
@@ -97,8 +108,9 @@ For the future port, capture the lists as customer-scoped mapping configuration
 with an explicit unclassified outcome. Preserve unmapped records in totals and
 make them visible for administrator review. Verify text-normalization/comparison
 behavior against the current report rather than assuming a replacement language's
-string trimming is identical. Conflicting mappings and changes to historical
-classification need a defined policy before implementation.
+string trimming is identical. The IOP-012 contract now rejects duplicate normalized
+mapping keys and freezes the applied classification/revision; historical changes
+require separately authorized correction work. Actual mapping delivery is IOP-049.
 
 Reproducing the current analytics requires both Python data preparation and this
 Power BI transformation. Porting the loader alone would omit sector classification.
