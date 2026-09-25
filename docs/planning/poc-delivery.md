@@ -41,6 +41,11 @@ IOP-014 has completed the [local security baseline](../architecture/security-bas
 as design. Configuration, input limits and scope controls still require executable
 evidence in their delivery slices; ADR-0018 remains Proposed.
 
+IOP-011 has a [CSV preservation proposal](../architecture/csv-preservation-poc.md)
+and [Proposed ADR-0022](../architecture/adr/ADR-0022-poc-csv-preservation.md).
+The bounded storage choice awaits owner acceptance; no RAW storage implementation
+is claimed. ADR-0018 remains a separate runtime access gate.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context

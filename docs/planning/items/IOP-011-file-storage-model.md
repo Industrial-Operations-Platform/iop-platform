@@ -2,7 +2,9 @@
 
 ## Status
 
-Proposed
+Blocked — design proposal prepared on 2026-09-25; awaiting owner acceptance of
+[ADR-0022](../../architecture/adr/ADR-0022-poc-csv-preservation.md).
+No runtime implementation is claimed.
 
 ## POC delivery applicability
 
@@ -10,7 +12,7 @@ Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
 2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
 control the selected slice; older general platform prose is future context, not
 an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+[delivery map](../poc-delivery.md).
 
 ## Milestone
 
@@ -22,17 +24,20 @@ Define minimum preservation and retrieval of original CSV input.
 
 ## User / business value
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+The team needs reviewable decisions before building a reusable platform.
 
 ## Context
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: product and cross-module architecture. See [modules](../../architecture/modules.md)
+and the [planning workflow](../workflow.md). This initial context comes from the
+owner's requested outline; a backlog entry alone does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+The [preservation contract](../../architecture/csv-preservation-poc.md) proposes
+original-byte retention, scoped provenance/retrieval, fixed admission budgets and
+failure/reset boundaries. ADR-0022 compares storage options and recommends bounded
+PostgreSQL binary rows. Neither the proposal nor its implementation is accepted.
 
 ## Desired state
 
@@ -50,43 +55,52 @@ Define minimum preservation and retrieval of original CSV input.
 
 - [ ] Define minimum preservation and retrieval of original CSV input.
 - [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
+
+The first two criteria have a reviewed proposal and scenario walkthroughs; final
+closure waits for the storage decision. Runtime tests belong to delivering stories.
 
 ## Domain considerations
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+Define contracts and decisions; keep identity, permissions, scope and providers separate.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt their decisions.
+ADR-0022 retains Accepted ADR-0012/0013/0014 scope, RLS and permissions.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permissions and organization/site scope on relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
+Original CSV retrieval requires `imports.review`, independently of analytics access.
 
 ## Data considerations
 
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
+Document persistence and isolation implications without creating schemas.
+Preserve original bytes and provenance, with no inferred occurrence timestamps.
 
 ## API considerations
 
-Especificar contratos cuando corresponda; no crear endpoints.
+Specify contracts where relevant; do not create endpoints.
 
 ## UI considerations
 
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
+Document user needs; do not select or build UI by inference.
 
 ## Dependencies
 
 [IOP-005](IOP-005-tenancy-and-data-isolation.md), [IOP-014](IOP-014-security-baseline.md).
+Both relevant design slices are completed and integrated on develop. The completed
+[IOP-012 source contract](IOP-012-source-integration-contract.md) supplies the CSV
+format and reporting-date semantics used by this proposal.
 
 Dependencies require only their relevant POC contracts/slices, not completion of
 all future parent capabilities. Runtime business access also requires an accepted
@@ -94,17 +108,28 @@ local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Implementing applications, migrations, endpoints or infrastructure. Do not introduce
+customer names into the core. Maps, attachments, a general storage platform and
+full retention infrastructure remain deferred beyond the POC.
 
 ## Validation
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+Review consistency, links, scenarios and decisions; do not invent test commands or
+write runtime code to validate this design task. The
+[active plan](../active/IOP-011-csv-preservation-plan.md) records documentation
+checks and limitations. No runtime security, storage or performance evidence is claimed.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its [backlog](../backlog.md) status and execution plan.
+Update contracts, model, guides or ADRs only when this task changes their content.
+The preservation contract, Proposed ADR-0022 and delivery discovery link are added.
+The original story's Spanish prose is translated in full; dependency stories read
+were already English. Accepted architecture baselines are unchanged.
 
 ## Open questions
 
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+Accept ADR-0022's bounded PostgreSQL storage and linked preservation contract, or
+select an alternative before dependent work. Ingestion transaction/publication and
+reset implementation remain separate delivery work; acceptance of this design does
+not accept ADR-0018 or complete those stories.
