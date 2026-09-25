@@ -1,0 +1,17 @@
+{
+  "organizationId": "fixture-org-001",
+  "organizationName": "Example Operations",
+  "siteId": "fixture-site-001",
+  "siteName": "Example Works",
+  "siteTimeZone": "Europe/Zurich",
+  "sourceId": "fixture-source-001",
+  "mappingRevision": "fixture-mapping-v1",
+  "sectorBySourceArea": {
+    "Area A": "alpha",
+    "Area B": "beta"
+  },
+  "sectorLabels": {
+    "alpha": "Preparation",
+    "beta": "Dispatch"
+  }
+}

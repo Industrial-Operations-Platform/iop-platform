@@ -1,0 +1,277 @@
+{
+  "reportingWindowStatus": "unknown",
+  "missingReportingDates": [
+    "2026-07-02"
+  ],
+  "validFiles": [
+    {
+      "path": "valid/Hitliste-20260701.csv",
+      "reportingDate": "2026-07-01",
+      "blankLineCount": 1,
+      "dataRecordCount": 6,
+      "reportedFrequency": 12,
+      "accumulatedAlarmSeconds": 94055,
+      "unclassifiedRecordNumbers": [
+        6,
+        8
+      ],
+      "repeatedTupleGroups": [
+        [
+          2,
+          7
+        ]
+      ],
+      "rows": [
+        [
+          2,
+          2,
+          90,
+          "Area A",
+          "=EQ-001",
+          "Jam",
+          "01",
+          "007",
+          "alpha"
+        ],
+        [
+          3,
+          3,
+          93784,
+          "Area B",
+          "=EQ-002",
+          "Fault; check \"A\"",
+          "X",
+          "008",
+          "beta"
+        ],
+        [
+          5,
+          0,
+          0,
+          "Area A",
+          "=EQ-003",
+          "Idle",
+          "01",
+          "007",
+          "alpha"
+        ],
+        [
+          6,
+          4,
+          30,
+          "Area X",
+          "=EQ-004",
+          "Unmapped alarm",
+          "X",
+          "009",
+          null
+        ],
+        [
+          7,
+          2,
+          90,
+          "Area A",
+          "=EQ-001",
+          "Jam",
+          "01",
+          "007",
+          "alpha"
+        ],
+        [
+          8,
+          1,
+          61,
+          "area a",
+          "=EQ-005",
+          "Case-sensitive area",
+          "01",
+          "007",
+          null
+        ]
+      ]
+    },
+    {
+      "path": "valid/Hitliste-20260703.csv",
+      "reportingDate": "2026-07-03",
+      "blankLineCount": 0,
+      "dataRecordCount": 3,
+      "reportedFrequency": 7,
+      "accumulatedAlarmSeconds": 3720,
+      "unclassifiedRecordNumbers": [
+        4
+      ],
+      "repeatedTupleGroups": [],
+      "rows": [
+        [
+          2,
+          5,
+          120,
+          "Area A",
+          "=EQ-001",
+          "Jam",
+          "01",
+          "007",
+          "alpha"
+        ],
+        [
+          3,
+          2,
+          3600,
+          "Area B",
+          "=EQ-002",
+          "Fault; check \"A\"",
+          "X",
+          "008",
+          "beta"
+        ],
+        [
+          4,
+          0,
+          0,
+          "Area X",
+          "=EQ-004",
+          "Unmapped alarm",
+          "X",
+          "009",
+          null
+        ]
+      ]
+    }
+  ],
+  "combined": {
+    "dataRecordCount": 9,
+    "reportedFrequency": 19,
+    "accumulatedAlarmSeconds": 97775
+  },
+  "bySector": [
+    {
+      "sectorKey": "alpha",
+      "dataRecordCount": 4,
+      "reportedFrequency": 9,
+      "accumulatedAlarmSeconds": 300
+    },
+    {
+      "sectorKey": "beta",
+      "dataRecordCount": 2,
+      "reportedFrequency": 5,
+      "accumulatedAlarmSeconds": 97384
+    },
+    {
+      "sectorKey": null,
+      "dataRecordCount": 3,
+      "reportedFrequency": 5,
+      "accumulatedAlarmSeconds": 91
+    }
+  ],
+  "filterChecks": [
+    {
+      "filters": {
+        "sourceArea": "Area A",
+        "sourceEquipmentReference": "=EQ-001",
+        "sourceMessageText": "Jam"
+      },
+      "contributingRecords": [
+        [
+          "2026-07-01",
+          2
+        ],
+        [
+          "2026-07-01",
+          7
+        ],
+        [
+          "2026-07-03",
+          2
+        ]
+      ],
+      "dataRecordCount": 3,
+      "reportedFrequency": 9,
+      "accumulatedAlarmSeconds": 300
+    },
+    {
+      "filters": {
+        "reportingDate": "2026-07-01",
+        "sectorKey": "beta",
+        "sourceArea": "Area B",
+        "sourceEquipmentReference": "=EQ-002",
+        "sourceMessageText": "Fault; check \"A\""
+      },
+      "contributingRecords": [
+        [
+          "2026-07-01",
+          3
+        ]
+      ],
+      "dataRecordCount": 1,
+      "reportedFrequency": 3,
+      "accumulatedAlarmSeconds": 93784
+    }
+  ],
+  "invalidFiles": [
+    {
+      "path": "invalid/negative-frequency/Hitliste-20260702.csv",
+      "reason": "negative-frequency",
+      "sourceRecordNumber": 3,
+      "field": "reportedFrequency",
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/invalid-duration/Hitliste-20260702.csv",
+      "reason": "invalid-duration",
+      "sourceRecordNumber": 3,
+      "field": "accumulatedAlarmSeconds",
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/missing-area/Hitliste-20260702.csv",
+      "reason": "missing-area",
+      "sourceRecordNumber": 3,
+      "field": "sourceArea",
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/frequency-overflow/Hitliste-20260702.csv",
+      "reason": "frequency-overflow",
+      "sourceRecordNumber": 3,
+      "field": "reportedFrequency",
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/extra-cell/Hitliste-20260702.csv",
+      "reason": "extra-cell",
+      "sourceRecordNumber": 3,
+      "field": null,
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/wrong-encoding/Hitliste-20260702.csv",
+      "reason": "wrong-encoding",
+      "sourceRecordNumber": null,
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/wrong-header/Hitliste-20260702.csv",
+      "reason": "wrong-header",
+      "sourceRecordNumber": 1,
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/unclosed-quote/Hitliste-20260702.csv",
+      "reason": "unclosed-quote",
+      "sourceRecordNumber": 2,
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/header-only/Hitliste-20260702.csv",
+      "reason": "header-only",
+      "sourceRecordNumber": null,
+      "admittedRecordCount": 0
+    },
+    {
+      "path": "invalid/invalid-date/Hitliste-20260230.csv",
+      "reason": "invalid-date",
+      "sourceRecordNumber": null,
+      "admittedRecordCount": 0
+    }
+  ]
+}

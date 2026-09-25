@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed
+Completed — static POC fixtures and independent expected outputs delivered on
+2026-09-25. Real importer validation remains an IOP-103 handoff.
 
 ## POC delivery applicability
 
@@ -14,7 +15,7 @@ an additional POC gate. See [POC scope](../../product/scope-poc.md) and
 
 ## Milestone
 
-M16 — Demo / Pilot Dataset. Proposed delivery slice.
+M16 — Demo / Pilot Dataset. Bounded POC fixture slice.
 
 ## Goal
 
@@ -22,17 +23,20 @@ Provide representative CSV aggregates and independent expected totals.
 
 ## User / business value
 
-El equipo necesita demostrar IOP sin infraestructura o información empresarial.
+The team needs to demonstrate IOP without enterprise infrastructure or information.
 
 ## Context
 
-Ámbito: Synthetic demo and pilot fixtures. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: synthetic demo and pilot fixtures. See [modules](../../architecture/modules.md) and
+the [planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; backlog membership alone does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+The [fixture corpus](../../../fixtures/analytical-poc/README.md) provides 14 synthetic
+CSV files, explicit fictional scope/mapping and literal expected outputs. The
+baseline contains nine aggregates across two reporting dates; invalid and duplicate
+scenarios are separate. No importer, database seed or runtime access is delivered.
 
 ## Desired state
 
@@ -48,45 +52,49 @@ Provide representative CSV aggregates and independent expected totals.
 
 ## Acceptance criteria
 
-- [ ] Provide representative CSV aggregates and independent expected totals.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Provide representative CSV aggregates and independent expected totals.
+- [x] Validate the slice-specific outcomes and limitations in Requirements.
+- [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
 ## Domain considerations
 
-Usar organizaciones, nombres, activos y relaciones ficticios; las fixtures no definen niveles rígidos del dominio.
+Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt their decisions.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify customer/site permissions and scope for relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Datos reproducibles, scope y procedencia explícitos; incluir casos inválidos/ambiguos útiles sin secretos.
+Use reproducible data with explicit scope and provenance; include useful invalid/ambiguous cases without secrets.
 
 ## API considerations
 
-Usar mecanismos de carga acordados; impedir que reset de demo pueda afectar producción.
+Use agreed loading mechanisms; prevent demo reset from affecting production.
 
 ## UI considerations
 
-El usuario debe distinguir demo y datos reales; el alcance no incluye diseñar nuevas pantallas.
+The user must distinguish demo and real data; scope does not include designing new screens.
 
 ## Dependencies
 
 [IOP-123](IOP-123-demo-organization.md), [IOP-012](IOP-012-source-integration-contract.md).
+
+IOP-012 supplies the completed source contract. IOP-123 remains Proposed; this
+standalone corpus uses descriptive fixture IDs and does not claim a seeded demo.
+IOP-123 must bind or seed that scope before runtime integration.
 
 Dependencies require only their relevant POC contracts/slices, not completion of
 all future parent capabilities. Runtime business access also requires an accepted
@@ -94,17 +102,23 @@ local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+Independent Python standard-library inspection verified encoding, physical lines,
+normalized rows, exact date/sector/filter totals, repeated tuples, ten intentional
+invalid inputs and duplicate bytes. See the [completed plan](../completed/IOP-125-analytical-fixtures-plan.md).
+Admission, retry, access denial and concurrency scenarios await the real importer
+under IOP-103; fixture checks are not runtime test evidence.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its [backlog](../backlog.md) status and execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+No open decision blocks static fixture delivery. Seed binding, real importer
+validation and observed end-to-end timings remain later handoffs. Reporting windows
+and exporter grouping remain unknown as required by the source contract.

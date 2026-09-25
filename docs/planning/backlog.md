@@ -226,7 +226,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | --- | --- |
 | [IOP-123 — Synthetic organization](items/IOP-123-demo-organization.md) | Proposed |
 | [IOP-124 — Synthetic asset structure](items/IOP-124-demo-assets.md) | Proposed |
-| [IOP-125 — Synthetic analytical CSV fixtures](items/IOP-125-demo-events.md) | Proposed |
+| [IOP-125 — Synthetic analytical CSV fixtures](items/IOP-125-demo-events.md) | Completed |
 | [IOP-126 — Synthetic workforce](items/IOP-126-demo-workforce.md) | Proposed |
 | [IOP-127 — Synthetic maintenance](items/IOP-127-demo-maintenance.md) | Proposed |
 | [IOP-128 — Demo reset](items/IOP-128-demo-reset.md) | Proposed |
