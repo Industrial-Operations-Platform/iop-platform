@@ -2,9 +2,9 @@
 
 ## Status
 
-Proposed — prepared on 2026-09-25 under
+Accepted — explicitly approved by the owner on 2026-09-25 under
 [IOP-011](../../planning/items/IOP-011-file-storage-model.md).
-Requires owner acceptance before dependent storage implementation. Does not accept
+Acceptance covers the storage design and linked contract only. Does not accept
 [ADR-0018](ADR-0018-local-poc-execution-context.md) or enable runtime access.
 
 ## Context and alternatives
@@ -26,7 +26,7 @@ Row policies require explicit configuration; owners and privileged roles need
 special care: [row security](https://www.postgresql.org/docs/17/ddl-rowsecurity.html).
 Official PostgreSQL 17 references consulted on 2026-09-25.
 
-## Proposed decision
+## Decision
 
 Integrations owns an immutable, site-scoped original CSV payload stored as `bytea`
 in the existing dedicated local PostgreSQL database, with its import provenance.
@@ -50,9 +50,9 @@ introduced. `imports.review` governs original-input retrieval.
 
 ## Consequences and acceptance boundary
 
-The proposal keeps CSV evidence and metadata in the existing local data target,
+The decision keeps CSV evidence and metadata in the existing local data target,
 with no runtime filesystem upload area. Database growth, memory use and retrieval
-latency still require measurement; the proposed logical quota does not bound WAL,
+latency still require measurement; the logical quota does not bound WAL,
 indexes, backups or physical database size. This is not production backup, retention,
 cryptographic authenticity or protection from privileged local operators.
 
@@ -61,7 +61,7 @@ automatic expiry, replacement or replay. Revisit storage if measured file sizes,
 concurrency, operational recovery or shared hosting exceed this bounded use case.
 Do not build a provider interface in anticipation of that possibility.
 
-Acceptance would select this storage choice and the linked POC contract only.
+Acceptance selects this storage choice and the linked POC contract only.
 Schemas, endpoints, importer implementation and reset commands remain separate
 stories. ADR-0018 or another accepted context remains an independent runtime gate.
 Required verification scenarios are in the preservation contract; none has run as

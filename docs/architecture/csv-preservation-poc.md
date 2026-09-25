@@ -1,7 +1,7 @@
 # POC original CSV preservation and retrieval
 
-Proposed design under [IOP-011](../planning/items/IOP-011-file-storage-model.md)
-and [ADR-0022](adr/ADR-0022-poc-csv-preservation.md), pending owner acceptance.
+Accepted design under [IOP-011](../planning/items/IOP-011-file-storage-model.md)
+and [ADR-0022](adr/ADR-0022-poc-csv-preservation.md), explicitly approved by the owner on 2026-09-25.
 This specializes the [CSV source contract](csv-source-contract-poc.md) and
 [security baseline](security-baseline-poc.md) for the [local POC](../product/scope-poc.md).
 No storage, endpoint, schema or runtime security is implemented here.
@@ -34,7 +34,7 @@ references its scoped import and original physical line number under IOP-012.
 Preserve original duration spelling through RAW even when normalized seconds differ.
 No copy of RAW content belongs in application logs, public assets or Git.
 
-## Proposed finite POC budgets
+## Finite POC budgets
 
 Use the following fixed defaults and maxima for the first delivery; lower host
 limits must be documented consistently. Increasing any maximum requires a reviewed

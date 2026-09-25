@@ -1,6 +1,6 @@
 # IOP-011 — CSV preservation plan
 
-Status: Blocked — awaiting owner acceptance of Proposed ADR-0022. Authorized by the owner's 2026-09-25 request to work on
+Status: Completed — owner accepted ADR-0022 and authorized publication on 2026-09-25. Authorized by the owner's 2026-09-25 request to work on
 [IOP-011](../items/IOP-011-file-storage-model.md), limited to the
 [POC](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 Branch: `docs/IOP-011-csv-preservation`, created from clean `develop` before edits.
@@ -18,6 +18,12 @@ Branch: `docs/IOP-011-csv-preservation`, created from clean `develop` before edi
 4. Synchronize IOP-011, backlog and a discovery link in `poc-delivery.md`.
    No application, migration, configuration or endpoint changes. No map/attachment
    platform, generic storage abstraction, worker or retention infrastructure.
+
+5. Record the owner acceptance in ADR-0022 and the preservation contract, close
+   the item/backlog, and synchronize discovery guidance in ARCHITECTURE.md and
+   the data model. Move this plan to completed after documentation checks.
+6. Commit the acceptance increment, merge this story into develop and push both
+   branches to origin under the owner’s explicit approval. Preserve the story branch.
 
 ## Validation and evidence
 
@@ -40,7 +46,13 @@ Evidence recorded on 2026-09-25:
 
 ## Closure
 
-Commit the validated documentation increment. Keep item/backlog and this plan
-Blocked if storage acceptance is pending, with an explicit decision request.
-Move the plan to completed only after all design criteria are satisfied.
-Runtime access independently requires acceptance of ADR-0018 or an alternative.
+The owner explicitly accepted ADR-0022 and authorized merging the story into develop
+and pushing both branches to origin. The accepted contract, item/backlog, architecture
+and data-model discovery guidance are synchronized; all design criteria are met.
+This plan moves to completed. Runtime access independently requires acceptance of
+ADR-0018 or an alternative; no application implementation or adjacent story is closed.
+
+Acceptance validation: changed-document relative links and item/backlog/ADR/plan
+statuses checked successfully; `git diff --check` passed. The remote was fetched
+and develop matched origin/develop before the authorized integration. Publication
+results and commit hashes are reported in the session, not predicted as evidence.

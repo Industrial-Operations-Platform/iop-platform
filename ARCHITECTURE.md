@@ -244,3 +244,14 @@ constraints and forced RLS with both organization and site selectors. Identical
 seeds leave data unchanged; conflicting owner, name or zone fails. Runtime keeps
 CONNECT only. IOP-026 implements the site migration, invoker zone-validation trigger and explicit
 insert-only seed. ADR-0018 remains Proposed, independently gating runtime business access.
+
+
+## Accepted POC CSV preservation
+
+[ADR-0022](docs/architecture/adr/ADR-0022-poc-csv-preservation.md) selects bounded
+original CSV storage as Integrations-owned PostgreSQL `bytea` rows with immutable
+scoped provenance, integrity checks and `imports.review` retrieval. The
+[preservation contract](docs/architecture/csv-preservation-poc.md) defines admission
+budgets, rejected-input behavior and reset boundaries. IOP-011 is complete as design;
+no RAW schema or endpoint is implemented. Maps, attachments and a general storage
+abstraction remain deferred. ADR-0018 remains an independent runtime access gate.

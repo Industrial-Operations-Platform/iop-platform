@@ -207,3 +207,14 @@ Forced RLS requires both seed selectors for migrator SELECT/INSERT. Identical se
 leave the row unchanged; different owner/name/zone fails. Runtime has no business
 grants. Site transfers, zone corrections, CRUD and lifecycle remain deferred.
 See [commands and evidence](../../infra/database/README.md#initial-site-seed-iop-026).
+
+
+## Accepted POC original CSV design
+
+[ADR-0022](adr/ADR-0022-poc-csv-preservation.md) places bounded original CSV bytes
+and scoped import provenance under Integrations in PostgreSQL. Original bytes and
+mandatory metadata become durable together; a RAW receipt is distinct from successful
+analytical admission. Scoped normalized references retain import identity and original
+physical line numbers. See the [preservation contract](csv-preservation-poc.md) for
+budgets, integrity, authorized retrieval and failure/reset semantics. This is accepted
+design only; physical RAW/import tables and publication mechanics remain delivery work.
