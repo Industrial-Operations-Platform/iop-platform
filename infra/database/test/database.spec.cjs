@@ -50,16 +50,16 @@ test('fresh provisioning, simultaneous first migrations and unchanged rerun', as
   await provision(configs);
   const first = await Promise.allSettled([migrate(configs.migrator), migrate(configs.migrator)]);
   expect(first.some((result) => result.status === 'fulfilled')).toBe(true);
-  expect(first.filter((result) => result.status === 'fulfilled').reduce((sum, result) => sum + result.value, 0)).toBe(2);
+  expect(first.filter((result) => result.status === 'fulfilled').reduce((sum, result) => sum + result.value, 0)).toBe(3);
   for (const result of first) {
     if (result.status === 'rejected') expect(result.reason.message).toContain('lock');
   }
-  expect(await history()).toEqual([{ name: '20260923000000-privilege-baseline' }, { name: '20260924000000-organizations' }]);
+  expect(await history()).toEqual([{ name: '20260923000000-privilege-baseline' }, { name: '20260924000000-organizations' }, { name: '20260925000000-sites' }]);
   await provision(configs);
   expect(await migrate(configs.migrator)).toBe(0);
   const tables = await query('bootstrap', "SELECT schemaname, tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema')");
-  expect(tables.rows).toEqual(expect.arrayContaining([{ schemaname: 'iop_migrations', tablename: 'history' }, { schemaname: 'platform_core', tablename: 'organizations' }]));
-  expect(tables.rows).toHaveLength(2);
+  expect(tables.rows).toEqual(expect.arrayContaining([{ schemaname: 'iop_migrations', tablename: 'history' }, { schemaname: 'platform_core', tablename: 'organizations' }, { schemaname: 'platform_core', tablename: 'sites' }]));
+  expect(tables.rows).toHaveLength(3);
 });
 
 test('runtime connects but cannot migrate, change history, create objects or assume elevated roles', async () => {
@@ -83,16 +83,17 @@ test('failed DDL leaves no partial history or objects; corrected fixture applies
   const directory = fixture({
     '20260923000000-privilege-baseline.sql': 'SELECT 1;',
     '20260924000000-organizations.sql': 'SELECT 1;',
-    '20260924000001-failure.sql': 'CREATE TABLE iop_migrations.rollback_probe(id int); SELECT 1 / 0;',
+    '20260925000000-sites.sql': 'SELECT 1;',
+    '20260925000001-failure.sql': 'CREATE TABLE iop_migrations.rollback_probe(id int); SELECT 1 / 0;',
   });
   await expect(migrate(configs.migrator, directory)).rejects.toThrow();
   expect((await query('migrator', "SELECT to_regclass('iop_migrations.rollback_probe') AS object")).rows[0].object).toBeNull();
-  expect(await history()).toHaveLength(2);
-  writeFileSync(join(directory, '20260924000001-failure.sql'), '-- Up Migration\nCREATE TABLE iop_migrations.rollback_probe(id int);');
+  expect(await history()).toHaveLength(3);
+  writeFileSync(join(directory, '20260925000001-failure.sql'), '-- Up Migration\nCREATE TABLE iop_migrations.rollback_probe(id int);');
   expect(await migrate(configs.migrator, directory)).toBe(1);
   expect(await migrate(configs.migrator, directory)).toBe(0);
   // Remove disposable fixture metadata only; committed migrations are never edited.
-  await query('migrator', "DROP TABLE iop_migrations.rollback_probe; DELETE FROM iop_migrations.history WHERE name = '20260924000001-failure'");
+  await query('migrator', "DROP TABLE iop_migrations.rollback_probe; DELETE FROM iop_migrations.history WHERE name = '20260925000001-failure'");
 });
 
 test('an advisory lock rejects a competing runner and permits an explicit retry', async () => {
@@ -137,6 +138,6 @@ test('a second empty database reproduces the same metadata using existing cluste
     await admin.query('CREATE DATABASE iop_local OWNER iop_bootstrap');
   } finally { await admin.end(); }
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(2);
-  expect(await history()).toEqual([{ name: '20260923000000-privilege-baseline' }, { name: '20260924000000-organizations' }]);
+  expect(await migrate(configs.migrator)).toBe(3);
+  expect(await history()).toEqual([{ name: '20260923000000-privilege-baseline' }, { name: '20260924000000-organizations' }, { name: '20260925000000-sites' }]);
 });

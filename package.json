@@ -23,6 +23,7 @@
     "db:build": "tsc -p infra/database/tsconfig.json",
     "db:provision": "npm run db:build && node infra/database/dist/cli.js provision",
     "db:seed:organization": "npm run db:build && node infra/database/dist/cli.js seed-organization",
+    "db:seed:site": "npm run db:build && node infra/database/dist/cli.js seed-site",
     "db:migrate": "npm run db:build && node infra/database/dist/cli.js migrate",
     "db:test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand --testPathPatterns configuration",
     "test:database": "npm run db:build && node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand"

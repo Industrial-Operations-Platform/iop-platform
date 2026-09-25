@@ -36,7 +36,7 @@ test('provisioning requires separate passwords; migration needs only its own', (
   expect(configuration({ ...env, IOP_POSTGRES_PASSWORD: undefined, IOP_RUNTIME_PASSWORD: undefined }, 'migrator').user).toBe('iop_migrator');
 });
 
-test.each(['provision', 'migrate', 'seed-organization', 'unknown'])('CLI rejects incomplete input safely: %s', (command) => {
+test.each(['provision', 'migrate', 'seed-organization', 'seed-site', 'unknown'])('CLI rejects incomplete input safely: %s', (command) => {
   const result = spawnSync(process.execPath, [resolve(__dirname, '../dist/cli.js'), command], {
     env: { PATH: process.env.PATH, IOP_DATABASE_NAME: 'do-not-print-this-value' }, encoding: 'utf8',
   });
@@ -67,5 +67,26 @@ test.each([undefined, '', ' ', ' leading', 'trailing ', '\u00a0name', 'name\uFEF
 test('seed names preserve Unicode and SQL punctuation as data', () => {
   for (const name of ["O'Brien; SELECT 1", 'Fictional Zürich', '🏭'.repeat(200)]) {
     expect(organizationConfiguration({ ...seed, IOP_SEED_ORGANIZATION_NAME: name })).toEqual({ id: 'org-test', name });
+  }
+});
+
+const { siteConfiguration } = require('../dist/seed-site.js');
+const site = { IOP_SEED_ORGANIZATION_ID: 'org-test', IOP_SEED_SITE_ID: 'site-test',
+  IOP_SEED_SITE_NAME: 'Fictional Site', IOP_SEED_SITE_TIME_ZONE: 'Europe/Zurich' };
+test.each(['IOP_SEED_ORGANIZATION_ID', 'IOP_SEED_SITE_ID'])('site rejects invalid %s', key => {
+  for (const value of [undefined, '', ' ', '-id', 'a/b', 'x'.repeat(65), 'id\n']) {
+    expect(() => siteConfiguration({ ...site, [key]: value })).toThrow('IDs');
+  }
+});
+test.each([undefined, '', ' ', ' leading', 'trailing\u00a0', 'a\nb', 'a\u0085b', '\ud800', 'x'.repeat(201)])('site rejects invalid name: %p', value => {
+  expect(() => siteConfiguration({ ...site, IOP_SEED_SITE_NAME: value })).toThrow('display name');
+});
+test.each([undefined, '', ' UTC', 'UTC\n', '+01:00', 'CET', 'Europe//Zurich', 'Unknown/Zone', 'x'.repeat(101)])('site rejects invalid zone: %p', value => {
+  expect(() => siteConfiguration({ ...site, IOP_SEED_SITE_TIME_ZONE: value })).toThrow('time zone');
+});
+test('site preserves explicit named zones, UTC, aliases and Unicode names', () => {
+  for (const timeZone of ['UTC', 'Europe/Zurich', 'US/Eastern']) {
+    expect(siteConfiguration({ ...site, IOP_SEED_SITE_NAME: '🏭'.repeat(200), IOP_SEED_SITE_TIME_ZONE: timeZone }))
+      .toEqual({ organizationId: 'org-test', id: 'site-test', name: '🏭'.repeat(200), timeZone });
   }
 });

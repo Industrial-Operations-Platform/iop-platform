@@ -51,3 +51,23 @@ services:
     depends_on:
       database:
         condition: service_healthy
+
+  database-seed-site:
+    profiles: [database-tools]
+    build:
+      context: .
+      dockerfile: infra/database/Dockerfile
+    command: [seed-site]
+    environment:
+      IOP_DATABASE_MODE: local
+      IOP_DATABASE_HOST: database
+      IOP_DATABASE_PORT: '5432'
+      IOP_DATABASE_NAME: iop_local
+      IOP_MIGRATOR_PASSWORD: ${IOP_MIGRATOR_PASSWORD:?Set IOP_MIGRATOR_PASSWORD}
+      IOP_SEED_ORGANIZATION_ID: ${IOP_SEED_ORGANIZATION_ID:-}
+      IOP_SEED_SITE_ID: ${IOP_SEED_SITE_ID:-}
+      IOP_SEED_SITE_NAME: ${IOP_SEED_SITE_NAME:-}
+      IOP_SEED_SITE_TIME_ZONE: ${IOP_SEED_SITE_TIME_ZONE:-}
+    depends_on:
+      database:
+        condition: service_healthy
