@@ -26,3 +26,6 @@ playwright-report/
 
 # Private local POC configuration
 config/*.local.json
+
+# Local agent instructions
+/AGENTS.md

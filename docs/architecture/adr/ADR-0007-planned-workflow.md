@@ -51,3 +51,12 @@ not accept its design or promise its delivery in v1.
 - Put task scope in active plans: loses the permanent specification when execution ends.
 - Allow opportunistic changes: contradicts the owner's explicit requirement.
 - Require fresh approval for every edit: unnecessary once the task and scope are authorized.
+
+## Owner-approved documentation refinement — 2026-09-25
+
+[IOP-143](../../planning/items/IOP-143-concise-workflow.md) moves shared agent rules
+to the [workflow](../../planning/workflow.md); AGENTS.md becomes optional local,
+ignored guidance. This supersedes the requirement above to version permanent rules
+in AGENTS.md. Items/plans remain required but concise, linking canonical information
+instead of repeating it. English authoring and translation-on-read rules live in
+the workflow. No change to decision acceptance or story branch boundaries.

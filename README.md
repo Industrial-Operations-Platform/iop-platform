@@ -23,7 +23,7 @@ and versioned migrations without adding business persistence.
   and [architecture decisions](docs/architecture/adr/)
 - [Roadmap](ROADMAP.md), [backlog](docs/planning/backlog.md)
   and [milestones](docs/planning/milestones.md)
-- [Agent navigation](AGENTS.md)
+- [Agent workflow](docs/planning/workflow.md)
 
 ## Repository map
 

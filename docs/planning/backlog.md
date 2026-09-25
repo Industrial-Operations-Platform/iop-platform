@@ -254,3 +254,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-140 — English project language](items/IOP-140-english-project-language.md) | Completed |
 | [IOP-141 — Story branches and review workflow](items/IOP-141-branch-workflow.md) | Completed |
 | [IOP-142 — Align delivery with a fast analytical POC](items/IOP-142-poc-delivery-scope.md) | Completed |
+| [IOP-143 — Local agent instructions and concise documentation](items/IOP-143-concise-workflow.md) | Completed |

@@ -6,9 +6,28 @@ including code, infrastructure, refactors and substantive documentation work.
 
 ## Project language
 
-Follow the [English project-language rule](../../AGENTS.md#project-language) for
-items, plans, evidence and all other authored deliverables. Conversation language
-does not determine project language. IOP-140 records the owner's explicit request.
+Write project-authored code, identifiers, comments, documentation, stories, plans,
+ADRs, tests, UI defaults, errors, logs, commits and PRs in English. Conversation may
+use the owner's language. Preserve proper names, external fields and customer data;
+localization resources may use their target language.
+
+When reading a story containing Spanish prose, translate that entire story file to
+English, preserving its meaning, status, IDs and links. This owner-authorized
+translation applies even when reading a dependency: record affected files in the
+current plan and keep translation-only changes distinguishable from functional
+changes. Do not scan or translate the entire backlog automatically.
+
+## Documentation size and traceability
+
+Document only what is needed to execute, review and resume a story. Use the templates
+as guides; omit irrelevant sections and repeated descriptions. Keep scope and
+acceptance in the item, execution/evidence in the plan, decisions in ADRs and status
+in the backlog. Link to the source instead of copying its content. Cite external
+sources when they support a decision or technical claim. Record actual validation
+results and material limitations, without repetitive progress narratives.
+
+`AGENTS.md` is an optional local, ignored instruction file. Shared rules live here
+and in the linked ADRs; a fresh clone does not depend on that local file.
 
 ## Sources of truth
 
@@ -19,7 +38,7 @@ does not determine project language. IOP-140 records the owner's explicit reques
 | active/IOP-NNN-slug-plan.md | How the authorized task/slice will be executed now, expected files and verification. |
 | completed/IOP-NNN-slug-plan.md | Finished execution record with outcomes, tests, limitations and deviations. |
 | ADRs | Decision records; only Accepted decisions are binding. Proposed records remain under review. |
-| AGENTS.md | Permanent navigation and working rules for agents. |
+| AGENTS.md (local, ignored) | Optional local agent guidance; shared rules remain in this workflow and ADRs. |
 
 An item is not a plan. A plan is not an architectural decision. A completed plan
 can finish one slice while the parent item remains open. Preserve research as a
@@ -32,7 +51,12 @@ local branch workflow. Use a story branch from develop before changes, including
 plans and documentation, and record its name in the plan. At least one branch per
 story; additional slices may use distinct names. Do not mix unrelated stories.
 
-The owner reviews and merges story → develop → stage → master. Stage is the chosen
+The owner controls promotion through story → develop → stage → master.
+When asking to publish, state that approval includes merging the reviewed story
+into develop and pushing both the story branch and develop to origin. An affirmative
+answer authorizes that full sequence; a narrower instruction takes precedence.
+This owner-approved convention (2026-09-25) does not authorize promotion to stage
+or master, force pushes, history rewrites or deleting branches. Stage is the chosen
 name for the intermediate branch. These refs alone do not create deployment or
 branch-protection configuration. Keep each pending review branch intact.
 
@@ -48,7 +72,7 @@ it silently to make its files appear. Independent stories can branch from develo
 ## Start work
 
 1. Resolve the requested ID through backlog.md and read its permanent context,
-   AGENTS.md, ARCHITECTURE.md and relevant/referenced ADRs.
+   this workflow, local AGENTS.md if present, ARCHITECTURE.md and relevant ADRs.
 2. Check existing active plans and unresolved dependencies. Confirm which slice
    the user requested. Read-only inspection or explanation needs no artificial task.
 3. Before making changes, create/update a plan in active/ using the template.
@@ -99,7 +123,8 @@ do not overwrite prior completed records. Do not publish or deploy by inference.
 
 ```text
 Work on IOP-032.
-Read AGENTS.md, ARCHITECTURE.md, the relevant ADRs and:
+Read docs/planning/workflow.md, local AGENTS.md if present, ARCHITECTURE.md,
+the relevant ADRs and:
 docs/planning/items/IOP-032-asset-hierarchy.md
 Create an execution plan under docs/planning/active before implementation.
 ```
