@@ -86,7 +86,7 @@ cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
 
 Resolve these with scoped plans and ADRs where they affect boundaries. IOP-016 adds
-API scaffolding and dependency manifests only; organization persistence is now supplied separately by IOP-025.
+API scaffolding and dependency manifests only; organization/site persistence is supplied separately by IOP-025/026.
 IOP-015 adds local container definitions;
 see [startup instructions and validation status](infra/docker/README.md).
 
@@ -220,8 +220,8 @@ provision/migrate commands, a private history schema and separate bootstrap,
 migrator and non-owner runtime roles. Migrations do not run during API startup.
 See [commands and evidence](infra/database/README.md). Runtime currently has CONNECT
 only. IOP-025 adds organization storage, forced seed RLS and an explicit privileged
-initial seed; site storage, runtime grants and application transaction handling
-belong to later owning stories. ADR-0018 remains Proposed.
+initial seed; IOP-026 adds site storage and its seed. Runtime grants and application
+transaction handling belong to later owning stories. ADR-0018 remains Proposed.
 
 
 ## Accepted initial organization bootstrap
@@ -242,5 +242,5 @@ local migrator bootstrap to initial site creation under IOP-026. It requires an
 existing organization, stable site identity, explicit validated IANA zone, scoped
 constraints and forced RLS with both organization and site selectors. Identical
 seeds leave data unchanged; conflicting owner, name or zone fails. Runtime keeps
-CONNECT only. The decision is Accepted; site storage and seed implementation remain
-pending. ADR-0018 remains Proposed, independently gating runtime business access.
+CONNECT only. IOP-026 implements the site migration, invoker zone-validation trigger and explicit
+insert-only seed. ADR-0018 remains Proposed, independently gating runtime business access.

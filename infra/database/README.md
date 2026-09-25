@@ -5,7 +5,8 @@ explicit role provisioning and node-pg-migrate 9.0.0 migrations on the existing
 PostgreSQL 17.6 local service. The API still exposes process health only and has no
 database connection. IOP-025 adds the organization table and explicit initial seed
 under Accepted [ADR-0020](../../docs/architecture/adr/ADR-0020-local-organization-bootstrap.md).
-There are no sites, login or ORM.
+IOP-026 adds site storage and an explicit initial seed under Accepted
+[ADR-0021](../../docs/architecture/adr/ADR-0021-local-site-bootstrap.md). There is no login or ORM.
 
 ## Compose commands
 
@@ -24,7 +25,7 @@ docker compose -f compose.yaml -f compose.database.yaml run --rm database-provis
 docker compose -f compose.yaml -f compose.database.yaml run --rm database-migrate
 ```
 
-A fresh database reports `2 applied` (privilege baseline and organizations); an unchanged rerun reports `0 applied`.
+A fresh database reports `3 applied` (privilege baseline, organizations and sites); an unchanged rerun reports `0 applied`.
 Provisioning can also be repeated. The optional overlay requires all three password
 variables for Compose interpolation, but the migration container receives only its
 own password. Neither API nor web receives any of them. Commands are one-shot jobs;
@@ -83,8 +84,8 @@ Migrations live in `infra/database/migrations/`; metadata lives in
 `iop_migrations.history`. The first migration removes PUBLIC default access for
 future migrator-created tables, sequences, functions and types. Future owning-module
 migrations must separately define scope, constraints, forced RLS and explicit grants.
-IOP-025 supplies the organization seed below. Site and combined fixture delivery
-remain IOP-026/123; ADR-0018 remains Proposed.
+IOP-025/026 supply the organization/site seeds below. Combined demo fixtures
+remain IOP-123; ADR-0018 remains Proposed.
 
 Use ordered timestamp-prefixed SQL files with `-- Up Migration`. Committed applied
 migrations are immutable by convention; append a corrective migration. There is no
@@ -131,8 +132,8 @@ IOP_SEED_ORGANIZATION_NAME=Fictional Demo Organization
 Use the exact `organization.id` from your `config/poc.local.json`, preserving its
 case and all `site.organizationId`/`source.organizationId` references. The existing
 JSON remains a reference-only configuration; do not add a name field. The command
-does not read that JSON or verify persisted site/source ownership: those records
-are not implemented. A configured ID alone still grants no runtime authority.
+does not read that JSON or verify persisted site/source ownership. The separate
+site seed checks its existing organization; source persistence remains future work. A configured ID alone still grants no runtime authority.
 
 ```sh
 docker compose -f compose.yaml -f compose.database.yaml build database-seed-organization
@@ -169,3 +170,55 @@ IOP-025 validation adds concurrent seed, conflict, rollback, constraint and real
 access tests on disposable PostgreSQL 17.6. Native suites and a disposable Compose
 build/provision/migrate/seed/rerun are recorded in the
 [completed plan](../../docs/planning/completed/IOP-025-organization-model-plan.md).
+
+
+## Initial site seed (IOP-026)
+
+After the organization seed, configure these explicit non-secret inputs:
+
+```dotenv
+IOP_SEED_ORGANIZATION_ID=org-demo
+IOP_SEED_SITE_ID=site-demo
+IOP_SEED_SITE_NAME=Fictional Demo Site
+IOP_SEED_SITE_TIME_ZONE=Europe/Zurich
+```
+
+The owner ID must already exist. Match `organization.id` and `site.organizationId`
+in `config/poc.local.json`, and match `site.id` and `site.timeZone` exactly; preserve
+source ownership references too. The command does not read that JSON. Do not add
+name fields to its strict shape. Persisted scope is not runtime authorization.
+
+```sh
+docker compose -f compose.yaml -f compose.database.yaml build database-seed-site
+docker compose -f compose.yaml -f compose.database.yaml run --rm database-seed-site
+```
+
+For native use, export the four seed variables and explicit migrator connection
+fields above, then run `npm run db:seed:site`. Alternatively, after `npm run db:build`,
+run `node --env-file=.env infra/database/dist/cli.js seed-site` with native connection
+fields in that private file. The tooling never runs at API startup.
+
+IDs and names follow the organization rules above. The zone must be `UTC` or a
+slash-separated named IANA zone of at most 100 characters, recognized by Node Intl
+and spelled exactly as in PostgreSQL's time-zone catalog. Offsets, bare abbreviations
+other than UTC, whitespace and unknown names fail. Accepted alias spelling is
+preserved; the command does not canonicalize it or infer source reporting windows.
+A catalog-checking invoker trigger also validates direct inserts in PostgreSQL.
+
+First creation reports `created`; identical reruns report `unchanged`. A different
+owner, name or zone at the same site ID fails without mutation, including concurrent
+attempts. A missing owner fails without creating it. Foreign conflicts return no
+foreign identifiers. Zone corrections and transfers require separately reviewed work.
+
+`platform_core.sites` has a globally unique site ID, an organization FK and a unique
+`(organization_id, site_id)` key for scoped references. Forced RLS requires both
+transaction-local seed selectors for migrator SELECT/INSERT. Missing site scope
+never expands access. No UPDATE/DELETE policy or runtime grant is added; provisioning
+reruns retain the CONNECT-only runtime baseline. The privileged object owner can
+change DDL, so these controls do not establish business RBAC or protect against a
+compromised migrator credential. Keep that credential outside API/web containers.
+
+Validation and limitations are recorded in the
+[IOP-026 plan](../../docs/planning/completed/IOP-026-site-model-plan.md).
+Site lifecycle, CRUD and administration remain deferred. No user/grant/source seed,
+runtime repository, endpoint or UI is provided; ADR-0018 remains Proposed.

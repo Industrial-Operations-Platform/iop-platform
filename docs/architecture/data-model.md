@@ -190,5 +190,20 @@ configuration format. Zero sites are supported without creating implicit scope.
 The initial local seed uses the migrator login with transaction-local scope and
 forced SELECT/INSERT RLS; runtime has no business access. A matching rerun is a
 no-op; a conflicting name is rejected. There is no update/delete path or policy.
-Site constraints, ordinary runtime authorization and scoped cross-module references
-remain later implementation. See [commands and evidence](../../infra/database/README.md).
+IOP-026 supplies site constraints below; ordinary runtime authorization and business
+module references remain later implementation. See [commands and evidence](../../infra/database/README.md).
+
+
+## Implemented POC site persistence
+
+IOP-026 implements Accepted [ADR-0021](adr/ADR-0021-local-site-bootstrap.md) as
+`platform_core.sites`: opaque text `site_id` primary key, non-null `organization_id`
+FK, `display_name` and explicit `time_zone`. A unique `(organization_id, site_id)`
+key supports future scoped references without introducing business tables now.
+Platform Core owns the table. Name/ID constraints and an invoker catalog-validation
+trigger protect direct inserts; the command also validates the zone with Node Intl.
+
+Forced RLS requires both seed selectors for migrator SELECT/INSERT. Identical seeds
+leave the row unchanged; different owner/name/zone fails. Runtime has no business
+grants. Site transfers, zone corrections, CRUD and lifecycle remain deferred.
+See [commands and evidence](../../infra/database/README.md#initial-site-seed-iop-026).

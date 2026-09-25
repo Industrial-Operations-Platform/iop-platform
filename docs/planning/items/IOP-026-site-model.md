@@ -2,9 +2,9 @@
 
 ## Status
 
-In progress — the owner accepted the initial site bootstrap authority in
-[ADR-0021](../../architecture/adr/ADR-0021-local-site-bootstrap.md).
-Accepted on 2026-09-24; site persistence is not implemented.
+Deferred — the selected POC persistence/seed slice is completed on 2026-09-25.
+CRUD, selectors, lifecycle and administration remain future parent scope.
+[ADR-0021](../../architecture/adr/ADR-0021-local-site-bootstrap.md) is Accepted.
 
 ## Authorization and POC applicability
 
@@ -22,21 +22,20 @@ See [modules](../../architecture/modules.md), [data model](../../architecture/da
 and [glossary](../../product/glossary.md).
 
 IOP-018 validates configuration references and zones. IOP-019 provides migrations;
-IOP-025 persists organizations through an explicit initial seed. No site table,
-seed or runtime site access exists. ADR-0020 limits its authority to organizations;
-Accepted ADR-0021 extends it to the site's initial installation.
+IOP-025 persists organizations through an explicit initial seed. IOP-026 now supplies
+`platform_core.sites`, forced two-selector RLS and an explicit insert-only seed under Accepted ADR-0021. Runtime site access remains closed.
 
 ## Requirements and acceptance criteria
 
-- [ ] Persist one explicitly configured site with stable opaque identity, display
+- [x] Persist one explicitly configured site with stable opaque identity, display
   name, existing organization owner and validated IANA time zone.
-- [ ] Enforce ownership, scoped references and forced RLS; missing site scope never
+- [x] Enforce ownership, scoped references and forced RLS; missing site scope never
   means all sites. Source labels cannot choose scope.
-- [ ] Provide an explicit insert-only seed with unchanged identical reruns, safe
+- [x] Provide an explicit insert-only seed with unchanged identical reruns, safe
   rejection of conflicting owner/name/zone and no runtime business grants.
-- [ ] Verify positive creation and negative input/ownership/scope cases, concurrent
+- [x] Verify positive creation and negative input/ownership/scope cases, concurrent
   seeds, rollback and runtime denial using actual roles on disposable databases.
-- [ ] Record executable evidence and synchronize item/backlog/plan, leaving future
+- [x] Record executable evidence and synchronize item/backlog/plan, leaving future
   lifecycle and administration scope deferred.
 
 ## Dependencies and decisions
@@ -69,15 +68,20 @@ repository, authentication, user/grant seed, source seed or generic seed engine.
 
 ## Validation and documentation
 
-The [active execution plan](../active/IOP-026-site-model-plan.md) records the branch,
-proposal checks and implementation handoff. ADR-0021 specifies concrete validation
-scenarios. Proposal review is not runtime test evidence. Update database instructions
-and accepted architecture only when implementation/acceptance warrants it.
+The [completed execution plan](../completed/IOP-026-site-model-plan.md) records
+implementation and executable evidence: typecheck, repository tests, PostgreSQL
+17.6 integration tests and native/Compose reproduction. Coverage includes exact
+reruns, conflicting owner/name/zone, concurrent inserts, catalog disagreement,
+scoped constraints, missing/foreign/sibling scope, rollback and actual-role runtime
+denial. Commands and configuration agreement are documented in the
+[database guide](../../../infra/database/README.md#initial-site-seed-iop-026).
+
 POC scope and delivery map remain unchanged; no adjacent story is activated.
+This is privileged installation evidence, not runtime business authorization.
 
-## Implementation handoff
+## Remaining scope
 
-ADR-0021 is Accepted. The owner authorized committing and merging this design into
-`develop` and publishing to `origin`. Site migration, seed, tests and runtime evidence
-remain pending under the active plan. No decision blocks this bounded bootstrap;
-runtime business access still depends independently on an accepted mechanism.
+No open decision blocks the completed POC slice. Site CRUD, selectors, lifecycle,
+transfers, zone corrections and administration remain deferred. ADR-0018 remains
+Proposed and independently gates runtime business access. Implementation commits
+remain on the story branch for owner review and publication approval.
