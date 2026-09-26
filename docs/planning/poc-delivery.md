@@ -99,6 +99,12 @@ explicit exclusions and coverage limits. Its specification slice is complete;
 runtime reconciliation remains Blocked on executable queries, production OIP facts
 and ADR-0018 host activation. No new metric or adjacent implementation is included.
 
+IOP-091 supplies the [accumulated alarm duration definition and reconciliation matrix](../product/alarm-duration-poc.md)
+under the accepted source/aggregate/query contracts: exact elapsed seconds, full-result
+sums and explicit coverage limits, without inferring downtime. Its specification
+slice is complete; runtime reconciliation remains Blocked on executable IOP-089,
+production OIP facts and ADR-0018 host activation.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context

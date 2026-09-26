@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed
+Blocked — duration specification complete; executable IOP-089 queries, production
+OIP receiving storage and ADR-0018 host activation remain pending.
 
 ## POC delivery applicability
 
@@ -14,7 +15,7 @@ an additional POC gate. See [POC scope](../../product/scope-poc.md) and
 
 ## Milestone
 
-M11 — OIP / Operational Intelligence. Proposed delivery slice.
+M11 — OIP / Operational Intelligence. Bounded POC duration slice.
 
 ## Goal
 
@@ -22,17 +23,20 @@ Report reconciled accumulated alarm duration.
 
 ## User / business value
 
-Operación y responsables necesitan métricas explicables para priorizar problemas.
+Operations staff and accountable leaders need explainable metrics to prioritize problems.
 
 ## Context
 
-Ámbito: Operational Intelligence (OIP). Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Operational Intelligence (OIP). See [modules](../../architecture/modules.md) and
+the [planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; inclusion in the backlog does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+The [duration definition and reconciliation matrix](../../product/alarm-duration-poc.md)
+specialize the accepted IOP-089 query and aggregate contracts. The specification
+slice is complete; no executable duration query or persisted overview/detail
+reconciliation is delivered. See the [execution record](../completed/IOP-091-alarm-duration-plan.md).
 
 ## Desired state
 
@@ -49,69 +53,75 @@ Report reconciled accumulated alarm duration.
 
 - [ ] Report reconciled accumulated alarm duration.
 - [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Record specification evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
 ## Domain considerations
 
-OIP es un módulo de IOP; métricas desacopladas de UI y de esquemas de WinCC.
+OIP is an IOP module; metrics remain independent of the UI and WinCC schemas.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to make the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permission and customer/site scope for relevant operations and references.
+Do not include secrets, plant drawings or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Definir grano, cobertura, unidades y periodos; duración acumulada de alarmas no equivale automáticamente a downtime.
+Define grain, coverage, units and periods; accumulated alarm duration does not automatically equal downtime.
 
 ## API considerations
 
-Consultas con filtros de scope verificados y trazabilidad a registros contribuyentes.
+Queries use verified scope filters and traceability to contributing records.
 
 ## UI considerations
 
-Mostrar definición y límites de la métrica; no presentar correlación como causa raíz.
+Show metric definitions and limitations; do not present correlation as root cause.
 
 ## Dependencies
 
 [IOP-089](IOP-089-analytics-query-layer.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. IOP-089 has an accepted query contract under
+ADR-0028 but no executable queries; production receiving storage remains pending.
+ADR-0018 is Accepted as of 2026-09-26; its implementation and validation still
+independently gate runtime business access.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must specify executable commands and scenarios using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictitious tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its [backlog](../backlog.md) status and the execution plan.
+Update contracts, models, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+The formula and units follow the accepted source/aggregate/query contracts.
+Runtime delivery waits for executable IOP-089, production OIP receiving storage
+and ADR-0018 host activation. Interval-based downtime needs separate source
+evidence and remains outside this POC.
 
 ## Owner-supplied CSV and reporting context
 
 The current export supplies accumulated duration without individual event intervals. Separate accumulated alarm duration from elapsed plant downtime; overlapping alarms cannot be deduplicated into downtime from this excerpt alone. Verify duration units and parsing, and label charts honestly.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
-under IOP-002 at the owner's request. This is context for future planning; this
-item remains Proposed and no implementation or metric formula is accepted here.
+under IOP-002 at the owner's request. The current definition follows accepted
+contracts; the retained CSV does not establish individual intervals or downtime.
+No runtime metric implementation is claimed.
