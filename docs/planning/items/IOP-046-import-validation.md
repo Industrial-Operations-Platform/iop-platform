@@ -2,11 +2,12 @@
 
 ## Status
 
-Proposed
+In progress — bounded POC validation reporting is implemented. Persisted importer
+and user-visible review composition remain pending.
 
 ## Milestone
 
-M5 — Industrial Data Foundation. Proposed delivery slice.
+M5 — Industrial Data Foundation. Local analytical POC only.
 
 ## Goal
 
@@ -20,11 +21,17 @@ Operations needs traceable imported data and reconcilable metrics.
 
 Scope: Integrations and Operational Intelligence. See [modules](../../architecture/modules.md) and
 the [planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; backlog membership alone does not authorize implementation.
+owner-requested outline; the owner authorized this POC slice on 2026-09-26.
+Follow the [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+`validateCsv` now shares IOP-045's pure parser and returns a bounded, value-free
+inspection report: one diagnostic per invalid value row, physical line/neutral
+field, exact inspected counts and explicit unknown remainder on interruption.
+Valid input retains the full preparation result; invalid input exposes no partial
+dataset. This internal report does not persist attempts or enable an upload/review
+endpoint. See the [execution record](../completed/IOP-046-import-validation-plan.md).
 
 ## Desired state
 
@@ -37,9 +44,11 @@ Visible invalid records
 
 ## Acceptance criteria
 
-- [ ] Visible invalid records
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Internal POC report identifies invalid rows with bounded safe diagnostics,
+  complete/unknown counts and all-or-nothing preparation.
+- [ ] Visible invalid records through the delivered importer/review path.
+- [x] The plan documents scenarios and necessary decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
@@ -74,7 +83,16 @@ Expose import states, errors and results only if requested by this task; do not 
 
 ## Dependencies
 
-[IOP-045](IOP-045-csv-adapter.md)
+[IOP-045](IOP-045-csv-adapter.md) is completed and integrated on develop.
+[IOP-012](IOP-012-source-integration-contract.md) defines source rules;
+[IOP-042](IOP-042-import-batches.md) provides the existing inspection vocabulary
+and internal storage. No new architectural mechanism is required.
+
+Remaining composition needs immutable scoped receipt, IOP-049 classification,
+production OIP receiver validation/publication and ADR-0018 host activation.
+The caller supplies mapping counts separately; missing classification is not zero.
+Review requires current `imports.review`, submission requires `imports.submit`.
+These dependencies are not activated by this story.
 
 Dependencies indicate required contracts/capabilities, not numerical implementation
 order. Refine them in the plan before changing code.
@@ -94,4 +112,7 @@ Update contracts, model, guides or ADRs only when this task changes their conten
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.
+No new decision blocks pure validation. The remaining delivery gate is the
+importer/host/receiver composition above. Do not mark the story complete from unit
+reports alone or infer user-visible persistence, scoped access evidence or POC
+completion. Full rejection counts are assigned only by the settled batch lifecycle.

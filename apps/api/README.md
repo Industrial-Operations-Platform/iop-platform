@@ -231,9 +231,9 @@ No occurrence time, physical asset or downtime is inferred.
 Failure throws one fixed `CsvAdapterError` with code and optional physical line/
 neutral field, without raw values or partial records. Fail-fast inspection leaves
 the remainder unknown; it does not report a complete invalid/data count. This is
-not yet an IOP-042 `Inspection` or OIP publication payload: composition must map
-safe diagnostics and counts, apply IOP-049 scoped classification and validate the
-receiver contract. A prepared dataset is not an admitted import.
+not an OIP publication payload. For multiple diagnostics and IOP-042-compatible
+counts, use the IOP-046 report below; composition still supplies classification
+and validates the receiver contract. A prepared dataset is not an admitted import.
 
 Future composition must authorize and persist immutable scoped RAW before
 preparation, validate receipt/date/revision consistency, share its monotonic
@@ -248,3 +248,38 @@ Run `npm test --workspace @iop/api -- --testPathPatterns csv-adapter` for the
 fictional byte fixture, exact arithmetic, malformed input and budget boundaries.
 The missing legacy Python duration helper prevents claiming conversion parity.
 See the [execution record](../../docs/planning/completed/IOP-045-csv-adapter-plan.md).
+
+
+## POC CSV validation report (IOP-046)
+
+`validateCsv(filename, bytes, startedAt?)` uses the same parser and fixed limits as
+`prepareCsv`, which retains its fail-fast throwing behavior. On `status: valid`,
+`prepared` contains the unchanged full result. On `status: invalid`, only safe
+`reason` and `inspection` metadata are returned, never records or partial totals.
+Unexpected programming errors propagate rather than becoming input rejections.
+
+Value errors (including individual exact-integer overflow) retain one diagnostic
+per invalid row and continue scanning. Structural/encoding/header errors, resource
+limits, cumulative overflow and deadline expiration stop inspection: total records
+remain `null`, even when a prefix was inspected. Empty/header-only input is invalid
+with a complete zero-record count. Two valid plus one invalid row reports 2/1/3;
+no row is admitted by this function. Blank/header lines are excluded from counts
+and retained in physical line numbering. Repeated valid tuples remain warnings.
+
+Diagnostics retain at most 100 entries; `diagnosticsTruncated` indicates omitted
+entries, independently of complete inspected counts. Codes and neutral fields use
+IOP-042's existing vocabulary: numeric overflow/timeouts become `limit-exceeded`,
+invalid filename becomes `invalid-value`, and empty input becomes `invalid-record`.
+`reason` preserves the precise first value error, or the terminal interruption code.
+A line beyond the 25,000-line budget is omitted from stored diagnostic metadata.
+No source values, paths, error stack or raw rows are included in reports.
+
+`CsvInspection` intentionally omits `unclassifiedCount`: scoped mapping has not
+run. Composition must supply that count to create an IOP-042 `Inspection`; it must
+not assume missing classification is zero. Receipt, rejected/admitted counts,
+publication, permission checks and `imports.review` retrieval remain batch/host
+responsibilities. Reports neither authorize access nor prove a durable outcome.
+The receiving OIP module must independently validate its invariants.
+
+Run `npm test --workspace @iop/api -- --testPathPatterns csv` for preparation and
+report scenarios. See the [execution record](../../docs/planning/completed/IOP-046-import-validation-plan.md).

@@ -230,3 +230,14 @@ executable syntax, conversion and boundary evidence. Classification and persiste
 composition remain separate: successful preparation is not analytical admission,
 a scope/permission check or legacy Python parity. The source-specific state machine
 implements this bounded single-line profile without a new parser dependency.
+
+
+## IOP-046 validation reporting handoff
+
+The internal `validateCsv` report implements bounded invalid-row visibility and
+inspection counts under this contract. It continues after value errors, stops at
+structural/resource interruptions and exposes no partial dataset. Diagnostics are
+capped at 100 independently of counts. Scoped classification, persisted outcomes
+and user-facing import/review composition remain pending; the parent stays open.
+See the [API report contract](../../apps/api/README.md#poc-csv-validation-report-iop-046)
+and [execution evidence](../planning/completed/IOP-046-import-validation-plan.md).

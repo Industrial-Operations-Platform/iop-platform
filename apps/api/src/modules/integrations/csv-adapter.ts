@@ -1,10 +1,11 @@
 import { performance } from 'node:perf_hooks';
 import { TextDecoder } from 'node:util';
+import type { Diagnostic, Inspection } from './import-batches';
 
 /** Fixed maxima from the accepted POC preservation contract; not upload admission. */
 export const CSV_LIMITS = Object.freeze({
   bytes: 5_242_880, records: 20_000, lines: 25_000,
-  fieldCodeUnits: 4_096, recordCodeUnits: 32_768, processingMs: 30_000,
+  fieldCodeUnits: 4_096, recordCodeUnits: 32_768, processingMs: 30_000, diagnostics: 100,
 });
 export const CSV_ADAPTER_REVISION = 'hitliste-poc-v1';
 const header = ['Häufigkeit', 'Dauer', 'Bereich', 'Betriebsmittelkennzeichen',
@@ -45,6 +46,26 @@ export interface PreparedCsv {
   readonly repeatedRecordCount: number;
   readonly totalReportedFrequency: number;
   readonly totalAccumulatedAlarmSeconds: number;
+}
+
+/** Classification is supplied by the scoped mapping stage, never guessed here. */
+export type CsvInspection = Omit<Inspection, 'unclassifiedCount'>;
+export type CsvValidationResult =
+  | { readonly status: 'valid'; readonly inspection: CsvInspection; readonly prepared: PreparedCsv }
+  | { readonly status: 'invalid'; readonly inspection: CsvInspection; readonly reason: Code };
+
+function diagnostic(error: CsvAdapterError): Diagnostic {
+  const code: Diagnostic['code'] = error.code === 'invalid-filename' ? 'invalid-value'
+    : error.code === 'empty-input' ? 'invalid-record'
+    : error.code === 'numeric-overflow' || error.code === 'processing-timeout' ? 'limit-exceeded'
+    : error.code;
+  return { code, ...(error.line === undefined || error.line > CSV_LIMITS.lines ? {} : { line: error.line }),
+    ...(error.field === undefined ? {} : { field: error.field }) };
+}
+
+/** Safe review metadata only on rejection; never expose a usable prefix dataset. */
+export function validateCsv(filename: string, bytes: Buffer, startedAt = performance.now()): CsvValidationResult {
+  return inspectCsv(filename, bytes, startedAt, true);
 }
 
 export function parseCsvReportingDate(filename: string): string {
@@ -105,82 +126,124 @@ function cellsFromLine(record: string, line: number): string[] {
  * deadline. Passing an earlier start includes preceding validation in the budget.
  */
 export function prepareCsv(filename: string, bytes: Buffer, startedAt = performance.now()): PreparedCsv {
+  const result = inspectCsv(filename, bytes, startedAt, false);
+  // Fail-fast mode throws at the first failure, preserving the original API.
+  if (result.status === 'invalid') throw new CsvAdapterError(result.reason);
+  return result.prepared;
+}
+
+function inspectCsv(filename: string, bytes: Buffer, startedAt: number, collect: boolean): CsvValidationResult {
+  let inspectedValidCount = 0, inspectedInvalidCount = 0, inspectionComplete = false;
+  let repeatedRecordCount = 0;
+  const diagnostics: Diagnostic[] = [];
+  let diagnosticsTruncated = false, firstError: CsvAdapterError | undefined;
+  const recordError = (error: CsvAdapterError): void => {
+    if (!collect) throw error;
+    firstError ??= error;
+    if (diagnostics.length < CSV_LIMITS.diagnostics) diagnostics.push(diagnostic(error));
+    else diagnosticsTruncated = true;
+  };
+  const inspection = (): CsvInspection => ({
+    dataRecordCount: inspectionComplete ? inspectedValidCount + inspectedInvalidCount : null,
+    inspectedValidCount, inspectedInvalidCount, inspectionComplete, repeatedCount: repeatedRecordCount,
+    diagnostics, diagnosticsTruncated,
+  });
   const checkTime = (): void => {
     const now = performance.now();
     if (!Number.isFinite(startedAt) || startedAt > now || now - startedAt >= CSV_LIMITS.processingMs) {
       throw new CsvAdapterError('processing-timeout');
     }
   };
-  checkTime();
-  const reportingDate = parseCsvReportingDate(filename);
-  if (!Buffer.isBuffer(bytes) || bytes.length > CSV_LIMITS.bytes) throw new CsvAdapterError('limit-exceeded');
-  if (bytes.length < 2 || bytes.length % 2 || bytes[0] !== 0xff || bytes[1] !== 0xfe) {
-    throw new CsvAdapterError('invalid-encoding');
-  }
-  let text: string;
   try {
-    // Remove exactly the required BOM. Preserve any subsequent BOM as source text.
-    text = new TextDecoder('utf-16le', { fatal: true, ignoreBOM: true }).decode(bytes.subarray(2));
-  } catch { throw new CsvAdapterError('invalid-encoding'); }
-  if (text.includes('\0')) throw new CsvAdapterError('invalid-encoding');
-  checkTime();
-  const records: CsvSourceRecord[] = [];
-  const firstByTuple = new Map<string, number>();
-  let physicalLineCount = 0, blankLineCount = 0, repeatedRecordCount = 0;
-  let totalFrequency = 0n, totalSeconds = 0n, headerSeen = false;
-  // Scan line lengths before slicing; the decoded input is itself byte bounded.
-  for (let start = 0; start < text.length;) {
     checkTime();
-    const line = ++physicalLineCount;
-    if (line > CSV_LIMITS.lines) throw new CsvAdapterError('limit-exceeded', line);
-    let end = start;
-    while (end < text.length && text[end] !== '\r' && text[end] !== '\n') {
-      if (end - start >= CSV_LIMITS.recordCodeUnits) throw new CsvAdapterError('limit-exceeded', line);
-      end++;
+    const reportingDate = parseCsvReportingDate(filename);
+    if (!Buffer.isBuffer(bytes) || bytes.length > CSV_LIMITS.bytes) throw new CsvAdapterError('limit-exceeded');
+    if (bytes.length < 2 || bytes.length % 2 || bytes[0] !== 0xff || bytes[1] !== 0xfe) {
+      throw new CsvAdapterError('invalid-encoding');
     }
-    if (text[end] === '\r' && text[end + 1] !== '\n') throw new CsvAdapterError('invalid-record', line);
-    const record = text.slice(start, end);
-    start = end + (text[end] === '\r' ? 2 : 1);
-    if (/^[ \t]*$/.test(record)) { blankLineCount++; continue; }
-    const cells = cellsFromLine(record, line);
-    if (!headerSeen) {
-      if (cells.some((cell, index) => cell !== header[index])) throw new CsvAdapterError('invalid-header', line);
-      headerSeen = true; continue;
-    }
-    if (records.length >= CSV_LIMITS.records) throw new CsvAdapterError('limit-exceeded', line);
-    const values = cells.map(trim);
-    values.forEach((value, index) => {
-      if (value.length === 0) throw new CsvAdapterError('invalid-value', line, fields[index]);
-    });
-    const [frequency, duration, sourceArea, sourceEquipmentReference, sourceMessageText, sourceMessageType, sourceMessageGroup] = values;
-    if (!/^[0-9]+$/.test(frequency)) throw new CsvAdapterError('invalid-value', line, 'frequency');
-    const durationParts = /^([0-9]+) ([0-9]{1,2}):([0-9]{2}):([0-9]{2})$/.exec(duration);
-    if (!durationParts || Number(durationParts[2]) > 23 || Number(durationParts[3]) > 59 || Number(durationParts[4]) > 59) {
-      throw new CsvAdapterError('invalid-value', line, 'duration');
-    }
-    const frequencyInteger = BigInt(frequency);
-    const seconds = BigInt(durationParts[1]) * 86400n + BigInt(durationParts[2]) * 3600n +
-      BigInt(durationParts[3]) * 60n + BigInt(durationParts[4]);
-    const reportedFrequency = exact(frequencyInteger, line, 'frequency');
-    const accumulatedAlarmSeconds = exact(seconds, line, 'duration');
-    totalFrequency += frequencyInteger; totalSeconds += seconds;
-    exact(totalFrequency, line, 'frequency'); exact(totalSeconds, line, 'duration');
-    const tuple = JSON.stringify(values.slice(2));
-    const first = firstByTuple.get(tuple);
-    if (first !== undefined) {
-      if (!records[first].repeatedTuple) {
-        records[first] = { ...records[first], repeatedTuple: true };
-        repeatedRecordCount++;
+    let text: string;
+    try {
+      // Remove exactly the required BOM. Preserve any subsequent BOM as source text.
+      text = new TextDecoder('utf-16le', { fatal: true, ignoreBOM: true }).decode(bytes.subarray(2));
+    } catch { throw new CsvAdapterError('invalid-encoding'); }
+    if (text.includes('\0')) throw new CsvAdapterError('invalid-encoding');
+    checkTime();
+    const records: CsvSourceRecord[] = [];
+    const firstByTuple = new Map<string, number>();
+    let physicalLineCount = 0, blankLineCount = 0;
+    let totalFrequency = 0n, totalSeconds = 0n, headerSeen = false;
+    // Scan line lengths before slicing; the decoded input is itself byte bounded.
+    for (let start = 0; start < text.length;) {
+      checkTime();
+      const line = ++physicalLineCount;
+      if (line > CSV_LIMITS.lines) throw new CsvAdapterError('limit-exceeded', line);
+      let end = start;
+      while (end < text.length && text[end] !== '\r' && text[end] !== '\n') {
+        if (end - start >= CSV_LIMITS.recordCodeUnits) throw new CsvAdapterError('limit-exceeded', line);
+        end++;
       }
-      repeatedRecordCount++;
-    } else firstByTuple.set(tuple, records.length);
-    records.push({ sourceRecordNumber: line, reportedFrequency, accumulatedAlarmSeconds,
-      originalDuration: cells[1], sourceArea, sourceEquipmentReference, sourceMessageText,
-      sourceMessageType, sourceMessageGroup, repeatedTuple: first !== undefined });
+      if (text[end] === '\r' && text[end + 1] !== '\n') throw new CsvAdapterError('invalid-record', line);
+      const record = text.slice(start, end);
+      start = end + (text[end] === '\r' ? 2 : 1);
+      if (/^[ \t]*$/.test(record)) { blankLineCount++; continue; }
+      const cells = cellsFromLine(record, line);
+      if (!headerSeen) {
+        if (cells.some((cell, index) => cell !== header[index])) throw new CsvAdapterError('invalid-header', line);
+        headerSeen = true; continue;
+      }
+      if (inspectedValidCount + inspectedInvalidCount >= CSV_LIMITS.records) throw new CsvAdapterError('limit-exceeded', line);
+      try {
+        const values = cells.map(trim);
+        values.forEach((value, index) => {
+          if (value.length === 0) throw new CsvAdapterError('invalid-value', line, fields[index]);
+        });
+        const [frequency, duration, sourceArea, sourceEquipmentReference, sourceMessageText, sourceMessageType, sourceMessageGroup] = values;
+        if (!/^[0-9]+$/.test(frequency)) throw new CsvAdapterError('invalid-value', line, 'frequency');
+        const durationParts = /^([0-9]+) ([0-9]{1,2}):([0-9]{2}):([0-9]{2})$/.exec(duration);
+        if (!durationParts || Number(durationParts[2]) > 23 || Number(durationParts[3]) > 59 || Number(durationParts[4]) > 59) {
+          throw new CsvAdapterError('invalid-value', line, 'duration');
+        }
+        const frequencyInteger = BigInt(frequency);
+        const seconds = BigInt(durationParts[1]) * 86400n + BigInt(durationParts[2]) * 3600n +
+          BigInt(durationParts[3]) * 60n + BigInt(durationParts[4]);
+        const reportedFrequency = exact(frequencyInteger, line, 'frequency');
+        const accumulatedAlarmSeconds = exact(seconds, line, 'duration');
+
+        const tuple = JSON.stringify(values.slice(2));
+        const first = firstByTuple.get(tuple);
+        if (first !== undefined) {
+          if (!records[first].repeatedTuple) {
+            records[first] = { ...records[first], repeatedTuple: true };
+            repeatedRecordCount++;
+          }
+          repeatedRecordCount++;
+        } else firstByTuple.set(tuple, records.length);
+        records.push({ sourceRecordNumber: line, reportedFrequency, accumulatedAlarmSeconds,
+          originalDuration: cells[1], sourceArea, sourceEquipmentReference, sourceMessageText,
+          sourceMessageType, sourceMessageGroup, repeatedTuple: first !== undefined });
+        inspectedValidCount++;
+      } catch (error) {
+        if (!(error instanceof CsvAdapterError)) throw error;
+        if (error.code !== 'invalid-value' && error.code !== 'numeric-overflow') throw error;
+        inspectedInvalidCount++;
+        recordError(error);
+        continue;
+      }
+      const last = records[records.length - 1];
+      totalFrequency += BigInt(last.reportedFrequency);
+      totalSeconds += BigInt(last.accumulatedAlarmSeconds);
+      exact(totalFrequency, line, 'frequency'); exact(totalSeconds, line, 'duration');
+    }
+    checkTime();
+    inspectionComplete = true;
+    if (inspectedValidCount + inspectedInvalidCount === 0) throw new CsvAdapterError('empty-input');
+    if (firstError) return { status: 'invalid', inspection: inspection(), reason: firstError.code };
+    return { status: 'valid', inspection: inspection(), prepared: { adapterRevision: CSV_ADAPTER_REVISION, reportingDate, reportingWindowStatus: 'unknown',
+      records, dataRecordCount: records.length, physicalLineCount, blankLineCount, repeatedRecordCount,
+      totalReportedFrequency: Number(totalFrequency), totalAccumulatedAlarmSeconds: Number(totalSeconds) } };
+  } catch (error) {
+    if (!(error instanceof CsvAdapterError)) throw error;
+    recordError(error);
+    return { status: 'invalid', inspection: inspection(), reason: error.code };
   }
-  if (records.length === 0) throw new CsvAdapterError('empty-input');
-  checkTime();
-  return { adapterRevision: CSV_ADAPTER_REVISION, reportingDate, reportingWindowStatus: 'unknown',
-    records, dataRecordCount: records.length, physicalLineCount, blankLineCount, repeatedRecordCount,
-    totalReportedFrequency: Number(totalFrequency), totalAccumulatedAlarmSeconds: Number(totalSeconds) };
 }

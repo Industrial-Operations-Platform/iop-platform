@@ -183,6 +183,14 @@ IOP-045 implements the bounded pure CSV adapter with a fictional UTF-16 fixture,
 physical-line provenance, exact normalized measures/totals and repeated-tuple
 warnings. Syntax/value/budget failures return no partial dataset. See the
 [execution record](completed/IOP-045-csv-adapter-plan.md). Preparation does not admit
-an import: IOP-046 reporting composition, IOP-049 classification, production OIP
+an import: persisted reporting composition, IOP-049 classification, production OIP
 receiving storage, IOP-042 composition and ADR-0018 host activation remain pending.
 Legacy Python duration conversion parity is unverified.
+
+
+IOP-046 adds internal bounded validation reports with invalid-row diagnostics,
+complete versus interrupted inspection counts and no partial preparation results.
+Its [execution record](completed/IOP-046-import-validation-plan.md) covers executable
+value/structure/budget scenarios. The story remains In progress for persisted
+import/review visibility; host activation, scoped classification and production
+OIP receiving validation/publication remain independent dependencies.
