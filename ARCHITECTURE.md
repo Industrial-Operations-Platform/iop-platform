@@ -16,12 +16,13 @@ work. An accepted design does not require building every future capability now.
 Keep the accepted stack, module ownership, source adapter, organization/site IDs,
 scoped constraints/RLS and temporal semantics for the implemented slices.
 
-[ADR-0018](docs/architecture/adr/ADR-0018-local-poc-execution-context.md) is Proposed:
-it describes a bounded local execution adapter without human login. The product
-scope is approved, but this mechanism and its narrow exception to verified identity
-are not yet accepted. Do not disable authorization/RLS or treat an implicit pilot
-site as trusted context. Dependent runtime business access waits for an accepted
-mechanism; independent bootstrap/parser/UI work may proceed under its own plans.
+[ADR-0018](docs/architecture/adr/ADR-0018-local-poc-execution-context.md) is Accepted
+as of 2026-09-26: a development-only local adapter supplies a seeded principal and
+explicit site grants without human login. This narrow identity exception retains
+permission checks, transaction-local scope and forced RLS. Loopback-only operation,
+origin protection and refusal of shared/deployed mode must be verified.
+Runtime business access remains closed until implementation and validation;
+independent bootstrap/parser/UI work may proceed under its own plans.
 See the [delivery map](docs/planning/poc-delivery.md) for exact slices and deferrals.
 
 ## Accepted foundations
@@ -221,7 +222,7 @@ migrator and non-owner runtime roles. Migrations do not run during API startup.
 See [commands and evidence](infra/database/README.md). Runtime currently has CONNECT
 only. IOP-025 adds organization storage, forced seed RLS and an explicit privileged
 initial seed; IOP-026 adds site storage and its seed. Runtime grants and application
-transaction handling belong to later owning stories. ADR-0018 remains Proposed.
+transaction handling belong to later owning stories. ADR-0018 is Accepted; its runtime implementation remains pending.
 
 
 ## Accepted initial organization bootstrap
@@ -232,7 +233,7 @@ IOP-025 implements `platform_core.organizations`, preserving existing opaque tex
 IDs, scoped SELECT/INSERT policies and forced RLS. Repeated matching inputs leave
 data unchanged; conflicting names fail. Runtime retains CONNECT only. This bounded
 installation authority does not provide business authorization, sites, users,
-grants or administrative CRUD. ADR-0018 remains Proposed; see
+grants or administrative CRUD. ADR-0018 is Accepted; its runtime implementation remains pending; see
 [commands and limitations](infra/database/README.md#initial-organization-seed-iop-025).
 
 ## Accepted initial site bootstrap
@@ -243,7 +244,7 @@ existing organization, stable site identity, explicit validated IANA zone, scope
 constraints and forced RLS with both organization and site selectors. Identical
 seeds leave data unchanged; conflicting owner, name or zone fails. Runtime keeps
 CONNECT only. IOP-026 implements the site migration, invoker zone-validation trigger and explicit
-insert-only seed. ADR-0018 remains Proposed, independently gating runtime business access.
+insert-only seed. ADR-0018 is Accepted; its runtime implementation remains pending, independently gating runtime business access.
 
 
 ## Accepted POC CSV preservation
@@ -267,4 +268,4 @@ Coverage distinguishes missing imports from no matching records, and full totals
 reconcile against contributing records on the same admitted data revision.
 IOP-097 remains Blocked: analytical contracts and runtime access are pending.
 Acceptance permits independent fixture UI work but delivers no runtime filters;
-ADR-0018 remains Proposed and independently gates business access.
+ADR-0018 is Accepted; its runtime implementation remains pending and independently gates business access.

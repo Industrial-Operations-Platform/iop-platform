@@ -2,9 +2,9 @@
 
 ## Status
 
-Proposed — prepared under [IOP-142](../../planning/items/IOP-142-poc-delivery-scope.md).
-The owner accepted a local single-operator POC without login; the mechanism below
-has not been accepted. No runtime implementation is authorized by this proposal.
+Accepted on 2026-09-26 by explicit owner approval under
+[IOP-142](../../planning/items/IOP-142-poc-delivery-scope.md). The bounded mechanism
+below is accepted; runtime implementation and verification remain pending.
 ADR-0015 and ADR-0017 IDs are reserved on existing review branches.
 
 ## Context
@@ -14,7 +14,7 @@ administration. Accepted ADR-0004 keeps providers out of the domain; ADR-0012/00
 require an actor, permissions, explicit scope and isolated persistence. A hard-coded
 allow-all guard or missing-scope default would contradict those decisions.
 
-## Proposed decision
+## Decision
 
 Introduce a development-only execution adapter at the host boundary for the local
 POC. It supplies a stable seeded platform principal and explicitly configured
@@ -42,9 +42,9 @@ same provider-independent operation context consumed by business modules.
 - Before shared use, replace the host adapter with accepted real authentication and
   complete lifecycle/admin and authorization verification. Preserve module contracts.
 
-This would be a narrow exception to the verified-authenticated-actor prerequisite
+This is a narrow exception to the verified-authenticated-actor prerequisite
 for this explicit local mode only, not a replacement of scope or RBAC semantics.
-Accepted ADRs remain unchanged until this record is accepted. Detailed seed and
+This exception applies only to the explicitly activated local mode. Detailed seed and
 origin/startup checks must be planned and tested before implementation is complete.
 
 ## Alternatives
@@ -66,11 +66,12 @@ back to this adapter. No such tests have run in this documentation-only reposito
 
 ## Consequences and acceptance boundary
 
-Only the minimal seeded identity/grant evaluation is required by this proposal;
+Only the minimal seeded identity/grant evaluation is required by this decision;
 full IOP-027–031 capabilities remain later work. This adds a small host boundary and
 its tests but avoids implementing temporary credential infrastructure. It does not
 make a no-login POC safe for shared access or establish production readiness.
 
-Dependent runtime work must wait for acceptance. Pure parser, fixture, bootstrap and
-UI work may proceed under their own plans. Product scope/dependency documentation
-can be completed while this mechanism remains Proposed.
+Dependent runtime work can now be planned under this accepted mechanism. Business
+access remains closed until the adapter, grants, scope and isolation checks have
+been implemented and tested. Pure parser, fixture, bootstrap and UI work may
+proceed under their own plans. Acceptance does not authorize publication.

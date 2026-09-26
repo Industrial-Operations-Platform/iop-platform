@@ -32,8 +32,8 @@ No application, schema, API, fixture or shared POC scope changes are planned.
 - The existing web application provides navigation placeholders, not analytical
   results. The visual-first delivery preference permits independent previews but
   does not supply implementation of the accepted shared filter/navigation semantics.
-- Runtime business access independently requires acceptance and implementation
-  of ADR-0018 or an alternative. No login, asset survey or physical registry is
+- Runtime business access independently requires implementation and validation
+  of ADR-0018, accepted by the owner on 2026-09-26. No login, asset survey or physical registry is
   added as a POC gate.
 
 The filter decision/integration gate is resolved. The remaining analytical and

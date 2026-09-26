@@ -117,9 +117,9 @@ IOP-089 must supply the bounded analytical operation, dimension references and
 coverage/revision metadata using IOP-043/048/049 contracts. Before endpoint delivery,
 specify and test finite date-span, selection-count, option-list and detail-page
 limits against the demo fixture; this decision supplies no performance commitment.
-Runtime access independently waits for acceptance and implementation of ADR-0018
-or another accepted mechanism. Acceptance here does not accept ADR-0018 or activate
-adjacent implementation stories. Fixture-only UI work can follow this decision
+Runtime access independently waits for implementation and validation of ADR-0018,
+separately accepted by the owner on 2026-09-26. Filter-contract acceptance does not
+activate adjacent implementation stories. Fixture-only UI work can follow this decision
 without claiming production data or runtime access evidence.
 
 ## Design walkthroughs and implementation acceptance

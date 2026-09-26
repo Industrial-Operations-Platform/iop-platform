@@ -11,7 +11,8 @@ Permanent scope: [IOP-097](../items/IOP-097-analytics-filters.md).
 1. Review direct dependencies: IOP-008 is Completed as design (Accepted ADR-0016);
    IOP-089 remains Proposed with no analytical operation. Its canonical aggregates,
    reconciliation and mappings depend on IOP-043/048/049, also Proposed in backlog.
-   ADR-0018 remains Proposed and independently gates runtime business access.
+   ADR-0018 is now Accepted (2026-09-26); implementation and validation still
+   gate runtime business access.
    The web host has navigation placeholders only. No prerequisite branch is merged here.
 2. Define a bounded OIP-owned filter contract in Proposed ADR-0023: reporting-date
    labels, sector/area/source-equipment/message selection, explicit exclusions,
@@ -79,7 +80,7 @@ until consistent filters have executable evidence in both analytical views.
 ADR-0023 acceptance is recorded; publication remains separately authorized.
 Keep this plan active while analytical contracts and runtime access are pending.
 A later fixture UI slice can use the accepted semantics; full delivery still
-requires IOP-089 and an accepted, implemented execution mechanism. Do not implement
+requires IOP-089 and implementation/validation of Accepted ADR-0018. Do not implement
 adjacent dependencies under this story. Acceptance does not complete IOP-096/097.
 
 ## Authorized integration — 2026-09-26

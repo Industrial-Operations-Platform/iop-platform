@@ -33,8 +33,8 @@ are review context only; this task does not merge or change their acceptance rec
 
 Preserve Accepted ADR-0004, ADR-0012/0013/0014 and ADR-0016. Product authorization to
 defer login does not select a technical replacement for identity verification.
-The proposed local execution contract requires separate acceptance before dependent
-runtime implementation. Retain RAW provenance, scoped duplicate prevention and
+The local execution contract in ADR-0018 was separately accepted on 2026-09-26;
+runtime implementation and validation remain pending. Retain RAW provenance, scoped duplicate prevention and
 reconciled frequency/duration semantics. No runtime isolation claim is made.
 
 ## API, UI and non-goals
@@ -50,7 +50,7 @@ Execution evidence belongs in the [plan](../completed/IOP-142-poc-delivery-scope
 
 ## Open questions
 
-The exact local execution-context mechanism remains Proposed. Import contracts,
+The local execution-context mechanism is accepted in ADR-0018. Import contracts,
 duration parsing and representative reference totals are refined in their delivery
 stories; none blocks this documentation increment.
 
@@ -61,3 +61,11 @@ Documentation alignment completed on 2026-09-15. The POC scope, inventory map,
 Local-link, backlog-status/ID, inventory coverage and selected dependency-closure
 checks passed; `git diff --check` passed. ADR-0018 remains Proposed. This completes
 the requested documentation increment, not the POC or its runtime access decision.
+
+## Local mechanism acceptance — 2026-09-26
+
+The owner explicitly accepted ADR-0018 after review of its local-only principal,
+explicit grants and retained RLS boundaries. The original alignment evidence above
+records the proposal-era state. This acceptance resolves the decision gate, not
+runtime delivery or IOP-096/097 completion. See the
+[acceptance plan](../completed/IOP-142-local-context-acceptance-plan.md).

@@ -46,7 +46,7 @@ Also deferred: exports, shared hosting, production backup/restore operations and
 full release ceremony. Basic input validation, safe configuration, scoped storage,
 useful error logs and tests for delivered behavior remain part of each slice.
 
-## Architecture retained and one open mechanism
+## Architecture retained and accepted local mechanism
 
 Keep the modular monolith, accepted stack/API strategy, provider-independent
 identity boundary, organization/site ownership, scoped references, RLS and temporal
@@ -55,9 +55,9 @@ belong to the adapter/configuration. Avoid a generic provider/plugin engine for 
 
 The owner approved the product boundary without login, not a technical bypass of
 Accepted ADR-0012/0013/0014. [ADR-0018](../architecture/adr/ADR-0018-local-poc-execution-context.md)
-proposes a local execution adapter with an explicit seeded principal and grants.
-It remains Proposed. Dependent runtime business access waits for its acceptance or
-another accepted mechanism; independent bootstrap, pure parsing and UI work can proceed.
+was accepted on 2026-09-26: a local execution adapter uses an explicit seeded
+principal and grants. Runtime business access waits for implementation and
+validation; independent bootstrap, pure parsing and UI work can proceed.
 Do not silently disable RLS, use a database-owner runtime role, or trust a browser's
 scope/actor as authority. A local unauthenticated demonstration is not shared-user
 access control and must not be presented as such.
@@ -85,4 +85,4 @@ See the [delivery map](../planning/poc-delivery.md) for story slices and sequenc
 
 The [local POC security baseline](../architecture/security-baseline-poc.md) defines
 IOP-014 control requirements and verification handoffs. It is completed design,
-not runtime security evidence or acceptance of the local execution mechanism.
+not runtime security evidence. ADR-0018 separately records mechanism acceptance.

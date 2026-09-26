@@ -4,7 +4,7 @@
 
 Blocked — the owner accepted [ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md)
 on 2026-09-26. End-to-end delivery still needs IOP-089's analytical contract and
-an accepted, implemented runtime access mechanism. No filter implementation exists.
+implementation and validation of the runtime access mechanism in Accepted ADR-0018. No filter implementation exists.
 
 ## Milestone and goal
 
@@ -61,8 +61,8 @@ The detailed selection and navigation behavior in ADR-0023 is Accepted.
   aggregate, reconciliation and mapping slices (IOP-043/048/049), not their broader
   future scope. Canonical references, bounded queries and coverage/data revision
   metadata must be settled before runtime filter integration.
-- Runtime business access waits for an accepted and implemented mechanism;
-  [ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md) is Proposed.
+- Runtime business access waits for implementation and validation of
+  [ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md), accepted on 2026-09-26.
   Independent fixture-backed UI work need not wait for real business access.
 
 Retain [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),

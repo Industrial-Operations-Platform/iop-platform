@@ -39,7 +39,7 @@ workers/caches/optimization need evidence, not anticipatory infrastructure.
 
 IOP-014 has completed the [local security baseline](../architecture/security-baseline-poc.md)
 as design. Configuration, input limits and scope controls still require executable
-evidence in their delivery slices; ADR-0018 remains Proposed.
+evidence in their delivery slices; ADR-0018 is Accepted; implementation remains pending.
 
 IOP-011 completed the accepted [CSV preservation design](../architecture/csv-preservation-poc.md)
 and [Accepted ADR-0022](../architecture/adr/ADR-0022-poc-csv-preservation.md).
@@ -48,7 +48,7 @@ The bounded storage choice is accepted as design; RAW storage remains unimplemen
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context
-  still needs acceptance of ADR-0018 or an alternative; this is one bounded decision.
+  follows Accepted ADR-0018; implementation and verification remain pending.
 - IOP-041 uses CSV-only IOP-011/012 contracts, not a map store or provider framework.
 - IOP-042 records a direct bounded import; no dependency on IOP-010/024 workers.
 - IOP-049 maps source area/sector vocabulary; no dependency on IOP-037 asset aliases.
@@ -69,14 +69,14 @@ Completed design does not mean implemented. Existing IDs are retained.
 | IDs | POC disposition |
 | --- | --- |
 | IOP-001–006, 008 | Reuse completed design; do not repeat decisions or demand full platform implementation. |
-| IOP-007 | Login/session delivery deferred. Separate Proposed local context in ADR-0018. |
+| IOP-007 | Login/session delivery deferred. Accepted local context in ADR-0018; implementation pending. |
 | IOP-009–010 | Full audit and job design/implementation not POC gates; retain future records. |
 | IOP-011–014 | Narrow decisions for CSV provenance/contract, useful logs/health and local input/configuration safety. |
 | IOP-015–020, 022 | Minimum local hosts, persistence, configuration, API errors and tests as used. |
 | IOP-021 | Basic CI once commands exist; not a local-demo prerequisite. |
 | IOP-023–024 | Audit and workers deferred. |
 | IOP-025–026 | Scoped organization/site seed and ownership validation; CRUD/admin later. |
-| IOP-027–031 | Full identity lifecycle, login and access administration later. Minimal principal/grant checking only if ADR-0018 is accepted; not blanket authorization bypass. |
+| IOP-027–031 | Full identity lifecycle, login and access administration later. Minimal principal/grant checking follows Accepted ADR-0018; not blanket authorization bypass. |
 | IOP-032–040, 044 | Physical asset domain/mapping deferred. |
 | IOP-041–043, 045–049 | Minimum CSV provenance, aggregates, validation, duplicate rejection and reconciliation. |
 | IOP-050–088 | Workforce, handover, maintenance, maps and asset histories deferred. |

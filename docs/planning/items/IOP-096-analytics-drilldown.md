@@ -8,7 +8,7 @@ The POC dependency review is recorded in the
 [execution plan](../active/IOP-096-analytics-drilldown-plan.md). IOP-094/095
 contracts are unavailable; IOP-097's filter contract is accepted in ADR-0023,
 but analytical filter implementation remains pending.
-Runtime access also awaits an accepted and implemented local execution mechanism.
+Runtime access awaits implementation and validation of Accepted ADR-0018.
 No drill-down implementation or executed acceptance evidence is claimed.
 
 ## POC delivery applicability
@@ -97,8 +97,8 @@ Show metric definitions and limitations; do not present correlation as root caus
 [IOP-094](IOP-094-asset-analytics.md), [IOP-095](IOP-095-area-analytics.md), [IOP-097](IOP-097-analytics-filters.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. Runtime business access also requires implementation and validation of the local
+execution-context mechanism accepted in ADR-0018 on 2026-09-26.
 
 ## Non-goals
 
