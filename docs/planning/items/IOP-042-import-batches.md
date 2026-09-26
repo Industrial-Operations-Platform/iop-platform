@@ -2,8 +2,10 @@
 
 ## Status
 
-In progress — ADR-0027 and the POC batch model accepted by the owner on
-2026-09-26. Runtime recording and executable evidence remain pending.
+In progress — the accepted POC batch storage/lifecycle is implemented and tested
+as an internal module. Production parser/OIP composition and delivered importer
+verification remain pending in the owning delivery slices; no end-to-end import
+completion is claimed.
 
 ## POC delivery applicability
 
@@ -11,7 +13,8 @@ Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
 2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
 control the selected slice; older general platform prose is future context, not
 an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+[delivery map](../poc-delivery.md). The current increment implements only the
+batch-owned recording and coordination boundary, not the entire importer.
 
 ## Milestone
 
@@ -33,10 +36,14 @@ owner-requested outline; backlog membership alone does not authorize implementat
 
 ## Current state
 
-The [batch model](../../architecture/import-batches-poc.md) now specifies attempt
-lifecycle, counts and failure/retry behavior. [Accepted ADR-0027](../../architecture/adr/ADR-0027-poc-import-publication.md)
-compares publication mechanisms and recommends bounded atomic publication and
-reconciliation. This capability is not implemented; its detailed design is accepted. IOP-041 supplies the integrated logical RAW contract, not storage.
+The [batch model](../../architecture/import-batches-poc.md) and
+[Accepted ADR-0027](../../architecture/adr/ADR-0027-poc-import-publication.md)
+govern the implemented API-internal Integrations service and seventh database
+migration. Complete receipts/quota, immutable provenance, statuses/counts, scoped
+successful date claims and synchronous recovery are persisted under forced RLS.
+OIP publication is an injected owner contract on the same transaction. Tests use
+a disposable receiver to verify coordination; the production receiver and CSV
+parser are not implemented by this story. See the [storage execution record](../completed/IOP-042-import-batch-storage-plan.md).
 
 ## Desired state
 
@@ -52,9 +59,9 @@ Record a bounded direct import and its outcome.
 
 ## Acceptance criteria
 
-- [ ] Record a bounded direct import and its outcome.
+- [x] Record a bounded direct import and its outcome through the internal batch contract.
 - [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
 ## Domain considerations
@@ -93,8 +100,8 @@ Expose import states, errors and results only when requested by this task; do no
 ## Dependencies
 
 [IOP-041](IOP-041-raw-ingestion-model.md): completed logical RAW design, integrated
-on develop. Its CSV-specific preservation/source contracts are available; physical
-RAW storage remains unimplemented.
+on develop. Its CSV-specific preservation/source contracts are available; IOP-042
+now supplies the batch-owned physical RAW receipt.
 
 Dependencies require only their relevant POC contracts/slices, not completion of
 all future parent capabilities. Runtime business access also requires an accepted
@@ -111,8 +118,9 @@ delivery to the whole milestone. Do not introduce customer names into the core.
 
 The plan must define commands and executable scenarios for the criteria using
 accepted tooling. Include expected paths, errors and relevant access denials; record
-actual results, not fictional tests. The current documentation increment checks
-links, statuses and scenario consistency only; executable evidence remains pending.
+actual results, not fictional tests. The storage execution record contains real-role
+receipt, quota, publication-coordination, recovery and isolation tests. Full importer
+validation with the production parser/OIP receiver and host remains pending.
 
 ## Documentation impact
 
@@ -122,6 +130,7 @@ guides or ADRs only when this task changes their content.
 
 ## Open questions
 
-The owner accepted ADR-0027, including its dataset quota counter, shared publication
-transaction and synchronous recovery contract. Implementation planning must preserve
-the batch-only boundary and the separate parser, OIP receiver and host delivery gates.
+No architectural decision remains open for the delivered batch slice. The owning
+parser/OIP/host slices must supply the documented contracts and verify the complete
+journey before the remaining integration criterion closes. No adjacent story is
+automatically activated by this increment.

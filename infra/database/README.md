@@ -328,11 +328,12 @@ Validation is recorded in the [IOP-030 plan](../../docs/planning/completed/IOP-0
 Accepted [ADR-0026](../../docs/architecture/adr/ADR-0026-poc-authorization-lookup.md)
 is implemented by the sixth migration and API-internal operation boundary. Run the
 normal provision/migrate commands; no new seed, environment switch or startup
-migration is added. Existing databases apply one new migration; fresh ones apply six.
+migration is added by IOP-029. Its baseline contains six migrations; IOP-042 adds
+the seventh below.
 
 Runtime has USAGE on `users_rbac`/`platform_core` and column SELECT only for user
 identity/active state, membership identity/active state, exact site-role assignments,
-and site/organization identity. Site names/zones, organization rows and all writes
+and site/organization identity. Site names/zones, organization rows and all writes to those foundation tables
 remain unavailable. Forced RLS requires all three nonempty transaction-local
 `iop.lookup_user_id`, `iop.lookup_organization_id`, `iop.lookup_site_id` selectors;
 rows match their applicable actor/organization/site keys. Seed selectors do not
@@ -351,3 +352,54 @@ drift. The authorization suite uses a disposable test-only business table, remov
 before checking the production privilege surface. It adds no production business
 schema or endpoint. The health host remains unchanged; ADR-0018 host activation,
 origin/local-only checks and import/read endpoint evidence are still pending.
+
+## Internal import batches (IOP-042)
+
+The seventh migration implements [Accepted ADR-0027](../../docs/architecture/adr/ADR-0027-poc-import-publication.md).
+Existing six-migration databases apply one migration; fresh databases apply seven.
+Use the normal provision/migrate commands. There is no automatic startup migration,
+import endpoint, new environment variable or demo reset command in this slice.
+
+Integrations owns `import_batches` (one complete immutable RAW receipt per attempt),
+`import_date_claims` (the successful scoped reporting-date key) and `import_quota`
+(one dedicated-database operational counter with no customer identifiers). Receipt
+and quota charge commit together; publication uses the authorized pinned transaction
+for claim, receiver-owned writes and terminal success. Failed/rejected receipts
+remain charged. Non-owner runtime access uses exact column grants and forced RLS;
+lookup/seed selectors do not establish business scope. No runtime delete, truncate,
+receipt/provenance update or quota-reset grant exists. Provisioning checks exact
+installed grants and compares quota to receipts using bootstrap credentials, failing
+on drift rather than repairing or disclosing cross-scope data to runtime.
+
+`apps/api/src/modules/integrations` exports `ImportBatches`. Internal composition
+supplies a runtime pool and frozen source configuration; the future host must bind
+that configuration to the seeded site/zone and configured source and supply a trusted
+principal. Public methods choose their own permission: `receive`, `reject`,
+`failProcessing`, `publish` and `reconcile` require submit; `review` and `original`
+require review. Original retrieval verifies exact byte length and SHA-256. Status
+reads omit bytes. Inspection counts/diagnostics use the [batch contract](../../docs/architecture/import-batches-poc.md).
+Known pre-publication failures can retain inspected counts through `failProcessing`.
+`publish` returns `succeeded` or `duplicate-date` after its transaction commits;
+the latter retains a rejected attempt and must be surfaced as a conflict by delivery.
+
+The owning OIP adapter must implement `ImportPublication.publish/inspect` on the
+supplied transaction, validating neutral records and returning the persisted record
+count (or null when no publication exists). There is no production OIP receiver in
+this slice. Tests use disposable receiver tables to prove coordination and rollback;
+they are not CSV normalization or analytical reconciliation evidence.
+
+An `ImportOutcomeUnknownError` carries the original attempt ID. Stop the old
+executor/queued phases, then explicitly reconcile that identity with current submit
+authorization before retrying. Reconciliation never replays bytes. Active local
+phases refuse reconciliation; advisory locks settle database phases and state guards
+reject delayed publishers after failure. This assumes one local host, not multiple
+processes or distributed leases. Keep unavailable/denied recovery incomplete; do
+not interpret it as absence. Inconsistent claim/fact/outcome evidence fails closed.
+
+Delivery must still enforce one in-flight upload, request/receive/parse deadlines,
+source/configuration binding and no pending execution at recovery. The internal
+adapter bounds bytes, counts, diagnostics and database waits, and checks publication
+deadlines; it does not implement transport cancellation or bound arbitrary receiver
+CPU work. ADR-0018 host activation, parser/mapping/OIP delivery and their end-to-end
+security/performance tests remain separate gates. No RAW content or diagnostics from
+source cells is logged. This slice does not provide the later HTTP retrieval headers.

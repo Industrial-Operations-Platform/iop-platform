@@ -149,3 +149,13 @@ selectors are distinct; runtime reads are limited to the columns specified in
 [ADR-0026](adr/ADR-0026-poc-authorization-lookup.md). Repositories must use the supplied
 handle and enforce domain references. The health host does not activate this path;
 local host binding and business operations remain pending under ADR-0018.
+
+
+## Internal POC import batch boundary
+
+IOP-042 implements Integrations-owned receipt, quota, outcome and date-claim storage
+under [ADR-0027](adr/ADR-0027-poc-import-publication.md). Its API-local internal
+service reuses ADR-0026 authorization/transactions and invokes an injected owning
+OIP publication/reconciliation contract. No production OIP receiver, parser or HTTP
+activation is introduced. See the [batch model](import-batches-poc.md) and
+[internal integration guide](../../infra/database/README.md#internal-import-batches-iop-042).

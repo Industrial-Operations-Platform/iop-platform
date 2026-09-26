@@ -43,7 +43,30 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
     'users_rbac.site_role_assignments.site_id', 'users_rbac.site_role_assignments.role_id',
     'platform_core.sites.organization_id', 'platform_core.sites.site_id',
   ] : [];
+  const batchesInstalled = history.rows[0].object !== null && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name = '20260926030000-import-batches'",
+  )).rowCount === 1;
+  const batchColumns = ['organization_id', 'site_id', 'source_id', 'import_id', 'raw_id',
+    'original_filename', 'reporting_date', 'original_bytes', 'byte_length', 'sha256',
+    'received_at', 'submitted_by', 'adapter_revision', 'profile_revision', 'mapping_revision',
+    'site_time_zone', 'reporting_window_status', 'outcome', 'completed_at', 'reason_code',
+    'data_record_count', 'admitted_record_count', 'rejected_record_count', 'inspected_valid_count',
+    'inspected_invalid_count', 'inspection_complete', 'unclassified_count', 'repeated_count',
+    'diagnostics', 'diagnostics_truncated'];
+  const batchInsert = batchColumns.slice(0, 10).concat(['submitted_by', 'adapter_revision',
+    'profile_revision', 'mapping_revision', 'site_time_zone']);
+  const batchUpdate = batchColumns.slice(17);
+  const claimColumns = ['organization_id', 'site_id', 'source_id', 'reporting_date', 'import_id'];
+  const columns = (table: string, names: string[]) => names.map(name => `integrations.${table}.${name}`);
+  const inserts = batchesInstalled ? columns('import_batches', batchInsert)
+    .concat(columns('import_date_claims', claimColumns)) : [];
+  const updates = batchesInstalled ? columns('import_batches', batchUpdate)
+    .concat(columns('import_quota', ['retained_attempts', 'retained_bytes'])) : [];
+  if (batchesInstalled) allowedColumns.push(...columns('import_batches', batchColumns),
+    ...columns('import_date_claims', claimColumns),
+    ...columns('import_quota', ['singleton', 'retained_attempts', 'retained_bytes']));
   const schemas = installed ? ['platform_core', 'users_rbac'] : [];
+  if (batchesInstalled) schemas.push('integrations');
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'
@@ -68,7 +91,11 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
       JOIN pg_namespace n ON n.oid = c.relnamespace
       WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname <> 'information_schema'
       AND c.relkind IN ('r','p','v','m','f') AND a.attnum > 0 AND NOT a.attisdropped AND (
-        has_column_privilege($1, c.oid, a.attnum, 'INSERT,UPDATE,REFERENCES') OR
+        has_column_privilege($1, c.oid, a.attnum, 'REFERENCES') OR
+        has_column_privilege($1, c.oid, a.attnum, 'INSERT') <>
+          ((n.nspname || '.' || c.relname || '.' || a.attname) = ANY($4::text[])) OR
+        has_column_privilege($1, c.oid, a.attnum, 'UPDATE') <>
+          ((n.nspname || '.' || c.relname || '.' || a.attname) = ANY($5::text[])) OR
         has_column_privilege($1, c.oid, a.attnum, 'SELECT') <>
           ((n.nspname || '.' || c.relname || '.' || a.attname) = ANY($3::text[])) OR
         (has_column_privilege($1, c.oid, a.attnum, 'SELECT') AND
@@ -77,8 +104,19 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
         EXISTS (SELECT 1 FROM aclexplode(a.attacl) grant_entry WHERE
           (grant_entry.grantee = 0 OR grant_entry.grantee = (SELECT oid FROM pg_roles WHERE rolname = $1))
           AND (grant_entry.grantee = 0 OR grant_entry.is_grantable)))) AS unsafe`,
-  [roles.runtime, schemas, allowedColumns]);
+  [roles.runtime, schemas, allowedColumns, inserts, updates]);
   if (result.rows[0].unsafe) throw new DatabaseError('Existing runtime privileges are incompatible.');
+  if (batchesInstalled) {
+    // Bootstrap-only integrity check; runtime must not scan foreign receipts for quota.
+    const quota = await client.query(`SELECT q.retained_attempts = b.attempts
+        AND q.retained_bytes = b.bytes AS consistent
+      FROM integrations.import_quota q CROSS JOIN
+        (SELECT count(*) AS attempts, coalesce(sum(byte_length),0) AS bytes FROM integrations.import_batches) b
+      WHERE q.singleton`);
+    if (quota.rows.length !== 1 || !quota.rows[0].consistent) {
+      throw new DatabaseError('Import quota is inconsistent; operator review is required.');
+    }
+  }
 }
 
 export async function provision(configs: Record<DatabaseRole, ClientConfig>): Promise<void> {

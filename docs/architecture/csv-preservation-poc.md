@@ -4,7 +4,9 @@ Accepted design under [IOP-011](../planning/items/IOP-011-file-storage-model.md)
 and [ADR-0022](adr/ADR-0022-poc-csv-preservation.md), explicitly approved by the owner on 2026-09-25.
 This specializes the [CSV source contract](csv-source-contract-poc.md) and
 [security baseline](security-baseline-poc.md) for the [local POC](../product/scope-poc.md).
-No storage, endpoint, schema or runtime security is implemented here.
+This document defines design, not endpoint or runtime security evidence. Subsequent
+IOP-042 implements bounded batch/RAW storage and internal review; see the
+[batch model](import-batches-poc.md). HTTP delivery and parser/OIP integration remain pending.
 
 ## Ownership and evidence
 

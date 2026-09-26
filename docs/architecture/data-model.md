@@ -217,10 +217,12 @@ mandatory metadata become durable together; a RAW receipt is distinct from succe
 analytical admission. Scoped normalized references retain import identity and original
 physical line numbers. See the [preservation contract](csv-preservation-poc.md) for
 budgets, integrity, authorized retrieval and failure/reset semantics. This is accepted
-design only; physical RAW/import tables and publication mechanics remain delivery work.
+design; IOP-042 subsequently implements physical RAW/import tables and publication
+coordination as described below. The production OIP receiver remains pending.
 The [IOP-041 logical RAW model](raw-ingestion-poc.md) defines immutable receipt
 fields, scoped physical-line references and availability/outcome distinctions.
-It is completed design, with no RAW schema or importer implementation.
+IOP-041 is completed design; IOP-042 supplies storage while the importer journey
+remains separate delivery.
 
 
 ## Minimal local principal storage
@@ -256,5 +258,8 @@ deny future business operations independently of stored assignments.
 The [IOP-042 batch model](import-batches-poc.md) defines attempt outcomes, known versus
 unknown counts, all-or-nothing admission and explicit retry/reconciliation behavior.
 [ADR-0027](adr/ADR-0027-poc-import-publication.md) is Accepted for quota,
-cross-module publication and recovery mechanics. No physical schema or runtime
-recording is claimed; IOP-042 remains In progress for implementation.
+cross-module publication and recovery mechanics. IOP-042 implements the Integrations
+receipt/outcome, date-claim and dataset-quota tables with forced RLS and narrow
+column grants. Original bytes and provenance are immutable through runtime grants;
+only a received attempt can become terminal. See the [storage guide](../../infra/database/README.md#internal-import-batches-iop-042).
+OIP receiving storage, CSV parsing and host activation are separate delivery.

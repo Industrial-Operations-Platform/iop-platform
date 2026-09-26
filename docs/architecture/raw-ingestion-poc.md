@@ -5,7 +5,9 @@ model for the [local POC](../product/scope-poc.md). It specializes the
 [CSV source contract](csv-source-contract-poc.md) and Accepted
 [ADR-0022 preservation contract](csv-preservation-poc.md); it adds no storage
 choice or cross-module transaction mechanism. This is design, not implemented
-persistence, an importer or runtime security evidence.
+persistence, an importer or runtime security evidence by IOP-041. Subsequent IOP-042
+implements batch-owned RAW persistence and scoped review; see the [batch model](import-batches-poc.md)
+and its execution record.
 
 ## Ownership and grain
 
@@ -131,6 +133,7 @@ walkthroughs, not executed database, parser, concurrency or endpoint tests.
 | Crash after receipt or uncertain publication commit | Show incomplete state, reconcile by identity before retry, never claim partial success. |
 | Changed/missing stored bytes | Safe unavailable/integrity result, no reconstructed download or silent repair. |
 
-Design closure supplies the RAW model and provenance contract only. Physical
-schemas, runtime source configuration, admission/recovery mechanisms and measured
-limits remain delivery work; unknown source windows remain an explicit metric limit.
+IOP-041 design closure supplies the RAW model and provenance contract only. IOP-042
+subsequently implements batch-owned persistence and admission/recovery coordination.
+Runtime source configuration, parser/OIP integration and measured journey limits
+remain delivery work; unknown source windows remain an explicit metric limit.

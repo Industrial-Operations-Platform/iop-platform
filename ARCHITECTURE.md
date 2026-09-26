@@ -3,7 +3,8 @@
 IOP is a generic industrial operations platform. OIP is its Operational
 Intelligence module, not the product boundary. The repository includes the minimal
 [IOP-016 API host](apps/api/README.md) and [IOP-017 web host](apps/web/README.md); the following decisions also guide future
-implementation. Operational business modules remain unimplemented. IOP-019 supplies local database
+implementation. IOP-042 adds internal Integrations batch persistence and lifecycle;
+CSV parsing, OIP receiving storage and business endpoints remain pending. IOP-019 supplies local database
 role provisioning and versioned migrations; IOP-025 adds the Platform Core
 organization table and explicit local seed. Runtime business access stays closed.
 

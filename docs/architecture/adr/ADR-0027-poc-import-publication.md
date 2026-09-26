@@ -4,7 +4,9 @@
 
 Accepted — explicitly approved by the owner on 2026-09-26, under [IOP-042](../../planning/items/IOP-042-import-batches.md).
 Acceptance covers this mechanism and the linked [batch model](../import-batches-poc.md).
-Runtime implementation and evidence remain pending.
+IOP-042 implements batch storage and internal coordination; evidence is in the
+[storage plan](../../planning/completed/IOP-042-import-batch-storage-plan.md).
+The OIP receiver, parser and host remain separate delivery.
 
 ## Context and alternatives
 

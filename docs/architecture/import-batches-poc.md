@@ -1,8 +1,8 @@
 # POC import batch model
 
 [IOP-042](../planning/items/IOP-042-import-batches.md) defines one bounded direct
-CSV attempt, without a worker or job. This is accepted design, not implemented
-storage. The mechanism in [Accepted ADR-0027](adr/ADR-0027-poc-import-publication.md)
+CSV attempt, without a worker or job. The batch-owned storage and internal lifecycle are implemented; parser, OIP
+receiver and HTTP composition remain separate delivery. The mechanism in [Accepted ADR-0027](adr/ADR-0027-poc-import-publication.md)
 was approved by the owner on 2026-09-26. Existing requirements
 come from the [RAW model](raw-ingestion-poc.md), [source contract](csv-source-contract-poc.md)
 and [preservation contract](csv-preservation-poc.md).
@@ -137,7 +137,9 @@ These are design walkthroughs, not executed tests.
 | Foreign scope/reference or missing context | Deny without foreign details; test real non-owner RLS and pool reuse. |
 | Different site/source, same date | Independent date namespaces; dedicated dataset quota still includes every receipt. |
 
-IOP-042 remains open until the required recording behavior is implemented and validated. Parser, normalization and duplicate
-delivery slices retain their own ownership; no adjacent story is activated here.
-ADR-0018 host activation independently gates endpoints. No HTTP contract, migration,
-performance result, reset implementation or runtime security proof is supplied here.
+The [storage execution record](../planning/completed/IOP-042-import-batch-storage-plan.md)
+records actual-role tests of receipt, quota, state, atomic coordination and recovery.
+Parser, normalization and duplicate delivery slices retain their own ownership;
+no adjacent story is activated here. ADR-0018 host activation independently gates
+endpoints. No end-to-end importer, analytical reconciliation, performance result
+or reset implementation is supplied here. See the [internal integration guide](../../infra/database/README.md#internal-import-batches-iop-042).

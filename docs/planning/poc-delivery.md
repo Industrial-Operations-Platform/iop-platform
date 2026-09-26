@@ -53,19 +53,23 @@ evidence in their delivery slices; ADR-0018 is Accepted; implementation remains 
 
 IOP-011 completed the accepted [CSV preservation design](../architecture/csv-preservation-poc.md)
 and [Accepted ADR-0022](../architecture/adr/ADR-0022-poc-csv-preservation.md).
-The bounded storage choice is accepted as design; RAW storage remains unimplemented. ADR-0018 remains a separate runtime access gate.
+The bounded storage choice is accepted as design; IOP-042 supplies its internal
+RAW/batch storage below. ADR-0018 remains a separate runtime access gate.
 
 IOP-041 completed the [logical RAW model](../architecture/raw-ingestion-poc.md):
 immutable receipt provenance, scoped contributing-line references and separate
-RAW availability/analytical outcomes. This is design only; storage, publication,
-concurrency and recovery still require implementation and executable evidence.
+RAW availability/analytical outcomes. IOP-041 is design only; IOP-042 supplies
+batch-owned storage and tested coordination below, without delivering a production
+OIP receiver or the full CSV journey.
 
 IOP-042 documents the [bounded import batch model](../architecture/import-batches-poc.md).
 [Accepted ADR-0027](../architecture/adr/ADR-0027-poc-import-publication.md) recommends
 atomic quota admission, cross-module publication and synchronous reconciliation.
-The owner accepted the design on 2026-09-26; the story remains In progress for
-implementation. No batch storage, importer or runtime evidence is delivered by
-this documentation increment.
+The owner accepted the design on 2026-09-26. IOP-042 now supplies internal batch
+storage/lifecycle and transaction coordination, with actual-role database tests.
+The OIP receiver is exercised through a disposable test fixture; parser, mapping,
+receiver and host activation still gate the working CSV-to-analysis journey. See
+the [storage record](completed/IOP-042-import-batch-storage-plan.md).
 
 ## Critical dependency corrections
 
