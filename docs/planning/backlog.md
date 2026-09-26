@@ -91,7 +91,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-042 — Import batch model](items/IOP-042-import-batches.md) | In progress |
 | [IOP-043 — Event canonical model](items/IOP-043-canonical-event-model.md) | Completed |
 | [IOP-044 — Event-to-asset mapping](items/IOP-044-event-asset-mapping.md) | Proposed |
-| [IOP-045 — CSV source adapter](items/IOP-045-csv-adapter.md) | Proposed |
+| [IOP-045 — CSV source adapter](items/IOP-045-csv-adapter.md) | Completed |
 | [IOP-046 — Data validation](items/IOP-046-import-validation.md) | Proposed |
 | [IOP-047 — Deduplication/idempotency](items/IOP-047-import-idempotency.md) | Proposed |
 | [IOP-048 — Reconciliation](items/IOP-048-data-reconciliation.md) | Proposed |

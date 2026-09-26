@@ -2,104 +2,112 @@
 
 ## Status
 
-Proposed
+Completed — bounded POC source adapter, 2026-09-26. Pure preparation is implemented;
+end-to-end import, classification and analytical publication remain separate delivery.
 
-## Milestone
+## Milestone and goal
 
-M5 — Industrial Data Foundation. Proposed delivery slice.
-
-## Goal
-
-CSV source adapter. Resultado esperado: Dataset de prueba importable
+M5 — Industrial Data Foundation. Deliver a CSV source adapter and a test dataset
+that can be prepared for import within the [POC scope](../../product/scope-poc.md)
+and [delivery map](../poc-delivery.md).
 
 ## User / business value
 
-Operación necesita datos importados trazables y métricas reconciliables.
+Operations needs traceable imported data and reconcilable metrics.
 
-## Context
+## Context and current state
 
-Ámbito: Integrations and Operational Intelligence. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Integrations and Operational Intelligence. See
+[modules](../../architecture/modules.md) and the [planning workflow](../workflow.md).
+The original context came from the owner-requested outline; backlog membership
+alone did not authorize implementation. The owner explicitly requested this POC
+slice on 2026-09-26.
 
-## Current state
+The API-internal pure adapter implements the existing
+[CSV source contract](../../architecture/csv-source-contract-poc.md): strict bounded
+UTF-16 LE/CSV parsing, filename reporting date, exact frequency/seconds, physical
+line provenance, original duration, required opaque dimensions, repeated-tuple
+warnings and complete-file totals. A fictional import fixture is executable.
+No browser or HTTP import, database composition or OIP receiver is delivered here.
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+## Requirements and acceptance
 
-## Desired state
+- [x] Provide an import-preparation dataset and executable source adapter for the
+  supported seven-column profile; preserve original bytes and physical lines.
+- [x] Validate grammar, required cells, exact measures/sums and approved parser
+  budgets. Reject invalid preparation without returning partial records.
+- [x] Document scenarios and necessary decisions without expanding scope.
+- [x] Record validation evidence and synchronize documentation.
 
-Dataset de prueba importable
+RAW → validation → normalization remains the ingestion flow; the receiver validates
+its invariants independently. Never infer a physical asset from text. Preparation
+is not successful analytical admission: receipt, scoped mapping, publication and
+host activation are still required in the owning slices.
 
-## Requirements
+## Architecture and security constraints
 
-- Entregar únicamente el resultado descrito para IOP-045.
-- RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
-
-## Acceptance criteria
-
-- [ ] Dataset de prueba importable
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
-
-## Domain considerations
-
-RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
+Follow [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt their decisions.
+The implementation specializes accepted source/temporal/preservation rules and
+reuses existing Integrations placement without introducing an architectural pattern.
 
-## Security considerations
+Verify permission and organization/site scope for relevant operations/references.
+This pure adapter has no resource access or authority; it neither selects scope nor
+bypasses authorization. Future composition must pass the immutable scoped receipt.
+Do not add secrets, floor plans or production rows. Existing owner-authorized CSVs
+are read-only verification input; test fixtures are fictional. Keep industrial
+integrations read-only and record material changes where applicable.
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+## Data, API and UI considerations
 
-## Data considerations
+Preserve provenance and grain; distinguish aggregate records from occurrences.
+Rejections and corrections must remain visible. Source columns remain inside the
+adapter; customer classification belongs in scoped configuration. Runtime ingestion
+uses owning-module contracts. Expose states/errors/results when delivered by their
+owning story; no dashboard or upload endpoint is created here.
 
-Preservar procedencia y grano; distinguir ocurrencias de agregados. Rechazos y correcciones deben ser visibles.
+## Dependencies and handoff
 
-## API considerations
+- [IOP-041](IOP-041-raw-ingestion-model.md): integrated logical RAW/line provenance.
+- [IOP-042](IOP-042-import-batches.md): integrated internal receipt/lifecycle;
+  production parser/receiver composition remains unfinished.
+- [IOP-043](IOP-043-canonical-event-model.md): integrated canonical aggregate design;
+  runtime receiver/storage remains unfinished.
+- [IOP-012](IOP-012-source-integration-contract.md): integrated syntax and normalization.
 
-Usar contratos de ingesta; credenciales y nombres de columnas externos quedan en adaptadores/configuración.
-
-## UI considerations
-
-Exponer estados, errores y resultados de importación solo si lo pide esta tarea; no crear un dashboard completo.
-
-## Dependencies
-
-[IOP-041](IOP-041-raw-ingestion-model.md), [IOP-042](IOP-042-import-batches.md), [IOP-043](IOP-043-canonical-event-model.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+These contracts suffice for independent pure preparation, not runtime ingestion.
+IOP-046 owns further validation/reporting composition, IOP-049 scoped classification,
+and runtime host access still requires ADR-0018 implementation. No adjacent story
+is activated or closed. Dependency capability matters, not numerical order.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent stories, inferring acceptance of open decisions or expanding
+to the whole milestone. No customer names in core, integration registry, asset
+inference, live connections, UI, receiver storage or automatic replacement.
 
-## Validation
+## Validation and documentation impact
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+See the [execution record](../completed/IOP-045-csv-adapter-plan.md) for executable
+normal/error/budget scenarios and actual results. The item, backlog, source-contract
+handoff, API guide and delivery map are synchronized. The original Spanish prose
+is translated into English; the read IOP-046 context receives translation only.
 
 ## Owner-supplied CSV and reporting context
 
-The observed source has seven semicolon-delimited columns. Preserve equipment designations as text and validate duration parsing, encoding and quoting against the actual exporter and existing Python script. The owner intends a TypeScript/Node.js port of the preparation behavior; compare normalized outputs with Python on identical input. The supplied loader reads UTF-16 and assigns every row a date parsed from `Hitliste-YYYYMMDD.csv`. The repository rejects dates already present. Reporting-window coverage, invalid-row handling and future scoped retry/correction semantics still require definition; the legacy date check alone does not establish concurrency-safe uniqueness.
+The source has seven semicolon-delimited columns. Equipment designations remain
+opaque text. The legacy loader reads UTF-16 and assigns the date parsed from
+`Hitliste-YYYYMMDD.csv`; its repository rejects dates already present. That legacy
+check alone does not establish concurrency-safe uniqueness. Reporting-window
+coverage and future scoped retry/correction semantics must not be invented.
+See the [shared evidence](../../product/csv-and-reporting-reference.md).
 
-See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
-under IOP-002 at the owner's request. This is context for future planning; this
-item remains Proposed and no implementation or metric formula is accepted here.
+The TypeScript adapter implements the explicit IOP-012 grammar and exact seconds.
+The missing Python `dauer_to_minutes` helper prevents a claim of legacy parity;
+reconciliation on identical input remains pending before replacing that process.
+The adapter does not infer source windows or introduce metric formulas. Existing
+reference files establish format compatibility only, not end-to-end admission.

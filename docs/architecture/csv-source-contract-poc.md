@@ -1,8 +1,9 @@
 # POC CSV source contract
 
 Defined by [IOP-012](../planning/items/IOP-012-source-integration-contract.md)
-for the [local analytical POC](../product/scope-poc.md). This is a design contract,
-not an implemented parser, API or database schema. It specializes existing
+for the [local analytical POC](../product/scope-poc.md). This is the design contract;
+IOP-045 now implements its pure parsing/normalization profile. It does not deliver
+runtime import admission, an API or OIP storage. It specializes existing
 [module boundaries](modules.md), [scope](adr/ADR-0012-organization-site-scope.md),
 [time semantics](adr/ADR-0016-time-and-timezone-model.md) and the
 [security baseline](security-baseline-poc.md); no new architectural pattern is introduced.
@@ -57,7 +58,8 @@ original filename, RAW reference, receipt instant, adapter/profile revision and
 mapping revision. Resolve one explicit configured source within its organization
 and site; validate ownership and the site's configured IANA zone before admission.
 CSV labels and filenames cannot select or override scope. Runtime access still
-requires an accepted execution mechanism; ADR-0018 remains Proposed.
+requires execution-mechanism implementation and validation; ADR-0018 is Accepted,
+but host activation remains pending.
 
 Each aggregate retains the import context and a `sourceRecordNumber` (original
 physical line number, including the header and any skipped blank lines):
@@ -218,3 +220,13 @@ reconciliation; IOP-125 and analytics delivery supply synthetic expected totals 
 overview/detail reconciliation. No adjacent story is activated or completed here.
 Exact exporter grouping, reporting-window boundaries and legacy conversion parity
 remain unverified; they do not block honest source-date aggregate presentation.
+
+## Implemented adapter handoff — IOP-045
+
+The [API guide](../../apps/api/README.md#pure-poc-csv-preparation-iop-045) documents
+the pure adapter and its fixed budgets. The
+[execution record](../planning/completed/IOP-045-csv-adapter-plan.md) supplies
+executable syntax, conversion and boundary evidence. Classification and persistence
+composition remain separate: successful preparation is not analytical admission,
+a scope/permission check or legacy Python parity. The source-specific state machine
+implements this bounded single-line profile without a new parser dependency.

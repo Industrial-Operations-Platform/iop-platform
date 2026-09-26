@@ -204,3 +204,47 @@ terminated connections. Runtime column grants are documented in the
 [database guide](../../infra/database/README.md#current-site-authorization-lookup-iop-029).
 ADR-0018's trusted local adapter, activation, loopback/origin checks and future
 import/read integration remain required before any business route is opened.
+
+## Pure POC CSV preparation (IOP-045)
+
+The Integrations index exports `prepareCsv(filename, bytes, startedAt?)`,
+`parseCsvReportingDate`, `CsvAdapterError`, `CSV_LIMITS` and adapter revision
+`hitliste-poc-v1`. Input is one complete Buffer and the original upload basename.
+The adapter has no file/network/database access and does not select organization,
+site or source. Source vocabulary is confined to the adapter.
+
+It implements the [source profile](../../docs/architecture/csv-source-contract-poc.md)
+with the [fixed preservation budgets](../../docs/architecture/csv-preservation-poc.md):
+5 MiB, 20,000 data records, 25,000 physical lines, 4,096 decoded UTF-16 code units
+per field, 32,768 per physical record and a 30-second processing deadline. It
+checks byte length before decoding, line length before slicing and field length
+before appending. No disk spooling or configurable cap increase is provided.
+A terminal newline does not invent another blank physical line.
+
+Successful preparation returns neutral source records, their original physical
+line numbers, original duration text, exact frequency/seconds and totals, blank
+counts and repeated-tuple flags/counts (including the first member). It preserves
+all repeated records and all nonempty areas, without choosing classifications.
+The filename supplies a reporting-date label with an explicitly unknown window.
+No occurrence time, physical asset or downtime is inferred.
+
+Failure throws one fixed `CsvAdapterError` with code and optional physical line/
+neutral field, without raw values or partial records. Fail-fast inspection leaves
+the remainder unknown; it does not report a complete invalid/data count. This is
+not yet an IOP-042 `Inspection` or OIP publication payload: composition must map
+safe diagnostics and counts, apply IOP-049 scoped classification and validate the
+receiver contract. A prepared dataset is not an admitted import.
+
+Future composition must authorize and persist immutable scoped RAW before
+preparation, validate receipt/date/revision consistency, share its monotonic
+`performance.now()` start across validation/mapping, and publish only after all
+checks and the successful date claim. Deadline checks occur after decoding, at
+every physical line and before return; the bounded synchronous adapter does not
+preempt a native decode or provide HTTP upload cancellation. Host admission,
+origin protection and request deadlines still require their own delivery tests.
+Original buffers are never changed; callers remain responsible for RAW retention.
+
+Run `npm test --workspace @iop/api -- --testPathPatterns csv-adapter` for the
+fictional byte fixture, exact arithmetic, malformed input and budget boundaries.
+The missing legacy Python duration helper prevents claiming conversion parity.
+See the [execution record](../../docs/planning/completed/IOP-045-csv-adapter-plan.md).

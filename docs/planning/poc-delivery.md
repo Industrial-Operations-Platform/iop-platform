@@ -178,3 +178,11 @@ is complete; the broader shared-user parent is Deferred. See the
 ADR-0018 host activation, configured principal binding, loopback/origin protection
 and future import/read endpoint tests remain pending. This lookup slice opens no
 business endpoint and does not complete that independent runtime access gate.
+
+IOP-045 implements the bounded pure CSV adapter with a fictional UTF-16 fixture,
+physical-line provenance, exact normalized measures/totals and repeated-tuple
+warnings. Syntax/value/budget failures return no partial dataset. See the
+[execution record](completed/IOP-045-csv-adapter-plan.md). Preparation does not admit
+an import: IOP-046 reporting composition, IOP-049 classification, production OIP
+receiving storage, IOP-042 composition and ADR-0018 host activation remain pending.
+Legacy Python duration conversion parity is unverified.
