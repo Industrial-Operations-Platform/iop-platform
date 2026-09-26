@@ -249,3 +249,12 @@ Forced RLS restricts migrator SELECT/INSERT to explicit principal/organization a
 for assignments, site. Runtime has no grants. Atomic initial seed and strict unchanged
 reruns provide installation evidence only; an inactive user/membership must still
 deny future business operations independently of stored assignments.
+
+
+## Proposed POC import batch lifecycle
+
+The [IOP-042 batch model](import-batches-poc.md) defines attempt outcomes, known versus
+unknown counts, all-or-nothing admission and explicit retry/reconciliation behavior.
+[ADR-0027](adr/ADR-0027-poc-import-publication.md) remains Proposed for quota,
+cross-module publication and recovery mechanics. No physical schema or runtime
+recording is claimed; IOP-042 remains Blocked pending the architectural decision.

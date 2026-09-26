@@ -60,6 +60,12 @@ immutable receipt provenance, scoped contributing-line references and separate
 RAW availability/analytical outcomes. This is design only; storage, publication,
 concurrency and recovery still require implementation and executable evidence.
 
+IOP-042 documents the [bounded import batch model](../architecture/import-batches-poc.md).
+[Proposed ADR-0027](../architecture/adr/ADR-0027-poc-import-publication.md) recommends
+atomic quota admission, cross-module publication and synchronous reconciliation.
+The story is Blocked pending owner acceptance; no batch storage, importer or runtime
+evidence is delivered by this documentation increment.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context
