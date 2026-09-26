@@ -55,9 +55,73 @@ The verified dialect is OpenAPI 3.0.0. No documentation route or Swagger UI is s
 It proves only that the process responds, not readiness of storage/import/analytics.
 It accepts no meaningful inputs and returns no application configuration or data.
 Unknown routes/versions and unsupported operations return 404 Problem Details.
-Unexpected host errors return sanitized 500 Problem Details and a fixed server log.
-Bootstrap errors use `about:blank`, `title`, and matching HTTP/body `status` with
-`application/problem+json`. Domain error types and correlation remain IOP-022/013.
+IOP-022 implements the common error contract below; domain-specific errors accompany
+future endpoints.
+
+## POC error contract (IOP-022)
+
+The global filter returns `application/problem+json` using
+[RFC 9457](https://www.rfc-editor.org/info/rfc9457/), as selected by
+[ADR-0011](../../docs/architecture/adr/ADR-0011-api-contract-strategy.md).
+Required fields are `type`, `title`, matching HTTP/body `status`, and `traceId`
+(a fresh server-generated UUID for each error). Clients use type/status, never
+parse titles. `detail` and `instance` are omitted to avoid reflecting request data.
+
+Type URIs use the stable, non-resolving `urn:iop:problem:` prefix plus the suffix
+below; this table is their documentation, not a new public route.
+
+| Status | Type suffix | Meaning |
+| --- | --- | --- |
+| 400 | bad-request | Malformed syntax, invalid fields/filters or missing required scope selector. |
+| 401 | unauthorized | Missing/invalid authentication; future authentication adapters must supply their scheme's challenge. |
+| 403 | forbidden | Operation disallowed for the authenticated principal. |
+| 404 | not-found | Missing route/resource or inaccessible resource; never reveal foreign existence. |
+| 409 | conflict | Conflict with current resource state. |
+| 413 | content-too-large | Request exceeds the operation's size budget. |
+| 415 | unsupported-media-type | Unsupported request representation. |
+| 429 | too-many-requests | Request rate limit reached. |
+| 500 | internal-server-error | Unexpected failure with no exposed internal detail. |
+| 503 | service-unavailable | Temporarily unavailable service. |
+
+Other valid HTTP error statuses retain their status and use `about:blank` with the
+standard reason phrase (or `HTTP Error` for unassigned statuses). The Express body-parser `entity.too.large` error maps to 413 (the current host
+JSON parser budget is 100 KiB; future CSV uploads need their own budgets). Other
+non-HTTP failures and invalid exception statuses become 500. Framework exception messages/objects,
+SQL, stacks, URLs, headers, payloads and scope identifiers are never serialized.
+The status mappings do not implement authentication, limits, retries or business
+operations. Future endpoints document any challenge or `Retry-After` behavior;
+the filter does not infer them from exception messages.
+
+For explicit `RequestValidationException` failures, 400 adds `errors`, at most 50
+entries of `{pointer, code}`. Codes: `required` (missing), `invalid` (syntax/type),
+`out-of-range` (outside allowed bounds), `unsupported` (unsupported value).
+Pointers are JSON Pointer strings into a logical request object containing `body`,
+`query` and `path`; for example `/query/reportingDate`, `/body/name`, or empty for
+the whole request. Escape `~` and `/` as `~0` and `~1`. Adapters supply fixed,
+reviewed schema paths, never submitted values, dynamic customer keys or source
+content. Pointers are limited to 256 characters; invalid metadata is a programming
+error and becomes a generic 500. Entries beyond 50 are omitted, so the list is not
+an exhaustive validation report. Extra properties are discarded. Generic framework
+400s have no validation entries. No DTO validation engine or CSV parser is added.
+
+Example (the identifier varies):
+
+```json
+{"type":"urn:iop:problem:bad-request","title":"Bad Request","status":400,"traceId":"ea6162a0-c8cc-4c7d-98a3-d5dd7aff2004","errors":[{"pointer":"/query/reportingDate","code":"invalid"}]}
+```
+
+For every 5xx, stderr receives only a JSON record with `event: api.request.failed`,
+`status` and the response's `traceId`. Client-provided IDs are ignored. This is
+error-occurrence correlation, not request-wide/distributed tracing or an audit log;
+4xx responses are not logged. Health success stays unchanged. Network/proxy errors
+may not follow this format, and HEAD responses have no body.
+
+Compatibility review: the bootstrap `about:blank` types become explicit catalog
+URIs and `traceId` is required. The existing browser uses only health success and
+its generic error state; regenerated bindings and tests verify this bounded update.
+Shared `ProblemDetails`/`ValidationIssue` DTOs appear in OpenAPI; only the shipped
+health route is published. Synthetic routes used to test failures never ship.
+Import row failures remain future import-result data, not automatically HTTP errors.
 
 ## Boundaries and follow-up
 

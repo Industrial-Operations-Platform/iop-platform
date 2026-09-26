@@ -2,10 +2,10 @@ import 'reflect-metadata';
 import { INestApplication } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { BootstrapErrorFilter } from './bootstrap-error.filter';
+import { ProblemDetailsFilter } from './problem-details.filter';
 
 export function configureApplication(app: INestApplication): void {
-  app.useGlobalFilters(new BootstrapErrorFilter(app.get(HttpAdapterHost)));
+  app.useGlobalFilters(new ProblemDetailsFilter(app.get(HttpAdapterHost)));
 }
 
 export async function createApplication(): Promise<INestApplication> {

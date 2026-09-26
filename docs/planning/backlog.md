@@ -53,7 +53,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-019 — PostgreSQL + migrations](items/IOP-019-database-bootstrap.md) | Completed |
 | [IOP-020 — Testing foundation](items/IOP-020-testing-foundation.md) | Proposed |
 | [IOP-021 — CI baseline](items/IOP-021-ci-baseline.md) | Proposed |
-| [IOP-022 — API error model](items/IOP-022-api-error-model.md) | Proposed |
+| [IOP-022 — API error model](items/IOP-022-api-error-model.md) | Completed |
 | [IOP-023 — Audit infrastructure](items/IOP-023-audit-infrastructure.md) | Proposed |
 | [IOP-024 — Worker infrastructure](items/IOP-024-worker-infrastructure.md) | Proposed |
 

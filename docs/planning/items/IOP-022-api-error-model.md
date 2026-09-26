@@ -2,96 +2,75 @@
 
 ## Status
 
-Proposed
+Completed — common local POC error model validated on 2026-09-26.
+Domain-specific errors remain with future endpoint stories.
 
 ## Milestone
 
-M2 — Development Platform Foundation. Proposed delivery slice.
+M2 — Development Platform Foundation.
 
-## Goal
+## Goal and value
 
-API error model. Resultado esperado: Respuestas de error consistentes y documentadas
+Provide consistent, documented API error responses so developers can diagnose
+failures and clients can handle them without parsing human messages.
 
-## User / business value
+## Context and scope
 
-Los desarrolladores necesitan un entorno reproducible y validación ejecutable.
-
-## Context
-
-Ámbito: Development infrastructure and application hosts. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
-
-## Current state
-
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Respuestas de error consistentes y documentadas
+The owner requested implementation limited to the [POC](../../product/scope-poc.md)
+and [delivery map](../poc-delivery.md). The existing NestJS health host has minimal
+bootstrap errors. Extend that host with the common error contract accepted in
+[ADR-0011](../../architecture/adr/ADR-0011-api-contract-strategy.md).
+See [modules](../../architecture/modules.md) and [workflow](../workflow.md).
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-022.
-- Aplicar únicamente el stack y los contratos aceptados; los hosts no son microservicios de negocio.
+- Consistent RFC 9457 responses, documented status/type mapping, sanitized failures
+  and a server-generated correlation identifier for each error occurrence.
+- A bounded validation representation with documented field pointers and codes;
+  future endpoints supply their own validation rules through the transport boundary.
+- Shared OpenAPI DTOs and synchronized generated browser bindings.
+- Use only accepted stack/contracts; hosts are not business microservices.
 
 ## Acceptance criteria
 
-- [ ] Respuestas de error consistentes y documentadas
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] Consistent, documented error responses validated over real HTTP.
+- [x] Plan documents scenarios and necessary choices without expanding scope.
+- [x] Validation evidence, generated contracts and documentation are synchronized.
 
-## Domain considerations
+## Constraints
 
-Aplicar únicamente el stack y los contratos aceptados; los hosts no son microservicios de negocio.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
+Apply Accepted [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs do not authorize implementation.
 
-## Security considerations
-
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
-
-## Data considerations
-
-PostgreSQL es la referencia; configuración de prueba y datos sintéticos separados.
-
-## API considerations
-
-Aplicar contratos de salud/error aceptados sin añadir funcionalidades de negocio.
-
-## UI considerations
-
-Solo lo necesario para verificar el host o entorno; no crear pantallas de negocio.
+Verify permissions and organization/site scope in future relevant operations and
+references. No access-control implementation or denial-of-access claim belongs to
+this health-only host. Exclude secrets, drawings, production data and customer
+labels from code, logs and responses. Keep industrial integrations read-only and
+record material changes where applicable. PostgreSQL remains authoritative; test
+configuration/data stays synthetic and separate. No business screens are needed.
 
 ## Dependencies
 
-[IOP-003](IOP-003-api-contract-strategy.md), [IOP-016](IOP-016-backend-bootstrap.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+[IOP-003](IOP-003-api-contract-strategy.md) and
+[IOP-016](IOP-016-backend-bootstrap.md) are Completed and present on develop.
+Dependencies identify required capabilities, not numerical implementation order.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Adjacent stories, business endpoints, full domain error catalogs, CSV row results,
+login, authorization/RLS, UI behavior, distributed tracing or broader logging.
+Future owning stories document domain-specific cases (including duplicate imports)
+using this common transport contract. No entire-milestone delivery or inferred ADR
+acceptance. No new persistence or integration behavior.
 
-## Validation
+## Validation and documentation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+The [execution plan](../completed/IOP-022-api-error-model-plan.md) records executable
+success/error, sanitization and contract checks. Update this item, its
+[backlog](../backlog.md) row, API documentation and generated artifacts together.
+Exact endpoint-specific errors remain with later endpoint delivery; the common
+POC model has no unresolved architectural dependency.

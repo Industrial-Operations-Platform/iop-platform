@@ -33,12 +33,16 @@ describe('API host', () => {
   ('does not expose unimplemented route %s or reflect request data', async (path) => {
     await request(app.getHttpServer()).get(path)
       .expect('Content-Type', /application\/problem\+json/)
-      .expect(404, { type: 'about:blank', title: 'Not Found', status: 404 });
+      .expect(404).expect(({ body }) => {
+        expect(body).toEqual({ type: 'urn:iop:problem:not-found', title: 'Not Found', status: 404, traceId: expect.any(String) });
+      });
   });
 
   it('does not implement mutations', async () => {
     await request(app.getHttpServer()).post('/health').send({ secret: 'private' })
-      .expect(404, { type: 'about:blank', title: 'Not Found', status: 404 });
+      .expect(404).expect(({ body }) => {
+        expect(body).toEqual({ type: 'urn:iop:problem:not-found', title: 'Not Found', status: 404, traceId: expect.any(String) });
+      });
   });
 
   it('sanitizes unexpected failures', async () => {
@@ -48,8 +52,10 @@ describe('API host', () => {
     });
     await request(app.getHttpServer()).get('/health')
       .expect('Content-Type', /application\/problem\+json/)
-      .expect(500, { type: 'about:blank', title: 'Internal Server Error', status: 500 });
-    expect(log).toHaveBeenCalledWith('API request failed with a server error.');
+      .expect(500).expect(({ body }) => {
+        expect(body).toEqual({ type: 'urn:iop:problem:internal-server-error', title: 'Internal Server Error', status: 500, traceId: expect.any(String) });
+        expect(log).toHaveBeenCalledWith(JSON.stringify({ event: 'api.request.failed', status: 500, traceId: body.traceId }));
+      });
   });
 
   it('keeps the reviewed OpenAPI artifact and real response consistent', async () => {

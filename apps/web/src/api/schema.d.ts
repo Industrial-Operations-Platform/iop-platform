@@ -28,6 +28,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ValidationIssue: {
+            /** @description JSON Pointer into the documented request representation; empty means the whole request. */
+            pointer: string;
+            /** @enum {string} */
+            code: "required" | "invalid" | "out-of-range" | "unsupported";
+        };
+        ProblemDetails: {
+            /**
+             * Format: uri
+             * @example urn:iop:problem:bad-request
+             */
+            type: string;
+            title: string;
+            status: number;
+            /**
+             * Format: uuid
+             * @description Server-generated error occurrence identifier; not a client-supplied ID.
+             */
+            traceId: string;
+            /** @description Only present for explicit safe input validation failures (400). */
+            errors?: components["schemas"]["ValidationIssue"][];
+        };
         HealthResponse: {
             /**
              * @example ok
@@ -68,14 +90,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/problem+json": {
-                        /** @enum {string} */
-                        type: "about:blank";
-                        /** @enum {string} */
-                        title: "Internal Server Error";
-                        /** @enum {integer} */
-                        status: 500;
-                    };
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
