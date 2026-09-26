@@ -2,7 +2,13 @@
 
 ## Status
 
-Proposed
+Blocked
+
+The POC dependency review is recorded in the
+[execution plan](../active/IOP-096-analytics-drilldown-plan.md). IOP-094/095
+contracts are unavailable; IOP-097's filter proposal is unmerged and unaccepted.
+Runtime access also awaits an accepted and implemented local execution mechanism.
+No drill-down implementation or executed acceptance evidence is claimed.
 
 ## POC delivery applicability
 
@@ -22,17 +28,18 @@ Drill down from overview to contributing aggregate records.
 
 ## User / business value
 
-Operación y responsables necesitan métricas explicables para priorizar problemas.
+Operations staff and managers need explainable metrics to prioritize problems.
 
 ## Context
 
-Ámbito: Operational Intelligence (OIP). Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Operational Intelligence (OIP). See [modules](../../architecture/modules.md) and
+the [planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; inclusion in the backlog does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+The web host has overview/detail navigation placeholders. Analytical drill-down
+is not implemented and the shared filter design has not been accepted.
 
 ## Desired state
 
@@ -54,34 +61,34 @@ Drill down from overview to contributing aggregate records.
 
 ## Domain considerations
 
-OIP es un módulo de IOP; métricas desacopladas de UI y de esquemas de WinCC.
+OIP is an IOP module; metrics remain decoupled from the UI and WinCC schemas.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permissions and customer/site scope for relevant operations and references.
+Do not include secrets, plant drawings or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Definir grano, cobertura, unidades y periodos; duración acumulada de alarmas no equivale automáticamente a downtime.
+Define grain, coverage, units and periods; accumulated alarm duration does not automatically equal downtime.
 
 ## API considerations
 
-Consultas con filtros de scope verificados y trazabilidad a registros contribuyentes.
+Queries require verified scope filters and traceability to contributing records.
 
 ## UI considerations
 
-Mostrar definición y límites de la métrica; no presentar correlación como causa raíz.
+Show metric definitions and limitations; do not present correlation as root cause.
 
 ## Dependencies
 
@@ -93,20 +100,40 @@ local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must specify executable commands and scenarios for the acceptance criteria using the accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+
+### Bounded POC acceptance scenarios
+
+These scenarios refine the existing requirements, not the pending IOP-097 contract.
+They are expected evidence for implementation, not results of executed tests.
+
+| Scenario | Required evidence |
+| --- | --- |
+| Overview → configured sector → area → source equipment → message/detail | Every step shows the active scope, reporting dates and filters, with contributing aggregate records at the end. |
+| Navigate with a message exclusion or existing dimension restriction | Dates and applicable filters remain visible and consistent; no silent broadening. Exact state transitions follow the accepted IOP-097 contract. |
+| Return to overview/detail | Verify selection behavior against IOP-097 and reconcile both measures for the same selection and admitted data. |
+| Inspect contributors | Trace aggregate records to source/import and original row provenance; show reported frequency and accumulated alarm duration with units. Do not expand them into individual occurrences. |
+| Unclassified sector or repeated equipment designation | Unclassified records remain in all-data reconciliation; source-scoped labels do not imply a unique physical asset or sensor. |
+| Missing reporting date versus a filtered result with no matches | Display coverage and empty states distinctly. Do not turn a missing import into zero faults or infer a full-day source window. |
+| Paginated contributors | Reconcile across all contributing pages; displayed subsets must not redefine the analytical total. |
+| Loading, failed read or changed selection | Do not present stale records/totals as evidence for a new selection; preserve visible context and provide a recoverable state. |
+| Missing/foreign scope, source or record reference; absent permission | Reject access without broadening the query or revealing foreign records; verify application checks and RLS when runtime access is delivered. |
+
+Physical maps, surveyed assets, verified sensor discovery, root-cause claims,
+exports, login and extra metric formulas remain outside this POC slice.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its [backlog](../backlog.md) status and the execution plan.
+Update contracts, models, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
 
 ## Owner-supplied CSV and reporting context
 
@@ -114,4 +141,4 @@ The requested path is overview → configured hall/sector → area → equipment
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
 under IOP-002 at the owner's request. This is context for future planning; this
-item remains Proposed and no implementation or metric formula is accepted here.
+item remains unimplemented and no metric formula is accepted by this evidence.

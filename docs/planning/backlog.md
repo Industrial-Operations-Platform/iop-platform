@@ -172,7 +172,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-093 — Pareto analysis](items/IOP-093-pareto.md) | Proposed |
 | [IOP-094 — Source equipment analytics (POC)](items/IOP-094-asset-analytics.md) | Proposed |
 | [IOP-095 — Area analytics](items/IOP-095-area-analytics.md) | Proposed |
-| [IOP-096 — Analytical drill-down](items/IOP-096-analytics-drilldown.md) | Proposed |
+| [IOP-096 — Analytical drill-down](items/IOP-096-analytics-drilldown.md) | Blocked |
 | [IOP-097 — Date/filter model](items/IOP-097-analytics-filters.md) | Proposed |
 
 ## M12 — Improvement Tracking
