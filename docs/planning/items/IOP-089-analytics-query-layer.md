@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed
+Blocked — POC query design is prepared; ADR-0028 acceptance, production OIP
+storage and ADR-0018 host activation remain pending.
 
 ## POC delivery applicability
 
@@ -14,7 +15,7 @@ an additional POC gate. See [POC scope](../../product/scope-poc.md) and
 
 ## Milestone
 
-M11 — OIP / Operational Intelligence. Proposed delivery slice.
+M11 — OIP / Operational Intelligence. Bounded POC query slice.
 
 ## Goal
 
@@ -32,7 +33,12 @@ owner-requested outline; inclusion in the backlog does not authorize implementat
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+The [POC query contract](../../architecture/analytics-query-poc.md) and
+[Proposed ADR-0028](../../architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
+define a reviewable operation, references, revision consistency and bounded pages.
+No query code or endpoint is implemented. Internal dependency evidence is available;
+production receiving storage and local host activation are not. See the
+[active plan](../active/IOP-089-analytics-query-layer-plan.md).
 
 ## Desired state
 
@@ -49,7 +55,7 @@ Query verified frequency and duration independently of UI.
 
 - [ ] Query verified frequency and duration independently of UI.
 - [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Record design evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
 ## Domain considerations
@@ -88,8 +94,12 @@ Show metric definitions and limitations; do not present correlation as root caus
 [IOP-043](IOP-043-canonical-event-model.md), [IOP-048](IOP-048-data-reconciliation.md), [IOP-049](IOP-049-source-mappings.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. IOP-043 supplies completed logical design; IOP-048
+has internal oracle evidence through a disposable receiver; IOP-049 has pure scoped
+classification. Neither latter story supplies durable production OIP facts.
+ADR-0018 is Accepted as of 2026-09-26; its implementation/validation independently
+gates runtime access. Accepted ADR-0023/0026/0027 supply filter, authorization and
+publication boundaries. ADR-0028 proposes the remaining analytical mechanisms.
 
 ## Non-goals
 
@@ -106,4 +116,8 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+Owner acceptance is required for ADR-0028 and its linked query contract before
+dependent implementation. The proposal recommends one-statement reads with an
+immutable-publication revision fingerprint, scoped dimension digests and validated
+cursors. Production storage and host activation remain explicit delivery handoffs;
+this story does not authorize adjacent implementation by implication.
