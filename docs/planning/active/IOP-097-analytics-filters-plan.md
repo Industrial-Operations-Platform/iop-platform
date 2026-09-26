@@ -1,6 +1,6 @@
 # IOP-097 — POC date/filter model plan
 
-Status: Blocked — documentation increment validated; ADR-0023 awaits acceptance.
+Status: Blocked — ADR-0023 accepted; analytical contracts and runtime access remain pending.
 Authorized by the owner's request to work on IOP-097 within
 the [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 Branch: `docs/IOP-097-analytics-filters`, created from clean `develop` on 2026-09-25.
@@ -25,6 +25,17 @@ Permanent scope: [IOP-097](../items/IOP-097-analytics-filters.md).
 4. Synchronize only the IOP-097 row in `backlog.md`; retain this active plan while
    the proposal awaits a decision. No application, schema, metric, import, scope
    document or adjacent-story implementation changes.
+
+## Owner acceptance increment — 2026-09-26
+
+The owner explicitly accepted ADR-0023 after reviewing the proposed behavior.
+Continue on the existing story branch; do not merge or publish without approval.
+Before edits, scope this increment to this plan, ADR-0023, the IOP-097 item and
+`ARCHITECTURE.md`. Record acceptance, check the contract acceptance criterion and
+synchronize the architecture summary. The backlog already mirrors Blocked and
+needs no change. Preserve the original proposal evidence below as historical.
+Validate relative links, status/criteria consistency and `git diff --check`, then
+commit locally. No runtime implementation or adjacent-story edits are included.
 
 ## Validation and evidence
 
@@ -51,15 +62,22 @@ Evidence, 2026-09-25:
 - No runtime, API, database or UI tests run: no executable files changed, and no
   analytical implementation or security verification is claimed.
 
+Acceptance evidence, 2026-09-26:
+
+- `git diff --check` passed; all 62 relative links in the four changed documents
+  resolved. Status assertions verified Accepted ADR-0023, its checked contract
+  criterion, unchecked implementation criteria and matching Blocked item/backlog.
+- Manual diff review confirmed acceptance/documentation changes only. No runtime
+  tests ran because no executable files changed. No merge or push performed.
+- This acceptance increment is complete; the parent implementation plan remains
+  active and Blocked by the contracts/access prerequisites above.
+
 ## Closure
 
 Commit the validated documentation increment automatically. IOP-097 remains open
 until consistent filters have executable evidence in both analytical views.
-Record the concrete proposal/dependency gates and ask for the decision and
-publication authorization separately; acceptance of an ADR is not push permission.
-
-The proposal/translation increment is complete. Keep this plan active because its
-decision gate remains open. After ADR-0023 acceptance, plan the independent fixture
-UI slice or integrate with IOP-089 when its contracts exist; do not implement the
-adjacent dependencies under this story. Runtime access still has the separate
-ADR-0018 gate. No plan deviation or scope expansion.
+ADR-0023 acceptance is recorded; publication remains separately authorized.
+Keep this plan active while analytical contracts and runtime access are pending.
+A later fixture UI slice can use the accepted semantics; full delivery still
+requires IOP-089 and an accepted, implemented execution mechanism. Do not implement
+adjacent dependencies under this story. Acceptance does not complete IOP-096/097.

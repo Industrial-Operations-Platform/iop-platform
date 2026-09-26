@@ -2,8 +2,9 @@
 
 ## Status
 
-Proposed — prepared under [IOP-097](../../planning/items/IOP-097-analytics-filters.md).
-Owner acceptance is pending; no runtime implementation or accepted baseline change.
+Accepted on 2026-09-26 by explicit owner approval after review under
+[IOP-097](../../planning/items/IOP-097-analytics-filters.md). This accepts the filter
+semantics; no runtime implementation, merge or publication is implied.
 
 ## Context and alternatives
 
@@ -20,7 +21,7 @@ provides sector/area/equipment/message filters, but no approved default exclusio
 | OIP-owned request semantics, validated by the server and displayed consistently by both views | Recommended; fits existing ownership and OpenAPI boundaries. |
 | Generic query language, saved reports or client-defined formulas | Unnecessary for two fixed measures and one local source. Defer. |
 
-## Proposed contract
+## Decision
 
 This is a semantic contract for the future IOP-089 operation, not an endpoint,
 physical dimension schema, module package layout or generated OpenAPI artifact.
@@ -115,7 +116,7 @@ broader access. Use ADR-0011 error mappings and safe Problem Details.
 IOP-089 must supply the bounded analytical operation, dimension references and
 coverage/revision metadata using IOP-043/048/049 contracts. Before endpoint delivery,
 specify and test finite date-span, selection-count, option-list and detail-page
-limits against the demo fixture; this proposal supplies no performance commitment.
+limits against the demo fixture; this decision supplies no performance commitment.
 Runtime access independently waits for acceptance and implementation of ADR-0018
 or another accepted mechanism. Acceptance here does not accept ADR-0018 or activate
 adjacent implementation stories. Fixture-only UI work can follow this decision
@@ -145,6 +146,6 @@ These are reviewed expectations, not executed software tests.
 
 A single filter meaning makes overview/detail reconciliation testable while leaving
 source normalization in its adapter. The cost is explicit selection, coverage and
-navigation state. This proposal does not deliver filters, establish metric formulas,
+navigation state. This decision does not deliver filters, establish metric formulas,
 change source dates or complete IOP-097. Implementation and its test evidence follow
-only after acceptance and the relevant contracts are available.
+when the relevant contracts are available.

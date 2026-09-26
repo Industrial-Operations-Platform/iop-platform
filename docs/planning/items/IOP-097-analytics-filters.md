@@ -2,9 +2,9 @@
 
 ## Status
 
-Blocked — POC contract proposed in [ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md),
-awaiting owner acceptance. End-to-end delivery also needs IOP-089's analytical
-contract and an accepted runtime access mechanism. No filter implementation exists.
+Blocked — the owner accepted [ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md)
+on 2026-09-26. End-to-end delivery still needs IOP-089's analytical contract and
+an accepted, implemented runtime access mechanism. No filter implementation exists.
 
 ## Milestone and goal
 
@@ -38,11 +38,11 @@ See [modules](../../architecture/modules.md) and the [workflow](../workflow.md).
   or production data in the repository; industrial integrations remain read-only.
   Record material changes where applicable.
 
-The detailed selection and navigation behavior in ADR-0023 is Proposed, not accepted.
+The detailed selection and navigation behavior in ADR-0023 is Accepted.
 
 ## Acceptance criteria
 
-- [ ] Date/filter contract accepted, including boundaries, empty/invalid selections,
+- [x] Date/filter contract accepted, including boundaries, empty/invalid selections,
   unclassified values, exclusions and overview/detail navigation.
 - [ ] Both analytical views apply and display identical filters; full frequency and
   accumulated-duration totals reconcile with contributing records on the same data.
@@ -98,5 +98,5 @@ contracts. Screenshot exclusions are examples, not generic defaults.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
 under IOP-002 at the owner's request. It supplies context, not acceptance of metric
-formulas. The current proposal supports reporting-label filtering while keeping
+formulas. The accepted contract supports reporting-label filtering while keeping
 exact source windows unresolved.
