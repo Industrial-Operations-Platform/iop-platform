@@ -189,7 +189,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | Contexto de tarea | Estado |
 | --- | --- |
 | [IOP-102 — Integration registry](items/IOP-102-integration-registry.md) | Proposed |
-| [IOP-103 — Manual CSV delivery validation](items/IOP-103-csv-integration.md) | Proposed |
+| [IOP-103 — Manual CSV delivery validation](items/IOP-103-csv-integration.md) | Blocked |
 | [IOP-104 — WinCC adapter contract](items/IOP-104-wincc-adapter.md) | Proposed |
 | [IOP-105 — Ultimo adapter contract](items/IOP-105-ultimo-adapter.md) | Proposed |
 | [IOP-106 — Entra identity adapter](items/IOP-106-entra-adapter.md) | Proposed |

@@ -88,6 +88,11 @@ Production OIP receiving storage and importer/host composition remain pending;
 IOP-048 stays In progress. This evidence does not complete analytical views or the
 end-to-end POC, and batch outcome recovery is not a metric-integrity check.
 
+IOP-103 has a [delivered-path validation plan](active/IOP-103-csv-validation-plan.md)
+and remains Blocked on production OIP receiving storage, real importer/review
+composition and ADR-0018 host activation. Existing internal evidence is reusable;
+no second importer or integration registry is required.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context
