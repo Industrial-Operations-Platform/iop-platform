@@ -242,7 +242,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-133 — Performance acceptance](items/IOP-133-performance-acceptance.md) | Proposed |
 | [IOP-134 — Deployment documentation](items/IOP-134-deployment-guide.md) | Proposed |
 | [IOP-135 — Admin documentation](items/IOP-135-admin-guide.md) | Proposed |
-| [IOP-136 — User documentation](items/IOP-136-user-guide.md) | Proposed |
+| [IOP-136 — User documentation](items/IOP-136-user-guide.md) | Blocked |
 | [IOP-137 — Architecture review](items/IOP-137-architecture-review.md) | Proposed |
 | [IOP-138 — v1 release](items/IOP-138-v1-release.md) | Proposed |
 

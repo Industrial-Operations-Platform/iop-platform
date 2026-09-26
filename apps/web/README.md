@@ -5,6 +5,8 @@ IOP-116 adds navigation between Import CSV, Executive Overview and analytical
 detail. These destinations show explicit empty states; CSV submission, analytical
 results, filters and business access are not connected yet.
 
+For the operator walkthrough, see the [POC user guide](../../docs/product/user-guide-poc.md).
+
 ## Run locally
 
 Use the root-required Node 24.21.0 and npm 10.9.2 (`nvm use` if available).

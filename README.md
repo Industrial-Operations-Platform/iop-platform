@@ -18,6 +18,8 @@ and versioned migrations without adding business persistence.
 
 ## Start here
 
+- [Local POC user guide](docs/product/user-guide-poc.md): fictional preview walkthrough and current limits
+
 - [Product vision](docs/product/vision.md) and [proposed v1 scope](docs/product/scope-v1.md)
 - [Architecture](ARCHITECTURE.md), [module boundaries](docs/architecture/modules.md)
   and [architecture decisions](docs/architecture/adr/)

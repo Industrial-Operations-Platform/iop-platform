@@ -283,3 +283,10 @@ and [active plan](active/IOP-128-demo-reset-plan.md). ADR-0029 was accepted on
 2026-09-26. IOP-128 remains Blocked on delivery of production OIP storage/importer/host
 composition and the reset implementation. IOP-123/125 fixtures are available; no reset command or executable
 recreation evidence is delivered by this documentation increment.
+
+IOP-136 supplies the [local POC user guide](../product/user-guide-poc.md) for the
+available fictional preview, including filters, drill-down, metric limits and
+recovery. The preparation slice is delivered; the story remains Blocked pending
+IOP-129's real journey and IOP-122's real-control evidence. It provides no working
+upload/reset instructions or end-to-end completion claim. See the
+[documentation record](completed/IOP-136-poc-user-guide-plan.md).
