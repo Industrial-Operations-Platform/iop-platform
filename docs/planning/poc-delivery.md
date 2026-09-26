@@ -232,3 +232,10 @@ The owner accepted the design on 2026-09-26. The story remains Blocked pending
 production OIP storage/local host activation. No analytical service or endpoint is delivered; internal IOP-048
 reconciliation evidence does not prove runtime overview/detail parity. See the
 [active plan](active/IOP-089-analytics-query-layer-plan.md).
+
+IOP-097 implements an opt-in shared filter preview across overview and detail with
+five fictional source-line aggregates. Dates, dimension sets, message exclusions,
+drill-down/back, coverage and totals share one page-session selection. See the
+[execution record](completed/IOP-097-fixture-filters-plan.md). The parent remains
+Blocked on production OIP queries/storage and ADR-0018 host activation; this UI
+evidence does not prove the real import-to-analysis journey or authorization.

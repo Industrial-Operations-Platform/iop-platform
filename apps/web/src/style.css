@@ -55,3 +55,13 @@ button, .action { max-width: 100%; white-space: normal; }
   .actions { align-items: stretch; flex-direction: column; gap: .75rem; }
   .state-preview select { width: 100%; }
 }
+
+.filter-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1rem; }
+.filter-groups fieldset, form fieldset { min-width: 0; border: 1px solid #526976; border-radius: .25rem; }
+.filter-option { display: flex; align-items: center; gap: .65rem; min-height: 44px; }
+.filter-option input { flex-shrink: 0; width: 1.2rem; height: 1.2rem; }
+.filter-dates { display: flex; flex-wrap: wrap; gap: 1rem; }
+.filter-dates label { display: grid; gap: .4rem; min-width: 0; }
+.filter-dates input { min-height: 44px; max-width: 100%; box-sizing: border-box; font: inherit; color: inherit; background: white; border: 1px solid #526976; padding: .5rem; }
+.filter-results { margin-top: 1.5rem; }
+section > details > summary { cursor: pointer; min-height: 44px; padding-block: .65rem; color: #174e69; }

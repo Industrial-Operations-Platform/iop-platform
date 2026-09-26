@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnalyticalStates } from './AnalyticalStates';
+import { FixtureFilters } from './FixtureFilters';
 import { HealthStatus } from './HealthStatus';
 
 const destinations = [
@@ -51,7 +52,7 @@ export function App() {
         <h1 ref={heading} tabIndex={-1}>{destination?.title ?? 'Page not found'}</h1>
         <aside className="context" aria-label="Scope and filters">
           <p><strong>Scope:</strong> No organization, site or source connected.</p>
-          <p><strong>Filters:</strong> Reporting dates, sector, area, equipment and message will be available with analytical data.</p>
+          <p><strong>Filters:</strong> Real analytical filters are not connected. A fictional shared-filter preview is available in the analytical views.</p>
         </aside>
         {!destination ? (
           <section><h2>This destination is unavailable</h2><p>Choose a page from the navigation or return to the start.</p><a className="action" href="#import">Go to Import CSV</a></section>
@@ -65,6 +66,7 @@ export function App() {
         ) : (
           <AnalyticalStates key={location} view={location === 'overview' ? 'overview' : 'detail'} />
         )}
+        <FixtureFilters view={location === 'detail' ? 'detail' : 'overview'} visible={location === 'overview' || location === 'detail'} />
         <div className="health-panel"><HealthStatus /></div>
       </main>
       <footer>IOP · Local POC · Import → Analysis → Presentation</footer>

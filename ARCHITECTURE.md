@@ -270,8 +270,9 @@ reporting-date labels, scoped dimension references and visible message exclusion
 Drill-down preserves restrictions; breadcrumb return restores the prior selection.
 Coverage distinguishes missing imports from no matching records, and full totals
 reconcile against contributing records on the same admitted data revision.
-IOP-097 remains Blocked: analytical contracts and runtime access are pending.
-Acceptance permits independent fixture UI work but delivers no runtime filters;
+IOP-097 supplies an opt-in shared fixture filter preview and remains Blocked on
+production queries/storage and runtime access. ADR-0028 accepts the query design;
+fixture behavior does not prove production filters or authorization.
 ADR-0018 is Accepted; its runtime implementation remains pending and independently gates business access.
 
 
