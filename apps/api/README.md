@@ -325,3 +325,38 @@ This API takes adapter-validated records, not untrusted JSON or client-provided
 scope. Mapping persistence, publication composition, actual owner-list reconciliation
 and host activation remain pending. Frozen in-memory output is not durable storage;
 DAX comparison parity and runtime authorization are not claimed.
+
+### Editing local sector mappings
+
+Use [the fictional example](../../config/source-mappings.example.json) as the JSON
+shape. The owner's supplied memberships are kept separately in ignored
+`config/source-mappings.local.json` on the current machine. That private file is
+not distributed by Git; keep an appropriate local backup. Its initial scope uses
+`org-demo` / `site-demo` / `source-demo` from the example POC configuration; these
+are explicit preparation targets, not evidence of seeded ownership or host activation.
+
+Edit the JSON with a text editor:
+
+- Rename a sector by changing its `label`, retaining its `sectorKey`.
+- Move an area by changing that area's `sectorKey` to an existing sector's key.
+- Add a sector with a new unique key and label, then assign areas to it.
+- Change `sourceArea` only to match a changed CSV value exactly. This is a source
+  match key, not a display alias: older spellings become unclassified unless their
+  own explicit entry is retained. Do not change spelling just to prettify a label.
+- Increment `mappingRevision` for every change (`r1` → `r2`, for example). Preserve
+  prior revisions used by imports; never rewrite historical classifications.
+
+Validate the edited configuration from the repository root with the required Node
+version. This checks the file without activating it or importing any CSV:
+
+```sh
+npm run build --workspace @iop/api
+node -e 'const fs = require("node:fs"); const { SourceMappings } = require("./apps/api/dist/modules/integrations/source-mappings.js"); const m = new SourceMappings(JSON.parse(fs.readFileSync("config/source-mappings.local.json", "utf8"))); console.log("Valid mapping:", m.configuration.sectors.length, "sectors;", m.configuration.areas.length, "areas");'
+```
+
+The file is editable now. Automatic file loading by the import host and durable
+revision binding remain pending; editing it does not currently change the running
+fixture UI. Once composed, changes apply to future imports only. Reclassifying
+already imported dates is a separate correction operation outside this POC.
+The supplied DAX fallback `Nicht klassifiziert` corresponds to the internal
+`unclassified`/null-key outcome; the default English presentation is `Unclassified`.

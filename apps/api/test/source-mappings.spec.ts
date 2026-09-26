@@ -128,3 +128,27 @@ it('rejects invalid areas instead of treating a missing value as unclassified', 
     records: [{ ...prepared.records[0], sourceArea: ' \t' }] }))
     .toThrow(expect.objectContaining({ code: 'invalid-area' }));
 });
+
+it('allows display renames and area reassignment in a new revision without changing prior results', () => {
+  const input = config();
+  input.sectors.push({ sectorKey: 'sector-b', label: 'Sector B' });
+  const prepared = parseAreas(['Area A', 'Renamed Area']);
+  const original = new SourceMappings(input).classify(source, prepared);
+  input.mappingRevision = 'r2';
+  input.sectors[0].label = 'Renamed Sector A';
+  input.areas[0] = { sourceArea: 'Area A', sectorKey: 'sector-b' };
+  const reassigned = new SourceMappings(input).classify({ ...source, mappingRevision: 'r2' }, prepared);
+  expect(reassigned.records[0].sectorKey).toBe('sector-b');
+  expect(reassigned.mapping.sectors[0]).toEqual({ sectorKey: 'sector-a', label: 'Renamed Sector A' });
+  input.mappingRevision = 'r3';
+  input.areas[0].sourceArea = 'Renamed Area';
+  const renamed = new SourceMappings(input).classify({ ...source, mappingRevision: 'r3' }, prepared);
+  expect(renamed.records.map(row => row.sectorKey)).toEqual([null, 'sector-b']);
+  expect(original.records.map(row => row.sectorKey)).toEqual(['sector-a', null]);
+  expect(original.mapping.sectors[0].label).toBe('Sector A');
+  expect(reassigned.records.map(row => row.sectorKey)).toEqual(['sector-b', null]);
+  for (const result of [original, reassigned, renamed]) {
+    expect(result.totalReportedFrequency).toBe(2);
+    expect(result.totalAccumulatedAlarmSeconds).toBe(4);
+  }
+});

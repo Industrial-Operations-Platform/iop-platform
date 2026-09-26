@@ -1,0 +1,14 @@
+{
+  "organizationId": "org-demo",
+  "siteId": "site-demo",
+  "sourceId": "source-demo",
+  "mappingRevision": "r1",
+  "sectors": [
+    { "sectorKey": "sector-001", "label": "Sector A" },
+    { "sectorKey": "sector-002", "label": "Sector B" }
+  ],
+  "areas": [
+    { "sourceArea": "Area A", "sectorKey": "sector-001" },
+    { "sourceArea": "Area B", "sectorKey": "sector-002" }
+  ]
+}

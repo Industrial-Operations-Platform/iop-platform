@@ -206,6 +206,6 @@ pending, so the parent stays In progress. See the
 IOP-049 supplies the pure scoped classification stage with immutable configuration
 snapshots, exact area matching and unclassified records retained in totals. Synthetic
 checks cover configuration conflicts, scope/revision mismatch and unchanged measures.
-Actual owner-list reconciliation and durable receipt/OIP composition remain pending;
-the story stays In progress. See the
-[execution record](completed/IOP-049-source-mappings-plan.md).
+Owner-supplied membership reconciliation is complete and the private local JSON
+is editable; durable receipt/OIP composition remains pending. The story stays
+In progress. See the [configuration record](completed/IOP-049-editable-mappings-plan.md).

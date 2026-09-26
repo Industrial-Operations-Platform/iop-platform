@@ -2,8 +2,8 @@
 
 ## Status
 
-In progress — pure scoped mapping implemented; owner-list reconciliation and
-persisted import composition remain pending.
+In progress — pure scoped mapping implemented; owner memberships reconciled and editable locally;
+persisted import composition remains pending.
 
 ## POC delivery applicability
 
@@ -37,8 +37,10 @@ The owner requested this POC slice on 2026-09-26.
 Integrations now validates and snapshots organization/site/source mapping configuration,
 classifies prepared CSV records and preserves unclassified records and measures.
 See the [internal contract](../../../apps/api/README.md#scoped-source-classification-iop-049).
-The original five customer lists are described but not included in the shared
-reference. Their reconciliation and durable receipt/OIP composition are pending.
+The owner supplied the original five customer lists on 2026-09-26. Their 89
+memberships are preserved in ignored local JSON, with editable labels and area
+assignments. Exact supplied-membership reconciliation is complete; durable
+receipt/OIP composition remains pending.
 
 ## Desired state
 
@@ -50,6 +52,8 @@ Map source area and sector labels through scoped configuration.
 - Preserve the evidenced area-to-sector classification, unclassified records and mapping
   revision. No physical asset alias dependency. IOP-037 is relevant only to a future
   surveyed-asset mapping slice.
+- Keep sector names and area assignments editable in scoped local configuration;
+  retain stable sector keys and use a new revision for changes to future imports.
 
 ## Acceptance criteria
 
@@ -128,10 +132,10 @@ The entire original story is translated to English; dependency stories were alre
 
 ## Open questions
 
-The original `Arbeit Sektor` expression or an equivalent owner-approved mapping
-configuration is needed to reconcile the actual five lists. Neither their contents
-nor full DAX comparison parity can be reconstructed from the reference summary.
-Durable mapping/receipt/OIP binding remains a future composition increment.
+The supplied `Arbeit Sektor` memberships are reconciled under the exact POC
+comparison contract; Power BI execution/comparison parity on variant text is not
+claimed. Durable mapping/receipt/OIP binding remains a future composition increment.
+See the [editable-configuration record](../completed/IOP-049-editable-mappings-plan.md).
 
 ## Owner-supplied CSV and reporting context
 

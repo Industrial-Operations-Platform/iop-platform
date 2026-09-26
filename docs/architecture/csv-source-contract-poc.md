@@ -248,5 +248,6 @@ The [internal mapping stage](../../apps/api/README.md#scoped-source-classificati
 validates bounded scoped configuration and freezes the applied mapping snapshot,
 classifications and unclassified count without changing prepared measures or RAW
 line references. Exact comparison and synthetic reconciliation are executable;
-actual owner-list reconciliation and durable receipt/publication composition remain
-pending. See the [execution record](../planning/completed/IOP-049-source-mappings-plan.md).
+the 89 owner-supplied memberships are now reconciled in editable private local
+configuration. Durable receipt/publication composition remains pending. See the
+[configuration record](../planning/completed/IOP-049-editable-mappings-plan.md).
