@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
-import { canonical, dimensions, initialSelection, labels, optionLabel, options, preview, validate, type Selection } from './fixture-filters';
+import { canonical, dimensions, initialSelection, labels, optionLabel, options, preview, validate, type Selection, type Dimension } from './fixture-filters';
 
 export function FixtureFilters({ view, visible }: { view: 'overview' | 'detail'; visible: boolean }) {
   const [draft, setDraft] = useState(initialSelection);
   const [applied, setApplied] = useState(initialSelection);
-  const [history, setHistory] = useState<Selection[]>([]);
+  const [history, setHistory] = useState<{ selection: Selection; label: string }[]>([]);
   const [error, setError] = useState<string | null>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
   const result = preview(applied);
@@ -13,6 +13,17 @@ export function FixtureFilters({ view, visible }: { view: 'overview' | 'detail';
     setDraft(canonical(selection));
     setError(null);
     if (!preserveHistory) setHistory([]);
+  };
+  const inspect = (dimension: Exclude<Dimension, 'excludedMessages'>, id: string) => {
+    setHistory([...history, { selection: applied, label: `${labels[dimension]}: ${optionLabel(dimension, id)}` }]);
+    apply({ ...applied, [dimension]: [id] }, true);
+    window.location.hash = 'detail';
+    if (view === 'detail') resultHeading.current?.focus();
+  };
+  const restore = (index: number) => {
+    apply(history[index].selection, true);
+    setHistory(history.slice(0, index));
+    resultHeading.current?.focus();
   };
   return (
     <section hidden={!visible} aria-label="Fictional filter preview">
@@ -60,18 +71,28 @@ export function FixtureFilters({ view, visible }: { view: 'overview' | 'detail';
           </>}
         </div>
         <p className="note">Each record is a source-line aggregate. Reporting windows are unknown; accumulated alarm duration is not plant downtime. Repeated source lines count separately. Equipment labels do not identify physical assets.</p>
-        {!!history.length && <button onClick={() => {
-          apply(history[history.length - 1], true);
-          setHistory(history.slice(0, -1));
-          resultHeading.current?.focus();
-        }}>Back to previous selection</button>}
-        {view === 'overview' ? <div className="actions">{[...new Set(result.matching.map(row => row.areas))].map(area => <button key={area} onClick={() => {
-          setHistory([...history, applied]);
-          apply({ ...applied, areas: [area] }, true);
-          window.location.hash = 'detail';
-        }}>Inspect {optionLabel('areas', area)}</button>)}</div> : <ul aria-label="Fixture contributing records">{result.matching.map(row => <li key={row.id}>
-          {row.id} · {row.date} · {optionLabel('equipment', row.equipment)} · {optionLabel('messages', row.messages)} · {row.frequency} reported occurrences · {row.seconds} seconds
+        {!!history.length && <section aria-label="Fixture drill-down history">
+          <h3>Drill-down path</h3>
+          <ol>{history.map((step, index) => <li key={index}>
+            Selected {step.label} <button onClick={() => restore(index)}>Return before {step.label}</button>
+          </li>)}</ol>
+          <button onClick={() => restore(history.length - 1)}>Back to previous selection</button>
+        </section>}
+        <section aria-label="Fixture drill-down choices">
+          <h3>Inspect contributing groups</h3>
+          <p>Follow sector → area → source equipment → message, or inspect a group directly. Each step keeps all other applied restrictions.</p>
+          {(['sectors', 'areas', 'equipment', 'messages'] as const).map(dimension => <div key={dimension}>
+            <h4>{labels[dimension]}</h4>
+            <div className="actions">{[...new Set(result.matching.map(row => row[dimension]))].map(id =>
+              <button key={id} disabled={applied[dimension].length === 1 && applied[dimension][0] === id}
+                onClick={() => inspect(dimension, id)}>Inspect {optionLabel(dimension, id)}</button>)}</div>
+          </div>)}
+        </section>
+        {view === 'detail' && <ul aria-label="Fixture contributing records">{result.matching.map(row => <li key={row.id}>
+          {row.id} · {row.date} · {optionLabel('sectors', row.sectors)} · {optionLabel('equipment', row.equipment)} · {optionLabel('messages', row.messages)} · {row.frequency} reported occurrences · {row.seconds} seconds
+          <p>Fictional provenance: Demo source · {row.importId} · {row.rawId} · {row.filename} · physical line {row.physicalLine}. No original file is available in this preview.</p>
         </li>)}</ul>}
+
       </details>
     </section>
   );

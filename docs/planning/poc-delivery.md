@@ -264,3 +264,10 @@ drill-down/back, coverage and totals share one page-session selection. See the
 [execution record](completed/IOP-097-fixture-filters-plan.md). The parent remains
 Blocked on production OIP queries/storage and ADR-0018 host activation; this UI
 evidence does not prove the real import-to-analysis journey or authorization.
+
+IOP-096 extends the opt-in fictional filter preview with sector → area → source
+equipment → message drill-down, selection history and fictional import/RAW/line
+provenance. See the [fixture record](completed/IOP-096-fixture-drilldown-plan.md).
+The parent remains Blocked on executable queries, production OIP storage and
+ADR-0018 host activation. The preview does not prove runtime reconciliation,
+pagination, revision consistency or access denial.

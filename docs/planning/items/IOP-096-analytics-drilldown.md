@@ -4,14 +4,13 @@
 
 Blocked
 
-The POC dependency review is recorded in the
-[execution plan](../completed/IOP-096-analytics-drilldown-plan.md). IOP-094/095
-contracts are unavailable; IOP-097's filter contract is accepted in ADR-0023,
-but analytical filter implementation remains pending.
-Runtime access awaits implementation and validation of Accepted ADR-0018.
-The owner closed the completed documentation increment on 2026-09-26. A new
-implementation plan is required when the prerequisites are available.
-No drill-down implementation or executed acceptance evidence is claimed.
+The independent fictional drill-down preview is implemented under the
+[fixture plan](../completed/IOP-096-fixture-drilldown-plan.md). IOP-094/095 specifications
+and IOP-097 fixture filters are available. Executable IOP-089 queries, production
+OIP storage and implementation/validation of ADR-0018 still block runtime acceptance.
+The [earlier dependency review](../completed/IOP-096-analytics-drilldown-plan.md)
+is historical evidence; its missing-contract gate is now resolved.
+No real import-to-analysis or runtime access evidence is claimed.
 
 ## POC delivery applicability
 
@@ -41,9 +40,11 @@ owner-requested outline; inclusion in the backlog does not authorize implementat
 
 ## Current state
 
-The web host has overview/detail navigation placeholders. Analytical drill-down
-is not implemented. The shared filter design is accepted in
-[ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md); implementation remains pending.
+The opt-in IOP-097 preview now supports sector → area → source equipment →
+message navigation, stepwise/direct return and explicit fictional import/RAW/physical
+line provenance. Dates, exclusions, scope, coverage and both measures remain visible.
+The five synchronous fictional rows are independent of the CSV reconciliation oracle;
+this preview does not implement production reads, pagination or authorization.
 
 ## Desired state
 

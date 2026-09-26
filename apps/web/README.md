@@ -141,3 +141,20 @@ Real OIP metrics/filter interpretation stays server-owned; generated API binding
 revision refresh, cursor reset and stale-response protection follow endpoint delivery.
 Unit/RTL and Playwright checks cover the preview's behavior and compact/tablet/laptop
 layout. Production isolation and import reconciliation remain independently pending.
+
+## Fictional drill-down (IOP-096)
+
+In the shared filter preview, use **Inspect** to follow sector → area → source
+equipment → message, or inspect a group directly. The path records each narrowing;
+**Back to previous selection** restores one step, and **Return before** restores
+an earlier selection. Apply/Reset starts a new path; ordinary page navigation keeps
+it. All applied dates, exclusions and unrelated restrictions survive drill-down.
+
+Detail lists every matching fictional aggregate with source, import/RAW identity,
+filename and physical line. These identifiers describe synthetic preview provenance;
+there is no downloadable original file. Repeated rows remain separate, source
+equipment includes area context, and matching zero values remain visible.
+
+The fixed five-row preview is synchronous and unpaginated. It does not validate
+production queries, cursor/revision behavior, failed reads or permissions. See the
+[execution record](../../docs/planning/completed/IOP-096-fixture-drilldown-plan.md).

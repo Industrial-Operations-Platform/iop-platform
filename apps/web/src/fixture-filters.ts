@@ -15,11 +15,11 @@ export const labels: Record<Dimension, string> = {
 export const admittedDates = ['2026-06-26', '2026-06-28'];
 export const initialSelection = (): Selection => ({ from: '2026-06-28', through: '2026-06-28', sectors: [], areas: [], equipment: [], messages: [], excludedMessages: [] });
 export const records = [
-  { id: 'line-1', date: '2026-06-26', sectors: 'north', areas: 'a', equipment: 'a-pump', messages: 'stop', frequency: 2, seconds: 60 },
-  { id: 'line-2', date: '2026-06-28', sectors: 'north', areas: 'a', equipment: 'a-pump', messages: 'stop', frequency: 3, seconds: 120 },
-  { id: 'line-3', date: '2026-06-28', sectors: 'unmapped', areas: 'b', equipment: 'b-pump', messages: 'check', frequency: 4, seconds: 90000 },
-  { id: 'line-4', date: '2026-06-28', sectors: 'named', areas: 'c', equipment: 'c-fan', messages: 'stop', frequency: 0, seconds: 0 },
-  { id: 'line-5', date: '2026-06-28', sectors: 'north', areas: 'a', equipment: 'a-pump', messages: 'stop', frequency: 1, seconds: 20 },
+  { id: 'line-1', importId: 'preview-import-26', rawId: 'preview-raw-26', filename: 'Demo-20260626.csv', physicalLine: 2, date: '2026-06-26', sectors: 'north', areas: 'a', equipment: 'a-pump', messages: 'stop', frequency: 2, seconds: 60 },
+  { id: 'line-2', importId: 'preview-import-28', rawId: 'preview-raw-28', filename: 'Demo-20260628.csv', physicalLine: 2, date: '2026-06-28', sectors: 'north', areas: 'a', equipment: 'a-pump', messages: 'stop', frequency: 3, seconds: 120 },
+  { id: 'line-3', importId: 'preview-import-28', rawId: 'preview-raw-28', filename: 'Demo-20260628.csv', physicalLine: 3, date: '2026-06-28', sectors: 'unmapped', areas: 'b', equipment: 'b-pump', messages: 'check', frequency: 4, seconds: 90000 },
+  { id: 'line-4', importId: 'preview-import-28', rawId: 'preview-raw-28', filename: 'Demo-20260628.csv', physicalLine: 4, date: '2026-06-28', sectors: 'named', areas: 'c', equipment: 'c-fan', messages: 'stop', frequency: 0, seconds: 0 },
+  { id: 'line-5', importId: 'preview-import-28', rawId: 'preview-raw-28', filename: 'Demo-20260628.csv', physicalLine: 5, date: '2026-06-28', sectors: 'north', areas: 'a', equipment: 'a-pump', messages: 'stop', frequency: 1, seconds: 20 },
 ];
 // UTC is used only for Gregorian calendar arithmetic, never source-window inference.
 export function calendarDay(label: string): number {
