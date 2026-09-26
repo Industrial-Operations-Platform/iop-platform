@@ -263,3 +263,15 @@ receipt/outcome, date-claim and dataset-quota tables with forced RLS and narrow
 column grants. Original bytes and provenance are immutable through runtime grants;
 only a received attempt can become terminal. See the [storage guide](../../infra/database/README.md#internal-import-batches-iop-042).
 OIP receiving storage, CSV parsing and host activation are separate delivery.
+
+
+## POC canonical event aggregates
+
+[IOP-043's logical model](event-aggregates-poc.md) specializes the CSV source
+contract: one OIP fact per scoped import/data line, exact reported frequency and
+accumulated seconds, all five source dimensions, frozen classification and RAW
+provenance. Repeated tuples remain separate facts; no asset/message registry or
+individual occurrence is fabricated. Reporting-date labels retain unknown windows.
+The model defines logical grouping equality and publication invariants under
+Accepted ADR-0023/0027; wire references and production OIP storage/receiver remain
+future delivery. This is completed design, not executable analytical evidence.

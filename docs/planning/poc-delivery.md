@@ -71,6 +71,13 @@ The OIP receiver is exercised through a disposable test fixture; parser, mapping
 receiver and host activation still gate the working CSV-to-analysis journey. See
 the [storage record](completed/IOP-042-import-batch-storage-plan.md).
 
+IOP-043 completed the [canonical aggregate design](../architecture/event-aggregates-poc.md):
+one fact per scoped source line, exact frequency/accumulated seconds, source
+grouping, frozen classification, RAW provenance and unknown reporting windows.
+It defines logical dimension equality without introducing physical assets or
+fabricated occurrences. OIP receiver/storage and analytical reference encoding
+remain future implementation; this design does not complete the CSV journey.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context

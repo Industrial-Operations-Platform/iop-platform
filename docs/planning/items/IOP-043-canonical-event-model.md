@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed
+Completed — bounded POC aggregate design documented on 2026-09-26.
+No runtime receiver, migration, endpoint or importer is implemented by this story.
 
 ## POC delivery applicability
 
@@ -22,17 +23,20 @@ Model source-reported event aggregates without fabricating occurrences.
 
 ## User / business value
 
-Operación necesita datos importados trazables y métricas reconciliables.
+Operations needs traceable imported data and reconcilable metrics.
 
 ## Context
 
-Ámbito: Integrations and Operational Intelligence. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Integrations and Operational Intelligence. See [modules](../../architecture/modules.md) and
+the [planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; backlog membership alone does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+The [POC canonical aggregate model](../../architecture/event-aggregates-poc.md)
+now specializes the existing source/RAW contracts and accepted temporal, scope,
+filter and publication decisions. Internal import batch storage exists under
+IOP-042; the production OIP receiver and analytical persistence remain unimplemented.
 
 ## Desired state
 
@@ -47,71 +51,87 @@ Model source-reported event aggregates without fabricating occurrences.
 
 ## Acceptance criteria
 
-- [ ] Model source-reported event aggregates without fabricating occurrences.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Model source-reported event aggregates without fabricating occurrences.
+- [x] Validate the slice-specific outcomes and limitations in Requirements.
+- [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
 ## Domain considerations
 
-RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
+RAW → validation → normalization; the receiving module validates invariants. Do not infer a physical asset from text alone.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt their decisions.
+The model also specializes Accepted ADR-0012/0013/0016/0023/0027; it adds no new
+architectural mechanism and requires no new ADR.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify organization/site permission and scope on relevant operations and references.
+Do not include secrets, floor plans or production records in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Preservar procedencia y grano; distinguir ocurrencias de agregados. Rechazos y correcciones deben ser visibles.
+Preserve provenance and grain; distinguish occurrences from aggregates. Rejections and corrections must be visible.
 
 ## API considerations
 
-Usar contratos de ingesta; credenciales y nombres de columnas externos quedan en adaptadores/configuración.
+Use ingestion contracts; credentials and external column names stay in adapters/configuration.
 
 ## UI considerations
 
-Exponer estados, errores y resultados de importación solo si lo pide esta tarea; no crear un dashboard completo.
+Expose import states, errors and results only if requested by this task; do not create a full dashboard.
 
 ## Dependencies
 
 [IOP-008](IOP-008-time-and-timezone-model.md), [IOP-012](IOP-012-source-integration-contract.md), [IOP-019](IOP-019-database-bootstrap.md), [IOP-026](IOP-026-site-model.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. IOP-008/012 are completed design; IOP-019 migration
+infrastructure and IOP-026's site seed are integrated on develop. The broader
+IOP-026 parent remains Deferred. These slices suffice for this design.
+ADR-0018 is Accepted; runtime host activation and verification remain pending.
+Existing IOP-041/042 RAW/publication contracts are reused without activating adjacent work.
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Implementing applications, migrations, endpoints or infrastructure. Do not introduce customer names into the core.
 
 ## Validation
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+Review consistency, links, scenarios and decisions; do not invent commands or write runtime code to validate this design task.
+The [completed plan](../completed/IOP-043-canonical-event-model-plan.md) records
+documentation checks and synthetic walkthroughs, not executable importer evidence.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, model, guides or ADRs only when this task changes their content.
+The aggregate model, conceptual data model and delivery map are synchronized.
+The entire original story is translated into English; direct dependency stories
+were already English and remain unchanged.
 
 ## Open questions
 
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+Resolve concrete design decisions with options, a recommendation and an ADR when
+they affect architecture. No new architectural decision blocks this bounded model.
+Exact exporter grouping/window remains unverified. Dimension wire encoding and
+resolution belong to analytical delivery; sector-key continuity belongs to mapping
+delivery. Physical storage and runtime receiver validation remain future work.
 
 ## Owner-supplied CSV and reporting context
 
 Model the supplied input as aggregate alarm statistics with frequency, duration, source dimensions and explicit reporting coverage. Do not synthesize individual event timestamps. Resolve exact grain and distinguish aggregate facts from future occurrence-level sources before defining the canonical contract.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
-under IOP-002 at the owner's request. This is context for future planning; this
-item remains Proposed and no implementation or metric formula is accepted here.
+under IOP-002 at the owner's request. IOP-012 establishes one aggregate per source
+record; this story defines the receiving model without claiming exporter tuple
+uniqueness, occurrence-level evidence or new metric formulas. No runtime
+implementation is claimed.
