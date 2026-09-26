@@ -139,3 +139,8 @@ IOP-027 implements minimal active principal storage and an explicit local insert
 seed under [Accepted ADR-0024](../architecture/adr/ADR-0024-local-principal-bootstrap.md).
 Runtime retains CONNECT only. Membership/grant seed and evaluation and the host
 adapter remain pending; the broader user lifecycle stays deferred beyond the POC.
+
+IOP-030 proposes only the initial organization membership and both fixed site-role
+seeds in [Proposed ADR-0025](../architecture/adr/ADR-0025-local-membership-bootstrap.md).
+Implementation awaits acceptance. No membership administration, grant evaluation
+or host adapter is delivered by this proposal; runtime access remains closed.

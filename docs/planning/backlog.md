@@ -66,7 +66,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-027 — User model](items/IOP-027-user-model.md) | Deferred |
 | [IOP-028 — Local authentication adapter](items/IOP-028-local-authentication.md) | Deferred |
 | [IOP-029 — Authorization/RBAC](items/IOP-029-rbac-enforcement.md) | Proposed |
-| [IOP-030 — User/site membership](items/IOP-030-membership-model.md) | Proposed |
+| [IOP-030 — User/site membership](items/IOP-030-membership-model.md) | Blocked |
 | [IOP-031 — Admin foundation](items/IOP-031-administration-foundation.md) | Deferred |
 
 ## M4 — Asset Domain

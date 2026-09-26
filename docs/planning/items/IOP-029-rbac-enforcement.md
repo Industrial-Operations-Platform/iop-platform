@@ -22,17 +22,18 @@ Enforce scoped permissions independently of identity-provider details.
 
 ## User / business value
 
-Administradores y usuarios necesitan acceso a organizaciones y sitios autorizados.
+Administrators and users need access to authorized organizations and sites.
 
 ## Context
 
-Ámbito: Platform Core, Authentication and Users/RBAC. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Platform Core, Authentication and Users/RBAC. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; inclusion in the backlog does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists for this capability. It is not implemented,
+and its detailed design is not accepted.
 
 ## Desired state
 
@@ -41,8 +42,8 @@ Enforce scoped permissions independently of identity-provider details.
 ## Requirements
 
 - Deliver only the selected POC slice or explicitly deferred future scope below.
-- Retain operation-level permission checks and foreign-scope rejection. If ADR-0018 is
-  accepted, the POC uses its minimum seeded principal/membership/grant slice of
+- Retain operation-level permission checks and foreign-scope rejection. Under Accepted ADR-0018,
+  the POC uses its minimum seeded principal/membership/grant slice of
   IOP-027/030, without requiring their full lifecycle or IOP-007 login. Full shared-user
   enforcement remains parent scope; no allow-all guard is authorized.
 
@@ -55,56 +56,61 @@ Enforce scoped permissions independently of identity-provider details.
 
 ## Domain considerations
 
-Organization representa el customer/tenant genérico; identidad, membership y permisos tienen responsabilidades distintas.
+Organization represents the generic customer/tenant; identity, membership and
+permissions have distinct responsibilities.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to treat the decision as accepted.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permission and customer/site scope in relevant operations and references.
+Keep secrets, floor plans and production data out of the repository. Keep industrial
+integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Conservar scope en entidades y relaciones; definir unicidad y lifecycle antes de migrar.
+Preserve scope in entities and relationships; define uniqueness and lifecycle before migrations.
 
 ## API considerations
 
-Operaciones públicas deben verificar identidad, permiso y scope; no exponer operaciones sin autorización durante el bootstrap.
+Public operations must verify identity, permission and scope; do not expose
+unauthorized operations during bootstrap.
 
 ## UI considerations
 
-Mostrar solo scopes permitidos y errores de acceso claros; ocultar controles no sustituye autorización.
+Show only permitted scopes and clear access errors; hiding controls does not replace authorization.
 
 ## Dependencies
 
 [IOP-006](IOP-006-rbac-model.md), [IOP-026](IOP-026-site-model.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. ADR-0018 now accepts the local execution-context mechanism; runtime business
+access still requires its implementation and verification.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, accepting open decisions by inference or extending
+delivery to the whole milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must define executable commands and scenarios for the criteria using
+accepted tooling. Include successful paths, errors and relevant access denial;
+record actual results, not invented tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its [backlog](../backlog.md) status and execution plan.
+Update contracts, model, guides or ADRs only when this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the accepted contract, edge cases and exact slice evidence before starting implementation.

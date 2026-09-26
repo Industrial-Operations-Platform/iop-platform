@@ -51,8 +51,8 @@ ADR-0012/0013 define ownership and RLS; ADR-0016 temporal semantics; ADR-0019/00
 supply existing database/bootstrap patterns. Follow ADR-0007/0008 workflow.
 See the [ADR directory](../../architecture/adr/).
 
-ADR-0021 is Accepted and authorizes the bounded site seed implementation. Proposed
-ADR-0018 separately gates runtime business access and remains unaccepted.
+ADR-0021 is Accepted and authorizes the bounded site seed implementation. Accepted
+ADR-0018 separately requires implementation and verification before runtime business access.
 
 ## Security, data, API and UI boundaries
 
@@ -82,6 +82,7 @@ This is privileged installation evidence, not runtime business authorization.
 ## Remaining scope
 
 No open decision blocks the completed POC slice. Site CRUD, selectors, lifecycle,
-transfers, zone corrections and administration remain deferred. ADR-0018 remains
-Proposed and independently gates runtime business access. Implementation commits
+transfers, zone corrections and administration remain deferred. ADR-0018 is Accepted;
+its pending implementation and verification independently gate runtime business access.
+Implementation commits
 remain on the story branch for owner review and publication approval.
