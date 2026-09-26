@@ -22,17 +22,17 @@ Define authentication for later shared use.
 
 ## User / business value
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+The team needs reviewable decisions before building a reusable platform.
 
 ## Context
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Product and cross-module architecture. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+outline requested by the owner; inclusion in the backlog does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
 
 ## Desired state
 
@@ -54,34 +54,34 @@ Define authentication for later shared use.
 
 ## Domain considerations
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+Define contracts and decisions; keep identity, permissions, scope and providers separate.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permission and customer/site scope in relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
+Document persistence and isolation implications without creating schemas.
 
 ## API considerations
 
-Especificar contratos cuando corresponda; no crear endpoints.
+Specify contracts where appropriate; do not create endpoints.
 
 ## UI considerations
 
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
+Document user needs; do not select or build UI by inference.
 
 ## Dependencies
 
@@ -92,17 +92,17 @@ uses an accepted execution-context contract rather than requiring the full paren
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Implementing applications, migrations, endpoints or infrastructure. Do not introduce customer names into the core.
 
 ## Validation
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+Review consistency, links, scenarios and decisions; do not invent commands or write code to validate this design task.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+Resolve this task’s concrete design decisions with options, a recommendation and an ADR when architecture is affected.

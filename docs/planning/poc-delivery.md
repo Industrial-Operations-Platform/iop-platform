@@ -134,3 +134,8 @@ unsupported query/body rejection and HTTP boundary tests. See the
 [API input contract](../../apps/api/README.md#poc-input-validation-iop-110).
 The parent remains In progress for CSV and analytical endpoint validation; this
 slice does not implement those paths or their admission/processing limits.
+
+IOP-027 has prepared [Proposed ADR-0024](../architecture/adr/ADR-0024-local-principal-bootstrap.md)
+for minimal active principal storage and an explicit local insert-only seed.
+Implementation awaits acceptance; this grants no runtime access and does not
+activate membership/role administration or complete the deferred user lifecycle.

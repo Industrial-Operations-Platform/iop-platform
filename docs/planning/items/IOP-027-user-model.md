@@ -2,107 +2,90 @@
 
 ## Status
 
-Proposed
+Blocked — the bounded POC principal storage/seed proposal awaits acceptance of
+[ADR-0024](../../architecture/adr/ADR-0024-local-principal-bootstrap.md).
+Full user lifecycle and provisioning remain deferred beyond the POC.
 
-## POC delivery applicability
+## Authorization and POC applicability
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+The owner requested IOP-027 on 2026-09-26, limited to the
+[POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
+M3 — Platform Core. The earlier owner-approved IOP-142 scope refinement retains
+full user lifecycle for later shared use; the selected slice is only the minimal
+active development principal required by Accepted ADR-0018.
 
-## Milestone
+## Value, context and current state
 
-M3 — Platform Core. Proposed delivery slice.
+Administrators and users eventually need access to authorized organizations and
+sites. For the local analytical POC, a stable principal supports later explicit
+membership and grant checks without human login. Identity, membership and permission
+are separate responsibilities; Organization is the generic customer boundary.
+See the [modules](../../architecture/modules.md), [data model](../../architecture/data-model.md)
+and [glossary](../../product/glossary.md).
 
-## Goal
+Organization/site persistence and insert-only bootstrap exist. User storage and
+seed do not. ADR-0018 accepts the local execution mechanism; ADR-0024 proposes the
+additional physical identity storage and privileged seed contract. No runtime
+adapter or authorization evidence is claimed.
 
-Retain user lifecycle implementation for later shared use.
+## Selected requirements and acceptance criteria
 
-## User / business value
+- [ ] Persist a stable opaque development user identity with explicit active state,
+  owned by Users/RBAC, separately from organization membership and permissions.
+- [ ] Provide an explicitly invoked local insert-only seed, with matching reruns,
+  conflict/inactive-user rejection, safe configuration and no implicit grants.
+- [ ] Verify constraints, concurrent seeds, rollback, exact-principal seed isolation
+  and runtime access denial using actual database roles.
+- [x] Review dependencies and prepare the missing bootstrap/storage decision under
+  a story branch and execution plan before implementation.
+- [ ] Record implementation evidence and synchronize item/backlog/plan without
+  completing the future parent lifecycle scope.
 
-Administradores y usuarios necesitan acceso a organizaciones y sitios autorizados.
+## Dependencies and architecture constraints
 
-## Context
+[IOP-007](IOP-007-authentication-model.md) and
+[IOP-025](IOP-025-organization-model.md) remain future parent dependencies.
+IOP-007 login/sessions are not a POC gate. IOP-025's POC organization seed is
+integrated, but its bootstrap authority explicitly excludes users. A global identity
+seed does not require organization creation; subsequent memberships require existing
+organization/site ownership. No unmerged dependency branch is required for this proposal.
 
-Ámbito: Platform Core, Authentication and Users/RBAC. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Accepted ADR-0001/0003/0004/0005 preserve module ownership, PostgreSQL,
+provider-independent identity and customer isolation. ADR-0013/0014 separate global
+identity, scoped membership and permission evaluation. ADR-0018 is Accepted and
+requires a current active principal plus explicit membership/site grants before
+business access. ADR-0019 supplies existing migration tooling. See the
+[ADR directory](../../architecture/adr/); Proposed decisions are not authority to
+implement. Follow Accepted ADR-0007/0008 and the [workflow](../workflow.md).
 
-## Current state
+## Security, data, API and UI boundaries
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Keep the principal free of customer-specific labels/source schemas and credentials.
+Do not expose a global identity directory. No runtime access is granted by the seed;
+future operations must validate identity, permission and customer/site scope.
+Preserve scoped reference integrity in future memberships/assignments. Hiding UI
+controls never substitutes for authorization. No endpoints or administration UI
+are part of this slice. Keep secrets, floor plans and production data out of the
+repository; industrial integrations remain read-only. Record material changes
+where applicable without adding audit infrastructure here.
 
-## Desired state
+## Non-goals and remaining scope
 
-Retain user lifecycle implementation for later shared use.
+Full provisioning, login/sessions, password/recovery flows, lifecycle/admin screens,
+identity-provider integration and complete shared-use user management remain deferred.
+Membership/role seed and evaluation and the local host adapter are separate planned
+work, not implicitly activated by this story. Do not implement adjacent tasks,
+accept open decisions by inference or expand delivery to the whole milestone.
 
-## Requirements
+## Validation and documentation impact
 
-- Deliver only the selected POC slice or explicitly deferred future scope below.
-- Full user lifecycle and provisioning are outside POC scope. Proposed ADR-0018 may
-  require a minimal seeded development principal; that bounded slice does not depend on
-  implementing IOP-007 sessions or complete this parent story.
+The [active plan](../active/IOP-027-local-principal-plan.md) records the proposed
+contract, documentation evidence and pending decision. ADR-0024 defines executable
+verification scenarios to plan after acceptance; no runtime tests have run for
+this slice. Update this item, backlog and plan together; change contracts/model/guides
+only when this task changes their content. Preserve permanent story context.
 
-## Acceptance criteria
+## Open decision
 
-- [ ] Retain user lifecycle implementation for later shared use.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
-  unfinished future scope.
-
-## Domain considerations
-
-Organization representa el customer/tenant genérico; identidad, membership y permisos tienen responsabilidades distintas.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
-
-## Security considerations
-
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
-
-## Data considerations
-
-Conservar scope en entidades y relaciones; definir unicidad y lifecycle antes de migrar.
-
-## API considerations
-
-Operaciones públicas deben verificar identidad, permiso y scope; no exponer operaciones sin autorización durante el bootstrap.
-
-## UI considerations
-
-Mostrar solo scopes permitidos y errores de acceso claros; ocultar controles no sustituye autorización.
-
-## Dependencies
-
-[IOP-007](IOP-007-authentication-model.md), [IOP-025](IOP-025-organization-model.md).
-
-These are future parent dependencies, not POC gates. Any minimal local seed slice
-uses an accepted execution-context contract rather than requiring the full parent.
-
-## Non-goals
-
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
-
-## Validation
-
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Accept or revise ADR-0024's minimal global user table and privileged insert-only
+local seed authority. This does not reopen ADR-0018 or authorize runtime access.
