@@ -1,35 +1,70 @@
-import 'reflect-metadata';
-import { INestApplication } from '@nestjs/common';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ProblemDetailsFilter } from './problem-details.filter';
+import "reflect-metadata";
+import { INestApplication } from "@nestjs/common";
+import { ExpressAdapter } from "@nestjs/platform-express";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { DemoModule } from "./demo/controller";
+import { DemoRuntime } from "./demo/runtime";
+import { ProblemDetailsFilter } from "./problem-details.filter";
 
 export function configureApplication(app: INestApplication): void {
   const adapter = app.getHttpAdapter() as ExpressAdapter;
-  adapter.useBodyParser('json', false, { limit: 102400, inflate: false });
-  adapter.useBodyParser('urlencoded', false, { limit: 102400, inflate: false, extended: true, parameterLimit: 10, depth: 1 });
+  adapter.useBodyParser("raw", false, {
+    type: "application/octet-stream",
+    limit: 5242880,
+    inflate: false,
+  });
+  adapter.useBodyParser("json", false, { limit: 102400, inflate: false });
+  adapter.useBodyParser("urlencoded", false, {
+    limit: 102400,
+    inflate: false,
+    extended: true,
+    parameterLimit: 10,
+    depth: 1,
+  });
   app.useGlobalFilters(new ProblemDetailsFilter(app.get(HttpAdapterHost)));
 }
 
-export async function createApplication(): Promise<INestApplication> {
-  const app = await NestFactory.create(AppModule, { logger: false, abortOnError: false });
+export async function createApplication(
+  runtime: DemoRuntime | null = null,
+  port = 3000,
+): Promise<INestApplication> {
+  const app = await NestFactory.create(
+    { module: AppModule, imports: [DemoModule.register(runtime)] },
+    { logger: false, abortOnError: false, bodyParser: false },
+  );
+  app.use(
+    "/api/v1",
+    (
+      req: import("node:http").IncomingMessage,
+      res: import("node:http").ServerResponse,
+      next: (error?: unknown) => void,
+    ) => {
+      res.setHeader("Cache-Control", "no-store");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      try {
+        if (runtime) {
+          runtime.protect(req, port);
+          if (req.method === "POST" && req.url?.split("?")[0] === "/imports") {
+            runtime.principals.resolve(req);
+            const release = runtime.reserveUpload();
+            const timer = setTimeout(() => req.destroy(), 30000);
+            const finish = () => {
+              clearTimeout(timer);
+              release();
+            };
+            res.once("finish", finish);
+            res.once("close", finish);
+          }
+        }
+        next();
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
   configureApplication(app);
   return app;
 }
 
-export function readPort(value: string | undefined): number {
-  if (value === undefined) return 3000;
-  if (!/^[0-9]+$/.test(value)) throw new Error('Invalid PORT');
-  const port = Number(value);
-  if (!Number.isSafeInteger(port) || port < 1 || port > 65535) {
-    throw new Error('Invalid PORT');
-  }
-  return port;
-}
-
-export function readHost(value: string | undefined): string {
-  if (value === undefined) return '127.0.0.1';
-  if (value !== '127.0.0.1' && value !== '0.0.0.0') throw new Error('Invalid HOST');
-  return value;
-}
+export { readHost, readPort } from "./host-address";

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('built UI reaches the real API through the same-origin proxy', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/');
+  await page.goto('/?preview=1');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Import CSV');
   await expect(page.getByRole('status')).toHaveText('API is reachable.');
   expect(errors).toEqual([]);
@@ -14,7 +14,7 @@ test('built UI reaches the real API through the same-origin proxy', async ({ pag
 
 test('safe error and keyboard retry recover to the real API', async ({ page }) => {
   await page.route('**/health', route => route.fulfill({ status: 502, contentType: 'text/html', body: '<h1>private diagnostic</h1>' }));
-  await page.goto('/');
+  await page.goto('/?preview=1');
   await expect(page.getByRole('status')).toContainText('API is unavailable');
   await expect(page.getByText('private diagnostic')).toHaveCount(0);
   await page.unroute('**/health');

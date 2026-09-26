@@ -25,6 +25,12 @@ export class ValidationIssue {
 }
 
 export class ProblemDetails {
+  @ApiPropertyOptional({ type: String, description: 'Safe business error code.' })
+  code?: string;
+
+  @ApiPropertyOptional({ type: String, description: 'Attempt identity for explicit outcome recovery.' })
+  importId?: string;
+
   @ApiProperty({ example: 'urn:iop:problem:bad-request', format: 'uri' })
   type!: string;
 
@@ -54,5 +60,12 @@ export class RequestValidationException extends HttpException {
       }
       return { pointer, code };
     });
+  }
+}
+
+/** Server-owned safe business outcome; raw exception messages are never exposed. */
+export class BusinessException extends HttpException {
+  constructor(status: number, readonly code: string, readonly importId?: string) {
+    super(code, status);
   }
 }

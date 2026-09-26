@@ -1,3 +1,4 @@
+import { demoMaintenance } from './demo-maintenance';
 import { configuration, DatabaseError, provisioningConfiguration } from './configuration';
 import { migrate } from './migrate';
 import { provision } from './provision';
@@ -9,7 +10,10 @@ import { seedOrganization } from './seed-organization';
 async function main(): Promise<void> {
   const [command, ...extra] = process.argv.slice(2);
   if (extra.length) throw new DatabaseError('Expected exactly one database command.');
-  if (command === 'provision') {
+  if (command === 'demo-register' || command === 'demo-reset') {
+    const result = await demoMaintenance(process.env, command === 'demo-register' ? 'register' : 'reset');
+    console.log(JSON.stringify(result));
+  } else if (command === 'provision') {
     await provision(provisioningConfiguration(process.env));
     console.log('Local database roles provisioned.');
   } else if (command === 'migrate') {

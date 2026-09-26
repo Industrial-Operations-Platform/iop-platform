@@ -24,6 +24,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/demo/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DemoController_context"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/demo/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DemoController_switchUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DemoController_history"];
+        put?: never;
+        post: operations["DemoController_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DemoController_review"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/{id}/recover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DemoController_recover"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/{id}/original": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DemoController_original"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DemoController_availability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DemoController_options"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DemoController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -35,6 +179,10 @@ export interface components {
             code: "required" | "invalid" | "out-of-range" | "unsupported";
         };
         ProblemDetails: {
+            /** @description Safe business error code. */
+            code?: string;
+            /** @description Attempt identity for explicit outcome recovery. */
+            importId?: string;
             /**
              * Format: uri
              * @example urn:iop:problem:bad-request
@@ -56,6 +204,179 @@ export interface components {
              * @enum {string}
              */
             status: "ok";
+        };
+        DemoUserDto: {
+            id: string;
+            name: string;
+        };
+        DemoScopeDto: {
+            organizationId: string;
+            siteId: string;
+            sourceId: string;
+            siteTimeZone: string;
+        };
+        DemoContextDto: {
+            enabled: boolean;
+            users: components["schemas"]["DemoUserDto"][];
+            user: components["schemas"]["DemoUserDto"] | null;
+            scope: components["schemas"]["DemoScopeDto"] | null;
+        };
+        SwitchUserDto: {
+            userId: string;
+        };
+        ImportSummaryDto: {
+            importId: string;
+            originalFilename: string;
+            reportingDate: string;
+            /** @enum {string} */
+            outcome: "received" | "succeeded" | "rejected" | "failed";
+            receivedAt: string;
+            submittedBy: string;
+            admittedRecordCount: number | null;
+            reasonCode: string | null;
+            byteLength: number;
+        };
+        DiagnosticDto: {
+            code: string;
+            line?: number;
+            field?: string;
+            reason?: string;
+        };
+        ImportReviewDto: {
+            importId: string;
+            rawId: string;
+            sourceId: string;
+            reportingDate: string;
+            originalFilename: string;
+            sha256: string;
+            byteLength: number;
+            /** @enum {string} */
+            outcome: "received" | "succeeded" | "rejected" | "failed";
+            dataRecordCount: number | null;
+            admittedRecordCount: number | null;
+            rejectedRecordCount: number | null;
+            reasonCode: string | null;
+            inspectedValidCount: number;
+            inspectedInvalidCount: number;
+            inspectionComplete: boolean;
+            unclassifiedCount: number;
+            repeatedCount: number;
+            diagnostics: components["schemas"]["DiagnosticDto"][];
+            diagnosticsTruncated: boolean;
+        };
+        AvailabilityDto: {
+            revision: string;
+            dates: string[];
+            latestDate: string | null;
+            siteTimeZone: string;
+        };
+        OptionRequestDto: {
+            /** @enum {string} */
+            kind: "sector" | "area" | "equipment" | "message";
+            revision: string;
+            cursor?: string;
+            /** @default 50 */
+            pageSize: number;
+        };
+        OptionDto: {
+            reference: string;
+            label: string;
+        };
+        OptionsDto: {
+            revision: string;
+            options: components["schemas"]["OptionDto"][];
+            nextCursor: string | null;
+        };
+        AnalyticalRequestDto: {
+            /** @description Inclusive Gregorian reporting-date label. */
+            from: string;
+            /** @description Exclusive reporting-date label. Maximum range: 366 days. */
+            toExclusive: string;
+            sectors?: string[];
+            areas?: string[];
+            equipment?: string[];
+            messages?: string[];
+            excludedMessages?: string[];
+            revision: string;
+            /** @default 50 */
+            pageSize: number;
+            cursor?: string;
+        };
+        SelectionDto: {
+            /** @description Inclusive Gregorian reporting-date label. */
+            from: string;
+            /** @description Exclusive reporting-date label. Maximum range: 366 days. */
+            toExclusive: string;
+            sectors?: string[];
+            areas?: string[];
+            equipment?: string[];
+            messages?: string[];
+            excludedMessages?: string[];
+        };
+        FactDto: {
+            importId: string;
+            rawId: string;
+            reportingDate: string;
+            sourceRecordNumber: number;
+            reportedFrequency: number;
+            accumulatedAlarmSeconds: number;
+            originalDuration: string;
+            sourceArea: string;
+            sourceEquipmentReference: string;
+            sourceMessageText: string;
+            sourceMessageType: string;
+            sourceMessageGroup: string;
+            repeatedTuple: boolean;
+            /** @enum {string} */
+            classificationStatus: "mapped" | "unclassified";
+            sectorKey: string | null;
+            sectorLabel: string;
+            sectorRef: string;
+            areaRef: string;
+            equipmentRef: string;
+            messageRef: string;
+            mappingRevision: string;
+            adapterRevision: string;
+            profileRevision: string;
+            siteTimeZone: string;
+        };
+        GroupDto: {
+            reference: string;
+            label: string;
+            reportedFrequency: number;
+            accumulatedAlarmSeconds: number;
+            recordCount: number;
+        };
+        GroupsDto: {
+            sector: components["schemas"]["GroupDto"][];
+            area: components["schemas"]["GroupDto"][];
+            equipment: components["schemas"]["GroupDto"][];
+            message: components["schemas"]["GroupDto"][];
+        };
+        GroupCountsDto: {
+            sector: number;
+            area: number;
+            equipment: number;
+            message: number;
+        };
+        AnalysisDto: {
+            revision: string;
+            selection: components["schemas"]["SelectionDto"];
+            recordCount: number;
+            reportedFrequency: number;
+            accumulatedAlarmSeconds: number;
+            admittedDates: string[];
+            missingDates: string[];
+            /** @enum {string} */
+            state: "no-imports" | "no-matches" | "ready";
+            unclassifiedCount: number;
+            repeatedCount: number;
+            records: components["schemas"]["FactDto"][];
+            nextCursor: string | null;
+            groups: components["schemas"]["GroupsDto"];
+            groupCounts: components["schemas"]["GroupCountsDto"];
+            /** @enum {string} */
+            reportingWindowStatus: "unknown";
         };
     };
     responses: never;
@@ -119,6 +440,691 @@ export interface operations {
                 content: {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
+            };
+        };
+    };
+    DemoController_context: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoContextDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_switchUser: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SwitchUserDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoContextDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_history: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportSummaryDto"][];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_submit: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+                /** @description Supported Hitliste-YYYYMMDD.csv reporting label. */
+                "X-CSV-Filename": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/octet-stream": string;
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportReviewDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_review: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportReviewDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_recover: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportReviewDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_original: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Original CSV bytes; requires imports.review. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_availability: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilityDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_options: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OptionRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OptionsDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DemoController_query: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnalyticalRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

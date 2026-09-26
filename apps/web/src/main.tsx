@@ -1,6 +1,7 @@
+import { DemoApp } from './DemoApp';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import './style.css';
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(window.location.search).get('preview') === '1' ? <App /> : <DemoApp />}</StrictMode>);

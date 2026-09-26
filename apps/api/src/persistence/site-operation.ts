@@ -64,6 +64,8 @@ export async function runSiteOperation<T>(
     await assertClean(client);
     await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');
     inTransaction = true;
+    // Shared transaction maintenance lease also covers internal import/query callers.
+    await client.query('SELECT pg_advisory_xact_lock_shared(190147)');
     await client.query(`SELECT set_config('iop.lookup_user_id', $1, true),
       set_config('iop.lookup_organization_id', $2, true), set_config('iop.lookup_site_id', $3, true),
       set_config('iop.user_id', '', true), set_config('iop.organization_id', '', true),

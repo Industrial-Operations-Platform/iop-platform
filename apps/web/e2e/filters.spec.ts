@@ -5,7 +5,7 @@ for (const width of [640, 768, 1366]) {
     await page.setViewportSize({ width, height: 1024 });
     const businessRequests: string[] = [];
     page.on('request', request => { if (request.url().includes('/api/')) businessRequests.push(request.url()); });
-    await page.goto('/#overview');
+    await page.goto('/?preview=1#overview');
     const disclosure = page.getByText('Try shared filters with fictional data', { exact: true });
     await disclosure.focus();
     await page.keyboard.press('Enter');
@@ -41,7 +41,7 @@ for (const width of [640, 768, 1366]) {
 }
 
 test('invalid and empty selections preserve applied meaning', async ({ page }) => {
-  await page.goto('/#overview');
+  await page.goto('/?preview=1#overview');
   await page.getByText('Try shared filters with fictional data', { exact: true }).click();
   await page.getByLabel('From', { exact: true }).fill('2026-06-29');
   await page.getByRole('button', { name: 'Apply filters' }).click();

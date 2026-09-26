@@ -38,7 +38,7 @@ screenshot catalog, every chart type and every future metric are not POC gates.
 
 ## Deferred beyond the POC
 
-Login, sessions, password workflows, user lifecycle/admin screens, interactive role
+Shared-use login/sessions, password workflows, user lifecycle/admin screens, interactive role
 and membership management, Entra, direct industrial connections, general integration
 registry, full audit/retention infrastructure, background workers/retries, map/file
 platforms, asset surveys/registry, workforce, handovers, maintenance and improvements.
@@ -56,8 +56,10 @@ belong to the adapter/configuration. Avoid a generic provider/plugin engine for 
 The owner approved the product boundary without login, not a technical bypass of
 Accepted ADR-0012/0013/0014. [ADR-0018](../architecture/adr/ADR-0018-local-poc-execution-context.md)
 was accepted on 2026-09-26: a local execution adapter uses an explicit seeded
-principal and grants. Runtime business access waits for implementation and
-validation; independent bootstrap, pure parsing and UI work can proceed.
+principal and grants. IOP-147 delivers the local host, receiving storage, import/read endpoints and
+connected views with executable validation. [ADR-0030](../architecture/adr/ADR-0030-local-demo-user-selection.md)
+records the owner-requested selection among configured demo users; third-party
+authentication replaces that local adapter before shared use.
 Do not silently disable RLS, use a database-owner runtime role, or trust a browser's
 scope/actor as authority. A local unauthenticated demonstration is not shared-user
 access control and must not be presented as such.
@@ -86,3 +88,13 @@ See the [delivery map](../planning/poc-delivery.md) for story slices and sequenc
 The [local POC security baseline](../architecture/security-baseline-poc.md) defines
 IOP-014 control requirements and verification handoffs. It is completed design,
 not runtime security evidence. ADR-0018 separately records mechanism acceptance.
+
+
+## Working demonstration — IOP-147
+
+The owner requested completion of the connected workflow on 2026-09-27, explicitly
+including temporary user switching and future third-party login integration.
+Use the [running guide](../development/running-poc.md) for the actual commands,
+reference CSVs, per-file/historical analysis and exact-target reset. Implementation
+and evidence are consolidated under [IOP-147](../planning/items/IOP-147-working-analytical-poc.md).
+Owner usability/value feedback remains separate from automated technical evidence.

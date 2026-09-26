@@ -1,5 +1,14 @@
 # Local POC containers
 
+## Connected analytical POC — IOP-147
+
+For the working CSV upload, history, demo users, analytical views and safe reset,
+follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
+API/web hosts and a dedicated PostgreSQL container. The earlier health/preview
+bootstrap instructions below remain available independently; they do not activate
+the business workflow by themselves.
+
+
 IOP-015 starts the existing React UI, public-health API and an empty PostgreSQL
 service. IOP-019 adds opt-in [role provisioning and migrations](../database/README.md).
 Application database access, seed data, CSV ingestion and analytics remain future work. See the [execution plan](../../docs/planning/completed/IOP-015-local-development-environment-plan.md)

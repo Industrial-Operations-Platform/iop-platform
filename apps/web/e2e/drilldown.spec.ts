@@ -5,7 +5,7 @@ for (const width of [375, 1366]) {
     await page.setViewportSize({ width, height: 900 });
     const businessRequests: string[] = [];
     page.on('request', request => { if (request.url().includes('/api/')) businessRequests.push(request.url()); });
-    await page.goto('/#overview');
+    await page.goto('/?preview=1#overview');
     await page.getByText('Try shared filters with fictional data', { exact: true }).click();
     await page.getByLabel('From', { exact: true }).fill('2026-06-26');
     await page.getByRole('group', { name: 'Excluded messages' }).getByLabel('Check · Warning · Inspection').check();

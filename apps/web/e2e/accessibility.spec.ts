@@ -15,7 +15,7 @@ function contrast(first: string, second: string) {
 for (const width of [768, 1366]) {
   test(`keyboard journey, labels, status and contrast at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1024 });
-    await page.goto('/');
+    await page.goto('/?preview=1');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.getByRole('main')).toHaveCount(1);
     await page.keyboard.press('Tab');

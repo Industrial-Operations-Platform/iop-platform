@@ -1,20 +1,26 @@
 # Industrial Operations Platform (IOP)
 
-IOP is a reusable industrial operations platform connecting people, shifts,
-maintenance, assets and operational insight. This is the single main repository
-for the platform. It includes a local API health host (IOP-016) and a web health UI (IOP-017);
-business functionality and the worker host are not implemented. TypeScript/Node.js
-with NestJS is the accepted backend ([ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md)). React +
-TypeScript + Vite, ECharts and Jest for frontend/backend are accepted in
-[ADR-0010](docs/architecture/adr/ADR-0010-frontend-charting-testing.md). Workspace,
-hook and Docker tooling are accepted in
-[ADR-0009](docs/architecture/adr/ADR-0009-local-delivery-tooling.md). IOP-002 stack
-selection is complete. See [API startup and checks](apps/api/README.md) for the
-implemented backend bootstrap and [web startup and checks](apps/web/README.md)
-for the frontend. [Local Compose instructions](infra/docker/README.md) cover
-the three-host container environment and its validation status.
-[Local database commands](infra/database/README.md) provide IOP-019 role provisioning
-and versioned migrations without adding business persistence.
+IOP is a reusable industrial operations platform. Its Operational Intelligence
+module now provides a local analytical POC: configured demo user → CSV upload →
+persistent history → Executive Overview and analytical detail. The React/Vite web
+and NestJS API share generated contracts; PostgreSQL retains original files,
+normalized aggregates and provenance with scoped authorization and forced RLS.
+
+## Run the POC
+
+With Node 24.21.0, npm 10.9.2 and Docker running:
+
+```sh
+npm ci
+npm run demo:setup
+npm run demo:start
+```
+
+Open **http://127.0.0.1:5173**. Follow the [demonstration guide](docs/development/running-poc.md)
+for file format, reference totals, historical filters, user switching and safe reset.
+Local demo user selection is temporary; third-party authentication remains a future
+adapter before shared use. Workers, external integrations and other platform modules
+remain outside this POC.
 
 ## Start here
 
@@ -35,14 +41,14 @@ and versioned migrations without adding business persistence.
 | `docs/planning/active/` | Current execution plans, written before changes |
 | `docs/planning/completed/` | Completed plans with verification evidence |
 | `docs/planning/templates/` | Item and execution-plan templates |
-| `apps/web/` | Local React/Vite health UI |
-| `apps/api/` | Local NestJS API health host |
+| `apps/web/` | React/Vite analytical workflow and optional fixture previews |
+| `apps/api/` | NestJS health and explicitly activated local business API |
 | `apps/worker/` | Future background processing host |
 | `packages/contracts/` | Future explicit API and module contracts |
 | `packages/shared/` | Future minimal, domain-neutral utilities |
 | `infra/docker/` | Local Compose instructions and validation boundary |
 | `infra/database/` | Local PostgreSQL provisioning, migrations and checks |
-| `scripts/`, `tests/` | Future development tooling and tests |
+| `scripts/`, `tests/` | Development tooling, demo launcher and checks |
 
 Empty future directories use `.gitkeep`. From the root, use Node 24.21.0 and
 `npm ci` and `npm run build`, then follow the
@@ -51,8 +57,9 @@ Empty future directories use `.gitkeep`. From the root, use Node 24.21.0 and
 `npm run test:database` verifies migration behavior in disposable PostgreSQL containers.
 `npm run test:poc` runs type checks and all current unit/integration/browser layers;
 see the [POC testing guide](docs/development/testing-poc.md) for prerequisites and limits.
-The API exposes only `GET http://127.0.0.1:3000/health`. Run `npm run dev:web`
-in another terminal for the UI at `http://127.0.0.1:5173`.
+Without explicit demo activation, business operations remain unavailable and
+`GET http://127.0.0.1:3000/health` remains public. Use the demo launcher for the
+connected import/analysis workflow.
 See [API instructions](apps/api/README.md) for configuration, contracts and limits.
 
 ## Planned work

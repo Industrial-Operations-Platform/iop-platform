@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/co
 import { HttpAdapterHost } from '@nestjs/core';
 import { randomUUID } from 'node:crypto';
 import { STATUS_CODES } from 'node:http';
-import { ProblemDetails, problemCatalog, RequestValidationException } from './problem-details';
+import { ProblemDetails, problemCatalog, RequestValidationException, BusinessException } from './problem-details';
 
 @Catch()
 export class ProblemDetailsFilter implements ExceptionFilter {
@@ -28,6 +28,10 @@ export class ProblemDetailsFilter implements ExceptionFilter {
       status,
       traceId: randomUUID(),
     };
+    if (exception instanceof BusinessException) {
+      problem.code = exception.code;
+      if (exception.importId) problem.importId = exception.importId;
+    }
     if (exception instanceof RequestValidationException) problem.errors = exception.errors;
     if (status >= 500) {
       console.error(JSON.stringify({ event: 'api.request.failed', status, traceId: problem.traceId }));

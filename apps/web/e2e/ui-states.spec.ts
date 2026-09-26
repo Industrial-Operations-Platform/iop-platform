@@ -8,7 +8,7 @@ test('analytical state previews are explicit, keyboard operable and issue no bus
   for (const width of [375, 768, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     for (const view of ['overview', 'detail']) {
-      await page.goto(`/#${view}`);
+      await page.goto(`/?preview=1#${view}`);
       await page.getByText('Preview UI states', { exact: true }).focus();
       await page.keyboard.press('Enter');
       const selector = page.getByLabel('Simulated analytical state');

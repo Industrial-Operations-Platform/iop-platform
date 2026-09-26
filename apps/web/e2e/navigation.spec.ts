@@ -5,7 +5,7 @@ test('navigation supports keyboard, history, direct links and reload without bus
   page.on('request', request => {
     if (new URL(request.url()).pathname.startsWith('/api/')) businessRequests.push(request.url());
   });
-  await page.goto('/');
+  await page.goto('/?preview=1');
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
   await page.keyboard.press('Enter');
@@ -24,7 +24,7 @@ test('navigation supports keyboard, history, direct links and reload without bus
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Analytical detail');
   await page.reload();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Analytical detail');
-  await page.goto('/#overview');
+  await page.goto('/?preview=1#overview');
   await expect(page).toHaveTitle('Executive Overview | IOP');
   await expect(page.getByText(/No organization, site or source connected/)).toBeVisible();
   await expect(page.getByText(/Accumulated alarm duration is not plant downtime/)).toBeVisible();
@@ -33,7 +33,7 @@ test('navigation supports keyboard, history, direct links and reload without bus
 });
 
 test('invalid destination recovers and all pages fit narrow and tablet layouts', async ({ page }) => {
-  await page.goto('/#unknown');
+  await page.goto('/?preview=1#unknown');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Page not found');
   await page.getByRole('link', { name: 'Go to Import CSV' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Import CSV');

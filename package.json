@@ -29,9 +29,14 @@
     "db:seed:site": "npm run db:build && node infra/database/dist/cli.js seed-site",
     "db:migrate": "npm run db:build && node infra/database/dist/cli.js migrate",
     "db:test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand --testPathPatterns configuration",
-    "test:database": "npm run build --workspace @iop/api && npm run db:build && node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand",
+    "test:database": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand",
     "check:secrets": "node scripts/check-secrets.cjs",
-    "test:secrets": "jest --config scripts/jest.config.cjs --runInBand"
+    "test:secrets": "jest --config scripts/jest.config.cjs --runInBand",
+    "demo:setup": "node scripts/demo.cjs setup",
+    "demo:start": "node scripts/demo.cjs start",
+    "demo:fixtures": "node scripts/demo.cjs fixtures",
+    "demo:reset": "node scripts/demo.cjs reset",
+    "demo:recreate": "node scripts/demo.cjs recreate"
   },
   "dependencies": {
     "node-pg-migrate": "9.0.0",

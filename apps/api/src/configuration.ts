@@ -1,5 +1,5 @@
 import { closeSync, constants, fstatSync, openSync, readSync } from 'node:fs';
-import { readHost, readPort } from './application';
+import { readHost, readPort } from './host-address';
 
 export const MAX_CONFIG_BYTES = 16 * 1024;
 

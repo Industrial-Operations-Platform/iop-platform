@@ -174,6 +174,18 @@ export class ImportBatches {
       return importId;
     });
   }
+  async history(actor: string): Promise<ImportSummary[]> {
+    return runSiteOperation(this.pool, { userId: actor, organizationId: this.source.organizationId,
+      siteId: this.source.siteId, permissions: ['imports.review'] }, async tx => {
+      const result = await tx.query(`SELECT import_id AS "importId", original_filename AS "originalFilename",
+        reporting_date::text AS "reportingDate", outcome, received_at AS "receivedAt", submitted_by AS "submittedBy",
+        admitted_record_count AS "admittedRecordCount", reason_code AS "reasonCode", byte_length AS "byteLength"
+        FROM integrations.import_batches WHERE organization_id=$1 AND site_id=$2 AND source_id=$3
+        ORDER BY received_at DESC,import_id DESC LIMIT 1000`,
+        [this.source.organizationId,this.source.siteId,this.source.sourceId]);
+      return result.rows.map(row => ({...row, receivedAt: (row.receivedAt as Date).toISOString()} as unknown as ImportSummary));
+    });
+  }
   async review(actor: string, importId: string): Promise<BatchStatus> {
     return this.run(actor, importId, 'imports.review', false, async tx => {
       const batch = await this.get(tx, importId);
@@ -269,4 +281,10 @@ export class ImportBatches {
       return 'failed';
     });
   }
+}
+
+export interface ImportSummary {
+  importId: string; originalFilename: string; reportingDate: string;
+  outcome: BatchStatus['outcome']; receivedAt: string; submittedBy: string;
+  admittedRecordCount: number | null; reasonCode: string | null; byteLength: number;
 }

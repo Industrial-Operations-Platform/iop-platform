@@ -1,11 +1,20 @@
 # Local web host
 
-IOP-017 supplies the React/TypeScript/Vite host and API process-liveness check.
-IOP-116 adds navigation between Import CSV, Executive Overview and analytical
-detail. These destinations show explicit empty states; CSV submission, analytical
-results, filters and business access are not connected yet.
+## Connected analytical POC — IOP-147
 
-## Run locally
+For the working CSV upload, history, demo users, analytical views and safe reset,
+follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
+API/web hosts and a dedicated PostgreSQL container. The earlier health/preview
+bootstrap instructions below remain available independently; they do not activate
+the business workflow by themselves.
+
+
+The default entry point is `DemoApp`: configured user selection, real CSV upload,
+persistent import history and connected overview/detail. Its typed client consumes
+the generated `/api/v1` contract through Vite's same-origin proxy. The old health,
+state and fixture examples remain explicitly opt-in at `?preview=1`.
+
+## Independent health/fixture preview
 
 Use the root-required Node 24.21.0 and npm 10.9.2 (`nvm use` if available).
 From the repository root:
@@ -18,9 +27,9 @@ chmod 600 config/poc.local.json
 IOP_CONFIG_FILE="$PWD/config/poc.local.json" npm start
 ```
 
-In a second terminal, run `npm run dev:web` and open `http://127.0.0.1:5173`.
+In a second terminal, run `npm run dev:web` and open `http://127.0.0.1:5173/?preview=1`.
 For the built static application, run `npm run preview:web` and open
-`http://127.0.0.1:4173` instead. Both listeners bind to loopback and fail if their
+`http://127.0.0.1:4173/?preview=1` instead. Both listeners bind to loopback and fail if their
 port is occupied. The API must use its default port 3000 for this bootstrap.
 The browser uses relative `/health`; Vite proxies that exact path to
 `http://127.0.0.1:3000` in development and preview. No CORS change or browser
@@ -64,7 +73,8 @@ access checks remain separate delivery slices.
 
 ## POC navigation
 
-Open `/#import` (the default), `/#overview` or `/#detail`. Native fragment links
+For the fixture preview, open `/?preview=1#import`, `/?preview=1#overview`
+or `/?preview=1#detail`. Native fragment links
 preserve browser back/forward and reload without server rewrite rules or a router
 dependency. Unknown fragments show a recovery link. Navigation moves keyboard
 focus to the page heading; a skip link bypasses the header. Scope and filter
@@ -72,9 +82,8 @@ availability stay visible on each page. Only `/health` is requested; navigation
 never grants business permission or selects a trusted actor/scope.
 
 The IOP-097 opt-in filter preview below uses fictional metrics; no real imports
-or analytical queries are connected. Production filter integration remains pending; ADR-0018 is Accepted, with runtime implementation pending. This completes
-only [IOP-116 navigation](../../docs/planning/items/IOP-116-navigation.md), not the
-end-to-end POC.
+or analytical queries are connected. The connected default application is separately delivered under IOP-147.
+This preview retains the original [IOP-116 navigation](../../docs/planning/items/IOP-116-navigation.md) evidence.
 
 
 ## Analytical state previews (IOP-120)
@@ -84,8 +93,8 @@ failure, absent imported coverage and no matching records. The default is honest
 not connected. All selected states are explicitly simulated; retry shows the loading
 preview until another state is selected, and reset returns to not connected. No
 business request, real filter change or metric is generated. Navigation resets the
-preview. Both views retain coverage and metric limitations. Real endpoint state
-integration remains pending under [IOP-120](../../docs/planning/items/IOP-120-ui-states.md).
+preview. Both views retain coverage and metric limitations. Real endpoint states are delivered and verified in the default application; see
+[IOP-120](../../docs/planning/items/IOP-120-ui-states.md).
 
 ## Responsive POC baseline (IOP-121)
 
@@ -96,8 +105,7 @@ have at least 44px height. Content remains available by vertical scrolling.
 Playwright checks simulated states, touch activation, keyboard recovery and state
 preservation across orientation changes; screenshots are in `test-results/`.
 The compact viewport approximates the layout space at 200% zoom on 1280×960;
-it is not a physical-device or browser-zoom certification. Real charts, tables,
-filters and records still need responsive verification when delivered. See
+it is not a physical-device or browser-zoom certification. Real tables, filters and records are now verified under IOP-147. See
 [IOP-121](../../docs/planning/items/IOP-121-responsive-ui.md).
 
 ## Accessibility POC baseline (IOP-122)
@@ -112,7 +120,7 @@ accessible names/descriptions, live-region markup and rendered text contrast of
 at least 4.5:1, with selector boundaries and heading focus at least 3:1. Existing
 navigation tests cover the skip link and history. Screenshots are in `test-results/`.
 These checks do not verify screen-reader speech or certify accessibility compliance.
-Real analytical filters, charts, tables and runtime feedback still need verification
+Real analytical filters, semantic tables and runtime feedback are verified
 under [IOP-122](../../docs/planning/items/IOP-122-accessibility.md).
 
 ## Shared fictional filters (IOP-097)
@@ -140,7 +148,7 @@ production query contracts, ranking engine, persistence or permissions are provi
 Real OIP metrics/filter interpretation stays server-owned; generated API bindings,
 revision refresh, cursor reset and stale-response protection follow endpoint delivery.
 Unit/RTL and Playwright checks cover the preview's behavior and compact/tablet/laptop
-layout. Production isolation and import reconciliation remain independently pending.
+layout. The real default application has separate isolation/import reconciliation evidence under IOP-147.
 
 ## Fictional drill-down (IOP-096)
 

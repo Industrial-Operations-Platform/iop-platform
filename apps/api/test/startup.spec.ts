@@ -86,7 +86,7 @@ describe('compiled entrypoint', () => {
     try {
       const [code] = await process.exited;
       expect(code).toBe(1);
-      expect(process.output()).toBe('API startup failed. Check local port availability.\n');
+      expect(process.output()).toBe('API startup failed. Check local configuration, database and port availability.\n');
     } finally {
       await stop(process.child);
       await close(reserved.server);

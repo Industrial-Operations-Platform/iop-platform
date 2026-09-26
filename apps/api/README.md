@@ -1,7 +1,18 @@
 # Local API host
 
-IOP-016 implements process liveness only. This is the API composition host for the
-modular monolith; it contains no business modules or database connection.
+## Connected analytical POC — IOP-147
+
+For the working CSV upload, history, demo users, analytical views and safe reset,
+follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
+API/web hosts and a dedicated PostgreSQL container. The earlier health/preview
+bootstrap instructions below remain available independently; they do not activate
+the business workflow by themselves.
+
+
+This is the modular monolith API composition host. Without explicit demo activation
+it exposes process health and a disabled demo-context response. Local-demo mode
+composes Users/RBAC, Integrations and OIP with the non-owner runtime database role.
+The following sections retain the individual foundation contracts and their history.
 
 ## Run from the repository root
 
@@ -118,7 +129,7 @@ error-occurrence correlation, not request-wide/distributed tracing or an audit l
 may not follow this format, and HEAD responses have no body.
 
 Compatibility review: the bootstrap `about:blank` types become explicit catalog
-URIs and `traceId` is required. The existing browser uses only health success and
+URIs and `traceId` is required. The independent health preview uses health success and
 its generic error state; regenerated bindings and tests verify this bounded update.
 Shared `ProblemDetails`/`ValidationIssue` DTOs appear in OpenAPI; only the shipped
 health route is published. Synthetic routes used to test failures never ship.
@@ -323,7 +334,7 @@ with repeated-record counts and must not be added to the total record count.
 
 This API takes adapter-validated records, not untrusted JSON or client-provided
 scope. Mapping persistence, publication composition, actual owner-list reconciliation
-and host activation remain pending. Frozen in-memory output is not durable storage;
+and host activation are delivered by IOP-147. The pure stage alone is not durable storage;
 DAX comparison parity and runtime authorization are not claimed.
 
 ### Editing local sector mappings
@@ -355,7 +366,7 @@ node -e 'const fs = require("node:fs"); const { SourceMappings } = require("./ap
 ```
 
 The file is editable now. Automatic file loading by the import host and durable
-revision binding remain pending; editing it does not currently change the running
+revision binding are delivered under IOP-147. This earlier private example is not automatically used by the running
 fixture UI. Once composed, changes apply to future imports only. Reclassifying
 already imported dates is a separate correction operation outside this POC.
 The supplied DAX fallback `Nicht klassifiziert` corresponds to the internal

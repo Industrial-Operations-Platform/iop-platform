@@ -25,7 +25,7 @@ for (const size of [
     const context = await browser.newContext({ viewport: size, hasTouch: true });
     const page = await context.newPage();
     for (const view of ['import', 'overview', 'detail']) {
-      await page.goto(`http://127.0.0.1:4173/#${view}`);
+      await page.goto(`http://127.0.0.1:4173/?preview=1#${view}`);
       await expectUsableLayout(page);
       if (view === 'import') continue;
       await page.getByText('Preview UI states', { exact: true }).tap();
@@ -57,7 +57,7 @@ for (const size of [
 
 test('tablet orientation preserves state and keyboard recovery remains reachable', async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 1024 });
-  await page.goto('/#overview');
+  await page.goto('/?preview=1#overview');
   await page.getByText('Preview UI states', { exact: true }).click();
   const selector = page.getByLabel('Simulated analytical state');
   await selector.selectOption('error');

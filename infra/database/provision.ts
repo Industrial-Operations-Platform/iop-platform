@@ -67,6 +67,22 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
     ...columns('import_quota', ['singleton', 'retained_attempts', 'retained_bytes']));
   const schemas = installed ? ['platform_core', 'users_rbac'] : [];
   if (batchesInstalled) schemas.push('integrations');
+  const oipInstalled = history.rows[0].object !== null && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name = '20260927000000-oip-aggregates'",
+  )).rowCount === 1;
+  if (oipInstalled) {
+    schemas.push('oip');
+    allowedColumns.push('platform_core.sites.time_zone');
+    const oipColumns = {
+      publications: ['organization_id','site_id','source_id','import_id','reporting_date','raw_id','record_count','context'],
+      facts: ['organization_id','site_id','source_id','import_id','reporting_date','source_record_number',
+        'reported_frequency','accumulated_alarm_seconds','sector_ref','area_ref','equipment_ref','message_ref','payload'],
+    };
+    for (const [table, names] of Object.entries(oipColumns)) {
+      const qualified = names.map(name => `oip.${table}.${name}`);
+      allowedColumns.push(...qualified); inserts.push(...qualified);
+    }
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

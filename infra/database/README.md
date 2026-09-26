@@ -1,9 +1,18 @@
 # Local PostgreSQL bootstrap
 
+## Connected analytical POC — IOP-147
+
+For the working CSV upload, history, demo users, analytical views and safe reset,
+follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
+API/web hosts and a dedicated PostgreSQL container. The earlier health/preview
+bootstrap instructions below remain available independently; they do not activate
+the business workflow by themselves.
+
+
 IOP-019 implements Accepted [ADR-0019](../../docs/architecture/adr/ADR-0019-local-database-migrations.md):
 explicit role provisioning and node-pg-migrate 9.0.0 migrations on the existing
-PostgreSQL 17.6 local service. The API still exposes process health only and has no
-database connection. IOP-025 adds the organization table and explicit initial seed
+PostgreSQL 17.6 local service. The separately activated local-demo API connects using the runtime role;
+independent health startup requires no database. IOP-025 adds the organization table and explicit initial seed
 under Accepted [ADR-0020](../../docs/architecture/adr/ADR-0020-local-organization-bootstrap.md).
 IOP-026 adds site storage and an explicit initial seed under Accepted
 [ADR-0021](../../docs/architecture/adr/ADR-0021-local-site-bootstrap.md). There is no login or ORM.
@@ -86,7 +95,7 @@ Migrations live in `infra/database/migrations/`; metadata lives in
 `iop_migrations.history`. The first migration removes PUBLIC default access for
 future migrator-created tables, sequences, functions and types. Future owning-module
 migrations must separately define scope, constraints, forced RLS and explicit grants.
-IOP-025/026/027/030 supply the organization/site/user/membership seeds below. IOP-123 supplies [fictional organization/site inputs and loading instructions](../../fixtures/analytical-poc/README.md#load-the-fictional-organization-and-site-iop-123); ADR-0018 is Accepted, with runtime implementation pending.
+IOP-025/026/027/030 supply the organization/site/user/membership seeds below. IOP-123 supplies [fictional organization/site inputs and loading instructions](../../fixtures/analytical-poc/README.md#load-the-fictional-organization-and-site-iop-123); ADR-0018/0030 local host implementation is delivered under IOP-147.
 
 Use ordered timestamp-prefixed SQL files with `-- Up Migration`. Committed applied
 migrations are immutable by convention; append a corrective migration. There is no
@@ -223,7 +232,7 @@ compromised migrator credential. Keep that credential outside API/web containers
 Validation and limitations are recorded in the
 [IOP-026 plan](../../docs/planning/completed/IOP-026-site-model-plan.md).
 Site lifecycle, CRUD and administration remain deferred. This site command supplies no user/grant/source seed, runtime repository, endpoint
-or UI; ADR-0018 is Accepted, with runtime implementation pending.
+or UI; ADR-0018/0030 local host implementation is delivered under IOP-147.
 
 
 ## Initial local user seed (IOP-027)
@@ -333,8 +342,8 @@ the seventh below.
 
 Runtime has USAGE on `users_rbac`/`platform_core` and column SELECT only for user
 identity/active state, membership identity/active state, exact site-role assignments,
-and site/organization identity. Site names/zones, organization rows and all writes to those foundation tables
-remain unavailable. Forced RLS requires all three nonempty transaction-local
+and site/organization identity. IOP-147 additionally grants site time-zone reads for startup validation. Site names,
+organization rows and writes to those foundation tables remain unavailable. Forced RLS requires all three nonempty transaction-local
 `iop.lookup_user_id`, `iop.lookup_organization_id`, `iop.lookup_site_id` selectors;
 rows match their applicable actor/organization/site keys. Seed selectors do not
 provide runtime visibility. Lookup selectors never authorize business rows.
@@ -350,13 +359,14 @@ can select candidate context through trusted backend code, not establish human i
 credentials, denial cases, revocation, rollback/cancellation/pool reuse and privilege
 drift. The authorization suite uses a disposable test-only business table, removed
 before checking the production privilege surface. It adds no production business
-schema or endpoint. The health host remains unchanged; ADR-0018 host activation,
-origin/local-only checks and import/read endpoint evidence are still pending.
+schema or endpoint. IOP-147 separately supplies the production OIP schema, composed host,
+origin/local-only checks and actual import/read/reset/browser evidence.
 
 ## Internal import batches (IOP-042)
 
 The seventh migration implements [Accepted ADR-0027](../../docs/architecture/adr/ADR-0027-poc-import-publication.md).
-Existing six-migration databases apply one migration; fresh databases apply seven.
+At that increment, six-migration databases applied one migration. The current
+installation has nine migrations, including OIP aggregates and guarded demo maintenance.
 Use the normal provision/migrate commands. There is no automatic startup migration,
 import endpoint, new environment variable or demo reset command in this slice.
 
