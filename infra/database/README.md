@@ -86,8 +86,7 @@ Migrations live in `infra/database/migrations/`; metadata lives in
 `iop_migrations.history`. The first migration removes PUBLIC default access for
 future migrator-created tables, sequences, functions and types. Future owning-module
 migrations must separately define scope, constraints, forced RLS and explicit grants.
-IOP-025/026/027/030 supply the organization/site/user/membership seeds below. Combined demo fixtures
-remain IOP-123; ADR-0018 is Accepted, with runtime implementation pending.
+IOP-025/026/027/030 supply the organization/site/user/membership seeds below. IOP-123 supplies [fictional organization/site inputs and loading instructions](../../fixtures/analytical-poc/README.md#load-the-fictional-organization-and-site-iop-123); ADR-0018 is Accepted, with runtime implementation pending.
 
 Use ordered timestamp-prefixed SQL files with `-- Up Migration`. Committed applied
 migrations are immutable by convention; append a corrective migration. There is no

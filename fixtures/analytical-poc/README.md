@@ -2,18 +2,73 @@
 
 Static, entirely fictional data for [IOP-125](../../docs/planning/items/IOP-125-demo-events.md),
 following the [source contract](../../docs/architecture/csv-source-contract-poc.md).
-These are reviewable inputs and a literal expected-results oracle, not an importer,
-seed command or runtime configuration format. No production data is included.
+These are reviewable inputs and a literal expected-results oracle, not an importer.
+IOP-123 adds explicit organization/site seed inputs and matching reference
+configuration below. No production data is included.
 
 ## Use and scope
 
 Use `scope.json` as the explicit fictional organization/site/source and mapping
-context for future importer tests. Its IDs are fixture identifiers, not references
-to an existing database. IOP-123 must bind or seed the intended demo scope before
-runtime use; configure the supported source separately during importer delivery.
-No implicit site selection, principal, grants or database access is supplied here.
-ADR-0018 remains Proposed. IOP-103 must validate these files through the real
-importer when available; this delivery does not claim that validation.
+context for importer tests. The IOP-123 instructions below persist its organization
+and site through the existing IOP-025/026 commands. Configure the supported source
+separately during importer delivery: a source reference is not a persisted source.
+No implicit site selection, principal, grants or runtime access is supplied here.
+ADR-0018 is Accepted; host implementation remains pending. IOP-103 must validate
+these CSVs through the real importer when available; fixtures do not prove that path.
+
+## Load the fictional organization and site (IOP-123)
+
+[`seed.env.example`](seed.env.example) contains only configurable fictional labels,
+stable IDs and an explicit zone, matching [`scope.json`](scope.json):
+`fixture-org-001` / Example Operations, `fixture-site-001` / Example Works,
+`Europe/Zurich`. Select IDs once; display names never determine identity or access.
+[`poc.example.json`](poc.example.json) uses the supported reference-only format.
+Copy it to `config/poc.local.json` only for this demo, preserving any existing local
+configuration first. Keep all organization/site/source references aligned. Names
+belong in seed inputs, not new fields in the strict reference configuration.
+
+Prepare the dedicated local database using the [database guide](../../infra/database/README.md)
+(provision, then migrate). Keep credentials in the private `.env`, never in fixtures.
+From the repository root, use the existing opt-in Compose services:
+
+```sh
+docker compose --env-file .env --env-file fixtures/analytical-poc/seed.env.example -f compose.yaml -f compose.database.yaml build database-seed-organization database-seed-site
+docker compose --env-file .env --env-file fixtures/analytical-poc/seed.env.example -f compose.yaml -f compose.database.yaml run --rm database-seed-organization
+docker compose --env-file .env --env-file fixtures/analytical-poc/seed.env.example -f compose.yaml -f compose.database.yaml run --rm database-seed-site
+```
+
+Alternatively, for a native local database, put the explicit native connection
+fields and migrator password documented in that guide in private `.env`, then:
+
+```sh
+npm run db:build
+node --env-file=.env --env-file=fixtures/analytical-poc/seed.env.example infra/database/dist/cli.js seed-organization
+node --env-file=.env --env-file=fixtures/analytical-poc/seed.env.example infra/database/dist/cli.js seed-site
+```
+
+Both tools give exported shell variables precedence over environment files: remove
+stale `IOP_SEED_*` overrides before loading this exact fixture. For customized labels,
+use a private environment file instead of editing committed fixtures; keep the
+reference JSON and scope/mapping inputs consistent if IDs or zone change.
+
+On an empty migrated database, each command reports `created`; exact repeats report
+`unchanged`. Stop if either command fails. A conflicting name, owner or zone fails
+without overwriting stored data. These are two independent transactions: if the
+site step fails, the organization can remain. Correct the inputs and rerun both;
+the matching organization is unchanged. Do not delete records to resolve conflicts.
+These commands neither reset data nor run automatically at application startup.
+IOP-128 owns the later safe demo reset.
+
+Only the fictional organization and site are seeded. No source rows, imported CSVs,
+physical assets, principal, membership or grants are created. RLS and the separate
+migrator credential follow Accepted ADR-0020/0021; configuration is not authorization.
+Existing principal/grant tooling remains separately explicit; ADR-0018's unfinished
+host adapter still gates runtime business access. This is a local installation
+fixture, not shared-use access control or an end-to-end analytical demonstration.
+
+`npm run test:database` loads these exact files through the CLI on disposable
+PostgreSQL, checks stored scope/config agreement, repeat/conflict behavior and
+runtime denial. It never seeds or resets the operator's database.
 
 Upload each CSV using its basename, not its containing scenario directory.
 The supported files use UTF-16 LE with BOM, semicolons and CRLF. The deliberately

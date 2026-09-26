@@ -2,108 +2,58 @@
 
 ## Status
 
-Proposed
+Completed on 2026-09-26 — bounded fictional organization/site fixture for the analytical POC.
 
-## POC delivery applicability
+## Scope and authorization
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+Owner requested IOP-123 on 2026-09-26, limited to the
+[POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
+M16 — Demo / Pilot Dataset. Seed a fictional organization and site through existing
+explicit local installation commands, with configurable labels, stable IDs and an
+explicit IANA zone. No physical asset hierarchy or administration screens.
 
-## Milestone
+## Delivery and acceptance
 
-M16 — Demo / Pilot Dataset. Proposed delivery slice.
+The [analytical fixtures](../../../fixtures/analytical-poc/README.md#load-the-fictional-organization-and-site-iop-123)
+provide seed inputs and matching reference configuration for Example Operations /
+Example Works. Labels remain scoped data outside the generic core. Source references
+and mapping fixtures do not imply source persistence or CSV import implementation.
 
-## Goal
+- [x] Load the fictional organization and site with exact fixture IDs, labels,
+  ownership and zone through the accepted seed commands.
+- [x] Reproduce on empty databases; exact repeats leave data unchanged, conflicting
+  input fails without overwrites, and failed site loading can be retried safely.
+- [x] Verify reference configuration agreement, scoped access denial and absence of
+  implicit users, membership or grants. No credentials or production data in fixtures.
+- [x] Document native/Compose loading and limitations; record executable evidence,
+  synchronize the backlog and complete the execution plan.
 
-Seed a fictional organization and site for the analytical POC.
+## Dependencies and decisions
 
-## User / business value
+[IOP-025](IOP-025-organization-model.md) and [IOP-026](IOP-026-site-model.md)
+have their relevant POC persistence/seed slices integrated on develop. Their broader
+CRUD/lifecycle/admin parents remain Deferred and are not prerequisites here.
+Accepted [ADR-0020](../../architecture/adr/ADR-0020-local-organization-bootstrap.md)
+and [ADR-0021](../../architecture/adr/ADR-0021-local-site-bootstrap.md) supply the
+insert-only migrator commands, ownership validation, forced RLS and conflict rules.
+No new architectural pattern or migration is required.
 
-The team needs to demonstrate IOP without enterprise infrastructure or information.
+[ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md) is Accepted;
+its host implementation and validation still gate runtime business access. This
+fixture creates no local principal or grants and supplies no implicit permission.
+Accepted ADR-0001/0003/0004/0005 preserve modular ownership, PostgreSQL, independent
+identity and customer isolation; ADR-0007/0008 govern planning and review.
+See the [ADR directory](../../architecture/adr/).
 
-## Context
+## Validation and boundaries
 
-Scope: synthetic demo and pilot fixtures. See [modules](../../architecture/modules.md) and
-the [planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; backlog membership alone does not authorize implementation.
+The [execution plan](../completed/IOP-123-demo-organization-plan.md) records validation.
+Tests use disposable PostgreSQL and actual credentials. The two seed commands have
+separate transactions: an organization can remain after a failed site step; rerun
+with matching corrected inputs. No reset, deletion, renaming or site-zone correction
+is supplied. IOP-128 owns safe demo reset.
 
-## Current state
-
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
-
-## Desired state
-
-Seed a fictional organization and site for the analytical POC.
-
-## Requirements
-
-- Deliver only the selected POC slice or explicitly deferred future scope below.
-- Use configurable fictional labels, stable IDs and a zone. No physical asset hierarchy.
-  Any local principal/grants follow an accepted execution-context mechanism, not implied
-  access from organization membership.
-
-## Acceptance criteria
-
-- [ ] Seed a fictional organization and site for the analytical POC.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
-  unfinished future scope.
-
-## Domain considerations
-
-Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to adopt their decisions.
-
-## Security considerations
-
-Verify customer/site permissions and scope for relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Use reproducible data with explicit scope and provenance; include useful invalid/ambiguous cases without secrets.
-
-## API considerations
-
-Use agreed loading mechanisms; prevent demo reset from affecting production.
-
-## UI considerations
-
-The user must distinguish demo and real data; scope does not include designing new screens.
-
-## Dependencies
-
-[IOP-025](IOP-025-organization-model.md), [IOP-026](IOP-026-site-model.md).
-
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
-
-## Non-goals
-
-Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must define executable commands and scenarios for the criteria using accepted tooling. Include expected behavior, errors and relevant access denial; record actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its [backlog](../backlog.md) status and execution plan.
-Update contracts, model, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.
+No new API/UI, source seed, assets, login, principal/grant automation, generalized
+seed engine or customer-specific core logic. The fixture is explicitly synthetic;
+no runtime screen or end-to-end analytical behavior is claimed. This story has no
+broader unfinished parent scope; adjacent stories remain independently selected.

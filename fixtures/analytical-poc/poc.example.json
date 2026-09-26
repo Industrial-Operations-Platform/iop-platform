@@ -1,0 +1,13 @@
+{
+  "organization": { "id": "fixture-org-001" },
+  "site": {
+    "id": "fixture-site-001",
+    "organizationId": "fixture-org-001",
+    "timeZone": "Europe/Zurich"
+  },
+  "source": {
+    "id": "fixture-source-001",
+    "organizationId": "fixture-org-001",
+    "siteId": "fixture-site-001"
+  }
+}
