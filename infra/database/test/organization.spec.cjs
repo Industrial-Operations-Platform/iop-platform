@@ -25,7 +25,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(4);
+  expect(await migrate(configs.migrator)).toBe(5);
 });
 afterAll(async () => { if (container) await container.stop(); });
 
@@ -133,7 +133,7 @@ test('second empty database reproduces organization identity and constraints', a
     await admin.query('CREATE DATABASE iop_local OWNER iop_bootstrap');
   } finally { await admin.end(); }
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(4);
+  expect(await migrate(configs.migrator)).toBe(5);
   expect(await seedOrganization(input())).toBe('created');
   expect((await all()).rows).toEqual([{ organization_id: 'org-a', display_name: 'Fictional A' }]);
   await provision(configs);

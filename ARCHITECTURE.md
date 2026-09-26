@@ -281,3 +281,15 @@ forced RLS and inactive-user rejection without reactivation. Identity remains
 separate from scoped membership and permissions. Runtime retains CONNECT only;
 ADR-0018's host adapter and current grant evaluation remain unimplemented. See the
 [database guide](infra/database/README.md#initial-local-user-seed-iop-027).
+
+
+## Accepted initial local membership bootstrap
+
+Accepted [ADR-0025](docs/architecture/adr/ADR-0025-local-membership-bootstrap.md)
+authorizes the IOP-030 bounded organization membership and fixed site-role seed.
+Users/RBAC owns the two tables with scoped foreign keys and forced exact-selector
+RLS. The explicit migrator command creates membership and both site roles atomically;
+reruns never repair incomplete grants or reactivate membership. Runtime remains
+CONNECT-only. Membership administration, current permission evaluation and the
+ADR-0018 host adapter remain later work. See the
+[database guide](infra/database/README.md#initial-local-membership-and-site-roles-iop-030).

@@ -2,7 +2,7 @@
 
 ## Status
 
-Blocked — the bounded POC seed awaits acceptance of
+Deferred — the bounded POC membership/site-role seed is implemented under Accepted
 [ADR-0025](../../architecture/adr/ADR-0025-local-membership-bootstrap.md).
 Membership lifecycle and administration remain deferred beyond the POC.
 
@@ -22,22 +22,23 @@ seeded principal. Organization is the generic customer boundary; identity,
 membership and permission remain distinct. See the [modules](../../architecture/modules.md),
 [data model](../../architecture/data-model.md) and [workflow](../workflow.md).
 
-Organization/site and active principal storage/seeds are integrated. Membership and
-role persistence, seed, evaluation and host adapter are not implemented. ADR-0018
-accepts the local execution mechanism; ADR-0025 proposes its missing bounded
-membership storage/bootstrap contract. Runtime retains CONNECT only.
+Organization/site and active principal storage/seeds are integrated. IOP-030 adds
+organization membership and explicit site-role persistence plus the atomic
+`seed-membership` command under ADR-0025, accepted on 2026-09-26. Current grant
+evaluation and the ADR-0018 host adapter remain unimplemented. Runtime retains
+CONNECT only.
 
 ## Selected requirements and acceptance criteria
 
 - [x] Review dependencies and create a story branch and execution plan before edits.
 - [x] Specify the bounded storage/bootstrap proposal and executable verification cases.
-- [ ] Obtain acceptance of ADR-0025 before dependent implementation.
-- [ ] Persist active organization membership and explicit `site-operator` and
+- [x] Obtain acceptance of ADR-0025 before dependent implementation.
+- [x] Persist active organization membership and explicit `site-operator` and
   `analytics-reader` assignments at the configured site, with scoped constraints
   and forced RLS; membership alone grants no permission.
-- [ ] Provide an explicit atomic local seed, unchanged matching reruns and safe
+- [x] Provide an explicit atomic local seed, unchanged matching reruns and safe
   rejection of inactive, incomplete or inconsistent state without restoring grants.
-- [ ] Verify concurrent seeds, rollback, foreign/missing scope, invalid references
+- [x] Verify concurrent seeds, rollback, foreign/missing scope, invalid references
   and actual-role runtime denial; record evidence and synchronize item/backlog/plan.
 
 ## Dependencies and architecture constraints
@@ -74,14 +75,16 @@ permission evaluation and the local host adapter require separately selected wor
 
 ## Validation and documentation impact
 
-The [active plan](../active/IOP-030-local-membership-plan.md) records execution,
+The [completed plan](../completed/IOP-030-local-membership-plan.md) records execution,
 files and evidence. ADR-0025 defines positive, error and denial scenarios for
-implementation using existing database tooling. Documentation checks links, IDs,
-status and consistency; no executable membership/security evidence is claimed yet.
+implementation using existing database tooling. Tests verify seed concurrency,
+rollback, constraints, strict reruns and actual-role isolation on disposable
+PostgreSQL. These prove installation behavior, not runtime business authorization.
 Update this item, backlog and plan together; update contracts/guides only when this
 slice changes them. A finished POC slice does not complete the broader parent.
 
-## Open decision
+## Remaining scope
 
-Accept or revise ADR-0025's initial bootstrap authority, two-table storage and
-strict rerun behavior before implementing the migration and seed command.
+No open decision blocks this completed POC seed slice. Full membership lifecycle
+and administration remain deferred. Runtime evaluation and the local host adapter
+still require their separately selected implementation and verification.

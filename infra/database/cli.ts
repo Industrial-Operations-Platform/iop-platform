@@ -1,6 +1,7 @@
 import { configuration, DatabaseError, provisioningConfiguration } from './configuration';
 import { migrate } from './migrate';
 import { provision } from './provision';
+import { seedMembership } from './seed-membership';
 import { seedUser } from './seed-user';
 import { seedSite } from './seed-site';
 import { seedOrganization } from './seed-organization';
@@ -23,8 +24,11 @@ async function main(): Promise<void> {
   } else if (command === 'seed-user') {
     const result = await seedUser(process.env);
     console.log(`Local user seed complete: ${result}.`);
+  } else if (command === 'seed-membership') {
+    const result = await seedMembership(process.env);
+    console.log(`Local membership seed complete: ${result}.`);
   } else {
-    throw new DatabaseError('Expected database command: provision, migrate, seed-organization, seed-site or seed-user.');
+    throw new DatabaseError('Expected database command: provision, migrate, seed-organization, seed-site, seed-user or seed-membership.');
   }
 }
 

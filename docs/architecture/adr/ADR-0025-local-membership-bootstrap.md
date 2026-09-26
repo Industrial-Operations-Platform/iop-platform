@@ -2,8 +2,9 @@
 
 ## Status
 
-Proposed under [IOP-030](../../planning/items/IOP-030-membership-model.md).
-No migration, seed or runtime authorization is implemented by this proposal.
+Accepted on 2026-09-26 by explicit owner approval under [IOP-030](../../planning/items/IOP-030-membership-model.md).
+IOP-030 implements the bounded migration and seed. Runtime authorization remains
+unimplemented; installation evidence is recorded in the completed plan below.
 
 ## Context
 
@@ -14,7 +15,7 @@ explicitly excludes membership and roles. ADR-0014 leaves physical constraints a
 bootstrap authority for implementation review. Existing organization/site seeds
 and role separation can support a bounded installation command without an admin UI.
 
-## Proposed decision
+## Decision
 
 ### Storage and ownership
 
@@ -98,7 +99,7 @@ login, admin role, delegation UI or full audit infrastructure is introduced here
 | Hard-code membership/roles in the host | Reject; bypasses current persisted access state and mixes identity with grants. |
 | Full membership and role administration | Defer beyond the local POC. |
 
-## Verification required after acceptance
+## Verification contract
 
 - Fresh migrations and seed on two disposable databases; exact ownership, keys,
   role constraints and enabled/forced RLS; provisioning rerun does not widen access.
@@ -114,5 +115,6 @@ login, admin role, delegation UI or full audit infrastructure is introduced here
 - Typecheck, `npm test`, database integration tests and native/one-shot Compose
   reproduction pass with safe error output. These prove installation only.
 
-See the [active plan](../../planning/active/IOP-030-local-membership-plan.md).
-Explicit acceptance is required before dependent migration/command implementation.
+See the [completed plan](../../planning/completed/IOP-030-local-membership-plan.md).
+The bounded migration/command is implemented and verified. This does not complete
+future membership administration or enable runtime business access.

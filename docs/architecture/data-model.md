@@ -227,5 +227,22 @@ Users/RBAC-owned `users_rbac.users`: global opaque `user_id` and non-null
 `is_active`, without customer/profile/provider data. An explicit migrator seed
 creates an active identity or verifies an unchanged active row; it never reactivates
 an inactive identity. Forced RLS restricts ordinary seed statements to the explicit
-principal. No runtime grants, scoped memberships or role assignments are delivered.
+principal. That principal slice delivers no runtime grants, scoped memberships or
+role assignments; the subsequent IOP-030 slice is described below.
 See the [database guide](../../infra/database/README.md#initial-local-user-seed-iop-027).
+
+
+## Initial local membership and fixed site grants
+
+IOP-030 implements Accepted [ADR-0025](adr/ADR-0025-local-membership-bootstrap.md):
+`users_rbac.organization_memberships` has primary key `(organization_id, user_id)`,
+references existing organization/global identity and has non-null `is_active`.
+`users_rbac.site_role_assignments` has key `(organization_id, user_id, site_id, role_id)`
+and composite foreign keys to membership and site ownership. Only the two fixed
+site roles are stored; organization roles and administration remain deferred.
+Foreign keys restrict deletion; no lifecycle cascade or restoration is provided.
+
+Forced RLS restricts migrator SELECT/INSERT to explicit principal/organization and,
+for assignments, site. Runtime has no grants. Atomic initial seed and strict unchanged
+reruns provide installation evidence only; an inactive user/membership must still
+deny future business operations independently of stored assignments.

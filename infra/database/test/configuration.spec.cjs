@@ -36,7 +36,7 @@ test('provisioning requires separate passwords; migration needs only its own', (
   expect(configuration({ ...env, IOP_POSTGRES_PASSWORD: undefined, IOP_RUNTIME_PASSWORD: undefined }, 'migrator').user).toBe('iop_migrator');
 });
 
-test.each(['provision', 'migrate', 'seed-organization', 'seed-site', 'seed-user', 'unknown'])('CLI rejects incomplete input safely: %s', (command) => {
+test.each(['provision', 'migrate', 'seed-organization', 'seed-site', 'seed-user', 'seed-membership', 'unknown'])('CLI rejects incomplete input safely: %s', (command) => {
   const result = spawnSync(process.execPath, [resolve(__dirname, '../dist/cli.js'), command], {
     env: { PATH: process.env.PATH, IOP_DATABASE_NAME: 'do-not-print-this-value' }, encoding: 'utf8',
   });
@@ -102,4 +102,16 @@ test('user identity is case-sensitive, opaque and never taken from ambient user 
   for (const id of ['A', 'a', 'User_1-demo', 'x'.repeat(64)]) {
     expect(userConfiguration({ IOP_SEED_USER_ID: id })).toEqual({ id });
   }
+});
+
+const { membershipConfiguration } = require('../dist/seed-membership.js');
+const membership = { IOP_SEED_ORGANIZATION_ID: 'Org', IOP_SEED_USER_ID: 'User', IOP_SEED_SITE_ID: 'Site' };
+test.each(Object.keys(membership))('membership requires valid explicit %s', key => {
+  for (const value of [undefined, '', ' ', '-id', 'a/b', 'x'.repeat(65), 'id\n', "x'; SELECT 1"]) {
+    expect(() => membershipConfiguration({ ...membership, [key]: value })).toThrow('IDs');
+  }
+});
+test('membership preserves opaque case-sensitive selectors without ambient fallbacks', () => {
+  expect(membershipConfiguration(membership)).toEqual({ organizationId: 'Org', userId: 'User', siteId: 'Site' });
+  expect(() => membershipConfiguration({ USER: 'User', organizationId: 'Org', siteId: 'Site' })).toThrow();
 });

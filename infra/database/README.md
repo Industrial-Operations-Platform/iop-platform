@@ -25,7 +25,7 @@ docker compose -f compose.yaml -f compose.database.yaml run --rm database-provis
 docker compose -f compose.yaml -f compose.database.yaml run --rm database-migrate
 ```
 
-A fresh database reports `4 applied` (privilege baseline, organizations, sites and users); an unchanged rerun reports `0 applied`.
+A fresh database reports `5 applied` (privilege baseline, organizations, sites, users and memberships); an unchanged rerun reports `0 applied`.
 Provisioning can also be repeated. The optional overlay requires all three password
 variables for Compose interpolation, but the migration container receives only its
 own password. Neither API nor web receives any of them. Commands are one-shot jobs;
@@ -84,7 +84,7 @@ Migrations live in `infra/database/migrations/`; metadata lives in
 `iop_migrations.history`. The first migration removes PUBLIC default access for
 future migrator-created tables, sequences, functions and types. Future owning-module
 migrations must separately define scope, constraints, forced RLS and explicit grants.
-IOP-025/026/027 supply the organization/site/user seeds below. Combined demo fixtures
+IOP-025/026/027/030 supply the organization/site/user/membership seeds below. Combined demo fixtures
 remain IOP-123; ADR-0018 is Accepted, with runtime implementation pending.
 
 Use ordered timestamp-prefixed SQL files with `-- Up Migration`. Committed applied
@@ -262,3 +262,59 @@ and analytics access. The later host adapter must validate this current active
 identity plus explicit membership and both site roles under ADR-0018. No user CRUD,
 reactivation, reset framework or administration screen is introduced. Validation
 is recorded in the [IOP-027 plan](../../docs/planning/completed/IOP-027-local-principal-plan.md).
+
+## Initial local membership and site roles (IOP-030)
+
+Accepted [ADR-0025](../../docs/architecture/adr/ADR-0025-local-membership-bootstrap.md)
+adds Users/RBAC-owned `organization_memberships` and `site_role_assignments`.
+An active organization membership is separate from the two explicit site grants;
+no site-membership flag, organization admin or arbitrary role catalog is added.
+Composite references enforce the user's membership and the site's organization.
+
+First run provisioning/migrations and the organization, site and user seeds above.
+Set all three explicit non-secret selectors in your private environment:
+
+```dotenv
+IOP_SEED_ORGANIZATION_ID=org-demo
+IOP_SEED_SITE_ID=site-demo
+IOP_SEED_USER_ID=local-demo-user
+```
+
+Use the existing stable IDs and match the organization/site POC configuration.
+The command never reads or changes that JSON and requires no name/zone input.
+
+```sh
+docker compose -f compose.yaml -f compose.database.yaml build database-seed-membership
+docker compose -f compose.yaml -f compose.database.yaml run --rm database-seed-membership
+```
+
+Native: export those selectors and the migrator connection fields, then run
+`npm run db:seed:membership`. Alternatively, after `npm run db:build`, run
+`node --env-file=.env infra/database/dist/cli.js seed-membership` with explicit
+native connection fields. This is initial installation tooling, never API startup.
+
+The command requires an existing active user and correctly owned site. It atomically
+creates an active organization membership with exactly `site-operator` and
+`analytics-reader` at that site, reporting `created`. An active existing membership
+with both roles reports `unchanged`. Concurrent matching calls converge; calls
+for different sites under the same membership cannot expand it. Missing roles,
+inactive membership or a new site under an existing membership fail unchanged.
+No repair, reactivation or grant restoration is performed. Do not delete membership
+rows to force reseeding: full deletion is indistinguishable from initial creation.
+Recovery or dedicated demo recreation needs separately reviewed work; this command
+is not a lifecycle or reset tool.
+
+Migrator-only forced RLS requires exact principal/organization selectors and the
+site selector for assignments. One READ COMMITTED transaction uses a transaction
+advisory lock for the organization/user pair before reading current state. Hash
+collisions only serialize unrelated seeds; locks and selectors clear at transaction
+end. The lock coordinates this seed command, not future lifecycle mutations or
+manual privileged changes. Every failure rolls back all new membership/role rows.
+No UPDATE/DELETE policy, runtime grant, security-definer function or RLS bypass is
+added. The trusted migrator owner can change DDL; its credentials stay outside hosts.
+
+Runtime retains CONNECT only. This seed does not authenticate a human or implement
+current permission evaluation, the ADR-0018 host adapter, origin protection or
+business transactions. Role permissions remain exactly those in ADR-0014; runtime
+access must still check active identity, membership, exact scope and grants.
+Validation is recorded in the [IOP-030 plan](../../docs/planning/completed/IOP-030-local-membership-plan.md).

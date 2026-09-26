@@ -24,6 +24,7 @@
     "db:build": "tsc -p infra/database/tsconfig.json",
     "db:provision": "npm run db:build && node infra/database/dist/cli.js provision",
     "db:seed:organization": "npm run db:build && node infra/database/dist/cli.js seed-organization",
+    "db:seed:membership": "npm run db:build && node infra/database/dist/cli.js seed-membership",
     "db:seed:user": "npm run db:build && node infra/database/dist/cli.js seed-user",
     "db:seed:site": "npm run db:build && node infra/database/dist/cli.js seed-site",
     "db:migrate": "npm run db:build && node infra/database/dist/cli.js migrate",
