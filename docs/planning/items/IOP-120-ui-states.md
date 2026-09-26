@@ -2,7 +2,9 @@
 
 ## Status
 
-In progress — independent POC state preview implemented; runtime integration pending.
+Blocked — independent POC state preview implemented; runtime integration requires
+delivered analytical endpoints and validated local business access. See the
+[continuation plan](../active/IOP-120-runtime-state-plan.md).
 
 ## Milestone
 
