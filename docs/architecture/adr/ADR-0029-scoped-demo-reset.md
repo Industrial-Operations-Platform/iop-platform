@@ -2,8 +2,11 @@
 
 ## Status
 
-Proposed under [IOP-128](../../planning/items/IOP-128-demo-reset.md), 2026-09-26.
-No reset command or deletion authority is implemented by this proposal.
+Accepted by explicit owner approval under
+[IOP-128](../../planning/items/IOP-128-demo-reset.md), 2026-09-26.
+Acceptance covers this bounded reset design; implementation and validation remain
+pending. The owner also authorized merging the story into develop and pushing
+both branches to origin. No reset command or deletion authority is implemented.
 
 ## Context
 
@@ -20,7 +23,7 @@ marks a database as disposable. A familiar database name, fictional label or
 loopback address alone cannot establish reset authority. Production OIP storage
 and real importer composition are still missing on develop.
 
-## Proposed decision
+## Decision
 
 Provide an explicit offline infrastructure command using the separate migrator
 credential, never an API route or permission in an analytics role. Keep runtime
@@ -88,7 +91,7 @@ Invalid/duplicate scenarios remain separate from that baseline.
 
 Dropping the database/volume would remove unrelated scope and installation state.
 A runtime delete endpoint would expand authority beyond the POC requirement.
-Direct SQL fixture inserts would skip importer validation. The proposed offline
+Direct SQL fixture inserts would skip importer validation. The accepted offline
 scoped command retains existing ownership and the real CSV path at modest local
 operational cost. These are project design judgments, not measured guarantees.
 
@@ -112,5 +115,5 @@ outside database reset. Acceptance does not activate adjacent stories.
   duplicate rejection. Test fixtures alone cannot close this requirement.
 
 Run `npm test` and relevant `npm run test:database` checks after implementation.
-Until acceptance and delivery of OIP storage/importer/host integration, IOP-128
+Until delivery of OIP storage/importer/host integration and the reset itself, IOP-128
 remains Blocked. No destructive command should be advertised as available.

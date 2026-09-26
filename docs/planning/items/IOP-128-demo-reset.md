@@ -2,8 +2,8 @@
 
 ## Status
 
-Blocked — reset authority awaits ADR-0029 acceptance; production OIP storage and
-real importer/host composition are not delivered. Dependency review: 2026-09-26.
+Blocked — ADR-0029 is Accepted; production OIP storage and real importer/host
+composition are not delivered. Dependency review: 2026-09-26.
 
 ## POC delivery applicability
 
@@ -36,7 +36,7 @@ owner-requested outline; backlog membership alone does not authorize implementat
 IOP-123 supplies the fictional scope seed and IOP-125 supplies analytical fixtures.
 Integrations retains batches/RAW with a database-wide quota; no reset exists.
 See the [execution plan](../active/IOP-128-demo-reset-plan.md) and
-[Proposed ADR-0029](../../architecture/adr/ADR-0029-scoped-demo-reset.md).
+[Accepted ADR-0029](../../architecture/adr/ADR-0029-scoped-demo-reset.md).
 
 ## Desired state
 
@@ -105,7 +105,7 @@ Implementing adjacent tasks, inferring acceptance of open decisions or extending
 
 The plan must specify executable commands and scenarios using accepted tooling.
 Include the expected path, failures and relevant access denial; record actual
-results, not fictitious tests. ADR-0029 lists the proposed reset evidence; none
+results, not fictitious tests. ADR-0029 lists the required reset evidence; none
 has been executed against a reset implementation.
 
 ## Documentation impact
@@ -115,6 +115,6 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Accept or revise Proposed ADR-0029 before dependent implementation. Before coding,
+The owner accepted ADR-0029 on 2026-09-26. Before coding,
 complete the execution plan with the concrete maintenance/quiescence mechanism
 and the delivered OIP cleanup/import contracts.

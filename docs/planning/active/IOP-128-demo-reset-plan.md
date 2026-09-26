@@ -19,6 +19,9 @@ the successful elevated retry. All subsequent edits and the commit use the story
    and links; record actual blockers. Dependency stories are already English.
 4. Synchronize backlog and add a short delivery-map handoff. Expected files are
    this plan, the story, backlog, delivery map and the new ADR only.
+5. Owner accepted ADR-0029 and authorized merging this story into develop and
+   pushing both branches to origin on 2026-09-26. Record acceptance in the ADR,
+   item and delivery map; validate and commit before the authorized publication.
 
 No database mutation, new runtime permission, reset command, adjacent story
 implementation, deployment or fixture replacement is part of this design increment.
@@ -44,7 +47,11 @@ No code changed, so application tests were not run. Reset/runtime evidence remai
 pending. The proposal preserves ADR-0022 retention and ADR-0027 quota/atomicity
 requirements without claiming that migrator reset policies already exist.
 
+Acceptance follow-up: `git diff --check` and all 60 local link targets in the
+four updated files passed; Accepted ADR and Blocked story/backlog status agree.
+Application tests remain inapplicable to this documentation-only change.
+
 Commit the validated documentation increment. Keep this plan active and IOP-128
-Blocked while ADR-0029 acceptance, the concrete quiescence implementation plan and
+Blocked while the concrete quiescence implementation plan and
 the executable storage/importer dependencies remain outstanding.
 Move to completed only after the reset and recreation criteria have actual evidence.
