@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed
+Blocked — reset authority awaits ADR-0029 acceptance; production OIP storage and
+real importer/host composition are not delivered. Dependency review: 2026-09-26.
 
 ## POC delivery applicability
 
@@ -22,17 +23,20 @@ Recreate only the dedicated analytical demo dataset.
 
 ## User / business value
 
-El equipo necesita demostrar IOP sin infraestructura o información empresarial.
+The team needs to demonstrate IOP without enterprise infrastructure or information.
 
 ## Context
 
-Ámbito: Synthetic demo and pilot fixtures. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: synthetic demo and pilot fixtures. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; backlog membership alone does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+IOP-123 supplies the fictional scope seed and IOP-125 supplies analytical fixtures.
+Integrations retains batches/RAW with a database-wide quota; no reset exists.
+See the [execution plan](../active/IOP-128-demo-reset-plan.md) and
+[Proposed ADR-0029](../../architecture/adr/ADR-0029-scoped-demo-reset.md).
 
 ## Desired state
 
@@ -54,56 +58,63 @@ Recreate only the dedicated analytical demo dataset.
 
 ## Domain considerations
 
-Usar organizaciones, nombres, activos y relaciones ficticios; las fixtures no definen niveles rígidos del dominio.
+Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt their decisions.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify customer/site permissions and scope for relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Datos reproducibles, scope y procedencia explícitos; incluir casos inválidos/ambiguos útiles sin secretos.
+Use reproducible data with explicit scope and provenance; include useful invalid/ambiguous cases without secrets.
 
 ## API considerations
 
-Usar mecanismos de carga acordados; impedir que reset de demo pueda afectar producción.
+Use agreed loading mechanisms; prevent demo reset from affecting production.
 
 ## UI considerations
 
-El usuario debe distinguir demo y datos reales; el alcance no incluye diseñar nuevas pantallas.
+The user must distinguish demo and real data; scope does not include designing new screens.
 
 ## Dependencies
 
 [IOP-123](IOP-123-demo-organization.md), [IOP-125](IOP-125-demo-events.md).
 
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+Both direct dependency slices are completed and integrated on develop. Dependencies
+require only their relevant POC slices, not future parent capabilities. ADR-0018
+is Accepted; host implementation and validation still gate runtime access. Actual
+recreation additionally needs production OIP receiving storage and the composed
+importer. Their absence does not authorize implementing adjacent stories here.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must specify executable commands and scenarios using accepted tooling.
+Include the expected path, failures and relevant access denial; record actual
+results, not fictitious tests. ADR-0029 lists the proposed reset evidence; none
+has been executed against a reset implementation.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its [backlog](../backlog.md) status and execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Accept or revise Proposed ADR-0029 before dependent implementation. Before coding,
+complete the execution plan with the concrete maintenance/quiescence mechanism
+and the delivered OIP cleanup/import contracts.

@@ -271,3 +271,9 @@ provenance. See the [fixture record](completed/IOP-096-fixture-drilldown-plan.md
 The parent remains Blocked on executable queries, production OIP storage and
 ADR-0018 host activation. The preview does not prove runtime reconciliation,
 pagination, revision consistency or access denial.
+
+IOP-128 has a [scoped reset proposal](../architecture/adr/ADR-0029-scoped-demo-reset.md)
+and [active plan](active/IOP-128-demo-reset-plan.md). It remains Blocked on acceptance
+of the offline reset authority and delivery of production OIP storage/importer/host
+composition. IOP-123/125 fixtures are available; no reset command or executable
+recreation evidence is delivered by this documentation increment.

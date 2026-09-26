@@ -229,7 +229,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-125 — Synthetic analytical CSV fixtures](items/IOP-125-demo-events.md) | Completed |
 | [IOP-126 — Synthetic workforce](items/IOP-126-demo-workforce.md) | Proposed |
 | [IOP-127 — Synthetic maintenance](items/IOP-127-demo-maintenance.md) | Deferred |
-| [IOP-128 — Demo reset](items/IOP-128-demo-reset.md) | Proposed |
+| [IOP-128 — Demo reset](items/IOP-128-demo-reset.md) | Blocked |
 
 ## M17 — v1 Validation & Release
 
