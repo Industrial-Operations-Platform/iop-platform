@@ -93,6 +93,12 @@ and remains Blocked on production OIP receiving storage, real importer/review
 composition and ADR-0018 host activation. Existing internal evidence is reusable;
 no second importer or integration registry is required.
 
+IOP-090 supplies the [frequency definition and reconciliation matrix](../product/event-frequency-poc.md)
+under the accepted IOP-089 query semantics: reported occurrences, full-result totals,
+explicit exclusions and coverage limits. Its specification slice is complete;
+runtime reconciliation remains Blocked on executable queries, production OIP facts
+and ADR-0018 host activation. No new metric or adjacent implementation is included.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context

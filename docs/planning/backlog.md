@@ -166,7 +166,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | Contexto de tarea | Estado |
 | --- | --- |
 | [IOP-089 — Analytics query layer](items/IOP-089-analytics-query-layer.md) | Blocked |
-| [IOP-090 — Event frequency KPI](items/IOP-090-event-frequency.md) | Proposed |
+| [IOP-090 — Event frequency KPI](items/IOP-090-event-frequency.md) | Blocked |
 | [IOP-091 — Accumulated alarm duration (POC)](items/IOP-091-downtime.md) | Proposed |
 | [IOP-092 — Trend analysis](items/IOP-092-event-trends.md) | Proposed |
 | [IOP-093 — Pareto analysis](items/IOP-093-pareto.md) | Proposed |
