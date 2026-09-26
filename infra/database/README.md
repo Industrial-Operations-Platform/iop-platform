@@ -25,7 +25,7 @@ docker compose -f compose.yaml -f compose.database.yaml run --rm database-provis
 docker compose -f compose.yaml -f compose.database.yaml run --rm database-migrate
 ```
 
-A fresh database reports `5 applied` (privilege baseline, organizations, sites, users and memberships); an unchanged rerun reports `0 applied`.
+A fresh database reports `6 applied` (privilege baseline, organizations, sites, users, memberships and authorization lookup); an unchanged rerun reports `0 applied`.
 Provisioning can also be repeated. The optional overlay requires all three password
 variables for Compose interpolation, but the migration container receives only its
 own password. Neither API nor web receives any of them. Commands are one-shot jobs;
@@ -69,16 +69,18 @@ authentication of a DNS server or a production network boundary; TLS is not enab
   objects. It can create database schemas but cannot create roles/databases or bypass
   RLS through a role attribute. Object ownership is privileged; never give this
   credential to the API.
-- `iop_runtime` has database CONNECT only. It cannot own objects, inherit/set an
+- `iop_runtime` has CONNECT plus the bounded IOP-029 lookup described below.
+  It cannot own objects, inherit/set an
   elevated role, create schemas/tables/temp tables, truncate or access migration
   history. No business data permission is implied by being able to connect.
 
 Provisioning locks and changes roles/privileges atomically, revokes standard PUBLIC
 access to the dedicated database and public schema, and refuses incompatible role
 attributes, memberships, ownership, schema grants and effective runtime grants.
-It does not rotate passwords. This initial connection-only baseline must be refined
-under the owning story before granting runtime business access; it will reject
-additional runtime grants on a later provisioning rerun until that contract changes.
+It does not rotate passwords. Before the lookup migration it accepts CONNECT-only
+access; afterward it permits exactly the installed lookup schema/column grants.
+Broader table/column, PUBLIC-derived or grant-option access, writes and unrelated
+objects are rejected. Business-table grants need a separately reviewed extension.
 
 Migrations live in `infra/database/migrations/`; metadata lives in
 `iop_migrations.history`. The first migration removes PUBLIC default access for
@@ -160,7 +162,7 @@ connections exit unsuccessfully without disclosing values or database diagnostic
 `platform_core.organizations` is owned by Platform Core, with its primary key also
 serving as root organization scope. The migrator login performs only scoped
 SELECT/INSERT through forced RLS in a fresh transaction. Commit/rollback clears its
-local selector. No runtime grant or UPDATE/DELETE policy exists. The migrator owner
+local selector. This seed adds no runtime grant or UPDATE/DELETE policy. The migrator owner
 can change DDL and remains privileged installation authority; RLS is not protection
 against that credential. Keep it out of hosts and never use this command as a
 business configuration endpoint. This seed does not create sites, users, grants or
@@ -214,7 +216,8 @@ foreign identifiers. Zone corrections and transfers require separately reviewed 
 `(organization_id, site_id)` key for scoped references. Forced RLS requires both
 transaction-local seed selectors for migrator SELECT/INSERT. Missing site scope
 never expands access. No UPDATE/DELETE policy or runtime grant is added; provisioning
-reruns retain the CONNECT-only runtime baseline. The privileged object owner can
+reruns retain only the accepted runtime lookup surface described below. The
+privileged object owner can
 change DDL, so these controls do not establish business RBAC or protect against a
 compromised migrator credential. Keep that credential outside API/web containers.
 
@@ -253,9 +256,10 @@ nonlocal configuration and incompatible role privileges fail with safe output.
 
 Only the dedicated migrator performs exact-principal SELECT/INSERT, with forced
 RLS and a transaction-local `iop.seed_user_id` selector on a fresh connection.
-Commit/rollback clears that selector. No ordinary UPDATE/DELETE policy or runtime
-grant exists. The migrator can change DDL and remains trusted installation authority.
-Keep its credential out of API/web containers. Runtime still has CONNECT only.
+Commit/rollback clears that selector. The seed adds no ordinary UPDATE/DELETE policy
+or runtime grant. The migrator can change DDL and remains trusted installation authority.
+Keep its credential out of API/web containers. Runtime lookup access is separately
+defined by IOP-029 below.
 
 This seed does not authenticate a person, create membership/roles or enable import
 and analytics access. The later host adapter must validate this current active
@@ -313,8 +317,38 @@ manual privileged changes. Every failure rolls back all new membership/role rows
 No UPDATE/DELETE policy, runtime grant, security-definer function or RLS bypass is
 added. The trusted migrator owner can change DDL; its credentials stay outside hosts.
 
-Runtime retains CONNECT only. This seed does not authenticate a human or implement
+IOP-029 separately supplies bounded lookup access below. This seed does not
+authenticate a human or implement
 current permission evaluation, the ADR-0018 host adapter, origin protection or
 business transactions. Role permissions remain exactly those in ADR-0014; runtime
 access must still check active identity, membership, exact scope and grants.
 Validation is recorded in the [IOP-030 plan](../../docs/planning/completed/IOP-030-local-membership-plan.md).
+
+## Current site authorization lookup (IOP-029)
+
+Accepted [ADR-0026](../../docs/architecture/adr/ADR-0026-poc-authorization-lookup.md)
+is implemented by the sixth migration and API-internal operation boundary. Run the
+normal provision/migrate commands; no new seed, environment switch or startup
+migration is added. Existing databases apply one new migration; fresh ones apply six.
+
+Runtime has USAGE on `users_rbac`/`platform_core` and column SELECT only for user
+identity/active state, membership identity/active state, exact site-role assignments,
+and site/organization identity. Site names/zones, organization rows and all writes
+remain unavailable. Forced RLS requires all three nonempty transaction-local
+`iop.lookup_user_id`, `iop.lookup_organization_id`, `iop.lookup_site_id` selectors;
+rows match their applicable actor/organization/site keys. Seed selectors do not
+provide runtime visibility. Lookup selectors never authorize business rows.
+
+The [API operation boundary](../../apps/api/README.md#site-operation-authorization-iop-029)
+checks current state and exact permissions before installing the separate business
+selectors on the same transaction. Provisioning permits only the reviewed grants
+once the lookup migration is recorded; it rejects privilege drift instead of repairing
+it. Installation credentials remain outside the API. Current runtime credentials
+can select candidate context through trusted backend code, not establish human identity.
+
+`npm run test:database` builds API/database code and checks actual PostgreSQL runtime
+credentials, denial cases, revocation, rollback/cancellation/pool reuse and privilege
+drift. The authorization suite uses a disposable test-only business table, removed
+before checking the production privilege surface. It adds no production business
+schema or endpoint. The health host remains unchanged; ADR-0018 host activation,
+origin/local-only checks and import/read endpoint evidence are still pending.

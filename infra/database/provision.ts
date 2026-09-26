@@ -31,19 +31,53 @@ export async function verifyRole(client: Client, role: 'migrator' | 'runtime'): 
 }
 
 async function verifyRuntimeAccess(client: Client): Promise<void> {
-  const result = await client.query(
-    `SELECT
-      has_database_privilege($1, current_database(), 'CREATE') OR
-      has_database_privilege($1, current_database(), 'TEMPORARY') OR
-      EXISTS (SELECT 1 FROM pg_namespace WHERE nspname NOT LIKE 'pg_%'
-        AND nspname <> 'information_schema'
-        AND (has_schema_privilege($1, oid, 'CREATE') OR has_schema_privilege($1, oid, 'USAGE'))) OR
-      EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-        WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname <> 'information_schema'
-        AND c.relkind IN ('r','p','v','m','f')
-        AND has_table_privilege($1, c.oid, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'))
-      AS unsafe`, [roles.runtime],
-  );
+  const history = await client.query("SELECT to_regclass('iop_migrations.history') AS object");
+  const installed = history.rows[0].object !== null && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name = '20260926020000-authorization-lookup'",
+  )).rowCount === 1;
+  const allowedColumns = installed ? [
+    'users_rbac.users.user_id', 'users_rbac.users.is_active',
+    'users_rbac.organization_memberships.organization_id',
+    'users_rbac.organization_memberships.user_id', 'users_rbac.organization_memberships.is_active',
+    'users_rbac.site_role_assignments.organization_id', 'users_rbac.site_role_assignments.user_id',
+    'users_rbac.site_role_assignments.site_id', 'users_rbac.site_role_assignments.role_id',
+    'platform_core.sites.organization_id', 'platform_core.sites.site_id',
+  ] : [];
+  const schemas = installed ? ['platform_core', 'users_rbac'] : [];
+  const result = await client.query(`SELECT
+    has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
+    EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'
+      AND nspname <> 'information_schema' AND (
+        has_schema_privilege($1, n.oid, 'CREATE') OR
+        has_schema_privilege($1, n.oid, 'USAGE') <> (nspname = ANY($2::text[])) OR
+        (nspname = ANY($2::text[]) AND pg_get_userbyid(nspowner) <> 'iop_migrator') OR
+        EXISTS (SELECT 1 FROM aclexplode(n.nspacl) a WHERE
+          (a.grantee = 0 OR a.grantee = (SELECT oid FROM pg_roles WHERE rolname = $1))
+          AND (a.grantee = 0 OR a.is_grantable)))) OR
+    EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname <> 'information_schema'
+      AND c.relkind IN ('r','p','v','m','f')
+      AND has_table_privilege($1, c.oid, 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')) OR
+    EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname <> 'information_schema'
+      AND CASE WHEN c.relkind = 'S' THEN has_sequence_privilege($1, c.oid, 'USAGE,SELECT,UPDATE') ELSE false END) OR
+    EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname <> 'information_schema'
+      AND has_function_privilege($1, p.oid, 'EXECUTE')) OR
+    EXISTS (SELECT 1 FROM pg_attribute a JOIN pg_class c ON c.oid = a.attrelid
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname <> 'information_schema'
+      AND c.relkind IN ('r','p','v','m','f') AND a.attnum > 0 AND NOT a.attisdropped AND (
+        has_column_privilege($1, c.oid, a.attnum, 'INSERT,UPDATE,REFERENCES') OR
+        has_column_privilege($1, c.oid, a.attnum, 'SELECT') <>
+          ((n.nspname || '.' || c.relname || '.' || a.attname) = ANY($3::text[])) OR
+        (has_column_privilege($1, c.oid, a.attnum, 'SELECT') AND
+          (NOT c.relrowsecurity OR NOT c.relforcerowsecurity OR
+           pg_get_userbyid(c.relowner) <> 'iop_migrator')) OR
+        EXISTS (SELECT 1 FROM aclexplode(a.attacl) grant_entry WHERE
+          (grant_entry.grantee = 0 OR grant_entry.grantee = (SELECT oid FROM pg_roles WHERE rolname = $1))
+          AND (grant_entry.grantee = 0 OR grant_entry.is_grantable)))) AS unsafe`,
+  [roles.runtime, schemas, allowedColumns]);
   if (result.rows[0].unsafe) throw new DatabaseError('Existing runtime privileges are incompatible.');
 }
 

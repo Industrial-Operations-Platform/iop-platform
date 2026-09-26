@@ -40,7 +40,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(5);
+  expect(await migrate(configs.migrator)).toBe(6);
   for (const org of ['org-a', 'org-b']) {
     await seedOrganization({ ...env, IOP_SEED_ORGANIZATION_ID: org, IOP_SEED_ORGANIZATION_NAME: 'Fictional Organization' });
   }
@@ -69,8 +69,8 @@ test('atomic fixed-pair creation, unchanged rerun, ownership and forced RLS surv
       pg_get_userbyid(relowner) AS owner FROM pg_class WHERE oid = $1::regclass`, [`users_rbac.${table}`]);
     expect(metadata.rows[0]).toEqual({ relrowsecurity: true, relforcerowsecurity: true, owner: 'iop_migrator' });
     const policies = await query('bootstrap', `SELECT cmd, roles FROM pg_policies
-      WHERE schemaname = 'users_rbac' AND tablename = $1 ORDER BY cmd`, [table]);
-    expect(policies.rows).toEqual([{ cmd: 'INSERT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_migrator}' }]);
+      WHERE schemaname = 'users_rbac' AND tablename = $1 ORDER BY cmd, roles::text`, [table]);
+    expect(policies.rows).toEqual([{ cmd: 'INSERT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_runtime}' }]);
   }
 });
 
@@ -201,7 +201,7 @@ test('relational constraints independently reject missing, foreign, duplicate an
   }
 });
 
-test('real runtime remains denied even with all forged selectors and after provisioning again', async () => {
+test('runtime seed selectors grant no visibility or writes after provisioning again', async () => {
   await provision(configs);
   await withClient('runtime', async client => {
     await client.query('BEGIN');
@@ -210,7 +210,8 @@ test('real runtime remains denied even with all forged selectors and after provi
     await client.query("SELECT set_config('iop.seed_organization_id', 'org-a', false), set_config('iop.seed_user_id', 'user', false), set_config('iop.seed_site_id', 'site-a', false)");
     for (const table of tables) {
       const values = table === tables[0] ? "('org-a', 'user', true)" : "('org-a', 'user', 'site-a', 'analytics-reader')";
-      for (const sql of [`SELECT * FROM users_rbac.${table}`, `INSERT INTO users_rbac.${table} VALUES ${values}`,
+      expect((await client.query(`SELECT * FROM users_rbac.${table}`)).rows).toEqual([]);
+      for (const sql of [`INSERT INTO users_rbac.${table} VALUES ${values}`,
         `UPDATE users_rbac.${table} SET user_id = 'user'`, `DELETE FROM users_rbac.${table}`,
         `TRUNCATE users_rbac.${table}`, `ALTER TABLE users_rbac.${table} DISABLE ROW LEVEL SECURITY`]) {
         await expect(client.query(sql)).rejects.toMatchObject({ code: '42501' });
@@ -246,7 +247,7 @@ test('native CLI reproduces the complete seed on a second empty disposable datab
   } finally { await admin.end(); }
   const values = { ...input(), IOP_SEED_ORGANIZATION_NAME: 'Fictional Organization',
     IOP_SEED_SITE_NAME: 'Fictional Site', IOP_SEED_SITE_TIME_ZONE: 'UTC' };
-  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '5 applied'],
+  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '6 applied'],
     ['seed-organization', 'created'], ['seed-site', 'created'], ['seed-user', 'created'],
     ['seed-membership', 'created'], ['seed-membership', 'unchanged'], ['provision', 'provisioned'], ['migrate', '0 applied']]) {
     const result = cli(command, values);

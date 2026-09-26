@@ -25,7 +25,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(5);
+  expect(await migrate(configs.migrator)).toBe(6);
 });
 afterAll(async () => { if (container) await container.stop(); });
 
@@ -96,7 +96,8 @@ test('database constraints reject invalid identity and missing state; case is pr
 test('runtime has no identity access even with a forged seed selector', async () => {
   await withClient('runtime', async client => {
     await client.query("SELECT set_config('iop.seed_user_id', 'local-user', false)");
-    for (const sql of ['SELECT * FROM users_rbac.users',
+    expect((await client.query('SELECT * FROM users_rbac.users')).rows).toEqual([]);
+    for (const sql of [
       "INSERT INTO users_rbac.users VALUES ('forged', true)",
       'UPDATE users_rbac.users SET is_active = false', 'DELETE FROM users_rbac.users',
       'TRUNCATE users_rbac.users', 'ALTER TABLE users_rbac.users DISABLE ROW LEVEL SECURITY',
@@ -132,7 +133,7 @@ test('native commands reproduce the seed on a second empty database', async () =
     await admin.query('DROP DATABASE iop_local');
     await admin.query('CREATE DATABASE iop_local OWNER iop_bootstrap');
   } finally { await admin.end(); }
-  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '5 applied'],
+  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '6 applied'],
     ['seed-user', 'created'], ['seed-user', 'unchanged'], ['provision', 'provisioned'], ['migrate', '0 applied']]) {
     const result = spawnSync(process.execPath, [resolve(__dirname, '../dist/cli.js'), command], {
       env: { PATH: process.env.PATH, ...input() }, encoding: 'utf8',

@@ -3,8 +3,8 @@
 ## Status
 
 Accepted on 2026-09-26 by explicit owner approval under [IOP-029](../../planning/items/IOP-029-rbac-enforcement.md).
-The bounded implementation is authorized. Runtime currently remains
-CONNECT-only; this document introduces no grants or executable authorization.
+IOP-029 implements the bounded lookup and transaction contract below. Its sixth
+migration adds narrow runtime column reads; no business endpoint is activated.
 
 ## Context
 
@@ -19,7 +19,7 @@ schema/table access, and module placement/transaction coordination remain undeci
 
 The [POC boundary](../../product/scope-poc.md) requires only checking the seeded
 principal and explicit site roles. Login, access administration and a generic
-authorization engine are excluded. This proposal resolves the lookup boundary;
+authorization engine are excluded. This decision resolves the lookup boundary;
 it does not activate the host adapter or open business endpoints.
 
 ## Decision
@@ -163,8 +163,8 @@ Use existing Jest and PostgreSQL Testcontainers with actual runtime credentials:
   Cleanup failure destroys the connection; unscoped follow-up sees no protected rows.
 - Internal callers use the same contract; no HTTP-only guard is the authority.
   Run `npm run typecheck`, `npm test` and `npm run test:database`, preserving seed
-  behavior. Record actual results in the [plan](../../planning/active/IOP-029-poc-authorization-plan.md).
+  behavior. Record actual results in the [completed plan](../../planning/completed/IOP-029-poc-authorization-plan.md).
 
-These are proposed verification cases, not executed evidence. Acceptance permits
-the bounded lookup implementation only; it neither completes IOP-029's shared-use
+The completed plan records executable unit and actual-role PostgreSQL evidence for
+this contract. The lookup implementation neither completes IOP-029's shared-use
 parent nor certifies ADR-0018 host or future import/analytics behavior.

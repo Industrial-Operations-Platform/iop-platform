@@ -2,9 +2,9 @@
 
 ## Status
 
-In progress — the owner accepted [ADR-0026](../../architecture/adr/ADR-0026-poc-authorization-lookup.md)
-on 2026-09-26, authorizing the narrow runtime lookup and transaction boundary.
-Dependencies are integrated. No runtime authorization is implemented by this increment.
+Deferred — the bounded POC lookup/transaction slice is implemented under
+[Accepted ADR-0026](../../architecture/adr/ADR-0026-poc-authorization-lookup.md).
+Shared-user authorization and access administration remain future parent scope.
 
 ## Authorization and POC applicability
 
@@ -22,8 +22,9 @@ Platform Core owns organization/site identity and ownership. See the
 and [workflow](../workflow.md).
 
 IOP-026/027/030 supply integrated site, active-principal and membership/site-role
-storage plus explicit seeds. Runtime remains CONNECT-only. ADR-0014's lookup policy
-review gate and undecided module/transaction boundaries are resolved by Accepted ADR-0026.
+storage plus explicit seeds. IOP-029 now supplies exact-selector runtime column
+reads, current permission evaluation and the pinned site-operation transaction
+under Accepted ADR-0026. The health host and business endpoint surface are unchanged.
 Accepted ADR-0018 permits the local mechanism; its host adapter and validation are
 still pending. No allow-all guard or trusted browser actor is authorized.
 
@@ -32,13 +33,13 @@ still pending. No allow-all guard or trusted browser actor is authorized.
 - [x] Review dependencies and create a story branch and execution plan before edits.
 - [x] Define the bounded lookup proposal, transaction handoff and verification cases.
 - [x] Obtain acceptance of ADR-0026 before dependent implementation.
-- [ ] Evaluate current active user, organization membership, ownership and explicit
+- [x] Evaluate current active user, organization membership, ownership and explicit
   site grants for every operation through a provider-independent contract.
-- [ ] Enforce the fixed permission bundles at the exact target; deny unknown/missing
+- [x] Enforce the fixed permission bundles at the exact target; deny unknown/missing
   scope, missing grants, foreign ownership and unavailable authorization state.
-- [ ] Implement narrow real-role lookup RLS and transaction-local handoff without
+- [x] Implement narrow real-role lookup RLS and transaction-local handoff without
   privileged credentials, a global directory or business access before authorization.
-- [ ] Verify allowed/denied operations, revocation, rollback, pool reuse and effective
+- [x] Verify allowed/denied operations, revocation, rollback, pool reuse and effective
   runtime privileges; record evidence and synchronize item/backlog/plan.
 
 A lookup-only implementation does not satisfy the host's ADR-0018 activation,
@@ -76,8 +77,11 @@ of architectural proposals from this request.
 
 ## Validation and documentation
 
-The [active plan](../active/IOP-029-poc-authorization-plan.md) records the branch,
-files, dependency findings and evidence. ADR-0026 specifies executable positive,
-negative and actual-role database scenarios for implementation. This documentation
-increment checks links, IDs, statuses and consistency only; no runtime evidence is
-claimed. Keep item/backlog In progress and the plan active until implementation is verified.
+The [completed plan](../completed/IOP-029-poc-authorization-plan.md) records branches,
+files, dependency findings and executable evidence. API tests and real-role PostgreSQL
+integration verify the selected requirements, including revocation, missing/foreign
+scope, column limits, rollback, timeout/cancellation and pool reuse. See the
+[API boundary](../../../apps/api/README.md#site-operation-authorization-iop-029) and
+[database guide](../../../infra/database/README.md#current-site-authorization-lookup-iop-029).
+No end-to-end import/read or local host activation claim follows from those tests.
+The selected plan is complete; the broader parent remains Deferred.

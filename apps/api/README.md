@@ -129,9 +129,10 @@ Import row failures remain future import-result data, not automatically HTTP err
 IOP-013 completed the [local health/logging design](../../docs/architecture/health-logging-poc.md);
 import diagnostics and their verification remain with future import delivery. See [IOP-015 container instructions](../../infra/docker/README.md) for Compose
 integration; IOP-018 supplies local scope validation; IOP-019 owns database bootstrap. No frontend,
-worker, migrations, database readiness, authentication, principal, authorization
-bypass or business routes are implemented. ADR-0018 remains Proposed; business
-access waits for an accepted mechanism. Loopback binding is a local host choice,
+worker, database readiness, authentication or business routes are wired into this
+health host. IOP-029 supplies the internal authorization boundary below; Accepted
+ADR-0018 still requires its local host adapter and executable activation/origin
+checks. Loopback binding is a local host choice,
 not proof of shared-user security. Hooks/lint/format tooling and CI remain future
 scoped work; this bootstrap provides build, type and runtime checks only.
 
@@ -163,3 +164,43 @@ coverage. This does not enable CSV uploads or analytical queries: their owning
 stories must supply semantic constraints, collection/processing budgets, scoped
 access and safe rejection/cleanup before exposing those paths. No upload timeout,
 performance commitment or shared-user security certification is implied.
+
+## Site-operation authorization (IOP-029)
+
+Accepted [ADR-0026](../../docs/architecture/adr/ADR-0026-poc-authorization-lookup.md)
+is implemented under `src/modules/users-rbac`, `src/modules/platform-core` and
+`src/persistence/site-operation.ts`. It is not wired into the health host and opens
+no business route. The receiving module calls `runSiteOperation(runtimePool,
+request, callback)` with a trusted principal, explicit organization/site and a
+nonempty permission list defined by the server's operation code. No browser/provider
+role claim is trusted. The pool must use non-owner `iop_runtime` credentials and
+clean session defaults; the caller owns its lifetime and shutdown.
+
+The boundary validates exact ownership and queries current active user, membership
+and assignments on every operation. It denies missing/foreign scope, missing grants,
+inactive state, empty/unknown permissions and organization-admin requests. The fixed
+reader and operator bundles retain ADR-0014's permissions without inheritance or
+cross-site composition. No result cache or login/session assumption is introduced.
+
+One pinned READ COMMITTED transaction installs candidate lookup selectors, checks
+access, then installs authorized `iop.user_id`, `iop.organization_id`, `iop.site_id`.
+Only then does the callback receive an immutable context and query handle. Receiving
+modules must enforce scoped records/references, await all queries and use this handle
+exclusively. They must not issue transaction-control/context changes except savepoints
+after entry. Handles reject queries after callback completion; a retry must re-enter
+the boundary and authorize again. Business policies/grants remain owning-module work.
+
+Denial throws `SiteAccessDeniedError`; unavailable lookup/driver state throws sanitized
+`AuthorizationUnavailableError`. Domain callback errors retain their identity for the
+future transport error mapper. Both failure paths roll back; uncertain cleanup or a
+contaminated/failed connection destroys it. No 403/503 endpoint mapping is claimed by
+this internal slice. Already-authorized work may finish after revocation, but a new
+check sees the current state.
+
+API unit tests cover permission bundles, invalid inputs and cleanup failures;
+`npm run test:database` exercises the compiled boundary under real runtime credentials,
+including a disposable scoped table, revocation, pool reuse, timeout/cancellation and
+terminated connections. Runtime column grants are documented in the
+[database guide](../../infra/database/README.md#current-site-authorization-lookup-iop-029).
+ADR-0018's trusted local adapter, activation, loopback/origin checks and future
+import/read integration remain required before any business route is opened.

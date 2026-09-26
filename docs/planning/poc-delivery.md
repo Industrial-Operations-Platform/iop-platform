@@ -137,19 +137,21 @@ slice does not implement those paths or their admission/processing limits.
 
 IOP-027 implements minimal active principal storage and an explicit local insert-only
 seed under [Accepted ADR-0024](../architecture/adr/ADR-0024-local-principal-bootstrap.md).
-Runtime retains CONNECT only. Membership/grant seed is delivered by IOP-030 below;
-current grant evaluation and the host adapter remain pending; the broader user lifecycle stays deferred beyond the POC.
+IOP-030 implements organization membership and both fixed site-role seeds under
+[Accepted ADR-0025](../architecture/adr/ADR-0025-local-membership-bootstrap.md), with
+atomic creation, strict unchanged reruns and forced seed RLS. User/membership
+administration remains deferred; see the
+[IOP-030 completed plan](completed/IOP-030-local-membership-plan.md).
 
-IOP-030 implements initial organization membership and both fixed site-role seeds
-under [Accepted ADR-0025](../architecture/adr/ADR-0025-local-membership-bootstrap.md),
-with atomic creation, strict unchanged reruns and forced seed RLS. Membership
-administration stays deferred; current grant evaluation and the host adapter remain
-pending. Runtime access remains closed. See the
-[completed plan](completed/IOP-030-local-membership-plan.md) for installation evidence.
+IOP-029 implements current scoped permission lookup and a pinned operation transaction
+under [Accepted ADR-0026](../architecture/adr/ADR-0026-poc-authorization-lookup.md).
+The runtime has narrow lookup column reads with forced RLS, replacing its former
+CONNECT-only baseline. Checks validate active principal/membership, exact ownership
+and fixed grants before installing business context. Real-role tests cover denials,
+revocation, rollback, cancellation, pool reuse and privilege drift. The bounded slice
+is complete; the broader shared-user parent is Deferred. See the
+[completed plan](completed/IOP-029-poc-authorization-plan.md).
 
-IOP-029 has reviewed the integrated IOP-006/026/027/030 prerequisites and prepared
-[Accepted ADR-0026](../architecture/adr/ADR-0026-poc-authorization-lookup.md) for
-current scoped permission lookup and its transaction handoff. The owner accepted that boundary on 2026-09-26; implementation is In progress
-without waiting for deferred identity parents. Runtime remains CONNECT-only; the proposal does not activate ADR-0018's
-host adapter or prove import/read access. See the
-[active plan](active/IOP-029-poc-authorization-plan.md).
+ADR-0018 host activation, configured principal binding, loopback/origin protection
+and future import/read endpoint tests remain pending. This lookup slice opens no
+business endpoint and does not complete that independent runtime access gate.

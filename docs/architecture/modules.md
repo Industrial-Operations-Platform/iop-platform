@@ -42,8 +42,9 @@ context and must not become a dependency required to perform core workflows.
 
 `packages/contracts` is for deliberate boundary contracts, not exported internal
 entities. `packages/shared` is for small domain-neutral utilities, not a second
-core. Module code placement, invocation mechanisms, transaction coordination and
-reliable audit/event delivery need design before implementation; a broker or
+core. ADR-0026 defines the first API-local Users/RBAC/Platform Core placement and pinned
+site-operation handoff. Broader module placement, invocation and reliable
+audit/event delivery still need design; a broker or
 microservices are not implied.
 
 
@@ -58,8 +59,8 @@ Browser bindings derive from the reviewed OpenAPI artifact and must not import
 Nest DTO classes, persistence entities or server internals. Transport validation
 checks untrusted input; each receiving module still enforces domain invariants and
 scoped references. Source adapters continue to translate vendor data into
-receiver-owned ingestion contracts. Exact module placement, invocation and
-transaction/delivery mechanisms remain undecided.
+receiver-owned ingestion contracts. ADR-0026 implements the first bounded API-local authorization contracts and
+transaction handoff; broader placement and delivery mechanisms remain undecided.
 
 
 ## Scope ownership
@@ -78,7 +79,8 @@ site scope never implies all sites. Integrations resolve source labels through
 configured mappings and pass validated scope to receiving modules. Derived results,
 files and caches preserve scope and cannot substitute for access checks.
 
-These are logical responsibilities, not implemented interfaces. Scope transport
+IOP-029 implements the bounded site-ownership and current-permission interfaces
+under Accepted ADR-0026; the other responsibilities remain logical contracts. Scope transport
 remains undecided. Accepted [ADR-0014](adr/ADR-0014-scoped-rbac.md) defines grants
 without inheritance. Persistence enforcement follows Accepted
 [ADR-0013](adr/ADR-0013-tenancy-data-isolation.md).
@@ -135,3 +137,15 @@ Receiving modules must not infer occurrence/shift evidence from date-only aggreg
 Site-zone corrections after use require reviewed reprocessing; completed periods
 retain their interpretation. Library choice and runtime verification remain future
 work; this decision does not activate scheduling or cross-site reports.
+
+
+## Implemented POC authorization boundary
+
+IOP-029 implements Users/RBAC's current exact-target lookup and Platform Core's
+site-ownership contract in `apps/api/src/modules/`, composed by the pinned
+`persistence/site-operation.ts` helper. Consumers receive an immutable actor/target
+and scoped query handle only after authorization. Lookup and authorized business
+selectors are distinct; runtime reads are limited to the columns specified in
+[ADR-0026](adr/ADR-0026-poc-authorization-lookup.md). Repositories must use the supplied
+handle and enforce domain references. The health host does not activate this path;
+local host binding and business operations remain pending under ADR-0018.

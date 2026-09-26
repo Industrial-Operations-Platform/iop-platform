@@ -81,7 +81,7 @@ ADR-0009/0010.
 
 ## Intentionally undecided
 
-ORM; module code layout; identity provider, protocols and session handling;
+ORM; broader module code layout; identity provider, protocols and session handling;
 hosting and network topology; job and
 cross-module delivery mechanisms; map storage/rendering; event grain and source
 contracts; retention, performance, availability and recovery targets.
@@ -190,8 +190,9 @@ may finish; access mutations must serialize authority checks with changes.
 
 IOP-006 is complete as design. The pilot uses a small fixed catalog and explicit
 assignments; no custom-role UI, policy engine or enterprise identity integration
-is required. Authentication/session implementation remains IOP-007. No runtime
-authorization or concurrency tests have run.
+is required. Authentication/session implementation remains IOP-007. IOP-029 implements
+the bounded site lookup and transaction handoff below;
+shared-use administration and host/endpoint integration remain pending.
 
 
 ## Accepted temporal model
@@ -220,10 +221,11 @@ shift implementation remain separate work.
 node-pg-migrate without an ORM for the local POC. IOP-019 supplies explicit one-shot
 provision/migrate commands, a private history schema and separate bootstrap,
 migrator and non-owner runtime roles. Migrations do not run during API startup.
-See [commands and evidence](infra/database/README.md). Runtime currently has CONNECT
-only. IOP-025 adds organization storage, forced seed RLS and an explicit privileged
-initial seed; IOP-026 adds site storage and its seed. Runtime grants and application
-transaction handling belong to later owning stories. ADR-0018 is Accepted; its runtime implementation remains pending.
+See [commands and evidence](infra/database/README.md). Runtime has CONNECT plus
+IOP-029's bounded lookup columns. IOP-025/026 provide organization/site storage and
+seeds; IOP-029 supplies the lookup grants and operation transaction helper.
+Business-table access belongs to later owning stories. ADR-0018 host implementation
+remains pending.
 
 
 ## Accepted initial organization bootstrap
@@ -232,7 +234,7 @@ transaction handling belong to later owning stories. ADR-0018 is Accepted; its r
 an explicit insert-only local organization seed using the separate migrator login.
 IOP-025 implements `platform_core.organizations`, preserving existing opaque text
 IDs, scoped SELECT/INSERT policies and forced RLS. Repeated matching inputs leave
-data unchanged; conflicting names fail. Runtime retains CONNECT only. This bounded
+data unchanged; conflicting names fail. The seed adds no runtime grants. Its bounded
 installation authority does not provide business authorization, sites, users,
 grants or administrative CRUD. ADR-0018 is Accepted; its runtime implementation remains pending; see
 [commands and limitations](infra/database/README.md#initial-organization-seed-iop-025).
@@ -243,8 +245,8 @@ grants or administrative CRUD. ADR-0018 is Accepted; its runtime implementation 
 local migrator bootstrap to initial site creation under IOP-026. It requires an
 existing organization, stable site identity, explicit validated IANA zone, scoped
 constraints and forced RLS with both organization and site selectors. Identical
-seeds leave data unchanged; conflicting owner, name or zone fails. Runtime keeps
-CONNECT only. IOP-026 implements the site migration, invoker zone-validation trigger and explicit
+seeds leave data unchanged; conflicting owner, name or zone fails. The seed adds no
+runtime grants. IOP-026 implements the migration, zone-validation trigger and explicit
 insert-only seed. ADR-0018 is Accepted; its runtime implementation remains pending, independently gating runtime business access.
 
 
@@ -278,8 +280,9 @@ ADR-0018 is Accepted; its runtime implementation remains pending and independent
 minimal Users/RBAC-owned global identity (`user_id`, `is_active`) and explicit
 insert-only local migrator seed. IOP-027 adds `users_rbac.users`, exact-principal
 forced RLS and inactive-user rejection without reactivation. Identity remains
-separate from scoped membership and permissions. Runtime retains CONNECT only;
-ADR-0018's host adapter and current grant evaluation remain unimplemented. See the
+separate from scoped membership and permissions. IOP-029 supplies bounded runtime
+lookup separately;
+ADR-0018's host adapter remains unimplemented. See the
 [database guide](infra/database/README.md#initial-local-user-seed-iop-027).
 
 
@@ -289,7 +292,22 @@ Accepted [ADR-0025](docs/architecture/adr/ADR-0025-local-membership-bootstrap.md
 authorizes the IOP-030 bounded organization membership and fixed site-role seed.
 Users/RBAC owns the two tables with scoped foreign keys and forced exact-selector
 RLS. The explicit migrator command creates membership and both site roles atomically;
-reruns never repair incomplete grants or reactivate membership. Runtime remains
-CONNECT-only. Membership administration, current permission evaluation and the
-ADR-0018 host adapter remain later work. See the
+reruns never repair incomplete grants or reactivate membership. IOP-029 supplies
+bounded runtime lookup separately. Membership administration and
+the ADR-0018 host adapter remain later work. See the
 [database guide](infra/database/README.md#initial-local-membership-and-site-roles-iop-030).
+
+
+## Accepted POC authorization lookup
+
+[ADR-0026](docs/architecture/adr/ADR-0026-poc-authorization-lookup.md) is Accepted.
+IOP-029 implements API-local Users/RBAC and Platform Core contracts, narrow runtime
+column reads with forced lookup RLS, and a pinned site-operation transaction helper.
+Current principal, membership, exact ownership and fixed permissions are checked
+before authorized business context is installed. Rollback, pool reuse and revocation
+are tested against real runtime credentials; no business table or endpoint is added.
+See the [API contract](apps/api/README.md#site-operation-authorization-iop-029) and
+[database guide](infra/database/README.md#current-site-authorization-lookup-iop-029).
+Broader module placement remains open; this bounded layout does not reorganize the
+platform. ADR-0018 host activation/origin protection and delivered import/read tests
+still gate business access. Shared-use access administration remains deferred.
