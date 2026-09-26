@@ -105,6 +105,12 @@ sums and explicit coverage limits, without inferring downtime. Its specification
 slice is complete; runtime reconciliation remains Blocked on executable IOP-089,
 production OIP facts and ADR-0018 host activation.
 
+IOP-095 supplies the [area/sector comparison specification and reconciliation matrix](../product/area-analytics-poc.md):
+exact source-area partitions, frozen sector membership, unclassified records and
+shared-selection drill-down for the two existing measures. The specification slice
+is complete; the parent remains Blocked on executable IOP-089 queries, production
+OIP facts and ADR-0018 host activation. No runtime grouped view is delivered.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context
