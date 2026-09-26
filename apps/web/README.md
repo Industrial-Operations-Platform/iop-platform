@@ -72,6 +72,17 @@ availability stay visible on each page. Only `/health` is requested; navigation
 never grants business permission or selects a trusted actor/scope.
 
 There are no fixture metrics or simulated imports. Real import/analytics and shared
-filters remain their own delivery slices; ADR-0018 remains Proposed. This completes
+filters remain their own delivery slices; ADR-0018 is Accepted, with runtime implementation pending. This completes
 only [IOP-116 navigation](../../docs/planning/items/IOP-116-navigation.md), not the
 end-to-end POC.
+
+
+## Analytical state previews (IOP-120)
+
+On overview or detail, expand **Preview UI states** to inspect loading, request
+failure, absent imported coverage and no matching records. The default is honestly
+not connected. All selected states are explicitly simulated; retry shows the loading
+preview until another state is selected, and reset returns to not connected. No
+business request, real filter change or metric is generated. Navigation resets the
+preview. Both views retain coverage and metric limitations. Real endpoint state
+integration remains pending under [IOP-120](../../docs/planning/items/IOP-120-ui-states.md).
