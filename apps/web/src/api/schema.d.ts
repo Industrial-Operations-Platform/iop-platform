@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Check API process liveness
-         * @description Owned by the API host. Public; no identity, permission or organization/site scope required. No inputs. Does not check database readiness or business access.
+         * @description Owned by the API host. Public; no identity, permission or organization/site scope required. No inputs: nonempty query strings and request bodies are rejected. JSON/form parsing is capped at 102400 bytes; compressed bodies are unsupported. Does not check database readiness or business access.
          */
         get: operations["getProcessHealth"];
         put?: never;
@@ -82,6 +82,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+            /** @description Malformed input, query parameters or body supplied to this no-input operation. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description JSON/form parser byte or parameter limit exceeded. */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unsupported body encoding or charset. */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
             /** @description Unexpected host failure; no internal details are exposed. */

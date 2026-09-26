@@ -2,96 +2,92 @@
 
 ## Status
 
-Proposed
+In progress — health-only POC slice implemented; CSV and analytical path validation
+remain pending their endpoint delivery.
 
 ## Milestone
 
-M14 — Security & Reliability. Proposed delivery slice.
+M14 — Security & Reliability. Bounded POC delivery slice.
 
 ## Goal
 
-Input validation. Resultado esperado: Inputs hostiles rechazados
+Reject hostile inputs at delivered boundaries, with bounded processing and safe errors.
 
 ## User / business value
 
-Clientes y operadores necesitan aislamiento verificable y recuperación reproducible.
+Customers and operators need verifiable isolation and reproducible recovery.
 
-## Context
+## Context and current state
 
-Ámbito: Security and operational reliability. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+The owner selected the [local POC](../../product/scope-poc.md) and
+[delivery map](../poc-delivery.md). The API currently exposes public process health
+only. Its no-input contract now rejects supplied query/body data; JSON/form parsing
+has explicit finite limits. No CSV or analytical endpoint exists yet.
+See [modules](../../architecture/modules.md) and [workflow](../workflow.md).
+The original backlog outline alone does not authorize implementation.
 
-## Current state
+## Desired state and requirements
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Inputs hostiles rechazados
-
-## Requirements
-
-- Entregar únicamente el resultado descrito para IOP-110.
-- Aplicar controles desde cada vertical slice; este hito verifica y endurece, no posterga seguridad hasta el final.
+Reject hostile inputs with controls accompanying each delivered vertical slice;
+security must not wait until the final milestone. Deliver only IOP-110's selected
+outcome, using endpoint-specific constraints and tests as paths become available.
 
 ## Acceptance criteria
 
-- [ ] Inputs hostiles rechazados
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] Current health path rejects unsupported input with safe, bounded errors.
+- [ ] CSV and analytical paths reject hostile input when delivered, including
+  byte/row/field/filter budgets and semantic validation in their owning adapters.
+- [x] The plan records scenarios and necessary choices without expanding scope.
+- [x] Validation evidence and documentation are synchronized for the delivered slice.
 
-## Domain considerations
+## Domain and architecture constraints
 
-Aplicar controles desde cada vertical slice; este hito verifica y endurece, no posterga seguridad hasta el final.
-
-## Architecture constraints
-
+Apply controls from each vertical slice. Preserve Accepted
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md),
+[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md) and the transport
+validation rules of [ADR-0011](../../architecture/adr/ADR-0011-api-contract-strategy.md).
+Proposed ADRs are proposals, not permission to implement their decisions.
 
-## Security considerations
+## Security and data considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permission and organization/site scope on relevant operations and references.
+Public process health provides no business authorization evidence. Exclude secrets,
+drawings and production data from the repository. Keep industrial integrations
+read-only and record material changes where applicable. Retention, restoration and
+sensitive data follow agreed decisions; tests use synthetic data.
 
-## Data considerations
+## API and UI considerations
 
-Retención, restauración y datos sensibles siguen decisiones acordadas; no copiar datos productivos al repositorio.
-
-## API considerations
-
-Probar límites de autorización, entrada, errores y recuperación relevantes a la tarea.
-
-## UI considerations
-
-Cuando haya UI, comprobar errores útiles sin datos sensibles y con contexto de scope correcto.
+Test relevant authorization, input, error and recovery boundaries. UI errors must
+be useful without sensitive data and preserve scope. This slice changes the health
+transport contract and generated bindings, without introducing business UI behavior.
 
 ## Dependencies
 
-[IOP-003](IOP-003-api-contract-strategy.md), [IOP-014](IOP-014-security-baseline.md), [IOP-022](IOP-022-api-error-model.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+[IOP-003](IOP-003-api-contract-strategy.md) supplies Accepted API strategy;
+[IOP-014](IOP-014-security-baseline.md) supplies local input safety requirements;
+[IOP-022](IOP-022-api-error-model.md) supplies implemented safe Problem Details.
+All are available on develop. Dependency numbers describe capabilities, not order.
+ADR-0018 is Accepted, but runtime access implementation still gates future business
+endpoints; it does not block this independent public health slice.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Neighboring tasks, implicit acceptance of open decisions or the entire milestone.
+No customer-specific core names, importer, analytics, login, authorization/RLS,
+shared-hosting protection, DTO engine or general validation framework is introduced.
 
-## Validation
+## Validation and documentation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+The [completed slice plan](../completed/IOP-110-poc-input-validation-plan.md)
+records executable success/rejection scenarios and actual results. API documentation,
+OpenAPI, browser bindings, this item and its [backlog](../backlog.md) row stay aligned.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Future endpoint stories must define and verify their exact contracts, limits and
+edge cases before activation. The health-only evidence does not close the remaining
+POC input validation or certify shared-use security.

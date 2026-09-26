@@ -53,7 +53,7 @@ The verified dialect is OpenAPI 3.0.0. No documentation route or Swagger UI is s
 
 `GET /health` is public and requires no identity, organization/site or permission.
 It proves only that the process responds, not readiness of storage/import/analytics.
-It accepts no meaningful inputs and returns no application configuration or data.
+It rejects nonempty query strings and request bodies and returns no application configuration or data.
 Unknown routes/versions and unsupported operations return 404 Problem Details.
 IOP-022 implements the common error contract below; domain-specific errors accompany
 future endpoints.
@@ -85,10 +85,11 @@ below; this table is their documentation, not a new public route.
 
 Other valid HTTP error statuses retain their status and use `about:blank` with the
 standard reason phrase (or `HTTP Error` for unassigned statuses). The Express body-parser `entity.too.large` error maps to 413 (the current host
-JSON parser budget is 100 KiB; future CSV uploads need their own budgets). Other
+JSON parser budget is 100 KiB; future CSV uploads need their own budgets). Known parser syntax/depth failures map to 400 and unsupported encoding/charset
+failures to 415; form parameter overflow maps to 413. Other
 non-HTTP failures and invalid exception statuses become 500. Framework exception messages/objects,
 SQL, stacks, URLs, headers, payloads and scope identifiers are never serialized.
-The status mappings do not implement authentication, limits, retries or business
+The filter alone does not implement authentication, limits, retries or business
 operations. Future endpoints document any challenge or `Retry-After` behavior;
 the filter does not infer them from exception messages.
 
@@ -138,3 +139,27 @@ Direct packages use MIT or Apache-2.0 licenses. Installed package distributions
 retain their license files (including the reflect-metadata CopyrightNotice).
 The lockfile records dependency licenses; any future redistribution/container
 packaging must preserve applicable notices. No production readiness is claimed.
+
+## POC input validation (IOP-110)
+
+Health allows zero query fields and zero body bytes. Nonempty raw query strings
+(including repeated/nested keys) and nonzero Content-Length or any Transfer-Encoding
+are rejected with 400 and fixed `/query` or `/body` pointers before the health
+service executes. HEAD uses the same validation and returns no response body.
+An empty query marker and explicit zero Content-Length remain valid.
+
+Before route validation, JSON and URL-encoded parsers enforce 102400 actual bytes
+(100 KiB), including chunked requests, with decompression disabled. Form parsing
+allows at most 10 parameters and nesting depth 1. These are fixed ceilings, not
+configurable defaults or CSV upload budgets. At the parser ceiling, health still
+rejects a body; above it, parsing returns 413. Malformed JSON/deep forms return 400;
+unsupported compressed bodies or charsets return 415. Other media are not parsed
+and health rejects their body framing with 400. No input is echoed or executed.
+The existing browser and container probes send no query/body and remain compatible.
+
+`test/input-validation.spec.ts` exercises real HTTP boundaries, including actual
+chunked bytes without Content-Length. Existing configuration tests remain regression
+coverage. This does not enable CSV uploads or analytical queries: their owning
+stories must supply semantic constraints, collection/processing budgets, scoped
+access and safe rejection/cleanup before exposing those paths. No upload timeout,
+performance commitment or shared-user security certification is implied.

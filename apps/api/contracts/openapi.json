@@ -3,7 +3,7 @@
   "paths": {
     "/health": {
       "get": {
-        "description": "Owned by the API host. Public; no identity, permission or organization/site scope required. No inputs. Does not check database readiness or business access.",
+        "description": "Owned by the API host. Public; no identity, permission or organization/site scope required. No inputs: nonempty query strings and request bodies are rejected. JSON/form parsing is capped at 102400 bytes; compressed bodies are unsupported. Does not check database readiness or business access.",
         "operationId": "getProcessHealth",
         "parameters": [],
         "responses": {
@@ -13,6 +13,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed input, query parameters or body supplied to this no-input operation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON/form parser byte or parameter limit exceeded.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported body encoding or charset.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }

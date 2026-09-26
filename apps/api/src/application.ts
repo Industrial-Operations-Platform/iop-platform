@@ -1,10 +1,14 @@
 import 'reflect-metadata';
 import { INestApplication } from '@nestjs/common';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ProblemDetailsFilter } from './problem-details.filter';
 
 export function configureApplication(app: INestApplication): void {
+  const adapter = app.getHttpAdapter() as ExpressAdapter;
+  adapter.useBodyParser('json', false, { limit: 102400, inflate: false });
+  adapter.useBodyParser('urlencoded', false, { limit: 102400, inflate: false, extended: true, parameterLimit: 10, depth: 1 });
   app.useGlobalFilters(new ProblemDetailsFilter(app.get(HttpAdapterHost)));
 }
 

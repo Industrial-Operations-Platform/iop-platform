@@ -9,11 +9,17 @@ export class ProblemDetailsFilter implements ExceptionFilter {
   constructor(private readonly adapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
-    // Express body-parser raises this transport error outside Nest's HttpException hierarchy.
-    const bodyTooLarge = exception instanceof Error
-      && 'type' in exception && exception.type === 'entity.too.large'
-      && 'status' in exception && exception.status === 413;
-    const candidate = exception instanceof HttpException ? exception.getStatus() : bodyTooLarge ? 413 : 500;
+    // Only recognized parser type/status pairs are safe transport failures.
+    const parserStatuses: Record<string, number> = {
+      'entity.too.large': 413, 'parameters.too.many': 413,
+      'entity.parse.failed': 400, 'querystring.parse.rangeError': 400,
+      'encoding.unsupported': 415, 'charset.unsupported': 415,
+    };
+    const parserStatus = exception instanceof Error && 'type' in exception
+      && typeof exception.type === 'string' && Object.hasOwn(parserStatuses, exception.type)
+      && 'status' in exception && exception.status === parserStatuses[exception.type]
+      ? parserStatuses[exception.type] : 500;
+    const candidate = exception instanceof HttpException ? exception.getStatus() : parserStatus;
     const status = Number.isInteger(candidate) && candidate >= 400 && candidate <= 599 ? candidate : 500;
     const category = problemCatalog[status as keyof typeof problemCatalog];
     const problem: ProblemDetails = {

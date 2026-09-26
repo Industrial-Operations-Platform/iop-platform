@@ -128,3 +128,9 @@ Do not infer acceptance of ADR-0015 or copy ADR-0017 into develop as an implicit
 IOP-109 provides [local secrets hygiene](../development/secrets-poc.md), including
 a staged-index check and private-file exclusions. This bounded POC check supplements
 manual review; it does not certify history or provide production secret management.
+
+IOP-110 hardens the current health-only input contract with explicit parser ceilings,
+unsupported query/body rejection and HTTP boundary tests. See the
+[API input contract](../../apps/api/README.md#poc-input-validation-iop-110).
+The parent remains In progress for CSV and analytical endpoint validation; this
+slice does not implement those paths or their admission/processing limits.
