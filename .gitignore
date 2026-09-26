@@ -29,3 +29,13 @@ config/*.local.json
 
 # Local agent instructions
 /AGENTS.md
+
+# Private local key material
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*

@@ -78,3 +78,5 @@ See the [API guide](../../apps/api/README.md),
 [web guide](../../apps/web/README.md) and
 [database guide](../../infra/database/README.md) for component details.
 Actual IOP-020 results belong in its execution plan, not inferred from this guide.
+
+See [POC secrets hygiene](secrets-poc.md) for staged-index checks and private credential handling.

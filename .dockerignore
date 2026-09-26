@@ -25,3 +25,16 @@
 !infra/database/*.ts
 !infra/database/migrations/
 !infra/database/migrations/*.sql
+
+# Exclude private files even when placed inside an allowed source directory.
+**/.env
+**/.env.*
+**/*.local.json
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/id_rsa*
+**/id_dsa*
+**/id_ecdsa*
+**/id_ed25519*

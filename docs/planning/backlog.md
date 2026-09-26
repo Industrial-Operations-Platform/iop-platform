@@ -200,7 +200,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | Contexto de tarea | Estado |
 | --- | --- |
 | [IOP-108 — Authorization test suite](items/IOP-108-authorization-tests.md) | Proposed |
-| [IOP-109 — Secrets handling](items/IOP-109-secret-management.md) | Proposed |
+| [IOP-109 — Secrets handling](items/IOP-109-secret-management.md) | Completed |
 | [IOP-110 — Input validation](items/IOP-110-input-validation.md) | Proposed |
 | [IOP-111 — Audit verification](items/IOP-111-audit-verification.md) | Proposed |
 | [IOP-112 — Backup process](items/IOP-112-backup.md) | Proposed |

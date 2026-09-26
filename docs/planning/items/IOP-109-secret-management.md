@@ -2,96 +2,89 @@
 
 ## Status
 
-Proposed
+Completed — local POC hygiene slice, 2026-09-26. Future production/shared-use
+secret management is not included.
 
 ## Milestone
 
-M14 — Security & Reliability. Proposed delivery slice.
+M14 — Security & Reliability. Controls accompany each delivered POC slice.
 
-## Goal
+## Goal and business value
 
-Secrets handling. Resultado esperado: Ningún secreto en repo
+Keep secrets out of the repository and delivered public surfaces so operators can
+reproduce the local demonstration without exposing credentials or production data.
 
-## User / business value
+## Context and current state
 
-Clientes y operadores necesitan aislamiento verificable y recuperación reproducible.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+select basic secrets/configuration hygiene in delivered paths. IOP-018 already
+validates local scope without credentials; database tooling uses separate local
+role passwords and sanitized failures. This slice adds a reproducible staged-index
+check, private-file exclusions and the [handling guide](../../development/secrets-poc.md).
 
-## Context
+## Desired state and requirements
 
-Ámbito: Security and operational reliability. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
-
-## Current state
-
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Ningún secreto en repo
-
-## Requirements
-
-- Entregar únicamente el resultado descrito para IOP-109.
-- Aplicar controles desde cada vertical slice; este hito verifica y endurece, no posterga seguridad hasta el final.
+- No real secrets in tracked POC configuration, examples, source or browser assets.
+- Keep private local files out of Git and Docker build inputs; examples contain
+  empty credential fields or fictional non-sensitive data only.
+- Verify current credential transport and safe failures, and document bounded
+  executable checks plus manual review. Apply controls with every vertical slice.
+- Deliver only this local hygiene outcome; no production secret service is selected.
 
 ## Acceptance criteria
 
-- [ ] Ningún secreto en repo
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] Review current delivered POC surfaces for secrets and preserve private-file exclusion.
+- [x] Verify positive/negative index checks and existing sanitized configuration failures.
+- [x] Record actual evidence, limitations and synchronized documentation without scope expansion.
 
-## Domain considerations
+## Domain and architecture constraints
 
-Aplicar controles desde cada vertical slice; este hito verifica y endurece, no posterga seguridad hasta el final.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
+Customer labels and source schemas remain scoped configuration/adapter data.
+Retain [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are not permission to implement a decision. No new architectural pattern.
 
-## Security considerations
+## Security and data considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Preserve organization/site permission checks in relevant operations and references.
+Keep secrets, plans of facilities and production records outside the repository;
+industrial integrations remain read-only and material changes require relevant
+traceability. Retention, restoration and sensitive-data handling follow agreed
+boundaries. The scanner cannot prove absence of every secret or inspect history;
+manual review remains required. No production data or credentials are introduced.
 
-## Data considerations
+## API and UI considerations
 
-Retención, restauración y datos sensibles siguen decisiones acordadas; no copiar datos productivos al repositorio.
-
-## API considerations
-
-Probar límites de autorización, entrada, errores y recuperación relevantes a la tarea.
-
-## UI considerations
-
-Cuando haya UI, comprobar errores útiles sin datos sensibles y con contexto de scope correcto.
+No API/UI contract changes. Existing startup/error tests verify safe failures without
+configuration values or raw driver details. Browser configuration is public; future
+operations must preserve input, authorization, scope and recovery boundaries and
+show useful errors without sensitive data.
 
 ## Dependencies
 
-[IOP-014](IOP-014-security-baseline.md), [IOP-018](IOP-018-configuration-management.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+[IOP-014](IOP-014-security-baseline.md) provides the completed local safety design;
+[IOP-018](IOP-018-configuration-management.md) provides completed configuration
+validation. Both are integrated on develop. Their current POC contracts suffice;
+no login, external integration or runtime business-access dependency is introduced.
+Dependencies identify required capabilities, not numeric implementation order.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Adjacent stories, inferred acceptance of open decisions, customer names in the core,
+full milestone delivery, hosted vaults, production rotation/recovery, shared hosting,
+history rewriting, new CI/hooks or full-history security certification.
 
-## Validation
+## Validation and documentation impact
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+The [execution plan](../completed/IOP-109-poc-secrets-plan.md) records commands,
+positive/negative scenarios, actual results and limitations. Synchronize this item,
+[backlog](../backlog.md), handling/testing/configuration guides and POC delivery.
+Only change contracts, models or ADRs if this task changes their meaning.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+No decision blocks this bounded POC slice. Future shared-use and integration secrets
+require their own scoped requirements and validation; they are not completed here.

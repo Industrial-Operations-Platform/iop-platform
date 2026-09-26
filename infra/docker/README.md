@@ -93,3 +93,6 @@ the execution-context and browser-origin controls described in the POC baseline.
 References: [Compose readiness](https://docs.docker.com/compose/how-tos/startup-order/),
 [Compose networking](https://docs.docker.com/compose/how-tos/networking/),
 [PostgreSQL image initialization](https://hub.docker.com/_/postgres).
+
+Before committing configuration changes, follow the
+[POC secrets hygiene checks](../../docs/development/secrets-poc.md).

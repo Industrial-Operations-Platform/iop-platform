@@ -89,3 +89,5 @@ Consumers must check persisted organization/site/source references, current gran
 transaction-local RLS and site-zone immutability before business use. No access
 checks, seed, migration, reset, production profile or shared-user security is
 claimed. Those requirements remain with their POC delivery stories.
+
+See [POC secrets hygiene](secrets-poc.md) for staged-index checks and private credential handling.

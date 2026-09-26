@@ -15,7 +15,7 @@
     "build": "npm run build --workspaces && npm run db:build",
     "start": "npm run start --workspace @iop/api",
     "typecheck": "npm run typecheck --workspaces && tsc --noEmit -p infra/database/tsconfig.json",
-    "test": "npm run build && npm run contract:check --workspace @iop/web && npm test --workspaces && npm run db:test:unit",
+    "test": "npm run test:secrets && npm run build && npm run contract:check --workspace @iop/web && npm test --workspaces && npm run db:test:unit",
     "test:poc": "npm run typecheck && npm test && npm run test:database && npm run test:e2e",
     "openapi": "npm run build && npm run openapi --workspace @iop/api",
     "dev:web": "npm run dev --workspace @iop/web",
@@ -27,7 +27,9 @@
     "db:seed:site": "npm run db:build && node infra/database/dist/cli.js seed-site",
     "db:migrate": "npm run db:build && node infra/database/dist/cli.js migrate",
     "db:test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand --testPathPatterns configuration",
-    "test:database": "npm run db:build && node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand"
+    "test:database": "npm run db:build && node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand",
+    "check:secrets": "node scripts/check-secrets.cjs",
+    "test:secrets": "jest --config scripts/jest.config.cjs --runInBand"
   },
   "dependencies": {
     "node-pg-migrate": "9.0.0",

@@ -124,3 +124,7 @@ owner-approved POC deferral supersedes its product timing, not its Proposed stat
 pilot deferral. Neither branch is merged here. During owner review/integration,
 preserve their evidence and reconcile older login requirements with this POC scope.
 Do not infer acceptance of ADR-0015 or copy ADR-0017 into develop as an implicit merge.
+
+IOP-109 provides [local secrets hygiene](../development/secrets-poc.md), including
+a staged-index check and private-file exclusions. This bounded POC check supplements
+manual review; it does not certify history or provide production secret management.
