@@ -1,6 +1,6 @@
 # IOP-042 — Import batch execution plan
 
-Status: Blocked — owner decision on Proposed ADR-0027. Owner requested IOP-042 on 2026-09-26, limited to the
+Status: Completed — design and owner acceptance; implementation remains open. Owner requested IOP-042 on 2026-09-26, limited to the
 [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 Story: [IOP-042](../items/IOP-042-import-batches.md).
 Branch: `docs/IOP-042-import-batches`, created from clean `develop` before edits.
@@ -59,3 +59,10 @@ claimed for this documentation increment. The plan stays active because acceptan
 and implementation remain outstanding. After acceptance, refine implementation files
 and executable checks before code changes; preserve these design review results.
 Acceptance of the ADR is not acceptance of a merge or push.
+
+## Owner acceptance — 2026-09-26
+
+The owner explicitly answered yes to ADR-0027 acceptance and publication of
+`docs/IOP-042-import-batches` through develop to origin. This completes the design
+increment only. Updated decision/model/status references, checked local links and
+`git diff --check`; implementation requires a separate active plan before code edits.

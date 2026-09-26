@@ -61,10 +61,11 @@ RAW availability/analytical outcomes. This is design only; storage, publication,
 concurrency and recovery still require implementation and executable evidence.
 
 IOP-042 documents the [bounded import batch model](../architecture/import-batches-poc.md).
-[Proposed ADR-0027](../architecture/adr/ADR-0027-poc-import-publication.md) recommends
+[Accepted ADR-0027](../architecture/adr/ADR-0027-poc-import-publication.md) recommends
 atomic quota admission, cross-module publication and synchronous reconciliation.
-The story is Blocked pending owner acceptance; no batch storage, importer or runtime
-evidence is delivered by this documentation increment.
+The owner accepted the design on 2026-09-26; the story remains In progress for
+implementation. No batch storage, importer or runtime evidence is delivered by
+this documentation increment.
 
 ## Critical dependency corrections
 

@@ -1,9 +1,9 @@
 # POC import batch model
 
 [IOP-042](../planning/items/IOP-042-import-batches.md) defines one bounded direct
-CSV attempt, without a worker or job. This is a design proposal, not implemented
-storage. The mechanism in [Proposed ADR-0027](adr/ADR-0027-poc-import-publication.md)
-requires owner acceptance before dependent implementation. Existing requirements
+CSV attempt, without a worker or job. This is accepted design, not implemented
+storage. The mechanism in [Accepted ADR-0027](adr/ADR-0027-poc-import-publication.md)
+was approved by the owner on 2026-09-26. Existing requirements
 come from the [RAW model](raw-ingestion-poc.md), [source contract](csv-source-contract-poc.md)
 and [preservation contract](csv-preservation-poc.md).
 
@@ -93,7 +93,7 @@ permissions via ADR-0026 and uses its supplied handle. No migrator bypass or new
 
 ## Failure, reconciliation and retry
 
-The proposed mechanism is in ADR-0027. Recovery is synchronous and bounded, before
+The accepted mechanism is in ADR-0027. Recovery is synchronous and bounded, before
 a retry or through an explicitly invoked local recovery operation. It never parses
 or republishes the old payload. A process restart does not automatically replay it.
 
@@ -137,8 +137,7 @@ These are design walkthroughs, not executed tests.
 | Foreign scope/reference or missing context | Deny without foreign details; test real non-owner RLS and pool reuse. |
 | Different site/source, same date | Independent date namespaces; dedicated dataset quota still includes every receipt. |
 
-IOP-042 remains open until its selected model/mechanism is accepted and the required
-recording behavior is implemented and validated. Parser, normalization and duplicate
+IOP-042 remains open until the required recording behavior is implemented and validated. Parser, normalization and duplicate
 delivery slices retain their own ownership; no adjacent story is activated here.
 ADR-0018 host activation independently gates endpoints. No HTTP contract, migration,
 performance result, reset implementation or runtime security proof is supplied here.

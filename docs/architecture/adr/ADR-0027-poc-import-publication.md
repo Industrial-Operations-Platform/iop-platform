@@ -2,9 +2,9 @@
 
 ## Status
 
-Proposed — 2026-09-26, under [IOP-042](../../planning/items/IOP-042-import-batches.md).
-Owner acceptance is required before implementing this mechanism or treating the
-linked [batch model](../import-batches-poc.md) as an accepted lifecycle contract.
+Accepted — explicitly approved by the owner on 2026-09-26, under [IOP-042](../../planning/items/IOP-042-import-batches.md).
+Acceptance covers this mechanism and the linked [batch model](../import-batches-poc.md).
+Runtime implementation and evidence remain pending.
 
 ## Context and alternatives
 
@@ -23,7 +23,7 @@ The [POC](../../product/scope-poc.md) has one direct bounded CSV path, no worker
 
 These are project design judgments, not measured performance claims.
 
-## Proposed decision
+## Decision
 
 Compose Integrations and OIP through narrow API-local exported contracts following
 the placement precedent in ADR-0026. An import coordinator sequences operations;
@@ -34,7 +34,7 @@ message bus, worker, ORM or provider registry is introduced.
 ### Receipt and quota
 
 Integrations persists immutable receipt plus `received` attempt in one short
-authorized transaction. Propose one database-local singleton quota row owned by
+authorized transaction. Use one database-local singleton quota row owned by
 Integrations, containing only retained-attempt and retained-byte counters for the
 dedicated demo dataset. It is platform operational metadata, not unscoped RAW or
 customer data; do not store identifiers, filenames, payloads or per-customer totals.
@@ -48,7 +48,7 @@ invalid counters fail closed. Only the owning adapter accesses the narrow counte
 columns after scoped submit authorization. Explicit runtime grants and provisioning
 allowlist changes require tests; no broad schema/table access or privileged function.
 Customer tables still require forced scope RLS. This global resource-counter
-exception is proposed here for review, not implied by earlier isolation decisions.
+exception is explicitly accepted here, not implied by earlier isolation decisions.
 
 The dedicated reset must later reset counters and all dependent data together with
 imports stopped. Counter drift requires controlled investigation/reset, never an

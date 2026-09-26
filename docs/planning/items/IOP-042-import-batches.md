@@ -2,8 +2,8 @@
 
 ## Status
 
-Blocked — Proposed ADR-0027 requires owner acceptance before dependent
-implementation. The POC batch model is documented; no runtime recording is claimed.
+In progress — ADR-0027 and the POC batch model accepted by the owner on
+2026-09-26. Runtime recording and executable evidence remain pending.
 
 ## POC delivery applicability
 
@@ -34,10 +34,9 @@ owner-requested outline; backlog membership alone does not authorize implementat
 ## Current state
 
 The [batch model](../../architecture/import-batches-poc.md) now specifies attempt
-lifecycle, counts and failure/retry behavior. [Proposed ADR-0027](../../architecture/adr/ADR-0027-poc-import-publication.md)
+lifecycle, counts and failure/retry behavior. [Accepted ADR-0027](../../architecture/adr/ADR-0027-poc-import-publication.md)
 compares publication mechanisms and recommends bounded atomic publication and
-reconciliation. This capability is not implemented and its detailed design is not
-yet accepted. IOP-041 supplies the integrated logical RAW contract, not storage.
+reconciliation. This capability is not implemented; its detailed design is accepted. IOP-041 supplies the integrated logical RAW contract, not storage.
 
 ## Desired state
 
@@ -71,7 +70,7 @@ RAW → validation → normalization; the receiving module validates invariants.
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
 Proposed ADRs are proposals, not permission to adopt their decisions. Accepted
 ADR-0022 governs preservation; ADR-0026 supplies the pinned authorization handoff.
-ADR-0027 remains Proposed for new quota/publication/recovery mechanics.
+ADR-0027 is Accepted for the bounded quota/publication/recovery mechanics.
 
 ## Security considerations
 
@@ -118,11 +117,11 @@ links, statuses and scenario consistency only; executable evidence remains pendi
 ## Documentation impact
 
 Update this item, its [backlog](../backlog.md) status and the
-[execution plan](../active/IOP-042-import-batches-plan.md). Update contracts, model,
+[design execution record](../completed/IOP-042-import-batches-plan.md). Update contracts, model,
 guides or ADRs only when this task changes their content.
 
 ## Open questions
 
-Owner decision on Proposed ADR-0027, including its dataset quota counter, shared
-publication transaction and synchronous recovery contract. Dependent implementation
-is paused under ADR-0007; acceptance does not imply runtime evidence or publication.
+The owner accepted ADR-0027, including its dataset quota counter, shared publication
+transaction and synchronous recovery contract. Implementation planning must preserve
+the batch-only boundary and the separate parser, OIP receiver and host delivery gates.
