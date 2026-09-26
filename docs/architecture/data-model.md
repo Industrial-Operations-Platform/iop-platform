@@ -6,7 +6,7 @@ The [local POC scope](../product/scope-poc.md) and [delivery map](../planning/po
 select the first analytical slices. The broader model below is not a requirement
 to implement every module, entity or lifecycle before the demonstration. Preserve
 scope and data invariants in delivered paths. Login/user administration and future
-operational modules are deferred; the local execution mechanism remains Proposed
+operational modules are deferred; the local execution mechanism is Accepted, with implementation pending,
 in [ADR-0018](adr/ADR-0018-local-poc-execution-context.md), without changing accepted
 identity, authorization or RLS requirements by implication.
 
@@ -218,3 +218,14 @@ analytical admission. Scoped normalized references retain import identity and or
 physical line numbers. See the [preservation contract](csv-preservation-poc.md) for
 budgets, integrity, authorized retrieval and failure/reset semantics. This is accepted
 design only; physical RAW/import tables and publication mechanics remain delivery work.
+
+
+## Minimal local principal storage
+
+Accepted [ADR-0024](adr/ADR-0024-local-principal-bootstrap.md) and IOP-027 implement
+Users/RBAC-owned `users_rbac.users`: global opaque `user_id` and non-null
+`is_active`, without customer/profile/provider data. An explicit migrator seed
+creates an active identity or verifies an unchanged active row; it never reactivates
+an inactive identity. Forced RLS restricts ordinary seed statements to the explicit
+principal. No runtime grants, scoped memberships or role assignments are delivered.
+See the [database guide](../../infra/database/README.md#initial-local-user-seed-iop-027).

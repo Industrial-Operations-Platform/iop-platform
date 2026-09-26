@@ -2,8 +2,8 @@
 
 ## Status
 
-Blocked — the bounded POC principal storage/seed proposal awaits acceptance of
-[ADR-0024](../../architecture/adr/ADR-0024-local-principal-bootstrap.md).
+Deferred — the bounded POC principal storage/seed slice is implemented under
+Accepted [ADR-0024](../../architecture/adr/ADR-0024-local-principal-bootstrap.md).
 Full user lifecycle and provisioning remain deferred beyond the POC.
 
 ## Authorization and POC applicability
@@ -23,22 +23,22 @@ are separate responsibilities; Organization is the generic customer boundary.
 See the [modules](../../architecture/modules.md), [data model](../../architecture/data-model.md)
 and [glossary](../../product/glossary.md).
 
-Organization/site persistence and insert-only bootstrap exist. User storage and
-seed do not. ADR-0018 accepts the local execution mechanism; ADR-0024 proposes the
-additional physical identity storage and privileged seed contract. No runtime
-adapter or authorization evidence is claimed.
+Organization/site persistence and insert-only bootstrap exist. IOP-027 now adds
+`users_rbac.users` and the explicit `seed-user` command under ADR-0024, accepted by
+the owner on 2026-09-26. ADR-0018 accepts the local execution mechanism, but its
+host adapter and grant evaluation remain unimplemented. Runtime keeps CONNECT only.
 
 ## Selected requirements and acceptance criteria
 
-- [ ] Persist a stable opaque development user identity with explicit active state,
+- [x] Persist a stable opaque development user identity with explicit active state,
   owned by Users/RBAC, separately from organization membership and permissions.
-- [ ] Provide an explicitly invoked local insert-only seed, with matching reruns,
+- [x] Provide an explicitly invoked local insert-only seed, with matching reruns,
   conflict/inactive-user rejection, safe configuration and no implicit grants.
-- [ ] Verify constraints, concurrent seeds, rollback, exact-principal seed isolation
+- [x] Verify constraints, concurrent seeds, rollback, exact-principal seed isolation
   and runtime access denial using actual database roles.
 - [x] Review dependencies and prepare the missing bootstrap/storage decision under
   a story branch and execution plan before implementation.
-- [ ] Record implementation evidence and synchronize item/backlog/plan without
+- [x] Record implementation evidence and synchronize item/backlog/plan without
   completing the future parent lifecycle scope.
 
 ## Dependencies and architecture constraints
@@ -48,7 +48,7 @@ adapter or authorization evidence is claimed.
 IOP-007 login/sessions are not a POC gate. IOP-025's POC organization seed is
 integrated, but its bootstrap authority explicitly excludes users. A global identity
 seed does not require organization creation; subsequent memberships require existing
-organization/site ownership. No unmerged dependency branch is required for this proposal.
+organization/site ownership. No unmerged dependency branch is required for this slice.
 
 Accepted ADR-0001/0003/0004/0005 preserve module ownership, PostgreSQL,
 provider-independent identity and customer isolation. ADR-0013/0014 separate global
@@ -79,13 +79,15 @@ accept open decisions by inference or expand delivery to the whole milestone.
 
 ## Validation and documentation impact
 
-The [active plan](../active/IOP-027-local-principal-plan.md) records the proposed
-contract, documentation evidence and pending decision. ADR-0024 defines executable
-verification scenarios to plan after acceptance; no runtime tests have run for
-this slice. Update this item, backlog and plan together; change contracts/model/guides
-only when this task changes their content. Preserve permanent story context.
+The [completed plan](../completed/IOP-027-local-principal-plan.md) records the
+accepted contract and actual validation evidence. Typecheck, npm tests, database
+integration tests and the disposable Compose seed workflow validate this bounded
+slice; they do not prove business authorization. See the
+[database guide](../../../infra/database/README.md#initial-local-user-seed-iop-027)
+for commands and limits. Item, backlog and plan are synchronized.
 
-## Open decision
+## Remaining scope
 
-Accept or revise ADR-0024's minimal global user table and privileged insert-only
-local seed authority. This does not reopen ADR-0018 or authorize runtime access.
+No open decision blocks this completed principal seed slice. Full user lifecycle
+remains deferred. Membership/role seed, evaluation and the local host adapter still
+need separately selected work before runtime business access can be enabled.

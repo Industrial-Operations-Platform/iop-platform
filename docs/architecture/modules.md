@@ -6,7 +6,7 @@ The [local POC scope](../product/scope-poc.md) and [delivery map](../planning/po
 select the first analytical slices. The broader model below is not a requirement
 to implement every module, entity or lifecycle before the demonstration. Preserve
 scope and data invariants in delivered paths. Login/user administration and future
-operational modules are deferred; the local execution mechanism remains Proposed
+operational modules are deferred; the local execution mechanism is Accepted, with implementation pending,
 in [ADR-0018](adr/ADR-0018-local-poc-execution-context.md), without changing accepted
 identity, authorization or RLS requirements by implication.
 

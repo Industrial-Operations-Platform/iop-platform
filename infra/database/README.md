@@ -25,7 +25,7 @@ docker compose -f compose.yaml -f compose.database.yaml run --rm database-provis
 docker compose -f compose.yaml -f compose.database.yaml run --rm database-migrate
 ```
 
-A fresh database reports `3 applied` (privilege baseline, organizations and sites); an unchanged rerun reports `0 applied`.
+A fresh database reports `4 applied` (privilege baseline, organizations, sites and users); an unchanged rerun reports `0 applied`.
 Provisioning can also be repeated. The optional overlay requires all three password
 variables for Compose interpolation, but the migration container receives only its
 own password. Neither API nor web receives any of them. Commands are one-shot jobs;
@@ -84,8 +84,8 @@ Migrations live in `infra/database/migrations/`; metadata lives in
 `iop_migrations.history`. The first migration removes PUBLIC default access for
 future migrator-created tables, sequences, functions and types. Future owning-module
 migrations must separately define scope, constraints, forced RLS and explicit grants.
-IOP-025/026 supply the organization/site seeds below. Combined demo fixtures
-remain IOP-123; ADR-0018 remains Proposed.
+IOP-025/026/027 supply the organization/site/user seeds below. Combined demo fixtures
+remain IOP-123; ADR-0018 is Accepted, with runtime implementation pending.
 
 Use ordered timestamp-prefixed SQL files with `-- Up Migration`. Committed applied
 migrations are immutable by convention; append a corrective migration. There is no
@@ -220,5 +220,45 @@ compromised migrator credential. Keep that credential outside API/web containers
 
 Validation and limitations are recorded in the
 [IOP-026 plan](../../docs/planning/completed/IOP-026-site-model-plan.md).
-Site lifecycle, CRUD and administration remain deferred. No user/grant/source seed,
-runtime repository, endpoint or UI is provided; ADR-0018 remains Proposed.
+Site lifecycle, CRUD and administration remain deferred. This site command supplies no user/grant/source seed, runtime repository, endpoint
+or UI; ADR-0018 is Accepted, with runtime implementation pending.
+
+
+## Initial local user seed (IOP-027)
+
+Accepted [ADR-0024](../../docs/architecture/adr/ADR-0024-local-principal-bootstrap.md)
+adds `users_rbac.users`, owned by Users/RBAC. It stores only the global opaque
+`user_id` and non-null `is_active`. No organization, profile, credentials or grants
+are stored in the identity row. It can be seeded before any organization exists.
+
+After provisioning and migration, set the explicit non-secret `IOP_SEED_USER_ID`
+in your private environment file, for example `local-demo-user`. IDs follow the
+same case-sensitive 1–64 character rules as organization IDs. Select once and keep
+stable; do not add user fields to the existing strict POC JSON configuration.
+
+```sh
+docker compose -f compose.yaml -f compose.database.yaml build database-seed-user
+docker compose -f compose.yaml -f compose.database.yaml run --rm database-seed-user
+```
+
+For native use, export `IOP_SEED_USER_ID` and the migrator connection fields listed
+above, then run `npm run db:seed:user`. Alternatively, after `npm run db:build`, use
+`node --env-file=.env infra/database/dist/cli.js seed-user` with explicit native
+connection fields. There is no implicit environment-file loading or startup seed.
+
+First creation reports `created`; an existing active identity reports `unchanged`.
+Concurrent seeds converge on the same row. An inactive identity fails without
+reactivation; another ID creates a different identity, not a rename. Invalid input,
+nonlocal configuration and incompatible role privileges fail with safe output.
+
+Only the dedicated migrator performs exact-principal SELECT/INSERT, with forced
+RLS and a transaction-local `iop.seed_user_id` selector on a fresh connection.
+Commit/rollback clears that selector. No ordinary UPDATE/DELETE policy or runtime
+grant exists. The migrator can change DDL and remains trusted installation authority.
+Keep its credential out of API/web containers. Runtime still has CONNECT only.
+
+This seed does not authenticate a person, create membership/roles or enable import
+and analytics access. The later host adapter must validate this current active
+identity plus explicit membership and both site roles under ADR-0018. No user CRUD,
+reactivation, reset framework or administration screen is introduced. Validation
+is recorded in the [IOP-027 plan](../../docs/planning/completed/IOP-027-local-principal-plan.md).

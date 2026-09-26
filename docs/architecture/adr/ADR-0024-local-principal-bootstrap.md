@@ -2,8 +2,9 @@
 
 ## Status
 
-Proposed on 2026-09-26 under [IOP-027](../../planning/items/IOP-027-user-model.md).
-No migration, seed command or runtime access is implemented by this proposal.
+Accepted on 2026-09-26 by explicit owner approval under [IOP-027](../../planning/items/IOP-027-user-model.md).
+IOP-027 implements the bounded migration and seed command; runtime access remains
+closed. See the execution evidence linked below.
 
 ## Context
 
@@ -15,7 +16,7 @@ only. [ADR-0013](ADR-0013-tenancy-data-isolation.md) permits separately classifi
 global identity data through narrow owner contracts. User lifecycle remains outside
 the [POC](../../product/scope-poc.md).
 
-## Proposed decision
+## Decision
 
 ### Minimal identity storage
 
@@ -87,7 +88,7 @@ assignment merely to seed a POC principal. No adjacent story is activated.
 | Organization-owned copies of the principal | Reject: couples global identity to membership and undermines later multi-organization identity. |
 | Full provisioning/login and user administration | Defer beyond the POC. |
 
-## Verification required after acceptance
+## Verification contract
 
 Use the existing PostgreSQL migration/seed test tooling and actual role logins:
 
@@ -104,7 +105,7 @@ Use the existing PostgreSQL migration/seed test tooling and actual role logins:
 - Typecheck, `npm test` and the database integration suite pass; native and one-shot
   Compose seed commands reproduce the documented result with safe failure output.
 
-Record real results in the [execution plan](../../planning/active/IOP-027-local-principal-plan.md).
-These are planned scenarios, not executed security evidence. Acceptance permits
-only this bounded migration/seed implementation after its plan is extended; it does
-not complete the broader user lifecycle story or enable local runtime access.
+Actual results are recorded in the [completed execution plan](../../planning/completed/IOP-027-local-principal-plan.md).
+The bounded migration and seed are implemented. This does not complete the broader
+user lifecycle story or enable local runtime access; no host-adapter, grant lookup
+or pooled business-transaction evidence is claimed by these seed tests.

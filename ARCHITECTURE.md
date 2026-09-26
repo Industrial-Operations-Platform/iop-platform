@@ -270,3 +270,14 @@ reconcile against contributing records on the same admitted data revision.
 IOP-097 remains Blocked: analytical contracts and runtime access are pending.
 Acceptance permits independent fixture UI work but delivers no runtime filters;
 ADR-0018 is Accepted; its runtime implementation remains pending and independently gates business access.
+
+
+## Accepted initial local principal bootstrap
+
+[ADR-0024](docs/architecture/adr/ADR-0024-local-principal-bootstrap.md) permits a
+minimal Users/RBAC-owned global identity (`user_id`, `is_active`) and explicit
+insert-only local migrator seed. IOP-027 adds `users_rbac.users`, exact-principal
+forced RLS and inactive-user rejection without reactivation. Identity remains
+separate from scoped membership and permissions. Runtime retains CONNECT only;
+ADR-0018's host adapter and current grant evaluation remain unimplemented. See the
+[database guide](infra/database/README.md#initial-local-user-seed-iop-027).

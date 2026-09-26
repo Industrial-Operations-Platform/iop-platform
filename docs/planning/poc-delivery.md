@@ -135,7 +135,7 @@ unsupported query/body rejection and HTTP boundary tests. See the
 The parent remains In progress for CSV and analytical endpoint validation; this
 slice does not implement those paths or their admission/processing limits.
 
-IOP-027 has prepared [Proposed ADR-0024](../architecture/adr/ADR-0024-local-principal-bootstrap.md)
-for minimal active principal storage and an explicit local insert-only seed.
-Implementation awaits acceptance; this grants no runtime access and does not
-activate membership/role administration or complete the deferred user lifecycle.
+IOP-027 implements minimal active principal storage and an explicit local insert-only
+seed under [Accepted ADR-0024](../architecture/adr/ADR-0024-local-principal-bootstrap.md).
+Runtime retains CONNECT only. Membership/grant seed and evaluation and the host
+adapter remain pending; the broader user lifecycle stays deferred beyond the POC.
