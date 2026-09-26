@@ -44,7 +44,8 @@ Completed documentation checks on 2026-09-26:
 - Retained-attempt bound checked against the existing CSV preservation contract:
   1,000 receipts include successful and failed attempts.
 
-Staged secrets validation remains a pre-commit check. No application changes were
+`npm run check:secrets` passed for 414 indexed files; `git diff --cached --check`
+also passed. No application changes were
 made, so API/database suites were not run; they cannot verify an unimplemented
 query service. No dependency story required translation. No adjacent work was changed.
 
