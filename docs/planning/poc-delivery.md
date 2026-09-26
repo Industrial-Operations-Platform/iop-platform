@@ -125,6 +125,12 @@ host activation and IOP-128 reset. The
 [preparation record](completed/IOP-129-end-to-end-scenario-plan.md) is documentation
 only; no end-to-end demonstration or POC completion is claimed.
 
+IOP-130 supplies the [pilot measurement and owner feedback procedure](../development/pilot-metrics-poc.md)
+for IOP-001's five acceptance measures within the local POC. Its
+[preparation record](completed/IOP-130-pilot-metrics-plan.md) is complete; the story
+remains Blocked on IOP-129's delivered demonstration and owner observation. No pilot
+measurement, timing, benefit or owner feedback is claimed.
+
 IOP-132 supplies the [final reconciliation procedure](../development/reconciliation-poc.md)
 and independent expected comparisons for both views. It remains Blocked on production
 OIP storage/importer/query/host delivery, connected views and IOP-129 evidence.
