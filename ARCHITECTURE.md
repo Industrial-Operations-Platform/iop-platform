@@ -122,9 +122,10 @@ compatibility review and normally a new major version.
 
 IOP-003 is complete as design. OpenAPI dialect/tool versions, endpoint schemas and
 limits, exact error catalogs and runtime conformance checks remain implementation
-work. IOP-016 supplies a generated OpenAPI 3.0.0 health contract and bootstrap error
-responses; business contracts, browser bindings and the full error catalog remain
-future work.
+work. IOP-016 supplies the generated OpenAPI 3.0.0 health contract. IOP-022 adds
+[common POC errors](apps/api/README.md#poc-error-contract-iop-022), bounded validation
+metadata and sanitized error correlation, with generated browser bindings. Business
+contracts and domain-specific error catalogs remain future endpoint work.
 
 
 ## Accepted Organization/Site scope

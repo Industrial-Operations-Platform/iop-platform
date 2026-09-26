@@ -1,5 +1,7 @@
 import { Controller, Get, Injectable } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, getSchemaPath, ApiOkResponse, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { ProblemDetails } from './problem-details';
 
 export class HealthResponse {
   @ApiProperty({ type: String, enum: ['ok'], example: 'ok' })
@@ -13,6 +15,7 @@ export class HealthService {
   }
 }
 
+@ApiExtraModels(ProblemDetails)
 @ApiTags('Host')
 @Controller('health')
 export class HealthController {
@@ -29,12 +32,7 @@ export class HealthController {
     status: 500,
     description: 'Unexpected host failure; no internal details are exposed.',
     content: { 'application/problem+json': { schema: {
-      type: 'object', required: ['type', 'title', 'status'],
-      properties: {
-        type: { type: 'string', enum: ['about:blank'] },
-        title: { type: 'string', enum: ['Internal Server Error'] },
-        status: { type: 'integer', enum: [500] },
-      },
+      $ref: getSchemaPath(ProblemDetails),
     } } },
   })
   getHealth(): HealthResponse {

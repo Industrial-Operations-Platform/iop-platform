@@ -22,32 +22,7 @@
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "type",
-                    "title",
-                    "status"
-                  ],
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "about:blank"
-                      ]
-                    },
-                    "title": {
-                      "type": "string",
-                      "enum": [
-                        "Internal Server Error"
-                      ]
-                    },
-                    "status": {
-                      "type": "integer",
-                      "enum": [
-                        500
-                      ]
-                    }
-                  }
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -70,6 +45,66 @@
   "servers": [],
   "components": {
     "schemas": {
+      "ValidationIssue": {
+        "type": "object",
+        "properties": {
+          "pointer": {
+            "type": "string",
+            "description": "JSON Pointer into the documented request representation; empty means the whole request.",
+            "maxLength": 256
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "required",
+              "invalid",
+              "out-of-range",
+              "unsupported"
+            ]
+          }
+        },
+        "required": [
+          "pointer",
+          "code"
+        ]
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "urn:iop:problem:bad-request",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "traceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-generated error occurrence identifier; not a client-supplied ID."
+          },
+          "errors": {
+            "maxItems": 50,
+            "description": "Only present for explicit safe input validation failures (400).",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationIssue"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "traceId"
+        ]
+      },
       "HealthResponse": {
         "type": "object",
         "properties": {
