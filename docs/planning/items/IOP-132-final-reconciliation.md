@@ -2,7 +2,13 @@
 
 ## Status
 
-Proposed
+Blocked
+
+The [reconciliation procedure](../../development/reconciliation-poc.md) is prepared;
+see the [preparation record](../completed/IOP-132-final-reconciliation-plan.md).
+Production OIP storage, delivered import/read composition and connected overview/detail
+remain unavailable. IOP-048 internal verification and IOP-096 fictional UI evidence
+do not satisfy final source-to-report acceptance; IOP-129 is still Proposed.
 
 ## POC delivery applicability
 
@@ -22,17 +28,19 @@ Verify source-to-report totals for the analytical POC.
 
 ## User / business value
 
-Usuarios y administradores necesitan una versión demostrable, operable y documentada.
+Users and administrators need a demonstrable, operable and documented version.
 
 ## Context
 
-Ámbito: Validation and release readiness. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Validation and release readiness. See [modules](../../architecture/modules.md) and
+the [planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; inclusion in the backlog does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Accepted filter/query/metric contracts and independent synthetic expectations are
+available. The procedure defines the comparison and evidence required, but no
+delivered source-to-both-views reconciliation has run.
 
 ## Desired state
 
@@ -55,56 +63,62 @@ Verify source-to-report totals for the analytical POC.
 
 ## Domain considerations
 
-Verificar el alcance de v1 acordado, no exigir todas las ideas futuras del backlog.
+Verify the agreed v1 scope without requiring every future backlog idea.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permissions and customer/site scope on relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Reconciliar evidencia y probar recuperación con datos autorizados o sintéticos.
+Reconcile evidence and test recovery with authorized or synthetic data.
 
 ## API considerations
 
-Validar contratos publicados y compatibilidad documentada; no introducir features durante cierre de release.
+Validate published contracts and documented compatibility; do not introduce features during release closure.
 
 ## UI considerations
 
-Validar el workflow acordado y documentación por persona; registrar limitaciones conocidas.
+Validate the agreed workflow and persona-specific documentation; record known limitations.
 
 ## Dependencies
 
 [IOP-048](IOP-048-data-reconciliation.md), [IOP-096](IOP-096-analytics-drilldown.md), [IOP-129](IOP-129-end-to-end-scenario.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. Runtime business access requires implementation and
+validation of the local execution-context mechanism in
+[Accepted ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md).
+The stale Proposed-ADR wording in IOP-129 is historical; it is translated without
+changing that dependency's scope or status in this increment.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must specify executable commands and scenarios for the acceptance criteria using the accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, models, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+The accepted contracts settle the comparison semantics. Resume delivered validation
+when production OIP storage, executable IOP-089 queries, importer/host activation
+and connected views are available. Record real IOP-129 demonstration evidence;
+no new formula, endpoint or architectural decision is requested by this procedure.

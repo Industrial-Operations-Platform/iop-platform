@@ -118,6 +118,12 @@ shared-selection drill-down for the two existing measures. The specification sli
 is complete; the parent remains Blocked on executable IOP-089 queries, production
 OIP facts and ADR-0018 host activation. No runtime grouped view is delivered.
 
+IOP-132 supplies the [final reconciliation procedure](../development/reconciliation-poc.md)
+and independent expected comparisons for both views. It remains Blocked on production
+OIP storage/importer/query/host delivery, connected views and IOP-129 evidence.
+Procedure arithmetic and existing internal/fictional tests do not prove delivered
+source-to-report totals; see the [preparation record](completed/IOP-132-final-reconciliation-plan.md).
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context
