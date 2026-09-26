@@ -2,10 +2,11 @@
 
 ## Status
 
-Blocked — the owner accepted [ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md)
-on 2026-09-26. End-to-end delivery still needs IOP-089's analytical contract and
-implementation and validation of the runtime access mechanism in Accepted ADR-0018. No filter implementation exists. The owner closed the completed documentation
-increment on 2026-09-26; runtime delivery requires a new implementation plan.
+Blocked — the shared fixture filter preview is implemented; end-to-end delivery
+still requires IOP-089's production queries and validated ADR-0018 host activation.
+[ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md) and
+IOP-089's ADR-0028/query design are Accepted. See the
+[fixture execution record](../completed/IOP-097-fixture-filters-plan.md).
 
 ## Milestone and goal
 
@@ -18,8 +19,9 @@ explainable metrics to prioritize problems.
 
 The original outline requested consistent date/filter behavior; backlog inclusion
 alone did not authorize implementation. The owner now requests this story strictly
-within the POC. The web host supplies navigation placeholders, and IOP-089 remains
-Proposed. IOP-008 supplies accepted temporal design, not runtime filters.
+within the POC. The web host provides navigation, state previews and an opt-in
+fictional shared-filter preview. IOP-089 has accepted design but remains Blocked on production storage and
+host activation. IOP-008 supplies accepted temporal design.
 See [modules](../../architecture/modules.md) and the [workflow](../workflow.md).
 
 ## Requirements
@@ -58,10 +60,11 @@ The detailed selection and navigation behavior in ADR-0023 is Accepted.
 - [IOP-008](IOP-008-time-and-timezone-model.md): Completed design;
   Accepted [ADR-0016](../../architecture/adr/ADR-0016-time-and-timezone-model.md).
   Source reporting hours remain unknown; this does not block label filtering.
-- [IOP-089](IOP-089-analytics-query-layer.md): Proposed. Requires the relevant
-  aggregate, reconciliation and mapping slices (IOP-043/048/049), not their broader
-  future scope. Canonical references, bounded queries and coverage/data revision
-  metadata must be settled before runtime filter integration.
+- [IOP-089](IOP-089-analytics-query-layer.md): Blocked with Accepted ADR-0028 and
+  [query design](../../architecture/analytics-query-poc.md), including canonical
+  references, bounds and coverage/revision metadata. IOP-043 supplies aggregate
+  design, IOP-048 internal reconciliation evidence and IOP-049 pure classification;
+  production storage and queries remain pending. Broader future scope is not a gate.
 - Runtime business access waits for implementation and validation of
   [ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md), accepted on 2026-09-26.
   Independent fixture-backed UI work need not wait for real business access.
@@ -84,8 +87,11 @@ or expansion to the whole milestone. No customer names in core logic.
 ## Validation and documentation
 
 The [completed documentation plan](../completed/IOP-097-analytics-filters-plan.md) records scope, branch,
-files and actual documentation checks. ADR-0023 supplies review scenarios for later
-executable tests, including negative access cases; these are not runtime evidence.
+files and actual documentation checks. The
+[fixture record](../completed/IOP-097-fixture-filters-plan.md) supplies executable
+UI evidence for selection, navigation, coverage and fictional totals. Production
+query, revision/pagination and negative access cases remain pending; fixture checks
+do not establish them.
 Update this item, [backlog](../backlog.md) and plan together. Change contracts,
 models, guides or other ADRs only when this story changes their content.
 
@@ -101,3 +107,17 @@ See the [shared evidence](../../product/csv-and-reporting-reference.md), capture
 under IOP-002 at the owner's request. It supplies context, not acceptance of metric
 formulas. The accepted contract supports reporting-label filtering while keeping
 exact source windows unresolved.
+
+## Delivered fixture increment
+
+Both analytical pages offer **Try shared filters with fictional data**. One
+page-session selection preserves inclusive reporting dates, dimension sets and
+message exclusions, including trips through Import CSV. Apply validates the draft
+atomically; Reset restores the latest fixed fixture date. Area drill-down narrows
+selection and return restores it. Unclassified records, repeated equipment labels,
+missing dates and zero measures remain distinguishable. The five fictional rows
+are a UI illustration, independent of imported data and IOP-048's oracle.
+
+This completes the independent fixture UI increment, not the unchecked delivered
+analytical/access criteria. No analytical endpoint or production filter engine was
+added; API bindings must derive from the future reviewed OpenAPI contract.

@@ -71,8 +71,8 @@ focus to the page heading; a skip link bypasses the header. Scope and filter
 availability stay visible on each page. Only `/health` is requested; navigation
 never grants business permission or selects a trusted actor/scope.
 
-There are no fixture metrics or simulated imports. Real import/analytics and shared
-filters remain their own delivery slices; ADR-0018 is Accepted, with runtime implementation pending. This completes
+The IOP-097 opt-in filter preview below uses fictional metrics; no real imports
+or analytical queries are connected. Production filter integration remains pending; ADR-0018 is Accepted, with runtime implementation pending. This completes
 only [IOP-116 navigation](../../docs/planning/items/IOP-116-navigation.md), not the
 end-to-end POC.
 
@@ -114,3 +114,30 @@ navigation tests cover the skip link and history. Screenshots are in `test-resul
 These checks do not verify screen-reader speech or certify accessibility compliance.
 Real analytical filters, charts, tables and runtime feedback still need verification
 under [IOP-122](../../docs/planning/items/IOP-122-accessibility.md).
+
+## Shared fictional filters (IOP-097)
+
+On overview/detail, expand **Try shared filters with fictional data**. The separate
+state preview remains disconnected. The filter preview uses five fictional rows,
+one fixed demo scope and revision, and admitted labels June 26 and June 28, 2026.
+Reset selects the latest fixture date (June 28); no exclusions are selected by
+default. Its four rows total 8 reported occurrences and 90,140 accumulated alarm
+seconds. Both dates together give 10 occurrences and 90,200 seconds across five
+rows, with June 27 explicitly missing. These are UI examples, not imported metrics.
+
+Edit inclusive From/Through and native checkboxes, then **Apply filters**. Invalid
+dates or message inclusion/exclusion conflicts preserve the previous applied
+results. Selections combine OR within each group and AND across groups; exclusions
+remove matching messages. Unclassified and mapped “Unclassified” are distinct;
+source equipment options include area context. Drafts and applied filters survive
+overview/detail/import navigation within the page session, but not reload.
+**Inspect Area A/B/C** narrows the current selection into detail; **Back to previous
+selection** restores it. Reset clears dimensions, exclusions and drill-down history.
+
+All displayed sums and contributing records use the same synchronous fixed fixture;
+missing imports are measured before dimension filters. No business requests,
+production query contracts, ranking engine, persistence or permissions are provided.
+Real OIP metrics/filter interpretation stays server-owned; generated API bindings,
+revision refresh, cursor reset and stale-response protection follow endpoint delivery.
+Unit/RTL and Playwright checks cover the preview's behavior and compact/tablet/laptop
+layout. Production isolation and import reconciliation remain independently pending.
