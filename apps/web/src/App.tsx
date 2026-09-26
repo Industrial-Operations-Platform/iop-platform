@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { AnalyticalStates } from './AnalyticalStates';
 import { HealthStatus } from './HealthStatus';
 
 const destinations = [
@@ -61,21 +62,8 @@ export function App() {
             <p>CSV upload, validation and duplicate reporting-date checks are not connected yet. No files can be submitted in this preview.</p>
             <a className="action" href="#overview">Explore Executive Overview <span aria-hidden="true">→</span></a>
           </section>
-        ) : location === 'overview' ? (
-          <section>
-            <p className="eyebrow">Review the evidence</p>
-            <h2>No analytical results yet</h2>
-            <p>Reported frequency and accumulated alarm duration will appear here after verified imports. Missing imports do not represent zero faults.</p>
-            <p className="note">A reporting date is a source label, not proof of a full 24-hour window. Accumulated alarm duration is not plant downtime.</p>
-            <div className="actions"><a className="action" href="#detail">Explore analytical detail <span aria-hidden="true">→</span></a><a href="#import">Go to Import CSV</a></div>
-          </section>
         ) : (
-          <section>
-            <p className="eyebrow">Follow the contributing records</p>
-            <h2>No contributing records yet</h2>
-            <p>Inspect sector, area, source equipment and messages when analytical data is connected. Source equipment labels do not establish physical asset identities.</p>
-            <a className="action" href="#overview">Back to Executive Overview</a>
-          </section>
+          <AnalyticalStates key={location} view={location === 'overview' ? 'overview' : 'detail'} />
         )}
         <div className="health-panel"><HealthStatus /></div>
       </main>

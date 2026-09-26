@@ -32,3 +32,7 @@ footer { padding: 1rem 0; color: #435563; font-size: .8rem; border-top: 1px soli
 .skip-link { position: absolute; top: -5rem; padding: 1rem; background: white; }
 .skip-link:focus { top: .5rem; }
 @media (max-width: 600px) { .app-shell { padding: 1rem; } nav { flex-direction: column; gap: 0; margin-top: 1rem; } nav a { padding: .75rem; } section { padding: 1.25rem; } }
+.state-preview { margin-bottom: 1.5rem; padding: 1rem; background: #f2f5f7; border-radius: .35rem; }
+.state-preview summary { cursor: pointer; color: #174e69; }
+.state-preview label { display: block; margin-bottom: .5rem; }
+.state-preview select { max-width: 100%; padding: .65rem; font: inherit; color: inherit; background: white; border: 1px solid #829ba8; border-radius: .25rem; }
