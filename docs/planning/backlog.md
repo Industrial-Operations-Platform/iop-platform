@@ -10,8 +10,8 @@ The owner approved a local single-operator CSV → analysis → presentation POC
 with login and external connections deferred. Follow [POC scope](../product/scope-poc.md)
 and the [complete delivery map](poc-delivery.md) before activating a story.
 Only relevant slices are prerequisites; M1–M17 are a future capability inventory.
-The local execution mechanism in Accepted ADR-0018 preserves RLS/RBAC; its host
-implementation and validation remain pending.
+IOP-147 delivers the local host and user selector under ADR-0018/0030 with current
+RLS/RBAC checks. Technical POC blockers are resolved; IOP-130 awaits owner feedback.
 
 IOP-001–006 and IOP-008 are Completed as design on this branch. Local API and web
 host implementation is completed under IOP-016/017. IOP-007, IOP-010, IOP-028
@@ -26,7 +26,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M1 — Product & Architecture Definition
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-001 — Validate v1 personas and pilot workflow](items/IOP-001-v1-personas-and-pilot-workflow.md) | Completed |
 | [IOP-002 — Select backend, frontend and tooling](items/IOP-002-technology-stack.md) | Completed |
@@ -45,7 +45,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M2 — Development Platform Foundation
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-015 — Local Docker development environment](items/IOP-015-local-development-environment.md) | Completed |
 | [IOP-016 — Bootstrap backend](items/IOP-016-backend-bootstrap.md) | Completed |
@@ -60,7 +60,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M3 — Platform Core
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-025 — Organization model](items/IOP-025-organization-model.md) | Deferred |
 | [IOP-026 — Site model](items/IOP-026-site-model.md) | Deferred |
@@ -72,7 +72,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M4 — Asset Domain
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-032 — Asset hierarchy model](items/IOP-032-asset-hierarchy.md) | Proposed |
 | [IOP-033 — Asset type model](items/IOP-033-asset-types.md) | Proposed |
@@ -86,21 +86,21 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M5 — Industrial Data Foundation
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-041 — RAW ingestion model](items/IOP-041-raw-ingestion-model.md) | Completed |
-| [IOP-042 — Import batch model](items/IOP-042-import-batches.md) | In progress |
+| [IOP-042 — Import batch model](items/IOP-042-import-batches.md) | Completed |
 | [IOP-043 — Event canonical model](items/IOP-043-canonical-event-model.md) | Completed |
 | [IOP-044 — Event-to-asset mapping](items/IOP-044-event-asset-mapping.md) | Proposed |
 | [IOP-045 — CSV source adapter](items/IOP-045-csv-adapter.md) | Completed |
-| [IOP-046 — Data validation](items/IOP-046-import-validation.md) | In progress |
-| [IOP-047 — Deduplication/idempotency](items/IOP-047-import-idempotency.md) | In progress |
-| [IOP-048 — Reconciliation](items/IOP-048-data-reconciliation.md) | In progress |
-| [IOP-049 — Source aliases/mappings](items/IOP-049-source-mappings.md) | In progress |
+| [IOP-046 — Data validation](items/IOP-046-import-validation.md) | Completed |
+| [IOP-047 — Deduplication/idempotency](items/IOP-047-import-idempotency.md) | Completed |
+| [IOP-048 — Reconciliation](items/IOP-048-data-reconciliation.md) | Completed |
+| [IOP-049 — Source aliases/mappings](items/IOP-049-source-mappings.md) | Completed |
 
 ## M6 — Workforce & Shift Management
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-050 — Technician/team profiles](items/IOP-050-workforce-profiles.md) | Proposed |
 | [IOP-051 — Team model](items/IOP-051-team-model.md) | Proposed |
@@ -115,7 +115,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M7 — Shift Handover
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-060 — Handover record](items/IOP-060-handover-record.md) | Proposed |
 | [IOP-061 — Handover categories](items/IOP-061-handover-categories.md) | Proposed |
@@ -128,7 +128,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M8 — Maintenance Management
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-068 — Maintenance record model](items/IOP-068-maintenance-record.md) | Proposed |
 | [IOP-069 — Maintenance status workflow](items/IOP-069-maintenance-status.md) | Proposed |
@@ -141,7 +141,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M9 — Asset Locator
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-076 — Map model](items/IOP-076-map-model.md) | Proposed |
 | [IOP-077 — Map upload](items/IOP-077-map-upload.md) | Proposed |
@@ -154,7 +154,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M10 — Asset History / Digital Asset Record
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-084 — Asset timeline model](items/IOP-084-asset-timeline.md) | Proposed |
 | [IOP-085 — Event history](items/IOP-085-asset-event-history.md) | Proposed |
@@ -164,21 +164,21 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M11 — OIP / Operational Intelligence
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
-| [IOP-089 — Analytics query layer](items/IOP-089-analytics-query-layer.md) | Blocked |
-| [IOP-090 — Event frequency KPI](items/IOP-090-event-frequency.md) | Blocked |
-| [IOP-091 — Accumulated alarm duration (POC)](items/IOP-091-downtime.md) | Blocked |
+| [IOP-089 — Analytics query layer](items/IOP-089-analytics-query-layer.md) | Completed |
+| [IOP-090 — Event frequency KPI](items/IOP-090-event-frequency.md) | Completed |
+| [IOP-091 — Accumulated alarm duration (POC)](items/IOP-091-downtime.md) | Completed |
 | [IOP-092 — Trend analysis](items/IOP-092-event-trends.md) | Proposed |
 | [IOP-093 — Pareto analysis](items/IOP-093-pareto.md) | Proposed |
-| [IOP-094 — Source equipment analytics (POC)](items/IOP-094-asset-analytics.md) | Blocked |
-| [IOP-095 — Area analytics](items/IOP-095-area-analytics.md) | Blocked |
-| [IOP-096 — Analytical drill-down (fixture UI delivered; runtime pending)](items/IOP-096-analytics-drilldown.md) | Blocked |
-| [IOP-097 — Date/filter model (fixture UI delivered; runtime pending)](items/IOP-097-analytics-filters.md) | Blocked |
+| [IOP-094 — Source equipment analytics (POC)](items/IOP-094-asset-analytics.md) | Completed |
+| [IOP-095 — Area analytics](items/IOP-095-area-analytics.md) | Completed |
+| [IOP-096 — Analytical drill-down (connected POC delivered)](items/IOP-096-analytics-drilldown.md) | Completed |
+| [IOP-097 — Date/filter model (connected POC delivered)](items/IOP-097-analytics-filters.md) | Completed |
 
 ## M12 — Improvement Tracking
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-098 — Improvement action](items/IOP-098-improvement-action.md) | Proposed |
 | [IOP-099 — Owner/target](items/IOP-099-improvement-target.md) | Proposed |
@@ -187,10 +187,10 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M13 — External Integrations
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-102 — Integration registry](items/IOP-102-integration-registry.md) | Proposed |
-| [IOP-103 — Manual CSV delivery validation](items/IOP-103-csv-integration.md) | Blocked |
+| [IOP-103 — Manual CSV delivery validation](items/IOP-103-csv-integration.md) | Completed |
 | [IOP-104 — WinCC adapter contract](items/IOP-104-wincc-adapter.md) | Proposed |
 | [IOP-105 — Ultimo adapter contract](items/IOP-105-ultimo-adapter.md) | Proposed |
 | [IOP-106 — Entra identity adapter](items/IOP-106-entra-adapter.md) | Proposed |
@@ -198,11 +198,11 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M14 — Security & Reliability
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-108 — Authorization test suite](items/IOP-108-authorization-tests.md) | Proposed |
 | [IOP-109 — Secrets handling](items/IOP-109-secret-management.md) | Completed |
-| [IOP-110 — Input validation](items/IOP-110-input-validation.md) | In progress |
+| [IOP-110 — Input validation](items/IOP-110-input-validation.md) | Completed |
 | [IOP-111 — Audit verification](items/IOP-111-audit-verification.md) | Proposed |
 | [IOP-112 — Backup process](items/IOP-112-backup.md) | Proposed |
 | [IOP-113 — Restore process](items/IOP-113-restore.md) | Proposed |
@@ -211,45 +211,45 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M15 — UX & Operational Experience
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-116 — App navigation](items/IOP-116-navigation.md) | Completed |
 | [IOP-117 — Role-aware home](items/IOP-117-role-home.md) | Proposed |
 | [IOP-118 — Area overview](items/IOP-118-area-overview.md) | Proposed |
 | [IOP-119 — Global search](items/IOP-119-global-search.md) | Proposed |
-| [IOP-120 — Empty/error/loading states](items/IOP-120-ui-states.md) | Blocked |
-| [IOP-121 — Responsive baseline](items/IOP-121-responsive-ui.md) | Blocked |
-| [IOP-122 — Accessibility baseline](items/IOP-122-accessibility.md) | Blocked |
+| [IOP-120 — Empty/error/loading states](items/IOP-120-ui-states.md) | Completed |
+| [IOP-121 — Responsive baseline](items/IOP-121-responsive-ui.md) | Completed |
+| [IOP-122 — Accessibility baseline](items/IOP-122-accessibility.md) | Completed |
 
 ## M16 — Demo / Pilot Dataset
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-123 — Synthetic organization](items/IOP-123-demo-organization.md) | Completed |
 | [IOP-124 — Synthetic asset structure](items/IOP-124-demo-assets.md) | Proposed |
 | [IOP-125 — Synthetic analytical CSV fixtures](items/IOP-125-demo-events.md) | Completed |
 | [IOP-126 — Synthetic workforce](items/IOP-126-demo-workforce.md) | Proposed |
 | [IOP-127 — Synthetic maintenance](items/IOP-127-demo-maintenance.md) | Deferred |
-| [IOP-128 — Demo reset](items/IOP-128-demo-reset.md) | Blocked |
+| [IOP-128 — Demo reset](items/IOP-128-demo-reset.md) | Completed |
 
 ## M17 — v1 Validation & Release
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
-| [IOP-129 — POC end-to-end demonstration](items/IOP-129-end-to-end-scenario.md) | Blocked |
-| [IOP-130 — Pilot metrics](items/IOP-130-pilot-metrics.md) | Blocked |
+| [IOP-129 — POC end-to-end demonstration](items/IOP-129-end-to-end-scenario.md) | Completed |
+| [IOP-130 — Pilot metrics](items/IOP-130-pilot-metrics.md) | In progress |
 | [IOP-131 — Permission validation](items/IOP-131-permission-validation.md) | Proposed |
-| [IOP-132 — Data reconciliation](items/IOP-132-final-reconciliation.md) | Blocked |
+| [IOP-132 — Data reconciliation](items/IOP-132-final-reconciliation.md) | Completed |
 | [IOP-133 — Performance acceptance](items/IOP-133-performance-acceptance.md) | Proposed |
 | [IOP-134 — Deployment documentation](items/IOP-134-deployment-guide.md) | Proposed |
 | [IOP-135 — Admin documentation](items/IOP-135-admin-guide.md) | Proposed |
-| [IOP-136 — User documentation](items/IOP-136-user-guide.md) | Proposed |
+| [IOP-136 — User documentation](items/IOP-136-user-guide.md) | Completed |
 | [IOP-137 — Architecture review](items/IOP-137-architecture-review.md) | Proposed |
 | [IOP-138 — v1 release](items/IOP-138-v1-release.md) | Proposed |
 
 ## Repository governance
 
-| Contexto de tarea | Estado |
+| Task context | Status |
 | --- | --- |
 | [IOP-139 — Planning workflow](items/IOP-139-planning-workflow.md) | Completed |
 | [IOP-140 — English project language](items/IOP-140-english-project-language.md) | Completed |
@@ -263,3 +263,9 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | Task context | Status |
 | --- | --- |
 | [IOP-145 — Preserve owner-supplied CSV reference files](items/IOP-145-csv-reference-files.md) | Completed |
+
+## Current POC completion
+
+| Task context | Status |
+| --- | --- |
+| [IOP-147 — Complete the working analytical POC](items/IOP-147-working-analytical-poc.md) | Completed |

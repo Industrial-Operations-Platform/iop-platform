@@ -2,8 +2,8 @@
 
 Accepted design for [IOP-089](../planning/items/IOP-089-analytics-query-layer.md)
 under [ADR-0028](adr/ADR-0028-poc-analytics-query-consistency.md), approved by the
-owner on 2026-09-26. No query service,
-endpoint or production OIP storage is delivered. Scope is the
+owner on 2026-09-26. Implemented under [IOP-147](../planning/items/IOP-147-working-analytical-poc.md),
+including OIP storage and authorized endpoints. Scope is the
 [local POC](../product/scope-poc.md); reuse [aggregate equality](event-aggregates-poc.md)
 and Accepted [filter semantics](adr/ADR-0023-poc-analytics-filters.md).
 
@@ -24,7 +24,8 @@ No client expressions, SQL, arbitrary grouping, ranking engine or new metric is
 introduced. Area/equipment charts and UI navigation remain their selected stories.
 These internal values are independent of React, HTTP DTOs and source column names.
 Endpoint delivery must map them to reviewed OpenAPI and generated browser types
-under ADR-0011; this contract does not add a route to the health-only host.
+under ADR-0011. IOP-147 supplies the corresponding `/api/v1` routes in the
+explicitly activated demo host.
 
 ## Selection, measures and traceability
 

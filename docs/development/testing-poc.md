@@ -34,8 +34,8 @@ The component commands retain their own builds so they also work independently.
 | --- | --- | --- |
 | `npm run typecheck` | API, web and database TypeScript checks | Type safety does not replace runtime tests. |
 | `npm test` | Builds; browser binding drift; API Jest/Supertest/process tests; web Jest/RTL; database configuration/CLI unit checks | Requires local listeners, but no Docker/browser. Includes real Nest injection, sanitized failures and OpenAPI drift. |
-| `npm run test:database` | Jest with disposable Testcontainers PostgreSQL; migrations, failed DDL rollback, reruns/concurrency, real-role denials and organization/site seed isolation | Bootstrap/seed RLS evidence, not the pending business runtime adapter or grants. |
-| `npm run test:e2e` | Playwright Chromium against built web and API through the same-origin preview proxy; safe error recovery, navigation, responsive and accessible UI states | Health is the real backend path; analytical/import screens still use fixtures. Not a Compose/Nginx or full import journey test. |
+| `npm run test:database` | Jest with disposable Testcontainers PostgreSQL; migrations, failed DDL rollback, reruns/concurrency, real-role denials and organization/site seed isolation | Includes actual-role import/query/reset isolation and a real Chromium CSV/history/user-switch journey. Requires Chromium as well as Docker. |
+| `npm run test:e2e` | Playwright Chromium against built web and API through the same-origin preview proxy; safe error recovery, navigation, responsive and accessible UI states | Exercises the explicit `?preview=1` examples and health proxy. The actual import journey runs in `test:database` against disposable PostgreSQL; neither is a Compose/Nginx certification. |
 
 ## Test placement and data isolation
 

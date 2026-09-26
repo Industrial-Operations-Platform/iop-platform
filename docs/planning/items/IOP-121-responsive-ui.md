@@ -2,29 +2,12 @@
 
 ## Status
 
-Blocked — POC presentation baseline implemented; data-backed views, filters and
-contributing records are not available for final validation. See the
-[continuation plan](../active/IOP-121-responsive-continuation-plan.md).
+Completed — selected local POC slice, delivered and verified under IOP-147 on
+2026-09-27. Broader deferred platform capabilities are not included.
 
-## Milestone and goal
+## Delivered outcome
 
-M15 — UX & Operational Experience. Make the local analytical POC usable on laptops
-and tablets within [POC scope](../../product/scope-poc.md) and the
-[delivery map](../poc-delivery.md). Broader cross-module delivery remains deferred.
-
-## User / business value and context
-
-Technicians, managers and administrators need coherent, accessible workflows.
-Scope: cross-module user experience; see [modules](../../architecture/modules.md)
-and the [planning workflow](../workflow.md). The original owner-requested outline
-is refined to this selected POC slice; backlog membership alone is not authorization.
-
-## Current and desired state
-
-The existing Import CSV, Executive Overview and analytical detail previews reflow
-across laptop/tablet viewports. Navigation and state controls remain reachable,
-with visible scope, coverage and simulation disclosures. Data-backed analytical
-views are not yet connected and need responsive validation when delivered.
+The actual uploaded dataset, filters, shared navigation and contributing tables are checked in Chromium at laptop/tablet/narrow widths, with contained table scrolling and preserved selection. Screenshots were visually inspected.
 
 ## Requirements
 
@@ -43,62 +26,27 @@ views are not yet connected and need responsive validation when delivered.
 - [x] Existing POC navigation and analytical states are usable on laptop/tablet.
 - [x] The plan documents scenarios and necessary choices without expanding scope.
 - [x] Presentation validation evidence and synchronized documentation exist.
-- [ ] Data-backed POC views, filters and records are validated on laptop/tablet.
+- [x] Data-backed POC views, filters and records are validated on laptop/tablet.
 
-## Architecture and domain constraints
+## Scope, dependencies and constraints
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to adopt decisions.
-Views consume authorized contracts without divergent copies of entities.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+control this selected slice. Preserve generic module ownership, configured source
+labels, exact aggregate grain, current permissions and forced scoped RLS. No live
+industrial writes, customer-specific core logic or production/shared-use claim.
 
-## Security and API considerations
+Required contracts/slices: [IOP-116](IOP-116-navigation.md), [IOP-120](IOP-120-ui-states.md), [IOP-089](IOP-089-analytics-query-layer.md), [IOP-094](IOP-094-asset-analytics.md), [IOP-097](IOP-097-analytics-filters.md).
 
-Verify customer/site scope and permissions for relevant operations and references.
-Exclude secrets, drawings and production data; industrial integrations remain
-read-only. Record material changes when applicable. Reuse authorized read/search
-contracts; pagination and limits belong to the selected endpoint scope. This
-presentation slice makes no API changes or runtime access-control claims.
+Canonical specifications:
 
-## UI considerations
+- [scope-poc](../../product/scope-poc.md)
 
-Evaluate keyboard use, labels, contrast and empty/error/loading states against
-verifiable laptop/tablet targets. Retain existing colors, labels and focus styles;
-full accessibility delivery remains separate.
+## Validation and traceability
 
-## Dependencies
+[IOP-147 execution evidence](../completed/IOP-147-working-analytical-poc-plan.md) records actual commands, results and limitations.
+The [operator guide](../../development/running-poc.md) describes the delivered flow.
 
-[IOP-116](IOP-116-navigation.md) supplies integrated navigation;
-[IOP-120](IOP-120-ui-states.md) supplies integrated simulated analytical states.
-Their relevant presentation capabilities are available without completion of
-future runtime integration. Real analytical contracts and views remain prerequisites
-for the final data-backed responsive validation, not this independent slice.
-Dependencies identify required capabilities, not numerical implementation order.
+Prior design, internal or preview evidence (historical):
 
-The remaining validation needs [IOP-089](IOP-089-analytics-query-layer.md)
-analytical reads, [IOP-094](IOP-094-asset-analytics.md) detail capabilities,
-[IOP-097](IOP-097-analytics-filters.md) filters and validated scoped local access
-under Accepted ADR-0018. Acceptance of the design does not deliver these runtime
-capabilities; their implementation is outside this story.
-
-## Non-goals
-
-Adjacent tasks, acceptance of open decisions by inference, or the entire milestone.
-No customer-specific core labels, administration, login, import processing, new
-metrics, charts or business filters. No physical-device or accessibility certification.
-
-## Validation and documentation
-
-Use accepted tooling for expected, error and recovery scenarios. Test access denial
-when relevant runtime access exists. Record actual results in the
-[execution record](../completed/IOP-121-responsive-ui-plan.md); synchronize this item,
-[backlog](../backlog.md) and plan. Update contracts, models, guides or ADRs only
-when this task changes their content.
-
-## Open questions
-
-No open decision for the independent presentation slice. Final data-backed layout
-checks await owning POC delivery; this increment does not complete the end-to-end POC.
+- [IOP-121-responsive-continuation-plan](../completed/IOP-121-responsive-continuation-plan.md)
+- [IOP-121-responsive-ui-plan](../completed/IOP-121-responsive-ui-plan.md)

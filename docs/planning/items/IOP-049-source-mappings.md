@@ -2,49 +2,12 @@
 
 ## Status
 
-In progress — pure scoped mapping implemented; owner memberships reconciled and editable locally;
-persisted import composition remains pending.
+Completed — selected local POC slice, delivered and verified under IOP-147 on
+2026-09-27. Broader deferred platform capabilities are not included.
 
-## POC delivery applicability
+## Delivered outcome
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md).
-
-## Milestone
-
-M5 — Industrial Data Foundation. Bounded POC delivery slice.
-
-## Goal
-
-Map source area and sector labels through scoped configuration.
-
-## User / business value
-
-Operations needs traceable imported data and reconcilable metrics.
-
-## Context
-
-Scope: Integrations and Operational Intelligence. See [modules](../../architecture/modules.md)
-and the [planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; backlog membership alone does not authorize implementation.
-The owner requested this POC slice on 2026-09-26.
-
-## Current state
-
-Integrations now validates and snapshots organization/site/source mapping configuration,
-classifies prepared CSV records and preserves unclassified records and measures.
-See the [internal contract](../../../apps/api/README.md#scoped-source-classification-iop-049).
-The owner supplied the original five customer lists on 2026-09-26. Their 89
-memberships are preserved in ignored local JSON, with editable labels and area
-assignments. Exact supplied-membership reconciliation is complete; durable
-receipt/OIP composition remains pending.
-
-## Desired state
-
-Map source area and sector labels through scoped configuration.
+The configured mapping snapshot is frozen into facts. Unknown areas remain included as unclassified. A real persisted two-revision scenario proves that changed mappings affect only future imports; prior owner membership reconciliation remains in its original record.
 
 ## Requirements
 
@@ -58,96 +21,31 @@ Map source area and sector labels through scoped configuration.
 ## Acceptance criteria
 
 - [x] Map source area and sector labels through scoped configuration (pure internal stage).
-- [ ] Validate the slice-specific outcomes and limitations in Requirements, including
+- [x] Validate the slice-specific outcomes and limitations in Requirements, including
   reconciliation against the actual owner lists and persisted import handoff.
 - [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
-## Domain considerations
+## Scope, dependencies and constraints
 
-RAW → validation → normalization; the receiving module validates invariants.
-Do not infer a physical asset from text alone.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+control this selected slice. Preserve generic module ownership, configured source
+labels, exact aggregate grain, current permissions and forced scoped RLS. No live
+industrial writes, customer-specific core logic or production/shared-use claim.
 
-## Architecture constraints
+Required contracts/slices: [IOP-012](IOP-012-source-integration-contract.md), [IOP-043](IOP-043-canonical-event-model.md).
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to adopt their decisions.
-This pure stage specializes IOP-012/043 contracts without a new architectural mechanism.
+Canonical specifications:
 
-## Security considerations
+- [scope-poc](../../product/scope-poc.md)
+- [csv-and-reporting-reference](../../product/csv-and-reporting-reference.md)
 
-Verify organization/site permissions and scope on relevant operations and references.
-Do not include secrets, floor plans or production records in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-Configuration matching is not authorization or proof of site ownership.
+## Validation and traceability
 
-## Data considerations
+[IOP-147 execution evidence](../completed/IOP-147-working-analytical-poc-plan.md) records actual commands, results and limitations.
+The [operator guide](../../development/running-poc.md) describes the delivered flow.
 
-Preserve provenance and grain; distinguish occurrences from aggregates.
-Rejections and corrections must be visible. Snapshot the mapping revision and result;
-changes affect future preparations only. Never silently reinterpret historical facts.
+Prior design, internal or preview evidence (historical):
 
-## API considerations
-
-Use ingestion contracts; credentials and external column names stay in adapters/configuration.
-No endpoint is added by this slice.
-
-## UI considerations
-
-Expose import states, errors and results only if requested by this task;
-do not create a full dashboard.
-
-## Dependencies
-
-[IOP-012](IOP-012-source-integration-contract.md), [IOP-043](IOP-043-canonical-event-model.md).
-
-Both relevant POC design slices are completed and integrated on develop. They do
-not require completion of all future parent capabilities. The integrated IOP-045
-adapter supplies prepared records. ADR-0018 is Accepted; its host implementation
-and validation still gate runtime business access independently.
-
-## Non-goals
-
-Implementing adjacent tasks, accepting open decisions by inference or extending
-delivery to the entire milestone. No customer names in the core, physical aliases,
-mapping administration UI, historical reclassification or general registry.
-
-## Validation
-
-Use executable expected-path, error and relevant scope-rejection scenarios with
-accepted tooling; record actual results, not invented tests. The
-[execution record](../completed/IOP-049-source-mappings-plan.md) covers synthetic
-classification, comparison, configuration, revision and measure-preservation tests.
-It does not establish DAX parity or delivered database/access behavior.
-
-## Documentation impact
-
-Update this item, its [backlog](../backlog.md) status and execution plan.
-Update contracts, model, guides or ADRs only when this task changes their content.
-The entire original story is translated to English; dependency stories were already English.
-
-## Open questions
-
-The supplied `Arbeit Sektor` memberships are reconciled under the exact POC
-comparison contract; Power BI execution/comparison parity on variant text is not
-claimed. Durable mapping/receipt/OIP binding remains a future composition increment.
-See the [editable-configuration record](../completed/IOP-049-editable-mappings-plan.md).
-
-## Owner-supplied CSV and reporting context
-
-The export has area labels and equipment designations but no explicit hall, parent
-or sensor field. The supplied Power BI DAX column applies `TRIM` to the area label
-and classifies it through five explicit membership lists into a reporting sector,
-with an unclassified fallback. This corrects the earlier Python attribution.
-Preserve this behavior as customer-scoped configuration, including visible unmapped
-records; validate text comparison, conflicting mappings and historical changes.
-Equipment-to-sensor mappings are still unverified. Preserve ambiguous/unmapped
-records; do not infer physical hierarchy from code punctuation or hard-code pilot labels.
-
-See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
-under IOP-002 at the owner's request. It supplies historical context, not acceptance
-of additional metric formulas or evidence that actual classifications are reconciled.
+- [IOP-049-source-mappings-plan](../completed/IOP-049-source-mappings-plan.md)
+- [IOP-049-editable-mappings-plan](../completed/IOP-049-editable-mappings-plan.md)

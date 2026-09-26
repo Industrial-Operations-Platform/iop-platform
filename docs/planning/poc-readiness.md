@@ -1,5 +1,11 @@
 # POC readiness and closure review — 2026-09-26
 
+> Historical snapshot, superseded for current readiness by
+> [IOP-147 delivery](poc-delivery.md) on 2026-09-27. The findings below describe
+> `52e803b`; they are retained as the reason for the integrated implementation.
+> Technical runtime blockers are now resolved; owner feedback remains pending.
+
+
 Review of `develop` at `52e803b`, under
 [IOP-146](items/IOP-146-poc-readiness-review.md). The accepted
 [scope](../product/scope-poc.md) is coherent, but the POC is not runnable end to end.

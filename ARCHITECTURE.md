@@ -1,315 +1,137 @@
 # Architecture baseline
 
-IOP is a generic industrial operations platform. OIP is its Operational
-Intelligence module, not the product boundary. The repository includes the minimal
-[IOP-016 API host](apps/api/README.md) and [IOP-017 web host](apps/web/README.md); the following decisions also guide future
-implementation. IOP-042 adds internal Integrations batch persistence and lifecycle;
-CSV parsing, OIP receiving storage and business endpoints remain pending. IOP-019 supplies local database
-role provisioning and versioned migrations; IOP-025 adds the Platform Core
-organization table and explicit local seed. Runtime business access stays closed.
-
-## Immediate delivery boundary
-
-The owner-approved [local analytical POC](docs/product/scope-poc.md) precedes
-shared-use v1. Deliver manual CSV preparation, verified analysis and presentation;
-login, external connections, full audit, workers and operational modules are later
-work. An accepted design does not require building every future capability now.
-Keep the accepted stack, module ownership, source adapter, organization/site IDs,
-scoped constraints/RLS and temporal semantics for the implemented slices.
-
-[ADR-0018](docs/architecture/adr/ADR-0018-local-poc-execution-context.md) is Accepted
-as of 2026-09-26: a development-only local adapter supplies a seeded principal and
-explicit site grants without human login. This narrow identity exception retains
-permission checks, transaction-local scope and forced RLS. Loopback-only operation,
-origin protection and refusal of shared/deployed mode must be verified.
-Runtime business access remains closed until implementation and validation;
-independent bootstrap/parser/UI work may proceed under its own plans.
-See the [delivery map](docs/planning/poc-delivery.md) for exact slices and deferrals.
-
-## Accepted foundations
-
-- [ADR-0001](docs/architecture/adr/ADR-0001-modular-monolith.md): modular monolith with explicit module ownership.
-- [ADR-0002](docs/architecture/adr/ADR-0002-monorepo.md): this monorepo is the single main platform repository.
-- [ADR-0003](docs/architecture/adr/ADR-0003-postgresql.md): PostgreSQL is the primary relational database.
-- [ADR-0004](docs/architecture/adr/ADR-0004-authentication-abstraction.md): provider-independent authentication boundary.
-- [ADR-0005](docs/architecture/adr/ADR-0005-customer-isolation.md): generic domain with customer-scoped configuration and data.
-- [ADR-0006](docs/architecture/adr/ADR-0006-backend-stack.md): TypeScript/Node.js with NestJS for the backend.
-
-## Boundaries and flow
-
-Web, API and future worker directories represent delivery/processing hosts for
-one modular platform. They do not establish independently owned microservices.
-Modules own business behavior and persistence; hosts compose them. Workers may
-execute background jobs using the same module contracts and release baseline.
-
-Industrial data flows from read-only source adapters through RAW capture,
-validation and normalization into owning modules and analytical read models.
-IOP may write its own handovers, maintenance records and configuration, but does
-not issue industrial control commands or write back to source systems in v1.
-
-Keep customer names, location labels, equipment codes, map data and integration
-settings in customer-scoped configuration/data. Put vendor protocols and schema
-translation in integration adapters. No customer-specific branching, types or
-hard-coded hierarchy levels belong in the generic domain.
-
-## Architecture map
-
-- [System context](docs/architecture/system-context.md): actors, external systems and trust boundaries.
-- [Modules](docs/architecture/modules.md): ownership and collaboration rules.
-- [Conceptual data model](docs/architecture/data-model.md): identities, relationships and normalization.
-- [Product scope](docs/product/scope-v1.md) and [roadmap](ROADMAP.md): proposed capabilities and sequencing.
-
-The historical PDFs named in [README](README.md) inform the analytics and locator
-model. Their SQL, deployment examples and pilot-specific choices are not adopted
-as platform implementation requirements. The foundational ADRs record accepted choices; ADR-0007 records the repository
-workflow required by the owner.
-
-## Required repository workflow
-
-[ADR-0007](docs/architecture/adr/ADR-0007-planned-workflow.md) is Accepted:
-work from a requested backlog item, write its execution plan before changes and
-preserve completion evidence. See [workflow](docs/planning/workflow.md).
-This does not accept any pending technology choice.
-
-## Accepted backend
-
-The owner accepted TypeScript on Node.js with NestJS under ADR-0006. The
-[current IOP-002 review](docs/planning/items/IOP-002-backend-review.md) covers both
-options against the analytics-only v1 scope and confirmed maintainer experience.
-Future API/worker composition follows explicit module contracts. IOP-016 implements
-the NestJS host with process health only. Frontend and tooling are accepted under
-ADR-0009/0010.
-
-## Intentionally undecided
-
-ORM; broader module code layout; identity provider, protocols and session handling;
-hosting and network topology; job and
-cross-module delivery mechanisms; map storage/rendering; event grain and source
-contracts; retention, performance, availability and recovery targets.
-
-Resolve these with scoped plans and ADRs where they affect boundaries. IOP-016 adds
-API scaffolding and dependency manifests only; organization/site persistence is supplied separately by IOP-025/026.
-IOP-015 adds local container definitions;
-see [startup instructions and validation status](infra/docker/README.md).
-
-## Accepted frontend and development tooling
-
-[ADR-0009](docs/architecture/adr/ADR-0009-local-delivery-tooling.md) selects npm
-workspaces, scoped Conventional Commits, Husky/lint-staged, Prettier/ESLint and
-TypeScript checks, plus Compose and multi-stage local container builds.
-[ADR-0010](docs/architecture/adr/ADR-0010-frontend-charting-testing.md) selects
-React + TypeScript + Vite, Apache ECharts, Jest for frontend/backend, React Testing
-Library, Supertest, Playwright and Testcontainers PostgreSQL. Jest has independent
-configuration from Vite. IOP-002 is complete as design; commands and runtime
-verification belong to bootstrap stories. IOP-016 supplies npm workspace build,
-type checks and Jest/Supertest coverage. IOP-017 adds the React/Vite health UI,
-generated browser types and Jest/RTL/Playwright checks. IOP-015 adds Compose and
-multi-stage container definitions with a static Nginx frontend proxy. Hooks and lint/format checks remain future scoped implementation.
-
-
-## Accepted API strategy
-
-[ADR-0011](docs/architecture/adr/ADR-0011-api-contract-strategy.md) selects REST/JSON,
-major versions in business API paths starting at `/api/v1`, and RFC 9457 Problem
-Details errors. Dedicated Nest transport DTOs and explicit metadata generate a
-reviewed OpenAPI artifact; browser bindings derive from that artifact. Runtime
-validation and owning-module invariants remain necessary.
-
-Internal module contracts are independent of HTTP and identity providers. Every
-operation documents and enforces its permissions and customer/site scope. Detail
-collections use bounded cursor pagination; analytical responses preserve metric,
-period, unit and coverage semantics. Breaking contract changes require explicit
-compatibility review and normally a new major version.
-
-IOP-003 is complete as design. OpenAPI dialect/tool versions, endpoint schemas and
-limits, exact error catalogs and runtime conformance checks remain implementation
-work. IOP-016 supplies the generated OpenAPI 3.0.0 health contract. IOP-022 adds
-[common POC errors](apps/api/README.md#poc-error-contract-iop-022), bounded validation
-metadata and sanitized error correlation, with generated browser bindings. Business
-contracts and domain-specific error catalogs remain future endpoint work.
-
-
-## Accepted Organization/Site scope
-
-[ADR-0012](docs/architecture/adr/ADR-0012-organization-site-scope.md) names
-Organization as the canonical customer data/configuration boundary. An organization
-owns zero or more sites; each site has exactly one organization, a stable opaque
-identity, a configurable name and explicit time-zone context. Locations and source
-labels are configurable data, not additional authorization scopes.
-
-Operations explicitly require organization scope (`organizationId`) or site scope
-(`organizationId`, `siteId`). Validate ownership and permission independently;
-missing site scope never broadens access. Users/RBAC owns authorization, Platform
-Core owns scope identity and each receiving module enforces scoped references.
-Scope follows imports, jobs, derived results and other data paths. Organization
-membership alone does not grant all-site access.
-
-IOP-004 is complete as design. HTTP scope transport and detailed temporal/lifecycle
-behavior remain separate decisions. ADR-0014 defines explicit grants without inheritance.
-
-
-## Accepted tenancy and data isolation
-
-[ADR-0013](docs/architecture/adr/ADR-0013-tenancy-data-isolation.md) selects shared
-PostgreSQL tables with explicit Organization/Site scope, application authorization,
-scoped relational constraints and row-level security (RLS). Organization-owned rows
-have non-null organization identity; site-owned rows also have non-null site identity.
-Scoped references prevent inconsistent organization/site ownership.
-
-Customer tables require enabled/forced RLS and a non-owner runtime role without
-bypass privileges. Each scoped database unit uses a pinned transaction connection
-with validated transaction-local context; missing scope denies access. Organization
-scope never grants all-site access. Imports, jobs, analytics and any future caches,
-files or exports preserve scope and enforce access independently of row policies.
-
-Shared storage shares resources and recovery impact. Application-set RLS context
-does not protect against compromised backend credentials or privileged operators.
-IOP-005 is complete as design; schema, policy SQL, driver/pool verification and
-runtime isolation tests remain implementation work. Hosting and ORM remain undecided;
-RBAC grants are defined separately by ADR-0014.
-
-
-## Accepted scoped authorization
-
-[ADR-0014](docs/architecture/adr/ADR-0014-scoped-rbac.md) selects explicit module-owned
-permissions in three fixed role bundles: site-scoped `analytics-reader` and
-`site-operator`, and organization-scoped `organization-access-admin`. Assignments
-combine only at the matching target; no role hierarchy, wildcard or automatic site
-inheritance exists. Active users and organization membership are prerequisites,
-not grants. Team Leader and Taskforce share the reader bundle.
-
-The access administrator may delegate the fixed roles within its organization,
-including explicit site access to itself, but has no implicit site data access,
-cross-organization authority or RLS bypass. Ordinary administration must preserve
-an active organization access admin. Removing membership revokes its assignments;
-rejoining does not restore them automatically.
-
-Users/RBAC evaluates current permission on each operation; receiving modules enforce
-resource scope and domain conditions. New job chunks/retries and result retrieval
-recheck access. A login token is not a permission snapshot. Already-authorized work
-may finish; access mutations must serialize authority checks with changes.
-
-IOP-006 is complete as design. The pilot uses a small fixed catalog and explicit
-assignments; no custom-role UI, policy engine or enterprise identity integration
-is required. Authentication/session implementation remains IOP-007. IOP-029 implements
-the bounded site lookup and transaction handoff below;
-shared-use administration and host/endpoint integration remain pending.
-
-
-## Accepted temporal model
-
-[ADR-0016](docs/architecture/adr/ADR-0016-time-and-timezone-model.md) distinguishes
-UTC instants, local calendar values, periods and durations. Sites have explicit
-IANA zones; source interpretation belongs in scoped adapter configuration.
-Instant contracts use an RFC 3339 profile with millisecond precision and UTC `Z`
-output; persistence uses `timestamptz(3)` with separate zone/provenance metadata.
-
-Resolved intervals use `[start, end)`. Reports retain site calendar context across
-viewer devices; gaps and repeated local times require explicit resolution or remain
-unresolved. Future overnight shifts retain local intent and independently resolved
-UTC bounds, so elapsed hours can vary across clock changes. Historical periods are
-not silently reinterpreted after zone/rule changes; ordinary site-zone replacement
-is disallowed after temporal use pending an explicit correction plan.
-
-IOP-008 is complete as design. CSV filename dates remain source labels until their
-window and zone are confirmed; no occurrence timestamps, shift assignments or
-24-hour coverage are inferred. Runtime/library validation, source contracts and
-shift implementation remain separate work.
-
-## Accepted local database migration tooling
-
-[ADR-0019](docs/architecture/adr/ADR-0019-local-database-migrations.md) selects
-node-pg-migrate without an ORM for the local POC. IOP-019 supplies explicit one-shot
-provision/migrate commands, a private history schema and separate bootstrap,
-migrator and non-owner runtime roles. Migrations do not run during API startup.
-See [commands and evidence](infra/database/README.md). Runtime has CONNECT plus
-IOP-029's bounded lookup columns. IOP-025/026 provide organization/site storage and
-seeds; IOP-029 supplies the lookup grants and operation transaction helper.
-Business-table access belongs to later owning stories. ADR-0018 host implementation
-remains pending.
-
-
-## Accepted initial organization bootstrap
-
-[ADR-0020](docs/architecture/adr/ADR-0020-local-organization-bootstrap.md) permits
-an explicit insert-only local organization seed using the separate migrator login.
-IOP-025 implements `platform_core.organizations`, preserving existing opaque text
-IDs, scoped SELECT/INSERT policies and forced RLS. Repeated matching inputs leave
-data unchanged; conflicting names fail. The seed adds no runtime grants. Its bounded
-installation authority does not provide business authorization, sites, users,
-grants or administrative CRUD. ADR-0018 is Accepted; its runtime implementation remains pending; see
-[commands and limitations](infra/database/README.md#initial-organization-seed-iop-025).
-
-## Accepted initial site bootstrap
-
-[ADR-0021](docs/architecture/adr/ADR-0021-local-site-bootstrap.md) extends the explicit
-local migrator bootstrap to initial site creation under IOP-026. It requires an
-existing organization, stable site identity, explicit validated IANA zone, scoped
-constraints and forced RLS with both organization and site selectors. Identical
-seeds leave data unchanged; conflicting owner, name or zone fails. The seed adds no
-runtime grants. IOP-026 implements the migration, zone-validation trigger and explicit
-insert-only seed. ADR-0018 is Accepted; its runtime implementation remains pending, independently gating runtime business access.
-
-
-## Accepted POC CSV preservation
-
-[ADR-0022](docs/architecture/adr/ADR-0022-poc-csv-preservation.md) selects bounded
-original CSV storage as Integrations-owned PostgreSQL `bytea` rows with immutable
-scoped provenance, integrity checks and `imports.review` retrieval. The
-[preservation contract](docs/architecture/csv-preservation-poc.md) defines admission
-budgets, rejected-input behavior and reset boundaries. IOP-011 is complete as design;
-no RAW schema or endpoint is implemented. Maps, attachments and a general storage
-abstraction remain deferred. ADR-0018 remains an independent runtime access gate.
-
-
-## Accepted POC analytical filters
-
-[ADR-0023](docs/architecture/adr/ADR-0023-poc-analytics-filters.md) defines one
-OIP-owned selection across overview and detail: explicit organization/site/source,
-reporting-date labels, scoped dimension references and visible message exclusions.
-Drill-down preserves restrictions; breadcrumb return restores the prior selection.
-Coverage distinguishes missing imports from no matching records, and full totals
-reconcile against contributing records on the same admitted data revision.
-IOP-097 supplies an opt-in shared fixture filter preview and remains Blocked on
-production queries/storage and runtime access. ADR-0028 accepts the query design;
-fixture behavior does not prove production filters or authorization.
-ADR-0018 is Accepted; its runtime implementation remains pending and independently gates business access.
-
-
-## Accepted initial local principal bootstrap
-
-[ADR-0024](docs/architecture/adr/ADR-0024-local-principal-bootstrap.md) permits a
-minimal Users/RBAC-owned global identity (`user_id`, `is_active`) and explicit
-insert-only local migrator seed. IOP-027 adds `users_rbac.users`, exact-principal
-forced RLS and inactive-user rejection without reactivation. Identity remains
-separate from scoped membership and permissions. IOP-029 supplies bounded runtime
-lookup separately;
-ADR-0018's host adapter remains unimplemented. See the
-[database guide](infra/database/README.md#initial-local-user-seed-iop-027).
-
-
-## Accepted initial local membership bootstrap
-
-Accepted [ADR-0025](docs/architecture/adr/ADR-0025-local-membership-bootstrap.md)
-authorizes the IOP-030 bounded organization membership and fixed site-role seed.
-Users/RBAC owns the two tables with scoped foreign keys and forced exact-selector
-RLS. The explicit migrator command creates membership and both site roles atomically;
-reruns never repair incomplete grants or reactivate membership. IOP-029 supplies
-bounded runtime lookup separately. Membership administration and
-the ADR-0018 host adapter remain later work. See the
-[database guide](infra/database/README.md#initial-local-membership-and-site-roles-iop-030).
-
-
-## Accepted POC authorization lookup
-
-[ADR-0026](docs/architecture/adr/ADR-0026-poc-authorization-lookup.md) is Accepted.
-IOP-029 implements API-local Users/RBAC and Platform Core contracts, narrow runtime
-column reads with forced lookup RLS, and a pinned site-operation transaction helper.
-Current principal, membership, exact ownership and fixed permissions are checked
-before authorized business context is installed. Rollback, pool reuse and revocation
-are tested against real runtime credentials; no business table or endpoint is added.
-See the [API contract](apps/api/README.md#site-operation-authorization-iop-029) and
-[database guide](infra/database/README.md#current-site-authorization-lookup-iop-029).
-Broader module placement remains open; this bounded layout does not reorganize the
-platform. ADR-0018 host activation/origin protection and delivered import/read tests
-still gate business access. Shared-use access administration remains deferred.
+IOP is the generic industrial operations platform; OIP is its Operational Intelligence
+module. The delivered [local analytical POC](docs/product/scope-poc.md) composes a
+React/TypeScript/Vite browser, NestJS modular monolith and PostgreSQL. It supports
+configured demo user selection, manual CSV upload, retained originals, immutable
+aggregate facts, historical analysis and scoped offline reset.
+See the [delivery map](docs/planning/poc-delivery.md),
+[operator guide](docs/development/running-poc.md) and
+[implementation evidence](docs/planning/completed/IOP-147-working-analytical-poc-plan.md).
+
+## Delivered boundaries and flow
+
+- Platform Core owns organization/site identity and the explicit site time zone.
+- Users/RBAC owns active principals, organization memberships and fixed site roles.
+  The host checks current permissions before each pinned scoped operation.
+- Integrations owns RAW bytes, receipt/inspection history, source-date admission,
+  CSV decoding/normalization and scoped mapping snapshots. Source schema names and
+  customer labels remain in adapters/configuration, outside generic core concepts.
+- OIP owns publications, exact immutable aggregate facts, dimension references,
+  coverage and analytical queries. Receiving validation binds facts to retained
+  RAW and original physical lines. Publication and date admission commit together.
+- The host composes these contracts; the browser consumes generated REST/JSON types.
+  Overview and detail share one backend selection/result, including full totals,
+  bounded groups, cursor pages and original-file provenance.
+
+One fact is a source-reported aggregate line, not an individual incident. Reported
+frequency and accumulated alarm seconds are exact additive measures. Duration is
+not plant downtime. Filename dates are reporting labels with unknown windows;
+missing imports are distinct from no matching records and actual zero measures.
+Scoped sector mappings are frozen at import; editing configuration never silently
+reclassifies history. See the [aggregate model](docs/architecture/event-aggregates-poc.md)
+and [query contract](docs/architecture/analytics-query-poc.md).
+
+## Identity and isolation
+
+The explicit native `local-demo` mode binds only to loopback and refuses production
+or shared/container activation. ADR-0030 extends ADR-0018 with an allowlisted local
+user selector and opaque short-lived cookies. Origin/Host checks precede business
+handling; selection does not create identities or grant access. The adapter is
+replaceable by third-party authentication before shared use; no provider is selected.
+
+Organization is the customer configuration/data boundary; site scope includes both
+organization and site, with independent ownership and permission checks. Membership
+alone grants no site access. Every operation/page checks current grants, installs
+transaction-local scope on a pinned connection and uses explicit predicates plus
+forced RLS. Revocation applies to subsequent operations; already-authorized work
+may finish. Browser references and tokens are never permission snapshots.
+
+Runtime uses a non-owner role with narrow column privileges and no RLS bypass,
+delete or schema authority. Separate bootstrap and migrator roles provision the
+local installation; migrations never run implicitly on API startup. RLS does not
+protect against a compromised trusted backend or privileged installation operator.
+
+## Persistence, consistency and reset
+
+Integrations retains bounded original bytes and failed attempts with provenance.
+Successful source/date admission is unique; changed duplicates do not replace data.
+A failed publication rolls back facts and its claim. Explicit outcome recovery
+inspects durable agreement without automatically replaying bytes.
+
+Each analytical operation uses one SQL snapshot. Revisions fingerprint immutable
+source publications; scoped canonical dimension digests and selection-bound cursors
+prevent silently mixing selections/pages. Exact sums fail before unsafe JSON number
+conversion. Reads have statement and response bounds; full totals never come from
+one displayed page. Stable source tuples, unclassified data and repeated lines
+remain independently represented.
+
+Reset is an offline migrator operation with a private installation identity and
+exact organization/site/source target. A single-host lease and shared operation
+locks exclude exclusive maintenance; active runtime connections cause refusal.
+Supported schema, seeded ownership and quota accounting are checked before atomic
+scoped cleanup. Foreign targets, configuration and principals/grants survive.
+Lost commit acknowledgement requires inspection, never automatic replay. Fixture
+reload is a separate phase through the real importer. No reset API or database/
+volume-drop convenience is provided.
+
+## Contracts and tooling
+
+Use REST/JSON business routes under `/api/v1`, reviewed OpenAPI, generated browser
+bindings and sanitized Problem Details with safe correlation. Internal module
+contracts remain independent of HTTP and the identity provider. Health bootstrap
+can run separately without business activation.
+
+Accepted tools are npm workspaces, Node/TypeScript, NestJS, React/Vite, PostgreSQL,
+node-pg-migrate without an ORM, Jest/RTL/Supertest, Playwright and Testcontainers.
+The local [testing entry point](docs/development/testing-poc.md) covers unit,
+contract, startup, actual-role database and real browser checks. Existing container
+health hosts remain separately documented; the analytical demo uses native hosts
+and a dedicated local database container. Hooks/lint automation remain future work.
+
+## Future scope and undecided choices
+
+Shared-use authentication/provider/session policy, administration, ORM, broader
+module placement, hosting/topology, workers/jobs, operational modules, map storage,
+full audit, production retention, backup/restore and formal service targets remain
+separately scoped. Historical PDFs inform the product; their SQL/deployment examples
+and customer-specific structures are not adopted implicitly. Industrial integrations
+remain read-only, with no commands to control plant equipment.
+
+Use the [module map](docs/architecture/modules.md),
+[conceptual data model](docs/architecture/data-model.md),
+[system context](docs/architecture/system-context.md) and
+[glossary](docs/product/glossary.md). Follow the
+[planned workflow](docs/planning/workflow.md): authorized scope, story branch,
+plan before edits, real validation and preserved evidence. Proposed ADRs remain
+proposals; acceptance is never inferred from an old implementation handoff.
+
+## Decision references
+
+- [ADR-0018-local-poc-execution-context](docs/architecture/adr/ADR-0018-local-poc-execution-context.md)
+- [ADR-0001-modular-monolith](docs/architecture/adr/ADR-0001-modular-monolith.md)
+- [ADR-0002-monorepo](docs/architecture/adr/ADR-0002-monorepo.md)
+- [ADR-0003-postgresql](docs/architecture/adr/ADR-0003-postgresql.md)
+- [ADR-0004-authentication-abstraction](docs/architecture/adr/ADR-0004-authentication-abstraction.md)
+- [ADR-0005-customer-isolation](docs/architecture/adr/ADR-0005-customer-isolation.md)
+- [ADR-0006-backend-stack](docs/architecture/adr/ADR-0006-backend-stack.md)
+- [ADR-0007-planned-workflow](docs/architecture/adr/ADR-0007-planned-workflow.md)
+- [ADR-0009-local-delivery-tooling](docs/architecture/adr/ADR-0009-local-delivery-tooling.md)
+- [ADR-0010-frontend-charting-testing](docs/architecture/adr/ADR-0010-frontend-charting-testing.md)
+- [ADR-0011-api-contract-strategy](docs/architecture/adr/ADR-0011-api-contract-strategy.md)
+- [ADR-0012-organization-site-scope](docs/architecture/adr/ADR-0012-organization-site-scope.md)
+- [ADR-0013-tenancy-data-isolation](docs/architecture/adr/ADR-0013-tenancy-data-isolation.md)
+- [ADR-0014-scoped-rbac](docs/architecture/adr/ADR-0014-scoped-rbac.md)
+- [ADR-0016-time-and-timezone-model](docs/architecture/adr/ADR-0016-time-and-timezone-model.md)
+- [ADR-0019-local-database-migrations](docs/architecture/adr/ADR-0019-local-database-migrations.md)
+- [ADR-0020-local-organization-bootstrap](docs/architecture/adr/ADR-0020-local-organization-bootstrap.md)
+- [ADR-0021-local-site-bootstrap](docs/architecture/adr/ADR-0021-local-site-bootstrap.md)
+- [ADR-0022-poc-csv-preservation](docs/architecture/adr/ADR-0022-poc-csv-preservation.md)
+- [ADR-0023-poc-analytics-filters](docs/architecture/adr/ADR-0023-poc-analytics-filters.md)
+- [ADR-0024-local-principal-bootstrap](docs/architecture/adr/ADR-0024-local-principal-bootstrap.md)
+- [ADR-0025-local-membership-bootstrap](docs/architecture/adr/ADR-0025-local-membership-bootstrap.md)
+- [ADR-0026-poc-authorization-lookup](docs/architecture/adr/ADR-0026-poc-authorization-lookup.md)
+- [ADR-0027-poc-import-publication](docs/architecture/adr/ADR-0027-poc-import-publication.md)
+- [ADR-0028-poc-analytics-query-consistency](docs/architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
+- [ADR-0029-scoped-demo-reset](docs/architecture/adr/ADR-0029-scoped-demo-reset.md)
+- [ADR-0030-local-demo-user-selection](docs/architecture/adr/ADR-0030-local-demo-user-selection.md)

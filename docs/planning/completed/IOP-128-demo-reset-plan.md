@@ -1,5 +1,15 @@
 # IOP-128 — Demo reset plan
 
+## Final disposition — 2026-09-27
+
+Completed through the explicitly authorized [IOP-147 integrated delivery](IOP-147-working-analytical-poc-plan.md).
+Its execution record supplies the missing runtime implementation and verification.
+The earlier steps and dated blockers below are historical; no separate active
+continuation remains. This archive preserves the original branch and review evidence.
+
+## Original execution record
+
+
 Status: Blocked; documentation increment validated. Owner requested IOP-128 on 2026-09-26, limited to the
 [POC](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 Story: [IOP-128](../items/IOP-128-demo-reset.md).

@@ -1,9 +1,10 @@
 # Final source-to-report reconciliation for the POC
 
 Acceptance procedure for [IOP-132](../planning/items/IOP-132-final-reconciliation.md),
-limited to the [local analytical POC](../product/scope-poc.md). **Runtime execution
-is blocked.** Internal IOP-048 tests and the independent fictional UI preview do
-not prove that uploaded CSVs reach either delivered analytical view.
+limited to the [local analytical POC](../product/scope-poc.md). Runtime reconciliation
+was executed under [IOP-147](../planning/completed/IOP-147-working-analytical-poc-plan.md)
+through actual PostgreSQL/API/browser views. The independent oracle remains the
+reference; fictional preview totals are not used as evidence.
 
 ## Prerequisites and independent reference
 
@@ -15,10 +16,10 @@ references; record fixture hashes, application commit, configuration/mapping rev
 and actual import/RAW IDs in the execution evidence. Do not copy expected values
 from the application's totals or use its parser/reducer as the independent oracle.
 
-Required delivery: production OIP publications/facts and the actual importer/review
+Delivered prerequisites under IOP-147: production OIP publications/facts and the actual importer/review
 path (IOP-048), executable IOP-089 reads, connected overview/detail and drill-down
-(IOP-096), and the IOP-129 demonstration. ADR-0018 is Accepted but its host protection,
-current grants and actual-role isolation must be implemented and validated first.
+(IOP-096), and the IOP-129 demonstration. ADR-0018/0030 host protection, current grants and actual-role isolation are
+implemented and verified in the linked record.
 Reuse IOP-128's delivered safe reset when available for reproducibility; no reset
 command or ad hoc deletion is authorized by this procedure.
 

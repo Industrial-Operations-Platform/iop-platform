@@ -2,11 +2,12 @@
 
 [IOP-043](../planning/items/IOP-043-canonical-event-model.md) defines the logical
 OIP receiving model for the [analytical POC](../product/scope-poc.md). This is
-design only, specializing the [CSV source contract](csv-source-contract-poc.md),
+the canonical design, specializing the [CSV source contract](csv-source-contract-poc.md),
 [RAW model](raw-ingestion-poc.md), [batch model](import-batches-poc.md) and Accepted
 [temporal](adr/ADR-0016-time-and-timezone-model.md) and
-[filter](adr/ADR-0023-poc-analytics-filters.md) semantics. It introduces no new
-architectural mechanism, schema, DTO, parser or runtime receiver.
+[filter](adr/ADR-0023-poc-analytics-filters.md) semantics. The physical schema and runtime receiver are delivered under
+[IOP-147](../planning/items/IOP-147-working-analytical-poc.md); the original IOP-043
+completion remains design-only evidence.
 
 ## Ownership, grain and identity
 

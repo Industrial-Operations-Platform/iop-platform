@@ -110,15 +110,13 @@ publication; invalid/foreign references and revoked grants; overflow; changed
 revision between pages; duplicate/invalid import leaving all groups unchanged.
 The baseline arithmetic does not prove those runtime outcomes.
 
-## Delivery gates
+## Delivery evidence
 
-IOP-090/091 provide measure specifications. Executable IOP-089 queries, production
-OIP publications/facts and ADR-0018 host activation remain pending. No IOP-044 or
-physical asset prerequisite is added. After those runtime dependencies deliver,
-resolve the bounded grouped response within the accepted query boundary and run
-`npm test`, `npm run test:database` and relevant HTTP/browser checks through the
-actual authorized path. Reconcile both views and all contributing records on one
-selection/revision, including denial, navigation and coverage scenarios. Record
-actual dataset size and timings. A new architectural mechanism requires a Proposed
-ADR and owner acceptance before dependent implementation. Specification validation
-does not complete IOP-094 or the end-to-end POC.
+Storage, queries, host activation and connected views are delivered under
+[IOP-147](../planning/completed/IOP-147-working-analytical-poc-plan.md). Actual
+PostgreSQL/HTTP/browser checks reconcile the baseline and cover tuple identity,
+historical mappings, zero/empty selections, revisions, overflow and access denial.
+The CSV contract rejects an empty file; an admitted empty publication cannot be
+created by this importer. Bounded top-100 group presentation retains full totals;
+paged dimension options provide access to any remaining group. No physical asset
+registry, legacy pipeline execution parity or additional metric is claimed.

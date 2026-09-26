@@ -1,5 +1,15 @@
 # IOP-120 — POC runtime state continuation
 
+## Final disposition — 2026-09-27
+
+Completed through the explicitly authorized [IOP-147 integrated delivery](IOP-147-working-analytical-poc-plan.md).
+Its execution record supplies the missing runtime implementation and verification.
+The earlier steps and dated blockers below are historical; no separate active
+continuation remains. This archive preserves the original branch and review evidence.
+
+## Original execution record
+
+
 Status: Blocked — analytical endpoints and validated local business access are absent.
 Authorization: owner's 2026-09-26 request to work on IOP-120 within the POC.
 Branch: `docs/IOP-120-runtime-state-plan`, created from clean `develop` before edits.

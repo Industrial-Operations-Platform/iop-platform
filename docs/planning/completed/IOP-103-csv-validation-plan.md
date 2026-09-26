@@ -1,5 +1,15 @@
 # IOP-103 — Manual CSV delivery validation plan
 
+## Final disposition — 2026-09-27
+
+Completed through the explicitly authorized [IOP-147 integrated delivery](IOP-147-working-analytical-poc-plan.md).
+Its execution record supplies the missing runtime implementation and verification.
+The earlier steps and dated blockers below are historical; no separate active
+continuation remains. This archive preserves the original branch and review evidence.
+
+## Original execution record
+
+
 Status: Blocked — real importer/receiver and local host activation are unavailable.
 Authorized by the owner's 2026-09-26 request for [IOP-103](../items/IOP-103-csv-integration.md),
 limited to the [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).

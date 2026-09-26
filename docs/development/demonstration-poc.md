@@ -1,9 +1,11 @@
 # Local CSV-to-presentation demonstration
 
 Prepared for [IOP-129](../planning/items/IOP-129-end-to-end-scenario.md).
-**Not executed: the delivered import, analytical reads, local host context and
-safe reset are still missing.** This procedure defines acceptance within the
-[POC scope](../product/scope-poc.md); a fictional preview is not its evidence.
+Executed under [IOP-147](../planning/completed/IOP-147-working-analytical-poc-plan.md)
+with actual PostgreSQL/API/browser evidence and guarded reset/reload. The canonical
+operator commands and step-by-step walkthrough are in [running the POC](running-poc.md).
+This document retains the acceptance procedure within the
+[POC scope](../product/scope-poc.md); fictional previews alone are not evidence.
 
 ## Preflight
 
@@ -51,7 +53,7 @@ not a rolled-back reset. No volume removal or broad database cleanup is part of 
 
 ## Execution record and closure
 
-Create the runtime execution plan when the gates are delivered. Record application
+Use the linked IOP-147 runtime execution record. For a new observation session, Record application
 commit, date/environment, fixture hashes and byte sizes, scope/source and mapping
 revision, actual import/RAW IDs, applied selections, data revisions, complete
 contributor identities, observed counts/totals and links to browser/API evidence.

@@ -1,5 +1,15 @@
 # IOP-122 — POC accessibility continuation
 
+## Final disposition — 2026-09-27
+
+Completed through the explicitly authorized [IOP-147 integrated delivery](IOP-147-working-analytical-poc-plan.md).
+Its execution record supplies the missing runtime implementation and verification.
+The earlier steps and dated blockers below are historical; no separate active
+continuation remains. This archive preserves the original branch and review evidence.
+
+## Original execution record
+
+
 Status: Blocked — real analytical controls and data are not delivered.
 Authorization: owner's 2026-09-26 IOP-122 request, limited to the POC.
 Branch: `docs/IOP-122-accessibility-continuation`, created from clean `develop`

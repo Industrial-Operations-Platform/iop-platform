@@ -2,47 +2,12 @@
 
 ## Status
 
-Blocked — POC query design and ADR-0028 are accepted; production OIP storage
-and ADR-0018 host activation remain pending.
+Completed — selected local POC slice, delivered and verified under IOP-147 on
+2026-09-27. Broader deferred platform capabilities are not included.
 
-## POC delivery applicability
+## Delivered outcome
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
-
-## Milestone
-
-M11 — OIP / Operational Intelligence. Bounded POC query slice.
-
-## Goal
-
-Query verified frequency and duration independently of UI.
-
-## User / business value
-
-Operations staff and accountable leaders need explainable metrics to prioritize problems.
-
-## Context
-
-Scope: Operational Intelligence (OIP). See [modules](../../architecture/modules.md) and
-the [planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; inclusion in the backlog does not authorize implementation.
-
-## Current state
-
-The [POC query contract](../../architecture/analytics-query-poc.md) and
-[Accepted ADR-0028](../../architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
-define the accepted operation, references, revision consistency and bounded pages.
-No query code or endpoint is implemented. Internal dependency evidence is available;
-production receiving storage and local host activation are not. See the
-[active plan](../active/IOP-089-analytics-query-layer-plan.md).
-
-## Desired state
-
-Query verified frequency and duration independently of UI.
+OIP owns immutable publications/facts and one-statement analytical snapshots. Scoped dimension references, source revisions, validated cursors, exact totals, bounded groups/options and contributing records are implemented behind current permission checks.
 
 ## Requirements
 
@@ -53,71 +18,31 @@ Query verified frequency and duration independently of UI.
 
 ## Acceptance criteria
 
-- [ ] Query verified frequency and duration independently of UI.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
+- [x] Query verified frequency and duration independently of UI.
+- [x] Validate the slice-specific outcomes and limitations in Requirements.
 - [x] Record design evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
-## Domain considerations
+## Scope, dependencies and constraints
 
-OIP is an IOP module; metrics remain independent of the UI and WinCC schemas.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+control this selected slice. Preserve generic module ownership, configured source
+labels, exact aggregate grain, current permissions and forced scoped RLS. No live
+industrial writes, customer-specific core logic or production/shared-use claim.
 
-## Architecture constraints
+Required contracts/slices: [IOP-043](IOP-043-canonical-event-model.md), [IOP-048](IOP-048-data-reconciliation.md), [IOP-049](IOP-049-source-mappings.md).
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
+Canonical specifications:
 
-## Security considerations
+- [scope-poc](../../product/scope-poc.md)
+- [analytics-query-poc](../../architecture/analytics-query-poc.md)
+- [ADR-0028-poc-analytics-query-consistency](../../architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
 
-Verify permission and customer/site scope for relevant operations and references.
-Do not include secrets, plant drawings or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
+## Validation and traceability
 
-## Data considerations
+[IOP-147 execution evidence](../completed/IOP-147-working-analytical-poc-plan.md) records actual commands, results and limitations.
+The [operator guide](../../development/running-poc.md) describes the delivered flow.
 
-Define grain, coverage, units and periods; accumulated alarm duration does not automatically equal downtime.
+Prior design, internal or preview evidence (historical):
 
-## API considerations
-
-Queries use verified scope filters and traceability to contributing records.
-
-## UI considerations
-
-Show metric definitions and limitations; do not present correlation as root cause.
-
-## Dependencies
-
-[IOP-043](IOP-043-canonical-event-model.md), [IOP-048](IOP-048-data-reconciliation.md), [IOP-049](IOP-049-source-mappings.md).
-
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. IOP-043 supplies completed logical design; IOP-048
-has internal oracle evidence through a disposable receiver; IOP-049 has pure scoped
-classification. Neither latter story supplies durable production OIP facts.
-ADR-0018 is Accepted as of 2026-09-26; its implementation/validation independently
-gates runtime access. Accepted ADR-0023/0026/0027 supply filter, authorization and
-publication boundaries. ADR-0028 accepts the analytical reference and consistency mechanisms.
-
-## Non-goals
-
-Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must specify executable commands and scenarios for the criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictitious tests.
-
-## Documentation impact
-
-Update this item, its [backlog](../backlog.md) status and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-The owner accepted ADR-0028 and its linked query contract on 2026-09-26.
-The decision selects one-statement reads with an
-immutable-publication revision fingerprint, scoped dimension digests and validated
-cursors. Production storage and host activation remain explicit delivery handoffs;
-this story does not authorize adjacent implementation by implication.
+- [IOP-089-analytics-query-layer-plan](../completed/IOP-089-analytics-query-layer-plan.md)

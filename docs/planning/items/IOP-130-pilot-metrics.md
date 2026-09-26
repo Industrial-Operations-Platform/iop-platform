@@ -2,9 +2,10 @@
 
 ## Status
 
-Blocked — IOP-129's delivered demonstration and owner observation are unavailable.
-[Measurement preparation](../completed/IOP-130-pilot-metrics-plan.md) completed on
-2026-09-26; no pilot measures or owner feedback have been collected.
+In progress — technical workflow/integrity/parity/isolation observations are available
+from [IOP-147](../completed/IOP-147-working-analytical-poc-plan.md).
+Owner observation and usefulness feedback are **not collected**. They remain the
+only acceptance dependency for this selected POC measurement slice.
 
 ## Milestone
 
@@ -27,10 +28,9 @@ Scope: validation and release readiness. See [modules](../../architecture/module
 and the [planning workflow](../workflow.md). Backlog inclusion alone did not authorize
 implementation; the owner requested this POC slice on 2026-09-26.
 
-IOP-001 supplies accepted design measures. IOP-129 is Blocked on production OIP
-storage, delivered importer/query/view composition, ADR-0018 host activation and
-IOP-128 reset. The [measurement procedure](../../development/pilot-metrics-poc.md)
-is prepared; internal tests and fictional views do not supply pilot results.
+IOP-001 supplies accepted design measures. IOP-129 now demonstrates the delivered
+importer/query/views, local host and safe reset. The [measurement procedure](../../development/pilot-metrics-poc.md)
+is prepared; actual runtime evidence supplies technical observations; automated checks cannot supply owner feedback.
 
 ## Desired state and requirements
 
@@ -61,9 +61,9 @@ Proposed ADRs are proposals, not permission to adopt a decision.
 
 Verify permissions and organization/site scope on relevant operations and references.
 [ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md) is Accepted,
-but its delivered host verification remains a gate. Do not include secrets, floor
+and its delivered host verification is recorded under IOP-147. Do not include secrets, floor
 plans or production data. Industrial integrations remain read-only; material changes
-retain applicable traceability. No architecture or runtime access change is introduced.
+retain applicable traceability. This measurement item introduces no further architecture or access change.
 
 ## Data, API and UI considerations
 
@@ -76,7 +76,7 @@ One local operator may perform multiple analytical responsibilities without logi
 
 [IOP-001](IOP-001-v1-personas-and-pilot-workflow.md) — Completed design; reuse its
 [accepted measures](../../product/personas-and-pilot-workflow.md#accepted-acceptance-measures).
-[IOP-129](IOP-129-end-to-end-scenario.md) — Blocked; supplies the actual demonstration,
+[IOP-129](IOP-129-end-to-end-scenario.md) — Completed; supplies the actual demonstration,
 reconciliation and local access/reset evidence. Reuse the linked
 [IOP-132 procedure](../../development/reconciliation-poc.md) for numerical comparisons.
 
@@ -99,5 +99,5 @@ and execution record. Change other contracts/guides/ADRs only when this task aff
 
 ## Open work
 
-After IOP-129 prerequisites are delivered, execute the measurement session and collect
-owner feedback. No additional architectural decision is required for preparation.
+Execute the owner observation session and collect feedback against the delivered
+workflow, reusing IOP-147 technical evidence. No additional architectural decision is required for preparation.

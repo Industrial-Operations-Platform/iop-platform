@@ -4,7 +4,7 @@ Definition and validation handoff for [IOP-090](../planning/items/IOP-090-event-
 limited to the [analytical POC](scope-poc.md). This specializes the already accepted
 [IOP-089 query contract](../architecture/analytics-query-poc.md); it introduces no
 new formula or architecture. Runtime queries and persisted-path reconciliation
-remain pending.
+are delivered under [IOP-147](../planning/completed/IOP-147-working-analytical-poc-plan.md).
 
 ## Definition
 
@@ -30,7 +30,7 @@ is lost; use the accepted `analytics_total_out_of_range` outcome, never a rounde
 partial or zero replacement. Invalid source measures fail admission rather than
 being silently omitted. The query contract owns transport/error implementation.
 
-The displayed label is “Event frequency”, with unit “reported occurrences” and
+The delivered label is “Reported frequency”, with unit “reported occurrences” and
 an explanation that source aggregates can overlap. This is not a failure rate,
 distinct incident count, uptime measure or duration-derived metric. No denominator,
 target, percentage change or new ranking calculation is defined by this story.

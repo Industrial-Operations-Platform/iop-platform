@@ -2,28 +2,12 @@
 
 ## Status
 
-In progress — internal POC reconciliation verification is delivered. Production
-OIP facts and the delivered import/review path remain pending.
+Completed — selected local POC slice, delivered and verified under IOP-147 on
+2026-09-27. Broader deferred platform capabilities are not included.
 
-## Milestone and goal
+## Delivered outcome
 
-M5 — Industrial Data Foundation. Reconcile RAW and normalized data, limited to the
-[POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
-Operations needs traceable imported data and reconcilable metrics.
-
-## Context and current state
-
-Scope: Integrations and Operational Intelligence. See the
-[modules](../../architecture/modules.md) and [planning workflow](../workflow.md).
-The original context came from the owner-requested outline; backlog membership
-alone did not authorize implementation. The owner requested this POC story on
-2026-09-26.
-
-Internal receipt, parsing, validation, classification and date-admission contracts
-are integrated on develop. This increment compares their composition through a
-disposable PostgreSQL receiver against IOP-125's independent literal oracle.
-See the [execution record](../completed/IOP-048-data-reconciliation-plan.md).
-The probe is not production OIP storage or an analytical query implementation.
+The real importer and retained RAW reconcile against every physical line in the independent IOP-125 oracle. Full, per-file, sector, area, equipment and message results reconcile through actual PostgreSQL and HTTP.
 
 ## Requirements and acceptance
 
@@ -33,7 +17,7 @@ The probe is not production OIP storage or an analytical query implementation.
 - [x] Verify settled counts satisfy data = admitted + rejected when fully counted;
   incomplete inspection retains unknown totals. Rejection, duplicate admission and
   receiver rollback must not add analytical measures.
-- [ ] Reconcile RAW and production OIP facts through the delivered import/review
+- [x] Reconcile RAW and production OIP facts through the delivered import/review
   path with actual scope/permission enforcement and visible discrepancies.
 - [x] Document scenarios and necessary decisions without expanding scope, with
   actual validation evidence and synchronized documentation.
@@ -45,65 +29,26 @@ remain distinct source lines. Warning counts can overlap and do not exclude rows
 Frequency is not record count; accumulated alarm seconds are not plant downtime.
 Unknown reporting windows remain explicit. Rejections and corrections stay visible.
 
-## Architecture and security constraints
+## Scope, dependencies and constraints
 
-Follow [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-[Accepted ADR-0027](../../architecture/adr/ADR-0027-poc-import-publication.md)
-and the [batch model](../../architecture/import-batches-poc.md) govern atomic
-publication, counts and recovery. Proposed ADRs do not authorize implementation.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+control this selected slice. Preserve generic module ownership, configured source
+labels, exact aggregate grain, current permissions and forced scoped RLS. No live
+industrial writes, customer-specific core logic or production/shared-use claim.
 
-Verify permission and organization/site scope on operations and references. Keep
-forced RLS and non-owner runtime access. Status/RAW review needs `imports.review`,
-publication/recovery needs `imports.submit`, analytical reads need `analytics.read`.
-No secrets, floor plans or production data are introduced. Industrial integrations
-remain read-only; record material changes where applicable. ADR-0018 host activation
-and validation remain independent runtime gates.
+Required contracts/slices: [IOP-046](IOP-046-import-validation.md), [IOP-047](IOP-047-import-idempotency.md), [IOP-042](IOP-042-import-batches.md), [IOP-045](IOP-045-csv-adapter.md), [IOP-049](IOP-049-source-mappings.md), [IOP-012](IOP-012-source-integration-contract.md), [IOP-043](IOP-043-canonical-event-model.md), [IOP-125](IOP-125-demo-events.md).
 
-## Data, API and UI considerations
+Canonical specifications:
 
-Use ingestion contracts; credentials and external source columns stay in adapters
-or scoped configuration, outside the generic core. Expose import states, errors
-and results only within the delivered task; no full dashboard is authorized here.
-This increment supplies executable reconciliation evidence without a new endpoint,
-reporting service, metric definition, schema or recovery mechanism.
+- [scope-poc](../../product/scope-poc.md)
+- [ADR-0027-poc-import-publication](../../architecture/adr/ADR-0027-poc-import-publication.md)
+- [import-batches-poc](../../architecture/import-batches-poc.md)
 
-Batch `reconcile` resolves uncertain publication outcomes from claim/count agreement;
-it does not recalculate source frequency/duration or detect all measure corruption.
-The independent oracle comparisons provide that measure evidence for the internal
-test path only. They do not prove legacy Python/DAX parity or overview/detail parity.
+## Validation and traceability
 
-## Dependencies and remaining handoff
+[IOP-147 execution evidence](../completed/IOP-147-working-analytical-poc-plan.md) records actual commands, results and limitations.
+The [operator guide](../../development/running-poc.md) describes the delivered flow.
 
-- [IOP-046](IOP-046-import-validation.md) and
-  [IOP-047](IOP-047-import-idempotency.md): relevant internal slices are integrated;
-  delivered-path criteria remain open.
-- [IOP-042](IOP-042-import-batches.md), [IOP-045](IOP-045-csv-adapter.md) and
-  [IOP-049](IOP-049-source-mappings.md): available internal receipt, parser and
-  pure scoped classification. Test composition is not production receiver delivery.
-- [IOP-012](IOP-012-source-integration-contract.md) and
-  [IOP-043](IOP-043-canonical-event-model.md): accepted source/aggregate rules;
-  [IOP-125](IOP-125-demo-events.md): independent synthetic expected outputs.
+Prior design, internal or preview evidence (historical):
 
-Dependencies describe required capabilities, not numerical execution order.
-Production OIP receiving storage and importer/host composition are required before
-closing delivered reconciliation. These are separate prerequisites, not authorization
-to start adjacent stories. No new architectural decision blocks internal verification.
-
-## Non-goals
-
-Adjacent stories, implicit acceptance of open decisions or delivery of the whole
-milestone. No customer names in core, physical assets, workers, live integrations,
-automatic repair/replacement, full dashboard or broader v1 functionality.
-
-## Validation and documentation impact
-
-The execution plan defines commands and expected-path, error and relevant access
-rejection scenarios using accepted tooling. Record actual results rather than
-fictional tests. Update this item, its [backlog](../backlog.md) status, the plan and
-delivery map; change contracts, model, guides or ADRs only if their content changes.
-The entire original Spanish context is translated into English, retaining its
-goal, constraints and outstanding acceptance. Read dependencies were already English.
+- [IOP-048-data-reconciliation-plan](../completed/IOP-048-data-reconciliation-plan.md)

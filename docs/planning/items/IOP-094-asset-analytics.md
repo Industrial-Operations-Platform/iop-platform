@@ -2,45 +2,12 @@
 
 ## Status
 
-Blocked — specification complete; executable IOP-089 queries, production OIP
-storage and ADR-0018 host activation remain pending.
+Completed — selected local POC slice, delivered and verified under IOP-147 on
+2026-09-27. Broader deferred platform capabilities are not included.
 
-## POC delivery applicability
+## Delivered outcome
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
-
-## Milestone
-
-M11 — OIP / Operational Intelligence. Proposed delivery slice.
-
-## Goal
-
-Analyze source equipment references without a physical asset registry.
-
-## User / business value
-
-Operations staff and managers need explainable metrics to prioritize problems.
-
-## Context
-
-Scope: Operational Intelligence (OIP). See [modules](../../architecture/modules.md) and
-the [planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; inclusion in the backlog does not authorize implementation.
-
-## Current state
-
-The [equipment specification and reconciliation matrix](../../product/source-equipment-analytics-poc.md)
-refine Accepted ADR-0023/0028 and the canonical aggregate equality rules.
-No runtime equipment query/view is delivered. See the
-[specification execution record](../completed/IOP-094-source-equipment-analytics-plan.md).
-
-## Desired state
-
-Analyze source equipment references without a physical asset registry.
+Source-scoped area/equipment pairs and text/type/group message tuples are grouped by the backend, with complete totals and provenance. Tests cover independent equipment totals, identical designations across areas, distinct message types and historical classifications without creating physical assets.
 
 ## Requirements
 
@@ -56,70 +23,31 @@ Analyze source equipment references without a physical asset registry.
 
 ## Acceptance criteria
 
-- [ ] Runtime source-equipment groups and contributing messages reconcile without a physical asset registry.
-- [ ] Validate shared navigation, filters, coverage, zero/empty states and relevant
+- [x] Runtime source-equipment groups and contributing messages reconcile without a physical asset registry.
+- [x] Validate shared navigation, filters, coverage, zero/empty states and relevant
   access denial through the delivered path.
 - [x] Record specification evidence and synchronize the story/plan; runtime
-  acceptance remains pending.
+  acceptance is recorded under IOP-147.
 
-## Domain considerations
+## Scope, dependencies and constraints
 
-OIP is an IOP module; metrics remain decoupled from the UI and WinCC schemas.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+control this selected slice. Preserve generic module ownership, configured source
+labels, exact aggregate grain, current permissions and forced scoped RLS. No live
+industrial writes, customer-specific core logic or production/shared-use claim.
 
-## Architecture constraints
+Required contracts/slices: [IOP-090](IOP-090-event-frequency.md), [IOP-091](IOP-091-downtime.md), [IOP-089](IOP-089-analytics-query-layer.md).
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to adopt the decision.
+Canonical specifications:
 
-## Security considerations
+- [scope-poc](../../product/scope-poc.md)
+- [source-equipment-analytics-poc](../../product/source-equipment-analytics-poc.md)
 
-Verify permissions and customer/site scope for relevant operations and references.
-Do not include secrets, plant drawings or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
+## Validation and traceability
 
-## Data considerations
+[IOP-147 execution evidence](../completed/IOP-147-working-analytical-poc-plan.md) records actual commands, results and limitations.
+The [operator guide](../../development/running-poc.md) describes the delivered flow.
 
-Define grain, coverage, units and periods; accumulated alarm duration does not automatically equal downtime.
+Prior design, internal or preview evidence (historical):
 
-## API considerations
-
-Queries require verified scope filters and traceability to contributing records.
-
-## UI considerations
-
-Show metric definitions and limitations; do not present correlation as root cause.
-
-## Dependencies
-
-[IOP-090](IOP-090-event-frequency.md), [IOP-091](IOP-091-downtime.md).
-
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Their measure specifications are complete; runtime
-reconciliation is Blocked on [IOP-089](IOP-089-analytics-query-layer.md), which has
-accepted query semantics under ADR-0028 but no executable queries. Production OIP
-facts and implementation/validation of Accepted ADR-0018 independently gate
-runtime business access. No adjacent story is activated.
-
-## Non-goals
-
-Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must specify executable commands and scenarios for the acceptance criteria using the accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its [backlog](../backlog.md) status and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-No new metric or architecture is introduced. Bounded grouped response delivery
-remains to be resolved within IOP-089 after its runtime prerequisites exist.
-The specification supplies exact fixture expectations and additional runtime
-scenarios; it does not implement the missing storage/query/host dependencies.
+- [IOP-094-source-equipment-analytics-plan](../completed/IOP-094-source-equipment-analytics-plan.md)

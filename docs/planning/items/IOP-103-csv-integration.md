@@ -2,49 +2,12 @@
 
 ## Status
 
-Blocked — production OIP receiving storage, delivered importer/review composition
-and ADR-0018 host activation are not yet available. Dependency review and the
-[execution plan](../active/IOP-103-csv-validation-plan.md) were prepared on 2026-09-26.
+Completed — selected local POC slice, delivered and verified under IOP-147 on
+2026-09-27. Broader deferred platform capabilities are not included.
 
-## POC delivery applicability
+## Delivered outcome
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
-
-## Milestone
-
-M13 — External Integrations. Local analytical POC validation slice.
-
-## Goal
-
-Verify the manual CSV path end to end.
-
-## User / business value
-
-Administrators need to connect sources without coupling the product to a provider.
-
-## Context
-
-Scope: Integrations and Authentication adapters. See [modules](../../architecture/modules.md)
-and the [planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; backlog membership alone does not authorize implementation.
-The owner requested this POC slice on 2026-09-26.
-
-## Current state
-
-IOP-045 supplies pure CSV preparation; IOP-046 supplies internal validation reports.
-IOP-047/048 verify date admission and reconciliation through a disposable database
-receiver. The API host registers only health operations; no real CSV submit/review
-or production OIP receiver is composed. These internal results do not verify the
-manual path end to end. Reuse [IOP-125 fixtures](IOP-125-demo-events.md) once that
-path is delivered; do not duplicate the importer to claim completion.
-
-## Desired state
-
-Verify the manual CSV path end to end.
+One host composes the existing receipt, parser, scoped mapping and OIP publication contracts. Actual HTTP/browser journeys cover upload, retained original retrieval, invalid/duplicate review, file/history analysis and current access denial.
 
 ## Requirements
 
@@ -55,68 +18,30 @@ Verify the manual CSV path end to end.
 
 ## Acceptance criteria
 
-- [ ] Verify the manual CSV path end to end.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Verify the manual CSV path end to end.
+- [x] Validate the slice-specific outcomes and limitations in Requirements.
+- [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
-## Domain considerations
+## Scope, dependencies and constraints
 
-WinCC and Ultimo are adapter candidates, not core entities; Entra belongs in Authentication.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+control this selected slice. Preserve generic module ownership, configured source
+labels, exact aggregate grain, current permissions and forced scoped RLS. No live
+industrial writes, customer-specific core logic or production/shared-use claim.
 
-## Architecture constraints
+Required contracts/slices: [IOP-045](IOP-045-csv-adapter.md), [IOP-046](IOP-046-import-validation.md), [IOP-047](IOP-047-import-idempotency.md), [IOP-048](IOP-048-data-reconciliation.md).
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to adopt their decisions.
+Canonical specifications:
 
-## Security considerations
+- [scope-poc](../../product/scope-poc.md)
+- [ADR-0018-local-poc-execution-context](../../architecture/adr/ADR-0018-local-poc-execution-context.md)
 
-Verify customer/site permissions and scope for relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
+## Validation and traceability
 
-## Data considerations
+[IOP-147 execution evidence](../completed/IOP-147-working-analytical-poc-plan.md) records actual commands, results and limitations.
+The [operator guide](../../development/running-poc.md) describes the delivered flow.
 
-Separate secrets, mapping, provenance and scope; preserve existing flows during any migration.
+Prior design, internal or preview evidence (historical):
 
-## API considerations
-
-Use documented, authorized interfaces; industrial sources remain read-only. Contracts do not promise real connectivity.
-
-## UI considerations
-
-Show health and errors without leaking credentials or another customer’s data.
-
-## Dependencies
-
-[IOP-045](IOP-045-csv-adapter.md), [IOP-046](IOP-046-import-validation.md), [IOP-047](IOP-047-import-idempotency.md), [IOP-048](IOP-048-data-reconciliation.md).
-
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. [ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md)
-is Accepted; its host implementation and verification remain pending. Production
-OIP receiving storage and real importer/review composition are additional runtime
-prerequisites. No IOP-102 integration registry is required.
-
-## Non-goals
-
-Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must define executable commands and scenarios for acceptance using the accepted tooling. Include expected paths, errors and relevant access denial; record actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its [backlog](../backlog.md) status and execution plan.
-Update contracts, model, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-The plan defines the bounded validation scenarios. Resolve actual endpoint/test
-contracts when the missing production path is integrated; internal probes and
-fixture UI cannot satisfy end-to-end acceptance. No new architectural decision
-is proposed by this documentation increment.
+- [IOP-103-csv-validation-plan](../completed/IOP-103-csv-validation-plan.md)

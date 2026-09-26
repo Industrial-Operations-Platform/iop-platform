@@ -2,40 +2,12 @@
 
 ## Status
 
-Blocked — the POC specification is complete; executable IOP-089 queries, production
-OIP storage and ADR-0018 host activation remain pending.
+Completed — selected local POC slice, delivered and verified under IOP-147 on
+2026-09-27. Broader deferred platform capabilities are not included.
 
-## Milestone
+## Delivered outcome
 
-M11 — OIP / Operational Intelligence. Bounded POC delivery slice.
-
-## Goal
-
-Deliver reconciled area and configured-sector comparisons of reported frequency
-and accumulated alarm duration for the local analytical POC.
-
-## User / business value
-
-Operations staff and managers need explainable metrics to prioritize problems.
-
-## Context
-
-Scope: Operational Intelligence (OIP). See [modules](../../architecture/modules.md) and
-the [planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; inclusion in the backlog does not authorize implementation.
-
-## Current state
-
-The [area specification and reconciliation matrix](../../product/area-analytics-poc.md)
-reuse accepted aggregate/filter/query semantics. No runtime grouped query or view
-is delivered. See the [specification execution record](../completed/IOP-095-area-analytics-plan.md).
-The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
-control this slice; broader reporting is not an additional POC gate.
-
-## Desired state
-
-An aggregated area view with sector context, shared filters and contributing-record
-drill-down that reconciles to both full selected measures.
+Exact source-area and frozen sector partitions reconcile to both measures. Actual unclassified records remain distinct from a mapped sector literally named Unclassified; historical mapping changes preserve original classification and source-area identity.
 
 ## Requirements
 
@@ -48,83 +20,33 @@ drill-down that reconciles to both full selected measures.
 
 ## Acceptance criteria
 
-- [ ] Runtime area/sector groups and contributing records reconcile to both measures.
-- [ ] Shared filters, drill-down/return, coverage, zero/empty states and relevant
+- [x] Runtime area/sector groups and contributing records reconcile to both measures.
+- [x] Shared filters, drill-down/return, coverage, zero/empty states and relevant
   access denial are validated through the delivered path.
 - [x] The plan documents scenarios and necessary decisions without expanding scope.
 - [x] Specification evidence exists and documentation is synchronized; runtime
-  acceptance remains pending.
+  acceptance is recorded under IOP-147.
 
-## Domain considerations
+## Scope, dependencies and constraints
 
-OIP is an IOP module; metrics remain decoupled from the UI and WinCC schemas.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+control this selected slice. Preserve generic module ownership, configured source
+labels, exact aggregate grain, current permissions and forced scoped RLS. No live
+industrial writes, customer-specific core logic or production/shared-use claim.
 
-## Architecture constraints
+Required contracts/slices: [IOP-090](IOP-090-event-frequency.md), [IOP-091](IOP-091-downtime.md), [IOP-026](IOP-026-site-model.md), [IOP-089](IOP-089-analytics-query-layer.md).
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to adopt the decision.
+Canonical specifications:
 
-## Security considerations
+- [area-analytics-poc](../../product/area-analytics-poc.md)
+- [scope-poc](../../product/scope-poc.md)
+- [csv-and-reporting-reference](../../product/csv-and-reporting-reference.md)
 
-Verify permissions and customer/site scope for relevant operations and references.
-Do not include secrets, plant drawings or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
+## Validation and traceability
 
-## Data considerations
+[IOP-147 execution evidence](../completed/IOP-147-working-analytical-poc-plan.md) records actual commands, results and limitations.
+The [operator guide](../../development/running-poc.md) describes the delivered flow.
 
-Define grain, coverage, units and periods; accumulated alarm duration does not automatically equal downtime.
+Prior design, internal or preview evidence (historical):
 
-## API considerations
-
-Queries require verified scope filters and traceability to contributing records.
-
-## UI considerations
-
-Show metric definitions and limitations; do not present correlation as root cause.
-
-## Dependencies
-
-[IOP-090](IOP-090-event-frequency.md) and [IOP-091](IOP-091-downtime.md) supply
-completed measure specifications; their runtime reconciliation is Blocked.
-[IOP-026](IOP-026-site-model.md) supplies the completed POC site seed; deferred
-site administration is not a prerequisite. [IOP-089](IOP-089-analytics-query-layer.md)
-has accepted query semantics under ADR-0028 but no executable queries. Production
-OIP storage and ADR-0018 implementation/validation independently gate runtime access.
-
-Dependencies identify required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
-
-## Non-goals
-
-Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must specify executable commands and scenarios for the acceptance criteria using the accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its [backlog](../backlog.md) status and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-The specification reuses Accepted ADR-0023/0028 and existing metrics without a new
-architectural pattern. Bounded grouped response delivery remains to be resolved
-within the query boundary once its runtime prerequisites exist. No adjacent story
-is activated. General hierarchies, physical assets, exports, rates and additional
-metrics remain outside this slice.
-
-## Owner-supplied CSV and reporting context
-
-Support configurable higher-level hall/sector and area comparisons with frequency/duration rankings and drill-down context. These are source/customer dimensions, not fixed core hierarchy levels. Confirm mappings and preserve unknown groups in reconciliation.
-
-See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
-under IOP-002 at the owner's request. This historical
-context does not add formulas or fixed hierarchy levels to this POC.
-The current specification follows subsequently accepted contracts; no runtime
-implementation is claimed.
+- [IOP-095-area-analytics-plan](../completed/IOP-095-area-analytics-plan.md)

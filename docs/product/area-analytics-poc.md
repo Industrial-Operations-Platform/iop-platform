@@ -106,16 +106,13 @@ foreign/wrong-kind reference, revoked grant, total overflow, changed revision be
 pages, and duplicate/invalid import leaving every group unchanged. These are separate
 synthetic scenarios, not claims about the baseline nine records.
 
-## Delivery gates
+## Delivery evidence
 
-IOP-026's site seed exists. IOP-090/091 supply metric definitions, but executable
-IOP-089 queries, production OIP publications/facts and ADR-0018 host activation remain
-pending. Define the bounded grouped response and verify it against this matrix before
-connecting the view; do not aggregate a browser page or add a parallel query engine.
-A new architectural mechanism needs a Proposed ADR and owner acceptance first.
-
-After those prerequisites, run `npm test`, `npm run test:database` and relevant
-HTTP/browser checks through the real authorized path, including denial, navigation,
-coverage and revision cases. Record dataset size and observed timings. Arithmetic
-validation of these expectations does not prove persisted queries, authorization,
-UI behavior or completion of IOP-095/the POC.
+Storage, queries, host activation and connected views are delivered under
+[IOP-147](../planning/completed/IOP-147-working-analytical-poc-plan.md). Actual
+PostgreSQL/HTTP/browser checks reconcile the baseline and cover tuple identity,
+historical mappings, zero/empty selections, revisions, overflow and access denial.
+The CSV contract rejects an empty file; an admitted empty publication cannot be
+created by this importer. Bounded top-100 group presentation retains full totals;
+paged dimension options provide access to any remaining group. No physical asset
+registry, legacy pipeline execution parity or additional metric is claimed.

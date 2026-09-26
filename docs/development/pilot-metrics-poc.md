@@ -1,9 +1,9 @@
 # POC pilot measurement and owner feedback
 
 Prepared for [IOP-130](../planning/items/IOP-130-pilot-metrics.md).
-**Not measured.** The [IOP-129 demonstration](demonstration-poc.md) is blocked on
-its delivered journey and reset prerequisites. No owner observation or measured
-benefit is recorded by this preparation.
+Technical observations are recorded in the [IOP-147 execution evidence](../planning/completed/IOP-147-working-analytical-poc-plan.md).
+The [delivered demonstration](running-poc.md) is runnable. Owner observation,
+usefulness feedback and measured benefit remain **not collected**.
 
 Use the five [IOP-001 acceptance measures](../product/personas-and-pilot-workflow.md#accepted-acceptance-measures)
 within the [local POC boundary](../product/scope-poc.md). One local operator may
@@ -73,10 +73,11 @@ Missing feedback stays `not collected`; successful automated tests cannot replac
 
 ## Current result and closure
 
-As of 2026-09-26, all five measures are **blocked / not measured** for the delivered
-pilot. Owner feedback is **not collected**. Existing internal reconciliation and
-fictional preview tests are supporting evidence only; there is no elapsed timing,
-user-value result or end-to-end acceptance to report.
+As of 2026-09-27, workflow coverage, import integrity, analytical parity and
+isolation/traceability have actual automated PostgreSQL/API/browser evidence in
+IOP-147, including recorded import sizes and observed submission timings. They are
+technical observations on fictional data, not a human pilot assessment. Owner
+usability/value feedback and end-to-end human task timing remain **not collected**.
 
 Close the selected IOP-130 POC slice only after each matrix row has actual evidence,
 IOP-129's real journey passes, both measures reconcile and owner feedback is recorded.

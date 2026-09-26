@@ -2,38 +2,12 @@
 
 ## Status
 
-Blocked — independent POC state preview implemented; runtime integration requires
-delivered analytical endpoints and validated local business access. See the
-[continuation plan](../active/IOP-120-runtime-state-plan.md).
+Completed — selected local POC slice, delivered and verified under IOP-147 on
+2026-09-27. Broader deferred platform capabilities are not included.
 
-## Milestone
+## Delivered outcome
 
-M15 — UX & Operational Experience. POC presentation slice.
-
-## Goal
-
-Consistent empty, error and loading experiences for Executive Overview and analytical
-detail within the [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). Broader cross-module UX remains future scope.
-
-## User / business value
-
-Technicians, managers and administrators need coherent, accessible flows that do
-not confuse unavailable data, missing imports and filters without matches.
-
-## Context
-
-Scope: Cross-module user experience. See [modules](../../architecture/modules.md)
-and [planning workflow](../workflow.md). The original owner-requested outline is
-refined here for the explicitly requested POC slice; backlog membership alone
-does not authorize implementation.
-
-## Current and desired state
-
-The existing web navigation now offers shared, explicitly simulated analytical
-states. Actual import/analytical endpoints and filters are not connected. The
-desired runtime experience reuses clear states with safe recovery and no invented
-metrics. See the [slice execution record](../completed/IOP-120-ui-states-plan.md).
+The real default application handles connection, pending requests, admitted/rejected imports, no coverage, no matches and service failure/retry. Browser recovery returns focus to a stable heading; failed requests do not present stale analytical results.
 
 ## Requirements
 
@@ -53,61 +27,27 @@ metrics. See the [slice execution record](../completed/IOP-120-ui-states-plan.md
 - [x] Consistent POC state presentation and reviewable recovery in both views.
 - [x] Plan records scenarios and necessary choices without expanding scope.
 - [x] Validation evidence and synchronized documentation for the preview slice.
-- [ ] Runtime states and recovery validated against delivered analytical endpoints.
+- [x] Runtime states and recovery validated against delivered analytical endpoints.
 
-## Domain and data considerations
+## Scope, dependencies and constraints
 
-Compose existing modules according to role; navigation does not grant permissions.
-Views consume authorized contracts without divergent entity copies. Missing imports
-are not zero-fault periods; accumulated alarm duration is not plant downtime.
+The [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md)
+control this selected slice. Preserve generic module ownership, configured source
+labels, exact aggregate grain, current permissions and forced scoped RLS. No live
+industrial writes, customer-specific core logic or production/shared-use claim.
 
-## Architecture constraints
+Required contracts/slices: [IOP-017](IOP-017-frontend-bootstrap.md), [IOP-022](IOP-022-api-error-model.md), [IOP-116](IOP-116-navigation.md).
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to adopt decisions.
+Canonical specifications:
 
-## Security considerations
+- [scope-poc](../../product/scope-poc.md)
 
-Verify customer/site scope and permissions in relevant operations and references.
-Exclude secrets, drawings and production data. Industrial integrations remain
-read-only; record material changes when applicable. The preview makes no server
-access-control claim.
+## Validation and traceability
 
-## API and UI considerations
+[IOP-147 execution evidence](../completed/IOP-147-working-analytical-poc-plan.md) records actual commands, results and limitations.
+The [operator guide](../../development/running-poc.md) describes the delivered flow.
 
-Reuse authorized read/search contracts; pagination and limits belong only to the
-selected endpoint scope. Evaluate keyboard use, labels, contrast and empty/error/
-loading states on laptops and tablets with verifiable targets. No API changes
-are needed for the independent preview.
+Prior design, internal or preview evidence (historical):
 
-## Dependencies
-
-[IOP-017](IOP-017-frontend-bootstrap.md) and
-[IOP-022](IOP-022-api-error-model.md) are completed and integrated.
-[IOP-116](IOP-116-navigation.md) supplies existing POC destinations.
-Dependencies identify contracts/capabilities, not numerical implementation order.
-Real analytics contracts and validated runtime access remain prerequisites for
-runtime state integration, not for the independent presentation slice.
-
-## Non-goals
-
-Adjacent stories, inferred acceptance of open decisions or delivery of the entire
-milestone. No customer names in the core, real filters, import processing, metrics,
-login, administration or business error contracts invented by the UI.
-
-## Validation and documentation
-
-The plan defines executable expected/error/recovery scenarios using accepted tools;
-access-denial testing applies when relevant runtime access exists. Record actual
-results, not fictional tests. Synchronize this item, [backlog](../backlog.md) and
-execution plan; update contracts, models, guides or ADRs only when affected.
-
-## Open questions
-
-No outstanding decision for the independent preview. Endpoint-specific failures,
-real retries and filter recovery require owning analytical contracts before runtime
-integration. This slice does not complete the POC or broader cross-module delivery.
+- [IOP-120-runtime-state-plan](../completed/IOP-120-runtime-state-plan.md)
+- [IOP-120-ui-states-plan](../completed/IOP-120-ui-states-plan.md)

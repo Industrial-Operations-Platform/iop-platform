@@ -4,9 +4,10 @@
 
 Accepted by explicit owner approval under
 [IOP-128](../../planning/items/IOP-128-demo-reset.md), 2026-09-26.
-Acceptance covers this bounded reset design; implementation and validation remain
-pending. The owner also authorized merging the story into develop and pushing
-both branches to origin. No reset command or deletion authority is implemented.
+Acceptance covers this bounded reset design. Implementation and verification
+were delivered under [IOP-147](../../planning/completed/IOP-147-working-analytical-poc-plan.md)
+on 2026-09-27. The owner also authorized merging the story into develop and pushing
+both branches to origin. The offline command uses the separately privileged migrator; runtime deletion remains denied.
 
 ## Context
 
@@ -20,8 +21,8 @@ migrator is privileged installation tooling, not a business authorization bounda
 
 IOP-123 supplies fictional scope; IOP-125 supplies the baseline corpus. Neither
 marks a database as disposable. A familiar database name, fictional label or
-loopback address alone cannot establish reset authority. Production OIP storage
-and real importer composition are still missing on develop.
+loopback address alone cannot establish reset authority. At design acceptance, OIP storage and real importer composition were missing;
+IOP-147 subsequently delivered both.
 
 ## Decision
 
@@ -115,5 +116,5 @@ outside database reset. Acceptance does not activate adjacent stories.
   duplicate rejection. Test fixtures alone cannot close this requirement.
 
 Run `npm test` and relevant `npm run test:database` checks after implementation.
-Until delivery of OIP storage/importer/host integration and the reset itself, IOP-128
-remains Blocked. No destructive command should be advertised as available.
+The linked IOP-147 record supplies implementation evidence; the operator guide
+documents the exact target confirmation and offline commands.

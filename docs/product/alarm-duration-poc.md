@@ -90,11 +90,10 @@ Those extra boundary cases are separate synthetic scenarios, not claims about th
 nine-row baseline. Reuse IOP-089's access-denial, revoked-grant, foreign-reference,
 revision-change and browser-zone/DST checks without introducing another query layer.
 
-## Delivery handoff
+## Delivery evidence
 
-Executable IOP-089 queries, production OIP publications/facts and ADR-0018 host
-activation are pending. After delivery, reconcile this matrix through the actual
-persisted query, overview/detail and all contributing pages on one selection/revision.
-Run `npm test`, `npm run test:database` and relevant HTTP/browser checks, recording
-actual dataset size and timings. Existing parser checks and independent arithmetic
-validate conversion expectations only; they do not complete IOP-091 or the POC.
+Executable queries, OIP storage, local host and both connected views are verified
+under [IOP-147](../planning/completed/IOP-147-working-analytical-poc-plan.md).
+The record supplies actual PostgreSQL/API/browser reconciliation, independent
+source-line expectations, complete contributing pages, dataset sizes and observed
+import timings. Accumulated duration remains distinct from plant downtime.

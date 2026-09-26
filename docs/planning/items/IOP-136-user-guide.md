@@ -2,96 +2,52 @@
 
 ## Status
 
-Proposed
+Completed — short local POC operator guide, verified under IOP-147 on 2026-09-27.
+Broader shared-use v1 user/administrator documentation remains future scope.
 
-## Milestone
+## Goal and value
 
-M17 — v1 Validation & Release. Proposed delivery slice.
+M17 — v1 Validation & Release. Technicians and team leaders can use the agreed
+POC with reproducible instructions. Users and administrators need a demonstrable,
+operable and documented result; this does not require every future backlog idea.
+The original outline has been fully translated from Spanish; the owner-requested
+IOP-147 delivery explicitly refines it to the local demonstration guide.
 
-## Goal
+## Requirements and acceptance
 
-User documentation. Resultado esperado: Technician/TL pueden usarlo
+- [x] Explain setup, entry/user switching, supported CSV, error/duplicate review,
+  file/history analysis, filters, drill-down, metric limitations and safe reset.
+- [x] Verify the guide against delivered behavior so technicians/team leaders can
+  follow the selected workflow; owner usefulness feedback stays in IOP-130.
+- [x] Record executable scenarios, necessary decisions, validation evidence and
+  synchronized documentation without expanding to the full release milestone.
 
-## User / business value
+## Dependencies and constraints
 
-Usuarios y administradores necesitan una versión demostrable, operable y documentada.
-
-## Context
-
-Ámbito: Validation and release readiness. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
-
-## Current state
-
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Technician/TL pueden usarlo
-
-## Requirements
-
-- Entregar únicamente el resultado descrito para IOP-136.
-- Verificar el alcance de v1 acordado, no exigir todas las ideas futuras del backlog.
-
-## Acceptance criteria
-
-- [ ] Technician/TL pueden usarlo
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
-
-## Domain considerations
-
-Verificar el alcance de v1 acordado, no exigir todas las ideas futuras del backlog.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
+[IOP-129](IOP-129-end-to-end-scenario.md) and
+[IOP-122](IOP-122-accessibility.md) supply the demonstrated workflow and baseline
+controls. Dependencies are capabilities, not numeric execution order.
+Follow [modules](../../architecture/modules.md), [workflow](../workflow.md) and
+Accepted [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are not implementation authority.
 
-## Security considerations
+Verify current customer/site permissions on relevant operations and references;
+exclude secrets, floor plans and production data from the repository. Industrial
+integrations remain read-only and retain applicable material-change traceability.
+Reconcile authorized/synthetic data and recovery. Validate published contracts and
+persona workflows, recording limits without adding unrelated release features.
+No adjacent milestone delivery, inferred acceptance of open decisions or customer
+names in core. Shared-use administration and third-party login remain future work.
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+## Validation and documentation
 
-## Data considerations
-
-Reconciliar evidencia y probar recuperación con datos autorizados o sintéticos.
-
-## API considerations
-
-Validar contratos publicados y compatibilidad documentada; no introducir features durante cierre de release.
-
-## UI considerations
-
-Validar el workflow acordado y documentación por persona; registrar limitaciones conocidas.
-
-## Dependencies
-
-[IOP-129](IOP-129-end-to-end-scenario.md), [IOP-122](IOP-122-accessibility.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
-
-## Non-goals
-
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
-
-## Validation
-
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+The [operator guide](../../development/running-poc.md) is the canonical instruction
+set. [IOP-147 evidence](../completed/IOP-147-working-analytical-poc-plan.md) records
+setup/start/fixtures/recreate verification, real browser behavior, error/access
+checks and link consistency. Update this permanent item, [backlog](../backlog.md)
+and evidence when behavior changes; avoid duplicate guides. No blocking design
+question remains for this selected local slice.
