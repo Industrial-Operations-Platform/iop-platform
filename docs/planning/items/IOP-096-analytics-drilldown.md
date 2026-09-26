@@ -5,10 +5,12 @@
 Blocked
 
 The POC dependency review is recorded in the
-[execution plan](../active/IOP-096-analytics-drilldown-plan.md). IOP-094/095
+[execution plan](../completed/IOP-096-analytics-drilldown-plan.md). IOP-094/095
 contracts are unavailable; IOP-097's filter contract is accepted in ADR-0023,
 but analytical filter implementation remains pending.
 Runtime access awaits implementation and validation of Accepted ADR-0018.
+The owner closed the completed documentation increment on 2026-09-26. A new
+implementation plan is required when the prerequisites are available.
 No drill-down implementation or executed acceptance evidence is claimed.
 
 ## POC delivery applicability

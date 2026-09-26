@@ -1,6 +1,6 @@
 # IOP-096 — POC analytical drill-down execution plan
 
-Status: Blocked (implementation prerequisites below). Authorized by the owner's request to work on IOP-096 within
+Status: Completed — documentation increment only; parent implementation remains Blocked. Authorized by the owner's request to work on IOP-096 within
 the [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 Branch: `docs/IOP-096-analytics-drilldown`, created from `develop` before edits.
 Permanent scope: [IOP-096](../items/IOP-096-analytics-drilldown.md).
@@ -15,7 +15,7 @@ Permanent scope: [IOP-096](../items/IOP-096-analytics-drilldown.md).
    gates in IOP-096. Synchronize its backlog status. No new architecture, metric
    definition, filter contract or adjacent implementation is introduced.
 4. Validate documentation, record evidence and commit this documentation increment.
-   Keep this plan active while implementation prerequisites remain unresolved.
+   Retain the implementation prerequisites below for a future execution plan.
 
 Expected files: this plan, the four story files above and `../backlog.md`.
 No application, schema, API, fixture or shared POC scope changes are planned.
@@ -58,6 +58,24 @@ documentation increment are complete; analytical implementation remains blocked.
 
 ## Closure
 
-The documentation increment may be committed while the story is Blocked. Leave
-acceptance unchecked until actual drill-down and validation are delivered. Move
-the plan to completed only when its implementation gates and work are resolved.
+The documentation increment is complete. Leave story acceptance unchecked until
+actual drill-down and validation are delivered. The owner-requested closure below
+archives this documentation record while the parent story remains Blocked.
+
+## Owner-requested documentation closure — 2026-09-26
+
+The owner explicitly requested closure of the remaining active plans after the
+accepted decisions were integrated. Close this completed documentation increment;
+keep the parent story Blocked with implementation criteria unchecked. This scoped
+closure supersedes this plan's earlier instruction to retain it until runtime
+delivery. It does not accept unfinished implementation or complete the story.
+
+Closure branch: `docs/IOP-096-documentation-closure`, created from develop.
+Files: this plan and the IOP-096 item. Move the finished record to completed and
+update its item link. The backlog already mirrors Blocked and remains unchanged.
+Check relative links, statuses and whitespace, then commit locally. Future runtime
+work requires a new implementation plan covering the remaining gates above.
+
+Closure validation: 20 relative links resolved in the two changed documents;
+item/backlog remain Blocked, implementation criteria remain unchecked and
+`git diff --check` passed. No application files changed or runtime tests ran.
