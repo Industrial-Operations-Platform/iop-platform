@@ -78,6 +78,16 @@ It defines logical dimension equality without introducing physical assets or
 fabricated occurrences. OIP receiver/storage and analytical reference encoding
 remain future implementation; this design does not complete the CSV journey.
 
+IOP-048 verifies retained synthetic RAW, normalized lines and scoped classification
+against IOP-125's independent oracle through the disposable database receiver:
+nine records, frequency 19 and 97,775 accumulated seconds, including unclassified
+and repeated records. Rejection counts preserve unknown remainders; failed or
+duplicate attempts add no measures. See the
+[reconciliation record](completed/IOP-048-data-reconciliation-plan.md).
+Production OIP receiving storage and importer/host composition remain pending;
+IOP-048 stays In progress. This evidence does not complete analytical views or the
+end-to-end POC, and batch outcome recovery is not a metric-integrity check.
+
 ## Critical dependency corrections
 
 - IOP-014's local safety slice does not wait for IOP-007 sessions. Runtime context

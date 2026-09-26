@@ -94,7 +94,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-045 — CSV source adapter](items/IOP-045-csv-adapter.md) | Completed |
 | [IOP-046 — Data validation](items/IOP-046-import-validation.md) | In progress |
 | [IOP-047 — Deduplication/idempotency](items/IOP-047-import-idempotency.md) | In progress |
-| [IOP-048 — Reconciliation](items/IOP-048-data-reconciliation.md) | Proposed |
+| [IOP-048 — Reconciliation](items/IOP-048-data-reconciliation.md) | In progress |
 | [IOP-049 — Source aliases/mappings](items/IOP-049-source-mappings.md) | In progress |
 
 ## M6 — Workforce & Shift Management
