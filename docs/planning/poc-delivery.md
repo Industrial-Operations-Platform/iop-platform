@@ -118,6 +118,13 @@ shared-selection drill-down for the two existing measures. The specification sli
 is complete; the parent remains Blocked on executable IOP-089 queries, production
 OIP facts and ADR-0018 host activation. No runtime grouped view is delivered.
 
+IOP-129 supplies the [demonstration procedure](../development/demonstration-poc.md)
+for import, failure/duplicate review, analysis, presentation and safe recreation.
+It remains Blocked on production storage/importer/query/view composition, ADR-0018
+host activation and IOP-128 reset. The
+[preparation record](completed/IOP-129-end-to-end-scenario-plan.md) is documentation
+only; no end-to-end demonstration or POC completion is claimed.
+
 IOP-132 supplies the [final reconciliation procedure](../development/reconciliation-poc.md)
 and independent expected comparisons for both views. It remains Blocked on production
 OIP storage/importer/query/host delivery, connected views and IOP-129 evidence.

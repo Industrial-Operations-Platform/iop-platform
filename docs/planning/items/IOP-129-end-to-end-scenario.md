@@ -2,7 +2,10 @@
 
 ## Status
 
-Proposed
+Blocked — production OIP storage, delivered importer/query/view composition,
+ADR-0018 host activation and IOP-128 reset are pending. Dependency review and
+[demonstration preparation](../completed/IOP-129-end-to-end-scenario-plan.md)
+completed on 2026-09-26; no end-to-end runtime result is claimed.
 
 ## POC delivery applicability
 
@@ -32,7 +35,10 @@ owner-requested outline; inclusion in the backlog does not authorize implementat
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design has not been accepted.
+Internal CSV reconciliation and fictional drill-down are available, but the API
+host registers only health operations and the UI upload is disconnected. The
+[demonstration procedure](../../development/demonstration-poc.md) defines the
+bounded journey and evidence. It has not been executed against a delivered path.
 
 ## Desired state
 
@@ -89,8 +95,12 @@ Validate the agreed workflow and persona-specific documentation; record known li
 [IOP-001](IOP-001-v1-personas-and-pilot-workflow.md), [IOP-048](IOP-048-data-reconciliation.md), [IOP-096](IOP-096-analytics-drilldown.md), [IOP-103](IOP-103-csv-integration.md), [IOP-128](IOP-128-demo-reset.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. IOP-001 is completed design; IOP-048 has internal
+evidence only, and IOP-096/103/128 remain Blocked for delivered acceptance.
+[ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md) is Accepted;
+its host implementation and verification still gate runtime access. IOP-128 reset
+design is also accepted in ADR-0029, but the reset is not implemented.
+These prerequisites do not authorize adjacent implementation under IOP-129.
 
 ## Non-goals
 
@@ -107,4 +117,7 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+The procedure fixes the bounded scenarios using existing contracts and fixtures.
+After prerequisite integration, plan actual endpoint/browser checks and reset
+commands before executable validation. No additional architectural decision is
+introduced by this preparation.
