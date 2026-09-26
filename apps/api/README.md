@@ -125,7 +125,8 @@ Import row failures remain future import-result data, not automatically HTTP err
 
 ## Boundaries and follow-up
 
-IOP-013 remains open for broader health/logging contracts. See [IOP-015 container instructions](../../infra/docker/README.md) for Compose
+IOP-013 completed the [local health/logging design](../../docs/architecture/health-logging-poc.md);
+import diagnostics and their verification remain with future import delivery. See [IOP-015 container instructions](../../infra/docker/README.md) for Compose
 integration; IOP-018 supplies local scope validation; IOP-019 owns database bootstrap. No frontend,
 worker, migrations, database readiness, authentication, principal, authorization
 bypass or business routes are implemented. ADR-0018 remains Proposed; business

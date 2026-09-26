@@ -37,6 +37,11 @@ platform. Add basic CI (IOP-021) when runnable checks exist; it does not gate th
 first local demonstration. Measure representative performance during validation;
 workers/caches/optimization need evidence, not anticipatory infrastructure.
 
+IOP-013 completed the [local health and diagnostic logging design](../architecture/health-logging-poc.md).
+Process liveness and IOP-022 error correlation already exist; import correlation
+and delivered-path verification remain implementation work. No readiness or metrics
+platform is added.
+
 IOP-014 has completed the [local security baseline](../architecture/security-baseline-poc.md)
 as design. Configuration, input limits and scope controls still require executable
 evidence in their delivery slices; ADR-0018 is Accepted; implementation remains pending.

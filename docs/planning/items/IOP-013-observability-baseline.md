@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Completed — local POC design; runtime delivery remains separately scoped.
 
 ## POC delivery applicability
 
@@ -22,17 +22,20 @@ Define health and diagnostic logging for the local POC.
 
 ## User / business value
 
-El equipo necesita decisiones revisables antes de construir una plataforma reutilizable.
+The team needs reviewable decisions before building a reusable platform.
 
 ## Context
 
-Ámbito: Product and cross-module architecture. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Product and cross-module architecture. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; inclusion in the backlog does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+The API host implements process liveness, sanitized startup diagnostics and the
+IOP-022 error-occurrence correlation contract. The [POC diagnostic baseline](../../architecture/health-logging-poc.md)
+now defines the bounded design and remaining import/UI verification handoffs.
+No runtime behavior is added by IOP-013.
 
 ## Desired state
 
@@ -47,63 +50,74 @@ Define health and diagnostic logging for the local POC.
 
 ## Acceptance criteria
 
-- [ ] Define health and diagnostic logging for the local POC.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Define health and diagnostic logging for the local POC.
+- [x] Validate the slice-specific outcomes and limitations in Requirements.
+- [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
 ## Domain considerations
 
-Definir contratos y decisiones; mantener separadas identidad, permisos, scope y proveedores.
+Define contracts and decisions; keep identity, permissions, scope and providers separate.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt a decision.
+[ADR-0011](../../architecture/adr/ADR-0011-api-contract-strategy.md) supplies the accepted
+error strategy. This design specializes existing contracts without adding an
+architectural mechanism; no new ADR is required.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permission and customer/site scope in relevant operations and references.
+Keep secrets, site plans and production data out of the repository. Keep industrial
+integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Documentar implicaciones de persistencia y aislamiento sin crear esquemas.
+Document persistence and isolation implications without creating schemas.
 
 ## API considerations
 
-Especificar contratos cuando corresponda; no crear endpoints.
+Specify contracts where appropriate; do not create endpoints.
 
 ## UI considerations
 
-Documentar necesidades de los usuarios; no seleccionar ni construir UI por inferencia.
+Document user needs; do not infer authorization to select or build UI.
 
 ## Dependencies
 
 [IOP-002](IOP-002-technology-stack.md), [IOP-003](IOP-003-api-contract-strategy.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. Both dependencies are Completed on develop.
+[ADR-0018](../../architecture/adr/ADR-0018-local-poc-execution-context.md) is Accepted;
+runtime business access still requires its implementation and validation. This
+does not block the independent health/diagnostic design.
 
 ## Non-goals
 
-Implementar aplicaciones, migraciones, endpoints o infraestructura. No introducir nombres de cliente en el core.
+Implementing applications, migrations, endpoints or infrastructure. Do not introduce customer names into the core.
 
 ## Validation
 
-Revisión de coherencia, enlaces, escenarios y decisiones; no inventar comandos ni escribir código para validar esta tarea de diseño.
+Review consistency, links, scenarios and decisions; do not invent commands or write
+application code to validate this design task. See the baseline scenario table and
+[completed plan](../completed/IOP-013-local-health-logging-plan.md) for evidence.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its [backlog](../backlog.md) status and the execution plan.
+Update contracts, model, guides or ADRs only when this task changes their content.
+The POC delivery map and API guide link the diagnostic baseline.
 
 ## Open questions
 
-Resolver las decisiones concretas de diseño de esta tarea con opciones, recomendación y ADR cuando afecte arquitectura.
+No POC design blocker remains. Reusing process liveness and bounded console errors
+meets this slice; a readiness/metrics platform would exceed it. Import correlation
+and output verification belong to the delivering stories. Broader observability
+is explicitly deferred, not completed by this design.
