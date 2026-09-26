@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed
+Blocked — specification complete; executable IOP-089 queries, production OIP
+storage and ADR-0018 host activation remain pending.
 
 ## POC delivery applicability
 
@@ -32,7 +33,10 @@ owner-requested outline; inclusion in the backlog does not authorize implementat
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design has not been accepted.
+The [equipment specification and reconciliation matrix](../../product/source-equipment-analytics-poc.md)
+refine Accepted ADR-0023/0028 and the canonical aggregate equality rules.
+No runtime equipment query/view is delivered. See the
+[specification execution record](../completed/IOP-094-source-equipment-analytics-plan.md).
 
 ## Desired state
 
@@ -44,13 +48,19 @@ Analyze source equipment references without a physical asset registry.
 - Group the two measures by source-scoped equipment designation and retain contributing
   messages. Do not create surveyed assets from text. IOP-044 becomes relevant only when
   physical asset linkage is separately delivered.
+- Equipment identity is the exact source-scoped area/equipment pair. Preserve
+  message text/type/group tuples, repeated lines, zero measures and unclassified
+  facts; both measures and record count reconcile across the complete selection.
+- Reuse shared filters, data revision, coverage and contributing-record provenance
+  between overview and detail; no totals derived from a single record page.
 
 ## Acceptance criteria
 
-- [ ] Analyze source equipment references without a physical asset registry.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
-  unfinished future scope.
+- [ ] Runtime source-equipment groups and contributing messages reconcile without a physical asset registry.
+- [ ] Validate shared navigation, filters, coverage, zero/empty states and relevant
+  access denial through the delivered path.
+- [x] Record specification evidence and synchronize the story/plan; runtime
+  acceptance remains pending.
 
 ## Domain considerations
 
@@ -88,8 +98,11 @@ Show metric definitions and limitations; do not present correlation as root caus
 [IOP-090](IOP-090-event-frequency.md), [IOP-091](IOP-091-downtime.md).
 
 Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+all future parent capabilities. Their measure specifications are complete; runtime
+reconciliation is Blocked on [IOP-089](IOP-089-analytics-query-layer.md), which has
+accepted query semantics under ADR-0028 but no executable queries. Production OIP
+facts and implementation/validation of Accepted ADR-0018 independently gate
+runtime business access. No adjacent story is activated.
 
 ## Non-goals
 
@@ -106,4 +119,7 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+No new metric or architecture is introduced. Bounded grouped response delivery
+remains to be resolved within IOP-089 after its runtime prerequisites exist.
+The specification supplies exact fixture expectations and additional runtime
+scenarios; it does not implement the missing storage/query/host dependencies.
