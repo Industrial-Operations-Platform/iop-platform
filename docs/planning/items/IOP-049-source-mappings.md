@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed
+In progress — pure scoped mapping implemented; owner-list reconciliation and
+persisted import composition remain pending.
 
 ## POC delivery applicability
 
@@ -10,11 +11,11 @@ Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
 2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
 control the selected slice; older general platform prose is future context, not
 an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+[delivery map](../poc-delivery.md).
 
 ## Milestone
 
-M5 — Industrial Data Foundation. Proposed delivery slice.
+M5 — Industrial Data Foundation. Bounded POC delivery slice.
 
 ## Goal
 
@@ -22,17 +23,22 @@ Map source area and sector labels through scoped configuration.
 
 ## User / business value
 
-Operación necesita datos importados trazables y métricas reconciliables.
+Operations needs traceable imported data and reconcilable metrics.
 
 ## Context
 
-Ámbito: Integrations and Operational Intelligence. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Integrations and Operational Intelligence. See [modules](../../architecture/modules.md)
+and the [planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; backlog membership alone does not authorize implementation.
+The owner requested this POC slice on 2026-09-26.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Integrations now validates and snapshots organization/site/source mapping configuration,
+classifies prepared CSV records and preserves unclassified records and measures.
+See the [internal contract](../../../apps/api/README.md#scoped-source-classification-iop-049).
+The original five customer lists are described but not included in the shared
+reference. Their reconciliation and durable receipt/OIP composition are pending.
 
 ## Desired state
 
@@ -47,71 +53,97 @@ Map source area and sector labels through scoped configuration.
 
 ## Acceptance criteria
 
-- [ ] Map source area and sector labels through scoped configuration.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Map source area and sector labels through scoped configuration (pure internal stage).
+- [ ] Validate the slice-specific outcomes and limitations in Requirements, including
+  reconciliation against the actual owner lists and persisted import handoff.
+- [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
 ## Domain considerations
 
-RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
+RAW → validation → normalization; the receiving module validates invariants.
+Do not infer a physical asset from text alone.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt their decisions.
+This pure stage specializes IOP-012/043 contracts without a new architectural mechanism.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify organization/site permissions and scope on relevant operations and references.
+Do not include secrets, floor plans or production records in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
+Configuration matching is not authorization or proof of site ownership.
 
 ## Data considerations
 
-Preservar procedencia y grano; distinguir ocurrencias de agregados. Rechazos y correcciones deben ser visibles.
+Preserve provenance and grain; distinguish occurrences from aggregates.
+Rejections and corrections must be visible. Snapshot the mapping revision and result;
+changes affect future preparations only. Never silently reinterpret historical facts.
 
 ## API considerations
 
-Usar contratos de ingesta; credenciales y nombres de columnas externos quedan en adaptadores/configuración.
+Use ingestion contracts; credentials and external column names stay in adapters/configuration.
+No endpoint is added by this slice.
 
 ## UI considerations
 
-Exponer estados, errores y resultados de importación solo si lo pide esta tarea; no crear un dashboard completo.
+Expose import states, errors and results only if requested by this task;
+do not create a full dashboard.
 
 ## Dependencies
 
 [IOP-012](IOP-012-source-integration-contract.md), [IOP-043](IOP-043-canonical-event-model.md).
 
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. Runtime business access also requires an accepted
-local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
+Both relevant POC design slices are completed and integrated on develop. They do
+not require completion of all future parent capabilities. The integrated IOP-045
+adapter supplies prepared records. ADR-0018 is Accepted; its host implementation
+and validation still gate runtime business access independently.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, accepting open decisions by inference or extending
+delivery to the entire milestone. No customer names in the core, physical aliases,
+mapping administration UI, historical reclassification or general registry.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+Use executable expected-path, error and relevant scope-rejection scenarios with
+accepted tooling; record actual results, not invented tests. The
+[execution record](../completed/IOP-049-source-mappings-plan.md) covers synthetic
+classification, comparison, configuration, revision and measure-preservation tests.
+It does not establish DAX parity or delivered database/access behavior.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its [backlog](../backlog.md) status and execution plan.
+Update contracts, model, guides or ADRs only when this task changes their content.
+The entire original story is translated to English; dependency stories were already English.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+The original `Arbeit Sektor` expression or an equivalent owner-approved mapping
+configuration is needed to reconcile the actual five lists. Neither their contents
+nor full DAX comparison parity can be reconstructed from the reference summary.
+Durable mapping/receipt/OIP binding remains a future composition increment.
 
 ## Owner-supplied CSV and reporting context
 
-The export has area labels and equipment designations but no explicit hall, parent or sensor field. The supplied Power BI DAX column applies `TRIM` to the area label and classifies it through five explicit membership lists into a reporting sector, with an unclassified fallback. This corrects the earlier Python attribution. Preserve this behavior as customer-scoped configuration, including visible unmapped records; validate text comparison, conflicting mappings and historical changes. Equipment-to-sensor mappings are still unverified. Preserve ambiguous/unmapped records; do not infer physical hierarchy from code punctuation or hard-code pilot labels.
+The export has area labels and equipment designations but no explicit hall, parent
+or sensor field. The supplied Power BI DAX column applies `TRIM` to the area label
+and classifies it through five explicit membership lists into a reporting sector,
+with an unclassified fallback. This corrects the earlier Python attribution.
+Preserve this behavior as customer-scoped configuration, including visible unmapped
+records; validate text comparison, conflicting mappings and historical changes.
+Equipment-to-sensor mappings are still unverified. Preserve ambiguous/unmapped
+records; do not infer physical hierarchy from code punctuation or hard-code pilot labels.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
-under IOP-002 at the owner's request. This is context for future planning; this
-item remains Proposed and no implementation or metric formula is accepted here.
+under IOP-002 at the owner's request. It supplies historical context, not acceptance
+of additional metric formulas or evidence that actual classifications are reconciled.

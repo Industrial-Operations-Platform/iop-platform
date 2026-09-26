@@ -202,3 +202,10 @@ Repeated source rows retain their measures. The disposable receiver proves inter
 coordination only; production OIP storage and delivered conflict visibility remain
 pending, so the parent stays In progress. See the
 [execution record](completed/IOP-047-import-idempotency-plan.md).
+
+IOP-049 supplies the pure scoped classification stage with immutable configuration
+snapshots, exact area matching and unclassified records retained in totals. Synthetic
+checks cover configuration conflicts, scope/revision mismatch and unchanged measures.
+Actual owner-list reconciliation and durable receipt/OIP composition remain pending;
+the story stays In progress. See the
+[execution record](completed/IOP-049-source-mappings-plan.md).

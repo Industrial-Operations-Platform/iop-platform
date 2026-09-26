@@ -283,3 +283,45 @@ The receiving OIP module must independently validate its invariants.
 
 Run `npm test --workspace @iop/api -- --testPathPatterns csv` for preparation and
 report scenarios. See the [execution record](../../docs/planning/completed/IOP-046-import-validation-plan.md).
+
+## Scoped source classification (IOP-049)
+
+`SourceMappings` is an internal Integrations stage after `prepareCsv` or a valid
+`validateCsv` result. Construct it from configuration, then call
+`mappings.classify(receiptSource, prepared)`. It opens no endpoint or database
+connection and does not authorize access. The host must bind trusted configuration
+to the seeded site/source and freeze it before receipt; the receiver must validate
+the resulting envelope against that receipt before publication.
+
+Configuration has `organizationId`, `siteId`, `sourceId`, `mappingRevision`,
+`sectors: [{ sectorKey, label }]` and `areas: [{ sourceArea, sectorKey }]`.
+Use local customer configuration outside Git for real labels; tests use fictional
+ones. IDs/revisions/sector keys use the existing 1–64 ASCII alphanumeric/underscore/
+hyphen identifier profile, beginning with an alphanumeric character. Lists are
+bounded at 20,000 entries each (the POC record ceiling); area/label strings at 4,096
+UTF-16 code units (the field ceiling). Empty lists explicitly classify all records
+as unclassified. Blank text, NUL/newlines, unknown sector references, duplicate
+sector keys and duplicate normalized area keys fail before classification, including
+identical duplicate assignments. Errors contain fixed codes without source values.
+
+Area matching trims only outer ASCII spaces/tabs and compares exactly, preserving
+case, internal spaces, accents, punctuation and nonbreaking spaces. Display labels
+are separate from identity and preserved verbatim. A sector key must retain the same
+reporting concept across revisions; a changed concept needs a new key. Renaming a
+label may retain its key. The configuration owner is responsible for this semantic
+continuity; the pure helper cannot compare independently loaded historical files.
+Every content change requires a new revision; never reuse one for changed rules.
+
+The returned immutable `ClassifiedCsv` carries the full frozen `mapping` snapshot,
+records with `classificationStatus`/`sectorKey`, and `unclassifiedCount`. Organization,
+site, source and mapping revision must exactly match the supplied receipt source.
+Source fields, physical line references, measures, duplicate flags and totals survive
+unchanged. Unmatched nonempty areas have a null key; they are retained in totals.
+Use `Unclassified` as the default presentation label, independently of sector keys.
+Copy `unclassifiedCount` into the future batch inspection handoff; it may overlap
+with repeated-record counts and must not be added to the total record count.
+
+This API takes adapter-validated records, not untrusted JSON or client-provided
+scope. Mapping persistence, publication composition, actual owner-list reconciliation
+and host activation remain pending. Frozen in-memory output is not durable storage;
+DAX comparison parity and runtime authorization are not claimed.

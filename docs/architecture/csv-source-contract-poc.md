@@ -241,3 +241,12 @@ capped at 100 independently of counts. Scoped classification, persisted outcomes
 and user-facing import/review composition remain pending; the parent stays open.
 See the [API report contract](../../apps/api/README.md#poc-csv-validation-report-iop-046)
 and [execution evidence](../planning/completed/IOP-046-import-validation-plan.md).
+
+## IOP-049 classification handoff
+
+The [internal mapping stage](../../apps/api/README.md#scoped-source-classification-iop-049)
+validates bounded scoped configuration and freezes the applied mapping snapshot,
+classifications and unclassified count without changing prepared measures or RAW
+line references. Exact comparison and synthetic reconciliation are executable;
+actual owner-list reconciliation and durable receipt/publication composition remain
+pending. See the [execution record](../planning/completed/IOP-049-source-mappings-plan.md).
