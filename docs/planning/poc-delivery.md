@@ -148,9 +148,8 @@ pending. Runtime access remains closed. See the
 [completed plan](completed/IOP-030-local-membership-plan.md) for installation evidence.
 
 IOP-029 has reviewed the integrated IOP-006/026/027/030 prerequisites and prepared
-[Proposed ADR-0026](../architecture/adr/ADR-0026-poc-authorization-lookup.md) for
-current scoped permission lookup and its transaction handoff. The story is Blocked
-on owner acceptance of that new boundary, not on completion of deferred identity
-parents. Runtime remains CONNECT-only; the proposal does not activate ADR-0018's
+[Accepted ADR-0026](../architecture/adr/ADR-0026-poc-authorization-lookup.md) for
+current scoped permission lookup and its transaction handoff. The owner accepted that boundary on 2026-09-26; implementation is In progress
+without waiting for deferred identity parents. Runtime remains CONNECT-only; the proposal does not activate ADR-0018's
 host adapter or prove import/read access. See the
 [active plan](active/IOP-029-poc-authorization-plan.md).

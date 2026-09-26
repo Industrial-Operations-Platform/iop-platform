@@ -1,7 +1,7 @@
 # IOP-029 — POC authorization execution plan
 
-Status: Blocked — awaiting owner acceptance of Proposed ADR-0026 before dependent
-implementation. The documentation increment is complete. Owner request on 2026-09-26, limited to the
+Status: In progress — the owner accepted ADR-0026 and authorized publication of
+the documentation branch on 2026-09-26. The decision increment is complete. Owner request on 2026-09-26, limited to the
 [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 Story: [IOP-029](../items/IOP-029-rbac-enforcement.md).
 Branch: `docs/IOP-029-poc-authorization`, created from clean `develop` before edits.
@@ -53,9 +53,17 @@ ADR-0018 host gate and absence of application/schema changes. No dependency stor
 needed translation. Runtime tests were not run for this documentation-only increment;
 no runtime authorization evidence is claimed.
 
+## Acceptance and continuation
+
+The owner explicitly accepted ADR-0026 and authorized merging this documentation
+branch into develop and pushing both to origin. Record acceptance in the ADR, item,
+backlog and delivery map before publication. Continue implementation on
+`feature/IOP-029-poc-authorization` from the resulting develop, updating this plan
+before code changes. No renewed decision approval is required.
+
 ## Closure
 
 Commit the validated decision increment even if implementation remains blocked.
-Keep item/backlog Blocked with the specific missing acceptance; keep this plan in
-active until the selected implementation is verified. Shared-user enforcement and
+Keep item/backlog In progress and this plan active until the selected implementation
+is verified. Shared-user enforcement and
 administration stay deferred; do not close the broader parent with POC-only evidence.

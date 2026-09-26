@@ -2,8 +2,8 @@
 
 ## Status
 
-Proposed on 2026-09-26 under [IOP-029](../../planning/items/IOP-029-rbac-enforcement.md).
-Owner acceptance is required before dependent implementation. Runtime remains
+Accepted on 2026-09-26 by explicit owner approval under [IOP-029](../../planning/items/IOP-029-rbac-enforcement.md).
+The bounded implementation is authorized. Runtime currently remains
 CONNECT-only; this document introduces no grants or executable authorization.
 
 ## Context
@@ -22,7 +22,7 @@ principal and explicit site roles. Login, access administration and a generic
 authorization engine are excluded. This proposal resolves the lookup boundary;
 it does not activate the host adapter or open business endpoints.
 
-## Proposed decision
+## Decision
 
 ### Contract and ownership
 

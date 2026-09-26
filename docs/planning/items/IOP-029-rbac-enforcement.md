@@ -2,8 +2,8 @@
 
 ## Status
 
-Blocked — owner acceptance of [Proposed ADR-0026](../../architecture/adr/ADR-0026-poc-authorization-lookup.md)
-is required before implementing the narrow runtime lookup and transaction boundary.
+In progress — the owner accepted [ADR-0026](../../architecture/adr/ADR-0026-poc-authorization-lookup.md)
+on 2026-09-26, authorizing the narrow runtime lookup and transaction boundary.
 Dependencies are integrated. No runtime authorization is implemented by this increment.
 
 ## Authorization and POC applicability
@@ -23,7 +23,7 @@ and [workflow](../workflow.md).
 
 IOP-026/027/030 supply integrated site, active-principal and membership/site-role
 storage plus explicit seeds. Runtime remains CONNECT-only. ADR-0014's lookup policy
-review gate and undecided module/transaction boundaries motivate Proposed ADR-0026.
+review gate and undecided module/transaction boundaries are resolved by Accepted ADR-0026.
 Accepted ADR-0018 permits the local mechanism; its host adapter and validation are
 still pending. No allow-all guard or trusted browser actor is authorized.
 
@@ -31,7 +31,7 @@ still pending. No allow-all guard or trusted browser actor is authorized.
 
 - [x] Review dependencies and create a story branch and execution plan before edits.
 - [x] Define the bounded lookup proposal, transaction handoff and verification cases.
-- [ ] Obtain acceptance of ADR-0026 before dependent implementation.
+- [x] Obtain acceptance of ADR-0026 before dependent implementation.
 - [ ] Evaluate current active user, organization membership, ownership and explicit
   site grants for every operation through a provider-independent contract.
 - [ ] Enforce the fixed permission bundles at the exact target; deny unknown/missing
@@ -59,7 +59,7 @@ unmerged prerequisite or IOP-007 login implementation blocks this slice.
 Accepted ADR-0001/0003/0004/0005 preserve module, PostgreSQL, provider and customer
 boundaries; ADR-0012/0013/0014 govern scope, RLS and permission; ADR-0018 governs the
 local host. Follow ADR-0007/0008. See the [ADR directory](../../architecture/adr/).
-Proposed ADR-0026 is not authority to implement until accepted.
+Accepted ADR-0026 authorizes this bounded implementation.
 
 ## Boundaries and remaining parent scope
 
@@ -80,4 +80,4 @@ The [active plan](../active/IOP-029-poc-authorization-plan.md) records the branc
 files, dependency findings and evidence. ADR-0026 specifies executable positive,
 negative and actual-role database scenarios for implementation. This documentation
 increment checks links, IDs, statuses and consistency only; no runtime evidence is
-claimed. Keep item/backlog Blocked and the plan active while acceptance is pending.
+claimed. Keep item/backlog In progress and the plan active until implementation is verified.
