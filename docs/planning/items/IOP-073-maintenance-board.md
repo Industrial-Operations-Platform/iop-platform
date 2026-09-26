@@ -10,88 +10,88 @@ M8 — Maintenance Management. Proposed delivery slice.
 
 ## Goal
 
-Maintenance Board. Resultado esperado: Board por site/hall/area
+Maintenance Board. Expected outcome: Board by site/hall/area
 
 ## User / business value
 
-Técnicos y responsables necesitan seguir trabajos, prioridades y resultados sobre activos.
+Technicians and responsible staff need to track work, priorities and outcomes for assets.
 
 ## Context
 
-Ámbito: Maintenance Management. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Maintenance Management. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+outline requested by the owner; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists for this capability. It is not implemented, and its detailed design has not been accepted.
 
 ## Desired state
 
-Board por site/hall/area
+Board by site/hall/area
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-073.
-- Estados y prioridad requieren reglas explícitas; el board usa ubicaciones configurables, no niveles locales fijos.
+- Deliver only the outcome described for IOP-073.
+- Statuses and priority require explicit rules; the board uses configurable locations, not fixed local levels.
 
 ## Acceptance criteria
 
-- [ ] Board por site/hall/area
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Board by site/hall/area
+- [ ] The plan documents scenarios and required decisions without expanding scope.
+- [ ] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
-Estados y prioridad requieren reglas explícitas; el board usa ubicaciones configurables, no niveles locales fijos.
+Statuses and priority require explicit rules; the board uses configurable locations, not fixed local levels.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to make the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permissions and customer/site scope for relevant operations and references.
+Do not include secrets, blueprints or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Conservar responsable, activo y transiciones con auditoría; no duplicar el registro canónico de activos.
+Preserve the responsible person, asset and transitions with auditing; do not duplicate the canonical asset registry.
 
 ## API considerations
 
-Validar transiciones, pertenencia al scope y permisos de edición; referencias externas pasan por Integrations.
+Validate transitions, scope membership and edit permissions; external references pass through Integrations.
 
 ## UI considerations
 
-Mostrar estado, prioridad, ubicación y responsable con filtros autorizados; no sustituir un CMMS completo.
+Show status, priority, location and responsible person with authorized filters; do not replace a full CMMS.
 
 ## Dependencies
 
 [IOP-069](IOP-069-maintenance-status.md), [IOP-070](IOP-070-maintenance-priority.md), [IOP-071](IOP-071-maintenance-ownership.md), [IOP-072](IOP-072-maintenance-asset-link.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies indicate required contracts/capabilities, not numerical implementation
+order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must define executable commands and scenarios for the acceptance criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictitious tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.

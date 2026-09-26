@@ -2,7 +2,14 @@
 
 ## Status
 
-Proposed
+Deferred
+
+Deferred beyond the analytical POC under the owner-approved
+[scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md), which
+explicitly defer maintenance and IOP-126–127 fixtures. The 2026-09-26 review
+introduces no issues/tasks dataset or runtime behavior.
+
+Execution evidence: [POC disposition plan](../completed/IOP-127-poc-disposition-plan.md).
 
 ## Milestone
 
@@ -10,21 +17,21 @@ M16 — Demo / Pilot Dataset. Proposed delivery slice.
 
 ## Goal
 
-Synthetic maintenance. Resultado esperado: Issues/tasks
+Synthetic maintenance. Expected outcome: Issues/tasks
 
 ## User / business value
 
-El equipo necesita demostrar IOP sin infraestructura o información empresarial.
+The team needs to demonstrate IOP without enterprise infrastructure or information.
 
 ## Context
 
-Ámbito: Synthetic demo and pilot fixtures. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Synthetic demo and pilot fixtures. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+outline requested by the owner; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists for this capability. It is not implemented, and its detailed design has not been accepted.
 
 ## Desired state
 
@@ -32,66 +39,75 @@ Issues/tasks
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-127.
-- Usar organizaciones, nombres, activos y relaciones ficticios; las fixtures no definen niveles rígidos del dominio.
+- Deliver only the outcome described for IOP-127.
+- Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
 
 ## Acceptance criteria
 
 - [ ] Issues/tasks
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] The plan documents scenarios and required decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
+
+The checked criteria cover the POC disposition review only. Issues/tasks remain
+unimplemented; this story is not Completed.
 
 ## Domain considerations
 
-Usar organizaciones, nombres, activos y relaciones ficticios; las fixtures no definen niveles rígidos del dominio.
+Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to make the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permissions and customer/site scope for relevant operations and references.
+Do not include secrets, blueprints or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Datos reproducibles, scope y procedencia explícitos; incluir casos inválidos/ambiguos útiles sin secretos.
+Use reproducible data with explicit scope and provenance; include useful invalid/ambiguous cases without secrets.
 
 ## API considerations
 
-Usar mecanismos de carga acordados; impedir que reset de demo pueda afectar producción.
+Use agreed loading mechanisms; prevent demo reset from affecting production.
 
 ## UI considerations
 
-El usuario debe distinguir demo y datos reales; el alcance no incluye diseñar nuevas pantallas.
+The user must distinguish demo data from real data; scope does not include designing new screens.
 
 ## Dependencies
 
 [IOP-124](IOP-124-demo-assets.md), [IOP-073](IOP-073-maintenance-board.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies indicate required contracts/capabilities, not numerical implementation
+order. Refine them in the plan before changing code.
+
+For the POC, both direct dependencies are deferred capabilities: IOP-124 supplies
+physical asset fixtures; IOP-073 supplies the maintenance board. Neither is a POC
+gate. Revisit their contracts only when maintenance work is explicitly activated
+beyond the POC.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must define executable commands and scenarios for the acceptance criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictitious tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+No decision is needed to apply the existing POC deferral. Before future maintenance
+implementation, confirm the approved contract, edge cases and exact evidence.
