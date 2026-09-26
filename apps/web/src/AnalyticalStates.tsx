@@ -1,17 +1,24 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 type PreviewState = 'disconnected' | 'loading' | 'error' | 'no-imports' | 'no-matches';
 
 export function AnalyticalStates({ view }: { view: 'overview' | 'detail' }) {
   const [state, setState] = useState<PreviewState>('disconnected');
+  const preview = useRef<HTMLDetailsElement>(null);
+  const stateSelector = useRef<HTMLSelectElement>(null);
+  const recover = (nextState: PreviewState) => {
+    setState(nextState);
+    if (preview.current) preview.current.open = true;
+    stateSelector.current?.focus();
+  };
   return (
     <section aria-label="Analytical state">
       <p className="eyebrow">{view === 'overview' ? 'Review the evidence' : 'Follow the contributing records'}</p>
-      <details className="state-preview">
+      <details ref={preview} className="state-preview">
         <summary>Preview UI states</summary>
         <p id="preview-help">Simulation only. These controls do not load data or change real filters. Select another state to end the loading preview.</p>
         <label htmlFor="preview-state">Simulated analytical state</label>
-        <select id="preview-state" aria-describedby="preview-help" value={state} onChange={event => setState(event.target.value as PreviewState)}>
+        <select ref={stateSelector} id="preview-state" aria-describedby="preview-help" value={state} onChange={event => setState(event.target.value as PreviewState)}>
           <option value="disconnected">Not connected</option>
           <option value="loading">Loading</option>
           <option value="error">Request failed</option>
@@ -42,8 +49,8 @@ export function AnalyticalStates({ view }: { view: 'overview' | 'detail' }) {
           <p>Imported data is available in this example, but no records match the selected filters. Review the filters; this does not establish a fault-free period.</p>
         </>}
       </div>
-      {state === 'error' && <button onClick={() => setState('loading')}>Simulate retry</button>}
-      {state === 'no-matches' && <button onClick={() => setState('disconnected')}>Reset state preview</button>}
+      {state === 'error' && <button onClick={() => recover('loading')}>Simulate retry</button>}
+      {state === 'no-matches' && <button onClick={() => recover('disconnected')}>Reset state preview</button>}
       <p className="note">A reporting date is a source label, not proof of a full 24-hour window. Accumulated alarm duration is not plant downtime.</p>
       {view === 'detail' && <p className="note">Source equipment labels do not establish physical asset identities.</p>}
       <div className="actions">

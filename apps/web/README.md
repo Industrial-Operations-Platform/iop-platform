@@ -99,3 +99,18 @@ The compact viewport approximates the layout space at 200% zoom on 1280×960;
 it is not a physical-device or browser-zoom certification. Real charts, tables,
 filters and records still need responsive verification when delivered. See
 [IOP-121](../../docs/planning/items/IOP-121-responsive-ui.md).
+
+## Accessibility POC baseline (IOP-122)
+
+The existing preview uses native links, buttons and a labelled state selector,
+landmarks, a skip link and polite status updates. Navigation gives the page heading
+visible focus; simulated retry/reset returns focus to the state selector when the
+recovery button disappears, reopening the preview if collapsed. The selector has a contrasting boundary.
+
+Playwright checks a keyboard-only overview/detail journey at 768px and 1366px,
+accessible names/descriptions, live-region markup and rendered text contrast of
+at least 4.5:1, with selector boundaries and heading focus at least 3:1. Existing
+navigation tests cover the skip link and history. Screenshots are in `test-results/`.
+These checks do not verify screen-reader speech or certify accessibility compliance.
+Real analytical filters, charts, tables and runtime feedback still need verification
+under [IOP-122](../../docs/planning/items/IOP-122-accessibility.md).
