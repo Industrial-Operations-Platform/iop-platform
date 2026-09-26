@@ -2,7 +2,9 @@
 
 ## Status
 
-In progress — POC presentation baseline implemented; data-backed validation pending.
+Blocked — POC presentation baseline implemented; data-backed views, filters and
+contributing records are not available for final validation. See the
+[continuation plan](../active/IOP-121-responsive-continuation-plan.md).
 
 ## Milestone and goal
 
@@ -75,6 +77,12 @@ Their relevant presentation capabilities are available without completion of
 future runtime integration. Real analytical contracts and views remain prerequisites
 for the final data-backed responsive validation, not this independent slice.
 Dependencies identify required capabilities, not numerical implementation order.
+
+The remaining validation needs [IOP-089](IOP-089-analytics-query-layer.md)
+analytical reads, [IOP-094](IOP-094-asset-analytics.md) detail capabilities,
+[IOP-097](IOP-097-analytics-filters.md) filters and validated scoped local access
+under Accepted ADR-0018. Acceptance of the design does not deliver these runtime
+capabilities; their implementation is outside this story.
 
 ## Non-goals
 
