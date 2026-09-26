@@ -10,7 +10,8 @@ The owner approved a local single-operator CSV → analysis → presentation POC
 with login and external connections deferred. Follow [POC scope](../product/scope-poc.md)
 and the [complete delivery map](poc-delivery.md) before activating a story.
 Only relevant slices are prerequisites; M1–M17 are a future capability inventory.
-The proposed local execution mechanism does not implicitly waive accepted RLS/RBAC.
+The local execution mechanism in Accepted ADR-0018 preserves RLS/RBAC; its host
+implementation and validation remain pending.
 
 IOP-001–006 and IOP-008 are Completed as design on this branch. Local API and web
 host implementation is completed under IOP-016/017. IOP-007, IOP-010, IOP-028
@@ -255,6 +256,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-141 — Story branches and review workflow](items/IOP-141-branch-workflow.md) | Completed |
 | [IOP-142 — Align delivery with a fast analytical POC](items/IOP-142-poc-delivery-scope.md) | Completed |
 | [IOP-143 — Local agent instructions and concise documentation](items/IOP-143-concise-workflow.md) | Completed |
+| [IOP-146 — Review POC coverage and closure dependencies](items/IOP-146-poc-readiness-review.md) | Completed |
 
 ## Owner-supplied reference data
 

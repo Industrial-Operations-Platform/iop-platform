@@ -6,6 +6,11 @@ increments selecting existing story slices, not five new mandatory architecture
 phases. Start a small plan/branch for the selected story; do not activate all IDs.
 A completed slice leaves a parent open when future requirements remain.
 
+The [2026-09-26 readiness review](poc-readiness.md) maps actual coverage, all
+15 currently Blocked stories and the missing implementation ownership for local
+host activation, OIP persistence and manual import composition. Follow its closure
+sequence; accepted designs and fixture previews do not prove an end-to-end POC.
+
 ## Delivery preference — 2026-09-25
 
 The owner prioritizes seeing the intended platform experience before substantial
