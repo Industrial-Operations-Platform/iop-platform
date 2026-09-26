@@ -8,7 +8,7 @@ const { seedOrganization } = require('../dist/seed-organization.js');
 const { seedSite } = require('../dist/seed-site.js');
 const { seedUser } = require('../dist/seed-user.js');
 const { seedMembership } = require('../dist/seed-membership.js');
-const { ImportBatches, ImportOutcomeUnknownError } = require('../../../apps/api/dist/modules/integrations');
+const { ImportBatches, ImportOutcomeUnknownError, validateCsv } = require('../../../apps/api/dist/modules/integrations');
 const { runSiteOperation } = require('../../../apps/api/dist/persistence/site-operation');
 let container, configs, pool, service;
 const source = { organizationId: 'org-a', siteId: 'site-a', sourceId: 'source', siteTimeZone: 'UTC',
@@ -28,7 +28,8 @@ async function admin(sql, values) {
 const receiver = {
   async publish(tx, batch, input) {
     for (let line = 1; line <= input.count; line++) {
-      await tx.query(`INSERT INTO batch_receiver_probe.records VALUES ($1,$2,$3,$4,$5)`,
+      await tx.query(`INSERT INTO batch_receiver_probe.records
+        (organization_id,site_id,source_id,import_id,source_record_number) VALUES ($1,$2,$3,$4,$5)`,
         [tx.context.organizationId, tx.context.siteId, batch.sourceId, batch.importId, line + 1]);
       if (input.failAfterFirst) throw new Error('Synthetic receiver failure');
     }
@@ -79,7 +80,7 @@ beforeAll(async () => {
   }
   await admin(`CREATE SCHEMA batch_receiver_probe AUTHORIZATION iop_migrator;
     CREATE TABLE batch_receiver_probe.records (organization_id text, site_id text, source_id text, import_id uuid,
-      source_record_number integer, PRIMARY KEY (organization_id,site_id,source_id,import_id,source_record_number),
+      source_record_number integer, reported_frequency bigint, accumulated_alarm_seconds bigint, PRIMARY KEY (organization_id,site_id,source_id,import_id,source_record_number),
       FOREIGN KEY (organization_id,site_id,source_id,import_id)
         REFERENCES integrations.import_batches (organization_id,site_id,source_id,import_id));
     ALTER TABLE batch_receiver_probe.records OWNER TO iop_migrator;
@@ -275,6 +276,133 @@ test('byte, diagnostic and count boundaries remain bounded; mid-publication expi
   expect(await service.reconcile('user',expiry,receiver)).toBe('failed');
 });
 
+// IOP-047: compose real CSV validation and batch contracts, with disposable storage.
+// This probe is not the production OIP receiver or scoped classification stage.
+const csvBytes = (frequency = 2) => Buffer.from('\uFEFF' +
+  'Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe\r\n' +
+  `\r\n${frequency};0 0:01:30;Area;Equipment;Fault;Type;Group\r\n` +
+  `${frequency};0 0:01:30;Area;Equipment;Fault;Type;Group\r\n`, 'utf16le');
+const csvReceiver = {
+  async publish(tx, batch, prepared) {
+    expect(prepared.reportingDate).toBe(batch.reportingDate);
+    for (const record of prepared.records) {
+      await tx.query(`INSERT INTO batch_receiver_probe.records VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [tx.context.organizationId, tx.context.siteId, batch.sourceId, batch.importId,
+          record.sourceRecordNumber, record.reportedFrequency, record.accumulatedAlarmSeconds]);
+    }
+    return prepared.records.length;
+  },
+  inspect: receiver.inspect,
+};
+async function receiveCsv(batchService, filename, content = csvBytes()) {
+  const id = await batchService.receive('user', filename, content);
+  const retained = await batchService.original('user', id);
+  const report = validateCsv(filename, retained);
+  expect(report.status).toBe('valid');
+  return { id, prepared: report.prepared,
+    // The probe intentionally treats every row as unclassified; it supplies no mapping.
+    inspection: { ...report.inspection, unclassifiedCount: report.prepared.dataRecordCount } };
+}
+const publishCsv = (batchService, input, target = csvReceiver) =>
+  batchService.publish('user', input.id, input.inspection, target, input.prepared, deadline());
+async function csvFacts(ids) {
+  return (await admin(`SELECT import_id,source_record_number,reported_frequency::text,
+    accumulated_alarm_seconds::text FROM batch_receiver_probe.records
+    WHERE import_id=ANY($1::uuid[]) ORDER BY import_id,source_record_number`, [ids])).rows;
+}
+
+test('IOP-047 identical and changed-byte reimports preserve the winner and repeated source rows', async () => {
+  const filename = 'Hitliste-20260801.csv';
+  const first = await receiveCsv(service, filename);
+  expect(await publishCsv(service, first)).toBe('succeeded');
+  const original = await csvFacts([first.id]);
+  expect(original).toEqual([3,4].map(line => ({ import_id:first.id, source_record_number:line,
+    reported_frequency:'2', accumulated_alarm_seconds:'90' })));
+  expect(await service.review('user', first.id)).toMatchObject({ repeatedCount:2,
+    admittedRecordCount:2, unclassifiedCount:2 });
+  for (const content of [csvBytes(), csvBytes(99)]) {
+    const duplicate = await receiveCsv(service, filename, content);
+    const forbiddenReceiver = { ...csvReceiver, publish: jest.fn() };
+    expect(await publishCsv(service, duplicate, forbiddenReceiver)).toBe('duplicate-date');
+    expect(forbiddenReceiver.publish).not.toHaveBeenCalled();
+    expect(await service.review('user', duplicate.id)).toMatchObject({ outcome:'rejected',
+      reasonCode:'duplicate-date', admittedRecordCount:0, rejectedRecordCount:2 });
+    expect(await service.original('user', duplicate.id)).toEqual(content);
+    expect(await csvFacts([first.id, duplicate.id])).toEqual(original);
+    expect(await service.reconcile('user', duplicate.id, csvReceiver)).toBe('rejected');
+  }
+  await expect(publishCsv(service, first)).rejects.toMatchObject({ code:'terminal' });
+  expect(await csvFacts([first.id])).toEqual(original);
+});
+
+test('IOP-047 concurrent CSV publications admit exactly one complete set of measures', async () => {
+  const inputs = await Promise.all([2,99].map(n => receiveCsv(service, 'Hitliste-20260802.csv', csvBytes(n))));
+  const results = await Promise.all(inputs.map(input => publishCsv(service, input)));
+  expect([...results].sort()).toEqual(['duplicate-date','succeeded']);
+  const winner = inputs[results.indexOf('succeeded')];
+  const rows = await csvFacts(inputs.map(input => input.id));
+  expect(rows).toHaveLength(2);
+  expect(rows.every(row => row.import_id === winner.id)).toBe(true);
+  expect(rows.reduce((sum, row) => sum + Number(row.reported_frequency), 0))
+    .toBe(winner.prepared.totalReportedFrequency);
+  expect(rows.reduce((sum, row) => sum + Number(row.accumulated_alarm_seconds), 0)).toBe(180);
+  expect((await admin('SELECT import_id FROM integrations.import_date_claims WHERE import_id=ANY($1::uuid[])',
+    [inputs.map(input => input.id)])).rows).toEqual([{ import_id:winner.id }]);
+});
+
+test('IOP-047 the date namespace includes source and site, while a new date is not a content hash conflict', async () => {
+  const filename = 'Hitliste-20260803.csv';
+  const first = await receiveCsv(service, filename);
+  expect(await publishCsv(service, first)).toBe('succeeded');
+  for (const scope of [{sourceId:'csv-other'}, {siteId:'site-a2'}, {organizationId:'org-b',siteId:'site-b'}]) {
+    const other = new ImportBatches(pool, { ...source, ...scope });
+    const independent = await receiveCsv(other, filename);
+    expect(await publishCsv(other, independent)).toBe('succeeded');
+    expect(await csvFacts([independent.id])).toHaveLength(2);
+    await expect(service.review('user', independent.id)).rejects.toMatchObject({ code:'not-found' });
+  }
+  // The supported basename has one representation per date. Renaming to a NEW
+  // valid date changes the label; identical content cannot establish a false date.
+  const renamed = await receiveCsv(service, 'Hitliste-20260804.csv');
+  expect(await publishCsv(service, renamed)).toBe('succeeded');
+  expect((await service.review('user', renamed.id)).sha256).toBe((await service.review('user', first.id)).sha256);
+  // Renaming that payload onto an occupied date is still a conflict.
+  const occupied = await receiveCsv(service, filename, await service.original('user', renamed.id));
+  expect(await publishCsv(service, occupied)).toBe('duplicate-date');
+  expect(await csvFacts([first.id, renamed.id, occupied.id])).toHaveLength(4);
+});
+
+test('IOP-047 invalid CSV reserves no date and a corrected explicit submission can succeed', async () => {
+  const filename = 'Hitliste-20260805.csv';
+  const invalid = csvBytes(-1);
+  const id = await service.receive('user', filename, invalid);
+  const report = validateCsv(filename, await service.original('user', id));
+  expect(report.status).toBe('invalid');
+  await service.reject('user', id, { ...report.inspection, unclassifiedCount:0 });
+  expect(await service.review('user', id)).toMatchObject({ outcome:'rejected', admittedRecordCount:0,
+    rejectedRecordCount:2, inspectedInvalidCount:2 });
+  const corrected = await receiveCsv(service, filename);
+  expect(await publishCsv(service, corrected)).toBe('succeeded');
+  expect(await service.reconcile('user', id, csvReceiver)).toBe('rejected');
+  expect(await csvFacts([id, corrected.id])).toHaveLength(2);
+});
+
+test('IOP-047 lost publication acknowledgement returns existing success and never republishes CSV facts', async () => {
+  const input = await receiveCsv(service, 'Hitliste-20260806.csv');
+  const uncertain = new ImportBatches(loseNextAcknowledgement(), source);
+  await expect(publishCsv(uncertain, input)).rejects.toMatchObject({ importId:input.id });
+  const original = await csvFacts([input.id]);
+  expect(original).toHaveLength(2);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    expect(await service.reconcile('user', input.id, csvReceiver)).toBe('succeeded');
+  }
+  await expect(publishCsv(service, input)).rejects.toMatchObject({ code:'terminal' });
+  const retry = await receiveCsv(service, 'Hitliste-20260806.csv');
+  expect(await publishCsv(service, retry)).toBe('duplicate-date');
+  expect(await csvFacts([input.id, retry.id])).toEqual(original);
+});
+
+// Run after receiver scenarios: provisioning requires removing disposable grants.
 test('provisioning accepts only exact batch grants and detects quota drift', async () => {
   await admin('DROP SCHEMA batch_receiver_probe CASCADE');
   await provision(configs);

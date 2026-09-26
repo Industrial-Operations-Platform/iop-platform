@@ -2,96 +2,102 @@
 
 ## Status
 
-Proposed
+In progress — internal POC date-admission verification is delivered. The production
+OIP receiver and delivered import journey remain pending; no end-to-end completion
+is claimed.
 
-## Milestone
+## Milestone and goal
 
-M5 — Industrial Data Foundation. Proposed delivery slice.
+M5 — Industrial Data Foundation. Reimport must not duplicate facts, limited to the
+[POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
+Operations needs traceable imported data and reconcilable metrics.
 
-## Goal
+## Context and current state
 
-Deduplication/idempotency. Resultado esperado: Reimport no duplica facts
+Scope: Integrations and Operational Intelligence. See the
+[modules](../../architecture/modules.md) and [planning workflow](../workflow.md).
+The initial context came from the owner-requested outline; backlog membership alone
+was not implementation authorization. The owner requested this POC story on 2026-09-26.
 
-## User / business value
+IOP-042 already supplies scoped successful-date uniqueness and atomic publication;
+IOP-045 supplies pure CSV preparation. This increment verifies their composition
+with retained synthetic CSV and a disposable receiver preserving physical lines
+and exact measures. It does not introduce a second deduplication mechanism.
+See the [execution record](../completed/IOP-047-import-idempotency-plan.md).
 
-Operación necesita datos importados trazables y métricas reconciliables.
+## Requirements and acceptance
 
-## Context
+- [x] Verify internal reimport rejection by `(organizationId, siteId, sourceId,
+  reportingDate)` for identical and changed bytes, without changing admitted facts.
+- [x] Verify concurrent publication admits at most one complete dataset; failed or
+  invalid attempts do not permanently reserve a date, and uncertain success is
+  reconciled without replay.
+- [x] Preserve legitimate repeated source rows and their measures. Independent
+  scopes/dates retain separate namespaces; a checksum is not the admission key.
+- [ ] Verify that reimport does not duplicate production OIP facts through the
+  delivered CSV import/review path, including visible conflict outcomes.
+- [x] Document scenarios and necessary decisions without expanding scope, with
+  validation evidence and synchronized documentation.
 
-Ámbito: Integrations and Operational Intelligence. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Only the described outcome is authorized. RAW → validation → normalization remains
+the flow; the receiving module validates its invariants. Never infer a physical
+asset from text alone. No automatic replacement, append or correction of an
+already successful reporting date.
 
-## Current state
+## Architecture and security constraints
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Reimport no duplica facts
-
-## Requirements
-
-- Entregar únicamente el resultado descrito para IOP-047.
-- RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
-
-## Acceptance criteria
-
-- [ ] Reimport no duplica facts
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
-
-## Domain considerations
-
-RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
+Follow [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+[Accepted ADR-0027](../../architecture/adr/ADR-0027-poc-import-publication.md)
+and the [batch model](../../architecture/import-batches-poc.md) govern publication,
+scoped date claims and recovery. Proposed ADRs do not authorize implementation.
 
-## Security considerations
+Verify permission and organization/site scope for operations and references. Do
+not include secrets, floor plans or production data. Keep industrial integrations
+read-only; record material changes where applicable. Host activation remains gated
+by ADR-0018 implementation and validation; internal tests do not open endpoints.
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+## Data, API and UI considerations
 
-## Data considerations
+Preserve provenance and grain; distinguish occurrences from aggregates. Rejections
+and corrections must remain visible. Use ingestion contracts; credentials and
+external source columns belong in adapters/configuration. Expose import states,
+errors and results only within this task's delivered path; no full dashboard.
 
-Preservar procedencia y grano; distinguir ocurrencias de agregados. Rechazos y correcciones deben ser visibles.
+The supported filename has one spelling per reporting date. Renaming bytes onto
+an occupied date is rejected. Renaming identical bytes to a different free valid
+date changes the label and remains admissible under the
+[source contract](../../architecture/csv-source-contract-poc.md); byte equality
+cannot prove a false reporting date. This is a review limitation, not a new global
+hash-based deduplication rule. Repeated tuples inside a file remain separate facts.
 
-## API considerations
+## Dependencies and remaining handoff
 
-Usar contratos de ingesta; credenciales y nombres de columnas externos quedan en adaptadores/configuración.
+- [IOP-042](IOP-042-import-batches.md): internal batch lifecycle and uniqueness are
+  integrated on develop; production receiver composition remains pending.
+- [IOP-045](IOP-045-csv-adapter.md): integrated bounded parser and exact normalization.
+- Production OIP receiving storage, scoped classification and host activation must
+  exist before the remaining delivered-path criterion can be verified. They are
+  separate delivery prerequisites, not authorization to start adjacent stories.
 
-## UI considerations
-
-Exponer estados, errores y resultados de importación solo si lo pide esta tarea; no crear un dashboard completo.
-
-## Dependencies
-
-[IOP-042](IOP-042-import-batches.md), [IOP-045](IOP-045-csv-adapter.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies describe required capabilities rather than numerical execution order.
+No new architectural decision is needed for the verified internal slice.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Adjacent stories, implicit acceptance of open decisions or delivery of the entire
+milestone. No customer names in core, background jobs, live integrations, automatic
+replacement or cross-date hash rejection.
 
-## Validation
+## Validation and documentation impact
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+The execution record defines commands and actual results for normal, error,
+concurrency and access-denial scenarios using accepted tooling. The probe verifies
+coordination and retained measures, not production analytical storage or the UI.
+Update this item, its [backlog](../backlog.md) status and the plan; change contracts,
+model, guides or ADRs only when their content changes. The original story is fully
+translated into English with its goal, constraints and outstanding acceptance
+preserved.

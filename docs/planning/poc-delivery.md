@@ -194,3 +194,11 @@ Its [execution record](completed/IOP-046-import-validation-plan.md) covers execu
 value/structure/budget scenarios. The story remains In progress for persisted
 import/review visibility; host activation, scoped classification and production
 OIP receiving validation/publication remain independent dependencies.
+
+IOP-047 verifies the existing date-claim mechanism together with the real CSV
+adapter and retained synthetic input: repeated/changed imports, concurrency,
+independent namespaces, invalid-input retry and uncertain-success reconciliation.
+Repeated source rows retain their measures. The disposable receiver proves internal
+coordination only; production OIP storage and delivered conflict visibility remain
+pending, so the parent stays In progress. See the
+[execution record](completed/IOP-047-import-idempotency-plan.md).
