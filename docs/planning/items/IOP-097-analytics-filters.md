@@ -4,7 +4,8 @@
 
 Blocked — the owner accepted [ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md)
 on 2026-09-26. End-to-end delivery still needs IOP-089's analytical contract and
-implementation and validation of the runtime access mechanism in Accepted ADR-0018. No filter implementation exists.
+implementation and validation of the runtime access mechanism in Accepted ADR-0018. No filter implementation exists. The owner closed the completed documentation
+increment on 2026-09-26; runtime delivery requires a new implementation plan.
 
 ## Milestone and goal
 
@@ -82,7 +83,7 @@ or expansion to the whole milestone. No customer names in core logic.
 
 ## Validation and documentation
 
-The [active plan](../active/IOP-097-analytics-filters-plan.md) records scope, branch,
+The [completed documentation plan](../completed/IOP-097-analytics-filters-plan.md) records scope, branch,
 files and actual documentation checks. ADR-0023 supplies review scenarios for later
 executable tests, including negative access cases; these are not runtime evidence.
 Update this item, [backlog](../backlog.md) and plan together. Change contracts,

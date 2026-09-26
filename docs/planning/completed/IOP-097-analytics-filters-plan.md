@@ -1,6 +1,6 @@
 # IOP-097 — POC date/filter model plan
 
-Status: Blocked — ADR-0023 accepted; analytical contracts and runtime access remain pending.
+Status: Completed — documentation increment only; parent implementation remains Blocked.
 Authorized by the owner's request to work on IOP-097 within
 the [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 Branch: `docs/IOP-097-analytics-filters`, created from clean `develop` on 2026-09-25.
@@ -78,7 +78,8 @@ Acceptance evidence, 2026-09-26:
 Commit the validated documentation increment automatically. IOP-097 remains open
 until consistent filters have executable evidence in both analytical views.
 ADR-0023 acceptance is recorded; publication remains separately authorized.
-Keep this plan active while analytical contracts and runtime access are pending.
+Archive this documentation plan under the owner-requested closure below;
+analytical contracts and runtime implementation remain pending.
 A later fixture UI slice can use the accepted semantics; full delivery still
 requires IOP-089 and implementation/validation of Accepted ADR-0018. Do not implement
 adjacent dependencies under this story. Acceptance does not complete IOP-096/097.
@@ -95,3 +96,20 @@ links, statuses, conflict markers and whitespace before completing the merge.
 Integration validation passed: 244 relative file links across 8 changed
 documents, no conflict markers, consistent Blocked story/backlog statuses and
 Accepted ADR-0023. `git diff --check` passed. No executable files changed.
+
+## Owner-requested documentation closure — 2026-09-26
+
+The owner explicitly requested closure of the remaining active plans after the
+accepted decisions were integrated. Close this completed proposal/acceptance
+increment while keeping IOP-097 Blocked and its runtime criteria unchecked.
+This scoped closure supersedes earlier instructions to retain this documentation
+plan until implementation; it does not complete the parent story.
+
+Closure branch: `docs/IOP-097-documentation-closure`, created from develop.
+Files: this plan and the IOP-097 item. Move this record to completed and update the
+item link; the backlog already mirrors Blocked. Validate links, statuses and
+whitespace and commit locally. Future runtime work needs a new implementation plan.
+
+Closure validation: 21 relative links resolved in the two changed documents;
+item/backlog remain Blocked, runtime criteria remain unchecked and
+`git diff --check` passed. No application files changed or runtime tests ran.
