@@ -217,7 +217,7 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-118 — Area overview](items/IOP-118-area-overview.md) | Proposed |
 | [IOP-119 — Global search](items/IOP-119-global-search.md) | Proposed |
 | [IOP-120 — Empty/error/loading states](items/IOP-120-ui-states.md) | In progress |
-| [IOP-121 — Responsive baseline](items/IOP-121-responsive-ui.md) | Proposed |
+| [IOP-121 — Responsive baseline](items/IOP-121-responsive-ui.md) | In progress |
 | [IOP-122 — Accessibility baseline](items/IOP-122-accessibility.md) | Proposed |
 
 ## M16 — Demo / Pilot Dataset

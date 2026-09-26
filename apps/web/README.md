@@ -86,3 +86,16 @@ preview until another state is selected, and reset returns to not connected. No
 business request, real filter change or metric is generated. Navigation resets the
 preview. Both views retain coverage and metric limitations. Real endpoint state
 integration remains pending under [IOP-120](../../docs/planning/items/IOP-120-ui-states.md).
+
+## Responsive POC baseline (IOP-121)
+
+The existing three destinations support laptop (1366×768), tablet portrait
+(768×1024), tablet landscape (1024×768) and compact 640×480 CSS viewport reflow.
+Navigation and actions wrap/stack, long text wraps, and navigation/state controls
+have at least 44px height. Content remains available by vertical scrolling.
+Playwright checks simulated states, touch activation, keyboard recovery and state
+preservation across orientation changes; screenshots are in `test-results/`.
+The compact viewport approximates the layout space at 200% zoom on 1280×960;
+it is not a physical-device or browser-zoom certification. Real charts, tables,
+filters and records still need responsive verification when delivered. See
+[IOP-121](../../docs/planning/items/IOP-121-responsive-ui.md).

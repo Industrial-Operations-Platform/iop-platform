@@ -2,96 +2,95 @@
 
 ## Status
 
-Proposed
+In progress — POC presentation baseline implemented; data-backed validation pending.
 
-## Milestone
+## Milestone and goal
 
-M15 — UX & Operational Experience. Proposed delivery slice.
+M15 — UX & Operational Experience. Make the local analytical POC usable on laptops
+and tablets within [POC scope](../../product/scope-poc.md) and the
+[delivery map](../poc-delivery.md). Broader cross-module delivery remains deferred.
 
-## Goal
+## User / business value and context
 
-Responsive baseline. Resultado esperado: Laptop/tablet usable
+Technicians, managers and administrators need coherent, accessible workflows.
+Scope: cross-module user experience; see [modules](../../architecture/modules.md)
+and the [planning workflow](../workflow.md). The original owner-requested outline
+is refined to this selected POC slice; backlog membership alone is not authorization.
 
-## User / business value
+## Current and desired state
 
-Técnicos, responsables y administradores necesitan flujos coherentes y accesibles.
-
-## Context
-
-Ámbito: Cross-module user experience. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
-
-## Current state
-
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Laptop/tablet usable
+The existing Import CSV, Executive Overview and analytical detail previews reflow
+across laptop/tablet viewports. Navigation and state controls remain reachable,
+with visible scope, coverage and simulation disclosures. Data-backed analytical
+views are not yet connected and need responsive validation when delivered.
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-121.
-- Componer módulos existentes según rol; navegación visible no concede permisos de servidor.
+- Deliver only IOP-121's selected outcome: laptop/tablet usability.
+- Compose existing modules as appropriate to the role; visible navigation does
+  not grant server permissions.
+- Preserve readable content without page-wide horizontal scrolling at 1366×768,
+  768×1024 and 1024×768; support narrow 640×480 CSS viewport reflow.
+- Keep navigation, preview and recovery controls reachable with at least 44px
+  height. Preserve state across tablet orientation changes and keyboard recovery.
+- Validate real filters, results and contributing records when available; do not
+  introduce fictional charts, metrics or imports to close this story.
 
 ## Acceptance criteria
 
-- [ ] Laptop/tablet usable
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [x] Existing POC navigation and analytical states are usable on laptop/tablet.
+- [x] The plan documents scenarios and necessary choices without expanding scope.
+- [x] Presentation validation evidence and synchronized documentation exist.
+- [ ] Data-backed POC views, filters and records are validated on laptop/tablet.
 
-## Domain considerations
-
-Componer módulos existentes según rol; navegación visible no concede permisos de servidor.
-
-## Architecture constraints
+## Architecture and domain constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt decisions.
+Views consume authorized contracts without divergent copies of entities.
 
-## Security considerations
+## Security and API considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
-
-## Data considerations
-
-Las vistas consumen contratos autorizados y no crean copias divergentes de entidades.
-
-## API considerations
-
-Reutilizar contratos de búsqueda/lectura; definir paginación y límites solo para el alcance seleccionado.
+Verify customer/site scope and permissions for relevant operations and references.
+Exclude secrets, drawings and production data; industrial integrations remain
+read-only. Record material changes when applicable. Reuse authorized read/search
+contracts; pagination and limits belong to the selected endpoint scope. This
+presentation slice makes no API changes or runtime access-control claims.
 
 ## UI considerations
 
-Evaluar teclado, etiquetas, contraste y estados vacíos/error/carga en laptop y tablet; acordar objetivos verificables.
+Evaluate keyboard use, labels, contrast and empty/error/loading states against
+verifiable laptop/tablet targets. Retain existing colors, labels and focus styles;
+full accessibility delivery remains separate.
 
 ## Dependencies
 
-[IOP-116](IOP-116-navigation.md), [IOP-120](IOP-120-ui-states.md)
-
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+[IOP-116](IOP-116-navigation.md) supplies integrated navigation;
+[IOP-120](IOP-120-ui-states.md) supplies integrated simulated analytical states.
+Their relevant presentation capabilities are available without completion of
+future runtime integration. Real analytical contracts and views remain prerequisites
+for the final data-backed responsive validation, not this independent slice.
+Dependencies identify required capabilities, not numerical implementation order.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Adjacent tasks, acceptance of open decisions by inference, or the entire milestone.
+No customer-specific core labels, administration, login, import processing, new
+metrics, charts or business filters. No physical-device or accessibility certification.
 
-## Validation
+## Validation and documentation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Use accepted tooling for expected, error and recovery scenarios. Test access denial
+when relevant runtime access exists. Record actual results in the
+[execution record](../completed/IOP-121-responsive-ui-plan.md); synchronize this item,
+[backlog](../backlog.md) and plan. Update contracts, models, guides or ADRs only
+when this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+No open decision for the independent presentation slice. Final data-backed layout
+checks await owning POC delivery; this increment does not complete the end-to-end POC.
