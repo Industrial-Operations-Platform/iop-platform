@@ -2,7 +2,9 @@
 
 ## Status
 
-In progress — POC preview baseline; real analytical UI validation pending.
+Blocked — POC preview baseline delivered; real analytical controls and data are
+not yet available for validation. See the
+[continuation plan](../active/IOP-122-accessibility-continuation-plan.md).
 
 ## Milestone and goal
 
@@ -81,7 +83,10 @@ contracts/models/guides only if affected.
 
 ## Open questions
 
-No blocking decision for the existing preview. Real data controls and assistive
-technology verification need evidence when the analytical UI is delivered.
+No blocking decision for the existing preview. Resume control/data validation when
+the owning stories deliver analytical UI; runtime state/recovery verification also
+requires analytical endpoints and validated local business access. Independent
+fixture controls can be checked when available. Assistive-technology verification
+remains pending; the preview does not satisfy the final acceptance criterion.
 
 Preview evidence: [completed execution record](../completed/IOP-122-accessibility-plan.md).
