@@ -16,6 +16,7 @@
     "start": "npm run start --workspace @iop/api",
     "typecheck": "npm run typecheck --workspaces && tsc --noEmit -p infra/database/tsconfig.json",
     "test": "npm run build && npm run contract:check --workspace @iop/web && npm test --workspaces && npm run db:test:unit",
+    "test:poc": "npm run typecheck && npm test && npm run test:database && npm run test:e2e",
     "openapi": "npm run build && npm run openapi --workspace @iop/api",
     "dev:web": "npm run dev --workspace @iop/web",
     "preview:web": "npm run preview --workspace @iop/web",

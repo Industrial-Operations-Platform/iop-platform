@@ -49,6 +49,8 @@ Empty future directories use `.gitkeep`. From the root, use Node 24.21.0 and
 [local configuration startup](docs/development/local-configuration.md).
 `npm test` builds and checks both hosts and database configuration.
 `npm run test:database` verifies migration behavior in disposable PostgreSQL containers.
+`npm run test:poc` runs type checks and all current unit/integration/browser layers;
+see the [POC testing guide](docs/development/testing-poc.md) for prerequisites and limits.
 The API exposes only `GET http://127.0.0.1:3000/health`. Run `npm run dev:web`
 in another terminal for the UI at `http://127.0.0.1:5173`.
 See [API instructions](apps/api/README.md) for configuration, contracts and limits.
