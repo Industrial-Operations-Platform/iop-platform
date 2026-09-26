@@ -2,115 +2,82 @@
 
 ## Status
 
-Proposed
+Blocked — owner acceptance of [Proposed ADR-0026](../../architecture/adr/ADR-0026-poc-authorization-lookup.md)
+is required before implementing the narrow runtime lookup and transaction boundary.
+Dependencies are integrated. No runtime authorization is implemented by this increment.
 
-## POC delivery applicability
+## Authorization and POC applicability
 
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+The owner requested IOP-029 on 2026-09-26, limited to the
+[POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
+M3 — Platform Core. Deliver current scoped permission checks for the seeded local
+principal independently of identity-provider details. Full shared-user enforcement,
+login and interactive access administration remain future parent scope.
 
-## Milestone
+## Context and current state
 
-M3 — Platform Core. Proposed delivery slice.
+Users/RBAC owns principal, membership, assignments and permission evaluation;
+Platform Core owns organization/site identity and ownership. See the
+[modules](../../architecture/modules.md), [data model](../../architecture/data-model.md)
+and [workflow](../workflow.md).
 
-## Goal
+IOP-026/027/030 supply integrated site, active-principal and membership/site-role
+storage plus explicit seeds. Runtime remains CONNECT-only. ADR-0014's lookup policy
+review gate and undecided module/transaction boundaries motivate Proposed ADR-0026.
+Accepted ADR-0018 permits the local mechanism; its host adapter and validation are
+still pending. No allow-all guard or trusted browser actor is authorized.
 
-Enforce scoped permissions independently of identity-provider details.
+## Selected requirements and acceptance criteria
 
-## User / business value
+- [x] Review dependencies and create a story branch and execution plan before edits.
+- [x] Define the bounded lookup proposal, transaction handoff and verification cases.
+- [ ] Obtain acceptance of ADR-0026 before dependent implementation.
+- [ ] Evaluate current active user, organization membership, ownership and explicit
+  site grants for every operation through a provider-independent contract.
+- [ ] Enforce the fixed permission bundles at the exact target; deny unknown/missing
+  scope, missing grants, foreign ownership and unavailable authorization state.
+- [ ] Implement narrow real-role lookup RLS and transaction-local handoff without
+  privileged credentials, a global directory or business access before authorization.
+- [ ] Verify allowed/denied operations, revocation, rollback, pool reuse and effective
+  runtime privileges; record evidence and synchronize item/backlog/plan.
 
-Administrators and users need access to authorized organizations and sites.
+A lookup-only implementation does not satisfy the host's ADR-0018 activation,
+loopback/origin and foreign-target tests, or import/read endpoint evidence. Those
+remain gates before opening business access; a POC slice does not complete the
+broader shared-user parent.
 
-## Context
+## Dependencies and decisions
 
-Scope: Platform Core, Authentication and Users/RBAC. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; inclusion in the backlog does not authorize implementation.
+- [IOP-006](IOP-006-rbac-model.md): completed accepted fixed-role design (ADR-0014).
+- [IOP-026](IOP-026-site-model.md): integrated POC site ownership/storage (ADR-0021).
+- [IOP-027](IOP-027-user-model.md): integrated active-principal seed (ADR-0024).
+- [IOP-030](IOP-030-membership-model.md): integrated membership and fixed site-role
+  seed (ADR-0025). Its future dependency on IOP-029 is not a POC seed dependency cycle.
 
-## Current state
+These require only delivered POC slices, not completion of deferred parents. No
+unmerged prerequisite or IOP-007 login implementation blocks this slice.
+Accepted ADR-0001/0003/0004/0005 preserve module, PostgreSQL, provider and customer
+boundaries; ADR-0012/0013/0014 govern scope, RLS and permission; ADR-0018 governs the
+local host. Follow ADR-0007/0008. See the [ADR directory](../../architecture/adr/).
+Proposed ADR-0026 is not authority to implement until accepted.
 
-Only the documentation baseline exists for this capability. It is not implemented,
-and its detailed design is not accepted.
+## Boundaries and remaining parent scope
 
-## Desired state
+No login, sessions, user lifecycle, membership editor, role delegation, organization
+admin bootstrap, wildcard policy, custom-role engine or full audit infrastructure.
+No business endpoints, source integrations, customer labels/schema in the generic
+core or administration UI. Keep secrets and production data out of the repository.
+Industrial integrations remain read-only. Receiving modules still validate scoped
+resources/references; hiding UI controls never substitutes for authorization.
 
-Enforce scoped permissions independently of identity-provider details.
+Shared-use authorization, lifecycle/concurrent access administration and their full
+verification remain deferred. Do not activate adjacent stories or infer acceptance
+of architectural proposals from this request.
 
-## Requirements
+## Validation and documentation
 
-- Deliver only the selected POC slice or explicitly deferred future scope below.
-- Retain operation-level permission checks and foreign-scope rejection. Under Accepted ADR-0018,
-  the POC uses its minimum seeded principal/membership/grant slice of
-  IOP-027/030, without requiring their full lifecycle or IOP-007 login. Full shared-user
-  enforcement remains parent scope; no allow-all guard is authorized.
-
-## Acceptance criteria
-
-- [ ] Enforce scoped permissions independently of identity-provider details.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
-  unfinished future scope.
-
-## Domain considerations
-
-Organization represents the generic customer/tenant; identity, membership and
-permissions have distinct responsibilities.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to treat the decision as accepted.
-
-## Security considerations
-
-Verify permission and customer/site scope in relevant operations and references.
-Keep secrets, floor plans and production data out of the repository. Keep industrial
-integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Preserve scope in entities and relationships; define uniqueness and lifecycle before migrations.
-
-## API considerations
-
-Public operations must verify identity, permission and scope; do not expose
-unauthorized operations during bootstrap.
-
-## UI considerations
-
-Show only permitted scopes and clear access errors; hiding controls does not replace authorization.
-
-## Dependencies
-
-[IOP-006](IOP-006-rbac-model.md), [IOP-026](IOP-026-site-model.md).
-
-Dependencies require only their relevant POC contracts/slices, not completion of
-all future parent capabilities. ADR-0018 now accepts the local execution-context mechanism; runtime business
-access still requires its implementation and verification.
-
-## Non-goals
-
-Implementing adjacent tasks, accepting open decisions by inference or extending
-delivery to the whole milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must define executable commands and scenarios for the criteria using
-accepted tooling. Include successful paths, errors and relevant access denial;
-record actual results, not invented tests.
-
-## Documentation impact
-
-Update this item, its [backlog](../backlog.md) status and execution plan.
-Update contracts, model, guides or ADRs only when this task changes their content.
-
-## Open questions
-
-Confirm the accepted contract, edge cases and exact slice evidence before starting implementation.
+The [active plan](../active/IOP-029-poc-authorization-plan.md) records the branch,
+files, dependency findings and evidence. ADR-0026 specifies executable positive,
+negative and actual-role database scenarios for implementation. This documentation
+increment checks links, IDs, statuses and consistency only; no runtime evidence is
+claimed. Keep item/backlog Blocked and the plan active while acceptance is pending.
