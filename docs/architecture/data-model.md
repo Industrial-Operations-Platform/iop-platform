@@ -218,6 +218,9 @@ analytical admission. Scoped normalized references retain import identity and or
 physical line numbers. See the [preservation contract](csv-preservation-poc.md) for
 budgets, integrity, authorized retrieval and failure/reset semantics. This is accepted
 design only; physical RAW/import tables and publication mechanics remain delivery work.
+The [IOP-041 logical RAW model](raw-ingestion-poc.md) defines immutable receipt
+fields, scoped physical-line references and availability/outcome distinctions.
+It is completed design, with no RAW schema or importer implementation.
 
 
 ## Minimal local principal storage
