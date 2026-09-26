@@ -42,7 +42,11 @@ Executed on 2026-09-26:
   No ADR status or dependency implementation changed.
 - Documentation checks cannot prove production query, authorization, pagination
   or overview/detail integration. No application code changed; runtime suites
-  were not run. Final relative-link, status, whitespace and secret checks follow.
+  were not run.
+- Final validation: 206 relative links resolve across the five changed files;
+  item/backlog Blocked statuses agree. `git diff --check` and
+  `git diff --cached --check` passed. `npm run check:secrets` passed for
+  424 indexed files.
 
 ## Closure
 
