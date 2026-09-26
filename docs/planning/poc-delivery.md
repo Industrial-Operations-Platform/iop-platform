@@ -226,9 +226,9 @@ is editable; durable receipt/OIP composition remains pending. The story stays
 In progress. See the [configuration record](completed/IOP-049-editable-mappings-plan.md).
 
 IOP-089 has a [bounded query design](../architecture/analytics-query-poc.md) with
-[Proposed ADR-0028](../architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
+[Accepted ADR-0028](../architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
 for dimension references, revision consistency and contributing-record pagination.
-The story is Blocked pending acceptance and production OIP storage/local host
-activation. No analytical service or endpoint is delivered; internal IOP-048
+The owner accepted the design on 2026-09-26. The story remains Blocked pending
+production OIP storage/local host activation. No analytical service or endpoint is delivered; internal IOP-048
 reconciliation evidence does not prove runtime overview/detail parity. See the
 [active plan](active/IOP-089-analytics-query-layer-plan.md).

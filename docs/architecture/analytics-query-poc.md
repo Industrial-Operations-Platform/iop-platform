@@ -1,7 +1,8 @@
 # POC analytics query contract
 
-Design proposal for [IOP-089](../planning/items/IOP-089-analytics-query-layer.md),
-pending [ADR-0028](adr/ADR-0028-poc-analytics-query-consistency.md). No query service,
+Accepted design for [IOP-089](../planning/items/IOP-089-analytics-query-layer.md)
+under [ADR-0028](adr/ADR-0028-poc-analytics-query-consistency.md), approved by the
+owner on 2026-09-26. No query service,
 endpoint or production OIP storage is delivered. Scope is the
 [local POC](../product/scope-poc.md); reuse [aggregate equality](event-aggregates-poc.md)
 and Accepted [filter semantics](adr/ADR-0023-poc-analytics-filters.md).
@@ -23,7 +24,7 @@ No client expressions, SQL, arbitrary grouping, ranking engine or new metric is
 introduced. Area/equipment charts and UI navigation remain their selected stories.
 These internal values are independent of React, HTTP DTOs and source column names.
 Endpoint delivery must map them to reviewed OpenAPI and generated browser types
-under ADR-0011; this proposal does not add a route to the health-only host.
+under ADR-0011; this contract does not add a route to the health-only host.
 
 ## Selection, measures and traceability
 
@@ -67,7 +68,7 @@ production reconciliation as unverified until the actual persisted path passes
 IOP-048; internal fixture success is not a production quality certificate. Rejected
 attempt diagnostics remain in the separately authorized import-review contract.
 
-Proposed POC bounds, to be exercised before endpoint delivery:
+Accepted POC bounds, to be exercised before endpoint delivery:
 
 | Boundary | Limit and behavior |
 | --- | --- |

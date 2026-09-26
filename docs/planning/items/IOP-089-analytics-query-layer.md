@@ -2,8 +2,8 @@
 
 ## Status
 
-Blocked — POC query design is prepared; ADR-0028 acceptance, production OIP
-storage and ADR-0018 host activation remain pending.
+Blocked — POC query design and ADR-0028 are accepted; production OIP storage
+and ADR-0018 host activation remain pending.
 
 ## POC delivery applicability
 
@@ -34,8 +34,8 @@ owner-requested outline; inclusion in the backlog does not authorize implementat
 ## Current state
 
 The [POC query contract](../../architecture/analytics-query-poc.md) and
-[Proposed ADR-0028](../../architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
-define a reviewable operation, references, revision consistency and bounded pages.
+[Accepted ADR-0028](../../architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
+define the accepted operation, references, revision consistency and bounded pages.
 No query code or endpoint is implemented. Internal dependency evidence is available;
 production receiving storage and local host activation are not. See the
 [active plan](../active/IOP-089-analytics-query-layer-plan.md).
@@ -99,7 +99,7 @@ has internal oracle evidence through a disposable receiver; IOP-049 has pure sco
 classification. Neither latter story supplies durable production OIP facts.
 ADR-0018 is Accepted as of 2026-09-26; its implementation/validation independently
 gates runtime access. Accepted ADR-0023/0026/0027 supply filter, authorization and
-publication boundaries. ADR-0028 proposes the remaining analytical mechanisms.
+publication boundaries. ADR-0028 accepts the analytical reference and consistency mechanisms.
 
 ## Non-goals
 
@@ -116,8 +116,8 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Owner acceptance is required for ADR-0028 and its linked query contract before
-dependent implementation. The proposal recommends one-statement reads with an
+The owner accepted ADR-0028 and its linked query contract on 2026-09-26.
+The decision selects one-statement reads with an
 immutable-publication revision fingerprint, scoped dimension digests and validated
 cursors. Production storage and host activation remain explicit delivery handoffs;
 this story does not authorize adjacent implementation by implication.

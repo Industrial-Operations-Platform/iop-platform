@@ -1,7 +1,7 @@
 # IOP-089 — POC analytics query layer
 
-Status: Blocked — design increment prepared; awaiting ADR-0028 acceptance and
-production storage/host prerequisites. Authorized by the owner's 2026-09-26 request, limited to
+Status: Blocked — ADR-0028 and the query contract are accepted; production
+storage/host prerequisites remain pending. Authorized by the owner's 2026-09-26 request, limited to
 [POC scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md).
 Story: [IOP-089](../items/IOP-089-analytics-query-layer.md).
 Branch: `docs/IOP-089-analytics-query-layer`, created from clean `develop` before edits.
@@ -33,6 +33,19 @@ invent acceptance, or treat disposable reconciliation storage as production stor
 
 ## Validation and evidence
 
+Owner follow-up on 2026-09-26 explicitly accepts ADR-0028 and its linked contract
+and authorizes merging `docs/IOP-089-analytics-query-layer` into `develop` and
+pushing both branches to `origin`. Update acceptance references in the ADR, query
+contract, item and delivery map; validate and commit on the story branch before
+that authorized merge/publication. Remaining runtime dependencies keep this plan
+active. No stage/master promotion or branch deletion is included.
+
+Acceptance follow-up validation: all 59 relative links in the five updated files
+resolve; ADR status and remaining blockers agree; `git diff --check` passed.
+After fetching origin, develop and origin/develop matched exactly, and the story
+contained only the two previously reviewed IOP-089 commits before this acceptance
+update. Publication will use ordinary non-forced updates.
+
 Completed documentation checks on 2026-09-26:
 
 - Python relative-link check: 207 links across all six changed/new Markdown files
@@ -53,4 +66,5 @@ query service. No dependency story required translation. No adjacent work was ch
 
 Keep IOP-089 open until executable independent queries and delivered-path isolation,
 reconciliation and consistency are verified. Move this plan to completed only when
-its pending decision and implementation handoff are resolved or explicitly resliced.
+its implementation handoff is resolved or explicitly resliced. Decision acceptance
+is complete; it does not close the runtime acceptance criteria.

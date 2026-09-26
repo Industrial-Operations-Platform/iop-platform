@@ -2,9 +2,9 @@
 
 ## Status
 
-Proposed on 2026-09-26 under [IOP-089](../../planning/items/IOP-089-analytics-query-layer.md).
-No implementation or acceptance is implied. The linked
-[query contract](../analytics-query-poc.md) is part of this proposal.
+Accepted on 2026-09-26 by explicit owner approval under
+[IOP-089](../../planning/items/IOP-089-analytics-query-layer.md), including the linked
+[query contract](../analytics-query-poc.md). No implementation is claimed.
 
 ## Context and alternatives
 
@@ -24,7 +24,7 @@ between requests.
 
 These are project design judgments, not measured performance claims.
 
-## Proposed decision
+## Decision
 
 OIP owns API-local query contracts and reads only its own persisted publications
 and facts on the authorized ADR-0026 handle. Production receiving storage must
@@ -87,4 +87,5 @@ boundaries. Measure the real fixture before claiming query performance.
 This mechanism relies on the bounded immutable local dataset. It adds no generic
 snapshot platform, worker, materialized projection or physical asset dependency.
 Production OIP storage and ADR-0018 host activation remain independent gates.
-Accepting this ADR does not complete IOP-089 or authorize publication.
+Acceptance does not complete IOP-089. The owner separately authorized merging the
+reviewed story into develop and pushing both branches to origin.
