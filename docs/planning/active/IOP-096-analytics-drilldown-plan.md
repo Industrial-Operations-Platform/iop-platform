@@ -25,22 +25,19 @@ No application, schema, API, fixture or shared POC scope changes are planned.
 - IOP-094 and IOP-095 are Proposed on develop; source-equipment and area analytical
   contracts/implementations are unavailable. Their metric dependencies IOP-090/091
   are also Proposed in the backlog; this review does not activate them.
-- IOP-097 is Proposed on develop. Read-only review found commit `0e456cf` on
-  `docs/IOP-097-analytics-filters`, absent from develop, containing Proposed
-  ADR-0023. Integration and acceptance are distinct prerequisites; neither is
-  inferred or performed here. Reconcile this branch's translation with that story
-  during owner-authorized integration.
+- IOP-097's ADR-0023 was accepted by the owner on 2026-09-26 and integrated
+  through the authorized story merge. Its contract is available; filter
+  implementation and IOP-089 analytical contracts remain pending. The older
+  translation-only IOP-097 context was reconciled with the accepted story.
 - The existing web application provides navigation placeholders, not analytical
   results. The visual-first delivery preference permits independent previews but
-  does not accept the pending shared filter/navigation semantics.
+  does not supply implementation of the accepted shared filter/navigation semantics.
 - Runtime business access independently requires acceptance and implementation
   of ADR-0018 or an alternative. No login, asset survey or physical registry is
   added as a POC gate.
 
-The [workflow](../workflow.md#branches-and-remote-publication) requires waiting
-for owner integration of an unmerged prerequisite, or explicit authorization for
-a dependent branch. Complete independent documentation now; do not implement
-against the unmerged proposal or duplicate its contract.
+The filter decision/integration gate is resolved. The remaining analytical and
+runtime prerequisites still block implementation; no adjacent work is activated.
 
 ## Validation and evidence
 

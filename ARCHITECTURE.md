@@ -255,3 +255,16 @@ scoped provenance, integrity checks and `imports.review` retrieval. The
 budgets, rejected-input behavior and reset boundaries. IOP-011 is complete as design;
 no RAW schema or endpoint is implemented. Maps, attachments and a general storage
 abstraction remain deferred. ADR-0018 remains an independent runtime access gate.
+
+
+## Accepted POC analytical filters
+
+[ADR-0023](docs/architecture/adr/ADR-0023-poc-analytics-filters.md) defines one
+OIP-owned selection across overview and detail: explicit organization/site/source,
+reporting-date labels, scoped dimension references and visible message exclusions.
+Drill-down preserves restrictions; breadcrumb return restores the prior selection.
+Coverage distinguishes missing imports from no matching records, and full totals
+reconcile against contributing records on the same admitted data revision.
+IOP-097 remains Blocked: analytical contracts and runtime access are pending.
+Acceptance permits independent fixture UI work but delivers no runtime filters;
+ADR-0018 remains Proposed and independently gates business access.

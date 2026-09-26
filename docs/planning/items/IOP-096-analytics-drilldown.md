@@ -6,7 +6,8 @@ Blocked
 
 The POC dependency review is recorded in the
 [execution plan](../active/IOP-096-analytics-drilldown-plan.md). IOP-094/095
-contracts are unavailable; IOP-097's filter proposal is unmerged and unaccepted.
+contracts are unavailable; IOP-097's filter contract is accepted in ADR-0023,
+but analytical filter implementation remains pending.
 Runtime access also awaits an accepted and implemented local execution mechanism.
 No drill-down implementation or executed acceptance evidence is claimed.
 
@@ -39,7 +40,8 @@ owner-requested outline; inclusion in the backlog does not authorize implementat
 ## Current state
 
 The web host has overview/detail navigation placeholders. Analytical drill-down
-is not implemented and the shared filter design has not been accepted.
+is not implemented. The shared filter design is accepted in
+[ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md); implementation remains pending.
 
 ## Desired state
 
@@ -108,7 +110,7 @@ The plan must specify executable commands and scenarios for the acceptance crite
 
 ### Bounded POC acceptance scenarios
 
-These scenarios refine the existing requirements, not the pending IOP-097 contract.
+These scenarios refine the existing requirements alongside the accepted IOP-097 contract.
 They are expected evidence for implementation, not results of executed tests.
 
 | Scenario | Required evidence |
