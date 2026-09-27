@@ -146,7 +146,13 @@ line/frequency are nonnegative integer strings, minutes permits up to two decima
 and matches `round(seconds / 60, 2)`. All values are parameterized, bounded and
 validated before persistence. Filtering precedes sorting/pagination. `recordCount`
 is the matching count, `totalRecordCount` is the full file count, and `options`
-contains up to 200 distinct suggestions per column from the complete scoped file.
+contains up to 200 distinct suggestions per column from the complete scoped file,
+restricted by preceding criteria in this order: sector, area, equipment, message,
+type, messageGroup, line, frequency, minutes. A field ignores its own/later filters
+so alternatives remain available. For example, area choices follow sector, and
+equipment choices follow sector and area. An incompatible query can still return
+zero records while supplying compatible ancestor choices for correction. The browser
+uses debounced source-row reads to preview drafts before Apply.
 Integrity validation still covers the whole file, even when filters match no rows.
 Administrative file filters include Sundays.
 

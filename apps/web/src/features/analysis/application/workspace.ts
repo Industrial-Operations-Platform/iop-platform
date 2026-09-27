@@ -1,4 +1,5 @@
 import type {
+  SourceFilters,
   SourceRowsRequest,
   SourceRowsResult,
   MessageCatalog,
@@ -62,6 +63,13 @@ export function filterGroup(
   });
 }
 export class AnalysisWorkspace {
+  previewSourceFilters(
+    importId: string,
+    filters: SourceFilters,
+  ): Promise<SourceRowsResult> {
+    return this.gateway.sourceRows({ importId, filters, page: 1, sort: [] });
+  }
+
   constructor(readonly gateway: AnalysisGateway) {}
   async messageOptions(): Promise<string[]> {
     const values = new Set<string>();
@@ -78,9 +86,7 @@ export class AnalysisWorkspace {
   async open(): Promise<DemoContext> {
     return this.gateway.context();
   }
-  async loadHistory(
-    canReview = false,
-  ): Promise<{
+  async loadHistory(canReview = false): Promise<{
     selection: ReportRequest | null;
     history: ImportSummary[];
     months: string[];

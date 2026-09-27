@@ -2,7 +2,7 @@ import {
   SourceFileFilters,
   sourceSortColumns as columns,
 } from "./SourceFileFilters";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -19,6 +19,7 @@ import {
 } from "../../application/workspace";
 import type {
   ImportSummary,
+  SourceFilters,
   SourceRowsRequest,
   SourceRowsResult,
 } from "../../domain/models";
@@ -37,6 +38,12 @@ export function SourceFiles({
   const [result, setResult] = useState<SourceRowsResult | null>(null),
     [error, setError] = useState<string>(),
     [loading, setLoading] = useState(false);
+  const importId = selection?.importId ?? "";
+  const loadPreview = useCallback(
+    (filters: SourceFilters) =>
+      application.previewSourceFilters(importId, filters),
+    [application, importId],
+  );
   useEffect(() => {
     let active = true;
     if (!selection) return;
@@ -92,7 +99,8 @@ export function SourceFiles({
         <SourceFileFilters
           key={selection.importId}
           filters={selection.filters}
-          options={result?.options}
+          snapshot={result}
+          loadPreview={loadPreview}
           onApply={(filters) =>
             setSelection({
               importId: selection.importId,

@@ -1,3 +1,4 @@
+import { sourceFilterFields } from "../../domain/source-rows";
 import { digest, scopeTuple } from "../../analytics";
 import { AnalyticsError, exactTotal } from "../../domain/values";
 import type {
@@ -51,18 +52,27 @@ export class PgDataExplorer implements DataExplorerRepository {
       const predicates = Object.entries(selection.filters ?? {}).map(
         ([field, value]) => {
           parameters.push(value);
-          return numericColumns[field]
-            ? `${numericColumns[field]}=$${parameters.length}::numeric`
-            : `values->>'${field}'=$${parameters.length}::text`;
+          return {
+            field,
+            condition: numericColumns[field]
+              ? `${numericColumns[field]}=$${parameters.length}::numeric`
+              : `values->>'${field}'=$${parameters.length}::text`,
+          };
         },
       );
+      const optionPredicates = sourceFilterFields.map((field, index) => {
+        const preceding = predicates.filter(
+          (p) => sourceFilterFields.indexOf(p.field as typeof field) < index,
+        );
+        return `(key='${field}' AND (${preceding.map((p) => p.condition).join(" AND ") || "true"}))`;
+      });
       const result = await tx.query(
         `WITH ready AS MATERIALIZED (${hitlisteReadModel} AND f.import_id=$4::uuid),
         profile AS (SELECT coalesce((SELECT version::text FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$5::text) AS version),
-        filtered AS MATERIALIZED (SELECT * FROM ready WHERE ${predicates.join(" AND ") || "true"}),
+        filtered AS MATERIALIZED (SELECT * FROM ready WHERE ${predicates.map((p) => p.condition).join(" AND ") || "true"}),
         options AS (SELECT key,value FROM ready CROSS JOIN LATERAL jsonb_each_text(values ||
           jsonb_build_object('line',source_record_number::text,'minutes',round(accumulated_alarm_seconds::numeric / 60,2)::text))
-          WHERE key <> 'duration' GROUP BY key,value),
+          WHERE ${optionPredicates.join(" OR ")} GROUP BY key,value),
         ranked_options AS (SELECT *,row_number() OVER(PARTITION BY key ORDER BY value COLLATE "C") AS position FROM options),
         rows AS (SELECT row_number() OVER(ORDER BY ${order}) AS ordinal,values,reporting_date::text AS date,import_id::text AS import_id,source_record_number AS line,reported_frequency::text AS frequency,accumulated_alarm_seconds::text AS seconds
           FROM filtered ORDER BY ${order} LIMIT 50 OFFSET $6)
@@ -71,7 +81,7 @@ export class PgDataExplorer implements DataExplorerRepository {
           ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND import_id=$4::uuid)
             AND NOT EXISTS(SELECT 1 FROM ready CROSS JOIN profile WHERE profile_version<>profile.version)) AS valid,
           (SELECT count(*)::integer FROM ready) AS total_count,
-          (SELECT coalesce(jsonb_agg(jsonb_build_object('field',key,'value',value)),'[]'::jsonb) FROM ranked_options WHERE position<=200) AS options,
+          (SELECT coalesce(jsonb_agg(jsonb_build_object('field',key,'value',value) ORDER BY key,value COLLATE "C"),'[]'::jsonb) FROM ranked_options WHERE position<=200) AS options,
           (SELECT count(*)::integer FROM filtered) AS count,(SELECT coalesce(jsonb_agg(rows ORDER BY ordinal),'[]'::jsonb) FROM rows) AS records`,
         parameters,
       );

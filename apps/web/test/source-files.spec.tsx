@@ -110,6 +110,9 @@ test("manual column filters apply across file pages, persist through sorting and
   fireEvent.change(screen.getByLabelText("Typ filter"), {
     target: { value: "001" },
   });
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Apply filters" })).toBeEnabled(),
+  );
   fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
   await waitFor(() =>
     expect(sourceRows).toHaveBeenLastCalledWith({
@@ -141,10 +144,10 @@ test("manual column filters apply across file pages, persist through sorting and
   fireEvent.change(screen.getByLabelText("Meldetext filter"), {
     target: { value: "Absent" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
   await screen.findByText(
-    "No rows match these filters. Clear or adjust the column filters.",
+    "No matching combination. Choose a suggested value or clear the filters.",
   );
+  expect(screen.getByRole("button", { name: "Apply filters" })).toBeDisabled();
   fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
   await waitFor(() =>
     expect(sourceRows).toHaveBeenLastCalledWith(

@@ -73,7 +73,13 @@ same value controls as Taskforce reports. Filters intersect across all file rows
 before sorting/pagination; suggestions are bounded to 200 values per column.
 Include line, all source/classification dimensions, frequency and displayed minutes
 rounded to two decimals. Show matching/total counts, preserve filters while sorting
-or paging, and clear them on file changes. Plain and sortable headings align.
+or paging, and clear them on file changes. Choices cascade in form order (sector,
+area, equipment, message, type, message group, line, frequency, minutes) using the
+whole file and preceding criteria. Changing a field clears following criteria.
+Drafts refresh choices before Apply; pending, failed or empty previews cannot be
+applied, and stale responses cannot overwrite newer choices. Exact manual values
+outside the bounded suggestions remain supported when they match. Plain and
+sortable headings align.
 Pareto is deferred as a future function inside Executive Overview, with no separate tab.
 Screenshot targets and improvement formulas are not invented metrics.
 

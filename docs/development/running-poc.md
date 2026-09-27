@@ -312,7 +312,14 @@ Text matches retain accents, commas and leading zeroes; numeric duration matches
 minutes rounded to two decimals as displayed (use a decimal point). Suggestions
 show up to 200 values per column; manually entered values can match beyond that list.
 The caption shows matching rows out of total file rows. Clear filters restores the
-whole file. Sorting/paging retain filters; switching files clears them.
+whole file. Choices update while editing, before Apply, following the order shown
+in the form. Choosing a sector limits Bereich choices to that sector; choosing a
+Bereich limits equipment choices. Each later filter follows the earlier criteria.
+Changing a filter clears the following fields, including when clearing its value.
+Manual values beyond the suggestion list remain supported if matching rows exist.
+Apply is disabled while choices load, when validation fails, or when no rows match;
+correct a value, clear the filters or retry a failed preview. Sorting/paging retain
+applied filters; switching files clears them. Original data remains unchanged.
 
 Click a column title once for
 ascending order, again for descending, then again to remove that criterion. Arrows

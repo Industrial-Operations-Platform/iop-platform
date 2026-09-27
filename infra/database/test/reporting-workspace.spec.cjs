@@ -830,7 +830,25 @@ test("administrator file rows sort across pages and catalog choices include ever
     }});
     expect(specific).toMatchObject({recordCount: 1, totalRecordCount: 235, pageCount: 1});
     expect(specific.records[0]).toMatchObject({line: 236, equipment: "=EQ-234"});
-    expect(specific.options).toEqual(natural.options);
+    expect(specific.options.sector).toEqual(natural.options.sector);
+    expect(specific.options.area).toEqual(["Area A"]);
+    expect(specific.options.equipment).toHaveLength(118);
+    expect(specific.options.equipment).not.toContain("=EQ-233");
+    expect(specific.options.message).toEqual(["Müll, 234"]);
+    expect(specific.options.line).toEqual(["236"]);
+    expect(specific.options.minutes).toEqual(["0.50"]);
+    const sectorChoices = await ref.explorer.sourceRows("demo-a", {...q, filters: {sector:"Preparation"}});
+    expect(sectorChoices.options.area).toEqual(["Area A"]);
+    expect(sectorChoices.options.equipment).toHaveLength(118);
+    expect(sectorChoices.options.message).toHaveLength(118);
+    const otherSector = await ref.explorer.sourceRows("demo-a", {...q, filters: {sector:"Dispatch"}});
+    expect(otherSector.options.area).toEqual(["Area B"]);
+    expect(otherSector.options.equipment).not.toContain("=EQ-234");
+    const invalidPair = await ref.explorer.sourceRows("demo-a", {...q, filters: {sector:"Preparation",area:"Area B"}});
+    expect(invalidPair.recordCount).toBe(0);
+    expect(invalidPair.options.area).toEqual(["Area A"]);
+    expect(invalidPair.options.equipment ?? []).toEqual([]);
+
     const areaPage = await ref.explorer.sourceRows("demo-a", {...q, page: 3, filters: {area: "Area A"}});
     expect(areaPage).toMatchObject({recordCount: 118, totalRecordCount: 235, pageCount: 3});
     expect(areaPage.records).toHaveLength(18);
