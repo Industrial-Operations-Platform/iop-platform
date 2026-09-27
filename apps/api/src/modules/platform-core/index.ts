@@ -1,1 +1,1 @@
-export { siteBelongsToOrganization } from './site-ownership';
+export { siteBelongsToOrganization } from './adapters/postgres/site-ownership';

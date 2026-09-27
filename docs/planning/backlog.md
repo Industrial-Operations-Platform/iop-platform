@@ -285,3 +285,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-161 — Visible trend time controls](items/IOP-161-trend-time-controls.md) | Completed |
 | [IOP-162 — Consistent monthly filters in the running workspace](items/IOP-162-shared-month-filters.md) | Completed |
 | [IOP-163 — Selected-month component totals and Pareto charts](items/IOP-163-component-pareto.md) | Completed |
+| [IOP-164 — Hexagonal boundaries and artifact cleanup](items/IOP-164-hexagonal-cleanup.md) | Completed |

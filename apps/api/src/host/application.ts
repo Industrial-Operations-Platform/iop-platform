@@ -3,8 +3,8 @@ import { INestApplication } from "@nestjs/common";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { PlatformModule } from "./host/controller";
-import { PlatformRuntime } from "./host/runtime";
+import { PlatformModule } from "./controller";
+import { PlatformRuntime } from "./runtime";
 import { ProblemDetailsFilter } from "./problem-details.filter";
 
 export function configureApplication(app: INestApplication): void {

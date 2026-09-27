@@ -9,7 +9,7 @@ const { migrate } = require("../../infra/database/dist/migrate");
 const { startPlatformRuntime } = require("../../apps/api/dist/host/runtime");
 const {
   validateCsv,
-} = require("../../apps/api/dist/modules/integrations/csv-adapter");
+} = require("../../apps/api/dist/modules/integrations/adapters/csv/csv-adapter");
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const next = (date) =>
   new Date(Date.parse(date) + 86400000).toISOString().slice(0, 10);

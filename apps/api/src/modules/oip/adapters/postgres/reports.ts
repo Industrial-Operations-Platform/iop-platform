@@ -5,7 +5,7 @@ import {
   compareExecutiveKpi,
   type ExecutiveKpiDefinition,
 } from "../../domain/executive";
-import { digest, scopeTuple } from "../../analytics";
+import { digest, scopeTuple } from "./analytics";
 import { exactTotal, AnalyticsError } from "../../domain/values";
 import {
   reportDimensions,

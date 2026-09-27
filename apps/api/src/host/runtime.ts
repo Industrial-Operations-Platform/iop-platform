@@ -23,7 +23,7 @@ import {
   ConfigurationError,
   loadConfiguration,
   type LocalConfiguration,
-} from "../configuration";
+} from "./configuration";
 import { runSiteOperation } from "../persistence/site-operation";
 import {
   ImportBatches,
@@ -32,8 +32,8 @@ import {
   type BatchStatus,
   type ImportSource,
 } from "../modules/integrations";
-import { OipReceiver } from "../modules/oip/receiver";
-import { OipQueries } from "../modules/oip/queries";
+import { OipReceiver } from "../modules/oip/adapters/postgres/receiver";
+import { OipQueries } from "../modules/oip/adapters/postgres/queries";
 
 export const PLATFORM_RUNTIME = "IOP_PLATFORM_RUNTIME";
 export const MAINTENANCE_LOCK = 190147;

@@ -19,12 +19,16 @@ SQL drivers, transport schemas or presentation adapters.
 | `apps/api/src/modules/integrations/` | Import lifecycle, CSV adapter, RAW retention, source-date admission and mapping snapshots |
 | `apps/api/src/modules/oip/` | Exact facts, analytical domain/use cases and outbound PostgreSQL reporting adapters |
 | `apps/web/src/features/analysis/` | Framework-free selection/use cases with HTTP, React and ECharts adapters |
-| `apps/web/src/AnalyticalApp.tsx` | Browser composition root |
+| `apps/web/src/host/AnalyticalApp.tsx` | Browser composition root |
 | `apps/web/src/design/` | Shared identity tokens and reusable presentation components |
 
 Platform Core owns organization/site identity and time zone. Users/RBAC owns
-principals, memberships and site grants. Existing publication and query infrastructure
-is reused behind ports; unrelated older modules have not all been rewritten.
+principals, memberships and site grants. Publication and query infrastructure lives in explicit module adapters and is
+reused behind ports. Users/RBAC separates its pure decision rules and lookup use
+case from PostgreSQL. Platform Core currently exposes only a site-ownership adapter;
+there is no artificial empty domain/application layer. The retained atomic import
+and compatibility query adapters still coordinate SQL transactions under ADR-0026/0027;
+this cleanup does not claim every persistence algorithm is a separate use case.
 Customer labels and source schemas remain in integration adapters/configuration.
 
 React feature adapters compose the [shared component library](apps/web/src/design/components/README.md).

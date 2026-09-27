@@ -1,10 +1,12 @@
 import {
+  dimensionReference,
+  decodeCursor,
+} from "../src/modules/oip/adapters/postgres/analytics";
+import {
   AnalyticsError,
   validateQuery,
   exactTotal,
-  dimensionReference,
-  decodeCursor,
-} from "../src/modules/oip/analytics";
+} from "../src/modules/oip/domain/analytics";
 const base = {
   revision: "r1." + "A".repeat(43),
   from: "2026-07-01",

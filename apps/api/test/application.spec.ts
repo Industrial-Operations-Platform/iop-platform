@@ -3,9 +3,9 @@ import { INestApplication } from '@nestjs/common';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import request from 'supertest';
-import { createApplication } from '../src/application';
-import { HealthService } from '../src/health.controller';
-import { createOpenApiDocument } from '../src/openapi';
+import { createApplication } from '../src/host/application';
+import { HealthService } from '../src/host/health.controller';
+import { createOpenApiDocument } from '../src/host/openapi';
 
 describe('API host', () => {
   let app: INestApplication;

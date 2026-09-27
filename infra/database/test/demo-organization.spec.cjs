@@ -5,7 +5,7 @@ const { readFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const { parseEnv } = require('node:util');
 const { provisioningConfiguration } = require('../dist/configuration.js');
-const { parseConfiguration } = require('../../../apps/api/dist/configuration.js');
+const { parseConfiguration } = require('../../../apps/api/dist/host/configuration.js');
 
 const fixture = resolve(__dirname, '../../../fixtures/analytical-poc');
 const seedFile = resolve(fixture, 'seed.env.example');

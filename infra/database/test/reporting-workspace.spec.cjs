@@ -14,7 +14,7 @@ const {
   SourceMappings,
 } = require("../../../apps/api/dist/modules/integrations");
 const { PlatformRuntime } = require("../../../apps/api/dist/host/runtime");
-const { createApplication } = require("../../../apps/api/dist/application");
+const { createApplication } = require("../../../apps/api/dist/host/application");
 const scope = require("../../../fixtures/analytical-poc/scope.json");
 let container,
   configs,

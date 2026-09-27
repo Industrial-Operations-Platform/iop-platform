@@ -1,5 +1,5 @@
 import { CSV_LIMITS, type PreparedCsv, type CsvSourceRecord } from './csv-adapter';
-import type { ImportSource } from './import-batches';
+import type { ImportSource } from '../../domain/imports';
 
 export interface SourceMappingConfiguration {
   readonly organizationId: string;

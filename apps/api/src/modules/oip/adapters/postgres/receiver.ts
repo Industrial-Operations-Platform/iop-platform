@@ -1,12 +1,13 @@
-import type { SiteTransaction } from "../../persistence/site-operation";
+import type { SiteTransaction } from "../../../../persistence/site-operation";
 import type {
   ImportPublication,
   BatchStatus,
   ClassifiedCsv,
   PreparedCsv,
   ImportSource,
-} from "../integrations";
-import { AnalyticsError, dimensionReference } from "./analytics";
+} from "../../../integrations";
+import { dimensionReference } from "./analytics";
+import { AnalyticsError } from "../../domain/analytics";
 
 export interface PublicationInput {
   classified: ClassifiedCsv;

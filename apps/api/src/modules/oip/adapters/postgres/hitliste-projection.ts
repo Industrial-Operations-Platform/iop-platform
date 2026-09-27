@@ -1,6 +1,6 @@
 import type { SiteTransaction } from "../../../../persistence/site-operation";
 import type { ImportSource } from "../../../integrations";
-import { scopeTuple } from "../../analytics";
+import { scopeTuple } from "./analytics";
 import {
   labelWhitespace,
   textFields,

@@ -6,7 +6,7 @@ import {
   type SiteTransaction,
 } from "../../../../persistence/site-operation";
 import type { ImportSource } from "../../../integrations";
-import { digest, scopeTuple } from "../../analytics";
+import { digest, scopeTuple } from "./analytics";
 import { AnalyticsError } from "../../domain/values";
 import {
   compileProfile,

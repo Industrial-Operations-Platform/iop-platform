@@ -1,6 +1,3 @@
-import { createHash } from "node:crypto";
-import type { ImportSource } from "../integrations";
-
 export type Dimension = "sector" | "area" | "equipment" | "message";
 export const dimensions: Dimension[] = [
   "sector",
@@ -8,24 +5,8 @@ export const dimensions: Dimension[] = [
   "equipment",
   "message",
 ];
-export { AnalyticsError, exactTotal, dateLabel } from "./domain/values";
-import { AnalyticsError, dateLabel } from "./domain/values";
-export const digest = (value: unknown): string =>
-  createHash("sha256")
-    .update(JSON.stringify(value), "utf8")
-    .digest("base64url");
-export const scopeTuple = (s: ImportSource): string[] => [
-  s.organizationId,
-  s.siteId,
-  s.sourceId,
-];
-export function dimensionReference(
-  s: ImportSource,
-  kind: Dimension,
-  tuple: unknown[],
-): string {
-  return "d1." + digest([1, ...scopeTuple(s), kind, ...tuple]);
-}
+export { AnalyticsError, exactTotal, dateLabel } from "./values";
+import { AnalyticsError, dateLabel } from "./values";
 export interface Selection {
   from: string;
   toExclusive: string;
@@ -176,16 +157,4 @@ export interface Analysis {
   groups: Record<Dimension, Group[]>;
   groupCounts: Record<Dimension, number>;
   reportingWindowStatus: "unknown";
-}
-export function decodeCursor(token: string): Record<string, unknown> {
-  try {
-    const bytes = Buffer.from(token, "base64url");
-    if (bytes.toString("base64url") !== token) throw new Error();
-    const value = JSON.parse(bytes.toString("utf8"));
-    if (!value || Array.isArray(value) || typeof value !== "object")
-      throw new Error();
-    return value;
-  } catch {
-    throw new AnalyticsError("invalid_selection");
-  }
 }

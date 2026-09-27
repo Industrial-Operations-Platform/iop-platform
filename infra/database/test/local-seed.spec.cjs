@@ -5,7 +5,7 @@ const { createHash } = require("node:crypto");
 const { seedHistory } = require("../../../scripts/local/initialize.cjs");
 const {
   validateCsv,
-} = require("../../../apps/api/dist/modules/integrations/csv-adapter");
+} = require("../../../apps/api/dist/modules/integrations/adapters/csv/csv-adapter");
 let directory, files, retained, runtime;
 beforeEach(() => {
   directory = mkdtempSync(join(tmpdir(), "iop-local-seed-"));

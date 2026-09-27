@@ -343,7 +343,7 @@ async function main() {
           });
       }
       // Reconcile retained evidence, including dates excluded from user reports.
-      const { OipQueries } = require("../apps/api/dist/modules/oip/queries");
+      const { OipQueries } = require("../apps/api/dist/modules/oip/adapters/postgres/queries");
       const verificationQueries = new OipQueries(runtime.pool, runtime.source);
       const a = await verificationQueries.availability(users[0].id);
       const result = await verificationQueries.query(users[0].id, {

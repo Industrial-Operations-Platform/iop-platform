@@ -3,9 +3,9 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { request as httpRequest } from 'node:http';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { configureApplication } from '../src/application';
-import { HealthService } from '../src/health.controller';
+import { AppModule } from '../src/host/app.module';
+import { configureApplication } from '../src/host/application';
+import { HealthService } from '../src/host/health.controller';
 
 describe('POC health input boundary', () => {
   let app: INestApplication;
