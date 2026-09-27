@@ -1793,6 +1793,13 @@
       "ReportRequestDto": {
         "type": "object",
         "properties": {
+          "months": {
+            "description": "Complete calendar months (YYYY-MM) included within the reporting range.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "executive": {
             "type": "boolean"
           },

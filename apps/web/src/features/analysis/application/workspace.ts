@@ -144,10 +144,21 @@ export const reportViews = [
 export function selectView(
   current: ReportRequest,
   view: number,
+  availableMonths: string[] = [],
 ): ReportRequest {
   if (view === 0) return executiveSelection(current.from.slice(0, 7));
   const policy = reportViews[view];
   const allowed: readonly string[] = policy.filters;
+  if (view === 1)
+    current = monthSelection(
+      current,
+      current.months ??
+        availableMonths.filter(
+          (month) =>
+            month >= current.from.slice(0, 7) &&
+            month + "-01" < current.toExclusive,
+        ),
+    );
   return changeSelection(current, {
     executive: false,
     dimension: policy.dimension,
@@ -214,4 +225,21 @@ export function cycleSourceSort(
     : current.direction === "asc"
       ? sort.map((s) => (s.field === field ? { ...s, direction: "desc" } : s))
       : sort.filter((s) => s.field !== field);
+}
+
+/** Month comparisons retain their exact selection when drilling into other views. */
+export function monthSelection(
+  current: ReportRequest,
+  months: string[],
+): ReportRequest {
+  const selected = [
+    ...new Set(months.length ? months : [current.from.slice(0, 7)]),
+  ].sort();
+  const [year, month] = selected[selected.length - 1].split("-").map(Number);
+  return changeSelection(current, {
+    executive: false,
+    months: selected,
+    from: selected[0] + "-01",
+    toExclusive: new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10),
+  });
 }

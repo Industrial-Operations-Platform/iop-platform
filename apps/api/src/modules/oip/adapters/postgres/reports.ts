@@ -79,6 +79,10 @@ export class PgReportRepository implements ReportRepository {
       const predicates = reportDimensions
         .filter((k) => q.filters[k]?.length)
         .map((k) => `n.values->>'${k}'=ANY(${bind(q.filters[k])}::text[])`);
+      if (q.months?.length)
+        predicates.push(
+          `to_char(n.reporting_date,'YYYY-MM')=ANY(${bind(q.months)}::text[])`,
+        );
       const search = bind(q.search.toLowerCase()),
         offset = bind((q.page - 1) * 50);
       const metric = q.metric === "frequency" ? "frequency" : "seconds";

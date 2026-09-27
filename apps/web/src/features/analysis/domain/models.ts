@@ -113,6 +113,7 @@ export interface ProfileResult {
   profile: ReportingProfile;
 }
 export interface ReportRequest {
+  months?: string[];
   executive?: boolean;
   from: string;
   toExclusive: string;

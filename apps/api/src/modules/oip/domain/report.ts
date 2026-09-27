@@ -2,6 +2,7 @@ import type { MonthlyExecutive } from "./executive";
 import { AnalyticsError, dateLabel } from "./values";
 import { reportDimensions, type ReportDimension } from "./reporting-profile";
 export interface ReportRequest {
+  months?: string[];
   executive?: boolean;
   from: string;
   toExclusive: string;
@@ -59,6 +60,7 @@ export function reportRequest(input: unknown): ReportRequest {
       (k) =>
         ![
           "executive",
+          "months",
           "from",
           "toExclusive",
           "dimension",
@@ -82,6 +84,29 @@ export function reportRequest(input: unknown): ReportRequest {
   const days =
     (Date.parse(input.toExclusive) - Date.parse(input.from)) / 86400000;
   if (days < 1 || days > 3660) throw new AnalyticsError("invalid_selection");
+  const months = input.months;
+  const from = input.from,
+    toExclusive = input.toExclusive;
+  if (
+    months !== undefined &&
+    (!Array.isArray(months) ||
+      months.length < 1 ||
+      months.length > 120 ||
+      months.some(
+        (month) =>
+          typeof month !== "string" ||
+          !/^\d{4}-(0[1-9]|1[0-2])$/.test(month) ||
+          !dateLabel(month + "-01") ||
+          month + "-01" < from ||
+          new Date(
+            Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5)), 1),
+          )
+            .toISOString()
+            .slice(0, 10) > toExclusive,
+      ) ||
+      input.executive)
+  )
+    throw new AnalyticsError("invalid_selection");
   const filters = input.filters ?? {};
   if (
     !obj(filters) ||
@@ -139,6 +164,7 @@ export function reportRequest(input: unknown): ReportRequest {
     throw new AnalyticsError("invalid_selection");
   return {
     ...(input.executive ? { executive: true } : {}),
+    ...(months ? { months: [...new Set(months as string[])].sort() } : {}),
     from: input.from,
     toExclusive: input.toExclusive,
     dimension: input.dimension as ReportDimension,

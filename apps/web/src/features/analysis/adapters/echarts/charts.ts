@@ -63,7 +63,22 @@ function calendar(report: Report): string[] {
         date.getUTCDate() + (report.selection.period === "week" ? 7 : 1),
       );
   }
-  return result;
+  return report.selection.months
+    ? result.filter((period) => {
+        if (report.selection.period !== "week")
+          return report.selection.months!.includes(period.slice(0, 7));
+        const end = new Date(Date.parse(period) + 7 * 86400000)
+          .toISOString()
+          .slice(0, 10);
+        return report.selection.months!.some((month) => {
+          const [year, index] = month.split("-").map(Number);
+          const monthEnd = new Date(Date.UTC(year, index, 1))
+            .toISOString()
+            .slice(0, 10);
+          return period < monthEnd && end > month + "-01";
+        });
+      })
+    : result;
 }
 export function options(kind: ChartKind, r: Report): EChartsCoreOption {
   const groupLabel = (key: string) =>
@@ -293,7 +308,13 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       ],
     };
   if (kind === "monthly" || kind === "messages") {
-    const months = [...new Set(r.monthly.map((x) => x.period))].sort();
+    const months = [
+      ...new Set(r.selection.months ?? r.monthly.map((x) => x.period)),
+    ].sort();
+    const colors = months.map(
+      (_, index) =>
+        chartPalette[index] ?? `hsl(${(index * 137.508) % 360}, 65%, 42%)`,
+    );
     return {
       ...base,
       xAxis: {
@@ -308,7 +329,10 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       },
       yAxis: { type: "value", name: unit },
       grid: { left: 20, right: 24, top: 42, bottom: 85, containLabel: true },
-      series: months.map((month) => ({
+      legend: { type: "scroll", top: 0, data: months },
+      series: months.map((month, index) => ({
+        itemStyle: { color: colors[index] },
+        lineStyle: { color: colors[index] },
         name: month,
         type: kind === "messages" ? "bar" : "line",
         ...(kind === "messages" ? { stack: "months" } : {}),

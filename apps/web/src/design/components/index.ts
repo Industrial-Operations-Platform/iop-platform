@@ -23,3 +23,4 @@ export { MonthPicker } from "./MonthPicker";
 export { SideNavigation } from "./SideNavigation";
 export { SortableHeader } from "./SortableHeader";
 export { ValueFilter } from "./ValueFilter";
+export { MonthMultiPicker } from "./MonthMultiPicker";

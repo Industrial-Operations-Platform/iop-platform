@@ -86,11 +86,11 @@ test("invalid reporting dates show a recoverable error without unmounting the wo
   const gateway = setup();
   fireEvent.click(await screen.findByRole("button", { name: "Data analysis" }));
   fireEvent.click(
-    await screen.findByRole("button", { name: "Halle analysis" }),
+    await screen.findByRole("button", { name: "Bereich analysis" }),
   );
   await screen.findByRole("heading", { name: "No matching records" });
   const initialCalls = gateway.report.mock.calls.length;
-  fireEvent.click(screen.getByText(/Date range ·/));
+  fireEvent.click(screen.getByText(/Date range & filters ·/));
   fireEvent.change(screen.getByLabelText("To (exclusive)"), {
     target: { value: "2026-06-30" },
   });
@@ -99,7 +99,7 @@ test("invalid reporting dates show a recoverable error without unmounting the wo
     "Choose a reporting range",
   );
   expect(gateway.report).toHaveBeenCalledTimes(initialCalls);
-  fireEvent.click(screen.getByText(/Date range ·/));
+  fireEvent.click(screen.getByText(/Date range & filters ·/));
   fireEvent.change(screen.getByLabelText("To (exclusive)"), {
     target: { value: "2026-07-02" },
   });
