@@ -11,7 +11,9 @@ with login and external connections deferred. Follow [POC scope](../product/scop
 and the [complete delivery map](poc-delivery.md) before activating a story.
 Only relevant slices are prerequisites; M1–M17 are a future capability inventory.
 IOP-147 delivers the local host and user selector under ADR-0018/0030 with current
-RLS/RBAC checks. Technical POC blockers are resolved; IOP-130 awaits owner feedback.
+RLS/RBAC checks. Technical POC blockers are resolved. The owner accepted the charts
+as Data Analysis v1 on 2026-09-27; IOP-130 retains remaining measurement closure.
+IOP-165 starts the operational home and proposes temporary access administration.
 
 IOP-001–006 and IOP-008 are Completed as design on this branch. Local API and web
 host implementation is completed under IOP-016/017. IOP-007, IOP-010, IOP-028
@@ -286,3 +288,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-162 — Consistent monthly filters in the running workspace](items/IOP-162-shared-month-filters.md) | Completed |
 | [IOP-163 — Selected-month component totals and Pareto charts](items/IOP-163-component-pareto.md) | Completed |
 | [IOP-164 — Hexagonal boundaries and artifact cleanup](items/IOP-164-hexagonal-cleanup.md) | Completed |
+| [IOP-165 — Operational home and transitional access](items/IOP-165-operational-home.md) | In progress |

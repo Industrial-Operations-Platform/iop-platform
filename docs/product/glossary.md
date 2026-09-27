@@ -3,7 +3,8 @@
 | Term | Meaning in IOP |
 | --- | --- |
 | IOP | Industrial Operations Platform; the whole reusable product. |
-| OIP | Historical Operational Insights Platform; now the Operational Intelligence module within IOP. |
+| OIP | Historical Operational Insights Platform; retained technical identifier of the analytical module within IOP. |
+| Data Analysis | Current product-facing name of the OIP analytical module; its charts were accepted by the owner as local v1 on 2026-09-27. |
 | Organization | Canonical customer data/configuration boundary with stable opaque identity; owns zero or more Sites under ADR-0012. |
 | Customer | Business vocabulary for an Organization, not a separate domain entity. |
 | Tenant | Isolation/deployment vocabulary; maps to Organization in the shared-table layout accepted by ADR-0013, without adding another ownership hierarchy. |

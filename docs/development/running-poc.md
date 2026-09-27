@@ -65,6 +65,20 @@ and counts active restrictions, including a restricted month selection.
 months without dimension filters. Changes become visible in the local installation
 after rebuilding/restarting its web and API services, then reloading the browser.
 
+## Start overview
+
+After selecting the local user, Start shows their configured name and the latest
+imported month's Data Analysis summary. Select a Sector / Halle to see its recorded
+Bereich groups; **Open Data Analysis** opens the full reporting workspace. Refresh
+the overview after new imports. Totals retain the report's calendar exclusions and
+coverage; alarm duration is not downtime or evidence of equipment condition.
+
+Weekly shifts/departments, technician publications and blocked/restored equipment
+are explicitly unavailable placeholders. No operational records are fabricated from
+alarm data. Profile/role administration and authenticated login are proposed under
+[IOP-165](../planning/items/IOP-165-operational-home.md); the selector is still a
+local demonstration mechanism, not password-based security.
+
 ## Import, prepare and analyze
 
 1. Switch to **Administration → Import & prepare → Import files**, select

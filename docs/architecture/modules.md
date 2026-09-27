@@ -5,10 +5,11 @@
 The [local POC scope](../product/scope-poc.md) and [delivery map](../planning/poc-delivery.md)
 select the first analytical slices. The broader model below is not a requirement
 to implement every module, entity or lifecycle before the demonstration. Preserve
-scope and data invariants in delivered paths. Login/user administration and future
-operational modules are deferred; the local execution mechanism is Accepted, with implementation pending,
-in [ADR-0018](adr/ADR-0018-local-poc-execution-context.md), without changing accepted
-identity, authorization or RLS requirements by implication.
+scope and data invariants in delivered paths. The local selector is implemented
+under ADR-0018/0030/0034. [IOP-165](../planning/items/IOP-165-operational-home.md)
+now requests temporary authenticated access and user administration; its mechanism
+remains Proposed in ADR-0035. Operational modules remain deferred, with honest Start
+placeholders. Existing identity, authorization and RLS requirements still apply.
 
 These are logical ownership boundaries, not generated packages or services.
 See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary.md).
@@ -23,7 +24,7 @@ See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary
 | Maintenance Management | Maintenance records, status, work outcomes | Assets, users; external references via Integrations |
 | Asset Management | Canonical assets, types, hierarchy, controller relationships, validation and alias mappings | Core site context; source identifiers from Integrations |
 | Asset Locator | Versioned maps, placements and location search views | Asset and site contracts; no duplicate asset registry |
-| Operational Intelligence (OIP) | Canonical event occurrences/aggregates, message definitions, asset/message associations and analytical projections | Normalized input contracts, assets, shifts and maintenance context |
+| Data Analysis (OIP) | Canonical event occurrences/aggregates, message definitions, asset/message associations and analytical projections | Normalized input contracts, assets, shifts and maintenance context |
 | Integrations | Source adapters, import runs, RAW provenance, source mapping and validation | Receiving modules' ingestion contracts |
 | Audit and activity tracking | Audit records and activity projections | Explicit records emitted by modules, with actor and organization/site context |
 

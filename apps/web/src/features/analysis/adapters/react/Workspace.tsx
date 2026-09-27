@@ -1,4 +1,5 @@
 import { AnalysisCalendarNotice } from "./AnalysisCalendarNotice";
+import { StartOverview } from "./StartOverview";
 import { SourceFiles } from "./SourceFiles";
 import { ExecutiveMonthControls, MonthlyOverview } from "./MonthlyOverview";
 import { ImportWorkspace } from "./ImportWorkspace";
@@ -101,7 +102,10 @@ export function WorkspaceApp({
             <Button
               variant="secondary"
               aria-pressed={administration}
-              onClick={() => setAdministration((value) => !value)}
+              onClick={() => {
+                setAdministration((value) => !value);
+                setPage("analysis");
+              }}
             >
               {administration ? "Taskforce view" : "Administration"}
             </Button>
@@ -132,7 +136,7 @@ export function WorkspaceApp({
       }}
       brand={
         <>
-          IOP<span>Operational Intelligence</span>
+          IOP<span>Industrial Operations Platform</span>
         </>
       }
       navigation={
@@ -148,7 +152,15 @@ export function WorkspaceApp({
     >
       <Notice error={error} />
       {page === "start" && context?.enabled && !error ? (
-        <section className="analysis-start" aria-label="Start page" />
+        <StartOverview
+          key={context.user?.id ?? "no-user"}
+          application={application}
+          context={context}
+          openAnalysis={() => {
+            setAdministration(false);
+            setPage("analysis");
+          }}
+        />
       ) : context?.user ? (
         <ReportWorkspace
           key={context.user.id}
@@ -276,8 +288,8 @@ function ReportWorkspace({
         }
         eyebrow={
           administration
-            ? "Administration · Operational Intelligence"
-            : "Taskforce · Operational Intelligence"
+            ? "Administration · Data Analysis"
+            : "Taskforce · Data Analysis"
         }
         description={
           administration

@@ -112,6 +112,33 @@
 .analysis-start {
   min-height: 60vh;
 }
+.analysis-home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.analysis-home-grid > *, .analysis-home-summary {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.analysis-home-label {
+  color: var(--iop-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.analysis-home-muted { color: var(--iop-muted); }
+.iop-ui .analysis-home-summary { margin: 18px 0; }
+.analysis-home-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.analysis-home-summary .iop-field { max-width: 320px; margin-bottom: 18px; }
+@media (max-width: 760px) {
+  .analysis-home-grid { grid-template-columns: minmax(0, 1fr); }
+}
 
 .analysis-filters {
   display: grid;

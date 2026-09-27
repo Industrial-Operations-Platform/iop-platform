@@ -157,11 +157,15 @@ test("preparation edits clear saved confirmation and cannot be overwritten durin
   expect(screen.queryByText(/Preparation saved\./)).not.toBeInTheDocument();
 });
 
-test("Start is empty and administrators enter the Taskforce presentation before enabling tools", async () => {
+test("Start summarizes analytics without privileged reads and administrators explicitly enable tools", async () => {
   const gateway = setup();
   await screen.findByRole("region", { name: "Start page" });
-  expect(gateway.report).not.toHaveBeenCalled();
-  expect(screen.queryByRole("heading")).not.toBeInTheDocument();
+  await screen.findByRole("heading", { name: "Welcome, Administrator" });
+  await waitFor(() => expect(gateway.report).toHaveBeenCalledWith(
+    expect.objectContaining({ dimension: "sector", months: ["2026-07"] }),
+  ));
+  expect(gateway.history).not.toHaveBeenCalled();
+  expect(gateway.profile).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
   await waitFor(() => expect(gateway.report).toHaveBeenCalled());
   expect(gateway.history).not.toHaveBeenCalled();
@@ -173,7 +177,7 @@ test("Start is empty and administrators enter the Taskforce presentation before 
     screen.queryByText(/Contributing source rows/),
   ).not.toBeInTheDocument();
   expect(
-    screen.getByText("Taskforce · Operational Intelligence"),
+    screen.getByText("Taskforce · Data Analysis"),
   ).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "Administration" }));
   await screen.findByRole("button", { name: "Import & prepare" });

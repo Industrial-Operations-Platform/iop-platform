@@ -1,6 +1,7 @@
 # Architecture
 
-IOP is the generic platform; OIP is its Operational Intelligence module.
+IOP is the generic platform; Data Analysis is the product-facing name of its
+analytical module, retaining OIP as the internal/historical identifier.
 The delivered [local POC](docs/product/scope-poc.md) uses React/TypeScript/Vite,
 a NestJS modular monolith and PostgreSQL. The [operator guide](docs/development/running-poc.md)
 owns execution instructions; the [delivery status](docs/planning/poc-delivery.md)

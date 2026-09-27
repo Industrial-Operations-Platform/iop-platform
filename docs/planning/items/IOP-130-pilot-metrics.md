@@ -8,8 +8,11 @@ Owner feedback **was collected on 2026-09-27 and was negative**: the technical
 flow did not provide the requested historical report experience. The owner supplied
 screenshots, exact sector rules, equipment-column clarification, a database backup
 and the hexagonal architecture requirement. [IOP-148](IOP-148-analytical-workspace.md)
-tracks corrective delivery. Positive acceptance of that revised experience remains
-pending; automated checks cannot provide it.
+tracks corrective delivery. On 2026-09-27, after the later chart refinements, the
+owner stated that the charts meet the desired form and accepted the component as
+Data Analysis v1. This positive observation supersedes the pending usefulness
+feedback, while preserving the earlier negative observation. It is not a new
+measured timing, reconciliation run or shared-use release acceptance.
 [IOP-152](../completed/IOP-152-poc-readiness-plan.md) adds current technical and visual
 verification on the complete Docker history, with concrete usability defects fixed.
 
@@ -105,6 +108,7 @@ and execution record. Change other contracts/guides/ADRs only when this task aff
 
 ## Open work
 
-Review the corrected IOP-148 experience with the owner after its technical validation.
-Retain the recorded negative observation; do not turn completed tests into positive
-user acceptance.
+Owner usefulness feedback is now positive, recorded under
+[IOP-165](IOP-165-operational-home.md). Consolidate the five measured outcomes and
+their dataset/timing context before closing the remaining criteria. Preserve the
+earlier negative observation and do not replace measured evidence with acceptance.
