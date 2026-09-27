@@ -28,8 +28,9 @@ One fact is a source-reported aggregate line, not an individual incident. Report
 frequency and accumulated alarm seconds are exact additive measures. Duration is
 not plant downtime. Filename dates are reporting labels with unknown windows;
 missing imports are distinct from no matching records and actual zero measures.
-Scoped sector mappings are frozen at import; editing configuration never silently
-reclassifies history. See the [aggregate model](docs/architecture/event-aggregates-poc.md)
+Import-time sector mappings remain frozen. The explicit, versioned reporting
+profile in ADR-0031 interprets historical source values without changing original
+facts; saving the profile deliberately changes analytical classification. See the [aggregate model](docs/architecture/event-aggregates-poc.md)
 and [query contract](docs/architecture/analytics-query-poc.md).
 
 ## Identity and isolation
@@ -135,3 +136,23 @@ proposals; acceptance is never inferred from an old implementation handoff.
 - [ADR-0028-poc-analytics-query-consistency](docs/architecture/adr/ADR-0028-poc-analytics-query-consistency.md)
 - [ADR-0029-scoped-demo-reset](docs/architecture/adr/ADR-0029-scoped-demo-reset.md)
 - [ADR-0030-local-demo-user-selection](docs/architecture/adr/ADR-0030-local-demo-user-selection.md)
+
+## Analytical workspace boundaries
+
+[ADR-0032](docs/architecture/adr/ADR-0032-hexagonal-application-boundaries.md) defines
+hexagonal development for both hosts. The active import workflow and reporting
+use cases depend on inward-owned ports. Backend domain/application folders contain
+no NestJS, PostgreSQL or transport imports; PostgreSQL adapters own scoped execution
+and SQL. The demo host is the composition root. Existing immutable publication and
+legacy query infrastructure is reused through adapters, not claimed to have been
+fully rewritten.
+
+The browser analysis feature has independent domain values and application selection
+use cases. HTTP, React and ECharts are outer adapters, wired in `AnalyticalApp.tsx`.
+Generated HTTP types are checked at the gateway boundary. Full-history totals remain
+server-owned; charts never calculate totals from the displayed row page.
+
+The [WinCC backup comparison](docs/architecture/wincc-backup-reference.md) records
+source tables, actual reconciliation gaps and exact duration evidence. Its SQL was
+not restored. [IOP-148](docs/planning/items/IOP-148-analytical-workspace.md) tracks the
+new report workspace and its validation separately from IOP-147's technical baseline.

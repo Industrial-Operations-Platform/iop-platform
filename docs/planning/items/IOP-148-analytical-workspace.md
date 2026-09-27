@@ -1,0 +1,52 @@
+# IOP-148 — Historical analysis workspace and import preparation
+
+## Status
+
+In progress
+
+## Owner request — 2026-09-27
+
+The owner says IOP-147's technical import/history flow does not satisfy the intended
+POC. Deliver the supplied report experience: one Data analysis navigation entry,
+header-only demo user selector, an administrator import/preparation workspace and
+analyst templates below the report. Persist daily uploads, use the complete selected
+history and show daily/monthly behavior, rankings, scatter and heatmap views.
+
+Use the five explicitly provided hall membership lists as scoped configuration.
+Support grouping/filtering by every source column, plus configured sector and
+equipment identifiers. Preserve original characters and CSV bytes;
+provide deliberate normalization/type interpretation and duration in minutes.
+Physical PLC/sensor relationships cannot be guessed from opaque source codes.
+
+## Acceptance
+
+- [ ] Administrator can upload daily CSV, review normalized types/classification and
+      manage analytical preparation rules without losing original retained data.
+- [ ] All admitted historical data is queried server-side with scope and revision
+      consistency; profile edits persist and explicitly apply to historical analysis.
+- [ ] Hall, area, equipment, message/type/group, daily/monthly and Pareto templates
+      provide real interactive charts and equivalent accessible data.
+- [ ] All seven source fields can be grouped/filtered, with exact frequency and
+      duration conversion to minutes; special characters/commas remain intact.
+- [ ] Equipment investigation uses the existing source code, location and error
+      columns, preserving their original associations.
+- [ ] Backend and frontend use hexagonal boundaries with tested dependency direction.
+- [ ] Persistent CSV storage and sector classification incorporate the supplied
+      database reference without copying unrelated modules or rounding source measures.
+- [ ] Actual owner-provided files and independent expectations validate classification,
+      normalization, historical graphs, persistence and the administrator/analyst journey.
+- [ ] Documentation distinguishes this requested outcome from the earlier technical
+      POC, with owner feedback kept honest and local commits validated.
+
+IOP-147 publication to develop/origin is explicitly authorized by this request.
+This new implementation uses its own branch and does not infer publication approval
+for unfinished changes. See the [plan](../active/IOP-148-analytical-workspace-plan.md).
+
+## Owner clarification
+
+The owner clarified that PLC/sensor refers to the existing source columns:
+Bereich is location, Betriebsmittelkennzeichen is the equipment/sensor identifier,
+Meldetext is the error, and Typ is currently constant. No additional physical
+identity or assignment model is requested. Implement those source dimensions
+and the provided sector classification; this clarification supersedes tentative
+PLC/sensor assignment work above.

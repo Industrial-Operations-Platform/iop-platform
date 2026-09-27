@@ -4,8 +4,12 @@
 
 In progress — technical workflow/integrity/parity/isolation observations are available
 from [IOP-147](../completed/IOP-147-working-analytical-poc-plan.md).
-Owner observation and usefulness feedback are **not collected**. They remain the
-only acceptance dependency for this selected POC measurement slice.
+Owner feedback **was collected on 2026-09-27 and was negative**: the technical
+flow did not provide the requested historical report experience. The owner supplied
+screenshots, exact sector rules, equipment-column clarification, a database backup
+and the hexagonal architecture requirement. [IOP-148](IOP-148-analytical-workspace.md)
+tracks corrective delivery. Positive acceptance of that revised experience remains
+pending; automated checks cannot provide it.
 
 ## Milestone
 
@@ -99,5 +103,6 @@ and execution record. Change other contracts/guides/ADRs only when this task aff
 
 ## Open work
 
-Execute the owner observation session and collect feedback against the delivered
-workflow, reusing IOP-147 technical evidence. No additional architectural decision is required for preparation.
+Review the corrected IOP-148 experience with the owner after its technical validation.
+Retain the recorded negative observation; do not turn completed tests into positive
+user acceptance.

@@ -269,3 +269,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | Task context | Status |
 | --- | --- |
 | [IOP-147 — Complete the working analytical POC](items/IOP-147-working-analytical-poc.md) | Completed |
+| [IOP-148 — Historical analysis workspace and import preparation](items/IOP-148-analytical-workspace.md) | In progress |
