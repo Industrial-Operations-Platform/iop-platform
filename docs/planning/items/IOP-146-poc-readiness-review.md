@@ -22,7 +22,7 @@ no application feature, architectural decision or shared-use requirement.
 
 ## Evidence
 
-[Readiness review](../poc-readiness.md) and
+[Readiness review](../completed/IOP-146-poc-readiness-review.md) and
 [execution plan](../completed/IOP-146-poc-readiness-review-plan.md).
 The review closes only this audit; unfinished application and owner-validation
 stories retain their existing acceptance criteria.

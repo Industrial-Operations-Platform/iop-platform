@@ -11,7 +11,8 @@ Item: [IOP-146](../items/IOP-146-poc-readiness-review.md).
    [delivery map](../poc-delivery.md) with implemented code, tests, all 15 Blocked
    story contexts, relevant active/completed plans and unmerged review branches.
 2. Record requirement coverage, missing implementation ownership and an ordered
-   closure checklist in `docs/planning/poc-readiness.md`. Distinguish internal,
+   closure checklist in the readiness report (originally `docs/planning/poc-readiness.md`,
+   archived beside this plan under IOP-151). Distinguish internal,
    fixture, design, runtime and owner-observation evidence. Retain honest statuses.
 3. Add this permanent item and backlog entry; link the review from the delivery
    map and correct the backlog summary of ADR-0018 acceptance. No application/schema/ADR

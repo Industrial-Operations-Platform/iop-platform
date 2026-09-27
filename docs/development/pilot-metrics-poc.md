@@ -2,8 +2,10 @@
 
 Prepared for [IOP-130](../planning/items/IOP-130-pilot-metrics.md).
 Technical observations are recorded in the [IOP-147 execution evidence](../planning/completed/IOP-147-working-analytical-poc-plan.md).
-The [delivered demonstration](running-poc.md) is runnable. Owner observation,
-usefulness feedback and measured benefit remain **not collected**.
+The [delivered demonstration](running-poc.md) is runnable. The owner gave negative
+feedback on the earlier experience on 2026-09-27; IOP-148–150 deliver the requested
+corrections. Positive usefulness acceptance of the revised experience remains pending;
+measured benefit and human task timings have not been established.
 
 Use the five [IOP-001 acceptance measures](../product/personas-and-pilot-workflow.md#accepted-acceptance-measures)
 within the [local POC boundary](../product/scope-poc.md). One local operator may
@@ -76,8 +78,10 @@ Missing feedback stays `not collected`; successful automated tests cannot replac
 As of 2026-09-27, workflow coverage, import integrity, analytical parity and
 isolation/traceability have actual automated PostgreSQL/API/browser evidence in
 IOP-147, including recorded import sizes and observed submission timings. They are
-technical observations on fictional data, not a human pilot assessment. Owner
-usability/value feedback and end-to-end human task timing remain **not collected**.
+technical observations on fictional data, not a human pilot assessment. Negative
+owner feedback is recorded in IOP-130; subsequent delivery evidence is linked from
+[delivery status](../planning/poc-delivery.md). Positive acceptance of the revised
+workspace and end-to-end human task timing remain outstanding.
 
 Close the selected IOP-130 POC slice only after each matrix row has actual evidence,
 IOP-129's real journey passes, both measures reconcile and owner feedback is recorded.

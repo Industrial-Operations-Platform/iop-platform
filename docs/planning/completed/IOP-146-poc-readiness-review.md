@@ -1,16 +1,16 @@
 # POC readiness and closure review — 2026-09-26
 
 > Historical snapshot, superseded for current readiness by
-> [IOP-147 delivery](poc-delivery.md) on 2026-09-27. The findings below describe
+> [IOP-147 delivery](../poc-delivery.md) on 2026-09-27. The findings below describe
 > `52e803b`; they are retained as the reason for the integrated implementation.
 > Technical runtime blockers were resolved. The owner subsequently rejected the
-> analytical experience; [IOP-148](items/IOP-148-analytical-workspace.md) tracks the
+> analytical experience; [IOP-148](../items/IOP-148-analytical-workspace.md) tracks the
 > requested report workspace, database reference and hexagonal implementation.
 
 
 Review of `develop` at `52e803b`, under
-[IOP-146](items/IOP-146-poc-readiness-review.md). The accepted
-[scope](../product/scope-poc.md) is coherent, but the POC is not runnable end to end.
+[IOP-146](../items/IOP-146-poc-readiness-review.md). The accepted
+[scope](../../product/scope-poc.md) is coherent, but the POC is not runnable end to end.
 All 15 Blocked stories still have unmet runtime or observation criteria. None can
 be closed solely from its completed design, preparation or preview increment.
 
@@ -18,7 +18,7 @@ be closed solely from its completed design, preparation or preview increment.
 
 | Required outcome | Available evidence | Remaining delivery |
 | --- | --- | --- |
-| Local React/Vite, NestJS and PostgreSQL startup | IOP-015–020/022; [Docker guide](../../infra/docker/README.md), [database guide](../../infra/database/README.md), health API and web connection | Business host composition and local execution protection. Current OpenAPI contains only `/health`. |
+| Local React/Vite, NestJS and PostgreSQL startup | IOP-015–020/022; [Docker guide](../../../infra/docker/README.md), [database guide](../../../infra/database/README.md), health API and web connection | Business host composition and local execution protection. Current OpenAPI contains only `/health`. |
 | One organization/site with zone and configured source | IOP-025/026/123 seeds, IOP-018 configuration; IOP-027/030 principal/grants and IOP-029 lookup | Bind these to each host operation under Accepted ADR-0018. Deferred administration parents do not invalidate their delivered seeds. |
 | Preserve CSV and normalize frequency/duration with mappings | IOP-042 retained RAW/batches; IOP-045 parser; IOP-046 diagnostics; IOP-049 pure classification and editable configuration | Durable OIP receiver, immutable facts/classification, and real receipt → parse → classify → publish composition. |
 | Visible invalid input, unresolved mappings and date duplicates | IOP-046–048 internal tests, date claims and independent oracle | Submit/review transport and UI, including renamed duplicates, safe recovery and no partial facts. Unclassified records remain included. |
@@ -46,7 +46,7 @@ does not give the following work an unambiguous executable story scope:
    Host infrastructure can start independently; final access proof needs real
    import/read operations.
 2. **OIP aggregate persistence and receiving contract.** Create a bounded
-   implementation item for the [IOP-043 model](../architecture/event-aggregates-poc.md)
+   implementation item for the [IOP-043 model](../../architecture/event-aggregates-poc.md)
    and ADR-0027 publication contract. IOP-043 explicitly completed design only;
    the `batch_receiver_probe` used in database tests is not its implementation.
    Require a migration, forced scoped RLS, exact measures, immutable classification,
@@ -108,7 +108,7 @@ requires actual owner observations; automated tests cannot supply that feedback.
 All remain Blocked. A completed slice is retained as evidence; remaining future
 parent scope is deferred only when explicitly outside the POC, not to hide missing
 POC delivery. There is no need to reopen IOP-020: its
-[completed plan](completed/IOP-020-poc-testing-foundation-plan.md) already records
+[completed plan](IOP-020-poc-testing-foundation-plan.md) already records
 the test entry point and foundation evidence.
 
 ## Branch and documentation handoffs
@@ -130,15 +130,15 @@ the test entry point and foundation evidence.
 
 ## Verification boundary
 
-Source inspection confirms a health-only [Nest module](../../apps/api/src/app.module.ts)
-and [OpenAPI artifact](../../apps/api/contracts/openapi.json), seven existing
-[migrations](../../infra/database/migrations/) without production OIP receiving
-storage, and an [import page](../../apps/web/src/App.tsx) that explicitly cannot
+Source inspection confirms a health-only [Nest module](../../../apps/api/src/app.module.ts)
+and [OpenAPI artifact](../../../apps/api/contracts/openapi.json), seven existing
+[migrations](../../../infra/database/migrations) without production OIP receiving
+storage, and an [import page](../../../apps/web/src/App.tsx) that explicitly cannot
 submit files. `batch_receiver_probe` exists only in the
-[database integration test](../../infra/database/test/import-batches.spec.cjs).
+[database integration test](../../../infra/database/test/import-batches.spec.cjs).
 This is direct evidence of missing composition, not an inference from story labels alone.
 
 Current test commands, results and documentation checks are recorded in the
-[IOP-146 execution plan](completed/IOP-146-poc-readiness-review-plan.md). Passing the
+[IOP-146 execution plan](IOP-146-poc-readiness-review-plan.md). Passing the
 existing suite verifies delivered pieces; it cannot close the missing end-to-end
 criteria above. No data reset, merge, publication or owner feedback was performed.

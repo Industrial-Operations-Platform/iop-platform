@@ -1,5 +1,9 @@
 # POC RAW ingestion model
 
+Current implementation and evidence: [architecture](../../ARCHITECTURE.md) and
+[delivery status](../planning/poc-delivery.md). This document records the design
+contract; original delivery handoffs below are not outstanding runtime blockers.
+
 [IOP-041](../planning/items/IOP-041-raw-ingestion-model.md) defines this logical
 model for the [local POC](../product/scope-poc.md). It specializes the
 [CSV source contract](csv-source-contract-poc.md) and Accepted

@@ -1,5 +1,9 @@
 # POC CSV source contract
 
+Current implementation and evidence: [architecture](../../ARCHITECTURE.md) and
+[delivery status](../planning/poc-delivery.md). This document records the design
+contract; original delivery handoffs below are not outstanding runtime blockers.
+
 Defined by [IOP-012](../planning/items/IOP-012-source-integration-contract.md)
 for the [local analytical POC](../product/scope-poc.md). This is the design contract;
 IOP-045 now implements its pure parsing/normalization profile. It does not deliver
@@ -42,7 +46,7 @@ compatibility with arbitrary CSV exports:
   Every subsequent record must contain exactly seven cells. Repeated headers fail
   value validation; missing/trailing extra cells must not shift field meaning.
 
-Use a strict CSV parser in future delivery, not the legacy global quote stripping
+Use the strict CSV parser in the Integrations adapter, not the legacy global quote stripping
 and `split(';')`. No library is selected here. Quote/delimiter edge cases above are
 contract choices requiring synthetic tests; they were not present in the sample.
 
@@ -223,7 +227,7 @@ remain unverified; they do not block honest source-date aggregate presentation.
 
 ## Implemented adapter handoff — IOP-045
 
-The [API guide](../../apps/api/README.md#pure-poc-csv-preparation-iop-045) documents
+The [adapter implementation](../../apps/api/src/modules/integrations/csv-adapter.ts) defines
 the pure adapter and its fixed budgets. The
 [execution record](../planning/completed/IOP-045-csv-adapter-plan.md) supplies
 executable syntax, conversion and boundary evidence. Classification and persistence
@@ -238,16 +242,16 @@ The internal `validateCsv` report implements bounded invalid-row visibility and
 inspection counts under this contract. It continues after value errors, stops at
 structural/resource interruptions and exposes no partial dataset. Diagnostics are
 capped at 100 independently of counts. Scoped classification, persisted outcomes
-and user-facing import/review composition remain pending; the parent stays open.
-See the [API report contract](../../apps/api/README.md#poc-csv-validation-report-iop-046)
+and user-facing import/review composition are delivered under IOP-147.
+See the [API report contract](../../apps/api/src/modules/integrations/csv-adapter.ts)
 and [execution evidence](../planning/completed/IOP-046-import-validation-plan.md).
 
 ## IOP-049 classification handoff
 
-The [internal mapping stage](../../apps/api/README.md#scoped-source-classification-iop-049)
+The [internal mapping stage](../../apps/api/src/modules/integrations/source-mappings.ts)
 validates bounded scoped configuration and freezes the applied mapping snapshot,
 classifications and unclassified count without changing prepared measures or RAW
 line references. Exact comparison and synthetic reconciliation are executable;
 the 89 owner-supplied memberships are now reconciled in editable private local
-configuration. Durable receipt/publication composition remains pending. See the
+configuration. Durable receipt/publication composition is delivered under IOP-147. See the
 [configuration record](../planning/completed/IOP-049-editable-mappings-plan.md).

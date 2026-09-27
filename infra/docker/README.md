@@ -1,113 +1,46 @@
-# Local POC containers
+# Local container platform
 
-## Working platform — IOP-149
+The primary entry point is `npm run local:up`, optionally with a backup path on first
+startup. The [operator guide](../../docs/development/running-poc.md) owns prerequisites,
+seed behavior, stop/start commands and troubleshooting. Open http://127.0.0.1:8080.
 
-Use `npm run local:up -- /absolute/path/to/backup.backup` for the complete local
-application on **http://127.0.0.1:8080**. This selects `compose.platform.yaml`:
-separate frontend, API and persistent database, plus a one-shot setup tool. Subsequent
-`npm run local:up` reuses the configured seed and preserves uploaded history.
-See the [operator guide](../../docs/development/running-poc.md) for prerequisites,
-analytics seed provenance, exact totals and stop/start commands. The native launchers
-remain optional development tools; application code has no demo directory.
+## Composition
 
-## Earlier health-only bootstrap
+[compose.platform.yaml](../../compose.platform.yaml) contains:
 
-The remaining instructions describe `compose.yaml`, which is separate from the
-working platform installation and does not activate business routes.
+| Service | Responsibility |
+| --- | --- |
+| `database` | PostgreSQL 17.6, persistent `platform-data` volume, no published port |
+| `setup` | One-shot role provisioning, migrations and idempotent analytics seed before API startup |
+| `api` | Built NestJS application, scoped non-owner credentials, private port 3000 |
+| `web` | Built React application served by Nginx; only published port is loopback 8080 |
 
-IOP-015 starts the existing React UI, public-health API and an empty PostgreSQL
-service. IOP-019 adds opt-in [role provisioning and migrations](../database/README.md).
-Those earlier health hosts do not include the business workflow. See the [execution plan](../../docs/planning/completed/IOP-015-local-development-environment-plan.md)
-for validation status and limitations. This is not completion of POC increment 1.
+`scripts/local/platform.cjs` orchestrates the sequence. Private `.local-platform/`
+files hold configuration, credentials and seed provenance and are excluded from
+Git/image contexts. Setup and runtime credentials are separate. Preserve both the
+private directory and volume when stopping; do not delete volumes to fix startup.
+API process health does not prove analytical readiness or replace migration/seed checks.
 
-## First startup
+Images use the root lockfile, Node 24.21.0/npm 10.9.2, PostgreSQL 17.6 and Nginx 1.28.0.
+API/web run as non-root users. Build inputs exclude local data, Git, secrets and host
+modules; packaging retains dependency notices. Patch tags are local packaging choices,
+not a production support or image-digest policy.
 
-Install/start Docker with Compose v2 supporting `up --wait` (CLI 2.39.2 used during
-validation). Run commands from the repository root. No native Node is required
-for container execution; builds use the root lockfile and Node 24.21.0/npm 10.9.2.
+Re-run `npm run local:up` to rebuild after code changes. Images have no hot-reload
+source mounts; use the optional native path for rapid development. Port conflicts,
+a stopped daemon or registry failures must be resolved before startup can succeed.
+This stack is for one trusted local operator, not public/shared hosting.
 
-Copy `.env.example` to `.env`, restrict it with `chmod 600 .env`, and set
-`IOP_POSTGRES_PASSWORD` to a locally generated password (for example, generate a
-hex value with `openssl rand -hex 24`). Never use production credentials.
-The empty example intentionally fails. Shell environment overrides Compose `.env`;
-native npm commands do not load this file. Avoid sharing `docker compose config`
-output because it can contain the password; use `config --quiet` to validate.
+## Optional foundation tooling
 
-Copy `config/poc.example.json` to `config/poc.local.json` and restrict it with
-`chmod 600 config/poc.local.json` before startup. The API validates this read-only
-mount; see the [configuration contract](../../docs/development/local-configuration.md).
-It contains fictional scope IDs and no credentials. Missing or invalid configuration
-prevents API health and web startup.
+[compose.yaml](../../compose.yaml) is the earlier health-only bootstrap, not the
+business platform. It uses `.env` and `config/poc.local.json`, which are separate from
+`.local-platform/`, and competes for web port 8080. Its fixed API configuration does
+not activate business operations. The earlier setup procedure is retained in the
+[IOP-015 execution record](../../docs/planning/completed/IOP-015-local-development-environment-plan.md).
 
-```sh
-docker compose up --build --wait --wait-timeout 120
-```
-
-Open `http://127.0.0.1:8080`. The UI calls same-origin `/health`, which Nginx proxies
-to `api:3000`. Only web port 8080 is published, explicitly on IPv4 loopback.
-API and PostgreSQL have no host ports. Container-wide API binding is explicitly
-enabled by Compose; native startup still defaults to loopback. This is a trusted
-single-operator local environment, not shared-user access control.
-
-`up --wait` checks all three processes. Web startup waits for API health, while
-PostgreSQL starts independently because the current API has no database dependency.
-Health does not establish business or database authorization readiness.
-
-## Verify and operate
-
-```sh
-docker compose ps
-curl --fail http://127.0.0.1:8080/health
-docker compose exec database psql -U iop_bootstrap -d iop_local -c 'SELECT 1;'
-docker compose logs --tail 50 api web
-docker compose down
-```
-
-The health response is `{"status":"ok"}`. `down` retains the dedicated named
-`postgres-data` volume. Start again with the startup command. PostgreSQL initializes
-its database/user/password only on an empty volume; editing `.env` does not rotate
-an existing database password. Do not delete a volume to resolve credentials.
-This story supplies no demo dataset reset; that belongs to IOP-128.
-
-The bootstrap database user is an owner, used only for database initialization and
-local operator inspection. No database credentials reach API or frontend images.
-IOP-019 provides migrations and separate non-owner runtime credentials through an
-explicit tooling overlay. Future business persistence must add scoped constraints,
-forced RLS and reviewed runtime grants in its owning migrations.
-IOP-018 supplies local target configuration and startup validation; future business
-consumers must still enforce persisted ownership and authorization.
-
-Images pin Node 24.21.0, PostgreSQL 17.6 and Nginx 1.28.0 patch tags. These are
-local packaging choices, not a production support/security certification or a
-commitment to an ORM or server topology. ADR-0019 selects node-pg-migrate for
-local migration tooling. Patch tags may be
-rebuilt upstream; digest pinning/update policy remains future release work.
-Build inputs use an allowlist, excluding local `.env`, data, Git and host modules.
-API/web run as non-root image users. API dependencies retain distributed notices;
-browser build dependency notices are retained under `/usr/share/iop-notices`.
-
-## Editing and troubleshooting
-
-Rebuild with the startup command after code changes. Runtime images have no source
-mounts or hot reload; native `npm run dev:web` remains the fast UI development path.
-No source-file mount is required until the CSV importer defines its input contract.
-
-- Missing password: set the local value; diagnostics never print its contents.
-- Port 8080 occupied: stop the conflicting local process or stack, then retry.
-- Daemon unavailable: start Docker Desktop/Engine before retrying.
-- Registry/build failure: verify registry access and availability of the pinned
-  images/packages. Do not treat configuration validation as a successful build.
-- API stopped: the UI displays its safe unavailable state; restart with
-  `docker compose start api`, then choose **Check again**. Nginx resolves the API
-  service name through Docker DNS, including after container recreation.
-
-No worker, login bypass, business origin policy, industrial integration or public
-deployment is included. ADR-0018 remains Proposed. Business mutations require
-the execution-context and browser-origin controls described in the POC baseline.
-
-References: [Compose readiness](https://docs.docker.com/compose/how-tos/startup-order/),
-[Compose networking](https://docs.docker.com/compose/how-tos/networking/),
-[PostgreSQL image initialization](https://hub.docker.com/_/postgres).
-
-Before committing configuration changes, follow the
-[POC secrets hygiene checks](../../docs/development/secrets-poc.md).
+[compose.database.yaml](../../compose.database.yaml) supplies explicit database
+provisioning/migration tools for that foundation stack. Consult the
+[database guide](../database/README.md) and
+[configuration contract](../../docs/development/local-configuration.md) when using
+those tools. Do not mix their credentials or volumes with the primary installation.

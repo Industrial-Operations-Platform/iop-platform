@@ -1,121 +1,91 @@
-# Analytical proof of concept
+# Local analytical POC scope
 
-## Owner-confirmed boundary
+The owner-confirmed workflow is **CSV → preparation → persistent history → analysis
+→ presentation**. This page consolidates the refinements delivered through IOP-150;
+[delivery status](../planning/poc-delivery.md) owns evidence and open acceptance.
+The [operator guide](../development/running-poc.md) owns execution instructions.
 
-Accepted product direction on 2026-09-15 under [IOP-142](../planning/items/IOP-142-poc-delivery-scope.md):
-**manual CSV → preparation and normalization → verified analysis → presentation**.
-The immediate target is a local demonstration operated by one person, without login
-or external system connections. It precedes the shared-use v1. This overrides older
-references to individual login as a prerequisite for the first demonstration.
+## Runtime and user
 
-Manual CSV ingestion remains essential; postponing integrations means postponing
-live WinCC/Ultimo/Entra connections and a general integration registry, not removing
-the source-to-domain translation boundary.
+- Separate Docker containers for frontend, backend and persistent PostgreSQL, with
+  an optional analytics-only backup seed. Only the web entry point is on loopback.
+- One local Administrator can import, prepare and analyze data. Keep the temporary
+  configured user selector in the header; third-party login is a later adapter.
+- One configured organization/site/source with an explicit time zone. Retain current
+  grants, scoped transactions and forced RLS; local selection is not shared-use login.
+- Frontend and backend follow [hexagonal boundaries](../architecture/adr/ADR-0032-hexagonal-application-boundaries.md).
+  Reusable frontend components preserve the [visual identity](../design/visual-identity.md).
 
-## Minimum useful result
+## Import, preparation and history
 
-- Start the accepted React/Vite, NestJS and PostgreSQL stack locally with documented
-  commands, migrations and configuration. Compose/tooling decisions remain accepted;
-  implement only the hosts and checks used by the slice, not a worker host.
-- Configure one organization, one site with an explicit zone, and one source through
-  development configuration/seed data. No organization/site administration screens.
-- Load the supported CSV, preserve original input and import provenance, normalize
-  reported frequency and accumulated alarm duration, and apply configured sector mappings.
-- Show validation failures and unresolved mappings. Unclassified records remain in
-  totals; no silent data loss. Reject already imported reporting dates within the
-  same organization/site/source, including renamed files, without automatic replacement.
-- Present Executive Overview with date controls and detail views with progressive
-  reporting-date, sector, area, equipment and message filters. Drill down to contributing source
-  records without requiring surveyed assets or physical sensor identities.
-- Show source coverage and metric limits. A filename date is a reporting label,
-  not an occurrence timestamp or proof of a full 24-hour window. Missing imports
-  are not zero-fault periods; accumulated alarm duration is not plant downtime.
-- Reproduce known results using synthetic or explicitly authorized reference data,
-  demonstrate duplicate/error handling and reset the dedicated demo dataset safely.
+Import one daily CSV with the supplied fields `Häufigkeit`, `Dauer`, `Bereich`,
+`Betriebsmittelkennzeichen`, `Meldetext`, `Typ` and `Meldegruppe`. Preserve original
+bytes, source values, physical lines and import outcomes. Normalize supported text
+and numbers conservatively; quoted commas and special characters remain data.
+Parse duration into exact seconds and display summed minutes.
 
-The owner refined the POC in IOP-148: persistent daily files, all-history analysis,
-administrator import/preparation, a header-only user selector, one Data analysis
-navigation entry and lower report templates. Hall/area/equipment/error rankings,
-monthly comparisons, duration/frequency scatter, period heatmaps, daily/weekly/monthly
-trends are selected. Executive Overview alone shows prioritization KPIs; import
-volume belongs in file review. Pareto is deferred to a later function inside Executive
-Overview and has no standalone tab. The POC exposes only Administrator, who imports
-and analyzes data. Preserve the [visual identity](../design/visual-identity.md).
-Screenshot targets and improvement
-formulas remain unvalidated and are not implemented as invented measures.
+Use the supplied five-sector mapping (Halle A T1/T2/T3, Halle B Sh/Sky), with explicit
+`Nicht klassifiziert` fallback. Keep source-specific rules in scoped configuration
+and adapters. Equipment means `Betriebsmittelkennzeichen`; area means `Bereich`;
+error means `Meldetext`. Do not invent separate PLC/sensor identities.
 
-Use all seven source fields, the supplied five-sector classification, conservative
-Unicode/space normalization and explicit value corrections. Equipment means the
-existing source identifier; do not invent separate PLC/sensor records. Save reporting
-preparation in the database and explicitly apply changes to historical analysis while
-preserving original CSVs. The supplied database backup informs the storage model;
-it is not an instruction to restore it over the POC. Both frontend and backend use
-hexagonal boundaries under ADR-0032.
+Persist daily files and query all matching historical facts. Reject already admitted
+reporting dates within organization/site/source without automatic replacement.
+Show invalid, duplicate and interrupted outcomes; retain unclassified rows in totals.
+Administrators can version-save normalization/corrections and sector rules for
+historical reporting while immutable CSVs/import-time facts remain unchanged.
 
-## Deferred beyond the POC
+The backup's normalized analytics model is the database reference, including a
+sector catalog and `sektor_id` on the main Hitliste fact. The public prototype is not
+the target model or an extra seed source. Backup-derived daily seed files use the
+real importer and keep provenance; archive SQL is never executed.
 
-Shared-use login/sessions, password workflows, user lifecycle/admin screens, interactive role
-and membership management, Entra, direct industrial connections, general integration
-registry, full audit/retention infrastructure, background workers/retries, map/file
-platforms, asset surveys/registry, workforce, handovers, maintenance and improvements.
-Also deferred: exports, shared hosting, production backup/restore operations and a
-full release ceremony. Basic input validation, safe configuration, scoped storage,
-useful error logs and tests for delivered behavior remain part of each slice.
+## Analytical workspace
 
-## Architecture retained and accepted local mechanism
+Left navigation has one Data analysis entry; lower navigation selects the templates.
+Import/preparation is available to the same Administrator.
 
-Keep the modular monolith, accepted stack/API strategy, provider-independent
-identity boundary, organization/site ownership, scoped references, RLS and temporal
-semantics. Metrics belong to OIP; source column names and customer classification
-belong to the adapter/configuration. Avoid a generic provider/plugin engine for one CSV.
+| Template | Filter policy |
+| --- | --- |
+| Executive Overview | Date only; useful prioritization KPIs appear only here |
+| Halle | Date only |
+| Bereich | Date, sector and area |
+| Equipment | Location filters plus equipment code |
+| Error | Equipment/location filters plus error text, type and message group |
+| Daily/monthly | All supported source-field filters |
 
-The owner approved the product boundary without login, not a technical bypass of
-Accepted ADR-0012/0013/0014. [ADR-0018](../architecture/adr/ADR-0018-local-poc-execution-context.md)
-was accepted on 2026-09-26: a local execution adapter uses an explicit seeded
-principal and grants. IOP-147 delivers the local host, receiving storage, import/read endpoints and
-connected views with executable validation. [ADR-0030](../architecture/adr/ADR-0030-local-demo-user-selection.md)
-records the owner-requested selection among configured demo users; third-party
-authentication replaces that local adapter before shared use.
-Do not silently disable RLS, use a database-owner runtime role, or trust a browser's
-scope/actor as authority. A local unauthenticated demonstration is not shared-user
-access control and must not be presented as such.
+Filters are subtle and collapsible, with the active selection summarized. Grouping
+is independent of filtering. Finer investigation preserves compatible constraints;
+returning to a broader template clears unsupported constraints. Chart/KPI drill-down
+opens a detail view that can show the selected constraint.
 
-## POC acceptance
+Provide rankings, monthly comparisons, duration/frequency scatter, heatmaps and
+period trends. Allow grouping by source fields and sector. Full matching measures
+are server-owned and independent of bounded chart groups and contributing-row pages.
+Import volume/counts belong to file review, not KPI cards on every template.
+Pareto is deferred as a future function inside Executive Overview, with no separate tab.
+Screenshot targets and improvement formulas are not invented metrics.
 
-The owner can import a representative CSV, inspect rejected/duplicate input, obtain
-independently reconciled frequency/duration totals in both views, navigate filters
-and contributing records, and present the result directly from IOP. The demo can be
-recreated from documented commands and fixtures. Record actual dataset size and
-observed timings without inventing a performance commitment.
+## Metric meaning and acceptance
 
-Exact parsing/grain and metric fixtures are refined with importer/analytics delivery;
-unknown reporting windows stay visible and block only claims that require them.
-POC completion does not complete deferred parent stories or certify shared-use v1.
+Frequency sums source-reported occurrences, not stored row count. Accumulated alarm
+duration is not plant downtime. Filename dates are reporting labels with unknown
+windows; missing imports are not zero-failure periods. Source equipment identifiers
+do not establish physical assets. Keep these limits and source provenance visible.
 
-## Later shared use
+Acceptance requires the owner to import/review data, investigate historical behavior,
+obtain independently reconciled measures and present useful results from IOP.
+Record actual dataset size, observed timings and owner feedback without inventing
+performance or benefit targets. Technical evidence does not replace usefulness review;
+IOP-130 remains open for that assessment. Synthetic native fixtures retain a guarded
+reset/reload path; the main Docker installation preserves historical data on restart.
 
-Before enabling other users or network-hosted operation, deliver authentication,
-current scoped authorization and lifecycle behavior, negative access tests and the
-operating controls relevant to that deployment. Reassess audit and recovery needs
-at that stage. The POC neither chooses a future provider nor removes those obligations.
+## Deferred scope
 
-See the [delivery map](../planning/poc-delivery.md) for story slices and sequencing.
-
-The [local POC security baseline](../architecture/security-baseline-poc.md) defines
-IOP-014 control requirements and verification handoffs. It is completed design,
-not runtime security evidence. ADR-0018 separately records mechanism acceptance.
-
-
-## Working demonstration — IOP-147
-
-The owner requested completion of the connected workflow on 2026-09-27, explicitly
-including temporary user switching and future third-party login integration.
-Use the [running guide](../development/running-poc.md) for the actual commands,
-reference CSVs, per-file/historical analysis and exact-target reset. Implementation
-and evidence are consolidated under [IOP-147](../planning/items/IOP-147-working-analytical-poc.md).
-Owner usability/value feedback remains separate from automated technical evidence.
-
-The primary local runtime is a three-service Docker Compose stack with an optional
-analytics-only backup seed ([IOP-149](../planning/items/IOP-149-local-stack-history.md)).
-Executive Overview and Halle expose collapsible date controls only; finer views
-progressively add location, equipment and error filters with independent grouping.
+Shared-use authentication/provider choice, account and membership administration,
+live industrial integrations, a general integration registry, workers, full audit,
+production retention/backup/restore, exports, shared hosting, assets/maps/surveys,
+workforce, handovers, maintenance and improvement tracking are separately scoped.
+Basic validation, safe configuration, explicit authorization, useful errors and tests
+remain part of every delivered slice. POC completion does not complete those future
+parents or certify shared-use v1.

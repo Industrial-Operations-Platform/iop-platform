@@ -61,7 +61,7 @@ interrupted run; never use broad volume deletion as test cleanup.
 
 ## Add evidence with each delivered slice
 
-| Future POC delivery | Required verification when implemented |
+| Delivered behavior | Regression evidence to preserve |
 | --- | --- |
 | CSV receipt and normalization | Known synthetic frequency/duration totals; exact budgets and one above; malformed/rejected input; renamed duplicate dates; no partial publication; bounded diagnostics and provenance. |
 | Local execution and persistence | Explicit grants/scope; missing and foreign access denied; real non-owner credentials; forced RLS, rollback/connection reuse and browser-origin rejection. Seed tests do not substitute for these. |

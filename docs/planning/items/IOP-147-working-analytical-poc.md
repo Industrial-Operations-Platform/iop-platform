@@ -14,7 +14,7 @@ identity boundary. The owner authorizes necessary development decisions without
 intermediate approval waits and consolidation of redundant planning for this work.
 
 This request consolidates the missing runtime slices documented by
-[IOP-146](../poc-readiness.md). It preserves the [POC scope](../../product/scope-poc.md)
+[IOP-146](../completed/IOP-146-poc-readiness-review.md). It preserves the [POC scope](../../product/scope-poc.md)
 except for explicitly allowing selection among configured local demo users.
 It does not authorize shared/public unauthenticated hosting or invented owner feedback.
 

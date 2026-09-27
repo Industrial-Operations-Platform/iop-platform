@@ -11,8 +11,8 @@ This document retains the acceptance procedure within the
 
 Use a dedicated local environment and the unchanged
 [synthetic fixture corpus](../../fixtures/analytical-poc/README.md), its explicit
-scope/mapping configuration and independent `expected.json`. Follow the existing
-[local startup guide](../../infra/docker/README.md) and fixture seed instructions.
+scope/mapping configuration and independent `expected.json`. Follow the optional native fixture installation in the
+[operator guide](running-poc.md) and fixture seed instructions.
 Seeding scope alone does not activate runtime access.
 
 Before importing, link passing evidence for Accepted
@@ -25,8 +25,8 @@ credentials. Do not substitute login, database-owner access or a fixture bypass.
 
 Confirm production OIP receiving storage, the real upload/review path, executable
 queries and connected overview/detail are available. Stop if any gate is absent.
-Use IOP-128's delivered verified reset for an existing demo dataset; there is no
-available reset command today and this procedure authorizes no ad hoc deletion.
+Use IOP-128's delivered guarded reset only for a registered native fixture dataset.
+This procedure does not reset the primary historical Docker installation.
 
 ## Demonstration sequence and expected evidence
 
@@ -53,7 +53,7 @@ not a rolled-back reset. No volume removal or broad database cleanup is part of 
 
 ## Execution record and closure
 
-Use the linked IOP-147 runtime execution record. For a new observation session, Record application
+Use the linked IOP-147 runtime execution record. For a new observation session, record application
 commit, date/environment, fixture hashes and byte sizes, scope/source and mapping
 revision, actual import/RAW IDs, applied selections, data revisions, complete
 contributor identities, observed counts/totals and links to browser/API evidence.

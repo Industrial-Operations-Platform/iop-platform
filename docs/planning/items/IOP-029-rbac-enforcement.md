@@ -24,9 +24,9 @@ and [workflow](../workflow.md).
 IOP-026/027/030 supply integrated site, active-principal and membership/site-role
 storage plus explicit seeds. IOP-029 now supplies exact-selector runtime column
 reads, current permission evaluation and the pinned site-operation transaction
-under Accepted ADR-0026. The health host and business endpoint surface are unchanged.
-Accepted ADR-0018 permits the local mechanism; its host adapter and validation are
-still pending. No allow-all guard or trusted browser actor is authorized.
+under Accepted ADR-0026. IOP-147 subsequently connected the accepted local host
+adapter and business operations with executable activation/origin tests. Shared-use
+administration remains deferred. No allow-all guard or trusted browser actor is authorized.
 
 ## Selected requirements and acceptance criteria
 
@@ -81,7 +81,7 @@ The [completed plan](../completed/IOP-029-poc-authorization-plan.md) records bra
 files, dependency findings and executable evidence. API tests and real-role PostgreSQL
 integration verify the selected requirements, including revocation, missing/foreign
 scope, column limits, rollback, timeout/cancellation and pool reuse. See the
-[API boundary](../../../apps/api/README.md#site-operation-authorization-iop-029) and
+[API boundary](../../../apps/api/README.md#composition-and-access) and
 [database guide](../../../infra/database/README.md#current-site-authorization-lookup-iop-029).
 No end-to-end import/read or local host activation claim follows from those tests.
 The selected plan is complete; the broader parent remains Deferred.

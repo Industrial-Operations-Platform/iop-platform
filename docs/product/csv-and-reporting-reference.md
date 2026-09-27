@@ -226,13 +226,16 @@ reconciliation, exact reporting windows or acceptance of pending ADRs.
 The owner resupplied the complete manual `Arbeit Sektor` membership expression and
 requested editable sector names and area assignments. It contains 89 distinct areas
 across five sectors, with 11, 28, 12, 18 and 20 entries in expression order. Supplied
-spelling and punctuation are preserved in ignored local scoped configuration;
-no customer membership list is committed as a generic fixture or seed.
+spelling and punctuation are preserved. The current owner-authorized lists live in
+[scoped reporting configuration](../../config/reporting/hitliste-halls.json), outside
+the generic core; IOP-148 adds editable historical preparation.
 
 The exact supplied values are checked through the IOP mapping stage. This verifies
 membership transcription, not execution of Power BI or equivalence for case/space
 variants. IOP retains the explicit comparison contract and rejects ambiguous
 normalized keys. Local JSON permits sector display renames and area reassignments
-with a new revision; historical results stay frozen. See the
-[editing guide](../../apps/api/README.md#editing-local-sector-mappings) and
+with a new revision; import-time classifications stay frozen. The current reporting
+profile can explicitly reclassify historical analysis without changing those facts.
+See the
+[editing guide](../../docs/development/running-poc.md#mapping-your-own-source-labels) and
 [execution record](../planning/completed/IOP-049-editable-mappings-plan.md).

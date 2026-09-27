@@ -1,25 +1,22 @@
 # Local PostgreSQL bootstrap
 
-## Connected analytical POC — IOP-147
+## Primary local platform
 
-For the working CSV upload, history, demo users, analytical views and safe reset,
-follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
-API/web hosts and a dedicated PostgreSQL container. The earlier health/preview
-bootstrap instructions below remain available independently; they do not activate
-the business workflow by themselves.
+Use `npm run local:up` for the full Docker application. Its one-shot setup service
+provisions roles, applies all migrations and optionally imports the backup's analytics
+history. Runtime uses non-owner credentials; only web is published on loopback.
+The [operator guide](../../docs/development/running-poc.md) owns seed provenance,
+reconciliation and persistent stop/start behavior. Do not apply the foundation
+commands below to `.local-platform/` credentials or delete its volume.
 
+This guide owns migration, role and storage contracts. Independent health startup
+requires no database; business operations explicitly activate scoped persistence.
+There is no ORM or production migration/backup service.
 
-IOP-019 implements Accepted [ADR-0019](../../docs/architecture/adr/ADR-0019-local-database-migrations.md):
-explicit role provisioning and node-pg-migrate 9.0.0 migrations on the existing
-PostgreSQL 17.6 local service. The separately activated local-demo API connects using the runtime role;
-independent health startup requires no database. IOP-025 adds the organization table and explicit initial seed
-under Accepted [ADR-0020](../../docs/architecture/adr/ADR-0020-local-organization-bootstrap.md).
-IOP-026 adds site storage and an explicit initial seed under Accepted
-[ADR-0021](../../docs/architecture/adr/ADR-0021-local-site-bootstrap.md). There is no login or ORM.
+## Optional foundation Compose commands
 
-## Compose commands
-
-Follow the [local environment setup](../docker/README.md). In ignored `.env`, provide
+These commands use the earlier `compose.yaml` and its tooling overlay, not
+`compose.platform.yaml`. Copy `.env.example` to ignored `.env`; provide
 three separate locally generated passwords: `IOP_POSTGRES_PASSWORD`,
 `IOP_MIGRATOR_PASSWORD` and `IOP_RUNTIME_PASSWORD`. Each must be 16–256 UTF-8 bytes;
 hex passwords generated independently with `openssl rand -hex 24` are convenient.
@@ -34,7 +31,7 @@ docker compose -f compose.yaml -f compose.database.yaml run --rm database-provis
 docker compose -f compose.yaml -f compose.database.yaml run --rm database-migrate
 ```
 
-A fresh database reports `6 applied` (privilege baseline, organizations, sites, users, memberships and authorization lookup); an unchanged rerun reports `0 applied`.
+A fresh database applies all 11 committed migrations; an unchanged rerun reports `0 applied`.
 Provisioning can also be repeated. The optional overlay requires all three password
 variables for Compose interpolation, but the migration container receives only its
 own password. Neither API nor web receives any of them. Commands are one-shot jobs;
@@ -78,7 +75,7 @@ authentication of a DNS server or a production network boundary; TLS is not enab
   objects. It can create database schemas but cannot create roles/databases or bypass
   RLS through a role attribute. Object ownership is privileged; never give this
   credential to the API.
-- `iop_runtime` has CONNECT plus the bounded IOP-029 lookup described below.
+- `iop_runtime` has CONNECT plus the exact installed lookup, import, OIP and reporting grants described below.
   It cannot own objects, inherit/set an
   elevated role, create schemas/tables/temp tables, truncate or access migration
   history. No business data permission is implied by being able to connect.
@@ -87,9 +84,9 @@ Provisioning locks and changes roles/privileges atomically, revokes standard PUB
 access to the dedicated database and public schema, and refuses incompatible role
 attributes, memberships, ownership, schema grants and effective runtime grants.
 It does not rotate passwords. Before the lookup migration it accepts CONNECT-only
-access; afterward it permits exactly the installed lookup schema/column grants.
+access; afterward it permits exactly the installed schema/column grants, including analytical persistence.
 Broader table/column, PUBLIC-derived or grant-option access, writes and unrelated
-objects are rejected. Business-table grants need a separately reviewed extension.
+objects are rejected. New grants require a reviewed migration and matching provisioning checks.
 
 Migrations live in `infra/database/migrations/`; metadata lives in
 `iop_migrations.history`. The first migration removes PUBLIC default access for
@@ -348,7 +345,7 @@ organization rows and writes to those foundation tables remain unavailable. Forc
 rows match their applicable actor/organization/site keys. Seed selectors do not
 provide runtime visibility. Lookup selectors never authorize business rows.
 
-The [API operation boundary](../../apps/api/README.md#site-operation-authorization-iop-029)
+The [API operation boundary](../../apps/api/README.md#composition-and-access)
 checks current state and exact permissions before installing the separate business
 selectors on the same transaction. Provisioning permits only the reviewed grants
 once the lookup migration is recorded; it rejects privilege drift instead of repairing
@@ -383,8 +380,8 @@ installed grants and compares quota to receipts using bootstrap credentials, fai
 on drift rather than repairing or disclosing cross-scope data to runtime.
 
 `apps/api/src/modules/integrations` exports `ImportBatches`. Internal composition
-supplies a runtime pool and frozen source configuration; the future host must bind
-that configuration to the seeded site/zone and configured source and supply a trusted
+supplies a runtime pool and frozen source configuration; the active host binds
+that configuration to the seeded site/zone and configured source and supplies a trusted
 principal. Public methods choose their own permission: `receive`, `reject`,
 `failProcessing`, `publish` and `reconcile` require submit; `review` and `original`
 require review. Original retrieval verifies exact byte length and SHA-256. Status
@@ -395,9 +392,9 @@ the latter retains a rejected attempt and must be surfaced as a conflict by deli
 
 The owning OIP adapter must implement `ImportPublication.publish/inspect` on the
 supplied transaction, validating neutral records and returning the persisted record
-count (or null when no publication exists). There is no production OIP receiver in
-this slice. Tests use disposable receiver tables to prove coordination and rollback;
-they are not CSV normalization or analytical reconciliation evidence.
+count (or null when no publication exists). IOP-147 delivers the actual OIP receiver.
+Earlier internal adapter tests use disposable receiver tables to prove coordination;
+the integrated suites separately verify actual CSV-to-report reconciliation.
 
 An `ImportOutcomeUnknownError` carries the original attempt ID. Stop the old
 executor/queued phases, then explicitly reconcile that identity with current submit
@@ -407,13 +404,13 @@ reject delayed publishers after failure. This assumes one local host, not multip
 processes or distributed leases. Keep unavailable/denied recovery incomplete; do
 not interpret it as absence. Inconsistent claim/fact/outcome evidence fails closed.
 
-Delivery must still enforce one in-flight upload, request/receive/parse deadlines,
+The host must enforce one in-flight upload, request/receive/parse deadlines,
 source/configuration binding and no pending execution at recovery. The internal
 adapter bounds bytes, counts, diagnostics and database waits, and checks publication
 deadlines; it does not implement transport cancellation or bound arbitrary receiver
-CPU work. ADR-0018 host activation, parser/mapping/OIP delivery and their end-to-end
-security/performance tests remain separate gates. No RAW content or diagnostics from
-source cells is logged. This slice does not provide the later HTTP retrieval headers.
+CPU work. Host activation, parser/mapping/OIP composition and end-to-end checks are delivered
+under IOP-147; formal performance acceptance remains separately scoped. No RAW content or diagnostics from
+source cells is logged. HTTP retrieval headers belong to the host adapter.
 
 ## Relational analytical tables — IOP-148
 

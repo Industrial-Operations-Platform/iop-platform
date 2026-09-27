@@ -4,7 +4,9 @@ Defined under [IOP-014](../planning/items/IOP-014-security-baseline.md) for the
 [owner-approved POC](../product/scope-poc.md). This is a delivery requirements
 baseline, not evidence that the controls are implemented. It applies only to
 manual CSV → preparation → verified analysis → presentation by one local operator.
-It introduces no identity mechanism and does not accept [ADR-0018](adr/ADR-0018-local-poc-execution-context.md).
+Mechanism acceptance is recorded separately in [ADR-0018](adr/ADR-0018-local-poc-execution-context.md)
+and ADR-0030/0034. Current runtime evidence is linked from the
+[delivery status](../planning/poc-delivery.md); the requirements below remain applicable.
 
 ## Trust boundary and dedicated operation
 
@@ -16,10 +18,12 @@ even when the operator selects the input manually.
 
 Use loopback listeners for the browser host and API; any published database port
 must also remain local. No LAN/public binding, tunnel, shared hosting or production
-database belongs to this demonstration. Container networking, if delivered, must
+database belongs to this demonstration. Container networking must
 preserve that host exposure boundary. Use a dedicated demo database/storage target
 and keep authorized reference input outside the repository and browser public assets.
-Only synthetic fixtures belong in version control. Local runtime storage permissions
+Use synthetic fixtures for tests; the explicitly authorized
+[reference CSVs](../product/reference-data/hitliste/README.md) are a separately recorded
+source-data exception, not permission to commit more private data. Local runtime storage permissions
 must restrict access to the intended operating-system account.
 
 Loopback exposure does not establish caller identity or prove that an unrelated
@@ -30,10 +34,9 @@ CORS response visibility alone is not mutation authorization. Exact origin/host
 checks belong to the host delivery plan; they must fail closed for unsupported
 callers without making local tools an authorization bypass.
 
-The existing [IOP-016 host](../../apps/api/README.md) exposes only public process
-health, with loopback binding, validated PORT and sanitized failures. Health gives
-no business-readiness or scoped-data-access guarantee. This document does not
-retroactively claim that business-origin checks or persistence exist.
+The [API host](../../apps/api/README.md) exposes public process health and explicitly
+activated local business routes. Health alone gives no business-readiness or
+scoped-data-access guarantee; business controls require their own executable evidence.
 
 ## Configuration and secrets
 
@@ -50,12 +53,12 @@ must never default to unrestricted access or silently select the first site.
   connection credentials, production records and local configuration out of Git,
   frontend bundles, screenshots, errors and logs. Ignore rules do not remove already
   tracked content; review the staged diff before committing configuration examples.
-- Frontend configuration is public. Keep database credentials server-side; future
-  runtime credentials must differ from migration/owner credentials and must not
+- Frontend configuration is public. Keep database credentials server-side; runtime
+  credentials must differ from migration/owner credentials and must not
   bypass RLS. Do not add secrets merely to support the health-only host.
-- Validate explicit development activation and dedicated targets before any future
+- Validate explicit development activation and dedicated targets before the
   local execution adapter is used. No fallback from failed authentication to local
-  mode. ADR-0018's proposed startup/identity mechanism still requires acceptance.
+  mode. Use the accepted local execution mechanism; never infer identity from loopback alone.
 - A demo reset must verify its dedicated target and reject missing/foreign targets
   before deleting data. Reset design and executable evidence belong to IOP-128;
   this baseline does not authorize a reset command or production recovery tooling.
@@ -122,9 +125,9 @@ Retain [ADR-0012](adr/ADR-0012-organization-site-scope.md),
   must not expose foreign record existence/content. Verify direct API and internal
   operation paths, not just hidden UI controls.
 
-Runtime business access remains blocked on acceptance of ADR-0018 or another
-mechanism. Its suggested seeded principal/grants are not implemented or accepted
-by IOP-014. Independent configuration, parsing and health work can continue.
+Runtime access is delivered under Accepted ADR-0018/0030/0034 with seeded principals
+and grants. IOP-014 defines requirements; it is not itself the executable proof.
+Use the linked delivery evidence when assessing implementation.
 
 ## Scenario review and implementation evidence handoff
 

@@ -61,62 +61,7 @@ open a view that can display the chosen constraint. Collapsed controls show date
 and the number of active constraints. The established colors and executive-only
 KPI cards remain unchanged.
 
-## Optional native development installation
-
-Prerequisites: Node 24.21.0, npm 10.9.2 and a running Docker daemon. Ports 54329
-(database), 3000 (API) and 5173 (web) must be available. From the repository root:
-
-```sh
-nvm install
-nvm use
-npm ci
-npm run demo:setup
-npm run demo:start
-```
-
-Open **http://127.0.0.1:5173**. Select **Administrator**.
-Keep the launcher running; Ctrl+C stops both application processes. PostgreSQL
-stores history in the dedicated `iop-poc-data` volume and survives application
-restarts. After restarting Docker, run `docker start iop-poc-postgres` before
-`npm run demo:start`, or rerun setup while the application is stopped.
-
-Setup creates a labelled `iop-poc-postgres` container, provisions separate database
-roles, applies migrations, seeds the fictional organization/site and the Administrator
-account, and registers an empty installation for safe reset. Reruns preserve imports,
-credentials and configuration. It refuses an unknown conflicting container and
-never deletes a volume or database. Runtime uses the non-owner `iop_runtime` role.
-
-Generated `.local-demo/` files are ignored and private: database credentials,
-configured scope, allowed users/origins, mappings and the reset dataset identity.
-Do not commit or share them. Existing operator configuration elsewhere is untouched.
-The default setup uses IOP-125's fictional scope, not an external customer connection.
-
-## Reference-data installation and report workspace
-
-For the owner's source CSVs and five hall lists, use a separate persistent installation:
-
-```sh
-npm run analysis:setup
-npm run analysis:load-reference
-npm run analysis:start
-```
-
-This uses `.local-analysis/`, container `iop-analysis-postgres`, volume
-`iop-analysis-data`, PostgreSQL port 54339 and the same API/web ports 3000/5173.
-Stop the other launcher first. Existing `.local-demo` data is not erased or mixed.
-The reference loader admits the three authorized repository CSVs through the real
-importer and skips already-admitted examples. It verifies 1,446 rows, frequency
-8,496 and 1,629,521 exact seconds. It does not restore the supplied backup.
-
-Select **Administrator** in the header for both import/preparation and analysis.
-Both launchers create this single default account. The local selector is
-impersonation, not secure login; the provider boundary remains replaceable.
-Existing installations preserve their private configuration: while stopped, limit
-`.local-analysis/users.json` (or `.local-demo/users.json`) to the existing
-`demo-operator` entry named `Administrator`. Keep origins and other configuration
-unchanged. This only narrows the selector allowlist; it does not delete database
-principals or their grants. The generic reader-only authorization capability and
-its tests remain available for later scope, outside the current demo flow.
+## Import, prepare and analyze
 
 1. Open **Import & prepare**, select `Hitliste-YYYYMMDD.csv` and press **Import CSV**.
    Input is UTF-16 LE with BOM, semicolon-separated, at most 5 MiB. Existing reporting
@@ -147,28 +92,6 @@ Source frequency is an integer. Duration is summed as exact seconds and divided 
 prove a complete reporting window. No rates, causal conclusions or screenshot
 improvement targets are invented.
 
-## Reproducible reference example
-
-Use these checked-in, fictional files through the upload control:
-
-- `fixtures/analytical-poc/valid/Hitliste-20260701.csv`: 6 records, frequency 12,
-  accumulated duration 94,055 seconds.
-- `fixtures/analytical-poc/valid/Hitliste-20260703.csv`: 3 records, frequency 7,
-  accumulated duration 3,720 seconds.
-
-Historical range **2026-07-01 to 2026-07-04 (exclusive)** gives **9 records,
-frequency 19 and 97,775 accumulated seconds**. July 2 is a missing import.
-Unclassified-only gives frequency 5 and 91 seconds. The independent expectations
-are in [expected.json](../../fixtures/analytical-poc/expected.json).
-
-Then upload `fixtures/analytical-poc/duplicate-changed/Hitliste-20260701.csv` and
-`fixtures/analytical-poc/invalid/negative-frequency/Hitliste-20260702.csv` to show
-preserved duplicate/validation outcomes without changing historical measures.
-
-Alternatively, while the application is stopped, `npm run demo:fixtures` imports
-both baseline files through the actual importer and verifies their totals. It
-fails visibly if those dates already exist; it does not reset or replace anything.
-
 ## Normalized analytical storage
 
 The reporting database follows the normalized backup reference in
@@ -179,8 +102,9 @@ classification, not a label calculated only in the browser. The same stored
 relationships drive every report. Original files and immutable source facts remain
 available for provenance and reconstruction.
 
-For an existing installation, stop the launcher, run `analysis:setup`, then
-`analysis:start` (or the corresponding `demo:*` commands). Setup applies forward
+For the Docker installation, rerun `npm run local:up`. For optional native
+installations, stop the launcher and rerun the matching setup/start commands below.
+Setup applies forward
 migrations without replacing admitted files. Administrator startup backfills the
 relational projection using the saved preparation profile; later uploads and
 profile saves update it within their existing transaction. There is no backup
@@ -206,21 +130,100 @@ Preserve the [IOP visual identity](../design/visual-identity.md) when changing v
 
 ## Mapping your own source labels
 
-Edit `.local-demo/mappings.json` while the host is stopped, then restart it. Keep
-its organization/site/source IDs aligned with `.local-demo/scope.json`. Configure
-sectors and exact source-area membership; change `mappingRevision` when editing.
-Preserve sector-key meaning across revisions. Unknown source areas are retained as
-unclassified. Changes affect future import-time facts only: previous facts retain their frozen
-classification. Use the explicit database reporting profile in Import & prepare to
-change historical analytical interpretation. A changed mapping is not permission to replace
-an existing reporting date.
+Use **Import & prepare → Save historical preparation** to edit sector rules and
+explicit value corrections in the database. The saved profile applies to historical
+reports, preserves originals and rejects stale editor versions. Unknown source areas
+remain included as unclassified. Changes never replace an admitted reporting date.
 
-Additional local users require the existing explicit user and membership seed
-commands plus `.local-demo/users.json`; changing a browser value cannot create a
-principal or grant access. Provider integration later replaces the principal/session
-adapter in `apps/api/src/demo/`, preserving domain permissions and scoped transactions.
+For low-level import-time mapping configuration, stop the matching installation
+before editing its private file: `.local-platform/config/mappings.json` for Docker,
+`.local-demo/mappings.json` or `.local-analysis/mappings.json` for native launchers.
+Keep organization/site/source IDs aligned with that installation's scope file, update
+`mappingRevision` and preserve sector-key meaning. These settings affect future
+import-time facts; use the database reporting profile for historical interpretation.
+The current POC keeps only Administrator; future provider integration replaces the
+principal/session adapter in `apps/api/src/host/`.
 
-## Safe reset and recreation
+## Optional native development installation
+
+Prerequisites: Node 24.21.0, npm 10.9.2 and a running Docker daemon. Ports 54329
+(database), 3000 (API) and 5173 (web) must be available. From the repository root:
+
+```sh
+nvm install
+nvm use
+npm ci
+npm run demo:setup
+npm run demo:start
+```
+
+Open **http://127.0.0.1:5173**. Select **Administrator**.
+Keep the launcher running; Ctrl+C stops both application processes. PostgreSQL
+stores history in the dedicated `iop-poc-data` volume and survives application
+restarts. After restarting Docker, run `docker start iop-poc-postgres` before
+`npm run demo:start`, or rerun setup while the application is stopped.
+
+Setup creates a labelled `iop-poc-postgres` container, provisions separate database
+roles, applies migrations, seeds the fictional organization/site and the Administrator
+account, and registers an empty installation for safe reset. Reruns preserve imports,
+credentials and configuration. It refuses an unknown conflicting container and
+never deletes a volume or database. Runtime uses the non-owner `iop_runtime` role.
+
+Generated `.local-demo/` files are ignored and private: database credentials,
+configured scope, allowed users/origins, mappings and the reset dataset identity.
+Do not commit or share them. Existing operator configuration elsewhere is untouched.
+The default setup uses IOP-125's fictional scope, not an external customer connection.
+
+## Optional native reference-data installation
+
+For the owner's source CSVs and five hall lists, use a separate persistent installation:
+
+```sh
+npm run analysis:setup
+npm run analysis:load-reference
+npm run analysis:start
+```
+
+This uses `.local-analysis/`, container `iop-analysis-postgres`, volume
+`iop-analysis-data`, PostgreSQL port 54339 and the same API/web ports 3000/5173.
+Stop the other launcher first. Existing `.local-demo` data is not erased or mixed.
+The reference loader admits the three authorized repository CSVs through the real
+importer and skips already-admitted examples. It verifies 1,446 rows, frequency
+8,496 and 1,629,521 exact seconds. It does not restore the supplied backup.
+
+Select **Administrator** in the header for both import/preparation and analysis.
+Both launchers create this single default account. The local selector is
+impersonation, not secure login; the provider boundary remains replaceable.
+Existing installations preserve their private configuration: while stopped, limit
+`.local-analysis/users.json` (or `.local-demo/users.json`) to the existing
+`demo-operator` entry named `Administrator`. Keep origins and other configuration
+unchanged. This only narrows the selector allowlist; it does not delete database
+principals or their grants. The generic reader-only authorization capability and
+its tests remain available for later scope, outside the current demo flow.
+
+## Reproducible reference example
+
+Use these checked-in, fictional files through the upload control:
+
+- `fixtures/analytical-poc/valid/Hitliste-20260701.csv`: 6 records, frequency 12,
+  accumulated duration 94,055 seconds.
+- `fixtures/analytical-poc/valid/Hitliste-20260703.csv`: 3 records, frequency 7,
+  accumulated duration 3,720 seconds.
+
+Historical range **2026-07-01 to 2026-07-04 (exclusive)** gives **9 records,
+frequency 19 and 97,775 accumulated seconds**. July 2 is a missing import.
+Unclassified-only gives frequency 5 and 91 seconds. The independent expectations
+are in [expected.json](../../fixtures/analytical-poc/expected.json).
+
+Then upload `fixtures/analytical-poc/duplicate-changed/Hitliste-20260701.csv` and
+`fixtures/analytical-poc/invalid/negative-frequency/Hitliste-20260702.csv` to show
+preserved duplicate/validation outcomes without changing historical measures.
+
+Alternatively, while the application is stopped, `npm run demo:fixtures` imports
+both baseline files through the actual importer and verifies their totals. It
+fails visibly if those dates already exist; it does not reset or replace anything.
+
+## Native fixture reset and recreation
 
 Stop `demo:start` first. Read the dataset ID from `.local-demo/dataset.json`, then:
 
@@ -265,5 +268,5 @@ operator installation. See [testing](testing-poc.md) and
   prepare once processing has stopped. Recovery checks durable outcome and never
   silently resubmits the bytes.
 - Storage is bounded to 1,000 retained attempts and 256 MiB original bytes across
-  the dedicated database. Rejected inputs also consume retention. Use verified
-  scoped reset when appropriate; do not bypass quotas or delete volumes.
+  the dedicated database. Rejected inputs also consume retention. The native fixture
+  reset does not reset the main Docker history; do not bypass quotas or delete volumes.

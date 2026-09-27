@@ -1,46 +1,31 @@
 # IOP roadmap
 
-## Immediate target: local analytical POC
+The current priority is the [local analytical POC](docs/product/scope-poc.md):
+**CSV → preparation → persistent history → analysis → presentation**.
 
-**Manual CSV → preparation/normalization → verified analysis → presentation.**
-The owner approved this priority on 2026-09-15 under IOP-142. Start with one local
-operator, one configured organization/site/source and no login or external connections.
-Preserve the accepted stack and domain boundaries. No delivery date is committed.
+## Delivered
 
-## Delivery direction
+The three-container application imports daily CSVs, preserves originals, prepares
+historical data and provides Executive Overview plus Halle, Bereich, Equipment,
+Error and Daily/monthly analysis. Frontend and backend follow hexagonal boundaries;
+shared presentation components preserve the established identity.
+The [delivery status](docs/planning/poc-delivery.md) links implementation evidence.
 
-1. Run the local frontend, API and PostgreSQL with reproducible migrations and configuration.
-2. Import a representative CSV with provenance, visible validation, configured source
-   mappings, scoped duplicate rejection and reconciled frequency/duration.
-3. Show Executive Overview with consistent filters and known reference totals.
-4. Add analytical detail through sector, area, source equipment and message records.
-5. Demonstrate import → analysis → presentation and safe reproducibility of the demo.
+## Remaining acceptance
 
-Use the [delivery map](docs/planning/poc-delivery.md) for existing story slices.
-Make a small plan and branch for the selected story. Do not complete all architecture,
-platform or future-module stories before delivering useful analytics.
+[IOP-130](docs/planning/items/IOP-130-pilot-metrics.md) remains open for the owner's
+assessment of usefulness. Review the current reports with representative data;
+automated reconciliation does not establish that the experience meets this goal.
+Any resulting change needs its own scope and execution plan.
 
-## Decisions and later capabilities
+## Later capabilities
 
-Reuse Accepted stack, API, scope, isolation and temporal decisions. The bounded local
-execution mechanism without login is Proposed in ADR-0018; dependent runtime access
-waits for an accepted mechanism. Independent bootstrap, parsing and UI work can proceed.
-Login deferral does not silently remove authorization or RLS.
+- Third-party authentication and operating controls before shared use.
+- Pareto as a function within Executive Overview, not a separate POC tab.
+- External connections, full audit, workers, assets/maps, workforce, handovers,
+  maintenance and improvement tracking when explicitly selected.
 
-After demonstrating analytical value, deliver authentication and operational controls
-for shared use. External connections, full audit, workers, maps/surveys, workforce,
-handovers, maintenance and improvements require their own scope and evidence.
-Manual CSV ingestion does not require a general integration registry. Full surveyed
-assets are not prerequisites for source-equipment analytics. Additional charts and
-performance optimization follow demonstrated needs.
-
-## Navigation
-
-- [Current POC scope](docs/product/scope-poc.md).
-- [Later shared-use v1](docs/product/scope-v1.md).
-- [Backlog](docs/planning/backlog.md), [delivery map](docs/planning/poc-delivery.md)
-  and [milestones](docs/planning/milestones.md).
-- [Workflow](docs/planning/workflow.md), [active plans](docs/planning/active/)
-  and [completed plans](docs/planning/completed/).
-
-No adjacent implementation, merge, push or deployment is authorized by this roadmap.
+The [backlog](docs/planning/backlog.md) owns task statuses and capability groups;
+the [v1 proposal](docs/product/scope-v1.md) describes the broader product direction.
+These are not extra POC exit gates or commitments to delivery dates.
+Follow the [workflow](docs/planning/workflow.md) when selecting work.

@@ -1,8 +1,11 @@
-# Local POC configuration
+# Host scope configuration
 
-IOP-018 validates host configuration before starting the public-health API. This
-configures targets only: it does not seed records, create an execution principal,
-authorize operations or establish database readiness. ADR-0018 remains Proposed.
+This is the scope-file contract delivered by IOP-018, also used by the active host.
+The primary [Docker launcher](running-poc.md) generates its private scope, identity,
+mapping and credential files automatically. The manual examples below are for the
+independent health-only/native foundation. A scope file alone does not seed records,
+create a principal, authorize operations or establish database readiness.
+Local business execution is accepted under ADR-0018/0030/0034.
 
 ## Native startup
 
@@ -20,7 +23,7 @@ explicit targets; keep local configuration out of Git. The API requires the file
 path even for health-only startup. Use an absolute path: relative paths resolve
 against the API process working directory (`apps/api` for npm workspace startup).
 No `.env` file is loaded by native API commands. Environment variables are the
-only source for host settings; the selected JSON file is the only source for
+source for host settings; the selected JSON file is the only source for
 scope. There is no field merge, fallback site, discovery or hot reload. Restart
 after changing configuration; the entire document must pass before listening.
 
@@ -49,13 +52,13 @@ values, input paths, parser messages or stack traces, then exit with code 1.
 The fixed byte/string limits bound this small single-target document and are not
 performance commitments. No configurable collections, source mappings, credentials,
 storage paths or database URLs are supported. Mapping fields are rejected; the
-CSV adapter/mapping stories must define and validate bounded scoped mapping
-references before applying them. Site-zone configuration does not establish source
+import host loads and validates its bounded mapping configuration separately.
+Site-zone configuration does not establish source
 reporting windows or permit changing historical temporal interpretation.
 
-## Containers and secrets
+## Foundation containers and secrets
 
-Follow [Compose startup](../../infra/docker/README.md). Compose reads the same
+The earlier `compose.yaml` foundation (see [container guide](../../infra/docker/README.md)) reads the same
 `config/poc.local.json` through a read-only bind mount, without baking it into an
 image. A missing source file is not automatically created. Compose explicitly
 sets container transport, HOST, PORT and the in-container configuration path;
@@ -66,7 +69,7 @@ listener or use container transport for native/LAN operation.
 `.env` is exclusively Compose input. The shell's `IOP_POSTGRES_PASSWORD` overrides
 the same variable in `.env`; neither API nor frontend receives it. Database name
 `iop_local`, initialization owner `iop_bootstrap` and the dedicated named volume
-remain fixed by Compose. No runtime database credentials are added by this story.
+remain fixed by Compose. The foundation health API does not receive runtime database credentials.
 Restrict private config/credential files to the operator account and ensure the
 container's non-root user can read the mounted scope file on the local platform.
 Do not print resolved Compose config containing credentials; use `config --quiet`.
@@ -84,10 +87,10 @@ one byte above it. `npm run test:e2e` sets explicit example configuration and na
 loopback transport for its API process. Neither command requires private `.env` or
 local scope files. `npm run typecheck` checks both hosts.
 
-Document ownership validation does not prove ownership in future persisted data.
+Scope-file ownership validation does not prove ownership of persisted records.
 Consumers must check persisted organization/site/source references, current grants,
-transaction-local RLS and site-zone immutability before business use. No access
-checks, seed, migration, reset, production profile or shared-user security is
-claimed. Those requirements remain with their POC delivery stories.
+transaction-local RLS and site-zone immutability before business use. The active host
+enforces these checks separately. This scope-file validator alone
+does not provide authorization, seeding, migrations or shared-user security.
 
 See [POC secrets hygiene](secrets-poc.md) for staged-index checks and private credential handling.

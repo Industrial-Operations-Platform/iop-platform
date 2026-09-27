@@ -1,5 +1,9 @@
 # Conceptual data model
 
+Current implementation and evidence: [architecture](../../ARCHITECTURE.md) and
+[delivery status](../planning/poc-delivery.md). This document records the design
+contract; original delivery handoffs below are not outstanding runtime blockers.
+
 ## POC applicability
 
 The [local POC scope](../product/scope-poc.md) and [delivery map](../planning/poc-delivery.md)

@@ -28,7 +28,7 @@ remains pending. Health never opens or bypasses business access.
 
 ## Error diagnostics and correlation
 
-Retain the [IOP-022 contract](../../apps/api/README.md#poc-error-contract-iop-022):
+Retain the [IOP-022 contract](../../apps/api/README.md#error-contract):
 each application error has a fresh server-generated UUID `traceId`. A 5xx emits
 one stderr JSON record containing only `event: api.request.failed`, numeric
 `status` and that same `traceId`. Client-supplied IDs are ignored. It identifies
