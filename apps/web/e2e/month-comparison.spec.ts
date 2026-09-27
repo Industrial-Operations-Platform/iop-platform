@@ -80,7 +80,7 @@ for (const width of [1440, 375]) {
       .getByRole("button", { name: "Data analysis", exact: true })
       .click();
     await page
-      .getByRole("button", { name: "Halle analysis", exact: true })
+      .getByRole("button", { name: "Bereich analysis", exact: true })
       .click();
     const panel = page.locator(".analysis-filter-panel");
     await panel.locator("summary").click();
@@ -98,6 +98,29 @@ for (const width of [1440, 375]) {
     await expect(
       page.locator(".analysis-plot").first().locator("svg"),
     ).toBeVisible();
+    for (const title of [
+      "Halle analysis",
+      "Equipment analysis",
+      "Error analysis",
+      "Daily / monthly",
+      "Halle analysis",
+    ]) {
+      await page.getByRole("button", { name: title, exact: true }).click();
+      await expect(panel.locator("summary")).toContainText("2026-05, 2026-07");
+      await expect(page.locator('input[type="date"]')).toHaveCount(0);
+      await expect
+        .poll(() => requests.at(-1)?.months)
+        .toEqual(["2026-05", "2026-07"]);
+    }
+    await page.locator(".analysis-data summary").click();
+    await page.getByRole("button", { name: "Sector A", exact: true }).click();
+    await expect
+      .poll(() => requests.at(-1)?.filters?.sector)
+      .toEqual(["Sector A"]);
+    await expect(panel.locator("summary")).toContainText("2 active");
+    await expect
+      .poll(() => requests.at(-1)?.months)
+      .toEqual(["2026-05", "2026-07"]);
     await expect(panel).not.toHaveAttribute("open");
     await expect(
       page.getByRole("button", { name: "Clear filters", exact: true }),

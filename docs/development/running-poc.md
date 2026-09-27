@@ -53,13 +53,17 @@ Keep `.local-platform/` with its database volume; do not regenerate lost credent
 or use `docker compose down -v` to troubleshoot. Earlier native installations remain
 separate. To start empty, omit the backup on the first `local:up`.
 
-Reports have a closed **Date range** control by default. Executive Overview and
-Halle expose dates only. Bereich adds sector and area; Equipment adds the code;
-Error and Daily/monthly add their finer dimensions. Grouping does not clear these
-filters. Returning to a broader view removes incompatible filters; chart/KPI clicks
-open a view that can display the chosen constraint. Collapsed controls show dates
-and the number of active constraints. The established colors and executive-only
-KPI cards remain unchanged.
+Executive Overview uses one calendar month for its KPIs. All investigation views
+(Halle, Bereich, Equipment, Error and Daily/monthly) expose a collapsed **Months**
+control with checkboxes for one or more complete months, including nonconsecutive
+months. Applied months remain active when navigating or drilling into detail views.
+Bereich adds sector and area; Equipment adds the code; Error and Daily/monthly add
+finer dimensions. Grouping does not clear these filters. Returning to a broader view
+removes incompatible dimension filters. The collapsed summary lists selected months
+and counts active restrictions, including a restricted month selection.
+**Clear filters** is always outside the disclosure and resets to all available
+months without dimension filters. Changes become visible in the local installation
+after rebuilding/restarting its web and API services, then reloading the browser.
 
 ## Import, prepare and analyze
 
@@ -69,13 +73,13 @@ KPI cards remain unchanged.
    dates cannot be replaced. Review errors, duplicates and interrupted outcomes.
 2. Review the import outcome, saved/rejected counts and diagnostics. Known accepted
    dates block another upload; the server also rejects duplicate races. Use **Taskforce view**
-   to return to reports and select the desired date/month. Dates are inclusive/exclusive as labelled.
+   to return to reports and select the desired month or comparison months.
 3. Start in **Executive Overview**, then choose Halle, Bereich, equipment, errors or daily/monthly.
    Group by any source field; change the measure and day/week/month period. Filter
    a sector, location, equipment or message with exact values; suggestions show up
    to 200 values and an exact typed value can reach others. Commas are part of values.
 4. Select a chart point/bar or a group in **Explore data** to filter it. **Clear filters**
-   restores the range without dimension filters. Tables expose rankings, periods and
+   restores all available months without dimension filters. Tables expose rankings, periods and
    trends; administrators review original files and source rows in **Files & source rows**.
 5. In **Import & prepare → Data preparation**, edit normalization, area-to-sector rules
    and explicit corrections.
