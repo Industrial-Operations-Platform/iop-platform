@@ -206,3 +206,32 @@ export const dimensions: Dimension[] = [
   "frequency",
   "duration",
 ];
+
+export type SourceSortField =
+  | "sector"
+  | "area"
+  | "equipment"
+  | "message"
+  | "type"
+  | "messageGroup";
+export interface SourceSort {
+  field: SourceSortField;
+  direction: "asc" | "desc";
+}
+export interface SourceRowsRequest {
+  importId: string;
+  page: number;
+  sort: SourceSort[];
+  revision?: string;
+}
+export interface SourceRowsResult {
+  revision: string;
+  records: Report["records"];
+  recordCount: number;
+  page: number;
+  pageCount: number;
+}
+export interface MessageCatalog {
+  values: string[];
+  nextCursor: string | null;
+}

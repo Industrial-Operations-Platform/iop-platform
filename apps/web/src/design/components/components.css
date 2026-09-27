@@ -428,3 +428,35 @@
   margin: 10px 0;
   font-weight: 600;
 }
+
+.iop-ui .iop-sidebar .iop-side-navigation {
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+}
+.iop-ui .iop-side-navigation .iop-button {
+  text-align: left;
+  padding: 14px 10px;
+  color: var(--iop-muted);
+}
+.iop-ui .iop-side-navigation [aria-current="page"] {
+  background: var(--iop-activeSurface);
+  color: var(--iop-activeInk);
+}
+.iop-ui .iop-top {
+  gap: 16px;
+  flex-wrap: wrap;
+  min-height: 64px;
+  height: auto;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+@media (max-width: 620px) {
+  .iop-ui .iop-sidebar .iop-side-navigation {
+    flex-direction: row;
+  }
+  .iop-ui .iop-side-navigation .iop-button {
+    padding: 8px;
+  }
+}

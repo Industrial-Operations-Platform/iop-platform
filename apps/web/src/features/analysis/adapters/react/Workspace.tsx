@@ -1,3 +1,4 @@
+import { SourceFiles } from "./SourceFiles";
 import { ExecutiveMonthControls, MonthlyOverview } from "./MonthlyOverview";
 import { ExecutiveSettings } from "./ExecutiveSettings";
 import { ReportFilters } from "./ReportFilters";
@@ -7,6 +8,7 @@ import {
   Actions,
   Alert,
   AppShell,
+  SideNavigation,
   Button,
   Disclosure,
   Field,
@@ -55,6 +57,8 @@ export function WorkspaceApp({
 }: {
   application: AnalysisWorkspace;
 }) {
+  const [page, setPage] = useState<"start" | "analysis">("start");
+  const [administration, setAdministration] = useState(false);
   const [context, setContext] = useState<DemoContext | null>(null),
     [error, setError] = useState<unknown>(),
     [pending, setPending] = useState(false),
@@ -79,6 +83,7 @@ export function WorkspaceApp({
     };
   }, [application, connectionAttempt]);
   const choose = async (id: string) => {
+    setAdministration(false);
     setPending(true);
     setError(undefined);
     setContext((c) => (c ? { ...c, user: null } : c));
@@ -97,6 +102,15 @@ export function WorkspaceApp({
       skipLabel="Skip to analysis"
       header={
         <>
+          {context?.user && context.canImport && (
+            <Button
+              variant="secondary"
+              aria-pressed={administration}
+              onClick={() => setAdministration((value) => !value)}
+            >
+              {administration ? "Taskforce view" : "Administration"}
+            </Button>
+          )}
           <Field layout="inline">
             User{" "}
             <Select
@@ -123,17 +137,25 @@ export function WorkspaceApp({
         </>
       }
       navigation={
-        <nav aria-label="Main navigation">
-          <span aria-current="page">▥ &nbsp; Data analysis</span>
-        </nav>
+        <SideNavigation
+          selected={page}
+          onSelect={setPage}
+          items={[
+            { id: "start", label: "Start" },
+            { id: "analysis", label: "Data analysis" },
+          ]}
+        />
       }
     >
       <Notice error={error} />
-      {context?.user ? (
+      {page === "start" && context?.enabled && !error ? (
+        <section className="analysis-start" aria-label="Start page" />
+      ) : context?.user ? (
         <ReportWorkspace
           key={context.user.id}
           application={application}
           context={context}
+          administration={administration && context.canImport}
         />
       ) : (
         <Panel variant="empty">
@@ -159,41 +181,44 @@ export function WorkspaceApp({
 function ReportWorkspace({
   application,
   context,
+  administration,
 }: {
   application: AnalysisWorkspace;
   context: DemoContext;
+  administration: boolean;
 }) {
   const [selection, setSelection] = useState<ReportRequest | null>(null),
     [report, setReport] = useState<Report | null>(null),
-    [history, setHistory] = useState<ImportSummary[]>([]);
+    [history, setHistory] = useState<ImportSummary[]>([]),
+    [months, setMonths] = useState<string[]>([]);
   const [error, setError] = useState<unknown>(),
     [loading, setLoading] = useState(true),
     [refresh, setRefresh] = useState(0),
     [template, setTemplate] = useState(0),
-    [admin, setAdmin] = useState(false);
+    [admin, setAdmin] = useState(false),
+    [fileView, setFileView] = useState(false);
   useEffect(() => {
     let active = true;
     setLoading(true);
     setError(undefined);
     void application
-      .loadHistory(context.canImport)
+      .loadHistory(administration)
       .then((x) => {
         if (active) {
           setHistory(x.history);
+          setMonths(x.months);
           setSelection((current) =>
-            x.selection
-              ? template === 0
-                ? executiveSelection(
-                    current?.executive
-                      ? current.from.slice(0, 7)
-                      : new Date(
-                          Date.parse(x.selection!.toExclusive) - 86400000,
-                        )
-                          .toISOString()
-                          .slice(0, 7),
-                  )
-                : selectView(x.selection, template)
-              : null,
+            current
+              ? { ...current, revision: undefined, page: 1 }
+              : x.selection
+                ? template === 0
+                  ? executiveSelection(
+                      new Date(Date.parse(x.selection!.toExclusive) - 86400000)
+                        .toISOString()
+                        .slice(0, 7),
+                    )
+                  : selectView(x.selection, template)
+                : null,
           );
           if (!x.selection) setLoading(false);
         }
@@ -207,7 +232,7 @@ function ReportWorkspace({
     return () => {
       active = false;
     };
-  }, [application, refresh]);
+  }, [application, refresh, administration]);
   useEffect(() => {
     let active = true;
     setReport(null);
@@ -253,19 +278,41 @@ function ReportWorkspace({
   return (
     <>
       <PageHeading
-        title={admin ? "Import & prepare" : "Data analysis"}
+        title={
+          administration && fileView
+            ? "Files & source rows"
+            : administration && admin
+              ? "Import & prepare"
+              : "Data analysis"
+        }
         eyebrow={
-          <>
-            {context.scope?.siteId} / {context.scope?.sourceId}
-          </>
+          administration
+            ? "Administration · Operational Intelligence"
+            : "Taskforce · Operational Intelligence"
         }
         description="Daily files. One persistent reporting history."
         actions={
           <Actions>
             {" "}
-            {context.canImport && (
-              <Button onClick={() => setAdmin(!admin)}>
+            {administration && (
+              <Button
+                onClick={() => {
+                  setFileView(false);
+                  setAdmin(!admin);
+                }}
+              >
                 {admin ? "Back to analysis" : "Import & prepare"}
+              </Button>
+            )}
+            {administration && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setAdmin(false);
+                  setFileView(!fileView);
+                }}
+              >
+                {fileView ? "Back to analysis" : "Files & source rows"}
               </Button>
             )}
             <Button
@@ -278,7 +325,13 @@ function ReportWorkspace({
         }
       />
       <Notice error={error} />
-      {admin ? (
+      {administration && fileView ? (
+        <SourceFiles
+          key={refresh + history.map((x) => x.importId).join(",")}
+          application={application}
+          history={history}
+        />
+      ) : administration && admin ? (
         <ImportWorkspace
           application={application}
           history={history}
@@ -289,6 +342,7 @@ function ReportWorkspace({
         <>
           {selection && template === 0 && (
             <ExecutiveMonthControls
+              months={months}
               month={selection.from.slice(0, 7)}
               onChange={(month) => setSelection(executiveSelection(month))}
             />
@@ -308,7 +362,7 @@ function ReportWorkspace({
             <Panel variant="empty">
               <h2>Your history starts with a CSV</h2>
               <p>
-                {context.canImport
+                {administration
                   ? "Open Import & prepare to add a daily file."
                   : "An administrator can import daily files for analysis."}
               </p>
@@ -399,29 +453,13 @@ function ReportWorkspace({
                       )}
                     </div>
                   ))}
-                {template === 0 && context.canImport && (
+                {template === 0 && administration && (
                   <ExecutiveSettings
                     application={application}
-                    messages={report.options.message ?? []}
                     onSaved={() => setRefresh((x) => x + 1)}
                   />
                 )}
-                <DataTables
-                  report={report}
-                  onSelect={select}
-                  onPage={(page) =>
-                    setSelection({
-                      ...selection,
-                      page,
-                      revision: report.revision,
-                    })
-                  }
-                  original={(id) =>
-                    context.canImport
-                      ? application.gateway.originalUrl(id)
-                      : undefined
-                  }
-                />
+                <DataTables report={report} onSelect={select} />
                 <p className="analysis-footnote">
                   Reporting dates come from file names; reporting windows are
                   unknown. Missing dates are not zero activity. Monthly
@@ -447,19 +485,15 @@ function ReportWorkspace({
 function DataTables({
   report,
   onSelect,
-  onPage,
-  original,
 }: {
   report: Report;
   onSelect: (key: string) => void;
-  onPage: (n: number) => void;
-  original: (id: string) => string | undefined;
 }) {
   return (
     <Disclosure
       className="analysis-data"
       variant="panel"
-      summary={<> Explore data · rankings, trends and original rows </>}
+      summary={<> Explore data · rankings and trends </>}
     >
       <TableViewport>
         <Table>
@@ -511,65 +545,6 @@ function DataTables({
           </tbody>
         </Table>
       </TableViewport>
-      <TableViewport>
-        <Table>
-          <caption>
-            Contributing source rows · page {report.page} of {report.pageCount}
-          </caption>
-          <thead>
-            <tr>
-              {[
-                "Date",
-                "Sector",
-                "Bereich",
-                "Betriebsmittelkennzeichen",
-                "Meldetext",
-                "Typ",
-                "Meldegruppe",
-                "Häufigkeit",
-                "Dauer · minutes",
-                "Original",
-              ].map((h) => (
-                <th key={h}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {report.records.map((r) => (
-              <tr key={r.importId + ":" + r.line}>
-                <td>{r.date}</td>
-                <td>{r.sector}</td>
-                <td>{r.area}</td>
-                <td>{r.equipment}</td>
-                <td>{r.message}</td>
-                <td>{r.type}</td>
-                <td>{r.messageGroup}</td>
-                <td>{number(r.frequency)}</td>
-                <td>{number(r.minutes)}</td>
-                <td>
-                  {original(r.importId) ? (
-                    <a href={original(r.importId)}>Line {r.line}</a>
-                  ) : (
-                    <>Line {r.line}</>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </TableViewport>
-      <Button
-        disabled={report.page <= 1}
-        onClick={() => onPage(report.page - 1)}
-      >
-        Previous rows
-      </Button>{" "}
-      <Button
-        disabled={report.page >= report.pageCount}
-        onClick={() => onPage(report.page + 1)}
-      >
-        Next rows
-      </Button>
     </Disclosure>
   );
 }

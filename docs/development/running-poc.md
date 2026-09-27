@@ -273,14 +273,14 @@ operator installation. See [testing](testing-poc.md) and
 
 ## Monthly Executive Overview
 
-Select the Administrator and open Executive Overview. Expand the subtle Month
-control to choose a calendar month (initially the latest imported month). Area
+Select the Administrator, choose Data analysis from the empty Start page and open Executive Overview. Expand the subtle Month
+control to choose an imported calendar month from the dropdown (initially the latest imported month). Area
 rankings and the daily heatmap use descending monthly frequency; scroll to inspect
 more areas. The daily graph overlays frequency and alarm minutes with labelled axes.
 Click a ranked area or heatmap cell to investigate that area in Bereich analysis.
 
-Expand **KPI settings & goals** to add/remove up to eight Meldetext cards, choose
-exact prepared error text, label and measure, and save. Goals are occurrences/day
+Switch to **Administration**, then expand **KPI settings & goals** to add/remove up to eight Meldetext cards, select
+prepared error text from the database dropdown, label and measure, and save. Goals are occurrences/day
 or alarm minutes/day; changing measure clears the old goal. Leaving a goal blank
 uses the daily average across all imported history, including the selected month.
 The monthly average also divides by imported dates, including dates without that
@@ -289,3 +289,19 @@ dates stay gaps; an entirely unimported month has no average. Below reference is
 green, above is red, equal is neutral. A zero reference has no percentage change.
 Settings survive reloads and Docker restarts. A conflicting edit requires reloading
 saved settings before applying changes again.
+
+## Taskforce and administration
+
+The default Start page is intentionally empty. Choose **Data analysis** to view
+reports as Taskforce. **Administration** exposes import/preparation, KPI settings
+and **Files & source rows** for authorized administrators; **Taskforce view** hides
+those tools again. Changing the user or reloading starts with administrative tools
+hidden. This is a presentation switch with the same server-side permission checks.
+
+In **Files & source rows**, select an imported file. Click a column title once for
+ascending order, again for descending, then again to remove that criterion. Arrows
+and numbers indicate direction and priority when several columns are selected.
+Sorting applies across the entire file; changing criteria or file returns to page
+one. Prepared values reflect current rules; download the original for source evidence.
+No contributing-row table appears inside analytical report tabs. The file list uses
+the existing most-recent-1,000-import-attempts window.

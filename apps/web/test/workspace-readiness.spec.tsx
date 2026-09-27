@@ -28,6 +28,7 @@ const profile: ProfileResult = {
 };
 function setup() {
   const gateway = {
+    messages: jest.fn().mockResolvedValue({ values: [], nextCursor: null }),
     context: jest.fn().mockResolvedValue({
       enabled: true,
       canImport: true,
@@ -83,6 +84,7 @@ function setup() {
 
 test("invalid reporting dates show a recoverable error without unmounting the workspace", async () => {
   const gateway = setup();
+  fireEvent.click(await screen.findByRole("button", { name: "Data analysis" }));
   fireEvent.click(
     await screen.findByRole("button", { name: "Halle analysis" }),
   );
@@ -109,6 +111,10 @@ test("invalid reporting dates show a recoverable error without unmounting the wo
 
 test("preparation edits clear saved confirmation and cannot be overwritten during a save", async () => {
   const gateway = setup();
+  fireEvent.click(await screen.findByRole("button", { name: "Data analysis" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Administration" }),
+  );
   fireEvent.click(
     await screen.findByRole("button", { name: "Import & prepare" }),
   );
@@ -149,4 +155,34 @@ test("preparation edits clear saved confirmation and cannot be overwritten durin
     target: { value: "Area B" },
   });
   expect(screen.queryByText(/Preparation saved\./)).not.toBeInTheDocument();
+});
+
+test("Start is empty and administrators enter the Taskforce presentation before enabling tools", async () => {
+  const gateway = setup();
+  await screen.findByRole("region", { name: "Start page" });
+  expect(gateway.report).not.toHaveBeenCalled();
+  expect(screen.queryByRole("heading")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
+  await waitFor(() => expect(gateway.report).toHaveBeenCalled());
+  expect(gateway.history).not.toHaveBeenCalled();
+  expect(gateway.profile).not.toHaveBeenCalled();
+  expect(
+    screen.queryByRole("button", { name: "Import & prepare" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/Contributing source rows/),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByText("Taskforce · Operational Intelligence"),
+  ).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Administration" }));
+  await screen.findByRole("button", { name: "Import & prepare" });
+  await waitFor(() => expect(gateway.history).toHaveBeenCalled());
+  fireEvent.click(screen.getByRole("button", { name: "Taskforce view" }));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("button", { name: "Import & prepare" }),
+    ).not.toBeInTheDocument(),
+  );
+  expect(screen.queryByText("KPI settings & goals")).not.toBeInTheDocument();
 });

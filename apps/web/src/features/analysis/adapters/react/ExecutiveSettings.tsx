@@ -16,13 +16,12 @@ import type {
 
 export function ExecutiveSettings({
   application,
-  messages,
   onSaved,
 }: {
   application: AnalysisWorkspace;
-  messages: string[];
   onSaved: () => void;
 }) {
+  const [messages, setMessages] = useState<string[]>([]);
   const [value, setValue] = useState<ProfileResult | null>(null);
   const [pending, setPending] = useState(false),
     [error, setError] = useState<string>(),
@@ -32,10 +31,15 @@ export function ExecutiveSettings({
     let active = true;
     setError(undefined);
     setValue(null);
-    void application.gateway
-      .profile()
-      .then((result) => {
-        if (active) setValue(result);
+    void Promise.all([
+      application.gateway.profile(),
+      application.messageOptions(),
+    ])
+      .then(([result, options]) => {
+        if (active) {
+          setValue(result);
+          setMessages(options);
+        }
       })
       .catch(() => {
         if (active)
@@ -89,11 +93,6 @@ export function ExecutiveSettings({
           void save();
         }}
       >
-        <datalist id="executive-messages">
-          {messages.map((message) => (
-            <option key={message} value={message} />
-          ))}
-        </datalist>
         {definitions.map((definition, index) => {
           const patch = (change: Partial<ExecutiveKpiDefinition>) =>
             edit(
@@ -115,13 +114,45 @@ export function ExecutiveSettings({
               </Field>
               <Field>
                 Meldetext {index + 1}
-                <Input
+                <Select
+                  aria-label={`Meldetext ${index + 1}`}
                   required
-                  list="executive-messages"
                   disabled={pending}
-                  value={definition.message ?? ""}
-                  onChange={(e) => patch({ message: e.target.value })}
-                />
+                  value={definition.message}
+                  onChange={(e) =>
+                    patch({
+                      message: e.target.value,
+                      label:
+                        definition.label === definition.message ||
+                        definition.label === "New KPI"
+                          ? e.target.value
+                          : definition.label,
+                    })
+                  }
+                >
+                  <option value="" disabled>
+                    Select an error
+                  </option>
+                  {definition.message &&
+                    !messages.includes(definition.message) && (
+                      <option value={definition.message}>
+                        {definition.message} (not in current history)
+                      </option>
+                    )}
+                  {messages
+                    .filter(
+                      (message) =>
+                        message === definition.message ||
+                        !definitions.some(
+                          (d, i) => i !== index && d.message === message,
+                        ),
+                    )
+                    .map((message) => (
+                      <option key={message} value={message}>
+                        {message}
+                      </option>
+                    ))}
+                </Select>
               </Field>
               <Field>
                 Measure {index + 1}
@@ -166,7 +197,14 @@ export function ExecutiveSettings({
           );
         })}
         <Button
-          disabled={!value || pending || definitions.length >= 8}
+          disabled={
+            !value ||
+            pending ||
+            definitions.length >= 8 ||
+            !messages.some(
+              (message) => !definitions.some((d) => d.message === message),
+            )
+          }
           variant="secondary"
           onClick={() =>
             edit([

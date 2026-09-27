@@ -13,11 +13,13 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `Field`, `Input`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
 | `FilterForm`, `Disclosure` | Form surface and native collapsible content; plain/panel/divided variants |
 | `Panel` | Content, chart, empty and metric surface treatments |
-| `MonthPicker` | Controlled calendar-month field using shared native input styling |
+| `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
 | `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
 | `MetricGrid`, `MetricCard` | Responsive shared metric appearance; callers supply label/value/content |
 | `Table`, `TableViewport` | Semantic table appearance and bounded scrolling |
 | `Alert` | Error announcement and consistent error surface |
+| `SideNavigation` | Controlled page navigation with current-page semantics |
+| `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort |
 | `ViewNavigation` | Typed controlled view selector with labelled navigation and pressed buttons |
 
 ```tsx

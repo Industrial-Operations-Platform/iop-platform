@@ -13,9 +13,11 @@ import { Plot } from "./Plot";
 
 export function ExecutiveMonthControls({
   month,
+  months,
   onChange,
 }: {
   month: string;
+  months: string[];
   onChange: (month: string) => void;
 }) {
   return (
@@ -25,7 +27,7 @@ export function ExecutiveMonthControls({
     >
       <Disclosure summary={<>Month · {month}</>}>
         <FieldRow>
-          <MonthPicker value={month} onChange={onChange} />
+          <MonthPicker months={months} value={month} onChange={onChange} />
         </FieldRow>
       </Disclosure>
     </FilterForm>

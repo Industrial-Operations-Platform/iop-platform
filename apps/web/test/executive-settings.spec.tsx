@@ -23,6 +23,16 @@ const saved: ProfileResult = {
 function setup() {
   const gateway = {
     profile: jest.fn().mockResolvedValue(saved),
+    messages: jest
+      .fn()
+      .mockResolvedValue({
+        values: [
+          "Jam",
+          "Müll, L5/6",
+          ...Array.from({ length: 10 }, (_, i) => "Other " + i),
+        ],
+        nextCursor: null,
+      }),
     saveProfile: jest.fn().mockImplementation(async (value: ProfileResult) => ({
       ...value,
       version: "new",
@@ -32,7 +42,6 @@ function setup() {
   render(
     <ExecutiveSettings
       application={new AnalysisWorkspace(gateway as unknown as AnalysisGateway)}
-      messages={["Jam", "Müll, L5/6"]}
       onSaved={onSaved}
     />,
   );
@@ -52,7 +61,12 @@ test("administrator selects an exact message and saves a goal without overwritin
     profile: {
       ...saved.profile,
       executiveKpis: [
-        { ...saved.profile.executiveKpis![0], message: "Müll, L5/6", goal: 0 },
+        {
+          ...saved.profile.executiveKpis![0],
+          message: "Müll, L5/6",
+          label: "Müll, L5/6",
+          goal: 0,
+        },
       ],
     },
   });
@@ -124,6 +138,11 @@ test("administrators add selected Meldetext cards up to the supported limit", as
   const { gateway } = setup();
   await screen.findByLabelText("Meldetext 1");
   fireEvent.click(screen.getByRole("button", { name: "Add KPI" }));
+  expect(
+    Array.from(
+      (screen.getByLabelText("Meldetext 2") as HTMLSelectElement).options,
+    ).map((x) => x.value),
+  ).not.toContain("Jam");
   fireEvent.change(screen.getByLabelText("Meldetext 2"), {
     target: { value: "Müll, L5/6" },
   });

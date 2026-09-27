@@ -33,7 +33,8 @@ shadows/gradients. Report cards use 8px corners; metric cards use 7px corners, 1
 padding, 29px figures at weight 650 and 14px gaps. Existing narrow-screen reductions
 remain in the shared [component stylesheet](../../apps/web/src/design/components/components.css).
 
-The header contains only user selection. The left rail contains Data analysis.
+The header contains user selection and the authorized Administration/Taskforce toggle.
+The left rail contains Start and Data analysis. Start has an intentionally empty body.
 Report templates sit along the bottom. Executive Overview alone contains analytical
 KPI cards; investigation tabs prioritize charts and detail. File volumes use the
 same card treatment within import review. Pareto is a future Overview function.
@@ -60,5 +61,11 @@ The analysis stylesheet now holds only feature arrangements and chart dimensions
 Executive Overview composes ranking/matrix above daily trend/comparison cards.
 `ComparisonCard` uses the existing metric surface with semantic better/worse variants;
 neutral and unavailable states keep the baseline. Always pair color with comparison
-text. `MonthPicker` reuses labelled native input styling; KPI settings use the shared
+text. `MonthPicker` reuses labelled native select styling; KPI settings use the shared
 collapsible panel and controls. These are stable additions to identity v1.
+
+`SideNavigation` keeps the existing active surface/ink for the selected page.
+`SortableHeader` uses a single text button in each table heading, with direction
+and priority beside the label. Native month/message/file selects open from the full
+field and support keyboard arrows and scrolling; do not replace them with manual
+text entry. Source-row tables belong to administration, outside report templates.

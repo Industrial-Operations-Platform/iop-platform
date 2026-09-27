@@ -1,4 +1,9 @@
 import type {
+  SourceRowsRequest,
+  SourceRowsResult,
+  MessageCatalog,
+  SourceSort,
+  SourceSortField,
   Availability,
   DemoContext,
   Dimension,
@@ -10,6 +15,8 @@ import type {
 } from "../domain/models";
 
 export interface AnalysisGateway {
+  sourceRows(selection: SourceRowsRequest): Promise<SourceRowsResult>;
+  messages(after?: string): Promise<MessageCatalog>;
   context(): Promise<DemoContext>;
   chooseUser(id: string): Promise<DemoContext>;
   availability(): Promise<Availability>;
@@ -56,17 +63,37 @@ export function filterGroup(
 }
 export class AnalysisWorkspace {
   constructor(readonly gateway: AnalysisGateway) {}
+  async messageOptions(): Promise<string[]> {
+    const values = new Set<string>();
+    let after: string | undefined;
+    do {
+      const page = await this.gateway.messages(after);
+      page.values.forEach((value) => values.add(value));
+      if (page.nextCursor === after)
+        throw new Error("Message choices could not be loaded. Try again.");
+      after = page.nextCursor ?? undefined;
+    } while (after !== undefined);
+    return [...values];
+  }
   async open(): Promise<DemoContext> {
     return this.gateway.context();
   }
   async loadHistory(
     canReview = false,
-  ): Promise<{ selection: ReportRequest | null; history: ImportSummary[] }> {
+  ): Promise<{
+    selection: ReportRequest | null;
+    history: ImportSummary[];
+    months: string[];
+  }> {
     const [availability, history] = await Promise.all([
       this.gateway.availability(),
       canReview ? this.gateway.history() : Promise.resolve([]),
     ]);
-    return { selection: historySelection(availability.dates), history };
+    return {
+      selection: historySelection(availability.dates),
+      history,
+      months: importedMonths(availability.dates),
+    };
   }
   async report(selection: ReportRequest): Promise<Report> {
     const days =
@@ -165,4 +192,20 @@ export function executiveSelection(month: string): ReportRequest {
     search: "",
     page: 1,
   };
+}
+
+export function importedMonths(dates: string[]): string[] {
+  return [...new Set(dates.map((date) => date.slice(0, 7)))].sort().reverse();
+}
+/** Sorting applies to the whole file; column click order determines priority. */
+export function cycleSourceSort(
+  sort: SourceSort[],
+  field: SourceSortField,
+): SourceSort[] {
+  const current = sort.find((s) => s.field === field);
+  return !current
+    ? [...sort, { field, direction: "asc" }]
+    : current.direction === "asc"
+      ? sort.map((s) => (s.field === field ? { ...s, direction: "desc" } : s))
+      : sort.filter((s) => s.field !== field);
 }

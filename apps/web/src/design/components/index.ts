@@ -20,3 +20,5 @@ export { AppShell, IdentityRoot, PageHeading } from "./Layout";
 export { ViewNavigation } from "./ViewNavigation";
 export { ComparisonCard } from "./ComparisonCard";
 export { MonthPicker } from "./MonthPicker";
+export { SideNavigation } from "./SideNavigation";
+export { SortableHeader } from "./SortableHeader";

@@ -112,3 +112,13 @@ test("Executive Overview rounds the current selection to one month and clears al
     selection: { executive: false, filters: { area: ["Area A"] } },
   });
 });
+
+test("catalog loading follows every cursor instead of truncating messages to report options", async () => {
+  const messages = jest
+    .fn()
+    .mockResolvedValueOnce({ values: ["A", "B"], nextCursor: "B" })
+    .mockResolvedValueOnce({ values: ["C"], nextCursor: null });
+  const app = new AnalysisWorkspace({ messages } as unknown as AnalysisGateway);
+  expect(await app.messageOptions()).toEqual(["A", "B", "C"]);
+  expect(messages.mock.calls).toEqual([[undefined], ["B"]]);
+});

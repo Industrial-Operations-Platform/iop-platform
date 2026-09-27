@@ -1,7 +1,7 @@
 # Local analytical POC scope
 
 The owner-confirmed workflow is **CSV → preparation → persistent history → analysis
-→ presentation**. This page consolidates the refinements delivered through IOP-153;
+→ presentation**. This page consolidates the refinements delivered through IOP-154;
 [delivery status](../planning/poc-delivery.md) owns evidence and open acceptance.
 The [operator guide](../development/running-poc.md) owns execution instructions.
 
@@ -42,8 +42,13 @@ real importer and keep provenance; archive SQL is never executed.
 
 ## Analytical workspace
 
-Left navigation has one Data analysis entry; lower navigation selects the templates.
-Import/preparation is available to the same Administrator.
+Left navigation contains an initially empty Start page and Data analysis; lower
+navigation selects analytical templates. Users enter the Taskforce presentation.
+An authorized Administrator can switch to Administration to expose import,
+preparation, KPI settings and Files & source rows, then return to Taskforce view.
+This toggle changes presentation, not the authenticated principal or backend grants.
+Human-readable context identifies Taskforce/Administration and Operational Intelligence
+instead of deployment IDs.
 
 | Template | Filter policy |
 | --- | --- |
@@ -68,10 +73,12 @@ Screenshot targets and improvement formulas are not invented metrics.
 
 Executive Overview shows a frequency-ranked area chart, an area/day matrix ordered
 by monthly frequency, and overlaid daily frequency/alarm-minute series with labelled
-axes. The month control is collapsible. Charts show up to 100 areas; monthly totals
+axes. The month control is collapsible and uses a whole-field dropdown of imported months. Charts show up to 100 areas; monthly totals
 and KPI calculations include all matching facts.
 
-Administrators configure up to eight ordered Meldetext KPIs with a label, frequency
+Administrators select up to eight ordered Meldetext KPIs from the prepared database
+catalog, excluding already-selected messages. Choices load all catalog pages. Each
+KPI has a label, frequency
 or duration measure, and an optional daily-average goal. Settings persist with the
 scoped reporting profile and its existing version checks. With no goal, compare the
 selected month's daily average against the daily average across all imported history,
@@ -105,3 +112,15 @@ workforce, handovers, maintenance and improvement tracking are separately scoped
 Basic validation, safe configuration, explicit authorization, useful errors and tests
 remain part of every delivered slice. POC completion does not complete those future
 parents or certify shared-use v1.
+
+## Administrative file rows
+
+Analytical templates show aggregate rankings and trends, without a contributing-row
+table. Administration provides a file dropdown, prepared source rows and a link to
+the preserved original. Clicking Sector, Bereich, Betriebsmittelkennzeichen,
+Meldetext, Typ or Meldegruppe cycles ascending, descending and off. Multiple criteria
+retain click-order priority; physical source line breaks ties. Sorting covers the
+whole file before pagination, and a preparation change rejects stale pages.
+The source-row endpoint requires current `imports.review` and `analytics.read` grants.
+The existing report API retains its legacy row fields for compatibility; the Taskforce
+presentation is not a separate security role or a restriction on analytical read grants.

@@ -690,6 +690,11 @@ test("real browser imports, analyzes file and history, reviews failures, switche
   try {
     await page.goto(browserOrigin);
     await page.getByLabel('Demo user',{exact:true}).selectOption('demo-a');
+    await pw(page.getByRole('region',{name:'Start page'})).toBeVisible();
+    await pw(page.getByRole('button',{name:'Import & prepare',exact:true})).toHaveCount(0);
+    await page.getByRole('button',{name:'Data analysis',exact:true}).click();
+    await pw(page.getByRole('button',{name:'Import & prepare',exact:true})).toHaveCount(0);
+    await page.getByRole('button',{name:'Administration',exact:true}).click();
     await page.getByRole('button',{name:'Import & prepare',exact:true}).click();
     for(const date of ['20260701','20260703']) {
       await page.getByLabel('CSV file',{exact:true}).setInputFiles(join(__dirname,`../../../fixtures/analytical-poc/valid/Hitliste-${date}.csv`));
@@ -710,7 +715,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await pw(page.locator('.analysis-kpis strong').first()).toHaveText('0');
     await page.getByText('KPI settings & goals',{exact:true}).click();
     await page.getByLabel('Label 1',{exact:true}).fill('Jam frequency');
-    await page.getByLabel('Meldetext 1',{exact:true}).fill('Jam');
+    await page.getByLabel('Meldetext 1',{exact:true}).selectOption('Jam');
     await page.getByRole('button',{name:'Save KPI settings',exact:true}).click();
     await pw(page.locator('.analysis-kpis strong').first()).toHaveText('4.5');
     await pw(page.locator('.analysis-kpis section').first()).toHaveAttribute('data-state','equal');
@@ -738,11 +743,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
       const style = getComputedStyle(el);
       return { background: style.backgroundColor, border: style.borderTopColor, radius: style.borderRadius, ink: style.color };
     })).toEqual({ background: 'rgb(255, 255, 255)', border: 'rgb(220, 229, 237)', radius: '7px', ink: 'rgb(23, 43, 67)' });
-    await page.getByLabel('Month',{exact:true}).fill('2026-06');
-    await pw(page.getByRole('heading',{name:'No imported dates in this month'})).toBeVisible();
-    await pw(page.locator('.analysis-kpis section').first()).toHaveAttribute('data-state','unavailable');
-    await page.getByLabel('Month',{exact:true}).fill('2026-07');
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('4.5');
+    expect(await page.getByLabel('Month',{exact:true}).evaluate(el=>el.tagName)).toBe('SELECT');
     await page.getByRole('button',{name:'Halle analysis',exact:true}).click();
     await page.locator('.analysis-filters summary').click();
     await page.getByLabel('To (exclusive)', {exact:true}).fill('2026-06-30');
@@ -773,6 +774,22 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await pw(page.getByLabel('Sector / Halle filter',{exact:true})).toHaveCount(0);
     await page.getByRole('button',{name:'Executive Overview',exact:true}).click();
     await pw(page.locator('.analysis-kpis strong').first()).toHaveText('4.5');
+    await pw(page.getByText(/Contributing source rows/)).toHaveCount(0);
+    await page.getByRole('button',{name:'Files & source rows',exact:true}).click();
+    await page.getByLabel('Imported file',{exact:true}).selectOption({label:'Hitliste-20260701.csv · 2026-07-01'});
+    await pw(page.getByRole('table')).toBeVisible();
+    for(const state of ['ascending','descending','none']) {
+      await page.getByRole('button',{name:'Sector',exact:true}).click();
+      await pw(page.getByRole('columnheader',{name:'Sector',exact:true})).toHaveAttribute('aria-sort',state);
+    }
+    await page.getByRole('button',{name:'Taskforce view',exact:true}).click();
+    await pw(page.locator('.analysis-kpis')).toBeVisible();
+    await pw(page.getByText(/Contributing source rows/)).toHaveCount(0);
+    await pw(page.getByText('KPI settings & goals',{exact:true})).toHaveCount(0);
+    await pw(page.getByRole('button',{name:'Import & prepare',exact:true})).toHaveCount(0);
+    await page.getByRole('button',{name:'Administration',exact:true}).click();
+    await page.getByRole('button',{name:'Back to analysis',exact:true}).click();
+    await pw(page.locator('.analysis-kpis')).toBeVisible();
     const artifactDir=join(__dirname,'../../../test-results/analytical-workspace');
     mkdirSync(artifactDir,{recursive:true});
     await page.screenshot({path:join(artifactDir,'desktop.png'),fullPage:true});
@@ -803,6 +820,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await page.getByLabel('Demo user',{exact:true}).selectOption('demo-b');
     await pw(page.locator('.analysis-kpis strong').first()).toHaveText('4.5');
     await page.reload();
+    await page.getByRole('button',{name:'Data analysis',exact:true}).click();
     await pw(page.locator('.analysis-kpis strong').first()).toHaveText('4.5');
     await page.route('**/api/v1/analytics/report',route=>route.fulfill({status:503,contentType:'application/problem+json',body:JSON.stringify({code:'persistence_unavailable'})}));
     await page.getByRole('button',{name:'Refresh history',exact:true}).click();

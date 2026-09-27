@@ -1,11 +1,24 @@
 import { api } from "../../../../api/platform";
 import type { components } from "../../../../api/schema";
 import type { AnalysisGateway } from "../../application/workspace";
-import type { ReportRequest, ProfileResult } from "../../domain/models";
+import type {
+  ReportRequest,
+  ProfileResult,
+  SourceRowsRequest,
+} from "../../domain/models";
 type Schemas = components["schemas"];
 
 /** Transport DTOs are structurally checked against the inward-owned port. */
 export class HttpAnalysisGateway implements AnalysisGateway {
+  sourceRows(selection: SourceRowsRequest) {
+    return api<Schemas["SourceRowsDto"]>("/analytics/source-rows", selection);
+  }
+  messages(after?: string) {
+    return api<Schemas["MessageCatalogDto"]>(
+      "/analytics/messages",
+      after === undefined ? {} : { after },
+    );
+  }
   context() {
     return api<Schemas["DemoContextDto"]>("/demo/context");
   }
