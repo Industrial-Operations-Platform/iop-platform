@@ -1,6 +1,6 @@
 import { performance } from 'node:perf_hooks';
 import { TextDecoder } from 'node:util';
-import type { Diagnostic, Inspection } from './import-batches';
+import type { Diagnostic, Inspection } from '../../domain/imports';
 
 /** Fixed maxima from the accepted POC preservation contract; not upload admission. */
 export const CSV_LIMITS = Object.freeze({

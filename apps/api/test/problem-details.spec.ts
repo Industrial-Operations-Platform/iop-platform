@@ -2,8 +2,8 @@ import 'reflect-metadata';
 import { Controller, Get, Post, Param, HttpException, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { configureApplication } from '../src/application';
-import { RequestValidationException, ValidationIssue } from '../src/problem-details';
+import { configureApplication } from '../src/host/application';
+import { RequestValidationException, ValidationIssue } from '../src/host/problem-details';
 
 @Controller('errors')
 class ErrorTestController {

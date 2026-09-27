@@ -9,8 +9,15 @@ for module responsibilities and hexagonal boundaries.
 
 `src/host/runtime.ts` composes Users/RBAC, Integrations and OIP. NestJS controllers
 are inbound adapters; module application code owns ports and use cases; PostgreSQL
-adapters implement persistence and reporting. Existing immutable publication/query
-infrastructure remains reusable behind these boundaries.
+adapters implement persistence and reporting. Immutable publication/query infrastructure remains reusable behind these boundaries.
+`src/main.ts` and `src/generate-openapi.ts` are the only root entry points;
+configuration, Nest composition, HTTP errors and health live under `src/host`.
+CSV decoding/mapping lives under Integrations `adapters/csv`; SQL publication,
+queries and lookups live under each owning module’s `adapters/postgres`.
+Users/RBAC domain rules and application lookup ports have no SQL dependency.
+The shared `src/persistence/site-operation.ts` remains the pinned transaction
+boundary mandated by ADR-0026. Module barrels are adapter/composition facades;
+domain/application code must import only inward-owned contracts.
 
 Business activation requires explicit local execution, configured identity/scope,
 origin checks and runtime credentials. Every scoped operation checks current grants
@@ -167,3 +174,10 @@ Totals, ranking options, period series, admitted dates and both KPI daily averag
 exclude those dates. Revisions include the calendar policy. Projection integrity
 still covers every fact, including excluded dates. Import history, original bytes,
 file source-row browsing and the KPI message catalog retain excluded-date data.
+
+## Generated output
+
+`npm run build` cleans `dist/` before compiling current source. It contains runtime
+JavaScript and the OpenAPI generator, never test files or retired source paths.
+Do not edit compiled files; rebuild after changing source. Database tooling follows
+the same clean-build policy in `npm run db:build`.

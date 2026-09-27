@@ -1,5 +1,5 @@
 import { sourceFilterFields } from "../../domain/source-rows";
-import { digest, scopeTuple } from "../../analytics";
+import { digest, scopeTuple } from "./analytics";
 import { AnalyticsError, exactTotal } from "../../domain/values";
 import type {
   MessageCatalog,

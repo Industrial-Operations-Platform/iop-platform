@@ -227,7 +227,7 @@ remain unverified; they do not block honest source-date aggregate presentation.
 
 ## Implemented adapter handoff — IOP-045
 
-The [adapter implementation](../../apps/api/src/modules/integrations/csv-adapter.ts) defines
+The [adapter implementation](../../apps/api/src/modules/integrations/adapters/csv/csv-adapter.ts) defines
 the pure adapter and its fixed budgets. The
 [execution record](../planning/completed/IOP-045-csv-adapter-plan.md) supplies
 executable syntax, conversion and boundary evidence. Classification and persistence
@@ -243,12 +243,12 @@ inspection counts under this contract. It continues after value errors, stops at
 structural/resource interruptions and exposes no partial dataset. Diagnostics are
 capped at 100 independently of counts. Scoped classification, persisted outcomes
 and user-facing import/review composition are delivered under IOP-147.
-See the [API report contract](../../apps/api/src/modules/integrations/csv-adapter.ts)
+See the [API report contract](../../apps/api/src/modules/integrations/adapters/csv/csv-adapter.ts)
 and [execution evidence](../planning/completed/IOP-046-import-validation-plan.md).
 
 ## IOP-049 classification handoff
 
-The [internal mapping stage](../../apps/api/src/modules/integrations/source-mappings.ts)
+The [internal mapping stage](../../apps/api/src/modules/integrations/adapters/csv/source-mappings.ts)
 validates bounded scoped configuration and freezes the applied mapping snapshot,
 classifications and unclassified count without changing prepared measures or RAW
 line references. Exact comparison and synthetic reconciliation are executable;

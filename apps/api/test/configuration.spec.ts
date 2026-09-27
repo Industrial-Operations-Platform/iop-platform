@@ -1,4 +1,4 @@
-import { readHost, readPort } from '../src/application';
+import { readHost, readPort } from '../src/host/application';
 
 describe('listen address configuration', () => {
   it('defaults to loopback and permits explicit container binding', () => {

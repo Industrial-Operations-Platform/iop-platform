@@ -37,8 +37,8 @@ import {
   CsvAdapterError,
   SourceMappingError,
 } from "../modules/integrations";
-import { AnalyticsError } from "../modules/oip/analytics";
-import { ProblemDetails, BusinessException } from "../problem-details";
+import { AnalyticsError } from "../modules/oip/domain/analytics";
+import { ProblemDetails, BusinessException } from "./problem-details";
 import * as C from "./contracts";
 async function operation<T>(work: () => Promise<T>): Promise<T> {
   try {

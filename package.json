@@ -21,7 +21,7 @@
     "dev:web": "npm run dev --workspace @iop/web",
     "preview:web": "npm run preview --workspace @iop/web",
     "test:e2e": "npm run build && npm run test:e2e --workspace @iop/web",
-    "db:build": "tsc -p infra/database/tsconfig.json",
+    "db:build": "node -e \"require('node:fs').rmSync('infra/database/dist', { recursive: true, force: true })\" && tsc -p infra/database/tsconfig.json",
     "db:provision": "npm run db:build && node infra/database/dist/cli.js provision",
     "db:seed:organization": "npm run db:build && node infra/database/dist/cli.js seed-organization",
     "db:seed:membership": "npm run db:build && node infra/database/dist/cli.js seed-membership",

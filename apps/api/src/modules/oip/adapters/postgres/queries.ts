@@ -1,27 +1,25 @@
-import { AnalysisCalendar } from "./domain/analysis-calendar";
-import { eligibleReportingDate } from "./adapters/postgres/analysis-calendar";
+import { AnalysisCalendar } from "../../domain/analysis-calendar";
+import { eligibleReportingDate } from "./analysis-calendar";
 import type { Pool } from "pg";
 import {
   runSiteOperation,
   type SiteTransaction,
-} from "../../persistence/site-operation";
-import type { ImportSource } from "../integrations";
+} from "../../../../persistence/site-operation";
+import type { ImportSource } from "../../../integrations";
+import { digest, scopeTuple, decodeCursor } from "./analytics";
 import {
   AnalyticsError,
-  digest,
-  scopeTuple,
   dimensions,
   exactTotal,
   validateQuery,
   selectionOf,
-  decodeCursor,
   dateLabel,
   type Availability,
   type Analysis,
   type Fact,
   type Dimension,
   type Group,
-} from "./analytics";
+} from "../../domain/analytics";
 
 const manifest = (
   calendar: AnalysisCalendar,

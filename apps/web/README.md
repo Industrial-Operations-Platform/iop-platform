@@ -7,7 +7,7 @@ Administrator, an import/preparation workflow and six analytical report template
 
 ## Development boundaries
 
-`src/AnalyticalApp.tsx` composes `src/features/analysis`:
+`src/host/AnalyticalApp.tsx` composes `src/features/analysis`:
 
 - `domain` and `application` own framework-free selection values, ports and use cases.
 - `adapters/http` consumes the reviewed generated API contract through a gateway.
@@ -36,22 +36,23 @@ npm run build --workspace @iop/web
 
 For integration/browser prerequisites and actual CSV/history verification, use the
 [testing guide](../../docs/development/testing-poc.md). It distinguishes real database
-journeys from synthetic previews.
+journeys from browser tests with intercepted HTTP responses.
 
-`src/api/schema.d.ts` derives from the reviewed API OpenAPI artifact, never Nest
+`src/features/analysis/adapters/http/schema.d.ts` derives from the reviewed API OpenAPI artifact, never Nest
 classes. After an authorized contract change, run `npm run openapi`, then
 `npm run contract --workspace @iop/web`, and review both diffs.
 HTTP responses are checked at the gateway boundary.
 
-## Optional native development and previews
+## Optional native development and build output
 
 The operator guide describes native launchers with PostgreSQL in Docker. Native
 Vite development (`npm run dev:web`) and preview (`npm run preview:web`) bind to
 loopback on ports 5173 and 4173 and proxy same-origin API requests to port 3000.
 `dist/` is the static artifact; the container serves it through Nginx.
 
-`?preview=1` selects the older health/fixture application (`App.tsx`), with `#import`,
-`#overview` and `#detail` routes. Its fictional filters, states and drill-down are
-developer examples with no real imports or analytical requests. They retain test
-coverage; their historical walkthroughs belong in completed IOP-096/097/116/120–122
-plans, not the current operator flow. The default page uses the connected application.
+The retired fictional preview is removed. Every page load uses the connected
+workspace, including URLs retaining `?preview=1`. Only `src/main.tsx` remains at
+the source root; it mounts the host composition and shared `design/base.css`
+resets. Generated transport bindings and HTTP parsing stay inside the HTTP adapter.
+Vite empties `dist/` before building, so only the current HTML and bundled assets
+remain. Tests and fixtures are not production build inputs.

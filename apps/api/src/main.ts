@@ -1,6 +1,6 @@
 import { startPlatformRuntime } from "./host/runtime";
-import { createApplication } from "./application";
-import { ConfigurationError, readStartupConfiguration } from "./configuration";
+import { createApplication } from "./host/application";
+import { ConfigurationError, readStartupConfiguration } from "./host/configuration";
 
 async function bootstrap(): Promise<void> {
   const { host, port } = readStartupConfiguration(process.env);

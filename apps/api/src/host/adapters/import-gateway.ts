@@ -3,13 +3,13 @@ import { ImportWorkflow } from "../../modules/integrations/application/import-wo
 import {
   ImportBatches,
   type ImportSource,
-} from "../../modules/integrations/import-batches";
+} from "../../modules/integrations/adapters/postgres/import-batches";
 import {
   validateCsv,
   parseCsvReportingDate,
-} from "../../modules/integrations/csv-adapter";
-import { SourceMappings } from "../../modules/integrations/source-mappings";
-import { OipReceiver } from "../../modules/oip/receiver";
+} from "../../modules/integrations/adapters/csv/csv-adapter";
+import { SourceMappings } from "../../modules/integrations/adapters/csv/source-mappings";
+import { OipReceiver } from "../../modules/oip/adapters/postgres/receiver";
 
 /** Existing durable adapters retain their pinned transactions and current authorization. */
 export function createImportWorkflow(

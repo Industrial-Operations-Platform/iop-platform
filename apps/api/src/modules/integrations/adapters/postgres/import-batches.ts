@@ -1,11 +1,11 @@
 import { createHash, randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import { runSiteOperation, SiteAccessDeniedError, AuthorizationUnavailableError,
-  type SiteTransaction } from '../../persistence/site-operation';
+  type SiteTransaction } from '../../../../persistence/site-operation';
 
-import { reasons, ImportBatchError, ImportOutcomeUnknownError, type ImportSource, type Inspection, type Diagnostic, type BatchStatus } from './domain/imports';
-export { ImportBatchError, ImportOutcomeUnknownError } from './domain/imports';
-export type { ImportSource, Inspection, Diagnostic, BatchStatus } from './domain/imports';
+import { reasons, ImportBatchError, ImportOutcomeUnknownError, type ImportSource, type Inspection, type Diagnostic, type BatchStatus } from '../../domain/imports';
+export { ImportBatchError, ImportOutcomeUnknownError } from '../../domain/imports';
+export type { ImportSource, Inspection, Diagnostic, BatchStatus } from '../../domain/imports';
 /** OIP implements both methods; neither may open another connection or commit independently. */
 export interface ImportPublication<T> {
   publish(transaction: SiteTransaction, batch: BatchStatus, input: T): Promise<number>;

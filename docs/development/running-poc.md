@@ -259,7 +259,7 @@ There is no automatic replay, volume removal or production backup/restore claim.
 `npm run test:poc` runs type, unit, actual-role PostgreSQL and browser checks.
 Install Chromium first with `npx playwright install chromium`. The database layer
 includes a real-browser CSV/history journey against disposable PostgreSQL, separate
-from the original opt-in `?preview=1` fixture previews. Tests never reset this
+from browser tests with intercepted HTTP fixtures. Tests never reset this
 operator installation. See [testing](testing-poc.md) and
 [delivery evidence](../planning/completed/IOP-147-working-analytical-poc-plan.md).
 
@@ -342,3 +342,13 @@ Sorting applies across the entire file; changing criteria or file returns to pag
 one. Prepared values reflect current rules; download the original for source evidence.
 No contributing-row table appears inside analytical report tabs. The file list uses
 the existing most-recent-1,000-import-attempts window.
+
+### Private installation directories
+
+`.local-platform` holds configuration and seed provenance for the current container
+stack. `.local-demo` and `.local-analysis` belong to the optional native installations.
+Do not delete one merely because its container is stopped: retained `iop-poc-data`
+or `iop-analysis-data` volumes still need its credentials and installation identity.
+IOP-164 retained all three after verifying that their associated volumes exist.
+Build output in application/database `dist/` directories is disposable and regenerated
+from current sources; it is not database state.

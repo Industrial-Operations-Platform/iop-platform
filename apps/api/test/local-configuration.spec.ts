@@ -1,7 +1,7 @@
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { loadConfiguration, MAX_CONFIG_BYTES, parseConfiguration, readStartupConfiguration } from '../src/configuration';
+import { loadConfiguration, MAX_CONFIG_BYTES, parseConfiguration, readStartupConfiguration } from '../src/host/configuration';
 
 const example = () => ({
   organization: { id: 'org-demo' },

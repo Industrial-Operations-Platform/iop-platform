@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createApplication } from './application';
-import { createOpenApiDocument } from './openapi';
+import { createApplication } from './host/application';
+import { createOpenApiDocument } from './host/openapi';
 
 async function generate(): Promise<void> {
   const app = await createApplication();
