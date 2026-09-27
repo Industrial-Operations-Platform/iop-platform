@@ -20,7 +20,13 @@ and [ADR-0034](../../architecture/adr/ADR-0034-local-container-platform.md).
   artifacts and preserve configuration associated with existing databases.
 - [x] Update current documentation and validate types, unit, database and browser
   tests appropriate to the changes. No schema, public API or business-policy change.
+- [x] Owner-approved follow-up: rebuild the local Docker application images, refresh
+  API/web containers, verify health and preserve the existing database installation.
+
+The owner also authorized merging the story into develop and pushing both branches
+to origin.
 
 ## Evidence
 
 [Execution plan](../completed/IOP-164-hexagonal-cleanup-plan.md).
+[Local refresh](../completed/IOP-164-local-refresh-plan.md).
