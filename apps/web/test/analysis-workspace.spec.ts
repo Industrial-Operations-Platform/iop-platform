@@ -27,15 +27,15 @@ test("new group and filter selections reset paging and revision without splittin
     changeSelection(selection, { dimension: "equipment" }),
   ).not.toHaveProperty("revision");
 });
-test("application rejects an invalid range before the HTTP port is called", () => {
+test("application rejects an invalid range before the HTTP port is called", async () => {
   const report = jest.fn();
   const app = new AnalysisWorkspace({ report } as unknown as AnalysisGateway);
-  expect(() =>
+  await expect(
     app.report({
       ...historySelection(["2026-07-01"])!,
       toExclusive: "2026-06-30",
     }),
-  ).toThrow("Choose a reporting range");
+  ).rejects.toThrow("Choose a reporting range");
   expect(report).not.toHaveBeenCalled();
 });
 

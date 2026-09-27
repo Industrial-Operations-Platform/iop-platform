@@ -809,6 +809,10 @@ function ProfileEditor({
       setPending(false);
     }
   };
+  const edit = (next: ProfileResult) => {
+    setSaved(false);
+    setValue(next);
+  };
   const profile = value?.profile;
   return (
     <Panel className="analysis-import">
@@ -831,11 +835,11 @@ function ProfileEditor({
               (key) => (
                 <Field key={key} layout="inline">
                   <Input
+                    disabled={pending}
                     type="checkbox"
                     checked={profile.normalization[key]}
                     onChange={(e) => {
-                      setSaved(false);
-                      setValue({
+                      edit({
                         ...value,
                         profile: {
                           ...profile,
@@ -866,10 +870,11 @@ function ProfileEditor({
               {profile.areaSectors.map((rule, i) => (
                 <div key={i}>
                   <Input
+                    disabled={pending}
                     aria-label={`Area ${i + 1}`}
                     value={rule.area}
                     onChange={(e) =>
-                      setValue({
+                      edit({
                         ...value,
                         profile: {
                           ...profile,
@@ -881,10 +886,11 @@ function ProfileEditor({
                     }
                   />
                   <Input
+                    disabled={pending}
                     aria-label={`Sector ${i + 1}`}
                     value={rule.sector}
                     onChange={(e) =>
-                      setValue({
+                      edit({
                         ...value,
                         profile: {
                           ...profile,
@@ -896,8 +902,9 @@ function ProfileEditor({
                     }
                   />
                   <Button
+                    disabled={pending}
                     onClick={() =>
-                      setValue({
+                      edit({
                         ...value,
                         profile: {
                           ...profile,
@@ -914,8 +921,9 @@ function ProfileEditor({
               ))}
             </div>
             <Button
+              disabled={pending}
               onClick={() =>
-                setValue({
+                edit({
                   ...value,
                   profile: {
                     ...profile,
@@ -941,10 +949,11 @@ function ProfileEditor({
             {profile.aliases.map((alias, i) => (
               <div className="analysis-alias" key={i}>
                 <Select
+                  disabled={pending}
                   aria-label={`Correction field ${i + 1}`}
                   value={alias.field}
                   onChange={(e) =>
-                    setValue({
+                    edit({
                       ...value,
                       profile: {
                         ...profile,
@@ -976,11 +985,12 @@ function ProfileEditor({
                 </Select>
                 {(["from", "to"] as const).map((k) => (
                   <Input
+                    disabled={pending}
                     key={k}
                     aria-label={`${k} value ${i + 1}`}
                     value={alias[k]}
                     onChange={(e) =>
-                      setValue({
+                      edit({
                         ...value,
                         profile: {
                           ...profile,
@@ -993,8 +1003,9 @@ function ProfileEditor({
                   />
                 ))}
                 <Button
+                  disabled={pending}
                   onClick={() =>
-                    setValue({
+                    edit({
                       ...value,
                       profile: {
                         ...profile,
@@ -1008,8 +1019,9 @@ function ProfileEditor({
               </div>
             ))}
             <Button
+              disabled={pending}
               onClick={() =>
-                setValue({
+                edit({
                   ...value,
                   profile: {
                     ...profile,

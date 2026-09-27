@@ -721,6 +721,14 @@ test("real browser imports, analyzes file and history, reviews failures, switche
       const style = getComputedStyle(el);
       return { background: style.backgroundColor, border: style.borderTopColor, radius: style.borderRadius, ink: style.color };
     })).toEqual({ background: 'rgb(255, 255, 255)', border: 'rgb(220, 229, 237)', radius: '7px', ink: 'rgb(23, 43, 67)' });
+    await page.getByLabel('To (exclusive)', {exact:true}).fill('2026-06-30');
+    await page.getByRole('button', {name:'Apply filters',exact:true}).click();
+    await pw(page.getByRole('alert')).toContainText('Choose a reporting range');
+    await page.locator('.analysis-filters summary').click();
+    await page.getByLabel('To (exclusive)', {exact:true}).fill('2026-07-04');
+    await page.getByRole('button', {name:'Apply filters',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
+    await pw(page.getByRole('alert')).toHaveCount(0);
     await page.locator('.analysis-kpi-label').first().click();
     await pw(page.getByRole('button',{name:'Bereich analysis',exact:true})).toHaveAttribute('aria-pressed','true');
     await page.locator('.analysis-filters summary').click();
@@ -754,11 +762,23 @@ test("real browser imports, analyzes file and history, reviews failures, switche
       await pw(page.locator('.analysis-kpis').first()).toBeVisible();
       await pw.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
     }
+    await page.setViewportSize({width:1440,height:900});
+    await page.getByRole('button',{name:'Daily / monthly',exact:true}).click();
+    await page.setViewportSize({width:390,height:844});
+    await pw.poll(() => page.getByRole('button',{name:'Daily / monthly',exact:true}).evaluate(el => {
+      const button = el.getBoundingClientRect(), nav = el.parentElement.getBoundingClientRect();
+      return button.left >= nav.left - 1 && button.right <= nav.right + 1;
+    })).toBe(true);
+    await page.getByRole('button',{name:'Executive Overview',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
     await page.screenshot({path:join(artifactDir,'mobile.png'),fullPage:true});
     await page.getByRole('button',{name:'Import & prepare',exact:true}).click();
     await page.getByLabel('CSV file',{exact:true}).setInputFiles(join(__dirname,'../../../fixtures/analytical-poc/valid/Hitliste-20260701.csv'));
     await page.getByRole('button',{name:'Import CSV',exact:true}).click();
     await pw(page.getByRole('heading',{name:'Duplicate reporting date'})).toBeVisible();
+    await page.screenshot({path:join(artifactDir,'import-mobile.png'),fullPage:true});
+    await page.setViewportSize({width:1366,height:900});
+    await page.screenshot({path:join(artifactDir,'import-desktop.png'),fullPage:true});
     await page.getByRole('button',{name:'Save historical preparation'}).click();
     await pw(page.getByText('Preparation saved.',{exact:false})).toBeVisible();
     await page.getByLabel('Demo user',{exact:true}).selectOption('demo-b');

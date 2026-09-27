@@ -1,6 +1,6 @@
 # POC delivery status
 
-The current local platform is implemented through IOP-150. Start with
+The current local platform is implemented and technically verified through IOP-152. Start with
 `npm run local:up`; the [operator guide](../development/running-poc.md) owns execution
 instructions and seed reconciliation. The [POC scope](../product/scope-poc.md) owns
 product requirements. This page records delivery and outstanding acceptance.
@@ -15,6 +15,7 @@ product requirements. This page records delivery and outstanding acceptance.
 | Normalized analytics catalogs and main Hitliste fact with physical sector FK | [IOP-148 relational model](completed/IOP-148-relational-hitliste-plan.md) |
 | Separate Docker services, analytics-only backup seed and progressive collapsible filters | [IOP-149](items/IOP-149-local-stack-history.md) |
 | Reusable frontend controls, surfaces and navigation | [IOP-150](completed/IOP-150-reusable-ui-plan.md) |
+| Invalid-date recovery, selected-measure chart correctness and preparation save integrity and responsive active navigation; final Docker/history verification | [IOP-152](completed/IOP-152-poc-readiness-plan.md) |
 
 Full-history totals come from persisted data, independently of the displayed page.
 Original CSV fields and durations remain traceable. Source-reported frequency is

@@ -78,12 +78,13 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
     0,
     10,
   );
-  if (kind === "frequency" || kind === "duration")
+  if (kind === "frequency" || kind === "duration") {
+    const barMetric = kind === "duration" ? "duration" : metric;
     return {
       ...base,
       xAxis: {
         type: "value",
-        name: kind === "duration" ? "Minutes" : "Frequency",
+        name: barMetric === "duration" ? "Minutes" : "Frequency",
         nameLocation: "middle",
         nameGap: 25,
       },
@@ -98,11 +99,11 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
           type: "bar",
           data: groups.map((x) => ({
             name: x.key,
-            value: kind === "duration" ? x.minutes : x.frequency,
+            value: value(x, barMetric),
           })),
           itemStyle: {
             color:
-              kind === "duration"
+              barMetric === "duration"
                 ? identity.chartDuration
                 : identity.chartFrequency,
           },
@@ -110,6 +111,7 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
         },
       ],
     };
+  }
   if (kind === "scatter")
     return {
       ...base,

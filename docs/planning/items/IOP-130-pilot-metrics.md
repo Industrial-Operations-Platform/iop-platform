@@ -10,6 +10,8 @@ screenshots, exact sector rules, equipment-column clarification, a database back
 and the hexagonal architecture requirement. [IOP-148](IOP-148-analytical-workspace.md)
 tracks corrective delivery. Positive acceptance of that revised experience remains
 pending; automated checks cannot provide it.
+[IOP-152](../completed/IOP-152-poc-readiness-plan.md) adds current technical and visual
+verification on the complete Docker history, with concrete usability defects fixed.
 
 ## Milestone
 

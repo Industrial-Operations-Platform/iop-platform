@@ -68,7 +68,7 @@ export class AnalysisWorkspace {
     ]);
     return { selection: historySelection(availability.dates), history };
   }
-  report(selection: ReportRequest): Promise<Report> {
+  async report(selection: ReportRequest): Promise<Report> {
     const days =
       (Date.parse(selection.toExclusive) - Date.parse(selection.from)) /
       86400000;

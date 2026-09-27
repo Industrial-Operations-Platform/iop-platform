@@ -70,3 +70,6 @@ library. The existing optional fixture preview is a separate historical surface.
 Validate changes with `npm test --workspace @iop/web`, the actual browser analytical
 journey, and desktop/narrow layout inspection. The dependency check prevents this
 library from importing features or transport adapters.
+
+`ViewNavigation` keeps the selected button visible inside its horizontal viewport
+on selection and window resize, without moving keyboard focus.
