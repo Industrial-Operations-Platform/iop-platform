@@ -29,6 +29,16 @@ results and material limitations, without repetitive progress narratives.
 `AGENTS.md` is an optional local, ignored instruction file. Shared rules live here
 and in the linked ADRs; a fresh clone does not depend on that local file.
 
+## Code architecture and quality
+
+All new or changed code follows Accepted [ADR-0032](../architecture/adr/ADR-0032-hexagonal-application-boundaries.md):
+hexagonal boundaries, inward dependencies, owner-defined ports and explicit adapter
+composition. This applies to temporary features as well as permanent modules.
+Plans identify owning modules and testable use cases before implementation. Keep
+functions cohesive, names clear, errors explicit and business rules unduplicated;
+verify architecture and relevant behavior before completion. Document exceptions
+rather than silently mixing HTTP, React, persistence and domain responsibilities.
+
 ## Sources of truth
 
 | Document | Responsibility |

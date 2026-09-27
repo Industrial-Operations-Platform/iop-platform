@@ -25,7 +25,8 @@ orchestration. HTTP schema generation remains at the transport boundary. Chart
 options and component lifecycle do not define business measures. The server remains
 the authority for full-history aggregation and permissions.
 
-Apply this to the active analytical workspace and import flow incrementally. Reuse
+The owner reaffirmed on 2026-09-27 that this applies to every new module, feature
+and subsequent code change, including authentication and user administration. Reuse
 existing infrastructure behind ports, document remaining legacy surfaces, and do
 not claim a folder rename makes them hexagonal. Verify dependency direction and
 exercise use cases with in-memory ports, alongside actual adapter integration tests.
@@ -37,3 +38,20 @@ rules. There are more explicit contracts to maintain. Avoid duplicated domain
 semantics across browser and server: the browser models report selection and
 presentation, while the API owns validation, normalization and aggregate semantics.
 This refines ADR-0001, ADR-0006 and ADR-0010 without changing the modular monolith.
+
+## Required implementation review
+
+Keep domain rules and application use cases independent of frameworks and storage.
+Declare narrow ports in the owning application layer and inject adapters at host
+composition roots. Controllers validate transport and map errors; React renders
+state and invokes use cases. Neither owns SQL, credentials policy or authorization.
+Use descriptive English names, small cohesive functions, explicit input/output and
+error contracts, and avoid duplicated rules, hidden side effects and speculative
+abstractions. Customer vocabulary remains scoped data or adapter configuration.
+
+Each execution plan identifies ownership and boundaries before edits. Verify inward
+imports with the repository architecture tests, use-case behavior with replaceable
+ports, and concrete adapter/security behavior with integration tests. Document an
+intentional exception and its bounded migration path; do not silently bypass these
+rules because a feature is temporary. Clean code is a review obligation, not a
+claim established solely by folder names or a passing formatter.
