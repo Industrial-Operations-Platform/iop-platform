@@ -1,7 +1,6 @@
 # Run and demonstrate the analytical POC
 
-The application supports **CSV → persistent history → Executive Overview →
-analytical detail**, with configured local demo users. This is a single trusted
+The application supports **CSV → persistent history → analytical report templates**, with configured local demo users. This is a single trusted
 operator's loopback-only demonstration. Third-party authentication replaces the
 local user selector before shared use; no password or enterprise login is claimed.
 
@@ -35,39 +34,56 @@ configured scope, allowed users/origins, mappings and the reset dataset identity
 Do not commit or share them. Existing operator configuration elsewhere is untouched.
 The default setup uses IOP-125's fictional scope, not an external customer connection.
 
-## Demonstration workflow
+## Reference-data installation and report workspace
 
-1. Select a demo user. The header allows switching later; switching clears the
-   previous browser workspace and invalidates its old session. Current grants are
-   checked on every operation. This selector is local impersonation, not human login.
-2. In **Import & history**, select a supported file and press **Import CSV**.
-   Supported input is `Hitliste-YYYYMMDD.csv`, UTF-16 LE with BOM, semicolon-separated,
-   with the exact [source contract](../architecture/csv-source-contract-poc.md).
-   Maximum file size is 5 MiB; one upload is processed at a time.
-3. Review the outcome and any line/field diagnostics. Failed input adds no analytical
-   measures. A repeated successful reporting date for the same source is rejected,
-   even if its bytes change; existing data is never replaced automatically.
-4. Choose **Analyze this file** or **Analyze file** in the history. The reporting
-   range selects that admitted date. Original bytes remain downloadable through
-   the review/provenance links with `imports.review` permission.
-5. Choose **Analyze history** to combine persisted reporting dates. A single analysis
-   spans at most 366 labels; for a longer history the initial range is the most recent
-   366 days. Open **Reporting dates & shared filters** to choose another range and
-   sector, area, source-equipment or message values, including message exclusions.
-   Empty dimension selections mean all values. Date end is exclusive.
-6. Executive Overview and Analytical detail share the same selection and backend
-   calculations. Choose a group to drill down; **Back one level** restores the prior
-   selection/view. Detail shows original physical lines, import/RAW identifiers,
-   source dimensions and frozen mapping revisions. Full totals include every page.
-7. Missing reporting dates remain visible. No matching rows differ from no imports;
-   records reporting zero remain real records. Unclassified and repeated source
-   rows remain included unless explicitly filtered out. A changed dataset revision
-   requires refreshing the selection rather than silently mixing pages.
+For the owner's source CSVs and five hall lists, use a separate persistent installation:
 
-Frequency means source-reported occurrences. Accumulated duration is summed exact
-seconds, **not plant downtime**; overlapping alarms can exceed a day. Filename dates
-are reporting labels, not event timestamps or proof of a complete reporting window.
-The UI makes no claim about distinct physical incidents, rates or operational causes.
+```sh
+npm run analysis:setup
+npm run analysis:load-reference
+npm run analysis:start
+```
+
+This uses `.local-analysis/`, container `iop-analysis-postgres`, volume
+`iop-analysis-data`, PostgreSQL port 54339 and the same API/web ports 3000/5173.
+Stop the other launcher first. Existing `.local-demo` data is not erased or mixed.
+The reference loader admits the three authorized repository CSVs through the real
+importer and skips already-admitted examples. It verifies 1,446 rows, frequency
+8,496 and 1,629,521 exact seconds. It does not restore the supplied backup.
+
+Select **Administrator** in the header to import and prepare; **Analyst** has only
+analytical read permission. This local selector is impersonation, not secure login.
+The original synthetic `demo:*` commands remain available with their two operator
+accounts and independent data. Seed option `IOP_SEED_ANALYTICS_ONLY=true` creates an
+explicit reader-only membership; reruns refuse conflicting existing grants.
+
+1. Open **Import & prepare**, select `Hitliste-YYYYMMDD.csv` and press **Import CSV**.
+   Input is UTF-16 LE with BOM, semicolon-separated, at most 5 MiB. Existing reporting
+   dates cannot be replaced. Review errors, duplicates and interrupted outcomes.
+2. Use **Analyze this file** for one date, or **Back to analysis** / **Refresh history**
+   for the complete imported range. Dates are inclusive/exclusive as labelled.
+3. Choose a lower template: Halle, Bereich, equipment, errors, daily/monthly or Pareto.
+   Group by any source field; change the measure and day/week/month period. Filter
+   a sector, location, equipment or message with exact values; suggestions show up
+   to 200 values and an exact typed value can reach others. Commas are part of values.
+4. Select a chart point/bar or a group in **Explore data** to filter it. **Clear filters**
+   restores the range without dimension filters. Tables expose rankings, periods and
+   contributing rows; authorized administrators can retrieve the original file/line.
+5. In preparation, edit normalization, area-to-sector rules and explicit corrections.
+   **Save historical preparation** persists the profile and applies it to historical
+   reports. It never edits retained originals or immutable import-time facts. A stale
+   editor/report version is rejected; refresh before continuing.
+6. Switch to **Analyst** for read-only reporting. Restart the application to demonstrate
+   persistence. Full totals use all matching records, not only the current page.
+
+The report range is bounded to 3,660 days; pages contain 50 contributing rows,
+rankings/scatter up to 100 groups and comparison/heatmap series up to 10 groups.
+Pareto percentages use the full total, so a truncated group list may end below 100%.
+Only admitted coverage appears; missing days are gaps rather than zero activity.
+Source frequency is an integer. Duration is summed as exact seconds and divided by
+60 before display rounding; it is **not plant downtime**. Filename dates do not
+prove a complete reporting window. No rates, causal conclusions or screenshot
+improvement targets are invented.
 
 ## Reproducible reference example
 
@@ -97,8 +113,9 @@ Edit `.local-demo/mappings.json` while the host is stopped, then restart it. Kee
 its organization/site/source IDs aligned with `.local-demo/scope.json`. Configure
 sectors and exact source-area membership; change `mappingRevision` when editing.
 Preserve sector-key meaning across revisions. Unknown source areas are retained as
-unclassified. Changes affect future imports only: previous facts retain their frozen
-classification and interpretation. A changed mapping is not permission to replace
+unclassified. Changes affect future import-time facts only: previous facts retain their frozen
+classification. Use the explicit database reporting profile in Import & prepare to
+change historical analytical interpretation. A changed mapping is not permission to replace
 an existing reporting date.
 
 Additional local users require the existing explicit user and membership seed
@@ -142,12 +159,12 @@ from the original opt-in `?preview=1` fixture previews. Tests never reset this
 operator installation. See [testing](testing-poc.md) and
 [delivery evidence](../planning/completed/IOP-147-working-analytical-poc-plan.md).
 
-- An inactive backend shows **Connect your analytical workspace**; use the demo
+- An inactive backend shows **Connect the local API**; use the demo
   launcher, not the independent health-only/container bootstrap.
 - Access failure requires checking the selected seeded principal and current grants.
   Shared hosting, production mode, foreign origins and arbitrary scope are refused.
 - An interrupted attempt can be reviewed and explicitly recovered from Import &
-  history once processing has stopped. Recovery checks durable outcome and never
+  prepare once processing has stopped. Recovery checks durable outcome and never
   silently resubmits the bytes.
 - Storage is bounded to 1,000 retained attempts and 256 MiB original bytes across
   the dedicated database. Rejected inputs also consume retention. Use verified

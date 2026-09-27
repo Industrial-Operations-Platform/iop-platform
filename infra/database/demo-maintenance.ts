@@ -13,6 +13,7 @@ const names = [
   "20260926030000-import-batches",
   "20260927000000-oip-aggregates",
   revision,
+  "20260928000000-reporting-profiles",
 ];
 function target(env: NodeJS.ProcessEnv) {
   if (env.IOP_EXECUTION_MODE !== "local-demo" || env.NODE_ENV === "production")

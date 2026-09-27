@@ -83,6 +83,14 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
       allowedColumns.push(...qualified); inserts.push(...qualified);
     }
   }
+  const reportingInstalled = history.rows[0].object !== null && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20260928000000-reporting-profiles'",
+  )).rowCount === 1;
+  if (reportingInstalled) {
+    const names=['organization_id','site_id','source_id','version','config'].map(n=>`oip.reporting_profiles.${n}`);
+    allowedColumns.push(...names); inserts.push(...names);
+    updates.push('oip.reporting_profiles.version','oip.reporting_profiles.config');
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

@@ -25,7 +25,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(9);
+  expect(await migrate(configs.migrator)).toBe(10);
 });
 afterAll(async () => { if (container) await container.stop(); });
 
@@ -133,7 +133,7 @@ test('native commands reproduce the seed on a second empty database', async () =
     await admin.query('DROP DATABASE iop_local');
     await admin.query('CREATE DATABASE iop_local OWNER iop_bootstrap');
   } finally { await admin.end(); }
-  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '9 applied'],
+  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '10 applied'],
     ['seed-user', 'created'], ['seed-user', 'unchanged'], ['provision', 'provisioned'], ['migrate', '0 applied']]) {
     const result = spawnSync(process.execPath, [resolve(__dirname, '../dist/cli.js'), command], {
       env: { PATH: process.env.PATH, ...input() }, encoding: 'utf8',

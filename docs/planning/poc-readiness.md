@@ -3,7 +3,9 @@
 > Historical snapshot, superseded for current readiness by
 > [IOP-147 delivery](poc-delivery.md) on 2026-09-27. The findings below describe
 > `52e803b`; they are retained as the reason for the integrated implementation.
-> Technical runtime blockers are now resolved; owner feedback remains pending.
+> Technical runtime blockers were resolved. The owner subsequently rejected the
+> analytical experience; [IOP-148](items/IOP-148-analytical-workspace.md) tracks the
+> requested report workspace, database reference and hexagonal implementation.
 
 
 Review of `develop` at `52e803b`, under

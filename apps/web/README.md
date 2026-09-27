@@ -1,6 +1,6 @@
 # Local web host
 
-## Connected analytical POC — IOP-147
+## Connected analytical POC — IOP-147 / IOP-148
 
 For the working CSV upload, history, demo users, analytical views and safe reset,
 follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
@@ -9,9 +9,11 @@ bootstrap instructions below remain available independently; they do not activat
 the business workflow by themselves.
 
 
-The default entry point is `DemoApp`: configured user selection, real CSV upload,
-persistent import history and connected overview/detail. Its typed client consumes
-the generated `/api/v1` contract through Vite's same-origin proxy. The old health,
+The default composition root is `AnalyticalApp`: configured header user selection,
+real CSV upload/preparation and historical chart templates. `features/analysis`
+separates domain values, application ports/use cases and HTTP/React/ECharts adapters.
+The HTTP gateway checks compatibility with the generated `/api/v1` contract through
+Vite's same-origin proxy. The superseded default component/styles were removed. The old health,
 state and fixture examples remain explicitly opt-in at `?preview=1`.
 
 ## Independent health/fixture preview

@@ -8,18 +8,8 @@ export const dimensions: Dimension[] = [
   "equipment",
   "message",
 ];
-export class AnalyticsError extends Error {
-  constructor(
-    readonly code:
-      | "invalid_selection"
-      | "unavailable_reference"
-      | "analytics_revision_changed"
-      | "analytics_total_out_of_range"
-      | "invalid_publication",
-  ) {
-    super(code);
-  }
-}
+export { AnalyticsError, exactTotal, dateLabel } from "./domain/values";
+import { AnalyticsError, dateLabel } from "./domain/values";
 export const digest = (value: unknown): string =>
   createHash("sha256")
     .update(JSON.stringify(value), "utf8")
@@ -35,20 +25,6 @@ export function dimensionReference(
   tuple: unknown[],
 ): string {
   return "d1." + digest([1, ...scopeTuple(s), kind, ...tuple]);
-}
-export function exactTotal(value: string | number): number {
-  const integer = BigInt(value);
-  if (integer < 0n || integer > BigInt(Number.MAX_SAFE_INTEGER))
-    throw new AnalyticsError("analytics_total_out_of_range");
-  return Number(integer);
-}
-export function dateLabel(value: unknown): value is string {
-  return (
-    typeof value === "string" &&
-    /^(?!0000)\d{4}-\d{2}-\d{2}$/.test(value) &&
-    Number.isFinite(Date.parse(value)) &&
-    new Date(value).toISOString().slice(0, 10) === value
-  );
 }
 export interface Selection {
   from: string;

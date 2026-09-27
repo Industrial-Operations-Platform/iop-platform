@@ -1,5 +1,21 @@
 # POC delivery map
 
+## Current owner-requested correction — IOP-148
+
+The owner rejected the IOP-147 report experience after its technical delivery.
+[IOP-148](items/IOP-148-analytical-workspace.md) implements the supplied chart
+templates, persistent historical preparation, five-sector mapping and hexagonal
+backend/frontend boundaries. Its [plan](completed/IOP-148-analytical-workspace-plan.md)
+records completed technical validation. Use `analysis:setup`, `analysis:load-reference` and
+`analysis:start` for the separate authorized reference installation.
+
+The supplied [database backup review](../architecture/wincc-backup-reference.md)
+identified missing analytical rows and per-row duration rounding in the reference
+model; neither discrepancy is copied. User acceptance of the revised workspace
+is still pending. The following evidence describes the earlier IOP-147 baseline.
+
+## Earlier technical baseline — IOP-147
+
 The owner requested a working local CSV demonstration on 2026-09-27, including
 frontend/backend integration and temporary configured user switching.
 [IOP-147](items/IOP-147-working-analytical-poc.md) owns that complete delivery and
@@ -35,7 +51,7 @@ supersedes the missing implementation handoffs in the
 | Shared overview/detail selection, drill-down, runtime states, layout and keyboard access | IOP-096/097/120/121/122 | Real browser uploads, file/history, filters, return, reload, retry, user switch, laptop/tablet checks and semantic tables. |
 | Guarded reset, end-to-end demonstration and numerical reconciliation | IOP-128/129/132 | Offline maintenance exclusion, rollback, quota/foreign-target preservation, uncertain acknowledgement and actual reimport. |
 | Input validation and usable instructions | IOP-110/136 | Bounded HTTP/domain inputs, safe errors, verified setup/start/fixtures/recreate commands and operator guide. |
-| Owner assessment of usefulness | IOP-130 | **Pending owner observation/feedback.** Technical evidence is available; automated checks cannot provide this assessment. |
+| Owner assessment of usefulness | IOP-130 | **Negative owner feedback recorded; IOP-148 addresses it.** Technical evidence is available; automated checks cannot provide this assessment. |
 
 The two baseline files produce **9 records, frequency 19 and 97,775 accumulated
 alarm seconds**. July 2 is missing. Unclassified records contribute frequency 5
@@ -63,4 +79,5 @@ Permanent contexts keep each selected story's acceptance and prior evidence.
 Finished continuation plans are archived; IOP-147 is the single implementation
 record for this integrated delivery. Historical review branches are preserved and
 have not been merged implicitly. Broader Deferred parents remain open for their
-future scope. Owner feedback is the only remaining POC acceptance observation.
+future scope. The revised report workspace must satisfy IOP-148 and receive owner review; earlier
+technical completion did not establish usability acceptance.

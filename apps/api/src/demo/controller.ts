@@ -1,3 +1,4 @@
+import { ImportBusyError } from "../modules/integrations/domain/imports";
 import {
   Body,
   Controller,
@@ -44,6 +45,7 @@ async function operation<T>(work: () => Promise<T>): Promise<T> {
     return await work();
   } catch (e) {
     if (e instanceof HttpException) throw e;
+    if (e instanceof ImportBusyError) throw new ServiceUnavailableException();
     if (e instanceof SiteAccessDeniedError)
       throw new BusinessException(403, "access_denied");
     if (e instanceof AuthorizationUnavailableError)
@@ -142,7 +144,13 @@ export class DemoController {
     )
       throw new BadRequestException();
     if (!this.runtime)
-      return { enabled: false, users: [], user: null, scope: null };
+      return {
+        enabled: false,
+        users: [],
+        user: null,
+        scope: null,
+        canImport: false,
+      };
     const r = this.runtime;
     let actor: string | undefined;
     try {
@@ -160,6 +168,7 @@ export class DemoController {
     }
     return {
       enabled: true,
+      canImport: actor ? await operation(() => r.canImport(actor!)) : false,
       users: r.config.users,
       user: r.config.users.find((u) => u.id === actor) ?? null,
       scope: {
@@ -194,6 +203,7 @@ export class DemoController {
     );
     return {
       enabled: true,
+      canImport: await operation(() => r.canImport(body.userId)),
       users: r.config.users,
       user: r.config.users.find((u) => u.id === body.userId)!,
       scope: {
@@ -306,6 +316,29 @@ export class DemoController {
   ): Promise<C.OptionsDto> {
     const r = this.active(req);
     return operation(() => r.queries.options(r.principals.resolve(req), body));
+  }
+  @Get("analytics/profile")
+  @ApiOkResponse({ type: C.ProfileResultDto })
+  async profile(@Req() req: IncomingMessage) {
+    const r = this.active(req);
+    return operation(() => r.profiles.get(r.principals.resolve(req)));
+  }
+  @Post("analytics/profile")
+  @ApiBody({ type: C.ProfileResultDto })
+  @ApiCreatedResponse({ type: C.ProfileResultDto })
+  async saveProfile(
+    @Req() req: IncomingMessage,
+    @Body() body: C.ProfileResultDto,
+  ) {
+    const r = this.active(req);
+    return operation(() => r.profiles.save(r.principals.resolve(req), body));
+  }
+  @Post("analytics/report")
+  @ApiBody({ type: C.ReportRequestDto })
+  @ApiCreatedResponse({ type: C.ReportDto })
+  async report(@Req() req: IncomingMessage, @Body() body: C.ReportRequestDto) {
+    const r = this.active(req);
+    return operation(() => r.reports.query(r.principals.resolve(req), body));
   }
   @Post("analytics/query")
   @ApiBody({ type: C.AnalyticalRequestDto })

@@ -42,3 +42,5 @@ id_ed25519*
 
 # Dedicated local demo installation and credentials
 .local-demo/
+
+.local-analysis/

@@ -9,9 +9,34 @@ const {
 } = require("node:fs");
 const { join, resolve } = require("node:path");
 const { randomBytes } = require("node:crypto");
+const reference = (process.argv[2] ?? "").endsWith("-reference");
+const containerName = reference ? "iop-analysis-postgres" : "iop-poc-postgres";
+const volumeName = reference ? "iop-analysis-data" : "iop-poc-data";
+const databasePort = reference ? "54339" : "54329";
 const root = resolve(__dirname, ".."),
-  directory = join(root, ".local-demo");
-const scope = require("../fixtures/analytical-poc/scope.json");
+  directory = join(root, reference ? ".local-analysis" : ".local-demo");
+const preset = require("../config/reporting/hitliste-halls.json");
+const hallLabels = [...new Set(preset.areaSectors.map((x) => x.sector))];
+const scope = reference
+  ? {
+      organizationId: "reference-org",
+      organizationName: "Reference operations",
+      siteId: "reference-site",
+      siteName: "Reference site",
+      siteTimeZone: "Europe/Zurich",
+      sourceId: "hitliste",
+      mappingRevision: "owner-halls-v1",
+      sectorLabels: Object.fromEntries(
+        hallLabels.map((label, i) => ["hall-" + i, label]),
+      ),
+      sectorBySourceArea: Object.fromEntries(
+        preset.areaSectors.map((x) => [
+          x.area,
+          "hall-" + hallLabels.indexOf(x.sector),
+        ]),
+      ),
+    }
+  : require("../fixtures/analytical-poc/scope.json");
 const run = (command, args, env = process.env) => {
   const result = spawnSync(command, args, { cwd: root, env, stdio: "inherit" });
   if (result.status !== 0) throw new DemoCommandError(`${command} failed.`);
@@ -23,7 +48,8 @@ const privateJson = (name, value) =>
   });
 const configPath = join(directory, "environment.json");
 async function main() {
-  const [command, confirmation, ...extra] = process.argv.slice(2);
+  const [requestedCommand, confirmation, ...extra] = process.argv.slice(2);
+  const command = reference ? requestedCommand.slice(0, -10) : requestedCommand;
   if (
     extra.length ||
     (!["reset", "recreate"].includes(command) && confirmation)
@@ -35,7 +61,7 @@ async function main() {
       // Refuse to attach an unknown existing container before creating new credentials.
       const probe = spawnSync(
         "docker",
-        ["container", "inspect", "iop-poc-postgres"],
+        ["container", "inspect", containerName],
         { encoding: "utf8" },
       );
       if (probe.status === 0)
@@ -45,7 +71,7 @@ async function main() {
       privateJson("environment.json", {
         IOP_DATABASE_MODE: "local",
         IOP_DATABASE_HOST: "127.0.0.1",
-        IOP_DATABASE_PORT: "54329",
+        IOP_DATABASE_PORT: databasePort,
         IOP_DATABASE_NAME: "iop_local",
         IOP_POSTGRES_PASSWORD: randomBytes(24).toString("base64url"),
         IOP_MIGRATOR_PASSWORD: randomBytes(24).toString("base64url"),
@@ -69,8 +95,14 @@ async function main() {
     if (!existsSync(join(directory, "users.json")))
       privateJson("users.json", {
         users: [
-          { id: "demo-operator", name: "Demo operator" },
-          { id: "demo-colleague", name: "Demo colleague" },
+          {
+            id: "demo-operator",
+            name: reference ? "Administrator" : "Demo operator",
+          },
+          {
+            id: reference ? "reference-analyst" : "demo-colleague",
+            name: reference ? "Analyst" : "Demo colleague",
+          },
         ],
         origins: ["http://127.0.0.1:5173", "http://127.0.0.1:4173"],
       });
@@ -116,32 +148,30 @@ async function main() {
       `POSTGRES_DB=iop_local\nPOSTGRES_USER=iop_bootstrap\nPOSTGRES_PASSWORD=${secret.IOP_POSTGRES_PASSWORD}\n`,
       { mode: 0o600 },
     );
-    const probe = spawnSync(
-      "docker",
-      ["container", "inspect", "iop-poc-postgres"],
-      { encoding: "utf8" },
-    );
+    const probe = spawnSync("docker", ["container", "inspect", containerName], {
+      encoding: "utf8",
+    });
     if (probe.status === 0) {
       const existing = JSON.parse(probe.stdout)[0];
       if (existing.Config.Labels?.["iop.local-demo"] !== "dedicated")
         throw new DemoCommandError(
           "Existing container is not this dedicated demo.",
         );
-      run("docker", ["start", "iop-poc-postgres"]);
+      run("docker", ["start", containerName]);
     } else
       run("docker", [
         "run",
         "-d",
         "--name",
-        "iop-poc-postgres",
+        containerName,
         "--label",
         "iop.local-demo=dedicated",
         "--env-file",
         join(directory, "postgres.env"),
         "-p",
-        "127.0.0.1:54329:5432",
+        `127.0.0.1:${databasePort}:5432`,
         "-v",
-        "iop-poc-data:/var/lib/postgresql/data",
+        `${volumeName}:/var/lib/postgresql/data`,
         "--health-cmd",
         "pg_isready -U iop_bootstrap -d iop_local",
         "--health-interval",
@@ -156,7 +186,7 @@ async function main() {
         "docker",
         [
           "exec",
-          "iop-poc-postgres",
+          containerName,
           "pg_isready",
           "-U",
           "iop_bootstrap",
@@ -202,6 +232,8 @@ async function main() {
       });
       await require("../infra/database/dist/seed-membership").seedMembership({
         ...seed,
+        IOP_SEED_ANALYTICS_ONLY:
+          reference && user.id === "reference-analyst" ? "true" : "false",
         IOP_SEED_USER_ID: user.id,
       });
     }
@@ -216,7 +248,7 @@ async function main() {
       { mode: 0o600 },
     );
     console.log(
-      `Demo ready. Dataset identity: ${registered.datasetId}\nRun npm run demo:start, then open http://127.0.0.1:5173`,
+      `Demo ready. Dataset identity: ${registered.datasetId}\nRun npm run ${reference ? "analysis:start" : "demo:start"}, then open http://127.0.0.1:5173`,
     );
     return;
   }
@@ -275,32 +307,61 @@ async function main() {
     const { startDemoRuntime } = require("../apps/api/dist/demo/runtime");
     const runtime = await startDemoRuntime(env);
     try {
-      for (const date of ["20260701", "20260703"]) {
+      for (const date of reference
+        ? ["20260701", "20260705", "20260707"]
+        : ["20260701", "20260703"]) {
         const name = `Hitliste-${date}.csv`;
+        if (
+          reference &&
+          (await runtime.batches.history(users[0].id)).some(
+            (x) => x.originalFilename === name && x.outcome === "succeeded",
+          )
+        ) {
+          console.log(`${name}: already admitted; retained history unchanged.`);
+          continue;
+        }
         const result = await runtime.submit(
           users[0].id,
           name,
-          readFileSync(join(root, "fixtures/analytical-poc/valid", name)),
+          readFileSync(
+            join(
+              root,
+              reference
+                ? "docs/product/reference-data/hitliste"
+                : "fixtures/analytical-poc/valid",
+              name,
+            ),
+          ),
         );
         if (result.outcome !== "succeeded")
           throw new DemoCommandError(
             `Fixture reload incomplete: ${result.outcome}. Inspect existing reporting dates before retrying.`,
           );
       }
+      if (reference) {
+        const current = await runtime.profiles.get(users[0].id);
+        if (current.version.startsWith("default."))
+          await runtime.profiles.save(users[0].id, {
+            version: current.version,
+            profile: preset,
+          });
+      }
       const a = await runtime.queries.availability(users[0].id);
       const result = await runtime.queries.query(users[0].id, {
         revision: a.revision,
         from: "2026-07-01",
-        toExclusive: "2026-07-04",
+        toExclusive: reference ? "2026-07-08" : "2026-07-04",
       });
       if (
-        result.recordCount !== 9 ||
-        result.reportedFrequency !== 19 ||
-        result.accumulatedAlarmSeconds !== 97775
+        result.recordCount !== (reference ? 1446 : 9) ||
+        result.reportedFrequency !== (reference ? 8496 : 19) ||
+        result.accumulatedAlarmSeconds !== (reference ? 1629521 : 97775)
       )
         throw new DemoCommandError("Fixture reconciliation failed.");
       console.log(
-        "Fixture baseline verified: 9 records, frequency 19, 97,775 accumulated seconds.",
+        reference
+          ? "Reference CSVs verified: 1,446 rows, frequency 8,496, 1,629,521 exact seconds."
+          : "Fixture baseline verified: 9 records, frequency 19, 97,775 accumulated seconds.",
       );
     } finally {
       await runtime.close();

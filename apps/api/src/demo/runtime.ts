@@ -1,4 +1,13 @@
-import { createHash, randomBytes } from "node:crypto";
+import { hitlisteReportingProfile } from "./adapters/hitliste-reporting-profile";
+import { createImportWorkflow } from "./adapters/import-gateway";
+import { evaluateSiteAccess } from "../modules/users-rbac";
+import {
+  ReportingProfiles,
+  OipReports,
+} from "../modules/oip/application/reporting";
+import { PgReportingProfiles } from "../modules/oip/adapters/postgres/reporting-profiles";
+import { PgReportRepository } from "../modules/oip/adapters/postgres/reports";
+import { randomBytes } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import type { IncomingMessage } from "node:http";
 import { Pool, type PoolClient } from "pg";
@@ -15,11 +24,8 @@ import {
 import { runSiteOperation } from "../persistence/site-operation";
 import {
   ImportBatches,
-  ImportOutcomeUnknownError,
   SourceMappings,
-  validateCsv,
   CSV_ADAPTER_REVISION,
-  parseCsvReportingDate,
   type BatchStatus,
   type ImportSource,
 } from "../modules/integrations";
@@ -158,8 +164,10 @@ export class DemoRuntime {
   readonly batches: ImportBatches;
   readonly receiver: OipReceiver;
   readonly queries: OipQueries;
+  readonly profiles: ReportingProfiles;
+  readonly reports: OipReports;
   readonly principals: LocalDemoPrincipals;
-  private busy = false;
+  readonly imports: ReturnType<typeof createImportWorkflow>;
   private receiving = false;
   private lease: PoolClient | undefined;
   constructor(
@@ -178,8 +186,21 @@ export class DemoRuntime {
     });
     this.batches = new ImportBatches(pool, this.source);
     this.receiver = new OipReceiver(this.source);
+    this.imports = createImportWorkflow(
+      this.batches,
+      this.receiver,
+      mappings,
+      this.source,
+    );
     this.queries = new OipQueries(pool, this.source);
     this.principals = new LocalDemoPrincipals(config.users);
+    const profileRepository = new PgReportingProfiles(
+      pool,
+      this.source,
+      hitlisteReportingProfile(mappings.configuration),
+    );
+    this.profiles = new ReportingProfiles(profileRepository);
+    this.reports = new OipReports(new PgReportRepository(profileRepository));
   }
   async start(): Promise<void> {
     const client = await this.pool.connect();
@@ -238,6 +259,24 @@ export class DemoRuntime {
       },
     );
   }
+  async canImport(actor: string): Promise<boolean> {
+    const context = {
+      userId: actor,
+      organizationId: this.source.organizationId,
+      siteId: this.source.siteId,
+    };
+    return runSiteOperation(
+      this.pool,
+      { ...context, permissions: ["analytics.read"] },
+      async (tx) =>
+        (
+          await evaluateSiteAccess(tx, {
+            ...context,
+            permissions: ["imports.submit", "imports.review"],
+          })
+        ).allowed,
+    );
+  }
   protect(request: IncomingMessage, apiPort: number): void {
     if (!this.lease) throw new ServiceUnavailableException();
     const hosts = new Set([
@@ -260,75 +299,18 @@ export class DemoRuntime {
       throw new ForbiddenException();
   }
   reserveUpload(): () => void {
-    if (this.receiving || this.busy) throw new ServiceUnavailableException();
+    if (this.receiving || this.imports.isBusy)
+      throw new ServiceUnavailableException();
     this.receiving = true;
     return () => {
       this.receiving = false;
     };
   }
-  async submit(
-    actor: string,
-    filename: string,
-    bytes: Buffer,
-  ): Promise<BatchStatus> {
-    if (this.busy) throw new ServiceUnavailableException();
-    this.busy = true;
-    const deadline = Date.now() + 30000;
-    let importId: string | undefined;
-    try {
-      parseCsvReportingDate(filename);
-      importId = await this.batches.receive(actor, filename, bytes);
-      const inspected = validateCsv(filename, bytes);
-      if (inspected.status === "invalid")
-        await this.batches.reject(actor, importId, {
-          ...inspected.inspection,
-          unclassifiedCount: 0,
-        });
-      else {
-        const classified = this.config.mappings.classify(
-          this.source,
-          inspected.prepared,
-        );
-        await this.batches.publish(
-          actor,
-          importId,
-          {
-            ...inspected.inspection,
-            unclassifiedCount: classified.unclassifiedCount,
-          },
-          this.receiver,
-          {
-            classified,
-            prepared: inspected.prepared,
-            inputSha256: createHash("sha256").update(bytes).digest("hex"),
-          },
-          deadline,
-        );
-      }
-      return await this.batches.review(actor, importId);
-    } catch (error) {
-      if (error instanceof ImportOutcomeUnknownError) {
-        // All awaited phases have stopped; reconciliation never replays input.
-        try {
-          await this.batches.reconcile(actor, error.importId, this.receiver);
-          return await this.batches.review(actor, error.importId);
-        } catch {
-          throw new ImportOutcomeUnknownError(error.importId);
-        }
-      }
-      if (importId)
-        await this.batches
-          .reconcile(actor, importId, this.receiver)
-          .catch(() => undefined);
-      throw error;
-    } finally {
-      this.busy = false;
-    }
+  submit(actor: string, filename: string, bytes: Buffer): Promise<BatchStatus> {
+    return this.imports.submit(actor, filename, bytes);
   }
-  async recover(actor: string, id: string): Promise<BatchStatus> {
-    if (this.busy) throw new ServiceUnavailableException();
-    await this.batches.reconcile(actor, id, this.receiver);
-    return this.batches.review(actor, id);
+  recover(actor: string, id: string): Promise<BatchStatus> {
+    return this.imports.recover(actor, id);
   }
 }
 export async function startDemoRuntime(

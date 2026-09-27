@@ -1,6 +1,6 @@
 # IOP-148 — Analytical workspace execution plan
 
-Status: In progress. Branch: `feature/IOP-148-analytical-workspace`, from clean
+Status: Completed. Branch: `feature/IOP-148-analytical-workspace`, from clean
 `develop` at `7ff8210`. The owner explicitly authorized IOP-147 integration and
 publication; develop and its story branch were fast-forwarded/pushed to origin.
 [Item](../items/IOP-148-analytical-workspace.md).
@@ -100,3 +100,42 @@ The former default `DemoApp.tsx` and `demo.css` are now unreachable. Remove them
 and update host READMEs so only the new report workspace owns the real UI. Keep the
 explicit `?preview=1` fixture application and its historical evidence. Final browser
 verification covers the reader-only UI as well as backend permission denials.
+
+## Final validation and handoff
+
+- `npm run test:poc` passed: type/build/contract checks, 9 secret-tool tests,
+  276 API tests, 25 frontend tests, 163 database tests (including 77 configuration
+  cases) and 18 opt-in preview browser tests. The database suite includes the real
+  default-UI upload/history/template/filter/reload/failure/mobile journey.
+- Subsequent focused regression checks passed after the final source-profile wiring
+  and Unicode handling: 6 actual-role reporting database cases and 9 API
+  reporting/import/architecture cases. The latter adds rejection of array-coerced
+  period/measure selectors. One disposable Docker port-binding startup timed out;
+  its retry passed, with no application failure or operator data reset.
+- The independent source oracle covers all 1,446 reference CSV rows, 8,496 frequency,
+  1,629,521 exact seconds, the five sector totals and one unclassified record.
+  A non-breaking-space case confirms identical normalization in rules and SQL;
+  identifier endings, punctuation and Unicode survive. A repeated equipment code
+  has verified monthly and calendar-week history. Recreated runtimes retain data.
+- The reference launcher was stopped/restarted without losing data. Final Chromium
+  checks on the actual reference installation confirm four overview charts, six
+  equipment charts, two trend/heatmap charts, persisted 89 area rules, administrator
+  controls and a reader-only analyst without import controls. No JavaScript errors.
+  Desktop and trend screenshots were visually inspected; regression browser checks
+  cover 1366, 1024, 768 and 390 pixel widths and horizontal overflow.
+- Documentation local links, story IDs/statuses and `git diff --check` were verified.
+  IOP-092/093 remain broader Proposed items with translated contexts; this selected
+  implementation belongs to IOP-148. IOP-130 retains actual negative feedback on
+  IOP-147 and awaits the owner's assessment of the revised workspace.
+
+The app is available through `analysis:start`; the prepared reference installation
+uses its own database/volume and includes Administrator and read-only Analyst.
+Third-party login, physical asset catalogs, causal metrics, improvement targets,
+backup restoration and the archive's manual-intervention tables are not delivered
+by this CSV reporting slice. Report bounds and missing-date semantics are documented
+in the operator guide. The ECharts build emits a non-failing bundle-size advisory;
+no formal production performance or accessibility certification is claimed.
+
+IOP-147 remains published as authorized. IOP-148 is committed on its review branch;
+its publication is a separate final owner decision, not inferred from technical
+validation. Owner usability acceptance remains distinct from implementation closure.

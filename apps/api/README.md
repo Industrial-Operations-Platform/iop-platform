@@ -1,6 +1,6 @@
 # Local API host
 
-## Connected analytical POC — IOP-147
+## Connected analytical POC — IOP-147 / IOP-148
 
 For the working CSV upload, history, demo users, analytical views and safe reset,
 follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
@@ -371,3 +371,20 @@ fixture UI. Once composed, changes apply to future imports only. Reclassifying
 already imported dates is a separate correction operation outside this POC.
 The supplied DAX fallback `Nicht klassifiziert` corresponds to the internal
 `unclassified`/null-key outcome; the default English presentation is `Unclassified`.
+
+## Hexagonal analytical flow
+
+The import lifecycle lives in `modules/integrations/application`, with its port and
+framework-free domain outcomes. The host's import gateway composes CSV decoding,
+source mappings and existing atomic publication adapters. Reporting rules/models
+live in `modules/oip/domain`, use cases/ports in `application`, and PostgreSQL
+implementations in `adapters/postgres`. NestJS controllers are inbound adapters;
+`demo/runtime.ts` composes them. Tests enforce inward dependencies and use in-memory
+ports, then verify actual PostgreSQL/HTTP behavior. Legacy foundation adapters are
+retained; this is not a claim that every existing module was rewritten.
+
+`POST /api/v1/analytics/report` returns full totals, bounded groups/periods and a
+50-row contributing page. `GET/POST /api/v1/analytics/profile` reads or version-saves
+historical preparation. Reads require `analytics.read`; writes require
+`imports.submit`. Profile save preserves immutable originals/facts. See ADR-0031,
+ADR-0032 and the [operator guide](../../docs/development/running-poc.md).

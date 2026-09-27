@@ -13,7 +13,11 @@
     "contract": "openapi-typescript ../api/contracts/openapi.json -o src/api/schema.d.ts",
     "contract:check": "node scripts/check-contract.mjs"
   },
-  "dependencies": { "react": "19.3.0", "react-dom": "19.3.0" },
+  "dependencies": {
+    "echarts": "6.0.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
   "devDependencies": {
     "@playwright/test": "1.63.0",
     "@testing-library/jest-dom": "7.0.1",

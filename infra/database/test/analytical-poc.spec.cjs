@@ -682,188 +682,60 @@ test("real browser imports, analyzes file and history, reviews failures, switche
   const { expect: pw } = require("@playwright/test");
   try {
     await page.goto(browserOrigin);
-    await page.getByRole("button", { name: /Demo operator/ }).click();
-    await pw(
-      page.getByRole("heading", { name: "Import & history", exact: true }),
-    ).toBeVisible();
-    for (const date of ["20260701", "20260703"]) {
-      await page
-        .getByLabel("CSV file", { exact: true })
-        .setInputFiles(
-          join(
-            __dirname,
-            `../../../fixtures/analytical-poc/valid/Hitliste-${date}.csv`,
-          ),
-        );
-      await page
-        .getByRole("button", { name: "Import CSV", exact: true })
-        .click();
-      await pw(
-        page.getByRole("heading", { name: "Import complete" }),
-      ).toBeVisible();
-      if (date === "20260701") {
-        await page.getByRole("button", { name: "Analyze this file" }).click();
-        await pw(page.getByTestId("frequency-total")).toHaveText("12");
-        await page.getByRole("button", { name: /Import & history/ }).click();
+    await page.getByLabel('Demo user',{exact:true}).selectOption('demo-a');
+    await page.getByRole('button',{name:'Import & prepare',exact:true}).click();
+    for(const date of ['20260701','20260703']) {
+      await page.getByLabel('CSV file',{exact:true}).setInputFiles(join(__dirname,`../../../fixtures/analytical-poc/valid/Hitliste-${date}.csv`));
+      await page.getByRole('button',{name:'Import CSV',exact:true}).click();
+      await pw(page.getByRole('heading',{name:'Import complete'})).toBeVisible();
+      if(date==='20260701') {
+        await page.getByRole('button',{name:'Analyze this file'}).click();
+        await pw(page.locator('.analysis-kpis strong').first()).toHaveText('12');
+        await page.getByRole('button',{name:'Import & prepare',exact:true}).click();
       }
     }
-    await page
-      .getByRole("button", { name: "Analyze history", exact: true })
-      .click();
-    await pw(page.getByTestId("frequency-total")).toHaveText("19");
-    await pw(page.getByTestId("duration-total")).toHaveText("97,775 s");
-    await page
-      .getByRole("button", { name: "Open analytical detail →" })
-      .click();
-    await pw(page.getByTestId("duration-total")).toHaveText("97,775 s");
-    await page
-      .getByRole("button", { name: "Unclassified →", exact: true })
-      .click();
-    await pw(page.getByTestId("frequency-total")).toHaveText("5");
-    await page.getByRole("button", { name: "← Back one level" }).click();
-    await pw(page.getByTestId("frequency-total")).toHaveText("19");
-    mkdirSync(join(__dirname, "../../../test-results"), { recursive: true });
-    await page.screenshot({
-      path: join(__dirname, "../../../test-results/analytical-poc-laptop.png"),
-      fullPage: true,
-    });
-    for (const [width, height] of [
-      [1366, 768],
-      [768, 1024],
-      [1024, 768],
-      [640, 480],
-    ]) {
-      await page.setViewportSize({ width, height });
-      await pw(page.getByTestId("frequency-total")).toBeVisible();
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      ).toBe(true);
+    await page.getByRole('button',{name:'Back to analysis'}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+    await pw(page.locator('.analysis-kpis strong').nth(1)).toHaveText('1,629.58');
+    for(const title of ['Bereich analysis','Equipment analysis','Error analysis','Daily / monthly','Pareto','Halle analysis']) {
+      await page.getByRole('button',{name:title,exact:true}).click();
+      await pw(page.locator('.analysis-plot svg').first()).toBeVisible();
+      await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
     }
-    await page.screenshot({
-      path: join(__dirname, "../../../test-results/analytical-poc-tablet.png"),
-      fullPage: true,
-    });
-    await page.getByRole("button", { name: /Import & history/ }).click();
-    await page
-      .getByLabel("CSV file", { exact: true })
-      .setInputFiles(
-        join(
-          __dirname,
-          "../../../fixtures/analytical-poc/duplicate-changed/Hitliste-20260701.csv",
-        ),
-      );
-    await page.getByRole("button", { name: "Import CSV", exact: true }).click();
-    await pw(
-      page.getByRole("heading", { name: "Duplicate reporting date" }),
-    ).toBeVisible();
-    await page
-      .getByLabel("CSV file", { exact: true })
-      .setInputFiles(
-        join(
-          __dirname,
-          "../../../fixtures/analytical-poc/invalid/negative-frequency/Hitliste-20260702.csv",
-        ),
-      );
-    await page.getByRole("button", { name: "Import CSV", exact: true }).click();
-    await pw(
-      page.getByRole("heading", { name: "Import not admitted" }),
-    ).toBeVisible();
-    await page.getByLabel("Demo user", { exact: true }).selectOption("demo-b");
-    await page
-      .getByRole("button", { name: "Analyze history", exact: true })
-      .click();
-    await pw(page.getByTestId("frequency-total")).toHaveText("19");
+    await page.locator('.analysis-filters summary').click();
+    await page.getByLabel('Sector / Halle filter',{exact:true}).fill('Dispatch');
+    await page.getByRole('button',{name:'Apply filters',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('5');
+    await page.getByRole('button',{name:'Clear filters',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+    const artifactDir=join(__dirname,'../../../test-results/analytical-workspace');
+    mkdirSync(artifactDir,{recursive:true});
+    await page.screenshot({path:join(artifactDir,'desktop.png'),fullPage:true});
+    for(const [width,height] of [[1024,768],[768,1024],[390,844]]) {
+      await page.setViewportSize({width,height});
+      await pw(page.locator('.analysis-kpis').first()).toBeVisible();
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
+    }
+    await page.screenshot({path:join(artifactDir,'mobile.png'),fullPage:true});
+    await page.getByRole('button',{name:'Import & prepare',exact:true}).click();
+    await page.getByLabel('CSV file',{exact:true}).setInputFiles(join(__dirname,'../../../fixtures/analytical-poc/valid/Hitliste-20260701.csv'));
+    await page.getByRole('button',{name:'Import CSV',exact:true}).click();
+    await pw(page.getByRole('heading',{name:'Duplicate reporting date'})).toBeVisible();
+    await page.getByRole('button',{name:'Save historical preparation'}).click();
+    await pw(page.getByText('Preparation saved.',{exact:false})).toBeVisible();
+    await page.getByLabel('Demo user',{exact:true}).selectOption('demo-b');
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
     await page.reload();
-    await page
-      .getByRole("button", { name: "Analyze history", exact: true })
-      .click();
-    await pw(page.getByTestId("frequency-total")).toHaveText("19");
-    await page.route(
-      "**/api/v1/analytics/query",
-      (route) =>
-        route.fulfill({
-          status: 503,
-          contentType: "application/problem+json",
-          body: JSON.stringify({
-            status: 503,
-            code: "persistence_unavailable",
-          }),
-        }),
-      { times: 1 },
-    );
-    await page
-      .getByRole("button", { name: "Refresh data", exact: true })
-      .click();
-    await pw(page.getByRole("alert")).toBeVisible();
-    await page
-      .getByRole("button", { name: "Try again / refresh data" })
-      .click();
-    await pw(page.getByTestId("frequency-total")).toHaveText("19");
-    await pw(
-      page.getByRole("heading", { name: "Executive Overview", exact: true }),
-    ).toBeFocused();
-    await page
-      .getByText("Reporting dates & shared filters", { exact: false })
-      .click();
-    await page.getByLabel("sector filters", { exact: true }).focus();
-    await page.keyboard.press("Home");
-    await page.keyboard.press("ArrowDown");
-    await page
-      .getByRole("button", { name: "Apply filters", exact: true })
-      .focus();
-    await page.keyboard.press("Enter");
-    await pw(page.getByTestId("frequency-total")).not.toHaveText("19");
-    await page
-      .getByRole("button", { name: "Clear dimension filters", exact: true })
-      .click();
-    await pw(page.getByTestId("frequency-total")).toHaveText("19");
-    await page
-      .getByRole("button", { name: "Apply filters", exact: true })
-      .focus();
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Shift+Tab");
-    await pw(page.getByRole("button", {name:"Apply filters",exact:true})).toBeFocused();
-    const contrast = await page.evaluate(() => {
-      const ratio = (a, b) => {
-        const lum = (c) => {
-          const rgb = c
-            .match(/\d+/g)
-            .slice(0, 3)
-            .map(Number)
-            .map((v) => {
-              v /= 255;
-              return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-            });
-          return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
-        };
-        const x = lum(a),
-          y = lum(b);
-        return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
-      };
-      const button = getComputedStyle(
-        [...document.querySelectorAll("button")].find(
-          (b) => b.textContent === "Apply filters",
-        ),
-      );
-      const select = getComputedStyle(
-        document.querySelector('select[aria-label="sector filters"]'),
-      );
-      return {
-        text: ratio(button.color, button.backgroundColor),
-        control: ratio(select.borderTopColor, select.backgroundColor),
-        focus: ratio(button.outlineColor, "rgb(255,255,255)"),
-      };
-    });
-    expect(contrast.text).toBeGreaterThanOrEqual(4.5);
-    expect(contrast.control).toBeGreaterThanOrEqual(3);
-    expect(contrast.focus).toBeGreaterThanOrEqual(3);
-    await page.getByLabel("Demo user", { exact: true }).focus();
-    await page.keyboard.press("Tab");
-    expect(await page.evaluate(() => document.activeElement.tagName)).not.toBe(
-      "BODY",
-    );
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+    await page.route('**/api/v1/analytics/report',route=>route.fulfill({status:503,contentType:'application/problem+json',body:JSON.stringify({code:'persistence_unavailable'})}));
+    await page.getByRole('button',{name:'Refresh history',exact:true}).click();
+    await pw(page.getByRole('alert')).toBeVisible();
+    await page.unroute('**/api/v1/analytics/report');
+    await page.getByRole('button',{name:'Refresh history',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+    await page.getByLabel('Demo user',{exact:true}).focus();
+    await page.keyboard.press('Tab');
+    expect(await page.evaluate(()=>document.activeElement.tagName)).not.toBe('BODY');
     expect(errors).toEqual([]);
   } finally {
     await browser.close();

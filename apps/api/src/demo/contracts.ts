@@ -10,6 +10,7 @@ export class DemoScopeDto {
   @ApiProperty() siteTimeZone!: string;
 }
 export class DemoContextDto {
+  @ApiProperty() canImport!: boolean;
   @ApiProperty() enabled!: boolean;
   @ApiProperty({ type: [DemoUserDto] }) users!: DemoUserDto[];
   @ApiProperty({ type: DemoUserDto, nullable: true }) user!: DemoUserDto | null;
@@ -176,4 +177,121 @@ export class AnalysisDto {
   @ApiProperty({ type: GroupsDto }) groups!: GroupsDto;
   @ApiProperty({ type: GroupCountsDto }) groupCounts!: GroupCountsDto;
   @ApiProperty({ enum: ["unknown"] }) reportingWindowStatus!: "unknown";
+}
+
+export class NormalizationDto {
+  @ApiProperty() trim!: boolean;
+  @ApiProperty() unicodeNfc!: boolean;
+  @ApiProperty() collapseWhitespace!: boolean;
+}
+export class AreaSectorDto {
+  @ApiProperty() area!: string;
+  @ApiProperty() sector!: string;
+}
+export class ValueAliasDto {
+  @ApiProperty({
+    enum: ["area", "equipment", "message", "type", "messageGroup"],
+  })
+  field!: "area" | "equipment" | "message" | "type" | "messageGroup";
+  @ApiProperty() from!: string;
+  @ApiProperty() to!: string;
+}
+export class ReportingProfileDto {
+  @ApiProperty({ type: NormalizationDto }) normalization!: NormalizationDto;
+  @ApiProperty() unclassifiedLabel!: string;
+  @ApiProperty({ type: [AreaSectorDto] }) areaSectors!: AreaSectorDto[];
+  @ApiProperty({ type: [ValueAliasDto] }) aliases!: ValueAliasDto[];
+}
+export class ProfileResultDto {
+  @ApiProperty() version!: string;
+  @ApiProperty({ type: ReportingProfileDto }) profile!: ReportingProfileDto;
+}
+export class ReportRequestDto {
+  @ApiProperty() from!: string;
+  @ApiProperty() toExclusive!: string;
+  @ApiProperty({
+    enum: [
+      "sector",
+      "area",
+      "equipment",
+      "message",
+      "type",
+      "messageGroup",
+      "frequency",
+      "duration",
+    ],
+  })
+  dimension!:
+    | "sector"
+    | "area"
+    | "equipment"
+    | "message"
+    | "type"
+    | "messageGroup"
+    | "frequency"
+    | "duration";
+  @ApiProperty({ enum: ["day", "week", "month"] }) period!:
+    | "day"
+    | "week"
+    | "month";
+  @ApiProperty({ enum: ["frequency", "duration"] }) metric!:
+    | "frequency"
+    | "duration";
+  @ApiPropertyOptional({
+    type: "object",
+    additionalProperties: { type: "array", items: { type: "string" } },
+  })
+  filters?: Record<string, string[]>;
+  @ApiPropertyOptional() search?: string;
+  @ApiPropertyOptional() page?: number;
+  @ApiPropertyOptional() revision?: string;
+}
+export class ReportRowDto {
+  @ApiProperty() key!: string;
+  @ApiProperty() frequency!: number;
+  @ApiProperty() seconds!: number;
+  @ApiProperty() minutes!: number;
+  @ApiProperty() records!: number;
+}
+export class ReportPointDto extends ReportRowDto {
+  @ApiProperty() period!: string;
+}
+export class ReportRecordDto {
+  @ApiProperty() area!: string;
+  @ApiProperty() equipment!: string;
+  @ApiProperty() message!: string;
+  @ApiProperty() type!: string;
+  @ApiProperty() messageGroup!: string;
+  @ApiProperty() sector!: string;
+  @ApiProperty() date!: string;
+  @ApiProperty() importId!: string;
+  @ApiProperty() line!: number;
+  @ApiProperty() frequency!: number;
+  @ApiProperty() seconds!: number;
+  @ApiProperty() minutes!: number;
+}
+export class ReportDto {
+  @ApiProperty() revision!: string;
+  @ApiProperty() profileVersion!: string;
+  @ApiProperty({ type: ReportRequestDto }) selection!: ReportRequestDto;
+  @ApiProperty({ type: ReportRowDto }) totals!: ReportRowDto;
+  @ApiProperty({ type: [ReportRowDto] }) groups!: ReportRowDto[];
+  @ApiProperty({ type: [ReportRowDto] }) durationGroups!: ReportRowDto[];
+  @ApiProperty() groupCount!: number;
+  @ApiProperty({ type: [ReportPointDto] }) timeline!: ReportPointDto[];
+  @ApiProperty({ type: [ReportPointDto] }) series!: ReportPointDto[];
+  @ApiProperty({ type: [ReportPointDto] }) monthly!: ReportPointDto[];
+  @ApiProperty({
+    type: "object",
+    additionalProperties: { type: "array", items: { type: "string" } },
+  })
+  options!: Record<string, string[]>;
+  @ApiProperty({ type: "object", additionalProperties: { type: "number" } })
+  optionCounts!: Record<string, number>;
+  @ApiProperty({ type: [String] }) dates!: string[];
+  @ApiProperty({ type: [ReportRecordDto] }) records!: ReportRecordDto[];
+  @ApiProperty() recordCount!: number;
+  @ApiProperty() page!: number;
+  @ApiProperty() pageCount!: number;
+  @ApiProperty() unclassifiedCount!: number;
 }

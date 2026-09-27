@@ -1,0 +1,367 @@
+{
+  "normalization": {
+    "trim": true,
+    "unicodeNfc": true,
+    "collapseWhitespace": true
+  },
+  "unclassifiedLabel": "Nicht klassifiziert",
+  "areaSectors": [
+    {
+      "area": "LB-Puffer",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "WE Abzug + NIO",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "WE Sky",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "Müllband L5/6",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "Stammdaten AP",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "WEA,AP",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "WE Leerbehälter",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "Abzug L 5 / 6",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "Leerbehälter L5/6",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "Abzug Stammdaten",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "WE Müll",
+      "sector": "Halle A T3"
+    },
+    {
+      "area": "Pick Tower 1",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Pick Tower 2",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Pick Tower 3",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Pick Tower 4",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Zuführung TaSo",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "LB Halle B",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "LB Pasarelle",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Passerelle Sky/MidiStich",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "LB aus Pasarelle",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Blitzpuffer",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Behälter Loop",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "WE Passerelle1",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Kartonage WA",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Leerkartoon ETK 2",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Abzug CH->VR",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Zuführung 2VR",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Zuführung TaSo 1",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "AP TaSo Auto",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "CH",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "DV",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Leerkartoon CH",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Abzug ETK",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Zuführung 1VR",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Abzug TaSo 1",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "CV",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Leerkartoon ETK 1",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Abzug VR Halle A",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "AP TaSo man",
+      "sector": "Halle A T2"
+    },
+    {
+      "area": "Zuführung Passerelle",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "Kon. & Auslagerloop",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "MPO Abführung",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "Passerelle1",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "WA Sorter",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "ATK",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "Kon. & Einlagerloop",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "BV",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "Passerelle2",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "WA Rutschen/NIO",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "SPO & BH",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "Kon.Kreuz MidiTransfer",
+      "sector": "Halle A T1"
+    },
+    {
+      "area": "Auslager Posi",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Einlager Posi",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "LagerB 18-13",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "LagerB 12-7",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "LagerB 6-1+NIO",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Lager VZ Block3",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Leerbehälter",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Leerbeh. Puffer",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "AP18-13 unten",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "AP12-7 unten",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "AP6-1 unten+NIO",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Lager VZ Block2",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Beh. Abtransport",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Schaltschränke",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "AP18-13 oben",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "AP12-7 oben",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "AP6-1 oben+NIO",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Lager VZ Block1",
+      "sector": "Halle B Sh"
+    },
+    {
+      "area": "Anbindung Bin-Interface",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Joiner und NIO-Joiner",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Einlaster Ordermover A",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "SH Sky zu Verp. WE",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Kartonzuführung L",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Abzug VAS/Verb. zu VR",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Abzug VR Halle B",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Bereich B8701",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Verbind. Bin-Interface",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "De-Joiner / Tablarpuffer",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Sky zu SH",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "SH zu Sky",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Kartonzuführung M",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Zuführung VR",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Sorter WA",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Semi Ordermover B",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Zuführung VAS",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Kartonzuführung S",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "Kartonzuführung L,M,S",
+      "sector": "Halle B Sky"
+    },
+    {
+      "area": "LB VAS",
+      "sector": "Halle B Sky"
+    }
+  ],
+  "aliases": []
+}

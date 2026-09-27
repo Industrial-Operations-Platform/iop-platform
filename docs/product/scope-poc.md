@@ -33,8 +33,20 @@ the source-to-domain translation boundary.
 - Reproduce known results using synthetic or explicitly authorized reference data,
   demonstrate duplicate/error handling and reset the dedicated demo dataset safely.
 
-Initial charts should prove these two measures and the analysis path. The broader
-screenshot catalog, every chart type and every future metric are not POC gates.
+The owner refined the POC in IOP-148: persistent daily files, all-history analysis,
+administrator import/preparation, a header-only user selector, one Data analysis
+navigation entry and lower report templates. Hall/area/equipment/error rankings,
+monthly comparisons, duration/frequency scatter, period heatmaps, daily/weekly/monthly
+trends and descriptive Pareto are now selected. Screenshot targets and improvement
+formulas remain unvalidated and are not implemented as invented measures.
+
+Use all seven source fields, the supplied five-sector classification, conservative
+Unicode/space normalization and explicit value corrections. Equipment means the
+existing source identifier; do not invent separate PLC/sensor records. Save reporting
+preparation in the database and explicitly apply changes to historical analysis while
+preserving original CSVs. The supplied database backup informs the storage model;
+it is not an instruction to restore it over the POC. Both frontend and backend use
+hexagonal boundaries under ADR-0032.
 
 ## Deferred beyond the POC
 
