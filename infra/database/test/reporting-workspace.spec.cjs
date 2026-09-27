@@ -967,6 +967,7 @@ test("nonconsecutive months constrain all report measures before aggregation and
     const report = await ref.reports.query("demo-a", query);
     expect(report.totals).toMatchObject({ frequency: 12, seconds: 120, records: 2 });
     expect(report.groups.reduce((n, row) => n + row.frequency, 0)).toBe(12);
+    expect(report.frequencyGroups.reduce((n, row) => n + row.frequency, 0)).toBe(12);
     expect(report.durationGroups.reduce((n, row) => n + row.seconds, 0)).toBe(120);
     expect(report.monthly.map(row => row.period)).toEqual(["2026-05", "2026-07"]);
     expect(report.timeline.map(row => row.period)).toEqual(["2026-05-01", "2026-07-01"]);
@@ -982,4 +983,32 @@ test("nonconsecutive months constrain all report measures before aggregation and
   } finally {
     await ref.close();
   }
+});
+
+
+test("frequency leaders and period series remain independent of duration leaders beyond the top 100", async () => {
+  const sourceId = "component-pareto";
+  const ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 3 }), {
+    ...runtimeConfig,
+    local: { ...runtimeConfig.local, source: { ...runtimeConfig.local.source, id: sourceId } },
+    mappings: new SourceMappings({ ...runtimeConfig.mappings.configuration, sourceId }),
+  });
+  const header = "Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe";
+  const rows = Array.from({ length: 105 }, (_, i) => `${i + 1};0 0:${String(59 - Math.floor(i / 60)).padStart(2, "0")}:${String(59 - i % 60).padStart(2, "0")};Area ${String(i).padStart(3, "0")};=007;Jam;01;001`);
+  try {
+    for (const date of ["20260501", "20260701"])
+      expect((await ref.submit("demo-a", `Hitliste-${date}.csv`, Buffer.from("\ufeff" + header + "\r\n" + rows.join("\r\n") + "\r\n", "utf16le"))).outcome).toBe("succeeded");
+    const report = await ref.reports.query("demo-a", { ...selection, dimension: "area", metric: "duration", from: "2026-05-01", months: ["2026-05", "2026-07"] });
+    expect(report.groupCount).toBe(105);
+    expect(report.frequencyGroups).toHaveLength(100);
+    expect(report.frequencyGroups[0]).toMatchObject({ key: "Area 104", frequency: 210, records: 2 });
+    expect(report.groups[0].key).toBe("Area 000");
+    expect(report.durationGroups[0].key).toBe("Area 000");
+    expect(report.groups.map(row => row.key)).not.toContain("Area 104");
+    expect([...new Set(report.series.map(row => row.key))].sort()).toEqual(Array.from({ length: 10 }, (_, i) => `Area ${String(i + 95).padStart(3, "0")}`));
+    expect([...new Set(report.monthly.map(row => row.key))].sort()).toEqual(Array.from({ length: 10 }, (_, i) => `Area ${String(i).padStart(3, "0")}`));
+    expect(report.totals.frequency).toBe(11130);
+    expect(report.frequencyGroups.reduce((n, row) => n + row.frequency, 0)).toBeLessThan(report.totals.frequency);
+    expect(report.totals.seconds).toBe(744870);
+  } finally { await ref.close(); }
 });

@@ -29,13 +29,31 @@ for (const width of [1440, 375]) {
         const months: string[] = selection.months ?? [
           selection.from.slice(0, 7),
         ];
-        const groups = ["Sector A", "Sector B", "Sector C"].map(
-          (key, index) => ({
-            key,
-            frequency: 30 - index * 5,
-            minutes: 10 - index,
-            seconds: (10 - index) * 60,
-            records: 3,
+        const scale = months.reduce(
+          (sum, month) => sum + Number(month.slice(5)) - 4,
+          0,
+        );
+        const frequencyGroups = Array.from({ length: 12 }, (_, index) => ({
+          key: `Sector ${String.fromCharCode(65 + index)}`,
+          frequency: (12 - index) * scale,
+          minutes: (index + 1) * scale,
+          seconds: (index + 1) * scale * 60,
+          records: months.length,
+        }));
+        const durationGroups = [...frequencyGroups].reverse();
+        const groups =
+          selection.metric === "duration" ? durationGroups : frequencyGroups;
+        const monthly = months.flatMap((period) =>
+          frequencyGroups.map((group) => {
+            const factor = (Number(period.slice(5)) - 4) / scale;
+            return {
+              ...group,
+              period,
+              frequency: group.frequency * factor,
+              minutes: group.minutes * factor,
+              seconds: group.seconds * factor,
+              records: 1,
+            };
           }),
         );
         body = {
@@ -45,29 +63,28 @@ for (const width of [1440, 375]) {
           excludedWeekdays: [7],
           totals: {
             key: "total",
-            frequency: 75,
-            minutes: 27,
-            seconds: 1620,
-            records: 9,
+            frequency: 78 * scale,
+            minutes: 78 * scale,
+            seconds: 78 * scale * 60,
+            records: 12 * months.length,
           },
           executive: [],
           groups,
-          durationGroups: groups,
-          groupCount: 3,
+          frequencyGroups,
+          durationGroups,
+          groupCount: 12,
           timeline: [],
-          series: [],
-          monthly: months.flatMap((period, index) =>
-            groups.map((group) => ({
-              ...group,
-              period,
-              frequency: group.frequency - index * 4,
-            })),
-          ),
+          series: monthly
+            .filter((row) =>
+              frequencyGroups.slice(0, 10).some((g) => g.key === row.key),
+            )
+            .map((row) => ({ ...row, period: row.period + "-01" })),
+          monthly,
           options: { sector: groups.map((g) => g.key) },
           optionCounts: {},
           dates,
           records: [],
-          recordCount: 9,
+          recordCount: 12 * months.length,
           page: 1,
           pageCount: 1,
           unclassifiedCount: 0,
@@ -85,6 +102,9 @@ for (const width of [1440, 375]) {
     const panel = page.locator(".analysis-filter-panel");
     await panel.locator("summary").click();
     await page.getByRole("checkbox", { name: "May 2026" }).check();
+    await page
+      .getByRole("combobox", { name: "Measure", exact: true })
+      .selectOption("duration");
     await expect(
       page.getByRole("checkbox", { name: "June 2026" }),
     ).not.toBeChecked();
@@ -98,6 +118,54 @@ for (const width of [1440, 375]) {
     await expect(
       page.locator(".analysis-plot").first().locator("svg"),
     ).toBeVisible();
+    for (const title of [
+      "Top 10 by frequency · Pareto",
+      "Top 10 by duration · Pareto",
+    ]) {
+      const card = page.locator("section").filter({
+        has: page.getByRole("heading", { name: title, exact: true }),
+      });
+      await expect(
+        card.getByText(/first 7 groups contribute 80.77%/),
+      ).toBeVisible();
+      await expect(card.locator("svg")).toBeVisible();
+      await expect(card.locator("svg")).toContainText("80%");
+      await expect(card.locator("svg")).toContainText("Cumulative %");
+      await expect(card.locator("svg")).not.toContainText("NaN");
+      const labels = await card.locator("svg text").allTextContents();
+      const componentLabels = labels.filter((label) =>
+        label.startsWith("Sector "),
+      );
+      expect(componentLabels).toHaveLength(10);
+      expect(componentLabels[0]).toBe(
+        title.includes("frequency") ? "Sector A" : "Sector L",
+      );
+      await card.screenshot({
+        path: `test-results/pareto-${title.includes("frequency") ? "frequency" : "duration"}-${width}.png`,
+      });
+    }
+    const heatmap = page
+      .locator(".iop-panel--chart")
+      .filter({
+        has: page.getByRole("heading", {
+          name: "Group behavior by reporting period",
+          exact: true,
+        }),
+      });
+    const heatmapLabels = await heatmap.locator("svg text").allTextContents();
+    expect(
+      heatmapLabels.filter((label) => label.startsWith("Sector ")),
+    ).toEqual(
+      Array.from(
+        { length: 10 },
+        (_, i) => `Sector ${String.fromCharCode(65 + i)}`,
+      ),
+    );
+    await heatmap.screenshot({ path: `test-results/heatmap-${width}.png` });
+    await page.screenshot({
+      path: `test-results/component-pareto-${width}.png`,
+      fullPage: true,
+    });
     for (const title of [
       "Halle analysis",
       "Equipment analysis",

@@ -35,6 +35,7 @@ interface ReportSnapshot {
   options: { field: string; value: string }[];
   option_counts: Record<string, number>;
   groups: Record<string, unknown>[];
+  frequency_groups: Record<string, unknown>[];
   duration_groups: Record<string, unknown>[];
   group_count: number;
   timeline: Record<string, unknown>[];
@@ -102,8 +103,9 @@ export class PgReportRepository implements ReportRepository {
      CASE WHEN metric='duration' THEN seconds::numeric ELSE frequency::numeric END DESC,key COLLATE "C") AS rank
      FROM executive_groups WHERE CASE WHEN metric='duration' THEN seconds::numeric ELSE frequency::numeric END > 0),
    leaders AS (SELECT * FROM groups ORDER BY ${metric}::numeric DESC,key COLLATE "C" LIMIT ${q.executive ? 100 : 10}),
+   frequency_leaders AS (SELECT * FROM groups ORDER BY frequency::numeric DESC,key COLLATE "C" LIMIT ${q.executive ? 100 : 10}),
    timeline AS (SELECT date_trunc('${q.period}',reporting_date)::date::text AS period,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected GROUP BY 1),
-   series AS (SELECT date_trunc('${q.period}',reporting_date)::date::text AS period,values->>'${q.dimension}' AS key,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected WHERE values->>'${q.dimension}' IN(SELECT key FROM leaders) GROUP BY 1,2),
+   series AS (SELECT date_trunc('${q.period}',reporting_date)::date::text AS period,values->>'${q.dimension}' AS key,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected WHERE values->>'${q.dimension}' IN(SELECT key FROM frequency_leaders) GROUP BY 1,2),
    monthly AS (SELECT to_char(reporting_date,'YYYY-MM') AS period,values->>'${q.dimension}' AS key,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected WHERE values->>'${q.dimension}' IN(SELECT key FROM leaders) GROUP BY 1,2),
    kpi_values AS (SELECT definition,ordinality,
      coalesce(sum(reported_frequency) FILTER (WHERE reporting_date >= $6::date AND reporting_date < $7::date),0)::text AS frequency,
@@ -124,6 +126,7 @@ export class PgReportRepository implements ReportRepository {
     (SELECT count(*)::integer FROM selected WHERE unmapped) AS unclassified,
     (SELECT coalesce(jsonb_agg(g),'[]'::jsonb) FROM(SELECT * FROM groups ORDER BY ${metric}::numeric DESC,key COLLATE "C" LIMIT 100)g) AS groups,
     (SELECT coalesce(jsonb_agg(g),'[]'::jsonb) FROM(SELECT * FROM groups ORDER BY seconds::numeric DESC,key COLLATE "C" LIMIT 100)g) AS duration_groups,
+    (SELECT coalesce(jsonb_agg(g),'[]'::jsonb) FROM(SELECT * FROM groups ORDER BY frequency::numeric DESC,key COLLATE "C" LIMIT 100)g) AS frequency_groups,
     (SELECT count(*)::integer FROM groups) AS group_count,
     (SELECT coalesce(jsonb_agg(t ORDER BY period),'[]'::jsonb) FROM timeline t) AS timeline,
     (SELECT coalesce(jsonb_agg(t ORDER BY period,key),'[]'::jsonb) FROM series t) AS series,
@@ -194,6 +197,7 @@ export class PgReportRepository implements ReportRepository {
           metric: x.metric,
         })),
         groups: r.groups.map(asRow),
+        frequencyGroups: r.frequency_groups.map(asRow),
         durationGroups: r.duration_groups.map(asRow),
         groupCount: r.group_count,
         timeline: points(r.timeline),

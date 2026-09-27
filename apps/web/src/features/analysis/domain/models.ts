@@ -180,6 +180,7 @@ export interface Report {
   totals: ReportRow;
   executive: ExecutiveLeader[];
   groups: ReportRow[];
+  frequencyGroups: ReportRow[];
   durationGroups: ReportRow[];
   groupCount: number;
   timeline: ReportPoint[];

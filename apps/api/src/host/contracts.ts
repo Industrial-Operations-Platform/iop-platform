@@ -337,6 +337,7 @@ export class ReportDto {
   @ApiProperty({ type: ReportRowDto }) totals!: ReportRowDto;
   @ApiProperty({ type: [ExecutiveLeaderDto] }) executive!: ExecutiveLeaderDto[];
   @ApiProperty({ type: [ReportRowDto] }) groups!: ReportRowDto[];
+  @ApiProperty({ type: [ReportRowDto] }) frequencyGroups!: ReportRowDto[];
   @ApiProperty({ type: [ReportRowDto] }) durationGroups!: ReportRowDto[];
   @ApiProperty() groupCount!: number;
   @ApiProperty({ type: [ReportPointDto] }) timeline!: ReportPointDto[];
