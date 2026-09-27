@@ -197,7 +197,42 @@ export class ValueAliasDto {
   @ApiProperty() from!: string;
   @ApiProperty() to!: string;
 }
+export class ExecutiveKpiDefinitionDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() label!: string;
+  @ApiProperty() message!: string;
+  @ApiProperty({ enum: ["frequency", "duration"] }) metric!:
+    | "frequency"
+    | "duration";
+  @ApiProperty({ type: Number, nullable: true }) goal!: number | null;
+}
+export class ExecutiveKpiDto extends ExecutiveKpiDefinitionDto {
+  @ApiProperty() total!: number;
+  @ApiProperty({ type: Number, nullable: true }) average!: number | null;
+  @ApiProperty({ type: Number, nullable: true }) historicalAverage!:
+    | number
+    | null;
+  @ApiProperty({ type: Number, nullable: true }) reference!: number | null;
+  @ApiProperty({ enum: ["goal", "historical"] }) referenceKind!:
+    | "goal"
+    | "historical";
+  @ApiProperty({ type: Number, nullable: true }) changePercent!: number | null;
+  @ApiProperty({ enum: ["better", "worse", "equal", "unavailable"] }) status!:
+    | "better"
+    | "worse"
+    | "equal"
+    | "unavailable";
+}
+export class MonthlyExecutiveDto {
+  @ApiProperty() month!: string;
+  @ApiProperty() importedDays!: number;
+  @ApiProperty() calendarDays!: number;
+  @ApiProperty() historicalDays!: number;
+  @ApiProperty({ type: [ExecutiveKpiDto] }) kpis!: ExecutiveKpiDto[];
+}
 export class ReportingProfileDto {
+  @ApiProperty({ type: [ExecutiveKpiDefinitionDto], required: false })
+  executiveKpis?: ExecutiveKpiDefinitionDto[];
   @ApiProperty({ type: NormalizationDto }) normalization!: NormalizationDto;
   @ApiProperty() unclassifiedLabel!: string;
   @ApiProperty({ type: [AreaSectorDto] }) areaSectors!: AreaSectorDto[];
@@ -208,6 +243,7 @@ export class ProfileResultDto {
   @ApiProperty({ type: ReportingProfileDto }) profile!: ReportingProfileDto;
 }
 export class ReportRequestDto {
+  @ApiProperty({ required: false }) executive?: boolean;
   @ApiProperty() from!: string;
   @ApiProperty() toExclusive!: string;
   @ApiProperty({
@@ -279,6 +315,8 @@ export class ExecutiveLeaderDto extends ReportRowDto {
     | "duration";
 }
 export class ReportDto {
+  @ApiProperty({ type: MonthlyExecutiveDto, required: false })
+  monthlyExecutive?: MonthlyExecutiveDto;
   @ApiProperty() revision!: string;
   @ApiProperty() profileVersion!: string;
   @ApiProperty({ type: ReportRequestDto }) selection!: ReportRequestDto;

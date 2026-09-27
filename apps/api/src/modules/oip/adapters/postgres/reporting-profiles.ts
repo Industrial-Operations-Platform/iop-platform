@@ -63,7 +63,10 @@ export class PgReportingProfiles implements ReportingProfileRepository {
   }
   private clean(config: CompiledProfile): ReportingProfile {
     const { compiled, ...profile } = config;
-    return profile;
+    return {
+      ...profile,
+      executiveKpis: profile.executiveKpis ?? this.initial.executiveKpis ?? [],
+    };
   }
   get(actor: string): Promise<ProfileResult> {
     return this.run(actor, false, async (tx) => {

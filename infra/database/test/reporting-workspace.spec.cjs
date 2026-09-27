@@ -768,3 +768,41 @@ test("concurrent preparation and import keep every relational fact on the commit
     await ref.close();
   }
 });
+
+test("monthly Meldetext KPIs persist in configured order, use scoped history and honor explicit goals", async () => {
+  const current = await runtime.profiles.get("demo-a");
+  const definitions = [
+    { id: "z-jam", label: "Jam frequency", message: "Jam", metric: "frequency", goal: null },
+    { id: "a-duration", label: "Jam duration", message: "Jam", metric: "duration", goal: 2 },
+    { id: "b-zero", label: "Zero goal", message: "Jam", metric: "frequency", goal: 0 },
+    { id: "c-absent", label: "No matching error", message: "Absent, error", metric: "frequency", goal: null },
+  ];
+  const saved = await runtime.profiles.save("demo-a", {
+    version: current.version, profile: { ...current.profile, executiveKpis: definitions },
+  });
+  expect((await runtime.profiles.get("demo-b")).profile.executiveKpis).toEqual(definitions);
+  const query = { ...selection, executive: true, dimension: "area" };
+  const july = await runtime.reports.query("demo-a", query);
+  expect(july.monthlyExecutive).toMatchObject({ month: "2026-07", importedDays: 2, calendarDays: 31, historicalDays: 3 });
+  const kpis = july.monthlyExecutive.kpis;
+  expect(kpis.map(x => x.id)).toEqual(definitions.map(x => x.id));
+  expect(kpis[0]).toMatchObject({ total: 9, average: 4.5, historicalAverage: 14 / 3, referenceKind: "historical", status: "better" });
+  expect(kpis[1]).toMatchObject({ total: 5, average: 2.5, historicalAverage: 7 / 3, reference: 2, status: "worse", changePercent: 25 });
+  expect(kpis[2]).toMatchObject({ reference: 0, status: "worse", changePercent: null });
+  expect(kpis[3]).toMatchObject({ average: 0, historicalAverage: 0, status: "equal", changePercent: null });
+  expect(july.groups.map(x => x.frequency)).toEqual(july.groups.map(x => x.frequency).sort((a,b) => b-a));
+  expect(new Set(july.series.map(x => x.key))).toEqual(new Set(july.groups.map(x => x.key)));
+  const august = await runtime.reports.query("demo-a", { ...query, from: "2026-08-01", toExclusive: "2026-09-01" });
+  expect(august.monthlyExecutive.kpis[0]).toMatchObject({ total: 5, average: 5, historicalAverage: 14 / 3, status: "worse" });
+  const absent = await runtime.reports.query("demo-a", { ...query, from: "2026-06-01", toExclusive: "2026-07-01" });
+  expect(absent.monthlyExecutive).toMatchObject({ importedDays: 0, calendarDays: 30, historicalDays: 3 });
+  expect(absent.monthlyExecutive.kpis.every(x => x.average === null && x.status === "unavailable")).toBe(true);
+  await expect(runtime.profiles.save("demo-a", current)).rejects.toMatchObject({ code: "analytics_revision_changed" });
+  await expect(runtime.reports.query("demo-b", { ...query, filters: { area: ["Area A"] } })).rejects.toMatchObject({ code: "invalid_selection" });
+  // A legacy saved profile inherits source-scoped defaults without losing its normalization rules.
+  await admin("UPDATE oip.reporting_profiles SET config=config-'executiveKpis' WHERE organization_id=$1 AND site_id=$2 AND source_id=$3", [scope.organizationId,scope.siteId,scope.sourceId]);
+  const legacy = await runtime.profiles.get("demo-a");
+  expect(legacy.profile.areaSectors).toEqual(saved.profile.areaSectors);
+  expect(legacy.profile.executiveKpis).toHaveLength(4);
+  expect((await runtime.reports.query("demo-a", query)).monthlyExecutive.kpis.map(x => x.message)).toEqual(legacy.profile.executiveKpis.map(x => x.message));
+});

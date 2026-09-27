@@ -1,3 +1,4 @@
+import { executiveDefinitions, type ExecutiveKpiDefinition } from "./executive";
 import { AnalyticsError } from "./values";
 // ECMAScript whitespace, shared with the PostgreSQL normalization adapter.
 export const labelWhitespace =
@@ -22,6 +23,7 @@ export const textFields = [
 ] as const;
 export type TextField = (typeof textFields)[number];
 export interface ReportingProfile {
+  executiveKpis?: ExecutiveKpiDefinition[];
   normalization: {
     trim: boolean;
     unicodeNfc: boolean;
@@ -63,8 +65,10 @@ export function normalizeLabel(
 export function compileProfile(value: unknown): CompiledProfile {
   if (
     !obj(value) ||
-    Object.keys(value).sort().join(",") !==
-      "aliases,areaSectors,normalization,unclassifiedLabel" ||
+    Object.keys(value)
+      .filter((key) => key !== "executiveKpis")
+      .sort()
+      .join(",") !== "aliases,areaSectors,normalization,unclassifiedLabel" ||
     !obj(value.normalization)
   )
     fail();
@@ -115,5 +119,6 @@ export function compileProfile(value: unknown): CompiledProfile {
     areas[area] = norm(a.sector);
   }
 
+  if (v.executiveKpis !== undefined) executiveDefinitions(v.executiveKpis);
   return { ...v, compiled: { areas, aliases } };
 }

@@ -1,6 +1,8 @@
+import type { MonthlyExecutive } from "./executive";
 import { AnalyticsError, dateLabel } from "./values";
 import { reportDimensions, type ReportDimension } from "./reporting-profile";
 export interface ReportRequest {
+  executive?: boolean;
   from: string;
   toExclusive: string;
   dimension: ReportDimension;
@@ -26,6 +28,7 @@ export interface ExecutiveLeader extends ReportRow {
   metric: "frequency" | "duration";
 }
 export interface ReportResult {
+  monthlyExecutive?: MonthlyExecutive;
   revision: string;
   profileVersion: string;
   selection: ReportRequest;
@@ -54,6 +57,7 @@ export function reportRequest(input: unknown): ReportRequest {
     Object.keys(input).some(
       (k) =>
         ![
+          "executive",
           "from",
           "toExclusive",
           "dimension",
@@ -111,7 +115,29 @@ export function reportRequest(input: unknown): ReportRequest {
         !/^a1\.[A-Za-z0-9_-]{43}$/.test(input.revision)))
   )
     throw new AnalyticsError("invalid_selection");
+  if (input.executive !== undefined && typeof input.executive !== "boolean")
+    throw new AnalyticsError("invalid_selection");
+  if (
+    input.executive &&
+    (input.from.slice(8) !== "01" ||
+      new Date(
+        Date.UTC(
+          Number(input.from.slice(0, 4)),
+          Number(input.from.slice(5, 7)),
+          1,
+        ),
+      )
+        .toISOString()
+        .slice(0, 10) !== input.toExclusive ||
+      input.dimension !== "area" ||
+      input.period !== "day" ||
+      input.metric !== "frequency" ||
+      count ||
+      search)
+  )
+    throw new AnalyticsError("invalid_selection");
   return {
+    ...(input.executive ? { executive: true } : {}),
     from: input.from,
     toExclusive: input.toExclusive,
     dimension: input.dimension as ReportDimension,

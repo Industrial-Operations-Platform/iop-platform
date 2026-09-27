@@ -320,6 +320,14 @@ export interface components {
             options: components["schemas"]["OptionDto"][];
             nextCursor: string | null;
         };
+        ExecutiveKpiDefinitionDto: {
+            id: string;
+            label: string;
+            message: string;
+            /** @enum {string} */
+            metric: "frequency" | "duration";
+            goal: number | null;
+        };
         NormalizationDto: {
             trim: boolean;
             unicodeNfc: boolean;
@@ -336,6 +344,7 @@ export interface components {
             to: string;
         };
         ReportingProfileDto: {
+            executiveKpis?: components["schemas"]["ExecutiveKpiDefinitionDto"][];
             normalization: components["schemas"]["NormalizationDto"];
             unclassifiedLabel: string;
             areaSectors: components["schemas"]["AreaSectorDto"][];
@@ -346,6 +355,7 @@ export interface components {
             profile: components["schemas"]["ReportingProfileDto"];
         };
         ReportRequestDto: {
+            executive?: boolean;
             from: string;
             toExclusive: string;
             /** @enum {string} */
@@ -360,6 +370,30 @@ export interface components {
             search?: string;
             page?: number;
             revision?: string;
+        };
+        ExecutiveKpiDto: {
+            id: string;
+            label: string;
+            message: string;
+            /** @enum {string} */
+            metric: "frequency" | "duration";
+            goal: number | null;
+            total: number;
+            average: number | null;
+            historicalAverage: number | null;
+            reference: number | null;
+            /** @enum {string} */
+            referenceKind: "goal" | "historical";
+            changePercent: number | null;
+            /** @enum {string} */
+            status: "better" | "worse" | "equal" | "unavailable";
+        };
+        MonthlyExecutiveDto: {
+            month: string;
+            importedDays: number;
+            calendarDays: number;
+            historicalDays: number;
+            kpis: components["schemas"]["ExecutiveKpiDto"][];
         };
         ReportRowDto: {
             key: string;
@@ -402,6 +436,7 @@ export interface components {
             minutes: number;
         };
         ReportDto: {
+            monthlyExecutive?: components["schemas"]["MonthlyExecutiveDto"];
             revision: string;
             profileVersion: string;
             selection: components["schemas"]["ReportRequestDto"];

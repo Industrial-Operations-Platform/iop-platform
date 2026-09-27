@@ -14,5 +14,17 @@ export function hitlisteReportingProfile(
       sector: labels.get(x.sectorKey)!,
     })),
     aliases: [],
+    executiveKpis: [
+      ["blocked-light-barrier", "Lichtschranke zu lange belegt"],
+      ["update-error-rate", "Fehlerquote an Update zu hoch"],
+      ["collective-fault", "Sammelstörung"],
+      ["volume-reducer", "Volumenreduzierer: Sammelstörung"],
+    ].map(([id, message]) => ({
+      id,
+      label: message,
+      message,
+      metric: "frequency",
+      goal: null,
+    })),
   };
 }

@@ -1333,6 +1333,38 @@
           "nextCursor"
         ]
       },
+      "ExecutiveKpiDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "frequency",
+              "duration"
+            ]
+          },
+          "goal": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "message",
+          "metric",
+          "goal"
+        ]
+      },
       "NormalizationDto": {
         "type": "object",
         "properties": {
@@ -1396,6 +1428,12 @@
       "ReportingProfileDto": {
         "type": "object",
         "properties": {
+          "executiveKpis": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExecutiveKpiDefinitionDto"
+            }
+          },
           "normalization": {
             "$ref": "#/components/schemas/NormalizationDto"
           },
@@ -1440,6 +1478,9 @@
       "ReportRequestDto": {
         "type": "object",
         "properties": {
+          "executive": {
+            "type": "boolean"
+          },
           "from": {
             "type": "string"
           },
@@ -1499,6 +1540,110 @@
           "dimension",
           "period",
           "metric"
+        ]
+      },
+      "ExecutiveKpiDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "frequency",
+              "duration"
+            ]
+          },
+          "goal": {
+            "type": "number",
+            "nullable": true
+          },
+          "total": {
+            "type": "number"
+          },
+          "average": {
+            "type": "number",
+            "nullable": true
+          },
+          "historicalAverage": {
+            "type": "number",
+            "nullable": true
+          },
+          "reference": {
+            "type": "number",
+            "nullable": true
+          },
+          "referenceKind": {
+            "type": "string",
+            "enum": [
+              "goal",
+              "historical"
+            ]
+          },
+          "changePercent": {
+            "type": "number",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "better",
+              "worse",
+              "equal",
+              "unavailable"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "message",
+          "metric",
+          "goal",
+          "total",
+          "average",
+          "historicalAverage",
+          "reference",
+          "referenceKind",
+          "changePercent",
+          "status"
+        ]
+      },
+      "MonthlyExecutiveDto": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "string"
+          },
+          "importedDays": {
+            "type": "number"
+          },
+          "calendarDays": {
+            "type": "number"
+          },
+          "historicalDays": {
+            "type": "number"
+          },
+          "kpis": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExecutiveKpiDto"
+            }
+          }
+        },
+        "required": [
+          "month",
+          "importedDays",
+          "calendarDays",
+          "historicalDays",
+          "kpis"
         ]
       },
       "ReportRowDto": {
@@ -1662,6 +1807,9 @@
       "ReportDto": {
         "type": "object",
         "properties": {
+          "monthlyExecutive": {
+            "$ref": "#/components/schemas/MonthlyExecutiveDto"
+          },
           "revision": {
             "type": "string"
           },

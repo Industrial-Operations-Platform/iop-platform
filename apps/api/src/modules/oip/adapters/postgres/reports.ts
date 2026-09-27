@@ -1,3 +1,7 @@
+import {
+  compareExecutiveKpi,
+  type ExecutiveKpiDefinition,
+} from "../../domain/executive";
 import { digest, scopeTuple } from "../../analytics";
 import { exactTotal, AnalyticsError } from "../../domain/values";
 import {
@@ -13,6 +17,13 @@ import type {
 import type { ReportRepository } from "../../application/ports";
 import { PgReportingProfiles } from "./reporting-profiles";
 interface ReportSnapshot {
+  kpi_values: {
+    definition: ExecutiveKpiDefinition;
+    frequency: string;
+    seconds: string;
+    historical_frequency: string;
+    historical_seconds: string;
+  }[];
   publications: { id: string; date: string }[];
   profile_version: string;
   totals: Record<string, unknown>;
@@ -90,13 +101,22 @@ export class PgReportRepository implements ReportRepository {
    executive_ranked AS (SELECT *,row_number() OVER(PARTITION BY dimension ORDER BY
      CASE WHEN metric='duration' THEN seconds::numeric ELSE frequency::numeric END DESC,key COLLATE "C") AS rank
      FROM executive_groups WHERE CASE WHEN metric='duration' THEN seconds::numeric ELSE frequency::numeric END > 0),
-   leaders AS (SELECT * FROM groups ORDER BY ${metric}::numeric DESC,key COLLATE "C" LIMIT 10),
+   leaders AS (SELECT * FROM groups ORDER BY ${metric}::numeric DESC,key COLLATE "C" LIMIT ${q.executive ? 100 : 10}),
    timeline AS (SELECT date_trunc('${q.period}',reporting_date)::date::text AS period,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected GROUP BY 1),
    series AS (SELECT date_trunc('${q.period}',reporting_date)::date::text AS period,values->>'${q.dimension}' AS key,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected WHERE values->>'${q.dimension}' IN(SELECT key FROM leaders) GROUP BY 1,2),
    monthly AS (SELECT to_char(reporting_date,'YYYY-MM') AS period,values->>'${q.dimension}' AS key,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected WHERE values->>'${q.dimension}' IN(SELECT key FROM leaders) GROUP BY 1,2),
+   kpi_values AS (SELECT definition,ordinality,
+     coalesce(sum(reported_frequency) FILTER (WHERE reporting_date >= $6::date AND reporting_date < $7::date),0)::text AS frequency,
+     coalesce(sum(accumulated_alarm_seconds) FILTER (WHERE reporting_date >= $6::date AND reporting_date < $7::date),0)::text AS seconds,
+     coalesce(sum(reported_frequency),0)::text AS historical_frequency,
+     coalesce(sum(accumulated_alarm_seconds),0)::text AS historical_seconds
+     FROM p CROSS JOIN LATERAL jsonb_array_elements(coalesce(p.config->'executiveKpis',$4::jsonb->'executiveKpis','[]'::jsonb)) WITH ORDINALITY AS definitions(definition,ordinality)
+     LEFT JOIN ready ON ready.values->>'message'=definition->>'message'
+     WHERE ${q.executive ? "true" : "false"} GROUP BY definition,ordinality),
    opts AS (SELECT key,value,count(*) AS n FROM ready CROSS JOIN LATERAL jsonb_each_text(values) GROUP BY key,value),
    rankedopts AS (SELECT *,row_number() OVER(PARTITION BY key ORDER BY value COLLATE "C") AS pos FROM opts)
-   SELECT (SELECT version FROM p) AS profile_version,(SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb) FROM manifest) AS publications,
+   SELECT (SELECT coalesce(jsonb_agg(k ORDER BY ordinality),'[]'::jsonb) FROM kpi_values k) AS kpi_values,
+    (SELECT version FROM p) AS profile_version,(SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb) FROM manifest) AS publications,
     (SELECT jsonb_build_object('frequency',coalesce(sum(reported_frequency),0)::text,'seconds',coalesce(sum(accumulated_alarm_seconds),0)::text,'records',count(*)::text) FROM selected) AS totals,
     (SELECT coalesce(jsonb_agg(e ORDER BY dimension),'[]'::jsonb) FROM executive_ranked e WHERE rank=1) AS executive,
     ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
@@ -123,6 +143,7 @@ export class PgReportRepository implements ReportRepository {
           ...scopeTuple(source),
           pubs.map((p) => p.id).sort(),
           r.profile_version,
+          this.profiles.initialVersion,
         ]);
       const totals = asRow(r.totals);
       const options: Record<string, string[]> = {};
@@ -134,6 +155,34 @@ export class PgReportRepository implements ReportRepository {
       return {
         revision,
         profileVersion: r.profile_version,
+        ...(q.executive
+          ? {
+              monthlyExecutive: {
+                month: q.from.slice(0, 7),
+                importedDays: pubs.filter(
+                  (x) => x.date >= q.from && x.date < q.toExclusive,
+                ).length,
+                calendarDays:
+                  (Date.parse(q.toExclusive) - Date.parse(q.from)) / 86400000,
+                historicalDays: pubs.length,
+                kpis: r.kpi_values.map((x) =>
+                  compareExecutiveKpi(
+                    x.definition,
+                    x.definition.metric === "duration"
+                      ? exactTotal(x.seconds) / 60
+                      : exactTotal(x.frequency),
+                    x.definition.metric === "duration"
+                      ? exactTotal(x.historical_seconds) / 60
+                      : exactTotal(x.historical_frequency),
+                    pubs.filter(
+                      (x) => x.date >= q.from && x.date < q.toExclusive,
+                    ).length,
+                    pubs.length,
+                  ),
+                ),
+              },
+            }
+          : {}),
         selection: q,
         totals,
         executive: r.executive.map((x) => ({
