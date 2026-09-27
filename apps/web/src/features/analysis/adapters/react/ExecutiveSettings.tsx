@@ -17,9 +17,11 @@ import type {
 export function ExecutiveSettings({
   application,
   onSaved,
+  initiallyExpanded = false,
 }: {
   application: AnalysisWorkspace;
   onSaved: () => void;
+  initiallyExpanded?: boolean;
 }) {
   const [messages, setMessages] = useState<string[]>([]);
   const [value, setValue] = useState<ProfileResult | null>(null);
@@ -80,6 +82,7 @@ export function ExecutiveSettings({
       className="analysis-executive-settings"
       variant="panel"
       summary="KPI settings & goals"
+      open={initiallyExpanded || undefined}
     >
       <p>
         Choose up to eight KPIs. Choose an exact prepared Meldetext for each

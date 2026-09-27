@@ -1,6 +1,7 @@
 # POC delivery status
 
-The current local platform is implemented and technically verified through IOP-156. Start with
+The current local platform is implemented and technically verified through IOP-156,
+with the IOP-158 administration refinement. Start with
 `npm run local:up`; the [operator guide](../development/running-poc.md) owns execution
 instructions and seed reconciliation. The [POC scope](../product/scope-poc.md) owns
 product requirements. This page records delivery and outstanding acceptance.
@@ -20,6 +21,7 @@ product requirements. This page records delivery and outstanding acceptance.
 | Empty Start page, default Taskforce view, administrator tools, dropdown selectors and sortable per-file source rows | [IOP-154](completed/IOP-154-taskforce-administration-plan.md) |
 | Sunday exclusion across reports and KPI averages, eligible chart calendars, preserved Sunday source files and complete seed verification | [IOP-155](completed/IOP-155-analysis-calendar-plan.md) |
 | Aligned file-table headers and complete-file column filters reusing Taskforce controls | [IOP-156](completed/IOP-156-source-file-filters-plan.md) |
+| Dedicated import administration, date confirmation, inspection outcomes and separate preparation/KPI settings without report duplication | [IOP-158](completed/IOP-158-import-administration-plan.md) |
 
 Full-history totals come from persisted data, independently of the displayed page.
 Original CSV fields and durations remain traceable. Source-reported frequency is

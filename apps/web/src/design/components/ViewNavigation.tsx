@@ -9,7 +9,7 @@ export function ViewNavigation<T extends string | number>({
   onSelect,
 }: {
   label: string;
-  items: readonly { id: T; label: string }[];
+  items: readonly { id: T; label: string; disabled?: boolean }[];
   selected: T;
   onSelect: (id: T) => void;
 }) {
@@ -36,6 +36,7 @@ export function ViewNavigation<T extends string | number>({
       {items.map((item) => (
         <Button
           key={item.id}
+          disabled={item.disabled}
           aria-pressed={selected === item.id}
           onClick={() => onSelect(item.id)}
         >

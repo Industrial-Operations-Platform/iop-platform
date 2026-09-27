@@ -18,9 +18,13 @@
   margin-top: 20px;
 }
 .analysis-import form {
-  display: flex;
-  align-items: end;
+  display: grid;
+  justify-items: start;
   gap: 15px;
+  overflow-wrap: anywhere;
+}
+.analysis-import form .iop-field {
+  max-width: 100%;
 }
 .analysis-import a {
   margin-left: 12px;

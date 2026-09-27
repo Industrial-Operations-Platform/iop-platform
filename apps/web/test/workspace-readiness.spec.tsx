@@ -118,6 +118,7 @@ test("preparation edits clear saved confirmation and cannot be overwritten durin
   fireEvent.click(
     await screen.findByRole("button", { name: "Import & prepare" }),
   );
+  fireEvent.click(screen.getByRole("button", { name: "Data preparation" }));
   const save = await screen.findByRole("button", {
     name: "Save historical preparation",
   });
@@ -178,6 +179,15 @@ test("Start is empty and administrators enter the Taskforce presentation before 
   fireEvent.click(screen.getByRole("button", { name: "Administration" }));
   await screen.findByRole("button", { name: "Import & prepare" });
   await waitFor(() => expect(gateway.history).toHaveBeenCalled());
+  await screen.findByRole("heading", { name: "Add a daily CSV" });
+  const reportCalls = gateway.report.mock.calls.length;
+  expect(
+    screen.queryByRole("navigation", { name: "Analysis templates" }),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByText(/Explore data/)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Refresh history" }));
+  await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(2));
+  expect(gateway.report).toHaveBeenCalledTimes(reportCalls);
   fireEvent.click(screen.getByRole("button", { name: "Taskforce view" }));
   await waitFor(() =>
     expect(
@@ -185,4 +195,24 @@ test("Start is empty and administrators enter the Taskforce presentation before 
     ).not.toBeInTheDocument(),
   );
   expect(screen.queryByText("KPI settings & goals")).not.toBeInTheDocument();
+});
+
+test("administration works before the first import without analytical requests", async () => {
+  const gateway = setup();
+  gateway.availability.mockResolvedValue({ dates: [] });
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Administration" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
+  await screen.findByRole("heading", { name: "Add a daily CSV" });
+  fireEvent.click(screen.getByRole("button", { name: "KPI settings & goals" }));
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Save KPI settings" }),
+    ).toBeEnabled(),
+  );
+  expect(gateway.report).not.toHaveBeenCalled();
+  expect(
+    screen.queryByRole("navigation", { name: "Analysis templates" }),
+  ).not.toBeInTheDocument();
 });
