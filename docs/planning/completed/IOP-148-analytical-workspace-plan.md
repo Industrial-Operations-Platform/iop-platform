@@ -139,3 +139,15 @@ no formal production performance or accessibility certification is claimed.
 IOP-147 remains published as authorized. IOP-148 is committed on its review branch;
 its publication is a separate final owner decision, not inferred from technical
 validation. Owner usability acceptance remains distinct from implementation closure.
+
+## Final startup recovery follow-up
+
+The final restart exposed a real startup-order race: Vite may answer before the API
+listens. Add a retry action to the React connection state and verify a rejected
+context request followed by a successful retry with an injected gateway. Files:
+`Workspace.tsx`, a focused frontend interaction test, and this evidence record.
+No background resubmission or import retry is introduced.
+
+The retry interaction test passed and the frontend build/type check passed. The
+running API returned `200 {"status":"ok"}` after startup. This follow-up changes
+only connection recovery; it does not replay uploads or alter analytical results.

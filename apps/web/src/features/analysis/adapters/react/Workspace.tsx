@@ -80,9 +80,12 @@ export function WorkspaceApp({
 }) {
   const [context, setContext] = useState<DemoContext | null>(null),
     [error, setError] = useState<unknown>(),
-    [pending, setPending] = useState(false);
+    [pending, setPending] = useState(false),
+    [connectionAttempt, setConnectionAttempt] = useState(0);
   useEffect(() => {
     let active = true;
+    setPending(true);
+    setError(undefined);
     void application
       .open()
       .then((c) => {
@@ -90,11 +93,14 @@ export function WorkspaceApp({
       })
       .catch((e) => {
         if (active) setError(e);
+      })
+      .finally(() => {
+        if (active) setPending(false);
       });
     return () => {
       active = false;
     };
-  }, [application]);
+  }, [application, connectionAttempt]);
   const choose = async (id: string) => {
     setPending(true);
     setError(undefined);
@@ -156,6 +162,14 @@ export function WorkspaceApp({
                 ? "Select a user in the header to open the workspace."
                 : "Connect the local API to open the analytical workspace."}
             </p>
+            {(!context?.enabled || !!error) && (
+              <button
+                disabled={pending}
+                onClick={() => setConnectionAttempt((n) => n + 1)}
+              >
+                {pending ? "Connecting…" : "Retry connection"}
+              </button>
+            )}
           </section>
         )}
       </main>
