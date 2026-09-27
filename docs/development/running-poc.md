@@ -4,7 +4,64 @@ The application supports **CSV → persistent history → analytical report temp
 operator's loopback-only demonstration. Third-party authentication replaces the
 local user selector before shared use; no password or enterprise login is claimed.
 
-## Start a dedicated installation
+## Primary local installation — Docker Compose
+
+Prerequisites: Node 24.21.0/npm 10.9.2 for the small host launcher, and Docker with
+Compose supporting `up --wait`. No host dependency installation is required for
+this path; application builds, migrations and seed imports run inside containers.
+Port 8080 must be available. From the repository root:
+
+```sh
+npm run local:up -- /absolute/path/to/wincc_local_20260729_123555.backup
+```
+
+Open **http://127.0.0.1:8080** and select **Administrator**. Frontend, API and
+PostgreSQL are three separate services. Only the frontend is published to loopback;
+API and database ports remain internal. A temporary setup container provisions roles,
+executes migrations and imports the seed before the API starts. Business composition
+lives in `apps/api/src/host`, with hexagonal modules/features in API and web.
+
+The seed uses only `analytics.fact_hitliste` joined to the backup's five `core`
+catalogs. It imports **42,220 rows across 78 dates (May 1–July 28, 2026), frequency
+212,411, 56,391,042 exact seconds (939,850.7 minutes)** from the supplied archive.
+The initial `public.hitliste` prototype is excluded. Its additional 467 rows are
+not silently added to the requested analytics dataset. Original duration strings
+supply exact seconds; rounded archive minutes are not summed. Sector classification
+uses the configured five hall lists, with explicit unclassified fallback.
+
+Private `.local-platform/seed/manifest.json` records the archive digest, per-day
+hashes/totals and original analytics/source IDs in derived CSV record order.
+These daily CSVs are **backup-derived seed inputs**, not original WinCC daily exports.
+The application retains them through the same immutable import pipeline as uploads.
+Backup SQL is read as COPY data and never executed. Neither the private data nor
+credentials enter Git or image build contexts.
+
+```sh
+npm run local:stop
+npm run local:up
+npm run local:status
+```
+
+Subsequent starts reuse the private seed and persistent
+`iop-platform-local_platform-data` volume. All files and existing dates are checked
+before importing missing dates. Matching retained bytes are skipped; conflicts stop
+initialization without replacing records. Later CSV uploads remain intact. A failed
+multi-day seed can leave already completed days; rerunning verifies/skips those
+before continuing. Ambiguous import outcomes require inspection, never automatic
+replay. `local:up` stops API/web during initialization, then rebuilds and starts them.
+Keep `.local-platform/` with its database volume; do not regenerate lost credentials
+or use `docker compose down -v` to troubleshoot. Earlier native installations remain
+separate. To start empty, omit the backup on the first `local:up`.
+
+Reports have a closed **Date range** control by default. Executive Overview and
+Halle expose dates only. Bereich adds sector and area; Equipment adds the code;
+Error and Daily/monthly add their finer dimensions. Grouping does not clear these
+filters. Returning to a broader view removes incompatible filters; chart/KPI clicks
+open a view that can display the chosen constraint. Collapsed controls show dates
+and the number of active constraints. The established colors and executive-only
+KPI cards remain unchanged.
+
+## Optional native development installation
 
 Prerequisites: Node 24.21.0, npm 10.9.2 and a running Docker daemon. Ports 54329
 (database), 3000 (API) and 5173 (web) must be available. From the repository root:
@@ -199,10 +256,11 @@ from the original opt-in `?preview=1` fixture previews. Tests never reset this
 operator installation. See [testing](testing-poc.md) and
 [delivery evidence](../planning/completed/IOP-147-working-analytical-poc-plan.md).
 
-- An inactive backend shows **Connect the local API**; use the demo
-  launcher, not the independent health-only/container bootstrap.
+- An inactive backend shows **Connect the local API**; use `npm run local:up`
+  for the full stack, or the matching native launcher for native development.
 - Access failure requires checking the selected seeded principal and current grants.
-  Shared hosting, production mode, foreign origins and arbitrary scope are refused.
+  Shared hosting, foreign origins and arbitrary scope are refused. The explicit
+  local-container mode uses production-built images while retaining local identity.
 - An interrupted attempt can be reviewed and explicitly recovered from Import &
   prepare once processing has stopped. Recovery checks durable outcome and never
   silently resubmits the bytes.

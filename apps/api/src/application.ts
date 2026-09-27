@@ -3,8 +3,8 @@ import { INestApplication } from "@nestjs/common";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { DemoModule } from "./demo/controller";
-import { DemoRuntime } from "./demo/runtime";
+import { PlatformModule } from "./host/controller";
+import { PlatformRuntime } from "./host/runtime";
 import { ProblemDetailsFilter } from "./problem-details.filter";
 
 export function configureApplication(app: INestApplication): void {
@@ -26,11 +26,11 @@ export function configureApplication(app: INestApplication): void {
 }
 
 export async function createApplication(
-  runtime: DemoRuntime | null = null,
+  runtime: PlatformRuntime | null = null,
   port = 3000,
 ): Promise<INestApplication> {
   const app = await NestFactory.create(
-    { module: AppModule, imports: [DemoModule.register(runtime)] },
+    { module: AppModule, imports: [PlatformModule.register(runtime)] },
     { logger: false, abortOnError: false, bodyParser: false },
   );
   app.use(

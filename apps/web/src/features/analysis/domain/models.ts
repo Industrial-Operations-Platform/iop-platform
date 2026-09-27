@@ -1,5 +1,5 @@
 // Application-owned values. HTTP adapters check compatibility with generated DTOs.
-export interface DemoUser {
+export interface LocalUser {
   id: string;
   name: string;
 }
@@ -12,8 +12,8 @@ export interface DemoScope {
 export interface DemoContext {
   canImport: boolean;
   enabled: boolean;
-  users: DemoUser[];
-  user: DemoUser | null;
+  users: LocalUser[];
+  user: LocalUser | null;
   scope: DemoScope | null;
 }
 export interface Diagnostic {

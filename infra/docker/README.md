@@ -1,17 +1,23 @@
 # Local POC containers
 
-## Connected analytical POC — IOP-147
+## Working platform — IOP-149
 
-For the working CSV upload, history, demo users, analytical views and safe reset,
-follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
-API/web hosts and a dedicated PostgreSQL container. The earlier health/preview
-bootstrap instructions below remain available independently; they do not activate
-the business workflow by themselves.
+Use `npm run local:up -- /absolute/path/to/backup.backup` for the complete local
+application on **http://127.0.0.1:8080**. This selects `compose.platform.yaml`:
+separate frontend, API and persistent database, plus a one-shot setup tool. Subsequent
+`npm run local:up` reuses the configured seed and preserves uploaded history.
+See the [operator guide](../../docs/development/running-poc.md) for prerequisites,
+analytics seed provenance, exact totals and stop/start commands. The native launchers
+remain optional development tools; application code has no demo directory.
 
+## Earlier health-only bootstrap
+
+The remaining instructions describe `compose.yaml`, which is separate from the
+working platform installation and does not activate business routes.
 
 IOP-015 starts the existing React UI, public-health API and an empty PostgreSQL
 service. IOP-019 adds opt-in [role provisioning and migrations](../database/README.md).
-Application database access, seed data, CSV ingestion and analytics remain future work. See the [execution plan](../../docs/planning/completed/IOP-015-local-development-environment-plan.md)
+Those earlier health hosts do not include the business workflow. See the [execution plan](../../docs/planning/completed/IOP-015-local-development-environment-plan.md)
 for validation status and limitations. This is not completion of POC increment 1.
 
 ## First startup

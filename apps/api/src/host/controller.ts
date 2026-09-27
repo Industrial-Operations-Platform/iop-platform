@@ -26,7 +26,7 @@ import {
   getSchemaPath,
 } from "@nestjs/swagger";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { DemoRuntime, DEMO_RUNTIME } from "./runtime";
+import { PlatformRuntime, PLATFORM_RUNTIME } from "./runtime";
 import {
   SiteAccessDeniedError,
   AuthorizationUnavailableError,
@@ -120,11 +120,11 @@ async function operation<T>(work: () => Promise<T>): Promise<T> {
     "Local mode inactive, maintenance, busy upload or persistence unavailable.",
 })
 @Controller("api/v1")
-export class DemoController {
+export class PlatformController {
   constructor(
-    @Inject(DEMO_RUNTIME) private readonly runtime: DemoRuntime | null,
+    @Inject(PLATFORM_RUNTIME) private readonly runtime: PlatformRuntime | null,
   ) {}
-  private active(req: IncomingMessage): DemoRuntime {
+  private active(req: IncomingMessage): PlatformRuntime {
     if (
       req.url?.includes("?") ||
       (req.method === "GET" &&
@@ -354,12 +354,12 @@ export class DemoController {
   }
 }
 @Module({})
-export class DemoModule {
-  static register(runtime: DemoRuntime | null): DynamicModule {
+export class PlatformModule {
+  static register(runtime: PlatformRuntime | null): DynamicModule {
     return {
-      module: DemoModule,
-      controllers: [DemoController],
-      providers: [{ provide: DEMO_RUNTIME, useValue: runtime }],
+      module: PlatformModule,
+      controllers: [PlatformController],
+      providers: [{ provide: PLATFORM_RUNTIME, useValue: runtime }],
     };
   }
 }

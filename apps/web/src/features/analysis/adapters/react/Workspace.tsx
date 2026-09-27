@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import {
   AnalysisWorkspace,
   changeSelection,
-  filterGroup,
+  drillInto,
+  selectView,
+  reportViews,
   nextDate,
 } from "../../application/workspace";
 import {
@@ -30,14 +32,6 @@ const labels: Record<Dimension, string> = {
   frequency: "Häufigkeit",
   duration: "Dauer (minutes)",
 };
-const templates = [
-  ["Executive Overview", "sector"],
-  ["Halle analysis", "sector"],
-  ["Bereich analysis", "area"],
-  ["Equipment analysis", "equipment"],
-  ["Error analysis", "message"],
-  ["Daily / monthly", "area"],
-] as const;
 function Notice({ error }: { error: unknown }) {
   return error ? (
     <p className="analysis-error" role="alert">
@@ -202,7 +196,7 @@ function ReportWorkspace({
       .then((x) => {
         if (active) {
           setHistory(x.history);
-          setSelection(x.selection);
+          setSelection(x.selection ? selectView(x.selection, template) : null);
           if (!x.selection) setLoading(false);
         }
       })
@@ -237,11 +231,17 @@ function ReportWorkspace({
       active = false;
     };
   }, [application, selection]);
+  const drill = (dimension: Dimension, key: string) => {
+    if (!selection) return;
+    const next = drillInto(selection, template, dimension, key);
+    setTemplate(next.view);
+    setSelection(next.selection);
+  };
   const select = (key: string) => {
-    if (selection)
-      setSelection(filterGroup(selection, selection.dimension, key));
+    if (selection) drill(selection.dimension, key);
   };
   const showFile = (date: string) => {
+    setTemplate(0);
     setSelection({
       from: date,
       toExclusive: nextDate(date),
@@ -290,6 +290,7 @@ function ReportWorkspace({
             <Filters
               key={JSON.stringify(selection)}
               selection={selection}
+              view={template}
               report={report}
               onApply={(s) => setSelection(s)}
             />
@@ -309,12 +310,7 @@ function ReportWorkspace({
             report && (
               <>
                 {template === 0 && (
-                  <ExecutiveKpis
-                    report={report}
-                    onSelect={(dimension, key) => {
-                      setSelection(filterGroup(selection, dimension, key));
-                    }}
-                  />
+                  <ExecutiveKpis report={report} onSelect={drill} />
                 )}
                 <p className="analysis-footnote">
                   All matching historical rows contribute to totals. Rankings
@@ -415,14 +411,13 @@ function ReportWorkspace({
             )
           )}
           <nav className="analysis-tabs" aria-label="Analysis templates">
-            {templates.map(([title, dimension], i) => (
+            {reportViews.map(({ title }, i) => (
               <button
                 key={title}
                 aria-pressed={template === i}
                 onClick={() => {
                   setTemplate(i);
-                  if (selection)
-                    setSelection(changeSelection(selection, { dimension }));
+                  if (selection) setSelection(selectView(selection, i));
                 }}
               >
                 {title}
@@ -436,10 +431,12 @@ function ReportWorkspace({
 }
 function Filters({
   selection,
+  view,
   report,
   onApply,
 }: {
   selection: ReportRequest;
+  view: number;
   report: Report | null;
   onApply: (s: ReportRequest) => void;
 }) {
@@ -452,127 +449,138 @@ function Filters({
         onApply(changeSelection(draft, {}));
       }}
     >
-      <div className="analysis-filter-row">
-        <label>
-          From
-          <input
-            type="date"
-            required
-            value={draft.from}
-            onChange={(e) => setDraft({ ...draft, from: e.target.value })}
-          />
-        </label>
-        <label>
-          To (exclusive)
-          <input
-            type="date"
-            required
-            value={draft.toExclusive}
-            onChange={(e) =>
-              setDraft({ ...draft, toExclusive: e.target.value })
-            }
-          />
-        </label>
-        <label>
-          Group by
-          <select
-            value={draft.dimension}
-            onChange={(e) =>
-              setDraft({ ...draft, dimension: e.target.value as Dimension })
-            }
-          >
-            {dimensions.map((d) => (
-              <option key={d} value={d}>
-                {labels[d]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Measure
-          <select
-            value={draft.metric}
-            onChange={(e) =>
-              setDraft({
-                ...draft,
-                metric: e.target.value as ReportRequest["metric"],
-              })
-            }
-          >
-            <option value="frequency">Frequency</option>
-            <option value="duration">Duration · minutes</option>
-          </select>
-        </label>
-        <label>
-          Period
-          <select
-            value={draft.period}
-            onChange={(e) =>
-              setDraft({
-                ...draft,
-                period: e.target.value as ReportRequest["period"],
-              })
-            }
-          >
-            <option value="day">Daily</option>
-            <option value="week">Weekly</option>
-            <option value="month">Monthly</option>
-          </select>
-        </label>
-        <label>
-          Search all fields
-          <input
-            value={draft.search ?? ""}
-            maxLength={200}
-            onChange={(e) => setDraft({ ...draft, search: e.target.value })}
-          />
-        </label>
-        <button>Apply filters</button>
-        <button
-          type="button"
-          className="secondary"
-          onClick={() =>
-            onApply(changeSelection(selection, { filters: {}, search: "" }))
-          }
-        >
-          Clear filters
-        </button>
-      </div>
-      <details>
+      <details className="analysis-filter-panel">
         <summary>
-          Filter a sector, location, equipment code or error ·{" "}
-          {Object.values(selection.filters ?? {}).flat().length} selected
+          Date range{view > 1 ? " & filters" : ""} · {selection.from} –{" "}
+          {new Date(Date.parse(selection.toExclusive) - 86400000)
+            .toISOString()
+            .slice(0, 10)}
+          {Object.values(selection.filters ?? {}).flat().length > 0
+            ? ` · ${Object.values(selection.filters ?? {}).flat().length} active`
+            : ""}
         </summary>
         <div className="analysis-filter-row">
-          {dimensions.map((d) => (
-            <label key={d}>
-              {labels[d]}
-              <input
-                aria-label={labels[d] + " filter"}
-                list={"values-" + d}
-                value={draft.filters?.[d]?.[0] ?? ""}
-                onChange={(e) =>
-                  setDraft({
-                    ...draft,
-                    filters: {
-                      ...draft.filters,
-                      [d]: e.target.value ? [e.target.value] : [],
-                    },
-                  })
-                }
-              />
-              <datalist id={"values-" + d}>
-                {report?.options[d]?.map((v) => (
-                  <option key={v} value={v} />
-                ))}
-              </datalist>
-              <small>
-                {d === "duration" ? "Exact seconds for this filter. " : ""}Type
-                an exact value; up to 200 suggestions.
-              </small>
-            </label>
-          ))}
+          <label>
+            From
+            <input
+              type="date"
+              required
+              value={draft.from}
+              onChange={(e) => setDraft({ ...draft, from: e.target.value })}
+            />
+          </label>
+          <label>
+            To (exclusive)
+            <input
+              type="date"
+              required
+              value={draft.toExclusive}
+              onChange={(e) =>
+                setDraft({ ...draft, toExclusive: e.target.value })
+              }
+            />
+          </label>
+          {view > 1 && (
+            <>
+              <label>
+                Group by
+                <select
+                  aria-label="Group by"
+                  value={draft.dimension}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      dimension: e.target.value as Dimension,
+                    })
+                  }
+                >
+                  {dimensions.map((d) => (
+                    <option key={d} value={d}>
+                      {labels[d]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Measure
+                <select
+                  aria-label="Measure"
+                  value={draft.metric}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      metric: e.target.value as ReportRequest["metric"],
+                    })
+                  }
+                >
+                  <option value="frequency">Frequency</option>
+                  <option value="duration">Duration · minutes</option>
+                </select>
+              </label>
+              <label>
+                Period
+                <select
+                  aria-label="Period"
+                  value={draft.period}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      period: e.target.value as ReportRequest["period"],
+                    })
+                  }
+                >
+                  <option value="day">Daily</option>
+                  <option value="week">Weekly</option>
+                  <option value="month">Monthly</option>
+                </select>
+              </label>
+            </>
+          )}
+          <button>Apply filters</button>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() =>
+              onApply(changeSelection(selection, { filters: {}, search: "" }))
+            }
+          >
+            Clear filters
+          </button>
         </div>
+        {view > 1 && (
+          <>
+            <div className="analysis-filter-row">
+              {reportViews[view].filters.map((d) => (
+                <label key={d}>
+                  {labels[d]}
+                  <input
+                    aria-label={labels[d] + " filter"}
+                    list={"values-" + d}
+                    value={draft.filters?.[d]?.[0] ?? ""}
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        filters: {
+                          ...draft.filters,
+                          [d]: e.target.value ? [e.target.value] : [],
+                        },
+                      })
+                    }
+                  />
+                  <datalist id={"values-" + d}>
+                    {report?.options[d]?.map((v) => (
+                      <option key={v} value={v} />
+                    ))}
+                  </datalist>
+                  <small>
+                    {d === "duration" ? "Exact seconds for this filter. " : ""}
+                    Type an exact value; up to 200 suggestions.
+                  </small>
+                </label>
+              ))}
+            </div>
+          </>
+        )}
       </details>
     </form>
   );

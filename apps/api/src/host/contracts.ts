@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-export class DemoUserDto {
+export class LocalUserDto {
   @ApiProperty() id!: string;
   @ApiProperty() name!: string;
 }
@@ -12,8 +12,9 @@ export class DemoScopeDto {
 export class DemoContextDto {
   @ApiProperty() canImport!: boolean;
   @ApiProperty() enabled!: boolean;
-  @ApiProperty({ type: [DemoUserDto] }) users!: DemoUserDto[];
-  @ApiProperty({ type: DemoUserDto, nullable: true }) user!: DemoUserDto | null;
+  @ApiProperty({ type: [LocalUserDto] }) users!: LocalUserDto[];
+  @ApiProperty({ type: LocalUserDto, nullable: true })
+  user!: LocalUserDto | null;
   @ApiProperty({ type: DemoScopeDto, nullable: true })
   scope!: DemoScopeDto | null;
 }

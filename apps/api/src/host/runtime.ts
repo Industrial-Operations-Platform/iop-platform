@@ -32,14 +32,14 @@ import {
 import { OipReceiver } from "../modules/oip/receiver";
 import { OipQueries } from "../modules/oip/queries";
 
-export const DEMO_RUNTIME = "IOP_DEMO_RUNTIME";
+export const PLATFORM_RUNTIME = "IOP_PLATFORM_RUNTIME";
 export const MAINTENANCE_LOCK = 190147;
-export interface DemoUser {
+export interface LocalUser {
   id: string;
   name: string;
 }
-export interface DemoConfiguration {
-  users: DemoUser[];
+export interface LocalIdentityConfiguration {
+  users: LocalUser[];
   origins: string[];
   local: LocalConfiguration;
   mappings: SourceMappings;
@@ -49,28 +49,35 @@ export interface PrincipalResolver {
 }
 const jsonFile = (file: string | undefined, max: number): unknown => {
   if (!file || !statSync(file).isFile() || statSync(file).size > max)
-    throw new ConfigurationError("demo file");
+    throw new ConfigurationError("local identity file");
   return JSON.parse(readFileSync(file, "utf8"));
 };
-export function readDemoConfiguration(
+export function readLocalIdentityConfiguration(
   env: NodeJS.ProcessEnv,
-): DemoConfiguration | null {
+): LocalIdentityConfiguration | null {
   if (env.IOP_EXECUTION_MODE === undefined) return null;
+  const native =
+    env.IOP_EXECUTION_MODE === "local-demo" &&
+    env.NODE_ENV !== "production" &&
+    (env.IOP_TRANSPORT ?? "native") === "native" &&
+    (env.HOST ?? "127.0.0.1") === "127.0.0.1" &&
+    ["127.0.0.1", "localhost", "::1"].includes(env.IOP_DATABASE_HOST ?? "");
+  const container =
+    env.IOP_EXECUTION_MODE === "local-container" &&
+    env.IOP_TRANSPORT === "container" &&
+    env.HOST === "0.0.0.0" &&
+    env.IOP_DATABASE_HOST === "database";
   if (
-    env.IOP_EXECUTION_MODE !== "local-demo" ||
-    env.NODE_ENV === "production" ||
-    (env.IOP_TRANSPORT ?? "native") !== "native" ||
-    (env.HOST ?? "127.0.0.1") !== "127.0.0.1" ||
+    (!native && !container) ||
     env.IOP_DATABASE_MODE !== "local" ||
-    !["127.0.0.1", "localhost", "::1"].includes(env.IOP_DATABASE_HOST ?? "") ||
     env.IOP_DATABASE_NAME !== "iop_local"
   )
-    throw new ConfigurationError("local-demo mode");
+    throw new ConfigurationError("local application mode");
   try {
-    const value = jsonFile(env.IOP_DEMO_CONFIG_FILE, 16384) as Record<
-      string,
-      unknown
-    >;
+    const value = jsonFile(
+      env.IOP_LOCAL_IDENTITY_FILE ?? env.IOP_DEMO_CONFIG_FILE,
+      16384,
+    ) as Record<string, unknown>;
     if (
       !value ||
       Object.keys(value).sort().join(",") !== "origins,users" ||
@@ -83,7 +90,7 @@ export function readDemoConfiguration(
     )
       throw new Error();
     const users = value.users.map((u: unknown) => {
-      const user = u as DemoUser;
+      const user = u as LocalUser;
       if (
         !user ||
         Object.keys(user).sort().join(",") !== "id,name" ||
@@ -123,13 +130,13 @@ export function readDemoConfiguration(
       throw new Error();
     return { users, origins, local, mappings };
   } catch {
-    throw new ConfigurationError("demo users, origins or source mappings");
+    throw new ConfigurationError("local users, origins or source mappings");
   }
 }
 /** Local demonstration adapter. A future authenticated provider implements PrincipalResolver. */
-export class LocalDemoPrincipals implements PrincipalResolver {
+export class LocalPrincipals implements PrincipalResolver {
   private sessions = new Map<string, { actor: string; expires: number }>();
-  constructor(private readonly users: readonly DemoUser[]) {}
+  constructor(private readonly users: readonly LocalUser[]) {}
   token(request: IncomingMessage): string | undefined {
     const entries = (request.headers.cookie ?? "")
       .split(";")
@@ -159,7 +166,7 @@ export class LocalDemoPrincipals implements PrincipalResolver {
     return token;
   }
 }
-export class DemoRuntime {
+export class PlatformRuntime {
   readonly source: ImportSource;
   readonly batches: ImportBatches;
   readonly receiver: OipReceiver;
@@ -167,13 +174,13 @@ export class DemoRuntime {
   readonly queries: OipQueries;
   readonly profiles: ReportingProfiles;
   readonly reports: OipReports;
-  readonly principals: LocalDemoPrincipals;
+  readonly principals: LocalPrincipals;
   readonly imports: ReturnType<typeof createImportWorkflow>;
   private receiving = false;
   private lease: PoolClient | undefined;
   constructor(
     readonly pool: Pool,
-    readonly config: DemoConfiguration,
+    readonly config: LocalIdentityConfiguration,
   ) {
     const { local, mappings } = config;
     this.source = Object.freeze({
@@ -202,7 +209,7 @@ export class DemoRuntime {
       this.source,
     );
     this.queries = new OipQueries(pool, this.source);
-    this.principals = new LocalDemoPrincipals(config.users);
+    this.principals = new LocalPrincipals(config.users);
     this.profiles = new ReportingProfiles(profileRepository);
     this.reports = new OipReports(new PgReportRepository(profileRepository));
   }
@@ -213,13 +220,13 @@ export class DemoRuntime {
         "SELECT pg_try_advisory_lock(190148) AS locked",
       );
       if (!single.rows[0].locked)
-        throw new ConfigurationError("another demo host is active");
+        throw new ConfigurationError("another application host is active");
       const r = await client.query(
         "SELECT pg_try_advisory_lock_shared($1) AS locked",
         [MAINTENANCE_LOCK],
       );
       if (!r.rows[0].locked)
-        throw new ConfigurationError("demo maintenance active");
+        throw new ConfigurationError("local maintenance active");
       // A lost lease stops new requests; the single host must be restarted explicitly.
       client.on("error", () => {
         if (this.lease === client) {
@@ -319,10 +326,10 @@ export class DemoRuntime {
     return this.imports.recover(actor, id);
   }
 }
-export async function startDemoRuntime(
+export async function startPlatformRuntime(
   env: NodeJS.ProcessEnv,
-): Promise<DemoRuntime | null> {
-  const config = readDemoConfiguration(env);
+): Promise<PlatformRuntime | null> {
+  const config = readLocalIdentityConfiguration(env);
   if (!config) return null;
   const password = env.IOP_RUNTIME_PASSWORD,
     port = env.IOP_DATABASE_PORT;
@@ -337,7 +344,7 @@ export async function startDemoRuntime(
     Number(port) > 65535
   )
     throw new ConfigurationError("runtime database credentials");
-  const runtime = new DemoRuntime(
+  const runtime = new PlatformRuntime(
     new Pool({
       host: env.IOP_DATABASE_HOST,
       port: Number(port),
@@ -348,7 +355,7 @@ export async function startDemoRuntime(
       ssl: false,
       connectionTimeoutMillis: 5000,
       statement_timeout: 30000,
-      application_name: "iop-local-demo",
+      application_name: "iop-local-platform",
       options: "-c search_path=pg_catalog -c lock_timeout=5000",
     }),
     config,

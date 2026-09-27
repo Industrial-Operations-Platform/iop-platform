@@ -1,0 +1,70 @@
+name: iop-platform-local
+services:
+  database:
+    image: postgres:17.6-bookworm
+    env_file: .local-platform/postgres.env
+    volumes:
+      - platform-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U iop_bootstrap -d iop_local']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  setup:
+    profiles: [tools]
+    build:
+      context: .
+      dockerfile: infra/local/Dockerfile
+    env_file: .local-platform/setup.env
+    environment: &local
+      IOP_EXECUTION_MODE: local-container
+      IOP_TRANSPORT: container
+      HOST: 0.0.0.0
+      PORT: '3000'
+      IOP_DATABASE_MODE: local
+      IOP_DATABASE_HOST: database
+      IOP_DATABASE_PORT: '5432'
+      IOP_DATABASE_NAME: iop_local
+      IOP_CONFIG_FILE: /config/scope.json
+      IOP_LOCAL_IDENTITY_FILE: /config/users.json
+      IOP_MAPPING_CONFIG_FILE: /config/mappings.json
+    volumes:
+      - ./.local-platform/config:/config:ro
+      - ./.local-platform/seed:/seed:ro
+    depends_on:
+      database:
+        condition: service_healthy
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    env_file: .local-platform/runtime.env
+    environment: *local
+    volumes:
+      - ./.local-platform/config:/config:ro
+    depends_on:
+      database:
+        condition: service_healthy
+    init: true
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/health').then(r => { if (!r.ok) process.exit(1); }).catch(() => process.exit(1))"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - '127.0.0.1:8080:8080'
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1:8080/]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  platform-data:

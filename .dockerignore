@@ -38,3 +38,8 @@
 **/id_dsa*
 **/id_ecdsa*
 **/id_ed25519*
+!infra/local/
+!infra/local/Dockerfile
+!scripts/
+!scripts/local/
+!scripts/local/initialize.cjs

@@ -66,7 +66,7 @@
     },
     "/api/v1/demo/context": {
       "get": {
-        "operationId": "DemoController_context",
+        "operationId": "PlatformController_context",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -122,7 +122,7 @@
     },
     "/api/v1/demo/user": {
       "post": {
-        "operationId": "DemoController_switchUser",
+        "operationId": "PlatformController_switchUser",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -188,7 +188,7 @@
     },
     "/api/v1/imports": {
       "get": {
-        "operationId": "DemoController_history",
+        "operationId": "PlatformController_history",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -245,7 +245,7 @@
         ]
       },
       "post": {
-        "operationId": "DemoController_submit",
+        "operationId": "PlatformController_submit",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -321,7 +321,7 @@
     },
     "/api/v1/imports/{id}": {
       "get": {
-        "operationId": "DemoController_review",
+        "operationId": "PlatformController_review",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -385,7 +385,7 @@
     },
     "/api/v1/imports/{id}/recover": {
       "post": {
-        "operationId": "DemoController_recover",
+        "operationId": "PlatformController_recover",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -449,7 +449,7 @@
     },
     "/api/v1/imports/{id}/original": {
       "get": {
-        "operationId": "DemoController_original",
+        "operationId": "PlatformController_original",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -514,7 +514,7 @@
     },
     "/api/v1/analytics/availability": {
       "get": {
-        "operationId": "DemoController_availability",
+        "operationId": "PlatformController_availability",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -570,7 +570,7 @@
     },
     "/api/v1/analytics/options": {
       "post": {
-        "operationId": "DemoController_options",
+        "operationId": "PlatformController_options",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -636,7 +636,7 @@
     },
     "/api/v1/analytics/profile": {
       "get": {
-        "operationId": "DemoController_profile",
+        "operationId": "PlatformController_profile",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -690,7 +690,7 @@
         ]
       },
       "post": {
-        "operationId": "DemoController_saveProfile",
+        "operationId": "PlatformController_saveProfile",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -756,7 +756,7 @@
     },
     "/api/v1/analytics/report": {
       "post": {
-        "operationId": "DemoController_report",
+        "operationId": "PlatformController_report",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -822,7 +822,7 @@
     },
     "/api/v1/analytics/query": {
       "post": {
-        "operationId": "DemoController_query",
+        "operationId": "PlatformController_query",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -980,7 +980,7 @@
           "status"
         ]
       },
-      "DemoUserDto": {
+      "LocalUserDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1030,7 +1030,7 @@
           "users": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DemoUserDto"
+              "$ref": "#/components/schemas/LocalUserDto"
             }
           },
           "user": {
@@ -1038,7 +1038,7 @@
             "type": "object",
             "allOf": [
               {
-                "$ref": "#/components/schemas/DemoUserDto"
+                "$ref": "#/components/schemas/LocalUserDto"
               }
             ]
           },

@@ -300,8 +300,8 @@ async function main() {
     if (command === "reset") return;
   }
   if (command === "fixtures" || command === "recreate") {
-    const { startDemoRuntime } = require("../apps/api/dist/demo/runtime");
-    const runtime = await startDemoRuntime(env);
+    const { startPlatformRuntime } = require("../apps/api/dist/host/runtime");
+    const runtime = await startPlatformRuntime(env);
     try {
       for (const date of reference
         ? ["20260701", "20260705", "20260707"]

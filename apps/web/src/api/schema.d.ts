@@ -31,7 +31,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["DemoController_context"];
+        get: operations["PlatformController_context"];
         put?: never;
         post?: never;
         delete?: never;
@@ -49,7 +49,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["DemoController_switchUser"];
+        post: operations["PlatformController_switchUser"];
         delete?: never;
         options?: never;
         head?: never;
@@ -63,9 +63,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["DemoController_history"];
+        get: operations["PlatformController_history"];
         put?: never;
-        post: operations["DemoController_submit"];
+        post: operations["PlatformController_submit"];
         delete?: never;
         options?: never;
         head?: never;
@@ -79,7 +79,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["DemoController_review"];
+        get: operations["PlatformController_review"];
         put?: never;
         post?: never;
         delete?: never;
@@ -97,7 +97,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["DemoController_recover"];
+        post: operations["PlatformController_recover"];
         delete?: never;
         options?: never;
         head?: never;
@@ -111,7 +111,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["DemoController_original"];
+        get: operations["PlatformController_original"];
         put?: never;
         post?: never;
         delete?: never;
@@ -127,7 +127,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["DemoController_availability"];
+        get: operations["PlatformController_availability"];
         put?: never;
         post?: never;
         delete?: never;
@@ -145,7 +145,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["DemoController_options"];
+        post: operations["PlatformController_options"];
         delete?: never;
         options?: never;
         head?: never;
@@ -159,9 +159,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["DemoController_profile"];
+        get: operations["PlatformController_profile"];
         put?: never;
-        post: operations["DemoController_saveProfile"];
+        post: operations["PlatformController_saveProfile"];
         delete?: never;
         options?: never;
         head?: never;
@@ -177,7 +177,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["DemoController_report"];
+        post: operations["PlatformController_report"];
         delete?: never;
         options?: never;
         head?: never;
@@ -193,7 +193,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["DemoController_query"];
+        post: operations["PlatformController_query"];
         delete?: never;
         options?: never;
         head?: never;
@@ -237,7 +237,7 @@ export interface components {
              */
             status: "ok";
         };
-        DemoUserDto: {
+        LocalUserDto: {
             id: string;
             name: string;
         };
@@ -250,8 +250,8 @@ export interface components {
         DemoContextDto: {
             canImport: boolean;
             enabled: boolean;
-            users: components["schemas"]["DemoUserDto"][];
-            user: components["schemas"]["DemoUserDto"] | null;
+            users: components["schemas"]["LocalUserDto"][];
+            user: components["schemas"]["LocalUserDto"] | null;
             scope: components["schemas"]["DemoScopeDto"] | null;
         };
         SwitchUserDto: {
@@ -582,7 +582,7 @@ export interface operations {
             };
         };
     };
-    DemoController_context: {
+    PlatformController_context: {
         parameters: {
             query?: never;
             header?: {
@@ -648,7 +648,7 @@ export interface operations {
             };
         };
     };
-    DemoController_switchUser: {
+    PlatformController_switchUser: {
         parameters: {
             query?: never;
             header?: {
@@ -718,7 +718,7 @@ export interface operations {
             };
         };
     };
-    DemoController_history: {
+    PlatformController_history: {
         parameters: {
             query?: never;
             header?: {
@@ -784,7 +784,7 @@ export interface operations {
             };
         };
     };
-    DemoController_submit: {
+    PlatformController_submit: {
         parameters: {
             query?: never;
             header: {
@@ -856,7 +856,7 @@ export interface operations {
             };
         };
     };
-    DemoController_review: {
+    PlatformController_review: {
         parameters: {
             query?: never;
             header?: {
@@ -924,7 +924,7 @@ export interface operations {
             };
         };
     };
-    DemoController_recover: {
+    PlatformController_recover: {
         parameters: {
             query?: never;
             header?: {
@@ -992,7 +992,7 @@ export interface operations {
             };
         };
     };
-    DemoController_original: {
+    PlatformController_original: {
         parameters: {
             query?: never;
             header?: {
@@ -1061,7 +1061,7 @@ export interface operations {
             };
         };
     };
-    DemoController_availability: {
+    PlatformController_availability: {
         parameters: {
             query?: never;
             header?: {
@@ -1127,7 +1127,7 @@ export interface operations {
             };
         };
     };
-    DemoController_options: {
+    PlatformController_options: {
         parameters: {
             query?: never;
             header?: {
@@ -1197,7 +1197,7 @@ export interface operations {
             };
         };
     };
-    DemoController_profile: {
+    PlatformController_profile: {
         parameters: {
             query?: never;
             header?: {
@@ -1263,7 +1263,7 @@ export interface operations {
             };
         };
     };
-    DemoController_saveProfile: {
+    PlatformController_saveProfile: {
         parameters: {
             query?: never;
             header?: {
@@ -1333,7 +1333,7 @@ export interface operations {
             };
         };
     };
-    DemoController_report: {
+    PlatformController_report: {
         parameters: {
             query?: never;
             header?: {
@@ -1403,7 +1403,7 @@ export interface operations {
             };
         };
     };
-    DemoController_query: {
+    PlatformController_query: {
         parameters: {
             query?: never;
             header?: {

@@ -1,7 +1,7 @@
 # Industrial Operations Platform (IOP)
 
 IOP is a reusable industrial operations platform. Its Operational Intelligence
-module now provides a local analytical POC: configured demo user → CSV upload →
+module now provides a local analytical POC: local Administrator → CSV upload →
 persistent history → Executive Overview and analytical detail. The React/Vite web
 and NestJS API share generated contracts; PostgreSQL retains original files,
 normalized aggregates and provenance with scoped authorization and forced RLS.
@@ -11,14 +11,14 @@ normalized aggregates and provenance with scoped authorization and forced RLS.
 With Node 24.21.0, npm 10.9.2 and Docker running:
 
 ```sh
-npm ci
-npm run demo:setup
-npm run demo:start
+npm run local:up -- /absolute/path/to/backup.backup
 ```
 
-Open **http://127.0.0.1:5173**. Follow the [demonstration guide](docs/development/running-poc.md)
+Open **http://127.0.0.1:8080**. Follow the [demonstration guide](docs/development/running-poc.md)
 for file format, reference totals, historical filters, user switching and safe reset.
-Local demo user selection is temporary; third-party authentication remains a future
+Frontend, API and PostgreSQL run in separate containers. Omit the backup to start
+empty, or run `npm run local:up` again to reuse the seed and persistent history.
+Local user selection is temporary; third-party authentication remains a future
 adapter before shared use. Workers, external integrations and other platform modules
 remain outside this POC.
 
@@ -48,7 +48,7 @@ remain outside this POC.
 | `packages/shared/` | Future minimal, domain-neutral utilities |
 | `infra/docker/` | Local Compose instructions and validation boundary |
 | `infra/database/` | Local PostgreSQL provisioning, migrations and checks |
-| `scripts/`, `tests/` | Development tooling, demo launcher and checks |
+| `scripts/`, `tests/` | Development tooling, local container launcher and checks |
 
 Empty future directories use `.gitkeep`. From the root, use Node 24.21.0 and
 `npm ci` and `npm run build`, then follow the
@@ -57,8 +57,8 @@ Empty future directories use `.gitkeep`. From the root, use Node 24.21.0 and
 `npm run test:database` verifies migration behavior in disposable PostgreSQL containers.
 `npm run test:poc` runs type checks and all current unit/integration/browser layers;
 see the [POC testing guide](docs/development/testing-poc.md) for prerequisites and limits.
-Without explicit demo activation, business operations remain unavailable and
-`GET http://127.0.0.1:3000/health` remains public. Use the demo launcher for the
+Without explicit local activation, business operations remain unavailable and
+`GET http://127.0.0.1:3000/health` remains public. Use the local container launcher for the
 connected import/analysis workflow.
 See [API instructions](apps/api/README.md) for configuration, contracts and limits.
 

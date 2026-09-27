@@ -1,6 +1,14 @@
 # POC delivery map
 
-## Current owner-requested correction — IOP-148
+## Current local platform — IOP-149
+
+[IOP-149](items/IOP-149-local-stack-history.md) implements the requested three-container
+local application, analytics-only backup seed and progressive collapsible filters.
+Use the [operator guide](../development/running-poc.md) and `npm run local:up`.
+IOP-148 was explicitly approved and published to develop; IOP-149 is a separate
+review increment. Broader pilot usefulness acceptance remains IOP-130.
+
+## Previous owner-requested correction — IOP-148
 
 The latest database clarification selects the normalized backup model and a physical
 sector FK in the main analytical fact; see the [relational plan](completed/IOP-148-relational-hitliste-plan.md).
@@ -18,7 +26,8 @@ records completed technical validation. Use `analysis:setup`, `analysis:load-ref
 
 The supplied [database backup review](../architecture/wincc-backup-reference.md)
 identified missing analytical rows and per-row duration rounding in the reference
-model; neither discrepancy is copied. User acceptance of the revised workspace
+model. IOP-149 preserves the requested analytics row population and exact original
+durations; it does not fill missing analytics rows from the public prototype. User acceptance of the revised workspace
 is still pending. The following evidence describes the earlier IOP-147 baseline.
 
 ## Earlier technical baseline — IOP-147

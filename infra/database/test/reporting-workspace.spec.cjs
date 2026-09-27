@@ -13,7 +13,7 @@ const { seedMembership } = require("../dist/seed-membership");
 const {
   SourceMappings,
 } = require("../../../apps/api/dist/modules/integrations");
-const { DemoRuntime } = require("../../../apps/api/dist/demo/runtime");
+const { PlatformRuntime } = require("../../../apps/api/dist/host/runtime");
 const { createApplication } = require("../../../apps/api/dist/application");
 const scope = require("../../../fixtures/analytical-poc/scope.json");
 let container,
@@ -85,7 +85,7 @@ beforeAll(async () => {
     await seedUser({ ...seed, IOP_SEED_USER_ID: user });
     await seedMembership({ ...seed, IOP_SEED_USER_ID: user });
   }
-  runtime = new DemoRuntime(new Pool({ ...configs.runtime, max: 5 }), {
+  runtime = new PlatformRuntime(new Pool({ ...configs.runtime, max: 5 }), {
     local: {
       organization: { id: scope.organizationId },
       site: {
@@ -347,7 +347,7 @@ test("incomplete and stale projections fail closed and administrator startup bac
     );
   await app.close();
   await runtime.close();
-  runtime = new DemoRuntime(
+  runtime = new PlatformRuntime(
     new Pool({ ...configs.runtime, max: 5 }),
     runtimeConfig,
   );
@@ -578,7 +578,7 @@ test("owner reference files reconcile exact totals and all five sectors after ru
       })),
     }),
   };
-  let ref = new DemoRuntime(new Pool({ ...configs.runtime, max: 2 }), config);
+  let ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 2 }), config);
   try {
     for (const date of ["20260701", "20260705", "20260707"]) {
       const name = `Hitliste-${date}.csv`,
@@ -596,7 +596,7 @@ test("owner reference files reconcile exact totals and all five sectors after ru
     const profile = await ref.profiles.get("demo-a");
     await ref.profiles.save("demo-a", profile);
     await ref.close();
-    ref = new DemoRuntime(new Pool({ ...configs.runtime, max: 2 }), config);
+    ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 2 }), config);
     const r = await ref.reports.query("demo-a", selection);
     expect(r.totals).toMatchObject({
       records: 1446,
@@ -658,7 +658,7 @@ test("owner reference files reconcile exact totals and all five sectors after ru
 
 test("concurrent preparation and import keep every relational fact on the committed profile and preserve code/area pairs", async () => {
   const sourceId = "concurrent-relational";
-  const ref = new DemoRuntime(new Pool({ ...configs.runtime, max: 4 }), {
+  const ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 4 }), {
     ...runtimeConfig,
     local: {
       ...runtimeConfig.local,

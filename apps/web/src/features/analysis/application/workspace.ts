@@ -77,3 +77,74 @@ export class AnalysisWorkspace {
     return this.gateway.report(selection);
   }
 }
+
+/** View constraints are independent from the dimension used to group results. */
+export const reportViews = [
+  { title: "Executive Overview", dimension: "sector", filters: [] },
+  { title: "Halle analysis", dimension: "sector", filters: [] },
+  { title: "Bereich analysis", dimension: "area", filters: ["sector", "area"] },
+  {
+    title: "Equipment analysis",
+    dimension: "equipment",
+    filters: ["sector", "area", "equipment"],
+  },
+  {
+    title: "Error analysis",
+    dimension: "message",
+    filters: ["sector", "area", "equipment", "message", "type", "messageGroup"],
+  },
+  {
+    title: "Daily / monthly",
+    dimension: "area",
+    filters: [
+      "sector",
+      "area",
+      "equipment",
+      "message",
+      "type",
+      "messageGroup",
+      "frequency",
+      "duration",
+    ],
+  },
+] as const;
+export function selectView(
+  current: ReportRequest,
+  view: number,
+): ReportRequest {
+  const policy = reportViews[view];
+  const allowed: readonly string[] = policy.filters;
+  return changeSelection(current, {
+    dimension: policy.dimension,
+    ...(view < 2
+      ? { metric: "frequency" as const, period: "day" as const }
+      : {}),
+    filters: Object.fromEntries(
+      Object.entries(current.filters ?? {}).filter(([key]) =>
+        allowed.includes(key),
+      ),
+    ),
+    search: "",
+  });
+}
+export function drillInto(
+  current: ReportRequest,
+  view: number,
+  dimension: Dimension,
+  value: string,
+) {
+  const target = reportViews.findIndex(
+    (policy, index) =>
+      index >= view &&
+      (policy.filters as readonly string[]).includes(dimension),
+  );
+  const next = target < 0 ? 5 : target;
+  return {
+    view: next,
+    selection: filterGroup(
+      next === view ? current : selectView(current, next),
+      dimension,
+      value,
+    ),
+  };
+}

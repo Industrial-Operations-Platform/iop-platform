@@ -24,8 +24,8 @@ the source-to-domain translation boundary.
 - Show validation failures and unresolved mappings. Unclassified records remain in
   totals; no silent data loss. Reject already imported reporting dates within the
   same organization/site/source, including renamed files, without automatic replacement.
-- Present an Executive Overview and a detail view with consistent reporting-date,
-  sector, area, equipment and message filters. Drill down to contributing source
+- Present Executive Overview with date controls and detail views with progressive
+  reporting-date, sector, area, equipment and message filters. Drill down to contributing source
   records without requiring surveyed assets or physical sensor identities.
 - Show source coverage and metric limits. A filename date is a reporting label,
   not an occurrence timestamp or proof of a full 24-hour window. Missing imports
@@ -114,3 +114,8 @@ Use the [running guide](../development/running-poc.md) for the actual commands,
 reference CSVs, per-file/historical analysis and exact-target reset. Implementation
 and evidence are consolidated under [IOP-147](../planning/items/IOP-147-working-analytical-poc.md).
 Owner usability/value feedback remains separate from automated technical evidence.
+
+The primary local runtime is a three-service Docker Compose stack with an optional
+analytics-only backup seed ([IOP-149](../planning/items/IOP-149-local-stack-history.md)).
+Executive Overview and Halle expose collapsible date controls only; finer views
+progressively add location, equipment and error filters with independent grouping.

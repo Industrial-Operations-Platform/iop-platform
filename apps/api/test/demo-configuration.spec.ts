@@ -3,9 +3,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { IncomingMessage } from "node:http";
 import {
-  readDemoConfiguration,
-  LocalDemoPrincipals,
-} from "../src/demo/runtime";
+  readLocalIdentityConfiguration,
+  LocalPrincipals,
+} from "../src/host/runtime";
 let directory: string;
 beforeEach(() => {
   directory = mkdtempSync(join(tmpdir(), "iop-demo-config-"));
@@ -13,14 +13,14 @@ beforeEach(() => {
 afterEach(() => rmSync(directory, { recursive: true, force: true }));
 const req = (cookie?: string) => ({ headers: { cookie } }) as IncomingMessage;
 test("no fallback activation and no production/nonlocal activation", () => {
-  expect(readDemoConfiguration({})).toBeNull();
+  expect(readLocalIdentityConfiguration({})).toBeNull();
   for (const env of [
     { IOP_EXECUTION_MODE: "anything" },
     { IOP_EXECUTION_MODE: "local-demo", NODE_ENV: "production" },
     { IOP_EXECUTION_MODE: "local-demo", HOST: "0.0.0.0" },
     { IOP_EXECUTION_MODE: "local-demo", IOP_TRANSPORT: "container" },
   ])
-    expect(() => readDemoConfiguration(env)).toThrow();
+    expect(() => readLocalIdentityConfiguration(env)).toThrow();
 });
 test("strict configured allowlist, scope and origin agreement", () => {
   const local = {
@@ -61,7 +61,24 @@ test("strict configured allowlist, scope and origin agreement", () => {
     IOP_DEMO_CONFIG_FILE: files.users,
     IOP_MAPPING_CONFIG_FILE: files.mappings,
   };
-  expect(readDemoConfiguration(env)?.users[0].id).toBe("user");
+  expect(readLocalIdentityConfiguration(env)?.users[0].id).toBe("user");
+  const container = {
+    ...env,
+    NODE_ENV: "production",
+    IOP_EXECUTION_MODE: "local-container",
+    IOP_TRANSPORT: "container",
+    HOST: "0.0.0.0",
+    IOP_DATABASE_HOST: "database",
+  };
+  expect(readLocalIdentityConfiguration(container)?.users[0].id).toBe("user");
+  for (const patch of [
+    { HOST: "127.0.0.1" },
+    { IOP_DATABASE_HOST: "remote" },
+    { IOP_TRANSPORT: "native" },
+  ])
+    expect(() =>
+      readLocalIdentityConfiguration({ ...container, ...patch }),
+    ).toThrow();
   writeFileSync(
     files.users,
     JSON.stringify({
@@ -69,10 +86,10 @@ test("strict configured allowlist, scope and origin agreement", () => {
       origins: ["https://evil.example"],
     }),
   );
-  expect(() => readDemoConfiguration(env)).toThrow();
+  expect(() => readLocalIdentityConfiguration(env)).toThrow();
 });
 test("opaque sessions allow only configured principals and invalidate previous selections", () => {
-  const p = new LocalDemoPrincipals([
+  const p = new LocalPrincipals([
     { id: "a", name: "A" },
     { id: "b", name: "B" },
   ]);

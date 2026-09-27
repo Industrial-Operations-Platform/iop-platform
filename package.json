@@ -39,7 +39,10 @@
     "demo:recreate": "node scripts/demo.cjs recreate",
     "analysis:setup": "node scripts/demo.cjs setup-reference",
     "analysis:start": "node scripts/demo.cjs start-reference",
-    "analysis:load-reference": "node scripts/demo.cjs fixtures-reference"
+    "analysis:load-reference": "node scripts/demo.cjs fixtures-reference",
+    "local:up": "node scripts/local/platform.cjs up",
+    "local:stop": "node scripts/local/platform.cjs stop",
+    "local:status": "node scripts/local/platform.cjs status"
   },
   "dependencies": {
     "node-pg-migrate": "9.0.0",

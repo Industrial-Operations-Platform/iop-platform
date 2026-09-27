@@ -13,7 +13,7 @@ const { seedMembership } = require("../dist/seed-membership");
 const {
   SourceMappings,
 } = require("../../../apps/api/dist/modules/integrations");
-const { DemoRuntime } = require("../../../apps/api/dist/demo/runtime");
+const { PlatformRuntime } = require("../../../apps/api/dist/host/runtime");
 const { createApplication } = require("../../../apps/api/dist/application");
 const scope = require("../../../fixtures/analytical-poc/scope.json");
 let container,
@@ -85,7 +85,7 @@ beforeAll(async () => {
     await seedUser({ ...seed, IOP_SEED_USER_ID: user });
     await seedMembership({ ...seed, IOP_SEED_USER_ID: user });
   }
-  runtime = new DemoRuntime(new Pool({ ...configs.runtime, max: 5 }), {
+  runtime = new PlatformRuntime(new Pool({ ...configs.runtime, max: 5 }), {
     local: {
       organization: { id: scope.organizationId },
       site: {
@@ -476,7 +476,7 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
       sourceId: "other-source",
     }),
   };
-  const foreign = new DemoRuntime(runtime.pool, foreignConfig);
+  const foreign = new PlatformRuntime(runtime.pool, foreignConfig);
   const foreignBatch = await foreign.submit(
     "demo-a",
     "Hitliste-20260701.csv",
@@ -508,7 +508,7 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
     await expect(demoMaintenance(env, "reset")).rejects.toThrow(
       "Stop the demo host",
     );
-    const reconnect = new DemoRuntime(
+    const reconnect = new PlatformRuntime(
       new Pool({ ...configs.runtime, max: 5 }),
       runtimeConfig,
     );
@@ -627,7 +627,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
   const { chromium } = require("@playwright/test");
   const { createServer, request: proxyRequest } = require("node:http");
   const { mkdirSync } = require("node:fs");
-  runtime = new DemoRuntime(
+  runtime = new PlatformRuntime(
     new Pool({ ...configs.runtime, max: 5 }),
     runtimeConfig,
   );
@@ -715,24 +715,36 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await page.getByRole('button',{name:'Executive Overview',exact:true}).click();
     await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
     await page.locator('.analysis-filters summary').click();
-    await page.getByLabel('Sector / Halle filter',{exact:true}).fill('Dispatch');
-    await page.getByRole('button',{name:'Apply filters',exact:true}).click();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('100%');
-    await page.getByRole('button',{name:'Clear filters',exact:true}).click();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
+    await pw(page.getByLabel('From',{exact:true})).toBeVisible();
+    await pw(page.getByLabel('Sector / Halle filter',{exact:true})).toHaveCount(0);
     expect(await page.locator('.analysis-kpis section').first().evaluate(el => {
       const style = getComputedStyle(el);
       return { background: style.backgroundColor, border: style.borderTopColor, radius: style.borderRadius, ink: style.color };
     })).toEqual({ background: 'rgb(255, 255, 255)', border: 'rgb(220, 229, 237)', radius: '7px', ink: 'rgb(23, 43, 67)' });
     await page.locator('.analysis-kpi-label').first().click();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('100%');
-    await page.getByRole('button',{name:'Clear filters',exact:true}).click();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
+    await pw(page.getByRole('button',{name:'Bereich analysis',exact:true})).toHaveAttribute('aria-pressed','true');
     await page.locator('.analysis-filters summary').click();
-    await page.getByLabel('Betriebsmittelkennzeichen filter',{exact:true}).fill('=EQ-003');
-    await page.getByRole('button',{name:'Apply filters',exact:true}).click();
-    await pw(page.locator('.analysis-kpis strong')).toHaveText(['—','—','—','—']);
+    await pw(page.getByLabel('Sector / Halle filter',{exact:true})).not.toHaveValue('');
+    await pw(page.getByLabel('Betriebsmittelkennzeichen filter',{exact:true})).toHaveCount(0);
     await page.getByRole('button',{name:'Clear filters',exact:true}).click();
+    await page.locator('.analysis-filters summary').click();
+    await page.getByLabel('Sector / Halle filter',{exact:true}).fill('Dispatch');
+    await page.getByLabel('Group by',{exact:true}).selectOption('message');
+    await page.getByRole('button',{name:'Apply filters',exact:true}).click();
+    await page.locator('.analysis-filters summary').click();
+    await pw(page.getByLabel('Sector / Halle filter',{exact:true})).toHaveValue('Dispatch');
+    await pw(page.getByLabel('Group by',{exact:true})).toHaveValue('message');
+    await page.getByRole('button',{name:'Equipment analysis',exact:true}).click();
+    await page.locator('.analysis-filters summary').click();
+    await page.getByLabel('Betriebsmittelkennzeichen filter',{exact:true}).fill('nonexistent-equipment');
+    await page.getByRole('button',{name:'Apply filters',exact:true}).click();
+    await pw(page.getByRole('heading',{name:'No matching records'})).toBeVisible();
+    await page.getByRole('button',{name:'Halle analysis',exact:true}).click();
+    await pw(page.locator('.analysis-plot svg').first()).toBeVisible();
+    await page.locator('.analysis-filters summary').click();
+    await pw(page.getByLabel('Betriebsmittelkennzeichen filter',{exact:true})).toHaveCount(0);
+    await pw(page.getByLabel('Sector / Halle filter',{exact:true})).toHaveCount(0);
+    await page.getByRole('button',{name:'Executive Overview',exact:true}).click();
     await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
     const artifactDir=join(__dirname,'../../../test-results/analytical-workspace');
     mkdirSync(artifactDir,{recursive:true});
@@ -793,7 +805,7 @@ test("historical mappings and scoped tuples preserve distinct equipment, message
     },
     mappings: new SourceMappings(mapping),
   };
-  const first = new DemoRuntime(runtime.pool, config);
+  const first = new PlatformRuntime(runtime.pool, config);
   const header =
     "Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe";
   const bytes = (rows) =>
@@ -811,7 +823,7 @@ test("historical mappings and scoped tuples preserve distinct equipment, message
     (await first.submit("demo-a", "Hitliste-20260901.csv", bytes(rows)))
       .outcome,
   ).toBe("succeeded");
-  const second = new DemoRuntime(runtime.pool, {
+  const second = new PlatformRuntime(runtime.pool, {
     ...config,
     mappings: new SourceMappings({
       ...mapping,

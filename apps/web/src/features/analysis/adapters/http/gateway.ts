@@ -1,4 +1,4 @@
-import { api } from "../../../../api/demo";
+import { api } from "../../../../api/platform";
 import type { components } from "../../../../api/schema";
 import type { AnalysisGateway } from "../../application/workspace";
 import type { ReportRequest, ProfileResult } from "../../domain/models";

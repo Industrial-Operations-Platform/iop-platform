@@ -1,17 +1,18 @@
 # Local API host
 
-## Connected analytical POC — IOP-147 / IOP-148
+## Working local platform — IOP-149
 
-For the working CSV upload, history, demo users, analytical views and safe reset,
-follow the [demonstration guide](../../docs/development/running-poc.md). The local demo launcher uses native loopback
-API/web hosts and a dedicated PostgreSQL container. The earlier health/preview
-bootstrap instructions below remain available independently; they do not activate
-the business workflow by themselves.
+Run `npm run local:up` for separate frontend/API/PostgreSQL containers, or pass the
+backup path on the first run to seed its analytics history. Follow the
+[operator guide](../../docs/development/running-poc.md). Native loopback launchers
+remain available for debugging. Earlier health-only bootstrap instructions below
+remain separate and do not activate the business workflow.
 
-
-This is the modular monolith API composition host. Without explicit demo activation
-it exposes process health and a disabled demo-context response. Local-demo mode
-composes Users/RBAC, Integrations and OIP with the non-owner runtime database role.
+The neutral `src/host` composition root wires Users/RBAC, Integrations and OIP using
+the non-owner runtime database role. Explicit local execution activates business
+routes; absent activation leaves health and a disabled local-context response.
+The temporary identity adapter retains `/demo/context`, `/demo/user` and its cookie
+contract for compatibility; it is not a separate application or business module.
 The following sections retain the individual foundation contracts and their history.
 
 ## Run from the repository root
@@ -379,7 +380,7 @@ framework-free domain outcomes. The host's import gateway composes CSV decoding,
 source mappings and existing atomic publication adapters. Reporting rules/models
 live in `modules/oip/domain`, use cases/ports in `application`, and PostgreSQL
 implementations in `adapters/postgres`. NestJS controllers are inbound adapters;
-`demo/runtime.ts` composes them. Tests enforce inward dependencies and use in-memory
+`host/runtime.ts` composes them. Tests enforce inward dependencies and use in-memory
 ports, then verify actual PostgreSQL/HTTP behavior. Legacy foundation adapters are
 retained; this is not a claim that every existing module was rewritten.
 
@@ -388,3 +389,5 @@ retained; this is not a claim that every existing module was rewritten.
 historical preparation. Reads require `analytics.read`; writes require
 `imports.submit`. Profile save preserves immutable originals/facts. See ADR-0031,
 ADR-0032 and the [operator guide](../../docs/development/running-poc.md).
+
+The primary local stack uses `npm run local:up`; see the [operator guide](../../docs/development/running-poc.md). `host/` composes reusable business modules; local identity is replaceable by an authenticated provider.

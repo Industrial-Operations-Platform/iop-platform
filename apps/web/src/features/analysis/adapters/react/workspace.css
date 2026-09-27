@@ -173,9 +173,9 @@
   font-size: 12px;
 }
 .analysis-filters details {
-  border-top: 1px solid var(--iop-line);
-  margin-top: 14px;
-  padding-top: 12px;
+  margin: 0;
+  padding: 0;
+  color: var(--iop-muted);
 }
 .analysis-app summary {
   cursor: pointer;

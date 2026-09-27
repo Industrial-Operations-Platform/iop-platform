@@ -35,8 +35,10 @@ and [query contract](docs/architecture/analytics-query-poc.md).
 
 ## Identity and isolation
 
-The explicit native `local-demo` mode binds only to loopback and refuses production
-or shared/container activation. ADR-0030 extends ADR-0018 with an allowlisted local
+The native `local-demo` mode binds only to loopback. The owner-approved
+[local container mode](docs/architecture/adr/ADR-0034-local-container-platform.md)
+runs separate frontend, API and database services with only the frontend published
+on loopback. ADR-0030 extends ADR-0018 with an allowlisted local
 user selector and opaque short-lived cookies. Origin/Host checks precede business
 handling; selection does not create identities or grant access. The adapter is
 replaceable by third-party authentication before shared use; no provider is selected.
@@ -87,9 +89,8 @@ can run separately without business activation.
 Accepted tools are npm workspaces, Node/TypeScript, NestJS, React/Vite, PostgreSQL,
 node-pg-migrate without an ORM, Jest/RTL/Supertest, Playwright and Testcontainers.
 The local [testing entry point](docs/development/testing-poc.md) covers unit,
-contract, startup, actual-role database and real browser checks. Existing container
-health hosts remain separately documented; the analytical demo uses native hosts
-and a dedicated local database container. Hooks/lint automation remain future work.
+contract, startup, actual-role database and real browser checks. The primary local application runs through `npm run local:up` in Docker Compose;
+native hosts and earlier health containers remain available for debugging. Hooks/lint automation remain future work.
 
 ## Future scope and undecided choices
 
@@ -144,7 +145,7 @@ proposals; acceptance is never inferred from an old implementation handoff.
 hexagonal development for both hosts. The active import workflow and reporting
 use cases depend on inward-owned ports. Backend domain/application folders contain
 no NestJS, PostgreSQL or transport imports; PostgreSQL adapters own scoped execution
-and SQL. The demo host is the composition root. Existing immutable publication and
+and SQL. The neutral `apps/api/src/host` directory is the composition root. Existing immutable publication and
 legacy query infrastructure is reused through adapters, not claimed to have been
 fully rewritten.
 

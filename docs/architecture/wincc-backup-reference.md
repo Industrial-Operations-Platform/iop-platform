@@ -63,3 +63,14 @@ not the generic platform core.
 The backup is a reference, not an authorized historical migration. Daily CSV
 imports remain the admission path. See [IOP-148](../planning/items/IOP-148-analytical-workspace.md)
 and [reporting profiles](adr/ADR-0031-historical-reporting-profiles.md).
+
+
+## Authorized local seed — IOP-149
+
+The owner subsequently authorized loading the **analytics** population in a dedicated
+Docker installation. Its verified source totals are 42,220 rows, 78 dates from
+2026-05-01 through 2026-07-28, frequency 212,411 and 56,391,042 exact seconds.
+Only the six known COPY tables are interpreted; archive SQL is never executed.
+Derived daily CSVs preserve analytics/source IDs in a private provenance manifest
+and pass through the real CSV importer. The public prototype is excluded; missing
+analytics rows are not reconstructed. See the [operator guide](../development/running-poc.md).

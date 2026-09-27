@@ -21,7 +21,7 @@ export class ApiError extends Error {
         : code === "analytics_revision_changed"
           ? "The imported data changed. Refresh the data before continuing."
           : status === 401
-            ? "Select a demo user to continue."
+            ? "Select a local user to continue."
             : status === 403
               ? "This user or browser is not permitted to perform this operation."
               : status === 413
@@ -31,7 +31,7 @@ export class ApiError extends Error {
                   : code === "invalid_filename"
                     ? "Use the supported filename Hitliste-YYYYMMDD.csv."
                     : code === "import_capacity"
-                      ? "The dedicated demo storage limit has been reached."
+                      ? "The local storage limit has been reached."
                       : "The operation could not be completed. Check the input and try again.",
     );
   }

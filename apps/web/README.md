@@ -176,3 +176,5 @@ equipment includes area context, and matching zero values remain visible.
 The fixed five-row preview is synchronous and unpaginated. It does not validate
 production queries, cursor/revision behavior, failed reads or permissions. See the
 [execution record](../../docs/planning/completed/IOP-096-fixture-drilldown-plan.md).
+
+The primary local stack uses `npm run local:up`; see the [operator guide](../../docs/development/running-poc.md). Template filter policies live in the framework-free analysis application layer; React renders collapsible controls and preserves the shared visual identity.

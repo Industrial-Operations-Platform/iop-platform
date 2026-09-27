@@ -1,10 +1,10 @@
-import { startDemoRuntime } from "./demo/runtime";
+import { startPlatformRuntime } from "./host/runtime";
 import { createApplication } from "./application";
 import { ConfigurationError, readStartupConfiguration } from "./configuration";
 
 async function bootstrap(): Promise<void> {
   const { host, port } = readStartupConfiguration(process.env);
-  const runtime = await startDemoRuntime(process.env);
+  const runtime = await startPlatformRuntime(process.env);
   const app = await createApplication(runtime, port);
   if (runtime) {
     const close = app.close.bind(app);
