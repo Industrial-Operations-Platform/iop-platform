@@ -44,8 +44,14 @@ real importer and keep provenance; archive SQL is never executed.
 
 Left navigation contains an initially empty Start page and Data analysis; lower
 navigation selects analytical templates. Users enter the Taskforce presentation.
-An authorized Administrator can switch to Administration to expose import,
-preparation, KPI settings and Files & source rows, then return to Taskforce view.
+An authorized Administrator enters Import & prepare directly when switching to
+Administration. Separate sections handle import/history, data preparation and KPI
+settings/goals, including before the first successful import. Reports, charts and
+analytical filters remain in Taskforce view; source rows have their own Files & source
+rows tool. Import confirms the filename date, flags known duplicate dates, and shows
+authoritative saved/rejected/inspection counts, errors and partial/truncated diagnostics.
+The server remains authoritative for admission and preserves existing date claims.
+Preparation and KPI editors mount separately and load the latest profile when opened.
 This toggle changes presentation, not the authenticated principal or backend grants.
 Human-readable context identifies Taskforce/Administration and Operational Intelligence
 instead of deployment IDs.

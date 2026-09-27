@@ -63,19 +63,22 @@ KPI cards remain unchanged.
 
 ## Import, prepare and analyze
 
-1. Open **Import & prepare**, select `Hitliste-YYYYMMDD.csv` and press **Import CSV**.
+1. Switch to **Administration → Import & prepare → Import files**, select
+   `Hitliste-YYYYMMDD.csv`, confirm the displayed reporting date and press **Import CSV**.
    Input is UTF-16 LE with BOM, semicolon-separated, at most 5 MiB. Existing reporting
    dates cannot be replaced. Review errors, duplicates and interrupted outcomes.
-2. Use **Analyze this file** for one date, or **Back to analysis** / **Refresh history**
-   for the complete imported range. Dates are inclusive/exclusive as labelled.
+2. Review the import outcome, saved/rejected counts and diagnostics. Known accepted
+   dates block another upload; the server also rejects duplicate races. Use **Taskforce view**
+   to return to reports and select the desired date/month. Dates are inclusive/exclusive as labelled.
 3. Start in **Executive Overview**, then choose Halle, Bereich, equipment, errors or daily/monthly.
    Group by any source field; change the measure and day/week/month period. Filter
    a sector, location, equipment or message with exact values; suggestions show up
    to 200 values and an exact typed value can reach others. Commas are part of values.
 4. Select a chart point/bar or a group in **Explore data** to filter it. **Clear filters**
    restores the range without dimension filters. Tables expose rankings, periods and
-   contributing rows; authorized administrators can retrieve the original file/line.
-5. In preparation, edit normalization, area-to-sector rules and explicit corrections.
+   trends; administrators review original files and source rows in **Files & source rows**.
+5. In **Import & prepare → Data preparation**, edit normalization, area-to-sector rules
+   and explicit corrections.
    **Save historical preparation** persists the profile and applies it to historical
    reports. It never edits retained originals or immutable import-time facts. A stale
    editor/report version is rejected; refresh before continuing.
@@ -114,13 +117,10 @@ cannot perform reconstruction. Current POC configuration exposes Administrator o
 
 ## Executive indicators and stable visual identity
 
-Only **Executive Overview** shows KPI cards. They identify the highest-frequency
-sector, equipment code and error, plus the area with the highest accumulated alarm
-duration. Each card shows the leader, its measure and its percentage of the complete
-filtered total (frequency for three cards, exact alarm seconds for the area card).
-Click the name to filter the report. Ties use deterministic label ordering; a zero
-or empty denominator displays no leader or percentage. Equipment groups by the source
-code across its locations, which remain independently filterable.
+Only **Executive Overview** shows configured Meldetext KPI cards. Administrators
+choose the messages, labels, measures and optional goals under **Import & prepare →
+KPI settings & goals**. The monthly overview compares daily averages with the saved
+goal or the global historical average; see the monthly overview instructions below.
 
 Counts of source/admitted/rejected rows and file bytes appear in **Import & prepare**
 for the reviewed file; unknown counts are labelled rather than treated as zero.
@@ -130,7 +130,7 @@ Preserve the [IOP visual identity](../design/visual-identity.md) when changing v
 
 ## Mapping your own source labels
 
-Use **Import & prepare → Save historical preparation** to edit sector rules and
+Use **Import & prepare → Data preparation → Save historical preparation** to edit sector rules and
 explicit value corrections in the database. The saved profile applies to historical
 reports, preserves originals and rejects stale editor versions. Unknown source areas
 remain included as unclassified. Changes never replace an admitted reporting date.
@@ -279,7 +279,7 @@ rankings and the daily heatmap use descending monthly frequency; scroll to inspe
 more areas. The daily graph overlays frequency and alarm minutes with labelled axes.
 Click a ranked area or heatmap cell to investigate that area in Bereich analysis.
 
-Switch to **Administration**, then expand **KPI settings & goals** to add/remove up to eight Meldetext cards, select
+Switch to **Administration → Import & prepare → KPI settings & goals** to add/remove up to eight Meldetext cards, select
 prepared error text from the database dropdown, label and measure, and save. Goals are occurrences/day
 or alarm minutes/day; changing measure clears the old goal. Leaving a goal blank
 uses the daily average across all imported history, including the selected month.
@@ -300,9 +300,19 @@ months with at least one eligible imported date.
 ## Taskforce and administration
 
 The default Start page is intentionally empty. Choose **Data analysis** to view
-reports as Taskforce. **Administration** exposes import/preparation, KPI settings
-and **Files & source rows** for authorized administrators; **Taskforce view** hides
-those tools again. Changing the user or reloading starts with administrative tools
+reports as Taskforce. **Administration** opens **Import & prepare** directly, with
+separate **Import files**, **Data preparation** and **KPI settings & goals** sections.
+Charts, report filters and analytical templates are not rendered or requested there.
+**Files & source rows** remains a separate administrator tool. **Taskforce view**
+returns to analysis. Settings are available even before the first successful import.
+Preparation and KPI editors load independently when opened, avoiding stale versions
+from simultaneously mounted editors.
+
+Import review shows the filename/date, source/admitted/rejected row counts, bytes,
+complete/partial inspection, valid/invalid inspected counts, import-time unclassified
+and repeated rows, and bounded line/field diagnostics. Unknown counts stay unknown.
+Repeated source rows are distinct from a duplicate date. Review received attempts
+and recover their final outcome before retrying an interrupted upload. Changing the user or reloading starts with administrative tools
 hidden. This is a presentation switch with the same server-side permission checks.
 
 In **Files & source rows**, select an imported file. Expand **Column filters** to

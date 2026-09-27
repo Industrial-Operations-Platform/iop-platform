@@ -1,7 +1,7 @@
 import { AnalysisCalendarNotice } from "./AnalysisCalendarNotice";
 import { SourceFiles } from "./SourceFiles";
 import { ExecutiveMonthControls, MonthlyOverview } from "./MonthlyOverview";
-import { ExecutiveSettings } from "./ExecutiveSettings";
+import { ImportWorkspace } from "./ImportWorkspace";
 import { ReportFilters } from "./ReportFilters";
 import { Plot } from "./Plot";
 import { labels } from "./labels";
@@ -13,9 +13,6 @@ import {
   Button,
   Disclosure,
   Field,
-  Input,
-  MetricCard,
-  MetricGrid,
   PageHeading,
   Panel,
   Select,
@@ -30,14 +27,11 @@ import {
   drillInto,
   selectView,
   reportViews,
-  nextDate,
 } from "../../application/workspace";
 import {
   type DemoContext,
   type Dimension,
-  type ImportReview,
   type ImportSummary,
-  type ProfileResult,
   type Report,
   type ReportRequest,
 } from "../../domain/models";
@@ -196,8 +190,10 @@ function ReportWorkspace({
     [loading, setLoading] = useState(true),
     [refresh, setRefresh] = useState(0),
     [template, setTemplate] = useState(0),
-    [admin, setAdmin] = useState(false),
     [fileView, setFileView] = useState(false);
+  useEffect(() => {
+    if (!administration) setFileView(false);
+  }, [administration]);
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -237,7 +233,7 @@ function ReportWorkspace({
   useEffect(() => {
     let active = true;
     setReport(null);
-    if (!selection) return;
+    if (!selection || administration) return;
     setLoading(true);
     setError(undefined);
     void application
@@ -254,7 +250,7 @@ function ReportWorkspace({
     return () => {
       active = false;
     };
-  }, [application, selection]);
+  }, [application, selection, administration]);
   const drill = (dimension: Dimension, key: string) => {
     if (!selection) return;
     const next = drillInto(selection, template, dimension, key);
@@ -264,25 +260,13 @@ function ReportWorkspace({
   const select = (key: string) => {
     if (selection) drill(selection.dimension, key);
   };
-  const showFile = (date: string) => {
-    setTemplate(5);
-    setSelection({
-      from: date,
-      toExclusive: nextDate(date),
-      dimension: "area",
-      period: "day",
-      metric: "frequency",
-      page: 1,
-    });
-    setAdmin(false);
-  };
   return (
     <>
       <PageHeading
         title={
           administration && fileView
             ? "Files & source rows"
-            : administration && admin
+            : administration
               ? "Import & prepare"
               : "Data analysis"
         }
@@ -291,29 +275,29 @@ function ReportWorkspace({
             ? "Administration · Operational Intelligence"
             : "Taskforce · Operational Intelligence"
         }
-        description="Daily files. One persistent reporting history."
+        description={
+          administration
+            ? "Manage daily files, import quality and reporting settings."
+            : "Daily files. One persistent reporting history."
+        }
         actions={
           <Actions>
             {" "}
             {administration && (
               <Button
-                onClick={() => {
-                  setFileView(false);
-                  setAdmin(!admin);
-                }}
+                aria-pressed={!fileView}
+                onClick={() => setFileView(false)}
               >
-                {admin ? "Back to analysis" : "Import & prepare"}
+                Import & prepare
               </Button>
             )}
             {administration && (
               <Button
                 variant="secondary"
-                onClick={() => {
-                  setAdmin(false);
-                  setFileView(!fileView);
-                }}
+                aria-pressed={fileView}
+                onClick={() => setFileView(true)}
               >
-                {fileView ? "Back to analysis" : "Files & source rows"}
+                Files & source rows
               </Button>
             )}
             <Button
@@ -332,12 +316,11 @@ function ReportWorkspace({
           application={application}
           history={history}
         />
-      ) : administration && admin ? (
+      ) : administration ? (
         <ImportWorkspace
           application={application}
           history={history}
           onImported={() => setRefresh((x) => x + 1)}
-          onFile={showFile}
         />
       ) : (
         <>
@@ -457,12 +440,6 @@ function ReportWorkspace({
                       )}
                     </div>
                   ))}
-                {template === 0 && administration && (
-                  <ExecutiveSettings
-                    application={application}
-                    onSaved={() => setRefresh((x) => x + 1)}
-                  />
-                )}
                 <DataTables report={report} onSelect={select} />
                 <p className="analysis-footnote">
                   Reporting dates come from file names; reporting windows are
@@ -550,456 +527,5 @@ function DataTables({
         </Table>
       </TableViewport>
     </Disclosure>
-  );
-}
-function ImportWorkspace({
-  application,
-  history,
-  onImported,
-  onFile,
-}: {
-  application: AnalysisWorkspace;
-  history: ImportSummary[];
-  onImported: () => void;
-  onFile: (date: string) => void;
-}) {
-  const [file, setFile] = useState<File | null>(null),
-    [pending, setPending] = useState(false),
-    [error, setError] = useState<unknown>(),
-    [review, setReview] = useState<ImportReview | null>(null);
-  const upload = async () => {
-    if (!file) return;
-    setPending(true);
-    setError(undefined);
-    setReview(null);
-    try {
-      const r = await application.gateway.upload(
-        file.name,
-        await file.arrayBuffer(),
-      );
-      setReview(r);
-      onImported();
-    } catch (e) {
-      setError(e);
-    } finally {
-      setPending(false);
-    }
-  };
-  const inspect = async (id: string, recover = false) => {
-    setPending(true);
-    setError(undefined);
-    try {
-      setReview(await application.gateway.review(id, recover));
-      if (recover) onImported();
-    } catch (e) {
-      setError(e);
-    } finally {
-      setPending(false);
-    }
-  };
-  return (
-    <>
-      <Panel className="analysis-import">
-        <h2>Add a daily CSV</h2>
-        <p>
-          Files and accepted rows persist in the database. An existing reporting
-          date cannot be replaced.
-        </p>
-        <p>
-          Hitliste-YYYYMMDD.csv · UTF-16 LE with BOM · semicolon separated ·
-          maximum 5 MiB.
-        </p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void upload();
-          }}
-        >
-          <Field>
-            CSV file
-            <Input
-              type="file"
-              accept=".csv"
-              disabled={pending}
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            />
-          </Field>
-          <Button type="submit" disabled={!file || pending}>
-            {pending ? "Processing CSV…" : "Import CSV"}
-          </Button>
-        </form>
-        <Notice error={error} />
-        {review && (
-          <div role="status">
-            <h3>
-              {review.outcome === "succeeded"
-                ? "Import complete"
-                : review.reasonCode === "duplicate-date"
-                  ? "Duplicate reporting date"
-                  : "Import " + review.outcome}
-            </h3>
-            <MetricGrid
-              className="analysis-import-counts"
-              aria-label="File import volume"
-            >
-              {[
-                ["Source rows", review.dataRecordCount],
-                ["Admitted rows", review.admittedRecordCount],
-                ["Rejected rows", review.rejectedRecordCount],
-                ["File size · bytes", review.byteLength],
-              ].map(([label, value]) => (
-                <MetricCard
-                  key={label}
-                  label={label}
-                  value={value === null ? "Unknown" : number(Number(value))}
-                />
-              ))}
-            </MetricGrid>
-            {review.diagnostics.map((d, i) => (
-              <p key={i}>
-                Line {d.line}: {d.field} {d.reason ?? d.code}
-              </p>
-            ))}
-            {review.outcome === "succeeded" && (
-              <Button onClick={() => onFile(review.reportingDate)}>
-                Analyze this file
-              </Button>
-            )}
-            <a href={application.gateway.originalUrl(review.importId)}>
-              Download preserved original
-            </a>
-          </div>
-        )}
-      </Panel>
-      <ProfileEditor application={application} onSaved={onImported} />
-      <Panel className="analysis-import">
-        <h2>Import history</h2>
-        <TableViewport>
-          <Table>
-            <thead>
-              <tr>
-                <th>File / date</th>
-                <th>Outcome</th>
-                <th>Rows</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.map((h) => (
-                <tr key={h.importId}>
-                  <th>
-                    {h.originalFilename}
-                    <small>{h.reportingDate}</small>
-                  </th>
-                  <td>{h.reasonCode ?? h.outcome}</td>
-                  <td>{h.admittedRecordCount ?? "—"}</td>
-                  <td>
-                    <Button
-                      disabled={pending}
-                      onClick={() => void inspect(h.importId)}
-                    >
-                      Review
-                    </Button>
-                    {h.outcome === "received" && (
-                      <Button
-                        disabled={pending}
-                        onClick={() => void inspect(h.importId, true)}
-                      >
-                        Recover import outcome
-                      </Button>
-                    )}
-                    {h.outcome === "succeeded" && (
-                      <Button onClick={() => onFile(h.reportingDate)}>
-                        Analyze file
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </TableViewport>
-      </Panel>
-    </>
-  );
-}
-function ProfileEditor({
-  application,
-  onSaved,
-}: {
-  application: AnalysisWorkspace;
-  onSaved: () => void;
-}) {
-  const [value, setValue] = useState<ProfileResult | null>(null),
-    [error, setError] = useState<unknown>(),
-    [pending, setPending] = useState(false),
-    [saved, setSaved] = useState(false);
-  useEffect(() => {
-    let active = true;
-    void application.gateway
-      .profile()
-      .then((x) => {
-        if (active) setValue(x);
-      })
-      .catch((e) => {
-        if (active) setError(e);
-      });
-    return () => {
-      active = false;
-    };
-  }, [application]);
-  const save = async () => {
-    if (!value) return;
-    setPending(true);
-    setError(undefined);
-    setSaved(false);
-    try {
-      setValue(await application.gateway.saveProfile(value));
-      setSaved(true);
-      onSaved();
-    } catch (e) {
-      setError(e);
-    } finally {
-      setPending(false);
-    }
-  };
-  const edit = (next: ProfileResult) => {
-    setSaved(false);
-    setValue(next);
-  };
-  const profile = value?.profile;
-  return (
-    <Panel className="analysis-import">
-      <h2>Data preparation & sector classification</h2>
-      <p>
-        Saving applies these rules to the complete historical analysis. Original
-        files and imported values remain preserved.
-      </p>
-      <p>
-        <strong>Types:</strong> Häufigkeit → integer; Dauer → exact seconds,
-        displayed as minutes; Bereich, Betriebsmittelkennzeichen, Meldetext, Typ
-        and Meldegruppe → text. Commas, umlauts and code punctuation are
-        preserved.
-      </p>
-      <Notice error={error} />
-      {value && profile && (
-        <>
-          <div className="analysis-checks">
-            {(["trim", "unicodeNfc", "collapseWhitespace"] as const).map(
-              (key) => (
-                <Field key={key} layout="inline">
-                  <Input
-                    disabled={pending}
-                    type="checkbox"
-                    checked={profile.normalization[key]}
-                    onChange={(e) => {
-                      edit({
-                        ...value,
-                        profile: {
-                          ...profile,
-                          normalization: {
-                            ...profile.normalization,
-                            [key]: e.target.checked,
-                          },
-                        },
-                      });
-                    }}
-                  />
-                  {
-                    {
-                      trim: "Trim outer spaces",
-                      unicodeNfc: "Normalize Unicode (NFC)",
-                      collapseWhitespace: "Collapse repeated spaces",
-                    }[key]
-                  }
-                </Field>
-              ),
-            )}
-          </div>
-          <Disclosure
-            variant="divided"
-            summary={<>Area → sector rules ({profile.areaSectors.length})</>}
-          >
-            <div className="analysis-rule-table">
-              {profile.areaSectors.map((rule, i) => (
-                <div key={i}>
-                  <Input
-                    disabled={pending}
-                    aria-label={`Area ${i + 1}`}
-                    value={rule.area}
-                    onChange={(e) =>
-                      edit({
-                        ...value,
-                        profile: {
-                          ...profile,
-                          areaSectors: profile.areaSectors.map((x, j) =>
-                            j === i ? { ...x, area: e.target.value } : x,
-                          ),
-                        },
-                      })
-                    }
-                  />
-                  <Input
-                    disabled={pending}
-                    aria-label={`Sector ${i + 1}`}
-                    value={rule.sector}
-                    onChange={(e) =>
-                      edit({
-                        ...value,
-                        profile: {
-                          ...profile,
-                          areaSectors: profile.areaSectors.map((x, j) =>
-                            j === i ? { ...x, sector: e.target.value } : x,
-                          ),
-                        },
-                      })
-                    }
-                  />
-                  <Button
-                    disabled={pending}
-                    onClick={() =>
-                      edit({
-                        ...value,
-                        profile: {
-                          ...profile,
-                          areaSectors: profile.areaSectors.filter(
-                            (_, j) => i !== j,
-                          ),
-                        },
-                      })
-                    }
-                  >
-                    Remove rule {i + 1}
-                  </Button>
-                </div>
-              ))}
-            </div>
-            <Button
-              disabled={pending}
-              onClick={() =>
-                edit({
-                  ...value,
-                  profile: {
-                    ...profile,
-                    areaSectors: [
-                      ...profile.areaSectors,
-                      { area: "", sector: "" },
-                    ],
-                  },
-                })
-              }
-            >
-              Add area rule
-            </Button>
-          </Disclosure>
-          <Disclosure
-            variant="divided"
-            summary={<>Explicit value corrections ({profile.aliases.length})</>}
-          >
-            <p>
-              Replace one exact source value for analysis. No automatic spelling
-              guesses.
-            </p>
-            {profile.aliases.map((alias, i) => (
-              <div className="analysis-alias" key={i}>
-                <Select
-                  disabled={pending}
-                  aria-label={`Correction field ${i + 1}`}
-                  value={alias.field}
-                  onChange={(e) =>
-                    edit({
-                      ...value,
-                      profile: {
-                        ...profile,
-                        aliases: profile.aliases.map((a, j) =>
-                          j === i
-                            ? {
-                                ...a,
-                                field: e.target.value as typeof alias.field,
-                              }
-                            : a,
-                        ),
-                      },
-                    })
-                  }
-                >
-                  {(
-                    [
-                      "area",
-                      "equipment",
-                      "message",
-                      "type",
-                      "messageGroup",
-                    ] as const
-                  ).map((f) => (
-                    <option key={f} value={f}>
-                      {labels[f]}
-                    </option>
-                  ))}
-                </Select>
-                {(["from", "to"] as const).map((k) => (
-                  <Input
-                    disabled={pending}
-                    key={k}
-                    aria-label={`${k} value ${i + 1}`}
-                    value={alias[k]}
-                    onChange={(e) =>
-                      edit({
-                        ...value,
-                        profile: {
-                          ...profile,
-                          aliases: profile.aliases.map((a, j) =>
-                            j === i ? { ...a, [k]: e.target.value } : a,
-                          ),
-                        },
-                      })
-                    }
-                  />
-                ))}
-                <Button
-                  disabled={pending}
-                  onClick={() =>
-                    edit({
-                      ...value,
-                      profile: {
-                        ...profile,
-                        aliases: profile.aliases.filter((_, j) => j !== i),
-                      },
-                    })
-                  }
-                >
-                  Remove correction {i + 1}
-                </Button>
-              </div>
-            ))}
-            <Button
-              disabled={pending}
-              onClick={() =>
-                edit({
-                  ...value,
-                  profile: {
-                    ...profile,
-                    aliases: [
-                      ...profile.aliases,
-                      { field: "area", from: "", to: "" },
-                    ],
-                  },
-                })
-              }
-            >
-              Add value correction
-            </Button>
-          </Disclosure>
-          <Button disabled={pending} onClick={() => void save()}>
-            {pending ? "Saving…" : "Save historical preparation"}
-          </Button>
-          {saved && (
-            <p role="status">
-              Preparation saved. Return to analysis to see the updated history.
-            </p>
-          )}
-        </>
-      )}
-    </Panel>
   );
 }
