@@ -351,13 +351,21 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       at = new Map(r.timeline.map((x) => [x.period, x]));
     return {
       ...base,
-      legend: { data: ["Frequency", "Duration (minutes)"] },
+      legend: {
+        type: "scroll",
+        top: 0,
+        data: ["Frequency", "Duration (minutes)"],
+      },
+      grid: { left: 20, right: 28, top: 52, bottom: 78, containLabel: true },
       xAxis: { type: "category", data: dates },
       yAxis: [
         { type: "value", name: "Frequency" },
         { type: "value", name: "Minutes" },
       ],
-      dataZoom: [{ type: "inside" }, { type: "slider", height: 14, bottom: 0 }],
+      dataZoom: [
+        { type: "inside" },
+        { type: "slider", height: 24, bottom: 16 },
+      ],
       series: [
         {
           name: "Frequency",
