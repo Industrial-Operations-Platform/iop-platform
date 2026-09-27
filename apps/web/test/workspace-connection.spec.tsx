@@ -5,6 +5,8 @@ import {
 } from "../src/features/analysis/application/workspace";
 import { WorkspaceApp } from "../src/features/analysis/adapters/react/Workspace";
 
+jest.mock("../src/design/components/components.css", () => ({}));
+
 jest.mock("../src/features/analysis/adapters/react/workspace.css", () => ({}));
 jest.mock("../src/features/analysis/adapters/echarts/charts", () => ({
   mountChart: jest.fn(),

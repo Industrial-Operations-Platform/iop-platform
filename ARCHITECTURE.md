@@ -166,3 +166,10 @@ refresh this relational projection atomically. Reports join its catalogs, verify
 complete source coverage/profile consistency and preserve the same API/UI contract.
 The backup's normalized analytical model is the reference; its initial `public`
 prototype is not the target reporting schema.
+
+
+Shared frontend appearance lives in `apps/web/src/design/components`, backed by
+`design/identity.ts`. React feature adapters compose these controls and surfaces;
+the shared library has no feature, domain-policy, transport or chart dependencies.
+See the [component contract](apps/web/src/design/components/README.md). This follows
+ADR-0032's existing presentation boundary without introducing another framework.

@@ -1,16 +1,32 @@
-import type { CSSProperties } from "react";
-import { identityVariables } from "../../../../design/identity";
-import { useEffect, useRef, useState } from "react";
+import { ReportFilters } from "./ReportFilters";
+import { Plot } from "./Plot";
+import { labels } from "./labels";
+import {
+  Actions,
+  Alert,
+  AppShell,
+  Button,
+  Disclosure,
+  Field,
+  Input,
+  MetricCard,
+  MetricGrid,
+  PageHeading,
+  Panel,
+  Select,
+  Table,
+  TableViewport,
+  ViewNavigation,
+} from "../../../../design/components";
+import { useEffect, useState } from "react";
 import {
   AnalysisWorkspace,
-  changeSelection,
   drillInto,
   selectView,
   reportViews,
   nextDate,
 } from "../../application/workspace";
 import {
-  dimensions,
   type DemoContext,
   type Dimension,
   type ImportReview,
@@ -19,55 +35,17 @@ import {
   type Report,
   type ReportRequest,
 } from "../../domain/models";
-import { mountChart, number, type ChartKind } from "../echarts/charts";
+import { number } from "../echarts/charts";
 import "./workspace.css";
 
-const labels: Record<Dimension, string> = {
-  sector: "Sector / Halle",
-  area: "Bereich",
-  equipment: "Betriebsmittelkennzeichen",
-  message: "Meldetext",
-  type: "Typ",
-  messageGroup: "Meldegruppe",
-  frequency: "Häufigkeit",
-  duration: "Dauer (minutes)",
-};
 function Notice({ error }: { error: unknown }) {
   return error ? (
-    <p className="analysis-error" role="alert">
+    <Alert>
       {error instanceof Error
         ? error.message
         : "The operation could not be completed."}
-    </p>
+    </Alert>
   ) : null;
-}
-function Plot({
-  kind,
-  report,
-  onSelect,
-  title,
-}: {
-  kind: ChartKind;
-  report: Report;
-  onSelect: (key: string) => void;
-  title: string;
-}) {
-  const element = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (element.current)
-      return mountChart(element.current, kind, report, onSelect);
-  }, [kind, report, onSelect]);
-  return (
-    <section className="analysis-chart">
-      <h2>{title}</h2>
-      <div
-        ref={element}
-        className="analysis-plot"
-        role="img"
-        aria-label={title + "; values available in the data tables below"}
-      />
-    </section>
-  );
 }
 export function WorkspaceApp({
   application,
@@ -110,66 +88,69 @@ export function WorkspaceApp({
     }
   };
   return (
-    <div className="analysis-app" style={identityVariables as CSSProperties}>
-      <a className="analysis-skip" href="#analysis-main">
-        Skip to analysis
-      </a>
-      <header className="analysis-top">
-        <label>
-          User{" "}
-          <select
-            aria-label="Demo user"
-            value={context?.user?.id ?? ""}
-            disabled={pending}
-            onChange={(e) => void choose(e.target.value)}
-          >
-            <option value="" disabled>
-              Select a user
-            </option>
-            {context?.users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
+    <AppShell
+      className="analysis-app"
+      mainId="analysis-main"
+      skipLabel="Skip to analysis"
+      header={
+        <>
+          <Field layout="inline">
+            User{" "}
+            <Select
+              aria-label="Demo user"
+              value={context?.user?.id ?? ""}
+              disabled={pending}
+              onChange={(e) => void choose(e.target.value)}
+            >
+              <option value="" disabled>
+                Select a user
               </option>
-            ))}
-          </select>
-        </label>
-      </header>
-      <aside className="analysis-sidebar">
-        <div className="analysis-logo">
+              {context?.users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </>
+      }
+      brand={
+        <>
           IOP<span>Operational Intelligence</span>
-        </div>
+        </>
+      }
+      navigation={
         <nav aria-label="Main navigation">
           <span aria-current="page">▥ &nbsp; Data analysis</span>
         </nav>
-      </aside>
-      <main id="analysis-main" className="analysis-main">
-        <Notice error={error} />
-        {context?.user ? (
-          <ReportWorkspace
-            key={context.user.id}
-            application={application}
-            context={context}
-          />
-        ) : (
-          <section className="analysis-empty">
-            <h1>Data analysis</h1>
-            <p>
-              {context?.enabled
-                ? "Select a user in the header to open the workspace."
-                : "Connect the local API to open the analytical workspace."}
-            </p>
-            {(!context?.enabled || !!error) && (
-              <button
-                disabled={pending}
-                onClick={() => setConnectionAttempt((n) => n + 1)}
-              >
-                {pending ? "Connecting…" : "Retry connection"}
-              </button>
-            )}
-          </section>
-        )}
-      </main>
-    </div>
+      }
+    >
+      <Notice error={error} />
+      {context?.user ? (
+        <ReportWorkspace
+          key={context.user.id}
+          application={application}
+          context={context}
+        />
+      ) : (
+        <Panel variant="empty">
+          <h1>Data analysis</h1>
+          <p>
+            {context?.enabled
+              ? "Select a user in the header to open the workspace."
+              : "Connect the local API to open the analytical workspace."}
+          </p>
+          {(!context?.enabled || !!error) && (
+            <Button
+              disabled={pending}
+              onClick={() => setConnectionAttempt((n) => n + 1)}
+            >
+              {pending ? "Connecting…" : "Retry connection"}
+            </Button>
+          )}
+        </Panel>
+      )}
+    </AppShell>
   );
 }
 function ReportWorkspace({
@@ -254,28 +235,31 @@ function ReportWorkspace({
   };
   return (
     <>
-      <div className="analysis-heading">
-        <div>
-          <p className="analysis-eyebrow">
+      <PageHeading
+        title={admin ? "Import & prepare" : "Data analysis"}
+        eyebrow={
+          <>
             {context.scope?.siteId} / {context.scope?.sourceId}
-          </p>
-          <h1>{admin ? "Import & prepare" : "Data analysis"}</h1>
-          <p>Daily files. One persistent reporting history.</p>
-        </div>
-        <div className="analysis-actions">
-          {context.canImport && (
-            <button onClick={() => setAdmin(!admin)}>
-              {admin ? "Back to analysis" : "Import & prepare"}
-            </button>
-          )}
-          <button
-            className="secondary"
-            onClick={() => setRefresh((x) => x + 1)}
-          >
-            Refresh history
-          </button>
-        </div>
-      </div>
+          </>
+        }
+        description="Daily files. One persistent reporting history."
+        actions={
+          <Actions>
+            {" "}
+            {context.canImport && (
+              <Button onClick={() => setAdmin(!admin)}>
+                {admin ? "Back to analysis" : "Import & prepare"}
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              onClick={() => setRefresh((x) => x + 1)}
+            >
+              Refresh history
+            </Button>
+          </Actions>
+        }
+      />
       <Notice error={error} />
       {admin ? (
         <ImportWorkspace
@@ -287,7 +271,7 @@ function ReportWorkspace({
       ) : (
         <>
           {selection && (
-            <Filters
+            <ReportFilters
               key={JSON.stringify(selection)}
               selection={selection}
               view={template}
@@ -298,14 +282,14 @@ function ReportWorkspace({
           {loading ? (
             <p role="status">Loading historical analysis…</p>
           ) : !selection ? (
-            <section className="analysis-empty">
+            <Panel variant="empty">
               <h2>Your history starts with a CSV</h2>
               <p>
                 {context.canImport
                   ? "Open Import & prepare to add a daily file."
                   : "An administrator can import daily files for analysis."}
               </p>
-            </section>
+            </Panel>
           ) : (
             report && (
               <>
@@ -319,10 +303,10 @@ function ReportWorkspace({
                   time, not plant downtime.
                 </p>
                 {report.totals.records === 0 ? (
-                  <section className="analysis-empty">
+                  <Panel variant="empty">
                     <h2>No matching records</h2>
                     <p>Adjust the dates or dimension filters.</p>
-                  </section>
+                  </Panel>
                 ) : (
                   <div className="analysis-charts">
                     {template === 5 ? (
@@ -410,179 +394,18 @@ function ReportWorkspace({
               </>
             )
           )}
-          <nav className="analysis-tabs" aria-label="Analysis templates">
-            {reportViews.map(({ title }, i) => (
-              <button
-                key={title}
-                aria-pressed={template === i}
-                onClick={() => {
-                  setTemplate(i);
-                  if (selection) setSelection(selectView(selection, i));
-                }}
-              >
-                {title}
-              </button>
-            ))}
-          </nav>
+          <ViewNavigation
+            label="Analysis templates"
+            selected={template}
+            items={reportViews.map(({ title }, id) => ({ id, label: title }))}
+            onSelect={(i) => {
+              setTemplate(i);
+              if (selection) setSelection(selectView(selection, i));
+            }}
+          />
         </>
       )}
     </>
-  );
-}
-function Filters({
-  selection,
-  view,
-  report,
-  onApply,
-}: {
-  selection: ReportRequest;
-  view: number;
-  report: Report | null;
-  onApply: (s: ReportRequest) => void;
-}) {
-  const [draft, setDraft] = useState(selection);
-  return (
-    <form
-      className="analysis-filters"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onApply(changeSelection(draft, {}));
-      }}
-    >
-      <details className="analysis-filter-panel">
-        <summary>
-          Date range{view > 1 ? " & filters" : ""} · {selection.from} –{" "}
-          {new Date(Date.parse(selection.toExclusive) - 86400000)
-            .toISOString()
-            .slice(0, 10)}
-          {Object.values(selection.filters ?? {}).flat().length > 0
-            ? ` · ${Object.values(selection.filters ?? {}).flat().length} active`
-            : ""}
-        </summary>
-        <div className="analysis-filter-row">
-          <label>
-            From
-            <input
-              type="date"
-              required
-              value={draft.from}
-              onChange={(e) => setDraft({ ...draft, from: e.target.value })}
-            />
-          </label>
-          <label>
-            To (exclusive)
-            <input
-              type="date"
-              required
-              value={draft.toExclusive}
-              onChange={(e) =>
-                setDraft({ ...draft, toExclusive: e.target.value })
-              }
-            />
-          </label>
-          {view > 1 && (
-            <>
-              <label>
-                Group by
-                <select
-                  aria-label="Group by"
-                  value={draft.dimension}
-                  onChange={(e) =>
-                    setDraft({
-                      ...draft,
-                      dimension: e.target.value as Dimension,
-                    })
-                  }
-                >
-                  {dimensions.map((d) => (
-                    <option key={d} value={d}>
-                      {labels[d]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Measure
-                <select
-                  aria-label="Measure"
-                  value={draft.metric}
-                  onChange={(e) =>
-                    setDraft({
-                      ...draft,
-                      metric: e.target.value as ReportRequest["metric"],
-                    })
-                  }
-                >
-                  <option value="frequency">Frequency</option>
-                  <option value="duration">Duration · minutes</option>
-                </select>
-              </label>
-              <label>
-                Period
-                <select
-                  aria-label="Period"
-                  value={draft.period}
-                  onChange={(e) =>
-                    setDraft({
-                      ...draft,
-                      period: e.target.value as ReportRequest["period"],
-                    })
-                  }
-                >
-                  <option value="day">Daily</option>
-                  <option value="week">Weekly</option>
-                  <option value="month">Monthly</option>
-                </select>
-              </label>
-            </>
-          )}
-          <button>Apply filters</button>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() =>
-              onApply(changeSelection(selection, { filters: {}, search: "" }))
-            }
-          >
-            Clear filters
-          </button>
-        </div>
-        {view > 1 && (
-          <>
-            <div className="analysis-filter-row">
-              {reportViews[view].filters.map((d) => (
-                <label key={d}>
-                  {labels[d]}
-                  <input
-                    aria-label={labels[d] + " filter"}
-                    list={"values-" + d}
-                    value={draft.filters?.[d]?.[0] ?? ""}
-                    onChange={(e) =>
-                      setDraft({
-                        ...draft,
-                        filters: {
-                          ...draft.filters,
-                          [d]: e.target.value ? [e.target.value] : [],
-                        },
-                      })
-                    }
-                  />
-                  <datalist id={"values-" + d}>
-                    {report?.options[d]?.map((v) => (
-                      <option key={v} value={v} />
-                    ))}
-                  </datalist>
-                  <small>
-                    {d === "duration" ? "Exact seconds for this filter. " : ""}
-                    Type an exact value; up to 200 suggestions.
-                  </small>
-                </label>
-              ))}
-            </div>
-          </>
-        )}
-      </details>
-    </form>
   );
 }
 function DataTables({
@@ -597,10 +420,13 @@ function DataTables({
   original: (id: string) => string | undefined;
 }) {
   return (
-    <details className="analysis-data">
-      <summary>Explore data · rankings, trends and original rows</summary>
-      <div className="analysis-table">
-        <table>
+    <Disclosure
+      className="analysis-data"
+      variant="panel"
+      summary={<> Explore data · rankings, trends and original rows </>}
+    >
+      <TableViewport>
+        <Table>
           <caption>Group totals · {labels[report.selection.dimension]}</caption>
           <thead>
             <tr>
@@ -614,14 +440,11 @@ function DataTables({
             {report.groups.map((g) => (
               <tr key={g.key}>
                 <th>
-                  <button
-                    className="text-button"
-                    onClick={() => onSelect(g.key)}
-                  >
+                  <Button variant="text" onClick={() => onSelect(g.key)}>
                     {report.selection.dimension === "duration"
                       ? number(Number(g.key) / 60)
                       : g.key}
-                  </button>
+                  </Button>
                 </th>
                 <td>{number(g.frequency)}</td>
                 <td>{number(g.minutes)}</td>
@@ -629,10 +452,10 @@ function DataTables({
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
-      <div className="analysis-table">
-        <table>
+        </Table>
+      </TableViewport>
+      <TableViewport>
+        <Table>
           <caption>Historical trend</caption>
           <thead>
             <tr>
@@ -650,10 +473,10 @@ function DataTables({
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
-      <div className="analysis-table">
-        <table>
+        </Table>
+      </TableViewport>
+      <TableViewport>
+        <Table>
           <caption>
             Contributing source rows · page {report.page} of {report.pageCount}
           </caption>
@@ -697,21 +520,21 @@ function DataTables({
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
-      <button
+        </Table>
+      </TableViewport>
+      <Button
         disabled={report.page <= 1}
         onClick={() => onPage(report.page - 1)}
       >
         Previous rows
-      </button>{" "}
-      <button
+      </Button>{" "}
+      <Button
         disabled={report.page >= report.pageCount}
         onClick={() => onPage(report.page + 1)}
       >
         Next rows
-      </button>
-    </details>
+      </Button>
+    </Disclosure>
   );
 }
 function ExecutiveKpis({
@@ -728,7 +551,7 @@ function ExecutiveKpis({
     ["message", "Most frequent error"],
   ] as const;
   return (
-    <div className="analysis-kpis" aria-label="Executive priorities">
+    <MetricGrid className="analysis-kpis" aria-label="Executive priorities">
       {priorities.map(([dimension, title]) => {
         const leader = report.executive.find((x) => x.dimension === dimension);
         const duration = dimension === "area";
@@ -741,21 +564,22 @@ function ExecutiveKpis({
             : leader.frequency
           : 0;
         return (
-          <section key={dimension}>
-            <span>{title}</span>
-            <strong>
-              {leader && total > 0
-                ? number((100 * measure) / total) + "%"
-                : "—"}
-            </strong>
+          <MetricCard
+            key={dimension}
+            label={title}
+            value={
+              leader && total > 0 ? number((100 * measure) / total) + "%" : "—"
+            }
+          >
             {leader ? (
               <>
-                <button
-                  className="text-button analysis-kpi-label"
+                <Button
+                  variant="text"
+                  className="analysis-kpi-label"
                   onClick={() => onSelect(dimension, leader.key)}
                 >
                   {leader.key || "(Empty value)"}
-                </button>
+                </Button>
                 <small>
                   {number(duration ? leader.minutes : leader.frequency)}{" "}
                   {duration ? "alarm minutes" : "occurrences"} · share of
@@ -768,10 +592,10 @@ function ExecutiveKpis({
                 selection
               </small>
             )}
-          </section>
+          </MetricCard>
         );
       })}
-    </div>
+    </MetricGrid>
   );
 }
 function ImportWorkspace({
@@ -821,7 +645,7 @@ function ImportWorkspace({
   };
   return (
     <>
-      <section className="analysis-import">
+      <Panel className="analysis-import">
         <h2>Add a daily CSV</h2>
         <p>
           Files and accepted rows persist in the database. An existing reporting
@@ -837,18 +661,18 @@ function ImportWorkspace({
             void upload();
           }}
         >
-          <label>
+          <Field>
             CSV file
-            <input
+            <Input
               type="file"
               accept=".csv"
               disabled={pending}
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
-          </label>
-          <button disabled={!file || pending}>
+          </Field>
+          <Button type="submit" disabled={!file || pending}>
             {pending ? "Processing CSV…" : "Import CSV"}
-          </button>
+          </Button>
         </form>
         <Notice error={error} />
         {review && (
@@ -860,7 +684,7 @@ function ImportWorkspace({
                   ? "Duplicate reporting date"
                   : "Import " + review.outcome}
             </h3>
-            <div
+            <MetricGrid
               className="analysis-import-counts"
               aria-label="File import volume"
             >
@@ -870,35 +694,34 @@ function ImportWorkspace({
                 ["Rejected rows", review.rejectedRecordCount],
                 ["File size · bytes", review.byteLength],
               ].map(([label, value]) => (
-                <section key={label}>
-                  <span>{label}</span>
-                  <strong>
-                    {value === null ? "Unknown" : number(Number(value))}
-                  </strong>
-                </section>
+                <MetricCard
+                  key={label}
+                  label={label}
+                  value={value === null ? "Unknown" : number(Number(value))}
+                />
               ))}
-            </div>
+            </MetricGrid>
             {review.diagnostics.map((d, i) => (
               <p key={i}>
                 Line {d.line}: {d.field} {d.reason ?? d.code}
               </p>
             ))}
             {review.outcome === "succeeded" && (
-              <button onClick={() => onFile(review.reportingDate)}>
+              <Button onClick={() => onFile(review.reportingDate)}>
                 Analyze this file
-              </button>
+              </Button>
             )}
             <a href={application.gateway.originalUrl(review.importId)}>
               Download preserved original
             </a>
           </div>
         )}
-      </section>
+      </Panel>
       <ProfileEditor application={application} onSaved={onImported} />
-      <section className="analysis-import">
+      <Panel className="analysis-import">
         <h2>Import history</h2>
-        <div className="analysis-table">
-          <table>
+        <TableViewport>
+          <Table>
             <thead>
               <tr>
                 <th>File / date</th>
@@ -917,32 +740,32 @@ function ImportWorkspace({
                   <td>{h.reasonCode ?? h.outcome}</td>
                   <td>{h.admittedRecordCount ?? "—"}</td>
                   <td>
-                    <button
+                    <Button
                       disabled={pending}
                       onClick={() => void inspect(h.importId)}
                     >
                       Review
-                    </button>
+                    </Button>
                     {h.outcome === "received" && (
-                      <button
+                      <Button
                         disabled={pending}
                         onClick={() => void inspect(h.importId, true)}
                       >
                         Recover import outcome
-                      </button>
+                      </Button>
                     )}
                     {h.outcome === "succeeded" && (
-                      <button onClick={() => onFile(h.reportingDate)}>
+                      <Button onClick={() => onFile(h.reportingDate)}>
                         Analyze file
-                      </button>
+                      </Button>
                     )}
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
-      </section>
+          </Table>
+        </TableViewport>
+      </Panel>
     </>
   );
 }
@@ -988,7 +811,7 @@ function ProfileEditor({
   };
   const profile = value?.profile;
   return (
-    <section className="analysis-import">
+    <Panel className="analysis-import">
       <h2>Data preparation & sector classification</h2>
       <p>
         Saving applies these rules to the complete historical analysis. Original
@@ -1006,8 +829,8 @@ function ProfileEditor({
           <div className="analysis-checks">
             {(["trim", "unicodeNfc", "collapseWhitespace"] as const).map(
               (key) => (
-                <label key={key}>
-                  <input
+                <Field key={key} layout="inline">
+                  <Input
                     type="checkbox"
                     checked={profile.normalization[key]}
                     onChange={(e) => {
@@ -1031,18 +854,18 @@ function ProfileEditor({
                       collapseWhitespace: "Collapse repeated spaces",
                     }[key]
                   }
-                </label>
+                </Field>
               ),
             )}
           </div>
-          <details>
-            <summary>
-              Area → sector rules ({profile.areaSectors.length})
-            </summary>
+          <Disclosure
+            variant="divided"
+            summary={<>Area → sector rules ({profile.areaSectors.length})</>}
+          >
             <div className="analysis-rule-table">
               {profile.areaSectors.map((rule, i) => (
                 <div key={i}>
-                  <input
+                  <Input
                     aria-label={`Area ${i + 1}`}
                     value={rule.area}
                     onChange={(e) =>
@@ -1057,7 +880,7 @@ function ProfileEditor({
                       })
                     }
                   />
-                  <input
+                  <Input
                     aria-label={`Sector ${i + 1}`}
                     value={rule.sector}
                     onChange={(e) =>
@@ -1072,7 +895,7 @@ function ProfileEditor({
                       })
                     }
                   />
-                  <button
+                  <Button
                     onClick={() =>
                       setValue({
                         ...value,
@@ -1086,11 +909,11 @@ function ProfileEditor({
                     }
                   >
                     Remove rule {i + 1}
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
-            <button
+            <Button
               onClick={() =>
                 setValue({
                   ...value,
@@ -1105,19 +928,19 @@ function ProfileEditor({
               }
             >
               Add area rule
-            </button>
-          </details>
-          <details>
-            <summary>
-              Explicit value corrections ({profile.aliases.length})
-            </summary>
+            </Button>
+          </Disclosure>
+          <Disclosure
+            variant="divided"
+            summary={<>Explicit value corrections ({profile.aliases.length})</>}
+          >
             <p>
               Replace one exact source value for analysis. No automatic spelling
               guesses.
             </p>
             {profile.aliases.map((alias, i) => (
               <div className="analysis-alias" key={i}>
-                <select
+                <Select
                   aria-label={`Correction field ${i + 1}`}
                   value={alias.field}
                   onChange={(e) =>
@@ -1150,9 +973,9 @@ function ProfileEditor({
                       {labels[f]}
                     </option>
                   ))}
-                </select>
+                </Select>
                 {(["from", "to"] as const).map((k) => (
-                  <input
+                  <Input
                     key={k}
                     aria-label={`${k} value ${i + 1}`}
                     value={alias[k]}
@@ -1169,7 +992,7 @@ function ProfileEditor({
                     }
                   />
                 ))}
-                <button
+                <Button
                   onClick={() =>
                     setValue({
                       ...value,
@@ -1181,10 +1004,10 @@ function ProfileEditor({
                   }
                 >
                   Remove correction {i + 1}
-                </button>
+                </Button>
               </div>
             ))}
-            <button
+            <Button
               onClick={() =>
                 setValue({
                   ...value,
@@ -1199,11 +1022,11 @@ function ProfileEditor({
               }
             >
               Add value correction
-            </button>
-          </details>
-          <button disabled={pending} onClick={() => void save()}>
+            </Button>
+          </Disclosure>
+          <Button disabled={pending} onClick={() => void save()}>
             {pending ? "Saving…" : "Save historical preparation"}
-          </button>
+          </Button>
           {saved && (
             <p role="status">
               Preparation saved. Return to analysis to see the updated history.
@@ -1211,6 +1034,6 @@ function ProfileEditor({
           )}
         </>
       )}
-    </section>
+    </Panel>
   );
 }

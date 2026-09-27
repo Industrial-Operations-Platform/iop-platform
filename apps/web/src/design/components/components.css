@@ -1,0 +1,409 @@
+.iop-ui {
+  font-family: var(--iop-font);
+  color: var(--iop-ink);
+  background: var(--iop-canvas);
+  min-height: 100vh;
+  font-size: 14px;
+}
+.iop-ui * {
+  box-sizing: border-box;
+}
+.iop-ui .iop-button,
+.iop-ui .iop-input,
+.iop-ui .iop-select {
+  font: inherit;
+}
+.iop-ui .iop-button {
+  background: var(--iop-primary);
+  color: var(--iop-surface);
+  border: 1px solid var(--iop-primary);
+  border-radius: var(--iop-controlRadius);
+  padding: 9px 13px;
+  cursor: pointer;
+  display: inline-block;
+  min-height: 44px;
+  max-width: 100%;
+  white-space: normal;
+}
+.iop-ui .iop-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.iop-ui .iop-button--secondary {
+  background: var(--iop-surface);
+  color: var(--iop-ink);
+  border-color: var(--iop-line);
+}
+.iop-ui .iop-button--text {
+  border: 0;
+  background: transparent;
+  color: var(--iop-activeInk);
+  padding: 0;
+  text-align: left;
+}
+.iop-ui .iop-input,
+.iop-ui .iop-select {
+  min-width: 0;
+  border: 1px solid var(--iop-inputBorder);
+  border-radius: var(--iop-inputRadius);
+  background: var(--iop-surface);
+  color: var(--iop-ink);
+  padding: 8px;
+}
+.iop-ui :focus-visible {
+  outline: 3px solid var(--iop-focus);
+  outline-offset: 3px;
+}
+.iop-ui h1 {
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 5px 0 10px;
+}
+.iop-ui h2 {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+.iop-ui h3 {
+  font-size: 16px;
+}
+.iop-ui p {
+  line-height: 1.6;
+}
+.iop-ui a {
+  color: var(--iop-link);
+}
+.iop-ui small {
+  display: block;
+  font-size: 11px;
+  color: var(--iop-muted);
+  line-height: 1.5;
+}
+.iop-ui .iop-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.iop-ui .iop-field--inline {
+  flex-direction: row;
+  align-items: center;
+}
+.iop-ui .iop-field-row {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.iop-ui .iop-field-row .iop-field {
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 130px;
+}
+.iop-ui .iop-field-row .iop-input,
+.iop-ui .iop-field-row .iop-select {
+  width: 100%;
+  font-size: 12px;
+}
+.iop-ui .iop-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.iop-ui .iop-filter-form {
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.iop-ui .iop-filter-form .iop-disclosure {
+  margin: 0;
+  padding: 0;
+  color: var(--iop-muted);
+}
+.iop-ui .iop-panel {
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  padding: 20px;
+  margin-top: 0;
+  min-width: 0;
+}
+.iop-ui .iop-panel--chart {
+  padding: 18px 18px 10px;
+}
+.iop-ui .iop-panel--chart h2 {
+  text-align: center;
+  font-weight: 550;
+  font-size: 15px;
+}
+.iop-ui .iop-panel--empty {
+  padding: 55px 30px;
+  text-align: center;
+}
+.iop-ui .iop-panel--metric {
+  border-radius: var(--iop-metricRadius);
+  padding: var(--iop-metricPadding);
+}
+.iop-ui .iop-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--iop-metricGap);
+}
+.iop-ui .iop-metric-label {
+  display: block;
+  color: var(--iop-muted);
+  font-size: 11px;
+}
+.iop-ui .iop-metric-value {
+  display: block;
+  font-size: var(--iop-metricSize);
+  line-height: 1.3;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--iop-metricWeight);
+}
+.iop-ui .iop-disclosure > summary {
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.iop-ui .iop-disclosure[open] > summary {
+  margin-bottom: 15px;
+}
+.iop-ui .iop-disclosure--panel {
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  padding: 20px;
+}
+.iop-ui .iop-disclosure--divided {
+  margin: 18px 0;
+  padding: 12px 0;
+  border-top: 1px solid var(--iop-line);
+}
+.iop-ui .iop-table-viewport {
+  overflow: auto;
+  max-height: 430px;
+  margin-bottom: 20px;
+}
+.iop-ui .iop-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.iop-ui .iop-table th,
+.iop-ui .iop-table td {
+  text-align: left;
+  border-bottom: 1px solid var(--iop-line);
+  padding: 10px;
+  vertical-align: top;
+}
+.iop-ui .iop-table th {
+  font-weight: 600;
+}
+.iop-ui .iop-table caption {
+  text-align: left;
+  font-weight: var(--iop-metricWeight);
+  padding: 15px 0;
+}
+.iop-ui .iop-alert {
+  background: var(--iop-errorSurface);
+  border: 1px solid var(--iop-errorBorder);
+  color: var(--iop-errorInk);
+  padding: 14px;
+  border-radius: 6px;
+}
+.iop-ui .iop-top {
+  height: 64px;
+  background: var(--iop-surface);
+  border-bottom: 1px solid var(--iop-line);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.iop-ui .iop-top .iop-field {
+  gap: 12px;
+}
+.iop-ui .iop-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 195px;
+  background: var(--iop-surface);
+  border-right: 1px solid var(--iop-line);
+  z-index: 6;
+  padding: 25px 15px;
+}
+.iop-ui .iop-brand {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding-left: 12px;
+}
+.iop-ui .iop-brand span {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--iop-muted);
+  margin-top: 6px;
+}
+.iop-ui .iop-sidebar nav {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  margin-top: 44px;
+  background: var(--iop-activeSurface);
+  color: var(--iop-activeInk);
+  padding: 14px 10px;
+  border-radius: 6px;
+  font-weight: var(--iop-metricWeight);
+}
+.iop-ui .iop-main {
+  margin-left: 195px;
+  padding: 28px 30px 90px;
+  max-width: 2000px;
+  min-width: 0;
+}
+.iop-ui .iop-page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.iop-ui .iop-page-heading p {
+  margin: 0;
+  color: var(--iop-muted);
+}
+.iop-ui .iop-eyebrow {
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.iop-ui .iop-view-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 195px;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow: auto;
+  background: var(--iop-surface);
+  border-top: 1px solid var(--iop-line);
+  z-index: 4;
+  padding: 0 20px;
+  margin-top: 0;
+}
+.iop-ui .iop-view-navigation .iop-button {
+  flex-shrink: 0;
+  padding: 18px;
+  border: 0;
+  border-right: 1px solid var(--iop-line);
+  border-radius: 0;
+  background: var(--iop-surface);
+  color: var(--iop-muted);
+  border-bottom: 3px solid transparent;
+}
+.iop-ui .iop-view-navigation .iop-button[aria-pressed="true"] {
+  border-bottom-color: var(--iop-primary);
+  color: var(--iop-ink);
+  font-weight: var(--iop-metricWeight);
+}
+.iop-ui .iop-skip {
+  position: absolute;
+  top: -100px;
+  z-index: 10;
+  background: var(--iop-surface);
+  padding: 10px;
+}
+.iop-ui .iop-skip:focus {
+  top: 5px;
+}
+@media (max-width: 1050px) {
+  .iop-ui .iop-sidebar {
+    width: 155px;
+  }
+  .iop-ui .iop-main {
+    margin-left: 155px;
+    padding: 22px 18px 90px;
+  }
+  .iop-ui .iop-view-navigation {
+    left: 155px;
+  }
+  .iop-ui .iop-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .iop-ui .iop-page-heading {
+    align-items: start;
+  }
+}
+@media (max-width: 620px) {
+  .iop-ui .iop-sidebar {
+    position: static;
+    width: auto;
+    border-bottom: 1px solid var(--iop-line);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 15px;
+  }
+  .iop-ui .iop-brand {
+    font-size: 19px;
+    padding: 0;
+  }
+  .iop-ui .iop-brand span {
+    display: none;
+  }
+  .iop-ui .iop-sidebar nav {
+    margin: 0;
+    padding: 8px;
+  }
+  .iop-ui .iop-main {
+    margin-left: 0;
+    padding: 18px 12px 90px;
+  }
+  .iop-ui .iop-top {
+    height: 56px;
+    padding: 0 12px;
+  }
+  .iop-ui .iop-view-navigation {
+    left: 0;
+    padding: 0;
+  }
+  .iop-ui .iop-page-heading {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .iop-ui .iop-metric-value {
+    font-size: 24px;
+  }
+  .iop-ui .iop-panel--metric {
+    padding: 14px;
+  }
+  .iop-ui .iop-panel--chart {
+    padding: 12px 6px;
+  }
+}
+
+/* Preserve the established divided-disclosure treatment without legacy ancestor CSS. */
+.iop-ui .iop-disclosure--divided > summary {
+  min-height: 44px;
+  padding-block: 0.65rem;
+  color: var(--iop-disclosureInk);
+}
+@media (max-width: 640px) {
+  .iop-ui .iop-view-navigation {
+    gap: 0;
+  }
+}

@@ -1,218 +1,4 @@
-.analysis-app {
-  font-family: var(--iop-font);
-  color: var(--iop-ink);
-  background: var(--iop-canvas);
-  min-height: 100vh;
-  font-size: 14px;
-}
-.analysis-app * {
-  box-sizing: border-box;
-}
-.analysis-app button,
-.analysis-app input,
-.analysis-app select {
-  font: inherit;
-}
-.analysis-app button {
-  background: var(--iop-primary);
-  color: var(--iop-surface);
-  border: 1px solid var(--iop-primary);
-  border-radius: var(--iop-controlRadius);
-  padding: 9px 13px;
-  cursor: pointer;
-}
-.analysis-app button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-.analysis-app button.secondary {
-  background: var(--iop-surface);
-  color: var(--iop-ink);
-  border-color: var(--iop-line);
-}
-.analysis-app input,
-.analysis-app select {
-  min-width: 0;
-  border: 1px solid var(--iop-inputBorder);
-  border-radius: var(--iop-inputRadius);
-  background: var(--iop-surface);
-  color: var(--iop-ink);
-  padding: 8px;
-}
-.analysis-app :focus-visible {
-  outline: 3px solid var(--iop-focus);
-  outline-offset: 3px;
-}
-.analysis-app h1 {
-  font-size: 28px;
-  line-height: 1.2;
-  margin: 5px 0 10px;
-}
-.analysis-app h2 {
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 0 0 12px;
-}
-.analysis-app h3 {
-  font-size: 16px;
-}
-.analysis-app p {
-  line-height: 1.6;
-}
-.analysis-app a {
-  color: var(--iop-link);
-}
-.analysis-app small {
-  display: block;
-  font-size: 11px;
-  color: var(--iop-muted);
-  line-height: 1.5;
-}
-.analysis-top {
-  height: 64px;
-  background: var(--iop-surface);
-  border-bottom: 1px solid var(--iop-line);
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0 28px;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-.analysis-top label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.analysis-sidebar {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 195px;
-  background: var(--iop-surface);
-  border-right: 1px solid var(--iop-line);
-  z-index: 6;
-  padding: 25px 15px;
-}
-.analysis-logo {
-  font-size: 25px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  padding-left: 12px;
-}
-.analysis-logo span {
-  display: block;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--iop-muted);
-  margin-top: 6px;
-}
-.analysis-sidebar nav {
-  margin-top: 44px;
-  background: var(--iop-activeSurface);
-  color: var(--iop-activeInk);
-  padding: 14px 10px;
-  border-radius: 6px;
-  font-weight: var(--iop-metricWeight);
-}
-.analysis-main {
-  margin-left: 195px;
-  padding: 28px 30px 90px;
-  max-width: 2000px;
-  min-width: 0;
-}
-.analysis-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-.analysis-heading p {
-  margin: 0;
-  color: var(--iop-muted);
-}
-.analysis-eyebrow {
-  text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 1px;
-}
-.analysis-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.analysis-filters {
-  background: var(--iop-surface);
-  border: 1px solid var(--iop-line);
-  border-radius: var(--iop-cardRadius);
-  padding: 16px;
-  margin-bottom: 20px;
-}
-.analysis-filter-row {
-  display: flex;
-  gap: 12px;
-  align-items: end;
-  flex-wrap: wrap;
-}
-.analysis-filter-row label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  flex: 1;
-  min-width: 130px;
-}
-.analysis-filter-row input,
-.analysis-filter-row select {
-  width: 100%;
-  font-size: 12px;
-}
-.analysis-filters details {
-  margin: 0;
-  padding: 0;
-  color: var(--iop-muted);
-}
-.analysis-app summary {
-  cursor: pointer;
-  font-weight: 600;
-  line-height: 1.6;
-}
-.analysis-app details[open] > summary {
-  margin-bottom: 15px;
-}
-.analysis-kpis,
-.analysis-import-counts {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--iop-metricGap);
-}
-.analysis-kpis section,
-.analysis-import-counts section {
-  background: var(--iop-surface);
-  border: 1px solid var(--iop-line);
-  border-radius: var(--iop-metricRadius);
-  padding: var(--iop-metricPadding);
-}
-.analysis-kpis span,
-.analysis-import-counts span {
-  display: block;
-  color: var(--iop-muted);
-  font-size: 11px;
-}
-.analysis-kpis strong,
-.analysis-import-counts strong {
-  display: block;
-  font-size: var(--iop-metricSize);
-  line-height: 1.3;
-  margin-top: 8px;
-  font-variant-numeric: tabular-nums;
-  font-weight: var(--iop-metricWeight);
-}
+/* Analysis-specific arrangements; shared appearance belongs to design/components. */
 .analysis-footnote {
   font-size: 11px;
   color: var(--iop-muted);
@@ -223,116 +9,26 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
-.analysis-chart {
-  background: var(--iop-surface);
-  border: 1px solid var(--iop-line);
-  border-radius: var(--iop-cardRadius);
-  padding: 18px 18px 10px;
-  min-width: 0;
-}
 .analysis-plot {
   width: 100%;
   height: 335px;
 }
-.analysis-chart h2 {
-  text-align: center;
-  font-weight: 550;
-  font-size: 15px;
-}
-.analysis-data,
-.analysis-import {
-  background: var(--iop-surface);
-  border: 1px solid var(--iop-line);
-  border-radius: var(--iop-cardRadius);
-  padding: 20px;
+.iop-ui .analysis-import,
+.iop-ui .analysis-data {
   margin-top: 20px;
-}
-.analysis-table {
-  overflow: auto;
-  max-height: 430px;
-  margin-bottom: 20px;
-}
-.analysis-app table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-.analysis-app th,
-.analysis-app td {
-  text-align: left;
-  border-bottom: 1px solid var(--iop-line);
-  padding: 10px;
-  vertical-align: top;
-}
-.analysis-app th {
-  font-weight: 600;
-}
-.analysis-app caption {
-  text-align: left;
-  font-weight: var(--iop-metricWeight);
-  padding: 15px 0;
-}
-.analysis-app button.text-button {
-  border: 0;
-  background: transparent;
-  color: var(--iop-activeInk);
-  padding: 0;
-  text-align: left;
-}
-.analysis-tabs {
-  position: fixed;
-  bottom: 0;
-  left: 195px;
-  right: 0;
-  display: flex;
-  overflow: auto;
-  background: var(--iop-surface);
-  border-top: 1px solid var(--iop-line);
-  z-index: 4;
-  padding: 0 20px;
-}
-.analysis-tabs button {
-  flex-shrink: 0;
-  padding: 18px;
-  border: 0;
-  border-right: 1px solid var(--iop-line);
-  border-radius: 0;
-  background: var(--iop-surface);
-  color: var(--iop-muted);
-  border-bottom: 3px solid transparent;
-}
-.analysis-tabs button[aria-pressed="true"] {
-  border-bottom-color: var(--iop-primary);
-  color: var(--iop-ink);
-  font-weight: var(--iop-metricWeight);
 }
 .analysis-import form {
   display: flex;
   align-items: end;
   gap: 15px;
 }
-.analysis-import form label {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 .analysis-import a {
   margin-left: 12px;
-}
-.analysis-import details {
-  margin: 18px 0;
-  padding: 12px 0;
-  border-top: 1px solid var(--iop-line);
 }
 .analysis-checks {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-}
-.analysis-checks label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 .analysis-rule-table {
   max-height: 350px;
@@ -347,140 +43,7 @@
 .analysis-rule-table input {
   flex: 1;
 }
-.analysis-error {
-  background: var(--iop-errorSurface);
-  border: 1px solid var(--iop-errorBorder);
-  color: var(--iop-errorInk);
-  padding: 14px;
-  border-radius: 6px;
-}
-.analysis-empty {
-  background: var(--iop-surface);
-  padding: 55px 30px;
-  text-align: center;
-  border: 1px solid var(--iop-line);
-  border-radius: var(--iop-cardRadius);
-}
-.analysis-skip {
-  position: absolute;
-  top: -100px;
-  z-index: 10;
-  background: var(--iop-surface);
-  padding: 10px;
-}
-.analysis-skip:focus {
-  top: 5px;
-}
-@media (min-width: 1700px) {
-  .analysis-plot {
-    height: 400px;
-  }
-}
-@media (max-width: 1050px) {
-  .analysis-sidebar {
-    width: 155px;
-  }
-  .analysis-main {
-    margin-left: 155px;
-    padding: 22px 18px 90px;
-  }
-  .analysis-tabs {
-    left: 155px;
-  }
-  .analysis-kpis,
-  .analysis-import-counts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .analysis-heading {
-    align-items: start;
-  }
-  .analysis-charts {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 620px) {
-  .analysis-sidebar {
-    position: static;
-    width: auto;
-    border-bottom: 1px solid var(--iop-line);
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 12px 15px;
-  }
-  .analysis-logo {
-    font-size: 19px;
-    padding: 0;
-  }
-  .analysis-logo span {
-    display: none;
-  }
-  .analysis-sidebar nav {
-    margin: 0;
-    padding: 8px;
-  }
-  .analysis-main {
-    margin-left: 0;
-    padding: 18px 12px 90px;
-  }
-  .analysis-top {
-    height: 56px;
-    padding: 0 12px;
-  }
-  .analysis-tabs {
-    left: 0;
-    padding: 0;
-  }
-  .analysis-heading {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .analysis-kpis strong,
-  .analysis-import-counts strong {
-    font-size: 24px;
-  }
-  .analysis-kpis section,
-  .analysis-import-counts section {
-    padding: 14px;
-  }
-  .analysis-chart {
-    padding: 12px 6px;
-  }
-  .analysis-rule-table > div,
-  .analysis-alias,
-  .analysis-import form {
-    flex-wrap: wrap;
-  }
-  .analysis-plot {
-    height: 340px;
-  }
-}
-
-.analysis-app section {
-  margin-top: 0;
-}
-.analysis-app .analysis-import,
-.analysis-app .analysis-data {
-  margin-top: 20px;
-}
-.analysis-app nav {
-  flex-direction: row;
-  flex-wrap: nowrap;
-  margin-top: 0;
-}
-.analysis-app .analysis-sidebar nav {
-  margin-top: 44px;
-}
-@media (max-width: 620px) {
-  .analysis-app .analysis-sidebar nav {
-    margin-top: 0;
-  }
-}
-
-.analysis-kpis section {
-  min-width: 0;
-}
-.analysis-app button.analysis-kpi-label {
+.iop-ui .analysis-kpi-label {
   display: block;
   margin: 8px 0;
   font-weight: 600;
@@ -489,4 +52,24 @@
 }
 .analysis-import-counts {
   margin-bottom: 18px;
+}
+@media (min-width: 1700px) {
+  .analysis-plot {
+    height: 400px;
+  }
+}
+@media (max-width: 1050px) {
+  .analysis-charts {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 620px) {
+  .analysis-rule-table > div,
+  .analysis-alias,
+  .analysis-import form {
+    flex-wrap: wrap;
+  }
+  .analysis-plot {
+    height: 340px;
+  }
 }

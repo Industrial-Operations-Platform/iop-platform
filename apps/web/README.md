@@ -178,3 +178,13 @@ production queries, cursor/revision behavior, failed reads or permissions. See t
 [execution record](../../docs/planning/completed/IOP-096-fixture-drilldown-plan.md).
 
 The primary local stack uses `npm run local:up`; see the [operator guide](../../docs/development/running-poc.md). Template filter policies live in the framework-free analysis application layer; React renders collapsible controls and preserves the shared visual identity.
+
+
+## Reusable identity components
+
+New React feature adapters consume [`src/design/components`](src/design/components/README.md).
+Use `AppShell`/`IdentityRoot`, shared controls and surfaces instead of copying the
+analysis screen's markup/styles. The library preserves the existing identity tokens;
+its README describes variants, native accessibility, form submission and extension
+rules. Active import and reporting already use it. `ReportFilters` and `Plot` remain
+feature-specific compositions over those primitives.

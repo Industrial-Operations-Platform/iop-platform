@@ -9,6 +9,7 @@ export const identity = {
   inputBorder: "#cbd7e2",
   focus: "#edaa30",
   link: "#076bb5",
+  disclosureInk: "#174e69",
   activeSurface: "#e8f3fc",
   activeInk: "#096faf",
   errorSurface: "#fff1f0",
