@@ -149,16 +149,15 @@ export function selectView(
   if (view === 0) return executiveSelection(current.from.slice(0, 7));
   const policy = reportViews[view];
   const allowed: readonly string[] = policy.filters;
-  if (view === 1)
-    current = monthSelection(
-      current,
-      current.months ??
-        availableMonths.filter(
-          (month) =>
-            month >= current.from.slice(0, 7) &&
-            month + "-01" < current.toExclusive,
-        ),
-    );
+  current = monthSelection(
+    current,
+    current.months ??
+      availableMonths.filter(
+        (month) =>
+          month >= current.from.slice(0, 7) &&
+          month + "-01" < current.toExclusive,
+      ),
+  );
   return changeSelection(current, {
     executive: false,
     dimension: policy.dimension,

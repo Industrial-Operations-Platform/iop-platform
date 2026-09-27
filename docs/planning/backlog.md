@@ -283,3 +283,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-159 — Brand navigation to Start](items/IOP-159-brand-start-navigation.md) | Completed |
 | [IOP-160 — Monthly Halle comparison and collapsed filter reset](items/IOP-160-month-comparison.md) | Completed |
 | [IOP-161 — Visible trend time controls](items/IOP-161-trend-time-controls.md) | Completed |
+| [IOP-162 — Consistent monthly filters in the running workspace](items/IOP-162-shared-month-filters.md) | Completed |

@@ -136,3 +136,18 @@ test("Halle selects complete available months and drill-down preserves gaps", ()
   );
   expect(selectView(hall, 0)).not.toHaveProperty("months");
 });
+
+test.each([1, 2, 3, 4, 5])(
+  "direct investigation view %i uses whole months and retains them downstream",
+  (view) => {
+    const current = historySelection(["2026-05-12", "2026-07-20"])!;
+    const selected = selectView(current, view, ["2026-05", "2026-07"]);
+    expect(selected).toMatchObject({
+      months: ["2026-05", "2026-07"],
+      from: "2026-05-01",
+      toExclusive: "2026-08-01",
+    });
+    for (const next of [1, 2, 3, 4, 5])
+      expect(selectView(selected, next).months).toEqual(selected.months);
+  },
+);

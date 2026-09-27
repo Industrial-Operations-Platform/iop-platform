@@ -82,7 +82,7 @@ function setup() {
   return gateway;
 }
 
-test("invalid reporting dates show a recoverable error without unmounting the workspace", async () => {
+test("direct detail entry uses months and an empty draft cannot replace applied results", async () => {
   const gateway = setup();
   fireEvent.click(await screen.findByRole("button", { name: "Data analysis" }));
   fireEvent.click(
@@ -90,23 +90,20 @@ test("invalid reporting dates show a recoverable error without unmounting the wo
   );
   await screen.findByRole("heading", { name: "No matching records" });
   const initialCalls = gateway.report.mock.calls.length;
-  fireEvent.click(screen.getByText(/Date range & filters ·/));
-  fireEvent.change(screen.getByLabelText("To (exclusive)"), {
-    target: { value: "2026-06-30" },
-  });
-  fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Choose a reporting range",
+  fireEvent.click(screen.getByText(/Months ·/));
+  fireEvent.click(screen.getByRole("checkbox", { name: "July 2026" }));
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Select at least one month",
   );
+  expect(screen.getByRole("button", { name: "Apply filters" })).toBeDisabled();
   expect(gateway.report).toHaveBeenCalledTimes(initialCalls);
-  fireEvent.click(screen.getByText(/Date range & filters ·/));
-  fireEvent.change(screen.getByLabelText("To (exclusive)"), {
-    target: { value: "2026-07-02" },
-  });
+  fireEvent.click(screen.getByRole("checkbox", { name: "July 2026" }));
   fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
   await screen.findByRole("heading", { name: "No matching records" });
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-  expect(gateway.report).toHaveBeenCalledTimes(initialCalls + 1);
+  expect(gateway.report).toHaveBeenLastCalledWith(
+    expect.objectContaining({ months: ["2026-07"] }),
+  );
 });
 
 test("preparation edits clear saved confirmation and cannot be overwritten during a save", async () => {
