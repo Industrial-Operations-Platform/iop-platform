@@ -37,6 +37,7 @@ export interface ReportResult {
   totals: ReportRow;
   executive: ExecutiveLeader[];
   groups: ReportRow[];
+  frequencyGroups: ReportRow[];
   durationGroups: ReportRow[];
   groupCount: number;
   timeline: ReportPoint[];

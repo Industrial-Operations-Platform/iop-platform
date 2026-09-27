@@ -14,6 +14,7 @@ jest.mock("../src/design/components/components.css", () => ({}));
 jest.mock("../src/features/analysis/adapters/react/workspace.css", () => ({}));
 jest.mock("../src/features/analysis/adapters/echarts/charts", () => ({
   mountChart: jest.fn(),
+  pareto: () => ({ summary: "Pareto coverage" }),
   number: String,
 }));
 
@@ -53,6 +54,7 @@ function setup() {
           },
           executive: [],
           groups: [],
+          frequencyGroups: [],
           durationGroups: [],
           groupCount: 0,
           timeline: [],

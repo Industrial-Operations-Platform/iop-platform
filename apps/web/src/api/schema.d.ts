@@ -514,6 +514,7 @@ export interface components {
             totals: components["schemas"]["ReportRowDto"];
             executive: components["schemas"]["ExecutiveLeaderDto"][];
             groups: components["schemas"]["ReportRowDto"][];
+            frequencyGroups: components["schemas"]["ReportRowDto"][];
             durationGroups: components["schemas"]["ReportRowDto"][];
             groupCount: number;
             timeline: components["schemas"]["ReportPointDto"][];

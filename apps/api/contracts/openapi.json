@@ -2111,6 +2111,12 @@
               "$ref": "#/components/schemas/ReportRowDto"
             }
           },
+          "frequencyGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportRowDto"
+            }
+          },
           "durationGroups": {
             "type": "array",
             "items": {
@@ -2185,6 +2191,7 @@
           "totals",
           "executive",
           "groups",
+          "frequencyGroups",
           "durationGroups",
           "groupCount",
           "timeline",

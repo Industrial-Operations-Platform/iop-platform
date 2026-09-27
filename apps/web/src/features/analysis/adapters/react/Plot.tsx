@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Panel } from "../../../../design/components";
 import type { Report } from "../../domain/models";
-import { mountChart, type ChartKind } from "../echarts/charts";
+import { mountChart, pareto, type ChartKind } from "../echarts/charts";
 export function Plot({
   kind,
   report,
@@ -21,6 +21,13 @@ export function Plot({
   return (
     <Panel variant="chart">
       <h2>{title}</h2>
+      {(kind === "frequency" || kind === "duration") && (
+        <p className="analysis-footnote">
+          {pareto(report, kind).summary} Cumulative share uses all matching
+          groups across the selected months. Solid bars include the group
+          reaching 80%.
+        </p>
+      )}
       <div
         ref={element}
         className="analysis-plot"

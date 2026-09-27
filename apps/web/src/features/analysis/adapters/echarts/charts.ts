@@ -13,6 +13,7 @@ import {
   DataZoomComponent,
   VisualMapComponent,
   AriaComponent,
+  MarkLineComponent,
 } from "echarts/components";
 import { SVGRenderer } from "echarts/renderers";
 import type { Report, ReportRow } from "../../domain/models";
@@ -27,6 +28,7 @@ use([
   DataZoomComponent,
   VisualMapComponent,
   AriaComponent,
+  MarkLineComponent,
   SVGRenderer,
 ]);
 export type ChartKind =
@@ -44,6 +46,34 @@ export const number = (n: number) =>
   new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(n);
 const value = (r: ReportRow, metric: string) =>
   metric === "duration" ? r.minutes : r.frequency;
+export function pareto(report: Report, metric: "frequency" | "duration") {
+  const rows = (
+    metric === "frequency" ? report.frequencyGroups : report.durationGroups
+  ).slice(0, 10);
+  const measure = (row: ReportRow) =>
+    metric === "duration" ? row.seconds : row.frequency;
+  const total = measure(report.totals);
+  let accumulated = 0;
+  const points = rows.map((row) => {
+    const inLeadingShare = total > 0 && accumulated < total * 0.8;
+    accumulated += measure(row);
+    return {
+      row,
+      inLeadingShare,
+      percent: total > 0 ? (accumulated / total) * 100 : 0,
+    };
+  });
+  const coverage = points.at(-1)?.percent ?? 0;
+  const crossing = points.findIndex((point) => point.percent >= 80);
+  const summary =
+    total === 0
+      ? "No accumulated value; the 80% share is undefined."
+      : crossing >= 0
+        ? `The first ${crossing + 1} groups contribute ${number(points[crossing].percent)}% of the total (80% threshold).`
+        : `Top ${rows.length} covers ${number(coverage)}% of the total; reaching 80% requires additional groups.`;
+  return { points, summary };
+}
+
 function calendar(report: Report): string[] {
   const result: string[] = [],
     date = new Date(report.selection.from + "T00:00:00Z");
@@ -247,45 +277,84 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       ],
     };
   }
-  const groups = (kind === "duration" ? r.durationGroups : r.groups).slice(
+  const groups = (kind === "heatmap" ? r.frequencyGroups : r.groups).slice(
     0,
     10,
   );
   if (kind === "frequency" || kind === "duration") {
-    const barMetric = kind === "duration" ? "duration" : metric;
+    const barMetric = kind === "duration" ? "duration" : "frequency";
+    const { points } = pareto(r, barMetric);
+    const color =
+      barMetric === "duration"
+        ? identity.chartDuration
+        : identity.chartFrequency;
     return {
       ...base,
-      xAxis: {
-        type: "value",
-        name: barMetric === "duration" ? "Minutes" : "Frequency",
-        nameLocation: "middle",
-        nameGap: 25,
-      },
+      grid: { left: 20, right: 35, top: 85, bottom: 45, containLabel: true },
+      tooltip: { trigger: "item", renderMode: "richText" },
+      legend: { top: 0, data: ["Total", "Cumulative %"] },
+      xAxis: [
+        {
+          type: "value",
+          name: barMetric === "duration" ? "Minutes" : "Frequency",
+          nameLocation: "middle",
+          nameGap: 28,
+        },
+        {
+          type: "value",
+          min: 0,
+          max: 100,
+          position: "top",
+          axisLabel: { formatter: "{value}%" },
+          splitLine: { show: false },
+        },
+      ],
       yAxis: {
         type: "category",
         inverse: true,
-        data: groups.map((x) => x.key),
+        data: points.map(({ row }) => row.key),
         axisLabel: { width: 170, overflow: "truncate", formatter: groupLabel },
       },
       series: [
         {
+          name: "Total",
           type: "bar",
-          data: groups.map((x) => ({
-            name: x.key,
-            value: value(x, barMetric),
+          data: points.map(({ row, inLeadingShare }) => ({
+            name: row.key,
+            value: value(row, barMetric),
+            itemStyle: { opacity: inLeadingShare ? 1 : 0.4 },
           })),
-          itemStyle: {
-            color:
-              barMetric === "duration"
-                ? identity.chartDuration
-                : identity.chartFrequency,
-          },
+          itemStyle: { color },
           barMaxWidth: 28,
+        },
+        {
+          name: "Cumulative %",
+          type: "line",
+          xAxisIndex: 1,
+          data: points.map(({ row, percent }) => ({
+            name: row.key,
+            value: [percent, row.key],
+          })),
+          encode: { x: 0, y: 1, tooltip: [0] },
+          tooltip: {
+            valueFormatter: (value: unknown) => `${number(Number(value))}%`,
+          },
+          itemStyle: { color: identity.chartAccent },
+          lineStyle: { color: identity.chartAccent },
+          symbolSize: 7,
+          markLine: {
+            silent: true,
+            symbol: "none",
+            data: [{ xAxis: 80 }],
+            label: { formatter: "80%", position: "insideEndTop" },
+            lineStyle: { color: identity.chartComparison, type: "dashed" },
+          },
         },
       ],
     };
   }
-  if (kind === "scatter")
+  if (kind === "scatter") {
+    const keys = r.groups.map((row) => row.key).sort();
     return {
       ...base,
       tooltip: { trigger: "item", renderMode: "richText" },
@@ -303,10 +372,14 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
           data: r.groups.map((x) => ({
             name: x.key,
             value: [x.minutes, x.frequency],
+            itemStyle: {
+              color: `hsl(${(keys.indexOf(x.key) * 137.508) % 360}, 65%, 42%)`,
+            },
           })),
         },
       ],
     };
+  }
   if (kind === "monthly" || kind === "messages") {
     const months = [
       ...new Set(r.selection.months ?? r.monthly.map((x) => x.period)),
@@ -334,8 +407,7 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
         itemStyle: { color: colors[index] },
         lineStyle: { color: colors[index] },
         name: month,
-        type: kind === "messages" ? "bar" : "line",
-        ...(kind === "messages" ? { stack: "months" } : {}),
+        type: "line",
         connectNulls: false,
         data: groups.map((g) => {
           const p = r.monthly.find(
@@ -401,6 +473,7 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       yAxis: {
         type: "category",
         data: keys,
+        inverse: true,
         axisLabel: { width: 165, overflow: "truncate", formatter: groupLabel },
       },
       visualMap: {

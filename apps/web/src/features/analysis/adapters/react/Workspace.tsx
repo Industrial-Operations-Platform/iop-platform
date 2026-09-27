@@ -415,13 +415,13 @@ function ReportWorkspace({
                           />
                           <Plot
                             kind="frequency"
-                            title="Top groups by selected measure"
+                            title="Top 10 by frequency · Pareto"
                             report={report}
                             onSelect={select}
                           />
                           <Plot
                             kind="duration"
-                            title="Top groups by duration"
+                            title="Top 10 by duration · Pareto"
                             report={report}
                             onSelect={select}
                           />
