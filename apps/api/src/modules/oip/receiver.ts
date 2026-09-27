@@ -14,7 +14,13 @@ export interface PublicationInput {
   inputSha256: string;
 }
 export class OipReceiver implements ImportPublication<PublicationInput> {
-  constructor(private readonly source: ImportSource) {}
+  constructor(
+    private readonly source: ImportSource,
+    private readonly project?: (
+      tx: SiteTransaction,
+      importId: string,
+    ) => Promise<void>,
+  ) {}
   async publish(
     tx: SiteTransaction,
     batch: BatchStatus,
@@ -157,6 +163,7 @@ export class OipReceiver implements ImportPublication<PublicationInput> {
       FROM jsonb_to_recordset($6::jsonb) AS r(line integer,frequency bigint,seconds bigint,sector text,area text,equipment text,message text,payload jsonb)`,
       [...values, JSON.stringify(rows)],
     );
+    if (this.project) await this.project(tx, batch.importId);
     return rows.length;
   }
   async inspect(

@@ -5,6 +5,7 @@ export class AnalyticsError extends Error {
       | "unavailable_reference"
       | "analytics_revision_changed"
       | "analytics_total_out_of_range"
+      | "analytics_projection_unavailable"
       | "invalid_publication",
   ) {
     super(code);

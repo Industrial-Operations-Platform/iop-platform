@@ -16,21 +16,23 @@ export class ApiError extends Error {
     readonly importId?: string,
   ) {
     super(
-      code === "analytics_revision_changed"
-        ? "The imported data changed. Refresh the data before continuing."
-        : status === 401
-          ? "Select a demo user to continue."
-          : status === 403
-            ? "This user or browser is not permitted to perform this operation."
-            : status === 413
-              ? "The CSV exceeds the 5 MiB upload limit."
-              : status === 503
-                ? "The service is unavailable or busy. Check the API and try again."
-                : code === "invalid_filename"
-                  ? "Use the supported filename Hitliste-YYYYMMDD.csv."
-                  : code === "import_capacity"
-                    ? "The dedicated demo storage limit has been reached."
-                    : "The operation could not be completed. Check the input and try again.",
+      code === "analytics_projection_unavailable"
+        ? "The analytical history needs preparation. Restart the local application with an administrator configured."
+        : code === "analytics_revision_changed"
+          ? "The imported data changed. Refresh the data before continuing."
+          : status === 401
+            ? "Select a demo user to continue."
+            : status === 403
+              ? "This user or browser is not permitted to perform this operation."
+              : status === 413
+                ? "The CSV exceeds the 5 MiB upload limit."
+                : status === 503
+                  ? "The service is unavailable or busy. Check the API and try again."
+                  : code === "invalid_filename"
+                    ? "Use the supported filename Hitliste-YYYYMMDD.csv."
+                    : code === "import_capacity"
+                      ? "The dedicated demo storage limit has been reached."
+                      : "The operation could not be completed. Check the input and try again.",
     );
   }
 }

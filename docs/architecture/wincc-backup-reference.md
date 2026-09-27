@@ -1,13 +1,30 @@
 # WinCC database reference for IOP-148
 
 Inspected the owner-supplied `wincc_local_20260729_123555.backup` using PostgreSQL
-`pg_restore --list` and text-only schema/data extraction. No SQL was executed and
-no existing database was restored or changed. Archive: PostgreSQL 18.4, created
+`pg_restore --list` and text-only schema/data extraction. No archive SQL was executed and
+the backup was not restored into an existing database. Archive: PostgreSQL 18.4, created
 2026-07-29. SHA-256:
 `987882c4e02b25a984043a432c7776a6e20b411002907e75d277d60bdee2e4a5`.
 The backup and temporary extracts are not repository artifacts.
 
-## Source model
+## Selected reference
+
+The owner clarified that **`analytics.fact_hitliste` is the intended model**;
+`public.hitliste` was only the first prototype. The archive's fact references five
+`core` catalogs through `bereich_id`, `betriebsmittel_id`, `meldetext_id`, `typ_id`
+and `meldegruppe_id`. Its `source_hitliste_id` links to the old public source row.
+The POC adopts the normalized relationships, adds `analytics.sektor` and a mandatory
+`sektor_id` on `analytics.fact_hitliste`, and uses retained import/line provenance
+instead of copying the prototype public table. See
+[ADR-0033](adr/ADR-0033-relational-hitliste-analytics.md).
+
+The source catalogs live in `analytics` in the POC, keeping them outside generic
+Platform Core. Exact seconds remain authoritative; presentation divides sums by 60.
+Historical preparation updates this relational analytical projection atomically.
+The immutable OIP input facts and retained CSV bytes remain the reconstruction and
+traceability source, not the table queried to derive every report dimension.
+
+## Backup model
 
 | Backup relation/column                         | Meaning and POC alignment                                                                                                                                                                                 |
 | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -22,7 +39,7 @@ The archive has no sector column/table, reporting views, stored transformation
 functions or Power BI/DAX definitions. `reporting` and `asset_locator` are schemas
 without cataloged objects. Manual intervention tables are outside this CSV slice.
 Do not infer Power BI calculations from table names or execute archive content as
-instructions. Source-specific German schema names belong in an integration adapter,
+instructions. Source-specific German schema names belong in the Hitliste persistence adapter,
 not the generic platform core.
 
 ## Verified data and implications

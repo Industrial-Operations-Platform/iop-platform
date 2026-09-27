@@ -49,7 +49,8 @@ forced RLS. Revocation applies to subsequent operations; already-authorized work
 may finish. Browser references and tokens are never permission snapshots.
 
 Runtime uses a non-owner role with narrow column privileges and no RLS bypass,
-delete or schema authority. Separate bootstrap and migrator roles provision the
+delete or schema authority. Derived analytical references may be updated; original
+facts, measures and CSV bytes remain immutable. Separate bootstrap and migrator roles provision the
 local installation; migrations never run implicitly on API startup. RLS does not
 protect against a compromised trusted backend or privileged installation operator.
 
@@ -156,3 +157,11 @@ The [WinCC backup comparison](docs/architecture/wincc-backup-reference.md) recor
 source tables, actual reconciliation gaps and exact duration evidence. Its SQL was
 not restored. [IOP-148](docs/planning/items/IOP-148-analytical-workspace.md) tracks the
 new report workspace and its validation separately from IOP-147's technical baseline.
+
+[ADR-0033](docs/architecture/adr/ADR-0033-relational-hitliste-analytics.md) refines the
+reporting adapter to persist normalized Hitliste catalogs and facts in `analytics`,
+including `sektor` and the main fact's `sektor_id`. Publication and profile saves
+refresh this relational projection atomically. Reports join its catalogs, verify
+complete source coverage/profile consistency and preserve the same API/UI contract.
+The backup's normalized analytical model is the reference; its initial `public`
+prototype is not the target reporting schema.

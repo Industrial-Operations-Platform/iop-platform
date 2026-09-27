@@ -163,6 +163,7 @@ export class DemoRuntime {
   readonly source: ImportSource;
   readonly batches: ImportBatches;
   readonly receiver: OipReceiver;
+  private readonly profileRepository: PgReportingProfiles;
   readonly queries: OipQueries;
   readonly profiles: ReportingProfiles;
   readonly reports: OipReports;
@@ -185,7 +186,15 @@ export class DemoRuntime {
       mappingRevision: mappings.configuration.mappingRevision,
     });
     this.batches = new ImportBatches(pool, this.source);
-    this.receiver = new OipReceiver(this.source);
+    const profileRepository = new PgReportingProfiles(
+      pool,
+      this.source,
+      hitlisteReportingProfile(mappings.configuration),
+    );
+    this.profileRepository = profileRepository;
+    this.receiver = new OipReceiver(this.source, (tx, id) =>
+      profileRepository.project(tx, id),
+    );
     this.imports = createImportWorkflow(
       this.batches,
       this.receiver,
@@ -194,11 +203,6 @@ export class DemoRuntime {
     );
     this.queries = new OipQueries(pool, this.source);
     this.principals = new LocalDemoPrincipals(config.users);
-    const profileRepository = new PgReportingProfiles(
-      pool,
-      this.source,
-      hitlisteReportingProfile(mappings.configuration),
-    );
     this.profiles = new ReportingProfiles(profileRepository);
     this.reports = new OipReports(new PgReportRepository(profileRepository));
   }
@@ -225,6 +229,8 @@ export class DemoRuntime {
       });
       this.lease = client;
       await this.checkUser(this.config.users[0].id);
+      if (await this.canImport(this.config.users[0].id))
+        await this.profileRepository.prepare(this.config.users[0].id);
     } catch (e) {
       this.lease = undefined;
       client.release(true);

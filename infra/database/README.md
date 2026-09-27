@@ -366,7 +366,8 @@ origin/local-only checks and actual import/read/reset/browser evidence.
 
 The seventh migration implements [Accepted ADR-0027](../../docs/architecture/adr/ADR-0027-poc-import-publication.md).
 At that increment, six-migration databases applied one migration. The current
-installation has nine migrations, including OIP aggregates and guarded demo maintenance.
+installation has eleven migrations, including OIP aggregates, guarded demo maintenance,
+reporting profiles and relational Hitliste analytics.
 Use the normal provision/migrate commands. There is no automatic startup migration,
 import endpoint, new environment variable or demo reset command in this slice.
 
@@ -413,3 +414,24 @@ deadlines; it does not implement transport cancellation or bound arbitrary recei
 CPU work. ADR-0018 host activation, parser/mapping/OIP delivery and their end-to-end
 security/performance tests remain separate gates. No RAW content or diagnostics from
 source cells is logged. This slice does not provide the later HTTP retrieval headers.
+
+## Relational analytical tables — IOP-148
+
+Migration `20260929000000-hitliste-analytics` adds the scoped `analytics` schema
+with six catalogs and `fact_hitliste` (20 total application/metadata tables across
+11 migrations). See the [relationship model](../../docs/architecture/data-model.md#relational-hitliste-analytical-projection--iop-148)
+and [ADR-0033](../../docs/architecture/adr/ADR-0033-relational-hitliste-analytics.md).
+The source-specific catalogs belong to the OIP persistence adapter, not Platform Core.
+
+All seven new tables force RLS. Runtime has explicit column SELECT/INSERT grants;
+only fact dimension FKs and `profile_version` are updateable. Source measures and
+provenance cannot be updated; no runtime delete/DDL/table-wide grants or privileged
+functions are added. Composite FKs protect scope and equipment/area agreement.
+
+Migrations create the schema without interpreting external configuration. Authorized
+Administrator startup backfills from immutable facts using the configured/saved
+profile. Normal imports and profile changes maintain the projection in the same
+transaction under a source lock. Reset deletes only the selected source's derived
+facts/catalogs before its immutable facts/imports; it preserves preparation settings,
+foreign scope and identity grants. Use the [operator guide](../../docs/development/running-poc.md)
+for a non-destructive upgrade of an existing local installation.

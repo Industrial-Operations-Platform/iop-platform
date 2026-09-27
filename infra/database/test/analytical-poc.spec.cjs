@@ -540,6 +540,8 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
     `CREATE FUNCTION public.test_reset_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic reset failure'; END $$`,
   );
   for (const table of [
+    "analytics.fact_hitliste", "analytics.betriebsmittel", "analytics.bereich", "analytics.sektor",
+    "analytics.meldetext", "analytics.meldung_typ", "analytics.meldegruppe",
     "oip.facts",
     "oip.publications",
     "integrations.import_date_claims",
@@ -556,6 +558,7 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
       expect(
         (await admin("SELECT count(*)::integer AS n FROM oip.facts")).rows[0].n,
       ).toBe(before);
+      expect((await admin("SELECT count(*)::integer AS n FROM analytics.fact_hitliste")).rows[0].n).toBe(before);
       expect(
         (await admin("SELECT retained_attempts FROM integrations.import_quota"))
           .rows[0].retained_attempts,
@@ -589,6 +592,10 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
       )
     ).rows[0],
   ).toEqual({ retained_attempts: 1, retained_bytes: foreignBatch.byteLength });
+  for (const table of ['fact_hitliste','betriebsmittel','bereich','sektor','meldetext','meldung_typ','meldegruppe']) {
+    expect((await admin(`SELECT count(*)::integer AS n FROM analytics.${table} WHERE source_id=$1`,[scope.sourceId])).rows[0].n).toBe(0);
+  }
+  expect((await admin("SELECT count(*)::integer AS n FROM analytics.fact_hitliste WHERE source_id='other-source'")).rows[0].n).toBeGreaterThan(0);
   expect((await demoMaintenance(env, "reset")).attempts).toBe(0);
   // The server committed, but the acknowledgement was lost. No automatic reset or reload follows.
   const query = Client.prototype.query;
@@ -733,7 +740,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     for(const [width,height] of [[1024,768],[768,1024],[390,844]]) {
       await page.setViewportSize({width,height});
       await pw(page.locator('.analysis-kpis').first()).toBeVisible();
-      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
+      await pw.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
     }
     await page.screenshot({path:join(artifactDir,'mobile.png'),fullPage:true});
     await page.getByRole('button',{name:'Import & prepare',exact:true}).click();

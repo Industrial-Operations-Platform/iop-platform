@@ -14,6 +14,7 @@ const names = [
   "20260927000000-oip-aggregates",
   revision,
   "20260928000000-reporting-profiles",
+  "20260929000000-hitliste-analytics",
 ];
 function target(env: NodeJS.ProcessEnv) {
   if (env.IOP_EXECUTION_MODE !== "local-demo" || env.NODE_ENV === "production")
@@ -88,7 +89,7 @@ export async function demoMaintenance(
     )
       throw new DatabaseError("The configured demo site does not exist.");
     await client.query(
-      "LOCK TABLE iop_demo.installation,oip.facts,oip.publications,integrations.import_date_claims,integrations.import_batches,integrations.import_quota IN EXCLUSIVE MODE",
+      "LOCK TABLE analytics.fact_hitliste,analytics.betriebsmittel,analytics.bereich,analytics.sektor,analytics.meldetext,analytics.meldung_typ,analytics.meldegruppe,iop_demo.installation,oip.facts,oip.publications,integrations.import_date_claims,integrations.import_batches,integrations.import_quota IN EXCLUSIVE MODE",
     );
     const marker = await client.query(
       "SELECT * FROM iop_demo.installation WHERE singleton FOR UPDATE",
@@ -143,6 +144,13 @@ export async function demoMaintenance(
       scope,
     );
     for (const table of [
+      "analytics.fact_hitliste",
+      "analytics.betriebsmittel",
+      "analytics.bereich",
+      "analytics.sektor",
+      "analytics.meldetext",
+      "analytics.meldung_typ",
+      "analytics.meldegruppe",
       "oip.facts",
       "oip.publications",
       "integrations.import_date_claims",

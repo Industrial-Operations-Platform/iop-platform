@@ -242,6 +242,200 @@ test("full historical report preserves all source rows and exact duration", asyn
   }
 });
 
+test("relational catalogs preserve exact facts and enforce sector/equipment foreign keys and runtime immutability", async () => {
+  const totals = (
+    await admin(
+      "SELECT count(*)::integer AS rows,sum(haufigkeit)::text AS frequency,sum(dauer_sekunden)::text AS seconds FROM analytics.fact_hitliste",
+    )
+  ).rows[0];
+  expect(totals).toEqual({ rows: 9, frequency: "19", seconds: "97775" });
+  const sectors = (
+    await admin(
+      "SELECT name,is_unclassified FROM analytics.sektor ORDER BY name",
+    )
+  ).rows;
+  expect(sectors).toEqual([
+    { name: "Dispatch", is_unclassified: false },
+    { name: "Nicht klassifiziert", is_unclassified: true },
+    { name: "Preparation", is_unclassified: false },
+  ]);
+  expect(
+    (await admin("SELECT count(*)::integer AS n FROM analytics.betriebsmittel"))
+      .rows[0].n,
+  ).toBe(5);
+  const joined = (
+    await admin(`SELECT b.name,e.kennzeichen,s.name AS sektor FROM analytics.fact_hitliste f
+    JOIN analytics.bereich b USING(organization_id,site_id,source_id)
+    JOIN analytics.betriebsmittel e ON e.id=f.betriebsmittel_id AND e.organization_id=f.organization_id AND e.site_id=f.site_id AND e.source_id=f.source_id
+    JOIN analytics.sektor s ON s.id=f.sektor_id AND s.organization_id=f.organization_id AND s.site_id=f.site_id AND s.source_id=f.source_id
+    WHERE b.id=f.bereich_id AND e.kennzeichen='=EQ-001'`)
+  ).rows;
+  expect(joined).toHaveLength(3);
+  expect(
+    joined.every((x) => x.name === "Area A" && x.sektor === "Preparation"),
+  ).toBe(true);
+  const client = new Client(configs.runtime);
+  await client.connect();
+  const scoped = async (sql, values = []) => {
+    await client.query("BEGIN");
+    try {
+      await client.query(
+        "SELECT set_config('iop.organization_id',$1,true),set_config('iop.site_id',$2,true),set_config('iop.user_id','demo-a',true)",
+        [scope.organizationId, scope.siteId],
+      );
+      return await client.query(sql, values);
+    } finally {
+      await client.query("ROLLBACK");
+    }
+  };
+  try {
+    for (const table of [
+      "sektor",
+      "bereich",
+      "betriebsmittel",
+      "meldetext",
+      "meldung_typ",
+      "meldegruppe",
+      "fact_hitliste",
+    ]) {
+      expect(
+        (await client.query(`SELECT * FROM analytics.${table}`)).rows,
+      ).toEqual([]);
+      await expect(
+        scoped(`DELETE FROM analytics.${table}`),
+      ).rejects.toMatchObject({ code: "42501" });
+    }
+    await expect(
+      scoped("UPDATE analytics.fact_hitliste SET haufigkeit=0"),
+    ).rejects.toMatchObject({ code: "42501" });
+    await expect(
+      scoped("UPDATE analytics.fact_hitliste SET sektor_id=NULL"),
+    ).rejects.toMatchObject({ code: "23502" });
+    await expect(
+      scoped("UPDATE analytics.fact_hitliste SET sektor_id=repeat('0',64)"),
+    ).rejects.toMatchObject({ code: "23503" });
+    await expect(
+      scoped(
+        `UPDATE analytics.fact_hitliste SET bereich_id=(SELECT id FROM analytics.bereich WHERE name='Area B') WHERE betriebsmittel_id=(SELECT id FROM analytics.betriebsmittel WHERE kennzeichen='=EQ-001')`,
+      ),
+    ).rejects.toMatchObject({ code: "23503" });
+    await expect(
+      scoped(
+        `INSERT INTO analytics.sektor(organization_id,site_id,source_id,id,name,is_unclassified) VALUES('foreign',$1,$2,repeat('0',64),'Foreign',false)`,
+        [scope.siteId, scope.sourceId],
+      ),
+    ).rejects.toMatchObject({ code: "42501" });
+  } finally {
+    await client.end();
+  }
+});
+
+test("incomplete and stale projections fail closed and administrator startup backfills existing history", async () => {
+  const original = (
+    await admin(
+      "SELECT jsonb_agg(to_jsonb(f) ORDER BY import_id,source_record_number) AS data FROM oip.facts f",
+    )
+  ).rows[0].data;
+  await admin(
+    "DELETE FROM analytics.fact_hitliste WHERE (import_id,source_record_number) IN (SELECT import_id,source_record_number FROM analytics.fact_hitliste LIMIT 1)",
+  );
+  await api("post", "/analytics/report")
+    .send(selection)
+    .expect(503)
+    .expect((r) =>
+      expect(r.body.code).toBe("analytics_projection_unavailable"),
+    );
+  await app.close();
+  await runtime.close();
+  runtime = new DemoRuntime(
+    new Pool({ ...configs.runtime, max: 5 }),
+    runtimeConfig,
+  );
+  await runtime.start();
+  app = await createApplication(runtime);
+  await app.init();
+  await selectUser();
+  const report = await runtime.reports.query("demo-a", selection);
+  expect(report.totals.records).toBe(9);
+  await admin("UPDATE analytics.fact_hitliste SET profile_version='stale'");
+  await expect(
+    runtime.reports.query("demo-a", selection),
+  ).rejects.toMatchObject({ code: "analytics_projection_unavailable" });
+  const profile = await runtime.profiles.get("demo-a");
+  await runtime.profiles.save("demo-a", profile);
+  expect((await runtime.reports.query("demo-a", selection)).totals).toEqual(
+    report.totals,
+  );
+  expect(
+    (
+      await admin(
+        "SELECT jsonb_agg(to_jsonb(f) ORDER BY import_id,source_record_number) AS data FROM oip.facts f",
+      )
+    ).rows[0].data,
+  ).toEqual(original);
+});
+
+test("projection failures roll back import publication and profile reclassification together", async () => {
+  const before = await runtime.reports.query("demo-a", selection);
+  const profile = await runtime.profiles.get("demo-a");
+  await admin(
+    "CREATE FUNCTION public.test_projection_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic projection failure'; END $$",
+  );
+  await admin(
+    "CREATE TRIGGER test_projection_failure AFTER INSERT OR UPDATE ON analytics.fact_hitliste FOR EACH ROW EXECUTE FUNCTION public.test_projection_failure()",
+  );
+  try {
+    await expect(
+      runtime.profiles.save("demo-a", {
+        version: profile.version,
+        profile: {
+          ...profile.profile,
+          areaSectors: profile.profile.areaSectors.map((x) => ({
+            ...x,
+            sector: "Must roll back",
+          })),
+        },
+      }),
+    ).rejects.toThrow();
+    expect(await runtime.profiles.get("demo-a")).toEqual(profile);
+    const result = await runtime.submit(
+      "demo-a",
+      "Hitliste-20260702.csv",
+      fixture("valid/Hitliste-20260703.csv"),
+    );
+    expect(result.outcome).not.toBe("succeeded");
+    expect(
+      (
+        await admin(
+          "SELECT count(*)::integer AS n FROM oip.publications WHERE reporting_date='2026-07-02'",
+        )
+      ).rows[0].n,
+    ).toBe(0);
+    expect(
+      (
+        await admin(
+          "SELECT count(*)::integer AS n FROM integrations.import_date_claims WHERE reporting_date='2026-07-02'",
+        )
+      ).rows[0].n,
+    ).toBe(0);
+    expect(
+      (
+        await admin(
+          "SELECT count(*)::integer AS n FROM analytics.sektor WHERE name='Must roll back'",
+        )
+      ).rows[0].n,
+    ).toBe(0);
+    expect((await runtime.reports.query("demo-a", selection)).totals).toEqual(
+      before.totals,
+    );
+  } finally {
+    await admin(
+      "DROP TRIGGER test_projection_failure ON analytics.fact_hitliste",
+    );
+    await admin("DROP FUNCTION public.test_projection_failure()");
+  }
+});
+
 test("profile edits persist, reclassify historical analysis and reject stale writers/pages", async () => {
   const before = await runtime.reports.query("demo-a", selection);
   const current = await runtime.profiles.get("demo-a");
@@ -457,6 +651,119 @@ test("owner reference files reconcile exact totals and all five sectors after ru
     expect(normalized.groups[0].key).toBe("Halle A T1");
     expect(normalized.records[0].equipment).toBe("=0001+Station");
     expect(normalized.records[0].message).toBe("Station");
+  } finally {
+    await ref.close();
+  }
+});
+
+test("concurrent preparation and import keep every relational fact on the committed profile and preserve code/area pairs", async () => {
+  const sourceId = "concurrent-relational";
+  const ref = new DemoRuntime(new Pool({ ...configs.runtime, max: 4 }), {
+    ...runtimeConfig,
+    local: {
+      ...runtimeConfig.local,
+      source: { ...runtimeConfig.local.source, id: sourceId },
+    },
+    mappings: new SourceMappings({
+      ...runtimeConfig.mappings.configuration,
+      sourceId,
+    }),
+  });
+  try {
+    const current = await ref.profiles.get("demo-a");
+    const header = fixture("valid/Hitliste-20260701.csv")
+      .toString("utf16le")
+      .replace(/^\ufeff/, "")
+      .split(/\r?\n/)[0];
+    const bytes = Buffer.from(
+      "\ufeff" +
+        header +
+        '\r\n"3";"0 0:01:00";"Area A";"=SHARED";"Jam";"X";"001"\r\n"2";"0 0:00:30";"Area B";"=SHARED";"Jam";"X";"001"\r\n',
+      "utf16le",
+    );
+    const revised = {
+      ...current.profile,
+      areaSectors: current.profile.areaSectors.map((x) => ({
+        ...x,
+        sector: "Concurrent hall",
+      })),
+    };
+    const [imported, saved] = await Promise.all([
+      ref.submit("demo-a", "Hitliste-20260901.csv", bytes),
+      ref.profiles.save("demo-a", {
+        version: current.version,
+        profile: revised,
+      }),
+    ]);
+    expect(imported.outcome).toBe("succeeded");
+    const q = { ...selection, from: "2026-09-01", toExclusive: "2026-09-02" };
+    const report = await ref.reports.query("demo-a", q);
+    expect(report.profileVersion).toBe(saved.version);
+    expect(report.groups).toEqual([
+      {
+        key: "Concurrent hall",
+        frequency: 5,
+        seconds: 90,
+        minutes: 1.5,
+        records: 2,
+      },
+    ]);
+    expect(
+      (
+        await admin(
+          "SELECT count(*)::integer AS n FROM analytics.betriebsmittel WHERE source_id=$1",
+          [sourceId],
+        )
+      ).rows[0].n,
+    ).toBe(2);
+    expect(
+      (await ref.reports.query("demo-a", { ...q, dimension: "equipment" }))
+        .groups,
+    ).toHaveLength(1);
+    const writers = await Promise.allSettled([
+      ref.profiles.save("demo-a", saved),
+      ref.profiles.save("demo-a", saved),
+    ]);
+    expect(writers.filter((x) => x.status === "fulfilled")).toHaveLength(1);
+    expect(writers.find((x) => x.status === "rejected").reason).toMatchObject({
+      code: "analytics_revision_changed",
+    });
+    expect((await ref.reports.query("demo-a", q)).totals).toEqual(
+      report.totals,
+    );
+    const latest = await ref.profiles.get("demo-a");
+    await ref.profiles.save("demo-a", {
+      version: latest.version,
+      profile: {
+        ...latest.profile,
+        areaSectors: latest.profile.areaSectors.map((x) => ({
+          ...x,
+          area: x.area === "Area A" ? "Area A, corrected" : x.area,
+        })),
+        aliases: [
+          { field: "area", from: "Area A", to: "Area A, corrected" },
+          { field: "equipment", from: "=SHARED", to: "=CORRECTED" },
+        ],
+      },
+    });
+    const corrected = await ref.reports.query("demo-a", {
+      ...q,
+      dimension: "equipment",
+    });
+    expect(corrected.groups[0].key).toBe("=CORRECTED");
+    expect(corrected.totals).toEqual(report.totals);
+    expect(corrected.records.map((x) => x.area).sort()).toEqual([
+      "Area A, corrected",
+      "Area B",
+    ]);
+    expect(
+      (
+        await admin(
+          "SELECT count(*)::integer AS n FROM oip.facts WHERE source_id=$1 AND payload->>'sourceEquipmentReference'='=SHARED'",
+          [sourceId],
+        )
+      ).rows[0].n,
+    ).toBe(2);
   } finally {
     await ref.close();
   }

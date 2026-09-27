@@ -1,3 +1,4 @@
+import { lockHitliste, projectHitliste } from "./hitliste-projection";
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
 import {
@@ -42,6 +43,24 @@ export class PgReportingProfiles implements ReportingProfileRepository {
       fn,
     );
   }
+  async project(tx: SiteTransaction, importId?: string): Promise<void> {
+    await lockHitliste(tx, this.source);
+    const result = await tx.query(
+      "SELECT version::text,config FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3",
+      scopeTuple(this.source),
+    );
+    const row = result.rows[0];
+    await projectHitliste(
+      tx,
+      this.source,
+      row ? (row.config as CompiledProfile) : this.initial,
+      row ? String(row.version) : this.initialVersion,
+      importId,
+    );
+  }
+  prepare(actor: string): Promise<void> {
+    return this.run(actor, true, (tx) => this.project(tx));
+  }
   private clean(config: CompiledProfile): ReportingProfile {
     const { compiled, ...profile } = config;
     return profile;
@@ -67,6 +86,7 @@ export class PgReportingProfiles implements ReportingProfileRepository {
     profile: CompiledProfile,
   ): Promise<ProfileResult> {
     return this.run(actor, true, async (tx) => {
+      await lockHitliste(tx, this.source);
       const version = randomUUID();
       const result =
         expected === this.initialVersion
@@ -85,6 +105,7 @@ export class PgReportingProfiles implements ReportingProfileRepository {
             );
       if (result.rows.length !== 1)
         throw new AnalyticsError("analytics_revision_changed");
+      await projectHitliste(tx, this.source, profile, version);
       return { version, profile: this.clean(profile) };
     });
   }

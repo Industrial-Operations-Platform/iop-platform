@@ -67,3 +67,16 @@ feature. Preserve the current colors and styles as a documented shared identity.
 - [x] The default POC offers Administrator only, with import and analysis access.
 
 Execution: [refinement plan](../completed/IOP-148-executive-overview-plan.md).
+
+## Relational reference clarification — 2026-09-27
+
+The owner selects the normalized `analytics.fact_hitliste` model and its related
+catalogs as the reference. `public.hitliste` was only the initial prototype. Add a
+physical `analytics.sektor` table and `sektor_id` on the analytical fact table,
+using the supplied area classification. The report must consume these relations.
+
+- [x] Persist all admitted CSV rows in the normalized analytical model with sector FK.
+- [x] Refresh analytical classification atomically while preserving originals.
+- [x] Validate existing-data backfill, future imports, exact totals and scoped integrity.
+
+Execution: [relational plan](../completed/IOP-148-relational-hitliste-plan.md).

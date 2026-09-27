@@ -91,6 +91,23 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
     allowedColumns.push(...names); inserts.push(...names);
     updates.push('oip.reporting_profiles.version','oip.reporting_profiles.config');
   }
+  const hitlisteInstalled = history.rows[0].object !== null && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20260929000000-hitliste-analytics'",
+  )).rowCount === 1;
+  if (hitlisteInstalled) {
+    schemas.push('analytics');
+    const catalogs = ['sektor','bereich','meldetext','meldung_typ','meldegruppe'];
+    for (const table of catalogs) {
+      const names = ['organization_id','site_id','source_id','id','name', ...(table === 'sektor' ? ['is_unclassified'] : [])];
+      const qualified = names.map(n => `analytics.${table}.${n}`);
+      allowedColumns.push(...qualified); inserts.push(...qualified);
+    }
+    const equipment = ['organization_id','site_id','source_id','id','kennzeichen','bereich_id'].map(n => `analytics.betriebsmittel.${n}`);
+    allowedColumns.push(...equipment); inserts.push(...equipment);
+    const facts = ['organization_id', 'site_id', 'source_id', 'import_id', 'source_record_number', 'datum', 'haufigkeit', 'dauer_sekunden', 'dauer_original', 'sektor_id', 'bereich_id', 'betriebsmittel_id', 'meldetext_id', 'typ_id', 'meldegruppe_id', 'profile_version'].map(n => `analytics.fact_hitliste.${n}`);
+    allowedColumns.push(...facts); inserts.push(...facts);
+    updates.push(...['sektor_id', 'bereich_id', 'betriebsmittel_id', 'meldetext_id', 'typ_id', 'meldegruppe_id', 'profile_version'].map(n => `analytics.fact_hitliste.${n}`));
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

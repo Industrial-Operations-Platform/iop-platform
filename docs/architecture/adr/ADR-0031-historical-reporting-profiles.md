@@ -44,3 +44,13 @@ Meldetext is the error, and Typ is currently constant. No additional physical
 identity or assignment model is requested. Implement those source dimensions
 and the provided sector classification; this clarification supersedes tentative
 PLC/sensor assignment work above.
+
+## Relational materialization refinement
+
+The owner's subsequent explicit database clarification is implemented by
+[ADR-0033](ADR-0033-relational-hitliste-analytics.md). Normalization and sector rules
+are now materialized into scoped analytical catalogs/facts, refreshed atomically
+with imports/profile saves. The one-snapshot report contract, exact measures,
+revision semantics and immutable originals remain; query-time JSON reconstruction
+is replaced by relational joins with completeness/version validation. Pareto was
+separately deferred by the owner to a future Executive Overview feature.

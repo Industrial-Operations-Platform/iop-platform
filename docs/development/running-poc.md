@@ -112,6 +112,25 @@ Alternatively, while the application is stopped, `npm run demo:fixtures` imports
 both baseline files through the actual importer and verifies their totals. It
 fails visibly if those dates already exist; it does not reset or replace anything.
 
+## Normalized analytical storage
+
+The reporting database follows the normalized backup reference in
+[ADR-0033](../architecture/adr/ADR-0033-relational-hitliste-analytics.md).
+`analytics.fact_hitliste` references `analytics.sektor`, `bereich`, `betriebsmittel`,
+`meldetext`, `meldung_typ` and `meldegruppe`. Its `sektor_id` is the current prepared
+classification, not a label calculated only in the browser. The same stored
+relationships drive every report. Original files and immutable source facts remain
+available for provenance and reconstruction.
+
+For an existing installation, stop the launcher, run `analysis:setup`, then
+`analysis:start` (or the corresponding `demo:*` commands). Setup applies forward
+migrations without replacing admitted files. Administrator startup backfills the
+relational projection using the saved preparation profile; later uploads and
+profile saves update it within their existing transaction. There is no backup
+restoration or silent dropped-row join. Reports refuse incomplete/stale projections;
+restart with Administrator configured to prepare them. A reader-only principal
+cannot perform reconstruction. Current POC configuration exposes Administrator only.
+
 ## Executive indicators and stable visual identity
 
 Only **Executive Overview** shows KPI cards. They identify the highest-frequency

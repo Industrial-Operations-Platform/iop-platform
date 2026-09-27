@@ -2,7 +2,10 @@
 
 ## Current owner-requested correction — IOP-148
 
-The latest owner refinement restricts the POC to Administrator, places prioritization
+The latest database clarification selects the normalized backup model and a physical
+sector FK in the main analytical fact; see the [relational plan](completed/IOP-148-relational-hitliste-plan.md).
+
+The preceding owner refinement restricts the POC to Administrator, places prioritization
 KPIs only in Executive Overview, defers Pareto and fixes the visual identity.
 See the [refinement plan](completed/IOP-148-executive-overview-plan.md).
 

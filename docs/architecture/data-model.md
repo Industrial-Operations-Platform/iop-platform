@@ -275,3 +275,36 @@ individual occurrence is fabricated. Reporting-date labels retain unknown window
 The model defines logical grouping equality and publication invariants under
 Accepted ADR-0023/0027; wire references and production OIP storage/receiver remain
 future delivery. This is completed design, not executable analytical evidence.
+
+## Relational Hitliste analytical projection — IOP-148
+
+[ADR-0033](adr/ADR-0033-relational-hitliste-analytics.md) applies the owner's normalized
+backup model. The OIP PostgreSQL adapter owns source-specific catalogs in `analytics`.
+All keys and FKs below also carry organization/site/source scope.
+
+```mermaid
+erDiagram
+    sektor ||--o{ fact_hitliste : sektor_id
+    bereich ||--o{ fact_hitliste : bereich_id
+    bereich ||--o{ betriebsmittel : bereich_id
+    betriebsmittel ||--o{ fact_hitliste : betriebsmittel_id
+    meldetext ||--o{ fact_hitliste : meldetext_id
+    meldung_typ ||--o{ fact_hitliste : typ_id
+    meldegruppe ||--o{ fact_hitliste : meldegruppe_id
+    immutable_source_fact ||--o| fact_hitliste : import_and_line
+```
+
+`analytics.fact_hitliste` stores `datum`, `haufigkeit`, `dauer_sekunden`,
+`dauer_original`, the six catalog FKs and `profile_version`. One row corresponds to
+one admitted CSV line; repeated tuples remain separate. Equipment IDs identify the
+normalized code/area pair and a composite FK prevents mismatched equipment/area
+references. All five configured sectors and the explicit unclassified sector exist
+in the catalog, including sectors with no observations. The `sektor_id` column
+represents the current prepared classification used by the reports.
+
+The profile is configuration; its rules are materialized into the relational model
+on publication, explicit historical preparation and authorized startup backfill.
+Original CSV and immutable input facts are preserved. Reports join these catalogs
+in one scoped SQL snapshot and reject missing/stale projection coverage. Physical
+FKs permit transient absence while reconstructing within a transaction; completed
+publication and visible reports require complete one-to-one source coverage.

@@ -54,11 +54,13 @@ async function operation<T>(work: () => Promise<T>): Promise<T> {
       throw new BusinessException(503, "import_outcome_unknown", e.importId);
     if (e instanceof AnalyticsError)
       throw new BusinessException(
-        e.code === "analytics_revision_changed"
-          ? 409
-          : e.code === "analytics_total_out_of_range"
-            ? 422
-            : 400,
+        e.code === "analytics_projection_unavailable"
+          ? 503
+          : e.code === "analytics_revision_changed"
+            ? 409
+            : e.code === "analytics_total_out_of_range"
+              ? 422
+              : 400,
         e.code,
       );
     if (e instanceof ImportBatchError)
