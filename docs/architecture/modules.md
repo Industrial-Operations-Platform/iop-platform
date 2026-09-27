@@ -7,8 +7,8 @@ select the first analytical slices. The broader model below is not a requirement
 to implement every module, entity or lifecycle before the demonstration. Preserve
 scope and data invariants in delivered paths. The local selector is implemented
 under ADR-0018/0030/0034. [IOP-165](../planning/items/IOP-165-operational-home.md)
-now requests temporary authenticated access and user administration; its mechanism
-remains Proposed in ADR-0035. Operational modules remain deferred, with honest Start
+implements temporary authenticated access and user administration under accepted
+[ADR-0035](adr/ADR-0035-transitional-authentication.md). Operational modules remain deferred, with honest Start
 placeholders. Existing identity, authorization and RLS requirements still apply.
 
 These are logical ownership boundaries, not generated packages or services.
@@ -18,7 +18,7 @@ See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary
 | --- | --- | --- |
 | Platform Core | Organization/Site identities and ownership, scoped configuration, module composition | No customer adapter or business-module internals |
 | Users and RBAC | Users, organization memberships, scoped role assignments and authorization evaluation | Core context; authenticated principal |
-| Authentication | Identity-provider boundary and identity-to-principal mapping | Provider adapters; user identity mapping contract |
+| Authentication | Identity-provider boundary, local credentials, throttling and revocable sessions | Provider adapters; user identity mapping contract |
 | Workforce and Shift Management | Teams, shift definitions, assignments | Core sites; user references |
 | Shift Handover | Handover notes, open issues, acknowledgements | Shifts, users, asset and maintenance references |
 | Maintenance Management | Maintenance records, status, work outcomes | Assets, users; external references via Integrations |

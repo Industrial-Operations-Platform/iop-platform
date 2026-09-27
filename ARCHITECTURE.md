@@ -10,17 +10,22 @@ links validation evidence.
 ## Hexagonal boundaries
 
 [ADR-0032](docs/architecture/adr/ADR-0032-hexagonal-application-boundaries.md)
-defines inward dependencies for the active import and analytical workflows.
+requires inward dependencies for every new feature and code change, including
+temporary authentication and administration. The shared workflow and ADR own the
+mandatory clean-code review criteria.
 Domain/application code owns rules, use cases and ports without importing frameworks,
 SQL drivers, transport schemas or presentation adapters.
 
 | Boundary | Implementation responsibility |
 | --- | --- |
-| `apps/api/src/host/` | Composition root, inbound NestJS controllers and temporary local identity adapter |
+| `apps/api/src/host/` | Composition root and inbound NestJS authentication/business controllers |
+| `apps/api/src/modules/authentication/` | Provider-independent authentication use cases with local Argon2id and PostgreSQL session adapters |
+| `apps/api/src/modules/users-rbac/` | User administration, profile rules and scoped authorization with PostgreSQL adapters |
 | `apps/api/src/modules/integrations/` | Import lifecycle, CSV adapter, RAW retention, source-date admission and mapping snapshots |
 | `apps/api/src/modules/oip/` | Exact facts, analytical domain/use cases and outbound PostgreSQL reporting adapters |
 | `apps/web/src/features/analysis/` | Framework-free selection/use cases with HTTP, React and ECharts adapters |
-| `apps/web/src/host/AnalyticalApp.tsx` | Browser composition root |
+| `apps/web/src/features/access/` | Framework-free access use cases with HTTP and React login/administration adapters |
+| `apps/web/src/host/` | Browser composition root and cross-feature workspace shell |
 | `apps/web/src/design/` | Shared identity tokens and reusable presentation components |
 
 Platform Core owns organization/site identity and time zone. Users/RBAC owns
@@ -39,7 +44,9 @@ and presentation; the server owns full-history totals and authorization.
 
 ## Data flow and persistence
 
-1. The host resolves the configured local principal and checks current permissions.
+1. The host resolves a verified principal through Authentication and checks current
+   Users/RBAC permissions. Docker uses temporary local credentials and revocable
+   sessions; the explicit native demo selector remains a separate adapter.
 2. Integrations retains bounded original bytes and inspection outcomes, validates
    CSV fields and freezes import-time classification.
 3. OIP receives immutable source aggregate facts bound to RAW/physical lines;
@@ -75,12 +82,14 @@ backup seed; API startup never implicitly migrates. Persistent volumes survive s
 The seed extracts known COPY data without executing archive SQL, then imports derived
 daily CSVs through the real pipeline. Private manifests preserve source provenance.
 
-The POC exposes one Administrator through a temporary configured selector under
-[ADR-0018](docs/architecture/adr/ADR-0018-local-poc-execution-context.md) and
-[ADR-0030](docs/architecture/adr/ADR-0030-local-demo-user-selection.md).
-Origin/Host checks and opaque local cookies protect this bounded local flow;
-a third-party identity adapter is required before shared use. Compatibility paths
-containing `demo` do not represent a separate application/module.
+Docker uses individual accounts under
+[ADR-0035](docs/architecture/adr/ADR-0035-transitional-authentication.md). Authentication
+owns local credentials and revocable sessions; Users/RBAC owns profiles, membership
+and grants. Only Administrator imports and manages users. Origin/Host checks and
+HttpOnly/SameSite cookies protect this bounded local flow. Corporate identity and
+remote/shared deployment remain separate work. The configured selector under
+ADR-0018/0030 remains only in explicit native demo mode and is rejected in password
+mode. Compatibility paths containing `demo` are not a separate module.
 
 Every operation checks current grants and exact ownership, pins a scoped connection
 and uses explicit predicates plus forced RLS. Runtime is a non-owner role with narrow

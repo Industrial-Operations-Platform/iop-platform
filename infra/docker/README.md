@@ -29,7 +29,10 @@ not a production support or image-digest policy.
 Re-run `npm run local:up` to rebuild after code changes. Images have no hot-reload
 source mounts; use the optional native path for rapid development. Port conflicts,
 a stopped daemon or registry failures must be resolved before startup can succeed.
-This stack is for one trusted local operator, not public/shared hosting.
+This stack uses individual temporary local accounts and remains loopback-only.
+After the first startup, run `npm run local:admin` to issue the initial administrator
+password in your terminal, then change it at first sign-in. Existing accounts and
+analytical data survive rebuilds. See the operator guide for profiles and recovery.
 
 ## Optional foundation tooling
 

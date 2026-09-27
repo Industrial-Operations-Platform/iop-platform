@@ -1,3 +1,7 @@
+import { startupAdministrator } from "../modules/users-rbac/adapters/postgres/administration";
+import { accessTransaction } from "../persistence/access-transaction";
+import { composeAccess } from "./access-composition";
+import { AuthenticationError } from "../modules/authentication/domain/identity";
 import { DataExplorer } from "../modules/oip/application/data-explorer";
 import { PgDataExplorer } from "../modules/oip/adapters/postgres/data-explorer";
 import { hitlisteAnalysisCalendar } from "./adapters/hitliste-analysis-calendar";
@@ -42,6 +46,7 @@ export interface LocalUser {
   name: string;
 }
 export interface LocalIdentityConfiguration {
+  passwordAuthentication?: boolean;
   users: LocalUser[];
   origins: string[];
   local: LocalConfiguration;
@@ -131,7 +136,20 @@ export function readLocalIdentityConfiguration(
       mappings.configuration.sourceId !== local.source.id
     )
       throw new Error();
-    return { users, origins, local, mappings };
+    if (
+      env.IOP_AUTHENTICATION !== undefined &&
+      env.IOP_AUTHENTICATION !== "password"
+    )
+      throw new Error();
+    return {
+      users,
+      origins,
+      local,
+      mappings,
+      ...(env.IOP_AUTHENTICATION === "password"
+        ? { passwordAuthentication: true }
+        : {}),
+    };
   } catch {
     throw new ConfigurationError("local users, origins or source mappings");
   }
@@ -170,6 +188,7 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly access: ReturnType<typeof composeAccess> | null;
   readonly source: ImportSource;
   readonly batches: ImportBatches;
   readonly receiver: OipReceiver;
@@ -180,12 +199,14 @@ export class PlatformRuntime {
   readonly explorer: DataExplorer;
   readonly principals: LocalPrincipals;
   readonly imports: ReturnType<typeof createImportWorkflow>;
+  startupActor: string;
   private receiving = false;
   private lease: PoolClient | undefined;
   constructor(
     readonly pool: Pool,
     readonly config: LocalIdentityConfiguration,
   ) {
+    this.startupActor = config.users[0].id;
     const { local, mappings } = config;
     this.source = Object.freeze({
       organizationId: local.organization.id,
@@ -196,6 +217,9 @@ export class PlatformRuntime {
       profileRevision: "aggregate-poc-v1",
       mappingRevision: mappings.configuration.mappingRevision,
     });
+    this.access = config.passwordAuthentication
+      ? composeAccess(pool, this.source)
+      : null;
     this.batches = new ImportBatches(pool, this.source);
     const profileRepository = new PgReportingProfiles(
       pool,
@@ -242,9 +266,15 @@ export class PlatformRuntime {
         }
       });
       this.lease = client;
-      await this.checkUser(this.config.users[0].id);
-      if (await this.canImport(this.config.users[0].id))
-        await this.profileRepository.prepare(this.config.users[0].id);
+      if (this.access) {
+        const operator = await accessTransaction(this.pool, this.source, (tx) =>
+          startupAdministrator(tx, this.source),
+        );
+        if (operator) this.startupActor = operator;
+      }
+      await this.checkUser(this.startupActor);
+      if (await this.canImport(this.startupActor))
+        await this.profileRepository.prepare(this.startupActor);
     } catch (e) {
       this.lease = undefined;
       client.release(true);
@@ -259,7 +289,7 @@ export class PlatformRuntime {
     await this.pool.end();
   }
   async checkUser(actor: string): Promise<void> {
-    if (!this.config.users.some((u) => u.id === actor))
+    if (!this.access && !this.config.users.some((u) => u.id === actor))
       throw new ForbiddenException();
     await runSiteOperation(
       this.pool,
@@ -278,6 +308,30 @@ export class PlatformRuntime {
           throw new ConfigurationError("seeded site zone");
       },
     );
+  }
+  sessionToken(request: IncomingMessage): string | undefined {
+    const cookies = (request.headers.cookie ?? "")
+      .split(";")
+      .map((value) => value.trim())
+      .filter((value) => value.startsWith("iop_session="));
+    return cookies.length === 1
+      ? cookies[0].slice("iop_session=".length)
+      : undefined;
+  }
+  async actor(request: IncomingMessage): Promise<string> {
+    if (!this.access) return this.principals.resolve(request);
+    try {
+      return (
+        await this.access.authentication.principal(this.sessionToken(request))
+      ).userId;
+    } catch (error) {
+      if (error instanceof AuthenticationError) {
+        if (error.code === "password_change_required")
+          throw new ForbiddenException();
+        throw new UnauthorizedException();
+      }
+      throw error;
+    }
   }
   async canImport(actor: string): Promise<boolean> {
     const context = {

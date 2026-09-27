@@ -2,14 +2,15 @@
 
 ## Status
 
-Proposed — 2026-09-27, under [IOP-165](../../planning/items/IOP-165-operational-home.md).
+Accepted by the owner on 2026-09-27, under [IOP-165](../../planning/items/IOP-165-operational-home.md).
 The owner requested temporary security, administrator-created users and later
 corporate identity integration. The owner confirmed four profiles: Administrator,
 Technician, Task Force and Team Leader; only Administrator imports, and the other
 three have identical capabilities until further modules exist. Credential/session
-mechanisms below still require acceptance before implementation under ADR-0007.
+mechanisms below were accepted in the follow-up request to implement profiles and
+update Docker, preserving hexagonal architecture and clean code.
 
-## Proposed decision
+## Decision
 
 Use an explicit local username/password adapter behind
 [ADR-0004](ADR-0004-authentication-abstraction.md), with individual accounts and
@@ -17,6 +18,10 @@ opaque, revocable server-side sessions. Keep deployment on the owner's loopback
 Docker stack. Authentication owns credentials, identity bindings and sessions;
 Users/RBAC owns stable user IDs, organization membership and scoped assignments.
 Business modules receive the platform principal, never credentials/provider claims.
+
+This increment supports one organization and one site per local installation;
+bootstrap refuses identities assigned elsewhere. Site-role policies retain both
+organization and site predicates. Multi-site administration is deferred.
 
 An administrator creates a new local identity through a bounded orchestration use
 case and assigns existing fixed bundles for the authorized organization/sites.
@@ -26,8 +31,8 @@ bootstrap is an explicit operator command, separate from runtime credentials.
 
 | Profile | Current assignments |
 | --- | --- |
-| Administrator | Organization access admin; site operator and analytics reader at each explicitly assigned site |
-| Technician | Analytics reader at each explicitly assigned site |
+| Administrator | Organization access admin; site operator and analytics reader at the configured local site |
+| Technician | Analytics reader at the configured local site |
 | Task Force | Same as Technician |
 | Team Leader | Same as Technician |
 
@@ -37,8 +42,9 @@ that module's contract exists. Only the administrator profile receives import to
 in this increment. Profile display is not an authorization source. Changing a label
 cannot grant access; mutations validate explicit assignments and target ownership.
 
-Store local credentials with unique salts and Argon2id password hashing; select a
-maintained compatible implementation and benchmark its work factor before coding.
+Store local credentials with unique salts and Argon2id password hashing; use Node 24
+native Argon2id with 64 MiB, three passes and one lane. The local benchmark was
+approximately 260 ms per hash. Salt and hash parameters are retained with each hash.
 Use a one-time initial secret with mandatory password change; expose it only at
 creation to the authorized administrator and never log or retain it in plaintext.
 Credential reset is limited to identities exclusively owned by this local
@@ -74,8 +80,8 @@ service to the local demonstration. It remains an alternative if the owner prefe
 it. Waiting for the corporate tenant blocks individual access unnecessarily. The
 existing selector remains impersonation and cannot meet the requested security.
 
-This proposal extends ADR-0030/0034 only after acceptance. Their existing local
-selector remains active until replacement is implemented and verified. The older
+This decision extends ADR-0030/0034. Their existing local selector remains available
+only in explicitly selected demonstration mode. Password mode never falls back to it. The older
 unmerged ADR-0015 proposal is not accepted or merged by this document.
 
 Start can independently consume existing authorized analytical contracts and show
@@ -88,11 +94,11 @@ labels stay in configuration/adapters and do not define a universal location tre
 Test login denial/throttling, session rotation/expiry/logout, mandatory initial
 password change, revoked access, forged roles/scope, direct forbidden imports,
 cross-organization access/reset denial, concurrent last-admin removal and atomic
-user provisioning. Test that provider identity binding preserves a platform ID
-without matching by email. Browser tests cover login, user creation, assignment,
+user provisioning. Verify stable local platform IDs. When corporate binding is implemented, test
+that it preserves the platform ID without matching by email. Browser tests cover login, user creation, assignment,
 home identity and logout; run real PostgreSQL RLS/migration tests.
 
 References: [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 and [session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
 These sources guide credential/session protection; product scope and identity
-migration choices above are project proposals, not external requirements.
+migration choices above are project decisions, not external requirements.

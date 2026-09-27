@@ -26,7 +26,7 @@ export async function evaluateSiteAccess(
     FROM users_rbac.users u
     JOIN users_rbac.organization_memberships m ON m.user_id = u.user_id
     LEFT JOIN users_rbac.site_role_assignments a
-      ON a.user_id = m.user_id AND a.organization_id = m.organization_id AND a.site_id = $3
+      ON a.user_id = m.user_id AND a.organization_id = m.organization_id AND a.site_id = $3 AND a.is_active
     WHERE u.user_id = $1 AND m.organization_id = $2`,
           [request.userId, request.organizationId, request.siteId],
         );

@@ -7,7 +7,7 @@ for (const width of [1440, 375]) {
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
       requests.push(path);
-      if (path.endsWith("/demo/context")) {
+      if (path.endsWith("/session/context")) {
         await route.fulfill({ json: {
           enabled: true, canImport: false,
           user: { id: "reader", name: "Alex" },

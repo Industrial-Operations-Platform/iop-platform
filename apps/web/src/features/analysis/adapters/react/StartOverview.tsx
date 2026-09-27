@@ -12,10 +12,12 @@ const formatNumber = (value: number) => new Intl.NumberFormat("en-GB", {
 }).format(value);
 
 /** Composes available analytical data; operational sources remain explicitly absent. */
-export function StartOverview({ application, context, openAnalysis }: {
+export function StartOverview({ application, context, openAnalysis, profileLabel, authenticated }: {
   application: AnalysisWorkspace;
   context: DemoContext;
   openAnalysis: () => void;
+  profileLabel?: string;
+  authenticated?: boolean;
 }) {
   const [base, setBase] = useState<Report | null>(null);
   const [detail, setDetail] = useState<Report | null>(null);
@@ -88,8 +90,8 @@ export function StartOverview({ application, context, openAnalysis }: {
           <Panel>
             <span className="analysis-home-label">Profile</span>
             <h2>{context.user.name}</h2>
-            <p>Local demonstration account</p>
-            <p className="analysis-home-muted">Team and role profile: not configured.</p>
+            <p>{authenticated ? "Local account" : "Local demonstration account"}</p>
+            <p className="analysis-home-muted">{profileLabel ? `Profile: ${profileLabel}` : "Team and role profile: not configured."}</p>
           </Panel>
           <Panel>
             <span className="analysis-home-label">Your week · Not connected</span>

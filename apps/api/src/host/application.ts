@@ -35,7 +35,7 @@ export async function createApplication(
   );
   app.use(
     "/api/v1",
-    (
+    async (
       req: import("node:http").IncomingMessage,
       res: import("node:http").ServerResponse,
       next: (error?: unknown) => void,
@@ -46,7 +46,7 @@ export async function createApplication(
         if (runtime) {
           runtime.protect(req, port);
           if (req.method === "POST" && req.url?.split("?")[0] === "/imports") {
-            runtime.principals.resolve(req);
+            await runtime.actor(req);
             const release = runtime.reserveUpload();
             const timer = setTimeout(() => req.destroy(), 30000);
             const finish = () => {

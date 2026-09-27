@@ -36,8 +36,8 @@ The earlier IOP-147 negative feedback remains historical evidence. IOP-130 stays
 **In progress** for consolidation of its measurement criteria, not missing usefulness
 feedback. Component acceptance does not publish or release the whole platform.
 See the [backlog](backlog.md) for the canonical item and all other task statuses.
-Temporary access and administration are now requested through IOP-165, with the new
-mechanism proposed in ADR-0035. Other deferred operational modules are not v1
+Temporary local authentication and four-profile administration are implemented
+through IOP-165 under accepted ADR-0035. Other deferred operational modules are not v1
 analytical blockers. Start reuses live analysis and labels unavailable data explicitly.
 
 ## Historical evidence

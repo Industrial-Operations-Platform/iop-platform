@@ -3,7 +3,7 @@ import {
   AnalysisWorkspace,
   type AnalysisGateway,
 } from "../src/features/analysis/application/workspace";
-import { WorkspaceApp } from "../src/features/analysis/adapters/react/Workspace";
+import { WorkspaceApp } from "../src/host/WorkspaceApp";
 import type {
   ProfileResult,
   Report,
@@ -11,6 +11,7 @@ import type {
 } from "../src/features/analysis/domain/models";
 
 jest.mock("../src/design/components/components.css", () => ({}));
+jest.mock("../src/features/access/adapters/react/access.css", () => ({}));
 jest.mock("../src/features/analysis/adapters/react/workspace.css", () => ({}));
 jest.mock("../src/features/analysis/adapters/echarts/charts", () => ({
   mountChart: jest.fn(),

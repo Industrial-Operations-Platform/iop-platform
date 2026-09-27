@@ -58,7 +58,8 @@ The existing Vite large-bundle advisory remains; bundle splitting is outside sco
 
 Home and documentation increment completed; IOP-165 remains In progress until
 temporary authentication and administration are implemented and verified. The
-[access plan](../active/IOP-165-transitional-access-plan.md) remains decision-pending.
-ADR-0035 is Proposed. Data Analysis v1 acceptance is recorded; no tag/platform
+[access plan](IOP-165-transitional-access-plan.md) was decision-pending at this slice
+closure; the subsequent completed access increment records ADR-0035 acceptance and
+implementation. Data Analysis v1 acceptance is recorded; no tag/platform
 release, merge or remote publication is implied. Validated local commits follow
 ADR-0008; owner approval is required before merging/pushing.

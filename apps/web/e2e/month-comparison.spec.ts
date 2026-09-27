@@ -13,7 +13,7 @@ for (const width of [1440, 375]) {
       const path = new URL(route.request().url()).pathname;
       const dates = ["2026-05-01", "2026-06-01", "2026-07-01"];
       let body: unknown;
-      if (path.endsWith("/demo/context"))
+      if (path.endsWith("/session/context"))
         body = {
           enabled: true,
           canImport: false,

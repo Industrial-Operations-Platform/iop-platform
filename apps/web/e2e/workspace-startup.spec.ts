@@ -27,7 +27,7 @@ for (const width of [1440, 375]) {
   }) => {
     await page.setViewportSize({ width, height: 900 });
     let available = false;
-    await page.route("**/api/v1/demo/context", (route) =>
+    await page.route("**/api/v1/session/context", (route) =>
       available
         ? route.fulfill({
             json: {

@@ -163,7 +163,29 @@ async function main() {
     seed,
   );
   await require("../../infra/database/dist/seed-site").seedSite(seed);
-  for (const user of users) {
+  const { Client } = require("pg");
+  const accessProbe = new Client(configs.migrator);
+  let hasAccounts;
+  await accessProbe.connect();
+  try {
+    await accessProbe.query("BEGIN");
+    await accessProbe.query(
+      "SELECT set_config('iop.access_organization_id',$1,true)",
+      [local.organization.id],
+    );
+    hasAccounts =
+      (
+        await accessProbe.query(
+          "SELECT user_id FROM authentication.credentials WHERE organization_id=$1 LIMIT 1",
+          [local.organization.id],
+        )
+      ).rowCount > 0;
+    await accessProbe.query("COMMIT");
+  } finally {
+    await accessProbe.end();
+  }
+  // Initial seeds never restore grants that an administrator subsequently revoked.
+  for (const user of hasAccounts ? [] : users) {
     const userSeed = { ...seed, IOP_SEED_USER_ID: user.id };
     await require("../../infra/database/dist/seed-user").seedUser(userSeed);
     await require("../../infra/database/dist/seed-membership").seedMembership(
@@ -173,7 +195,7 @@ async function main() {
   console.log("Preparing historical analytics…");
   const runtime = await startPlatformRuntime(env);
   try {
-    await seedHistory(runtime, users[0].id, "/seed");
+    await seedHistory(runtime, runtime.startupActor, "/seed");
   } finally {
     await runtime.close();
   }

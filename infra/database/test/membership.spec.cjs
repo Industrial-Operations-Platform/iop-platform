@@ -40,7 +40,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(11);
+  expect(await migrate(configs.migrator)).toBe(12);
   for (const org of ['org-a', 'org-b']) {
     await seedOrganization({ ...env, IOP_SEED_ORGANIZATION_ID: org, IOP_SEED_ORGANIZATION_NAME: 'Fictional Organization' });
   }
@@ -57,7 +57,7 @@ test('atomic fixed-pair creation, unchanged rerun, ownership and forced RLS surv
   expect(before).toEqual([
     [{ organization_id: 'org-a', user_id: 'user', is_active: true }],
     expect.arrayContaining(['analytics-reader', 'site-operator'].map(role_id =>
-      ({ organization_id: 'org-a', user_id: 'user', site_id: 'site-a', role_id }))),
+      ({ organization_id: 'org-a', user_id: 'user', site_id: 'site-a', role_id, is_active: true }))),
   ]);
   expect(before[1]).toHaveLength(2);
   await provision(configs);
@@ -70,7 +70,7 @@ test('atomic fixed-pair creation, unchanged rerun, ownership and forced RLS surv
     expect(metadata.rows[0]).toEqual({ relrowsecurity: true, relforcerowsecurity: true, owner: 'iop_migrator' });
     const policies = await query('bootstrap', `SELECT cmd, roles FROM pg_policies
       WHERE schemaname = 'users_rbac' AND tablename = $1 ORDER BY cmd, roles::text`, [table]);
-    expect(policies.rows).toEqual([{ cmd: 'INSERT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_runtime}' }]);
+    expect(policies.rows).toEqual([{ cmd: 'ALL', roles: '{iop_migrator,iop_runtime}' }, { cmd: 'INSERT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_runtime}' }]);
   }
 });
 
@@ -247,7 +247,7 @@ test('native CLI reproduces the complete seed on a second empty disposable datab
   } finally { await admin.end(); }
   const values = { ...input(), IOP_SEED_ORGANIZATION_NAME: 'Fictional Organization',
     IOP_SEED_SITE_NAME: 'Fictional Site', IOP_SEED_SITE_TIME_ZONE: 'UTC' };
-  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '11 applied'],
+  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '12 applied'],
     ['seed-organization', 'created'], ['seed-site', 'created'], ['seed-user', 'created'],
     ['seed-membership', 'created'], ['seed-membership', 'unchanged'], ['provision', 'provisioned'], ['migrate', '0 applied']]) {
     const result = cli(command, values);

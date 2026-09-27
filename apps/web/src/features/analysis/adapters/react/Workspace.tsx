@@ -1,5 +1,4 @@
 import { AnalysisCalendarNotice } from "./AnalysisCalendarNotice";
-import { StartOverview } from "./StartOverview";
 import { SourceFiles } from "./SourceFiles";
 import { ExecutiveMonthControls, MonthlyOverview } from "./MonthlyOverview";
 import { ImportWorkspace } from "./ImportWorkspace";
@@ -9,8 +8,6 @@ import { labels } from "./labels";
 import {
   Actions,
   Alert,
-  AppShell,
-  SideNavigation,
   Button,
   Disclosure,
   Field,
@@ -48,148 +45,7 @@ function Notice({ error }: { error: unknown }) {
     </Alert>
   ) : null;
 }
-export function WorkspaceApp({
-  application,
-}: {
-  application: AnalysisWorkspace;
-}) {
-  const [page, setPage] = useState<"start" | "analysis">("start");
-  const [administration, setAdministration] = useState(false);
-  const [context, setContext] = useState<DemoContext | null>(null),
-    [error, setError] = useState<unknown>(),
-    [pending, setPending] = useState(false),
-    [connectionAttempt, setConnectionAttempt] = useState(0);
-  useEffect(() => {
-    let active = true;
-    setPending(true);
-    setError(undefined);
-    void application
-      .open()
-      .then((c) => {
-        if (active) setContext(c);
-      })
-      .catch((e) => {
-        if (active) setError(e);
-      })
-      .finally(() => {
-        if (active) setPending(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [application, connectionAttempt]);
-  const choose = async (id: string) => {
-    setAdministration(false);
-    setPending(true);
-    setError(undefined);
-    setContext((c) => (c ? { ...c, user: null } : c));
-    try {
-      setContext(await application.gateway.chooseUser(id));
-    } catch (e) {
-      setError(e);
-    } finally {
-      setPending(false);
-    }
-  };
-  return (
-    <AppShell
-      className="analysis-app"
-      mainId="analysis-main"
-      skipLabel="Skip to analysis"
-      header={
-        <>
-          {context?.user && context.canImport && (
-            <Button
-              variant="secondary"
-              aria-pressed={administration}
-              onClick={() => {
-                setAdministration((value) => !value);
-                setPage("analysis");
-              }}
-            >
-              {administration ? "Taskforce view" : "Administration"}
-            </Button>
-          )}
-          <Field layout="inline">
-            User{" "}
-            <Select
-              aria-label="Demo user"
-              value={context?.user?.id ?? ""}
-              disabled={pending}
-              onChange={(e) => void choose(e.target.value)}
-            >
-              <option value="" disabled>
-                Select a user
-              </option>
-              {context?.users.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.name}
-                </option>
-              ))}
-            </Select>
-          </Field>
-        </>
-      }
-      brandAction={{
-        label: "IOP · Go to Start",
-        onClick: () => setPage("start"),
-      }}
-      brand={
-        <>
-          IOP<span>Industrial Operations Platform</span>
-        </>
-      }
-      navigation={
-        <SideNavigation
-          selected={page}
-          onSelect={setPage}
-          items={[
-            { id: "start", label: "Start" },
-            { id: "analysis", label: "Data analysis" },
-          ]}
-        />
-      }
-    >
-      <Notice error={error} />
-      {page === "start" && context?.enabled && !error ? (
-        <StartOverview
-          key={context.user?.id ?? "no-user"}
-          application={application}
-          context={context}
-          openAnalysis={() => {
-            setAdministration(false);
-            setPage("analysis");
-          }}
-        />
-      ) : context?.user ? (
-        <ReportWorkspace
-          key={context.user.id}
-          application={application}
-          context={context}
-          administration={administration && context.canImport}
-        />
-      ) : (
-        <Panel variant="empty">
-          <h1>Data analysis</h1>
-          <p>
-            {context?.enabled
-              ? "Select a user in the header to open the workspace."
-              : "Connect the local API to open the analytical workspace."}
-          </p>
-          {(!context?.enabled || !!error) && (
-            <Button
-              disabled={pending}
-              onClick={() => setConnectionAttempt((n) => n + 1)}
-            >
-              {pending ? "Connecting…" : "Retry connection"}
-            </Button>
-          )}
-        </Panel>
-      )}
-    </AppShell>
-  );
-}
-function ReportWorkspace({
+export function ReportWorkspace({
   application,
   context,
   administration,

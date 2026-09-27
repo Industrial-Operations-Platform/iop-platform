@@ -1,3 +1,5 @@
+import { AccessController } from "./access-controller";
+import { AuthenticationError } from "../modules/authentication/domain/identity";
 import { ImportBusyError } from "../modules/integrations/domain/imports";
 import {
   Body,
@@ -135,7 +137,7 @@ export class PlatformController {
     if (!this.runtime) throw new ServiceUnavailableException();
     return this.runtime;
   }
-  @Get("demo/context")
+  @Get(["session/context", "demo/context"])
   @ApiOkResponse({ type: C.DemoContextDto })
   async context(@Req() req: IncomingMessage): Promise<C.DemoContextDto> {
     if (
@@ -154,9 +156,53 @@ export class PlatformController {
         canImport: false,
       };
     const r = this.runtime;
+    if (r.access) {
+      try {
+        const principal = await r.access.authentication.principal(
+          r.sessionToken(req),
+          true,
+        );
+        const profile = await r.access.users.self(principal.userId);
+        const canUse = !principal.mustChangePassword;
+        return {
+          enabled: true,
+          authentication: "password",
+          mustChangePassword: principal.mustChangePassword,
+          canAdminister:
+            canUse && (await r.access.users.canAdminister(principal.userId)),
+          canImport:
+            canUse &&
+            (await operation(async () => r.canImport(principal.userId))),
+          users: [],
+          user: {
+            id: profile.id,
+            name: profile.name,
+            profile: profile.profile,
+          },
+          scope: {
+            organizationId: r.source.organizationId,
+            siteId: r.source.siteId,
+            sourceId: r.source.sourceId,
+            siteTimeZone: r.source.siteTimeZone,
+          },
+        };
+      } catch (error) {
+        if (!(error instanceof AuthenticationError)) throw error;
+        return {
+          enabled: true,
+          authentication: "password",
+          canImport: false,
+          canAdminister: false,
+          mustChangePassword: false,
+          users: [],
+          user: null,
+          scope: null,
+        };
+      }
+    }
     let actor: string | undefined;
     try {
-      actor = r.principals.resolve(req);
+      actor = await r.actor(req);
     } catch (e) {
       if (!(e instanceof HttpException) || e.getStatus() !== 401) throw e;
     }
@@ -165,12 +211,14 @@ export class PlatformController {
         await r.checkUser(actor);
       } catch (e) {
         if (e instanceof SiteAccessDeniedError) actor = undefined;
-        else await operation(() => Promise.reject(e));
+        else await operation(async () => Promise.reject(e));
       }
     }
     return {
       enabled: true,
-      canImport: actor ? await operation(() => r.canImport(actor!)) : false,
+      canImport: actor
+        ? await operation(async () => r.canImport(actor!))
+        : false,
       users: r.config.users,
       user: r.config.users.find((u) => u.id === actor) ?? null,
       scope: {
@@ -190,6 +238,7 @@ export class PlatformController {
     @Res({ passthrough: true }) res: ServerResponse,
   ): Promise<C.DemoContextDto> {
     const r = this.active(req);
+    if (r.access) throw new BusinessException(403, "selector_disabled");
     if (
       !body ||
       Array.isArray(body) ||
@@ -197,7 +246,7 @@ export class PlatformController {
       typeof body.userId !== "string"
     )
       throw new BadRequestException();
-    await operation(() => r.checkUser(body.userId));
+    await operation(async () => r.checkUser(body.userId));
     const token = r.principals.switch(req, body.userId);
     res.setHeader(
       "Set-Cookie",
@@ -205,7 +254,7 @@ export class PlatformController {
     );
     return {
       enabled: true,
-      canImport: await operation(() => r.canImport(body.userId)),
+      canImport: await operation(async () => r.canImport(body.userId)),
       users: r.config.users,
       user: r.config.users.find((u) => u.id === body.userId)!,
       scope: {
@@ -220,7 +269,7 @@ export class PlatformController {
   @ApiOkResponse({ type: [C.ImportSummaryDto] })
   async history(@Req() req: IncomingMessage): Promise<C.ImportSummaryDto[]> {
     const r = this.active(req);
-    return operation(() => r.batches.history(r.principals.resolve(req)));
+    return operation(async () => r.batches.history(await r.actor(req)));
   }
   @Post("imports")
   @ApiConsumes("application/octet-stream")
@@ -239,8 +288,8 @@ export class PlatformController {
       filename = req.headers["x-csv-filename"];
     if (typeof filename !== "string" || !Buffer.isBuffer(bytes))
       throw new BadRequestException();
-    const result = await operation(() =>
-      r.submit(r.principals.resolve(req), filename, bytes),
+    const result = await operation(async () =>
+      r.submit(await r.actor(req), filename, bytes),
     );
     console.info(
       JSON.stringify({
@@ -258,8 +307,8 @@ export class PlatformController {
     @Param("id") id: string,
   ): Promise<C.ImportReviewDto> {
     const r = this.active(req);
-    const result = await operation(() =>
-      r.batches.review(r.principals.resolve(req), id),
+    const result = await operation(async () =>
+      r.batches.review(await r.actor(req), id),
     );
     return { ...result, diagnostics: [...result.diagnostics] };
   }
@@ -277,8 +326,8 @@ export class PlatformController {
     )
       throw new BadRequestException();
     const r = this.active(req);
-    const result = await operation(() =>
-      r.recover(r.principals.resolve(req), id),
+    const result = await operation(async () =>
+      r.recover(await r.actor(req), id),
     );
     return { ...result, diagnostics: [...result.diagnostics] };
   }
@@ -293,9 +342,9 @@ export class PlatformController {
     @Res() res: ServerResponse,
   ): Promise<void> {
     const r = this.active(req),
-      actor = r.principals.resolve(req);
-    const batch = await operation(() => r.batches.review(actor, id));
-    const bytes = await operation(() => r.batches.original(actor, id));
+      actor = await r.actor(req);
+    const batch = await operation(async () => r.batches.review(actor, id));
+    const bytes = await operation(async () => r.batches.original(actor, id));
     res.setHeader("Content-Type", "application/octet-stream");
     res.setHeader(
       "Content-Disposition",
@@ -307,7 +356,7 @@ export class PlatformController {
   @ApiOkResponse({ type: C.AvailabilityDto })
   async availability(@Req() req: IncomingMessage): Promise<C.AvailabilityDto> {
     const r = this.active(req);
-    return operation(() => r.queries.availability(r.principals.resolve(req)));
+    return operation(async () => r.queries.availability(await r.actor(req)));
   }
   @Post("analytics/options")
   @ApiBody({ type: C.OptionRequestDto })
@@ -317,13 +366,13 @@ export class PlatformController {
     @Body() body: C.OptionRequestDto,
   ): Promise<C.OptionsDto> {
     const r = this.active(req);
-    return operation(() => r.queries.options(r.principals.resolve(req), body));
+    return operation(async () => r.queries.options(await r.actor(req), body));
   }
   @Get("analytics/profile")
   @ApiOkResponse({ type: C.ProfileResultDto })
   async profile(@Req() req: IncomingMessage) {
     const r = this.active(req);
-    return operation(() => r.profiles.get(r.principals.resolve(req)));
+    return operation(async () => r.profiles.get(await r.actor(req)));
   }
   @Post("analytics/profile")
   @ApiBody({ type: C.ProfileResultDto })
@@ -333,7 +382,7 @@ export class PlatformController {
     @Body() body: C.ProfileResultDto,
   ) {
     const r = this.active(req);
-    return operation(() => r.profiles.save(r.principals.resolve(req), body));
+    return operation(async () => r.profiles.save(await r.actor(req), body));
   }
   @Post("analytics/messages")
   @ApiBody({ type: C.MessageCatalogRequestDto })
@@ -343,9 +392,7 @@ export class PlatformController {
     @Body() body: C.MessageCatalogRequestDto,
   ) {
     const r = this.active(req);
-    return operation(() =>
-      r.explorer.messages(r.principals.resolve(req), body),
-    );
+    return operation(async () => r.explorer.messages(await r.actor(req), body));
   }
   @Post("analytics/source-rows")
   @ApiBody({ type: C.SourceRowsRequestDto })
@@ -355,8 +402,8 @@ export class PlatformController {
     @Body() body: C.SourceRowsRequestDto,
   ) {
     const r = this.active(req);
-    return operation(() =>
-      r.explorer.sourceRows(r.principals.resolve(req), body),
+    return operation(async () =>
+      r.explorer.sourceRows(await r.actor(req), body),
     );
   }
   @Post("analytics/report")
@@ -364,7 +411,7 @@ export class PlatformController {
   @ApiCreatedResponse({ type: C.ReportDto })
   async report(@Req() req: IncomingMessage, @Body() body: C.ReportRequestDto) {
     const r = this.active(req);
-    return operation(() => r.reports.query(r.principals.resolve(req), body));
+    return operation(async () => r.reports.query(await r.actor(req), body));
   }
   @Post("analytics/query")
   @ApiBody({ type: C.AnalyticalRequestDto })
@@ -374,7 +421,7 @@ export class PlatformController {
     @Body() body: C.AnalyticalRequestDto,
   ): Promise<C.AnalysisDto> {
     const r = this.active(req);
-    return operation(() => r.queries.query(r.principals.resolve(req), body));
+    return operation(async () => r.queries.query(await r.actor(req), body));
   }
 }
 @Module({})
@@ -382,7 +429,7 @@ export class PlatformModule {
   static register(runtime: PlatformRuntime | null): DynamicModule {
     return {
       module: PlatformModule,
-      controllers: [PlatformController],
+      controllers: [PlatformController, AccessController],
       providers: [{ provide: PLATFORM_RUNTIME, useValue: runtime }],
     };
   }
