@@ -2,6 +2,10 @@
 
 ## Current owner-requested correction — IOP-148
 
+The latest owner refinement restricts the POC to Administrator, places prioritization
+KPIs only in Executive Overview, defers Pareto and fixes the visual identity.
+See the [refinement plan](completed/IOP-148-executive-overview-plan.md).
+
 The owner rejected the IOP-147 report experience after its technical delivery.
 [IOP-148](items/IOP-148-analytical-workspace.md) implements the supplied chart
 templates, persistent historical preparation, five-sector mapping and hexagonal

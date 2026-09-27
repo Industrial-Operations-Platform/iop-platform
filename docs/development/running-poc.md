@@ -1,6 +1,6 @@
 # Run and demonstrate the analytical POC
 
-The application supports **CSV → persistent history → analytical report templates**, with configured local demo users. This is a single trusted
+The application supports **CSV → persistent history → analytical report templates**, with one local Administrator. This is a single trusted
 operator's loopback-only demonstration. Third-party authentication replaces the
 local user selector before shared use; no password or enterprise login is claimed.
 
@@ -17,15 +17,15 @@ npm run demo:setup
 npm run demo:start
 ```
 
-Open **http://127.0.0.1:5173**. Select **Demo operator** or **Demo colleague**.
+Open **http://127.0.0.1:5173**. Select **Administrator**.
 Keep the launcher running; Ctrl+C stops both application processes. PostgreSQL
 stores history in the dedicated `iop-poc-data` volume and survives application
 restarts. After restarting Docker, run `docker start iop-poc-postgres` before
 `npm run demo:start`, or rerun setup while the application is stopped.
 
 Setup creates a labelled `iop-poc-postgres` container, provisions separate database
-roles, applies migrations, seeds the fictional organization/site and both demo
-users, and registers an empty installation for safe reset. Reruns preserve imports,
+roles, applies migrations, seeds the fictional organization/site and the Administrator
+account, and registers an empty installation for safe reset. Reruns preserve imports,
 credentials and configuration. It refuses an unknown conflicting container and
 never deletes a volume or database. Runtime uses the non-owner `iop_runtime` role.
 
@@ -51,18 +51,22 @@ The reference loader admits the three authorized repository CSVs through the rea
 importer and skips already-admitted examples. It verifies 1,446 rows, frequency
 8,496 and 1,629,521 exact seconds. It does not restore the supplied backup.
 
-Select **Administrator** in the header to import and prepare; **Analyst** has only
-analytical read permission. This local selector is impersonation, not secure login.
-The original synthetic `demo:*` commands remain available with their two operator
-accounts and independent data. Seed option `IOP_SEED_ANALYTICS_ONLY=true` creates an
-explicit reader-only membership; reruns refuse conflicting existing grants.
+Select **Administrator** in the header for both import/preparation and analysis.
+Both launchers create this single default account. The local selector is
+impersonation, not secure login; the provider boundary remains replaceable.
+Existing installations preserve their private configuration: while stopped, limit
+`.local-analysis/users.json` (or `.local-demo/users.json`) to the existing
+`demo-operator` entry named `Administrator`. Keep origins and other configuration
+unchanged. This only narrows the selector allowlist; it does not delete database
+principals or their grants. The generic reader-only authorization capability and
+its tests remain available for later scope, outside the current demo flow.
 
 1. Open **Import & prepare**, select `Hitliste-YYYYMMDD.csv` and press **Import CSV**.
    Input is UTF-16 LE with BOM, semicolon-separated, at most 5 MiB. Existing reporting
    dates cannot be replaced. Review errors, duplicates and interrupted outcomes.
 2. Use **Analyze this file** for one date, or **Back to analysis** / **Refresh history**
    for the complete imported range. Dates are inclusive/exclusive as labelled.
-3. Choose a lower template: Halle, Bereich, equipment, errors, daily/monthly or Pareto.
+3. Start in **Executive Overview**, then choose Halle, Bereich, equipment, errors or daily/monthly.
    Group by any source field; change the measure and day/week/month period. Filter
    a sector, location, equipment or message with exact values; suggestions show up
    to 200 values and an exact typed value can reach others. Commas are part of values.
@@ -73,12 +77,13 @@ explicit reader-only membership; reruns refuse conflicting existing grants.
    **Save historical preparation** persists the profile and applies it to historical
    reports. It never edits retained originals or immutable import-time facts. A stale
    editor/report version is rejected; refresh before continuing.
-6. Switch to **Analyst** for read-only reporting. Restart the application to demonstrate
+6. Restart the application and select **Administrator** to demonstrate
    persistence. Full totals use all matching records, not only the current page.
 
 The report range is bounded to 3,660 days; pages contain 50 contributing rows,
 rankings/scatter up to 100 groups and comparison/heatmap series up to 10 groups.
-Pareto percentages use the full total, so a truncated group list may end below 100%.
+Executive KPIs use the full filtered data, independently of ranking and row limits.
+Pareto is deferred to a future feature inside Executive Overview; there is no Pareto tab.
 Only admitted coverage appears; missing days are gaps rather than zero activity.
 Source frequency is an integer. Duration is summed as exact seconds and divided by
 60 before display rounding; it is **not plant downtime**. Filename dates do not
@@ -106,6 +111,22 @@ preserved duplicate/validation outcomes without changing historical measures.
 Alternatively, while the application is stopped, `npm run demo:fixtures` imports
 both baseline files through the actual importer and verifies their totals. It
 fails visibly if those dates already exist; it does not reset or replace anything.
+
+## Executive indicators and stable visual identity
+
+Only **Executive Overview** shows KPI cards. They identify the highest-frequency
+sector, equipment code and error, plus the area with the highest accumulated alarm
+duration. Each card shows the leader, its measure and its percentage of the complete
+filtered total (frequency for three cards, exact alarm seconds for the area card).
+Click the name to filter the report. Ties use deterministic label ordering; a zero
+or empty denominator displays no leader or percentage. Equipment groups by the source
+code across its locations, which remain independently filterable.
+
+Counts of source/admitted/rejected rows and file bytes appear in **Import & prepare**
+for the reviewed file; unknown counts are labelled rather than treated as zero.
+These are import diagnostics, not executive performance indicators.
+
+Preserve the [IOP visual identity](../design/visual-identity.md) when changing views.
 
 ## Mapping your own source labels
 

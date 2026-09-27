@@ -1528,6 +1528,51 @@
           "records"
         ]
       },
+      "ExecutiveLeaderDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "number"
+          },
+          "seconds": {
+            "type": "number"
+          },
+          "minutes": {
+            "type": "number"
+          },
+          "records": {
+            "type": "number"
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "sector",
+              "area",
+              "equipment",
+              "message"
+            ]
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "frequency",
+              "duration"
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "frequency",
+          "seconds",
+          "minutes",
+          "records",
+          "dimension",
+          "metric"
+        ]
+      },
       "ReportPointDto": {
         "type": "object",
         "properties": {
@@ -1629,6 +1674,12 @@
           "totals": {
             "$ref": "#/components/schemas/ReportRowDto"
           },
+          "executive": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExecutiveLeaderDto"
+            }
+          },
           "groups": {
             "type": "array",
             "items": {
@@ -1707,6 +1758,7 @@
           "profileVersion",
           "selection",
           "totals",
+          "executive",
           "groups",
           "durationGroups",
           "groupCount",

@@ -24,7 +24,7 @@ Physical PLC/sensor relationships cannot be guessed from opaque source codes.
       manage analytical preparation rules without losing original retained data.
 - [x] All admitted historical data is queried server-side with scope and revision
       consistency; profile edits persist and explicitly apply to historical analysis.
-- [x] Hall, area, equipment, message/type/group, daily/monthly and Pareto templates
+- [x] Executive Overview, hall, area, equipment, message/type/group and daily/monthly templates
       provide real interactive charts and equivalent accessible data.
 - [x] All seven source fields can be grouped/filtered, with exact frequency and
       duration conversion to minutes; special characters/commas remain intact.
@@ -51,5 +51,19 @@ identity or assignment model is requested. Implement those source dimensions
 and the provided sector classification; this clarification supersedes tentative
 PLC/sensor assignment work above.
 
-Technical implementation and validation are complete. Owner acceptance of the
+The original implementation and the refinement below are validated. Owner acceptance of the
 revised experience remains tracked separately in IOP-130.
+
+## Owner refinement — 2026-09-27
+
+Only Administrator is exposed by the current POC launcher, with import and analysis
+access. Put useful prioritization KPIs only in Executive Overview; import row counts
+belong to file review. Remove the Pareto tab and defer Pareto to a later Overview
+feature. Preserve the current colors and styles as a documented shared identity.
+
+- [x] Full-selection prioritization KPIs appear only in Executive Overview.
+- [x] Import volumes stay in import review; Pareto is absent from live templates.
+- [x] Shared visual tokens preserve the current identity across UI and charts.
+- [x] The default POC offers Administrator only, with import and analysis access.
+
+Execution: [refinement plan](../completed/IOP-148-executive-overview-plan.md).

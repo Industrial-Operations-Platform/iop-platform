@@ -21,11 +21,16 @@ export interface ReportRow {
 export interface ReportPoint extends ReportRow {
   period: string;
 }
+export interface ExecutiveLeader extends ReportRow {
+  dimension: "sector" | "area" | "equipment" | "message";
+  metric: "frequency" | "duration";
+}
 export interface ReportResult {
   revision: string;
   profileVersion: string;
   selection: ReportRequest;
   totals: ReportRow;
+  executive: ExecutiveLeader[];
   groups: ReportRow[];
   durationGroups: ReportRow[];
   groupCount: number;

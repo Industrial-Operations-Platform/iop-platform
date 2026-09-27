@@ -1,11 +1,7 @@
 .analysis-app {
-  --ink: #172b43;
-  --muted: #64758b;
-  --line: #dce5ed;
-  --blue: #087bd5;
-  font-family: Inter, system-ui, sans-serif;
-  color: var(--ink);
-  background: #f3f6f9;
+  font-family: var(--iop-font);
+  color: var(--iop-ink);
+  background: var(--iop-canvas);
   min-height: 100vh;
   font-size: 14px;
 }
@@ -18,10 +14,10 @@
   font: inherit;
 }
 .analysis-app button {
-  background: #087bd5;
-  color: white;
-  border: 1px solid #087bd5;
-  border-radius: 5px;
+  background: var(--iop-primary);
+  color: var(--iop-surface);
+  border: 1px solid var(--iop-primary);
+  border-radius: var(--iop-controlRadius);
   padding: 9px 13px;
   cursor: pointer;
 }
@@ -30,21 +26,21 @@
   cursor: default;
 }
 .analysis-app button.secondary {
-  background: white;
-  color: var(--ink);
-  border-color: var(--line);
+  background: var(--iop-surface);
+  color: var(--iop-ink);
+  border-color: var(--iop-line);
 }
 .analysis-app input,
 .analysis-app select {
   min-width: 0;
-  border: 1px solid #cbd7e2;
-  border-radius: 4px;
-  background: white;
-  color: var(--ink);
+  border: 1px solid var(--iop-inputBorder);
+  border-radius: var(--iop-inputRadius);
+  background: var(--iop-surface);
+  color: var(--iop-ink);
   padding: 8px;
 }
 .analysis-app :focus-visible {
-  outline: 3px solid #edaa30;
+  outline: 3px solid var(--iop-focus);
   outline-offset: 3px;
 }
 .analysis-app h1 {
@@ -64,18 +60,18 @@
   line-height: 1.6;
 }
 .analysis-app a {
-  color: #076bb5;
+  color: var(--iop-link);
 }
 .analysis-app small {
   display: block;
   font-size: 11px;
-  color: var(--muted);
+  color: var(--iop-muted);
   line-height: 1.5;
 }
 .analysis-top {
   height: 64px;
-  background: #fff;
-  border-bottom: 1px solid var(--line);
+  background: var(--iop-surface);
+  border-bottom: 1px solid var(--iop-line);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -95,8 +91,8 @@
   bottom: 0;
   left: 0;
   width: 195px;
-  background: #fff;
-  border-right: 1px solid var(--line);
+  background: var(--iop-surface);
+  border-right: 1px solid var(--iop-line);
   z-index: 6;
   padding: 25px 15px;
 }
@@ -111,16 +107,16 @@
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0;
-  color: var(--muted);
+  color: var(--iop-muted);
   margin-top: 6px;
 }
 .analysis-sidebar nav {
   margin-top: 44px;
-  background: #e8f3fc;
-  color: #096faf;
+  background: var(--iop-activeSurface);
+  color: var(--iop-activeInk);
   padding: 14px 10px;
   border-radius: 6px;
-  font-weight: 650;
+  font-weight: var(--iop-metricWeight);
 }
 .analysis-main {
   margin-left: 195px;
@@ -137,7 +133,7 @@
 }
 .analysis-heading p {
   margin: 0;
-  color: var(--muted);
+  color: var(--iop-muted);
 }
 .analysis-eyebrow {
   text-transform: uppercase;
@@ -150,9 +146,9 @@
   flex-wrap: wrap;
 }
 .analysis-filters {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
   padding: 16px;
   margin-bottom: 20px;
 }
@@ -177,7 +173,7 @@
   font-size: 12px;
 }
 .analysis-filters details {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--iop-line);
   margin-top: 14px;
   padding-top: 12px;
 }
@@ -189,33 +185,37 @@
 .analysis-app details[open] > summary {
   margin-bottom: 15px;
 }
-.analysis-kpis {
+.analysis-kpis,
+.analysis-import-counts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--iop-metricGap);
 }
-.analysis-kpis section {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  padding: 19px;
+.analysis-kpis section,
+.analysis-import-counts section {
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-metricRadius);
+  padding: var(--iop-metricPadding);
 }
-.analysis-kpis span {
+.analysis-kpis span,
+.analysis-import-counts span {
   display: block;
-  color: var(--muted);
+  color: var(--iop-muted);
   font-size: 11px;
 }
-.analysis-kpis strong {
+.analysis-kpis strong,
+.analysis-import-counts strong {
   display: block;
-  font-size: 29px;
+  font-size: var(--iop-metricSize);
   line-height: 1.3;
   margin-top: 8px;
   font-variant-numeric: tabular-nums;
-  font-weight: 650;
+  font-weight: var(--iop-metricWeight);
 }
 .analysis-footnote {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--iop-muted);
   margin: 14px 0;
 }
 .analysis-charts {
@@ -224,9 +224,9 @@
   gap: 18px;
 }
 .analysis-chart {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
   padding: 18px 18px 10px;
   min-width: 0;
 }
@@ -241,9 +241,9 @@
 }
 .analysis-data,
 .analysis-import {
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
   padding: 20px;
   margin-top: 20px;
 }
@@ -260,7 +260,7 @@
 .analysis-app th,
 .analysis-app td {
   text-align: left;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--iop-line);
   padding: 10px;
   vertical-align: top;
 }
@@ -269,13 +269,13 @@
 }
 .analysis-app caption {
   text-align: left;
-  font-weight: 650;
+  font-weight: var(--iop-metricWeight);
   padding: 15px 0;
 }
 .analysis-app button.text-button {
   border: 0;
   background: transparent;
-  color: #096faf;
+  color: var(--iop-activeInk);
   padding: 0;
   text-align: left;
 }
@@ -286,8 +286,8 @@
   right: 0;
   display: flex;
   overflow: auto;
-  background: #fff;
-  border-top: 1px solid var(--line);
+  background: var(--iop-surface);
+  border-top: 1px solid var(--iop-line);
   z-index: 4;
   padding: 0 20px;
 }
@@ -295,16 +295,16 @@
   flex-shrink: 0;
   padding: 18px;
   border: 0;
-  border-right: 1px solid var(--line);
+  border-right: 1px solid var(--iop-line);
   border-radius: 0;
-  background: white;
-  color: var(--muted);
+  background: var(--iop-surface);
+  color: var(--iop-muted);
   border-bottom: 3px solid transparent;
 }
 .analysis-tabs button[aria-pressed="true"] {
-  border-bottom-color: #087bd5;
-  color: var(--ink);
-  font-weight: 650;
+  border-bottom-color: var(--iop-primary);
+  color: var(--iop-ink);
+  font-weight: var(--iop-metricWeight);
 }
 .analysis-import form {
   display: flex;
@@ -322,7 +322,7 @@
 .analysis-import details {
   margin: 18px 0;
   padding: 12px 0;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--iop-line);
 }
 .analysis-checks {
   display: flex;
@@ -348,24 +348,24 @@
   flex: 1;
 }
 .analysis-error {
-  background: #fff1f0;
-  border: 1px solid #efb8b3;
-  color: #9c2424;
+  background: var(--iop-errorSurface);
+  border: 1px solid var(--iop-errorBorder);
+  color: var(--iop-errorInk);
   padding: 14px;
   border-radius: 6px;
 }
 .analysis-empty {
-  background: #fff;
+  background: var(--iop-surface);
   padding: 55px 30px;
   text-align: center;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
 }
 .analysis-skip {
   position: absolute;
   top: -100px;
   z-index: 10;
-  background: white;
+  background: var(--iop-surface);
   padding: 10px;
 }
 .analysis-skip:focus {
@@ -387,7 +387,8 @@
   .analysis-tabs {
     left: 155px;
   }
-  .analysis-kpis {
+  .analysis-kpis,
+  .analysis-import-counts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .analysis-heading {
@@ -401,7 +402,7 @@
   .analysis-sidebar {
     position: static;
     width: auto;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--iop-line);
     display: flex;
     align-items: center;
     gap: 20px;
@@ -434,10 +435,12 @@
     flex-direction: column;
     gap: 12px;
   }
-  .analysis-kpis strong {
+  .analysis-kpis strong,
+  .analysis-import-counts strong {
     font-size: 24px;
   }
-  .analysis-kpis section {
+  .analysis-kpis section,
+  .analysis-import-counts section {
     padding: 14px;
   }
   .analysis-chart {
@@ -472,4 +475,18 @@
   .analysis-app .analysis-sidebar nav {
     margin-top: 0;
   }
+}
+
+.analysis-kpis section {
+  min-width: 0;
+}
+.analysis-app button.analysis-kpi-label {
+  display: block;
+  margin: 8px 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.analysis-import-counts {
+  margin-bottom: 18px;
 }

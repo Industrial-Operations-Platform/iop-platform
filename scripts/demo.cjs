@@ -97,11 +97,7 @@ async function main() {
         users: [
           {
             id: "demo-operator",
-            name: reference ? "Administrator" : "Demo operator",
-          },
-          {
-            id: reference ? "reference-analyst" : "demo-colleague",
-            name: reference ? "Analyst" : "Demo colleague",
+            name: "Administrator",
           },
         ],
         origins: ["http://127.0.0.1:5173", "http://127.0.0.1:4173"],

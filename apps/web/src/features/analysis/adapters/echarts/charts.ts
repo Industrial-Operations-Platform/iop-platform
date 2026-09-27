@@ -1,3 +1,4 @@
+import { identity, chartPalette } from "../../../../design/identity";
 import { init, use, type EChartsCoreOption } from "echarts/core";
 import {
   BarChart,
@@ -35,7 +36,6 @@ export type ChartKind =
   | "monthly"
   | "trend"
   | "heatmap"
-  | "pareto"
   | "messages";
 export const number = (n: number) =>
   new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(n);
@@ -66,12 +66,12 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
   const metric = r.selection.metric,
     unit = metric === "duration" ? "Duration (minutes)" : "Frequency";
   const base: EChartsCoreOption = {
-    color: ["#138df4", "#2424a5", "#f3773d", "#147e8a", "#a755ad"],
+    color: chartPalette,
     animation: false,
     aria: { enabled: true },
     tooltip: { trigger: "axis", renderMode: "richText" },
     grid: { left: 20, right: 28, top: 42, bottom: 38, containLabel: true },
-    textStyle: { fontFamily: "Inter, system-ui, sans-serif", color: "#576779" },
+    textStyle: { fontFamily: identity.font, color: identity.chartText },
     legend: { type: "scroll", top: 0 },
   };
   const groups = (kind === "duration" ? r.durationGroups : r.groups).slice(
@@ -100,7 +100,12 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
             name: x.key,
             value: kind === "duration" ? x.minutes : x.frequency,
           })),
-          itemStyle: { color: kind === "duration" ? "#164f84" : "#138df4" },
+          itemStyle: {
+            color:
+              kind === "duration"
+                ? identity.chartDuration
+                : identity.chartFrequency,
+          },
           barMaxWidth: 28,
         },
       ],
@@ -212,42 +217,13 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
         orient: "horizontal",
         left: "center",
         bottom: 0,
-        inRange: { color: ["#e8f4ff", "#0875cc"] },
+        inRange: { color: [identity.heatmapLow, identity.heatmapHigh] },
       },
       series: [{ type: "heatmap", data: points }],
       dataZoom: [{ type: "inside", xAxisIndex: 0 }],
     };
   }
-  let cumulative = 0;
-  const total = value(r.totals, metric);
-  return {
-    ...base,
-    xAxis: {
-      type: "category",
-      data: r.groups.map((x) => x.key),
-      axisLabel: {
-        rotate: 30,
-        width: 100,
-        overflow: "truncate",
-        formatter: groupLabel,
-      },
-    },
-    yAxis: [
-      { type: "value", name: unit },
-      { type: "value", name: "Cumulative % of total", max: 100 },
-    ],
-    series: [
-      { type: "bar", data: r.groups.map((x) => value(x, metric)) },
-      {
-        type: "line",
-        yAxisIndex: 1,
-        data: r.groups.map((x) => {
-          cumulative += value(x, metric);
-          return total ? (100 * cumulative) / total : 0;
-        }),
-      },
-    ],
-  };
+  throw new Error("Unsupported analysis chart");
 }
 export function mountChart(
   element: HTMLElement,
@@ -259,14 +235,9 @@ export function mountChart(
   chart.setOption(options(kind, report));
   chart.on("click", (params) => {
     if (
-      [
-        "frequency",
-        "duration",
-        "scatter",
-        "monthly",
-        "messages",
-        "pareto",
-      ].includes(kind) &&
+      ["frequency", "duration", "scatter", "monthly", "messages"].includes(
+        kind,
+      ) &&
       params.name
     )
       onSelect(params.name);

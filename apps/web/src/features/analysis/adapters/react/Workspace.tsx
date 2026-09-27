@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+import { identityVariables } from "../../../../design/identity";
 import { useEffect, useRef, useState } from "react";
 import {
   AnalysisWorkspace,
@@ -29,12 +31,12 @@ const labels: Record<Dimension, string> = {
   duration: "Dauer (minutes)",
 };
 const templates = [
+  ["Executive Overview", "sector"],
   ["Halle analysis", "sector"],
   ["Bereich analysis", "area"],
   ["Equipment analysis", "equipment"],
   ["Error analysis", "message"],
   ["Daily / monthly", "area"],
-  ["Pareto", "area"],
 ] as const;
 function Notice({ error }: { error: unknown }) {
   return error ? (
@@ -114,7 +116,7 @@ export function WorkspaceApp({
     }
   };
   return (
-    <div className="analysis-app">
+    <div className="analysis-app" style={identityVariables as CSSProperties}>
       <a className="analysis-skip" href="#analysis-main">
         Skip to analysis
       </a>
@@ -306,37 +308,19 @@ function ReportWorkspace({
           ) : (
             report && (
               <>
-                <div className="analysis-kpis">
-                  <section>
-                    <span>Reported frequency</span>
-                    <strong>{number(report.totals.frequency)}</strong>
-                  </section>
-                  <section>
-                    <span>Accumulated duration · minutes</span>
-                    <strong>{number(report.totals.minutes)}</strong>
-                  </section>
-                  <section>
-                    <span>Source rows</span>
-                    <strong>{number(report.totals.records)}</strong>
-                  </section>
-                  <section>
-                    <span>Imported dates in range</span>
-                    <strong>
-                      {
-                        report.dates.filter(
-                          (d) =>
-                            d >= selection.from && d < selection.toExclusive,
-                        ).length
-                      }
-                    </strong>
-                  </section>
-                </div>
+                {template === 0 && (
+                  <ExecutiveKpis
+                    report={report}
+                    onSelect={(dimension, key) => {
+                      setSelection(filterGroup(selection, dimension, key));
+                    }}
+                  />
+                )}
                 <p className="analysis-footnote">
                   All matching historical rows contribute to totals. Rankings
                   show up to 100 of {number(report.groupCount)} groups; charts
-                  show the top 10 unless stated. {report.unclassifiedCount}{" "}
-                  unclassified rows. Duration is accumulated alarm time, not
-                  plant downtime.
+                  show the top 10 unless stated. Duration is accumulated alarm
+                  time, not plant downtime.
                 </p>
                 {report.totals.records === 0 ? (
                   <section className="analysis-empty">
@@ -345,7 +329,7 @@ function ReportWorkspace({
                   </section>
                 ) : (
                   <div className="analysis-charts">
-                    {template === 4 ? (
+                    {template === 5 ? (
                       <>
                         <Plot
                           kind="trend"
@@ -360,25 +344,10 @@ function ReportWorkspace({
                           onSelect={select}
                         />
                       </>
-                    ) : template === 5 ? (
-                      <>
-                        <Plot
-                          kind="pareto"
-                          title="Pareto · cumulative share of the full total"
-                          report={report}
-                          onSelect={select}
-                        />
-                        <Plot
-                          kind="scatter"
-                          title="Duration versus frequency"
-                          report={report}
-                          onSelect={select}
-                        />
-                      </>
                     ) : (
                       <>
                         <Plot
-                          kind={template === 3 ? "messages" : "monthly"}
+                          kind={template === 4 ? "messages" : "monthly"}
                           title="Comparison between months"
                           report={report}
                           onSelect={select}
@@ -401,7 +370,7 @@ function ReportWorkspace({
                           report={report}
                           onSelect={select}
                         />
-                        {(template === 1 || template === 2) && (
+                        {(template === 2 || template === 3) && (
                           <>
                             <Plot
                               kind="trend"
@@ -737,6 +706,66 @@ function DataTables({
     </details>
   );
 }
+function ExecutiveKpis({
+  report,
+  onSelect,
+}: {
+  report: Report;
+  onSelect: (dimension: Dimension, key: string) => void;
+}) {
+  const priorities = [
+    ["sector", "Most recurrent sector"],
+    ["area", "Highest alarm duration area"],
+    ["equipment", "Most recurrent equipment"],
+    ["message", "Most frequent error"],
+  ] as const;
+  return (
+    <div className="analysis-kpis" aria-label="Executive priorities">
+      {priorities.map(([dimension, title]) => {
+        const leader = report.executive.find((x) => x.dimension === dimension);
+        const duration = dimension === "area";
+        const total = duration
+          ? report.totals.seconds
+          : report.totals.frequency;
+        const measure = leader
+          ? duration
+            ? leader.seconds
+            : leader.frequency
+          : 0;
+        return (
+          <section key={dimension}>
+            <span>{title}</span>
+            <strong>
+              {leader && total > 0
+                ? number((100 * measure) / total) + "%"
+                : "—"}
+            </strong>
+            {leader ? (
+              <>
+                <button
+                  className="text-button analysis-kpi-label"
+                  onClick={() => onSelect(dimension, leader.key)}
+                >
+                  {leader.key || "(Empty value)"}
+                </button>
+                <small>
+                  {number(duration ? leader.minutes : leader.frequency)}{" "}
+                  {duration ? "alarm minutes" : "occurrences"} · share of
+                  filtered {duration ? "duration" : "frequency"}
+                </small>
+              </>
+            ) : (
+              <small>
+                No {duration ? "alarm duration" : "occurrences"} in this
+                selection
+              </small>
+            )}
+          </section>
+        );
+      })}
+    </div>
+  );
+}
 function ImportWorkspace({
   application,
   history,
@@ -823,10 +852,24 @@ function ImportWorkspace({
                   ? "Duplicate reporting date"
                   : "Import " + review.outcome}
             </h3>
-            <p>
-              {review.admittedRecordCount ?? "Unknown"} admitted rows ·{" "}
-              {review.rejectedRecordCount ?? "Unknown"} rejected rows
-            </p>
+            <div
+              className="analysis-import-counts"
+              aria-label="File import volume"
+            >
+              {[
+                ["Source rows", review.dataRecordCount],
+                ["Admitted rows", review.admittedRecordCount],
+                ["Rejected rows", review.rejectedRecordCount],
+                ["File size · bytes", review.byteLength],
+              ].map(([label, value]) => (
+                <section key={label}>
+                  <span>{label}</span>
+                  <strong>
+                    {value === null ? "Unknown" : number(Number(value))}
+                  </strong>
+                </section>
+              ))}
+            </div>
             {review.diagnostics.map((d, i) => (
               <p key={i}>
                 Line {d.line}: {d.field} {d.reason ?? d.code}

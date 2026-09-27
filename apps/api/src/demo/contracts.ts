@@ -270,11 +270,19 @@ export class ReportRecordDto {
   @ApiProperty() seconds!: number;
   @ApiProperty() minutes!: number;
 }
+export class ExecutiveLeaderDto extends ReportRowDto {
+  @ApiProperty({ enum: ["sector", "area", "equipment", "message"] })
+  dimension!: "sector" | "area" | "equipment" | "message";
+  @ApiProperty({ enum: ["frequency", "duration"] }) metric!:
+    | "frequency"
+    | "duration";
+}
 export class ReportDto {
   @ApiProperty() revision!: string;
   @ApiProperty() profileVersion!: string;
   @ApiProperty({ type: ReportRequestDto }) selection!: ReportRequestDto;
   @ApiProperty({ type: ReportRowDto }) totals!: ReportRowDto;
+  @ApiProperty({ type: [ExecutiveLeaderDto] }) executive!: ExecutiveLeaderDto[];
   @ApiProperty({ type: [ReportRowDto] }) groups!: ReportRowDto[];
   @ApiProperty({ type: [ReportRowDto] }) durationGroups!: ReportRowDto[];
   @ApiProperty() groupCount!: number;

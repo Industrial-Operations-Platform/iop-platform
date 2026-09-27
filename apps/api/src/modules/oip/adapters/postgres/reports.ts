@@ -9,6 +9,7 @@ import type {
   ReportRequest,
   ReportResult,
   ReportRow,
+  ExecutiveLeader,
 } from "../../domain/report";
 import type { ReportRepository } from "../../application/ports";
 import { PgReportingProfiles } from "./reporting-profiles";
@@ -16,6 +17,8 @@ interface ReportSnapshot {
   publications: { id: string; date: string }[];
   profile_version: string;
   totals: Record<string, unknown>;
+  executive: (Record<string, unknown> &
+    Pick<ExecutiveLeader, "dimension" | "metric">)[];
   options: { field: string; value: string }[];
   option_counts: Record<string, number>;
   groups: Record<string, unknown>[];
@@ -91,6 +94,13 @@ export class PgReportRepository implements ReportRepository {
    selected AS MATERIALIZED (SELECT * FROM ready n WHERE reporting_date >= $6::date AND reporting_date < $7::date ${predicates.map((x) => "AND " + x).join(" ")}
     AND (${search}::text='' OR EXISTS (SELECT 1 FROM jsonb_each_text(n.values) field WHERE position(${search}::text in lower(field.value))>0))),
    groups AS MATERIALIZED (SELECT values->>'${q.dimension}' AS key,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected GROUP BY 1),
+   executive_groups AS (SELECT d.dimension,d.metric,values->>d.dimension AS key,
+     sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records
+     FROM selected CROSS JOIN (VALUES ('sector','frequency'),('area','duration'),('equipment','frequency'),('message','frequency')) d(dimension,metric)
+     GROUP BY d.dimension,d.metric,values->>d.dimension),
+   executive_ranked AS (SELECT *,row_number() OVER(PARTITION BY dimension ORDER BY
+     CASE WHEN metric='duration' THEN seconds::numeric ELSE frequency::numeric END DESC,key COLLATE "C") AS rank
+     FROM executive_groups WHERE CASE WHEN metric='duration' THEN seconds::numeric ELSE frequency::numeric END > 0),
    leaders AS (SELECT * FROM groups ORDER BY ${metric}::numeric DESC,key COLLATE "C" LIMIT 10),
    timeline AS (SELECT date_trunc('${q.period}',reporting_date)::date::text AS period,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected GROUP BY 1),
    series AS (SELECT date_trunc('${q.period}',reporting_date)::date::text AS period,values->>'${q.dimension}' AS key,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected WHERE values->>'${q.dimension}' IN(SELECT key FROM leaders) GROUP BY 1,2),
@@ -99,6 +109,7 @@ export class PgReportRepository implements ReportRepository {
    rankedopts AS (SELECT *,row_number() OVER(PARTITION BY key ORDER BY value COLLATE "C") AS pos FROM opts)
    SELECT (SELECT version FROM p) AS profile_version,(SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb) FROM manifest) AS publications,
     (SELECT jsonb_build_object('frequency',coalesce(sum(reported_frequency),0)::text,'seconds',coalesce(sum(accumulated_alarm_seconds),0)::text,'records',count(*)::text) FROM selected) AS totals,
+    (SELECT coalesce(jsonb_agg(e ORDER BY dimension),'[]'::jsonb) FROM executive_ranked e WHERE rank=1) AS executive,
     (SELECT count(*)::integer FROM selected WHERE unmapped) AS unclassified,
     (SELECT coalesce(jsonb_agg(g),'[]'::jsonb) FROM(SELECT * FROM groups ORDER BY ${metric}::numeric DESC,key COLLATE "C" LIMIT 100)g) AS groups,
     (SELECT coalesce(jsonb_agg(g),'[]'::jsonb) FROM(SELECT * FROM groups ORDER BY seconds::numeric DESC,key COLLATE "C" LIMIT 100)g) AS duration_groups,
@@ -132,6 +143,11 @@ export class PgReportRepository implements ReportRepository {
         profileVersion: r.profile_version,
         selection: q,
         totals,
+        executive: r.executive.map((x) => ({
+          ...asRow(x),
+          dimension: x.dimension,
+          metric: x.metric,
+        })),
         groups: r.groups.map(asRow),
         durationGroups: r.duration_groups.map(asRow),
         groupCount: r.group_count,

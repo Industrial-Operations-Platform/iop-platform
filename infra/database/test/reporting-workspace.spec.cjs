@@ -169,6 +169,60 @@ test("full historical report preserves all source rows and exact duration", asyn
   ]);
   expect(report.groups.reduce((n, x) => n + x.frequency, 0)).toBe(19);
   expect(report.records).toHaveLength(9);
+  expect(report.executive).toEqual([
+    {
+      dimension: "area",
+      metric: "duration",
+      key: "Area B",
+      frequency: 5,
+      seconds: 97384,
+      minutes: 97384 / 60,
+      records: 2,
+    },
+    {
+      dimension: "equipment",
+      metric: "frequency",
+      key: "=EQ-001",
+      frequency: 9,
+      seconds: 300,
+      minutes: 5,
+      records: 3,
+    },
+    {
+      dimension: "message",
+      metric: "frequency",
+      key: "Jam",
+      frequency: 9,
+      seconds: 300,
+      minutes: 5,
+      records: 3,
+    },
+    expect.objectContaining({
+      dimension: "sector",
+      metric: "frequency",
+      frequency: 9,
+      seconds: 300,
+      records: 4,
+    }),
+  ]);
+  const tied = await runtime.reports.query("demo-a", {
+    ...selection,
+    toExclusive: "2026-07-02",
+    filters: { equipment: ["=EQ-001", "=EQ-004"] },
+  });
+  expect(tied.executive.find((x) => x.dimension === "equipment").key).toBe(
+    "=EQ-001",
+  );
+  expect(tied.executive.find((x) => x.dimension === "sector").key).toBe(
+    "Nicht klassifiziert",
+  );
+  const paged = await runtime.reports.query("demo-a", {
+    ...selection,
+    page: 20,
+    metric: "duration",
+  });
+  expect(paged.records).toEqual([]);
+  expect(paged.executive).toEqual(report.executive);
   for (const dimension of [
     "area",
     "equipment",
@@ -183,6 +237,7 @@ test("full historical report preserves all source rows and exact duration", asyn
       dimension,
     });
     expect(r.totals).toEqual(report.totals);
+    expect(r.executive).toEqual(report.executive);
     expect(r.groups.reduce((n, x) => n + x.seconds, 0)).toBe(97775);
   }
 });
@@ -231,12 +286,24 @@ test("literal source filters retain commas and never interpret SQL syntax", asyn
     filters: { area: [key] },
   });
   expect(filtered.groups.map((x) => x.key)).toEqual([key]);
+  expect(filtered.executive.find((x) => x.dimension === "area")).toMatchObject({
+    key,
+    frequency: filtered.totals.frequency,
+    seconds: filtered.totals.seconds,
+  });
+  const zero = await runtime.reports.query("demo-a", {
+    ...selection,
+    filters: { equipment: ["=EQ-003"] },
+  });
+  expect(zero.totals.records).toBe(1);
+  expect(zero.executive).toEqual([]);
   const empty = await runtime.reports.query("demo-a", {
     ...selection,
     filters: { equipment: ["' OR true --"] },
   });
   expect(empty.totals.records).toBe(0);
   expect(empty.groups).toEqual([]);
+  expect(empty.executive).toEqual([]);
 });
 
 test("reader-only grants permit historical reports and deny preparation/import operations", async () => {

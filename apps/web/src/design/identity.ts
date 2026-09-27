@@ -1,0 +1,46 @@
+/** IOP identity v1. Preserve these tokens unless the owner explicitly requests a visual change. */
+export const identity = {
+  ink: "#172b43",
+  muted: "#64758b",
+  line: "#dce5ed",
+  primary: "#087bd5",
+  canvas: "#f3f6f9",
+  surface: "#ffffff",
+  inputBorder: "#cbd7e2",
+  focus: "#edaa30",
+  link: "#076bb5",
+  activeSurface: "#e8f3fc",
+  activeInk: "#096faf",
+  errorSurface: "#fff1f0",
+  errorBorder: "#efb8b3",
+  errorInk: "#9c2424",
+  chartFrequency: "#138df4",
+  chartComparison: "#2424a5",
+  chartAccent: "#f3773d",
+  chartTeal: "#147e8a",
+  chartPurple: "#a755ad",
+  chartDuration: "#164f84",
+  chartText: "#576779",
+  heatmapLow: "#e8f4ff",
+  heatmapHigh: "#0875cc",
+  font: "Inter, system-ui, sans-serif",
+  cardRadius: "8px",
+  metricRadius: "7px",
+  controlRadius: "5px",
+  inputRadius: "4px",
+  metricSize: "29px",
+  metricWeight: "650",
+  metricPadding: "19px",
+  metricGap: "14px",
+} as const;
+
+export const identityVariables = Object.fromEntries(
+  Object.entries(identity).map(([name, value]) => [`--iop-${name}`, value]),
+);
+export const chartPalette = [
+  identity.chartFrequency,
+  identity.chartComparison,
+  identity.chartAccent,
+  identity.chartTeal,
+  identity.chartPurple,
+];

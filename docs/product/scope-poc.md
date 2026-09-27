@@ -37,7 +37,11 @@ The owner refined the POC in IOP-148: persistent daily files, all-history analys
 administrator import/preparation, a header-only user selector, one Data analysis
 navigation entry and lower report templates. Hall/area/equipment/error rankings,
 monthly comparisons, duration/frequency scatter, period heatmaps, daily/weekly/monthly
-trends and descriptive Pareto are now selected. Screenshot targets and improvement
+trends are selected. Executive Overview alone shows prioritization KPIs; import
+volume belongs in file review. Pareto is deferred to a later function inside Executive
+Overview and has no standalone tab. The POC exposes only Administrator, who imports
+and analyzes data. Preserve the [visual identity](../design/visual-identity.md).
+Screenshot targets and improvement
 formulas remain unvalidated and are not implemented as invented measures.
 
 Use all seven source fields, the supplied five-sector classification, conservative

@@ -368,6 +368,17 @@ export interface components {
             minutes: number;
             records: number;
         };
+        ExecutiveLeaderDto: {
+            key: string;
+            frequency: number;
+            seconds: number;
+            minutes: number;
+            records: number;
+            /** @enum {string} */
+            dimension: "sector" | "area" | "equipment" | "message";
+            /** @enum {string} */
+            metric: "frequency" | "duration";
+        };
         ReportPointDto: {
             key: string;
             frequency: number;
@@ -395,6 +406,7 @@ export interface components {
             profileVersion: string;
             selection: components["schemas"]["ReportRequestDto"];
             totals: components["schemas"]["ReportRowDto"];
+            executive: components["schemas"]["ExecutiveLeaderDto"][];
             groups: components["schemas"]["ReportRowDto"][];
             durationGroups: components["schemas"]["ReportRowDto"][];
             groupCount: number;

@@ -16,6 +16,14 @@ The HTTP gateway checks compatibility with the generated `/api/v1` contract thro
 Vite's same-origin proxy. The superseded default component/styles were removed. The old health,
 state and fixture examples remain explicitly opt-in at `?preview=1`.
 
+## Stable visual identity
+
+Follow the [identity contract](../../docs/design/visual-identity.md). The current
+palette, font and card tokens in `src/design/identity.ts` are shared by React CSS
+variables and ECharts. Keep them across iterations; a feature request does not
+implicitly authorize a redesign. Only Executive Overview shows priority KPI cards;
+import counts belong to file review, and Pareto is deferred.
+
 ## Independent health/fixture preview
 
 Use the root-required Node 24.21.0 and npm 10.9.2 (`nvm use` if available).

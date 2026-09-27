@@ -688,26 +688,45 @@ test("real browser imports, analyzes file and history, reviews failures, switche
       await page.getByLabel('CSV file',{exact:true}).setInputFiles(join(__dirname,`../../../fixtures/analytical-poc/valid/Hitliste-${date}.csv`));
       await page.getByRole('button',{name:'Import CSV',exact:true}).click();
       await pw(page.getByRole('heading',{name:'Import complete'})).toBeVisible();
+      await pw(page.locator('.analysis-import-counts strong').nth(1)).toHaveText(date==='20260701'?'6':'3');
+      await pw(page.locator('.analysis-kpis')).toHaveCount(0);
       if(date==='20260701') {
         await page.getByRole('button',{name:'Analyze this file'}).click();
-        await pw(page.locator('.analysis-kpis strong').first()).toHaveText('12');
+        await pw(page.locator('.analysis-kpis strong').first()).toHaveText('41.67%');
         await page.getByRole('button',{name:'Import & prepare',exact:true}).click();
       }
     }
     await page.getByRole('button',{name:'Back to analysis'}).click();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
-    await pw(page.locator('.analysis-kpis strong').nth(1)).toHaveText('1,629.58');
-    for(const title of ['Bereich analysis','Equipment analysis','Error analysis','Daily / monthly','Pareto','Halle analysis']) {
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
+    await pw(page.locator('.analysis-kpis strong').nth(1)).toHaveText('99.6%');
+    for(const title of ['Bereich analysis','Equipment analysis','Error analysis','Daily / monthly','Halle analysis']) {
       await page.getByRole('button',{name:title,exact:true}).click();
       await pw(page.locator('.analysis-plot svg').first()).toBeVisible();
-      await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+      await pw(page.locator('.analysis-kpis')).toHaveCount(0);
     }
+    await pw(page.getByRole('button',{name:'Pareto',exact:true})).toHaveCount(0);
+    await page.getByRole('button',{name:'Executive Overview',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
     await page.locator('.analysis-filters summary').click();
     await page.getByLabel('Sector / Halle filter',{exact:true}).fill('Dispatch');
     await page.getByRole('button',{name:'Apply filters',exact:true}).click();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('5');
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('100%');
     await page.getByRole('button',{name:'Clear filters',exact:true}).click();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
+    expect(await page.locator('.analysis-kpis section').first().evaluate(el => {
+      const style = getComputedStyle(el);
+      return { background: style.backgroundColor, border: style.borderTopColor, radius: style.borderRadius, ink: style.color };
+    })).toEqual({ background: 'rgb(255, 255, 255)', border: 'rgb(220, 229, 237)', radius: '7px', ink: 'rgb(23, 43, 67)' });
+    await page.locator('.analysis-kpi-label').first().click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('100%');
+    await page.getByRole('button',{name:'Clear filters',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
+    await page.locator('.analysis-filters summary').click();
+    await page.getByLabel('Betriebsmittelkennzeichen filter',{exact:true}).fill('=EQ-003');
+    await page.getByRole('button',{name:'Apply filters',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong')).toHaveText(['—','—','—','—']);
+    await page.getByRole('button',{name:'Clear filters',exact:true}).click();
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
     const artifactDir=join(__dirname,'../../../test-results/analytical-workspace');
     mkdirSync(artifactDir,{recursive:true});
     await page.screenshot({path:join(artifactDir,'desktop.png'),fullPage:true});
@@ -724,15 +743,15 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await page.getByRole('button',{name:'Save historical preparation'}).click();
     await pw(page.getByText('Preparation saved.',{exact:false})).toBeVisible();
     await page.getByLabel('Demo user',{exact:true}).selectOption('demo-b');
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
     await page.reload();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
     await page.route('**/api/v1/analytics/report',route=>route.fulfill({status:503,contentType:'application/problem+json',body:JSON.stringify({code:'persistence_unavailable'})}));
     await page.getByRole('button',{name:'Refresh history',exact:true}).click();
     await pw(page.getByRole('alert')).toBeVisible();
     await page.unroute('**/api/v1/analytics/report');
     await page.getByRole('button',{name:'Refresh history',exact:true}).click();
-    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('19');
+    await pw(page.locator('.analysis-kpis strong').first()).toHaveText('47.37%');
     await page.getByLabel('Demo user',{exact:true}).focus();
     await page.keyboard.press('Tab');
     expect(await page.evaluate(()=>document.activeElement.tagName)).not.toBe('BODY');

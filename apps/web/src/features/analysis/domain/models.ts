@@ -140,11 +140,16 @@ export interface ReportRecord {
   seconds: number;
   minutes: number;
 }
+export interface ExecutiveLeader extends ReportRow {
+  dimension: "sector" | "area" | "equipment" | "message";
+  metric: "frequency" | "duration";
+}
 export interface Report {
   revision: string;
   profileVersion: string;
   selection: ReportRequest;
   totals: ReportRow;
+  executive: ExecutiveLeader[];
   groups: ReportRow[];
   durationGroups: ReportRow[];
   groupCount: number;
