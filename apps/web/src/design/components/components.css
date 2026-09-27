@@ -84,6 +84,9 @@
   flex-direction: column;
   gap: 8px;
 }
+.iop-ui .iop-value-filter {
+  overflow-wrap: anywhere;
+}
 .iop-ui .iop-field--inline {
   flex-direction: row;
   align-items: center;
@@ -202,6 +205,7 @@
   vertical-align: top;
 }
 .iop-ui .iop-table th {
+  vertical-align: middle;
   font-weight: 600;
 }
 .iop-ui .iop-table caption {

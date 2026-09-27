@@ -1,3 +1,7 @@
+import {
+  SourceFileFilters,
+  sourceSortColumns as columns,
+} from "./SourceFileFilters";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -17,17 +21,8 @@ import type {
   ImportSummary,
   SourceRowsRequest,
   SourceRowsResult,
-  SourceSortField,
 } from "../../domain/models";
 import { number } from "../echarts/charts";
-const columns: { field: SourceSortField; label: string }[] = [
-  { field: "sector", label: "Sector" },
-  { field: "area", label: "Bereich" },
-  { field: "equipment", label: "Betriebsmittelkennzeichen" },
-  { field: "message", label: "Meldetext" },
-  { field: "type", label: "Typ" },
-  { field: "messageGroup", label: "Meldegruppe" },
-];
 export function SourceFiles({
   application,
   history,
@@ -93,6 +88,21 @@ export function SourceFiles({
           ))}
         </Select>
       </Field>
+      {selection && (
+        <SourceFileFilters
+          key={selection.importId}
+          filters={selection.filters}
+          options={result?.options}
+          onApply={(filters) =>
+            setSelection({
+              importId: selection.importId,
+              page: 1,
+              sort: selection.sort,
+              filters,
+            })
+          }
+        />
+      )}
       <p>
         Click a column title to cycle ascending, descending and off. Numbers
         show sorting priority across the whole file.
@@ -125,7 +135,8 @@ export function SourceFiles({
           <TableViewport>
             <Table>
               <caption>
-                {file?.originalFilename} · {number(result.recordCount)} rows ·
+                {file?.originalFilename} · {number(result.recordCount)} of{" "}
+                {number(result.totalRecordCount ?? result.recordCount)} rows ·
                 page {result.page} of {Math.max(1, result.pageCount)}
               </caption>
               <thead>
@@ -145,6 +156,9 @@ export function SourceFiles({
                           setSelection({
                             importId: selection.importId,
                             page: 1,
+                            ...(selection.filters
+                              ? { filters: selection.filters }
+                              : {}),
                             sort: cycleSourceSort(selection.sort, column.field),
                           })
                         }
@@ -172,7 +186,9 @@ export function SourceFiles({
             </Table>
           </TableViewport>
           {result.recordCount === 0 && (
-            <p>This file contains no admitted rows.</p>
+            <p>
+              No rows match these filters. Clear or adjust the column filters.
+            </p>
           )}
           <Button
             disabled={result.page <= 1}

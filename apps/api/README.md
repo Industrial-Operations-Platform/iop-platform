@@ -131,13 +131,24 @@ up to 200 referenced, prepared Meldetext values plus `nextCursor`. Follow pages 
 null; unused historical catalog entries are excluded. Current `analytics.read` applies.
 
 `POST /api/v1/analytics/source-rows` takes an admitted `importId`, one-based `page`,
-ordered `sort` criteria and optional prior `revision`. It requires `imports.review`
+ordered `sort` criteria, optional `filters` and optional prior `revision`. It requires `imports.review`
 and `analytics.read`, applies exact source scope/RLS, verifies the projection and
 sorts the whole file before returning 50 rows. Criteria support sector, area,
 equipment, message, type and messageGroup with asc/desc; an empty list means source
 line order. Unknown/foreign imports do not disclose their data. Profile changes
 invalidate prior pages. Report row fields remain for API compatibility; the UI only
 browses contributing rows in the administrative file section.
+
+`filters` maps column names to literal exact strings and combines them with AND.
+Allowed keys: sector, area, equipment, message, type, messageGroup, line, frequency
+and minutes. Empty values are removed. Text preserves punctuation/case/leading zeroes;
+line/frequency are nonnegative integer strings, minutes permits up to two decimals
+and matches `round(seconds / 60, 2)`. All values are parameterized, bounded and
+validated before persistence. Filtering precedes sorting/pagination. `recordCount`
+is the matching count, `totalRecordCount` is the full file count, and `options`
+contains up to 200 distinct suggestions per column from the complete scoped file.
+Integrity validation still covers the whole file, even when filters match no rows.
+Administrative file filters include Sundays.
 
 ### Analytical calendar
 

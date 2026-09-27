@@ -1664,6 +1664,13 @@
       "SourceRowsRequestDto": {
         "type": "object",
         "properties": {
+          "filters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Exact per-column values combined with AND; minutes match displayed two-decimal values."
+          },
           "importId": {
             "type": "string"
           },
@@ -1744,6 +1751,18 @@
       "SourceRowsDto": {
         "type": "object",
         "properties": {
+          "totalRecordCount": {
+            "type": "number"
+          },
+          "options": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
           "revision": {
             "type": "string"
           },

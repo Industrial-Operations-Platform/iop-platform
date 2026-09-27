@@ -220,13 +220,18 @@ export interface SourceSort {
   field: SourceSortField;
   direction: "asc" | "desc";
 }
+export type SourceFilterField = SourceSortField | "line" | "frequency" | "minutes";
+export type SourceFilters = Partial<Record<SourceFilterField, string>>;
 export interface SourceRowsRequest {
   importId: string;
   page: number;
   sort: SourceSort[];
+  filters?: SourceFilters;
   revision?: string;
 }
 export interface SourceRowsResult {
+  totalRecordCount?: number;
+  options?: Record<string, string[]>;
   revision: string;
   records: Report["records"];
   recordCount: number;

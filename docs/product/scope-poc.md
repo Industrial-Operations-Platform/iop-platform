@@ -68,6 +68,12 @@ Provide rankings, monthly comparisons, duration/frequency scatter, heatmaps and
 period trends. Allow grouping by source fields and sector. Full matching measures
 are server-owned and independent of bounded chart groups and contributing-row pages.
 Import volume/counts belong to file review, not KPI cards on every template.
+Administrative file review provides collapsible exact per-column filters using the
+same value controls as Taskforce reports. Filters intersect across all file rows
+before sorting/pagination; suggestions are bounded to 200 values per column.
+Include line, all source/classification dimensions, frequency and displayed minutes
+rounded to two decimals. Show matching/total counts, preserve filters while sorting
+or paging, and clear them on file changes. Plain and sortable headings align.
 Pareto is deferred as a future function inside Executive Overview, with no separate tab.
 Screenshot targets and improvement formulas are not invented metrics.
 

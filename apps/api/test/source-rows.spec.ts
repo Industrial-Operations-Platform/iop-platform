@@ -50,3 +50,44 @@ test("file paging refuses stale preparation revisions", async () => {
   ).rejects.toThrow("analytics_revision_changed");
   expect(sourceRows).toHaveBeenCalledTimes(1);
 });
+
+test("column filters preserve exact text and bound numeric display values before persistence", () => {
+  expect(
+    sourceRowsRequest({
+      ...query,
+      filters: {
+        message: "Müll, 'quoted' % _",
+        type: "001",
+        frequency: "0",
+        minutes: "1.25",
+        line: "52",
+        area: "",
+      },
+    }).filters,
+  ).toEqual({
+    message: "Müll, 'quoted' % _",
+    type: "001",
+    frequency: "0",
+    minutes: "1.25",
+    line: "52",
+  });
+  for (const filters of [
+    null,
+    [],
+    "message",
+    { unknown: "x" },
+    { message: ["x"] },
+    { message: null },
+    { message: "x\n" },
+    { message: "x".repeat(4097) },
+    { frequency: "1.5" },
+    { frequency: "-1" },
+    { frequency: "9007199254740992" },
+    { line: "1 OR true" },
+    { minutes: "1.234" },
+    { minutes: "Infinity" },
+  ])
+    expect(() => sourceRowsRequest({ ...query, filters })).toThrow(
+      "invalid_selection",
+    );
+});

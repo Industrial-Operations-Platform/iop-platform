@@ -7,6 +7,7 @@ import {
   FilterForm,
   Input,
   Select,
+  ValueFilter,
 } from "../../../../design/components";
 import { changeSelection, reportViews } from "../../application/workspace";
 import {
@@ -143,32 +144,23 @@ export function ReportFilters({
           <>
             <FieldRow>
               {reportViews[view].filters.map((d) => (
-                <Field key={d}>
-                  {labels[d]}
-                  <Input
-                    aria-label={labels[d] + " filter"}
-                    list={"values-" + d}
-                    value={draft.filters?.[d]?.[0] ?? ""}
-                    onChange={(e) =>
-                      setDraft({
-                        ...draft,
-                        filters: {
-                          ...draft.filters,
-                          [d]: e.target.value ? [e.target.value] : [],
-                        },
-                      })
-                    }
-                  />
-                  <datalist id={"values-" + d}>
-                    {report?.options[d]?.map((v) => (
-                      <option key={v} value={v} />
-                    ))}
-                  </datalist>
-                  <small>
-                    {d === "duration" ? "Exact seconds for this filter. " : ""}
-                    Type an exact value; up to 200 suggestions.
-                  </small>
-                </Field>
+                <ValueFilter
+                  key={d}
+                  label={labels[d]}
+                  value={draft.filters?.[d]?.[0] ?? ""}
+                  options={report?.options[d]}
+                  hint={
+                    d === "duration"
+                      ? "Exact seconds for this filter. Type an exact value; up to 200 suggestions."
+                      : undefined
+                  }
+                  onChange={(value) =>
+                    setDraft({
+                      ...draft,
+                      filters: { ...draft.filters, [d]: value ? [value] : [] },
+                    })
+                  }
+                />
               ))}
             </FieldRow>
           </>

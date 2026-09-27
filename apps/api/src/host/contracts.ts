@@ -365,12 +365,25 @@ export class SourceSortDto {
   @ApiProperty({ enum: ["asc", "desc"] }) direction!: "asc" | "desc";
 }
 export class SourceRowsRequestDto {
+  @ApiPropertyOptional({
+    type: "object",
+    additionalProperties: { type: "string" },
+    description:
+      "Exact per-column values combined with AND; minutes match displayed two-decimal values.",
+  })
+  filters?: Record<string, string>;
   @ApiProperty() importId!: string;
   @ApiProperty() page!: number;
   @ApiProperty({ type: [SourceSortDto] }) sort!: SourceSortDto[];
   @ApiPropertyOptional() revision?: string;
 }
 export class SourceRowsDto {
+  @ApiPropertyOptional() totalRecordCount?: number;
+  @ApiPropertyOptional({
+    type: "object",
+    additionalProperties: { type: "array", items: { type: "string" } },
+  })
+  options?: Record<string, string[]>;
   @ApiProperty() revision!: string;
   @ApiProperty({ type: [ReportRecordDto] }) records!: ReportRecordDto[];
   @ApiProperty() recordCount!: number;

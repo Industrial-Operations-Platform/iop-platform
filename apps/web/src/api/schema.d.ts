@@ -400,6 +400,10 @@ export interface components {
             direction: "asc" | "desc";
         };
         SourceRowsRequestDto: {
+            /** @description Exact per-column values combined with AND; minutes match displayed two-decimal values. */
+            filters?: {
+                [key: string]: string;
+            };
             importId: string;
             page: number;
             sort: components["schemas"]["SourceSortDto"][];
@@ -420,6 +424,10 @@ export interface components {
             minutes: number;
         };
         SourceRowsDto: {
+            totalRecordCount?: number;
+            options?: {
+                [key: string]: string[];
+            };
             revision: string;
             records: components["schemas"]["ReportRecordDto"][];
             recordCount: number;

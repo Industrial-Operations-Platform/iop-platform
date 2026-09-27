@@ -305,7 +305,16 @@ and **Files & source rows** for authorized administrators; **Taskforce view** hi
 those tools again. Changing the user or reloading starts with administrative tools
 hidden. This is a presentation switch with the same server-side permission checks.
 
-In **Files & source rows**, select an imported file. Click a column title once for
+In **Files & source rows**, select an imported file. Expand **Column filters** to
+enter exact values or choose suggestions for any displayed column. Apply combines
+criteria with AND across the complete file, including rows beyond the current page.
+Text matches retain accents, commas and leading zeroes; numeric duration matches
+minutes rounded to two decimals as displayed (use a decimal point). Suggestions
+show up to 200 values per column; manually entered values can match beyond that list.
+The caption shows matching rows out of total file rows. Clear filters restores the
+whole file. Sorting/paging retain filters; switching files clears them.
+
+Click a column title once for
 ascending order, again for descending, then again to remove that criterion. Arrows
 and numbers indicate direction and priority when several columns are selected.
 Sorting applies across the entire file; changing criteria or file returns to page

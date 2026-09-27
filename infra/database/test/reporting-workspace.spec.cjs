@@ -821,6 +821,25 @@ test("administrator file rows sort across pages and catalog choices include ever
     const q={importId:submitted.importId,page:1,sort:[]};
     const natural=await ref.explorer.sourceRows("demo-a",q);
     expect(natural.recordCount).toBe(235);expect(natural.pageCount).toBe(5);
+    expect(natural.totalRecordCount).toBe(235);
+    expect(natural.options.message).toHaveLength(200);
+    expect(natural.options.minutes).toEqual(["0.50"]);
+    const specific = await ref.explorer.sourceRows("demo-a", {...q, filters: {
+      sector: natural.records[0].sector, area: "Area A", equipment: "=EQ-234", message: "Müll, 234",
+      type: "Störung", messageGroup: "007", frequency: "1", minutes: "0.5", line: "236",
+    }});
+    expect(specific).toMatchObject({recordCount: 1, totalRecordCount: 235, pageCount: 1});
+    expect(specific.records[0]).toMatchObject({line: 236, equipment: "=EQ-234"});
+    expect(specific.options).toEqual(natural.options);
+    const areaPage = await ref.explorer.sourceRows("demo-a", {...q, page: 3, filters: {area: "Area A"}});
+    expect(areaPage).toMatchObject({recordCount: 118, totalRecordCount: 235, pageCount: 3});
+    expect(areaPage.records).toHaveLength(18);
+    expect(areaPage.records.every(x => x.area === "Area A")).toBe(true);
+    for (const filters of [{area:"Area A", equipment:"=EQ-233"}, {message:"%' OR 1=1 --"}, {minutes:"0.51"}]) {
+      const empty = await ref.explorer.sourceRows("demo-a", {...q, filters});
+      expect(empty).toMatchObject({recordCount:0,totalRecordCount:235,pageCount:0,records:[]});
+    }
+
     expect(natural.records.map(x=>x.line)).toEqual(Array.from({length:50},(_,i)=>i+2));
     const sort=[{field:"area",direction:"asc"},{field:"equipment",direction:"desc"}];
     const all=[];

@@ -11,6 +11,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
 | `Button` | `primary`, `secondary`, `text`; native disabled and focus behavior |
 | `Field`, `Input`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
+| `ValueFilter` | Editable column value with native suggestions, unique accessible hint IDs and caller-owned matching semantics |
 | `FilterForm`, `Disclosure` | Form surface and native collapsible content; plain/panel/divided variants |
 | `Panel` | Content, chart, empty and metric surface treatments |
 | `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
@@ -19,7 +20,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `Table`, `TableViewport` | Semantic table appearance and bounded scrolling |
 | `Alert` | Error announcement and consistent error surface |
 | `SideNavigation` | Controlled page navigation with current-page semantics |
-| `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort |
+| `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort; table headings vertically center plain labels and buttons together |
 | `ViewNavigation` | Typed controlled view selector with labelled navigation and pressed buttons |
 
 ```tsx
