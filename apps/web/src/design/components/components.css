@@ -250,7 +250,16 @@
   font-size: 25px;
   font-weight: 800;
   letter-spacing: 1px;
-  padding-left: 12px;
+  padding: 0 0 0 12px;
+}
+.iop-ui button.iop-brand {
+  display: block;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 .iop-ui .iop-brand span {
   display: block;

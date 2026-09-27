@@ -17,6 +17,7 @@ export function IdentityRoot({
 export function AppShell({
   header,
   brand,
+  brandAction,
   navigation,
   children,
   mainId,
@@ -25,6 +26,7 @@ export function AppShell({
 }: {
   header: ReactNode;
   brand: ReactNode;
+  brandAction?: { label: string; onClick: () => void };
   navigation: ReactNode;
   children: ReactNode;
   mainId: string;
@@ -38,7 +40,18 @@ export function AppShell({
       </a>
       <header className="iop-top">{header}</header>
       <aside className="iop-sidebar">
-        <div className="iop-brand">{brand}</div>
+        {brandAction ? (
+          <button
+            type="button"
+            className="iop-brand"
+            aria-label={brandAction.label}
+            onClick={brandAction.onClick}
+          >
+            {brand}
+          </button>
+        ) : (
+          <div className="iop-brand">{brand}</div>
+        )}
         {navigation}
       </aside>
       <main id={mainId} className="iop-main">

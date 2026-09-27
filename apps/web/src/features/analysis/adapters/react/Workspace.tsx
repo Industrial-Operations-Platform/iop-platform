@@ -126,6 +126,10 @@ export function WorkspaceApp({
           </Field>
         </>
       }
+      brandAction={{
+        label: "IOP · Go to Start",
+        onClick: () => setPage("start"),
+      }}
       brand={
         <>
           IOP<span>Operational Intelligence</span>

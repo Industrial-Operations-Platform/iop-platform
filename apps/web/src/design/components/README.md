@@ -2,7 +2,9 @@
 
 Use this public barrel for new React presentation adapters. Wrap a page in
 `AppShell`, or wrap an embedded composition once in `IdentityRoot`. Both apply the
-canonical [identity tokens](../identity.ts). Components contain no feature models,
+canonical [identity tokens](../identity.ts). `AppShell` accepts an optional
+`brandAction` with an accessible label and caller-owned click handler; without it,
+the brand remains static. Components contain no feature models,
 HTTP requests, permissions, report calculations or chart-library dependencies.
 
 | Components | Responsibility |
