@@ -23,3 +23,5 @@ Extends [IOP-160](IOP-160-month-comparison.md) and
 [ADR-0010](../../architecture/adr/ADR-0010-frontend-charting-testing.md) and
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md).
 Plan: [execution](../completed/IOP-163-component-pareto-plan.md).
+
+Local refresh and approved publication: [execution](../completed/IOP-163-local-publication-plan.md).
