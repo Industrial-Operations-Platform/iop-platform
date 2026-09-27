@@ -112,3 +112,45 @@ test("report selectors reject array coercion instead of changing the requested m
     "invalid_selection",
   );
 });
+
+test("month selection is canonical, bounded and admits only complete valid months", () => {
+  const request = {
+    from: "2024-02-01",
+    toExclusive: "2024-05-01",
+    dimension: "sector",
+    metric: "frequency",
+    period: "day",
+  };
+  expect(
+    reportRequest({ ...request, months: ["2024-04", "2024-02", "2024-04"] })
+      .months,
+  ).toEqual(["2024-02", "2024-04"]);
+  for (const months of [
+    [],
+    ["2024-13"],
+    ["2024-2"],
+    ["2024-00"],
+    ["2024-01"],
+    ["2024-05"],
+    [null],
+    "2024-02",
+    Array(121).fill("2024-02"),
+  ]) {
+    expect(() => reportRequest({ ...request, months })).toThrow(
+      "invalid_selection",
+    );
+  }
+  expect(() =>
+    reportRequest({ ...request, from: "2024-02-02", months: ["2024-02"] }),
+  ).toThrow("invalid_selection");
+  expect(() =>
+    reportRequest({
+      ...request,
+      toExclusive: "2024-04-30",
+      months: ["2024-04"],
+    }),
+  ).toThrow("invalid_selection");
+  expect(() =>
+    reportRequest({ ...request, executive: true, months: ["2024-02"] }),
+  ).toThrow("invalid_selection");
+});

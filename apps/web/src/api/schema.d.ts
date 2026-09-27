@@ -435,6 +435,8 @@ export interface components {
             pageCount: number;
         };
         ReportRequestDto: {
+            /** @description Complete calendar months (YYYY-MM) included within the reporting range. */
+            months?: string[];
             executive?: boolean;
             from: string;
             toExclusive: string;

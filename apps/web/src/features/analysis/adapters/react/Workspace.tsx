@@ -339,6 +339,7 @@ function ReportWorkspace({
             <ReportFilters
               key={JSON.stringify(selection)}
               selection={selection}
+              months={months}
               view={template}
               report={report}
               onApply={(s) => setSelection(s)}
@@ -459,7 +460,7 @@ function ReportWorkspace({
             items={reportViews.map(({ title }, id) => ({ id, label: title }))}
             onSelect={(i) => {
               setTemplate(i);
-              if (selection) setSelection(selectView(selection, i));
+              if (selection) setSelection(selectView(selection, i, months));
             }}
           />
         </>

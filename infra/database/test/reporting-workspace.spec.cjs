@@ -949,3 +949,37 @@ test("Sunday analysis exclusion preserves original files and excludes measures a
     await ref.close();
   }
 });
+
+test("nonconsecutive months constrain all report measures before aggregation and pagination", async () => {
+  const sourceId = "month-comparison";
+  const ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 3 }), {
+    ...runtimeConfig,
+    local: { ...runtimeConfig.local, source: { ...runtimeConfig.local.source, id: sourceId } },
+    mappings: new SourceMappings({ ...runtimeConfig.mappings.configuration, sourceId }),
+  });
+  const header = "Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe";
+  const bytes = (frequency) => Buffer.from("\ufeff" + header + `\r\n${frequency};0 0:01:00;Area A;=007;Jam;01;001\r\n`, "utf16le");
+  try {
+    for (const [date, frequency] of [["20260501", 5], ["20260601", 900], ["20260701", 7], ["20260705", 999]]) {
+      expect((await ref.submit("demo-a", `Hitliste-${date}.csv`, bytes(frequency))).outcome).toBe("succeeded");
+    }
+    const query = { ...selection, from: "2026-05-01", months: ["2026-05", "2026-07"] };
+    const report = await ref.reports.query("demo-a", query);
+    expect(report.totals).toMatchObject({ frequency: 12, seconds: 120, records: 2 });
+    expect(report.groups.reduce((n, row) => n + row.frequency, 0)).toBe(12);
+    expect(report.durationGroups.reduce((n, row) => n + row.seconds, 0)).toBe(120);
+    expect(report.monthly.map(row => row.period)).toEqual(["2026-05", "2026-07"]);
+    expect(report.timeline.map(row => row.period)).toEqual(["2026-05-01", "2026-07-01"]);
+    expect(report.series.reduce((n, row) => n + row.frequency, 0)).toBe(12);
+    expect(report.records.map(row => row.date)).toEqual(["2026-05-01", "2026-07-01"]);
+    expect(report.executive.find(row => row.dimension === "sector").frequency).toBe(12);
+    expect(report.recordCount).toBe(2);
+    expect((await ref.reports.query("demo-a", { ...query, page: 2, revision: report.revision })).totals).toEqual(report.totals);
+    const filtered = await ref.reports.query("demo-a", { ...query, filters: { message: ["Missing"] } });
+    expect(filtered.totals.records).toBe(0);
+    const all = await ref.reports.query("demo-a", { ...query, months: undefined });
+    expect(all.totals.frequency).toBe(912);
+  } finally {
+    await ref.close();
+  }
+});

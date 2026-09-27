@@ -122,3 +122,17 @@ test("catalog loading follows every cursor instead of truncating messages to rep
   expect(await app.messageOptions()).toEqual(["A", "B", "C"]);
   expect(messages.mock.calls).toEqual([[undefined], ["B"]]);
 });
+
+test("Halle selects complete available months and drill-down preserves gaps", () => {
+  const current = historySelection(["2024-02-29", "2024-04-02"])!;
+  const hall = selectView(current, 1, ["2024-04", "2024-02"]);
+  expect(hall).toMatchObject({
+    from: "2024-02-01",
+    toExclusive: "2024-05-01",
+    months: ["2024-02", "2024-04"],
+  });
+  expect(drillInto(hall, 1, "sector", "A").selection.months).toEqual(
+    hall.months,
+  );
+  expect(selectView(hall, 0)).not.toHaveProperty("months");
+});

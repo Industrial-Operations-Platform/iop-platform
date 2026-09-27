@@ -135,3 +135,61 @@ test("daily charts omit excluded weekdays without filling missing eligible dates
     "2026-06-29",
   );
 });
+
+test("month comparisons expose every selected month with distinct matching line and legend colors", () => {
+  const months = [
+    "2026-01",
+    "2026-02",
+    "2026-03",
+    "2026-04",
+    "2026-05",
+    "2026-07",
+  ];
+  const chart = options("monthly", {
+    ...report,
+    selection: { ...report.selection, months },
+    monthly: [
+      { key: "Area, A", period: "2026-01", frequency: 3, minutes: 12.5 },
+    ],
+  } as Report);
+  expect(chart.legend).toMatchObject({ type: "scroll", data: months });
+  const series = chart.series as {
+    name: string;
+    itemStyle: { color: string };
+    lineStyle: { color: string };
+    data: (number | null)[];
+  }[];
+  expect(series.map((s) => s.name)).toEqual(months);
+  expect(new Set(series.map((s) => s.itemStyle.color)).size).toBe(
+    months.length,
+  );
+  expect(series.every((s) => s.lineStyle.color === s.itemStyle.color)).toBe(
+    true,
+  );
+  expect(series[1].data).toEqual([null]);
+});
+
+test("drill-down trends omit unselected months while retaining weeks crossing selected month boundaries", () => {
+  const selected = {
+    ...report,
+    selection: {
+      ...report.selection,
+      from: "2026-05-01",
+      toExclusive: "2026-08-01",
+      months: ["2026-05", "2026-07"],
+      period: "day",
+    },
+    timeline: [],
+  } as Report;
+  const days = (options("trend", selected).xAxis as { data: string[] }).data;
+  expect(new Set(days.map((day) => day.slice(0, 7)))).toEqual(
+    new Set(["2026-05", "2026-07"]),
+  );
+  const weekly = options("trend", {
+    ...selected,
+    selection: { ...selected.selection, period: "week" },
+  });
+  const weeks = (weekly.xAxis as { data: string[] }).data;
+  expect(weeks).toContain("2026-06-29");
+  expect(weeks).not.toContain("2026-06-08");
+});

@@ -244,6 +244,13 @@ export class ProfileResultDto {
   @ApiProperty({ type: ReportingProfileDto }) profile!: ReportingProfileDto;
 }
 export class ReportRequestDto {
+  @ApiProperty({
+    required: false,
+    type: [String],
+    description:
+      "Complete calendar months (YYYY-MM) included within the reporting range.",
+  })
+  months?: string[];
   @ApiProperty({ required: false }) executive?: boolean;
   @ApiProperty() from!: string;
   @ApiProperty() toExclusive!: string;

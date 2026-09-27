@@ -112,3 +112,24 @@
 .analysis-start {
   min-height: 60vh;
 }
+
+.analysis-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+.analysis-filter-panel {
+  min-width: 0;
+}
+.analysis-filter-panel summary {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 620px) {
+  .analysis-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .analysis-clear-filters {
+    justify-self: start;
+  }
+}

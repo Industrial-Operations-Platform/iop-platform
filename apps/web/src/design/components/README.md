@@ -16,6 +16,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `ValueFilter` | Editable column value with native suggestions, unique accessible hint IDs and caller-owned matching semantics |
 | `FilterForm`, `Disclosure` | Form surface and native collapsible content; plain/panel/divided variants |
 | `Panel` | Content, chart, empty and metric surface treatments |
+| `MonthMultiPicker` | Checkbox selection of nonconsecutive calendar months |
 | `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
 | `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
 | `MetricGrid`, `MetricCard` | Responsive shared metric appearance; callers supply label/value/content |
