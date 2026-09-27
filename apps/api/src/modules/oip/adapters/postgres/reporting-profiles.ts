@@ -43,6 +43,21 @@ export class PgReportingProfiles implements ReportingProfileRepository {
       fn,
     );
   }
+  review<T>(
+    actor: string,
+    fn: (tx: SiteTransaction) => Promise<T>,
+  ): Promise<T> {
+    return runSiteOperation(
+      this.pool,
+      {
+        userId: actor,
+        organizationId: this.source.organizationId,
+        siteId: this.source.siteId,
+        permissions: ["imports.review", "analytics.read"],
+      },
+      fn,
+    );
+  }
   async project(tx: SiteTransaction, importId?: string): Promise<void> {
     await lockHitliste(tx, this.source);
     const result = await tx.query(

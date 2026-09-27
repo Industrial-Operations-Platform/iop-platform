@@ -1,3 +1,5 @@
+import { DataExplorer } from "../modules/oip/application/data-explorer";
+import { PgDataExplorer } from "../modules/oip/adapters/postgres/data-explorer";
 import { hitlisteReportingProfile } from "./adapters/hitliste-reporting-profile";
 import { createImportWorkflow } from "./adapters/import-gateway";
 import { evaluateSiteAccess } from "../modules/users-rbac";
@@ -174,6 +176,7 @@ export class PlatformRuntime {
   readonly queries: OipQueries;
   readonly profiles: ReportingProfiles;
   readonly reports: OipReports;
+  readonly explorer: DataExplorer;
   readonly principals: LocalPrincipals;
   readonly imports: ReturnType<typeof createImportWorkflow>;
   private receiving = false;
@@ -211,6 +214,7 @@ export class PlatformRuntime {
     this.queries = new OipQueries(pool, this.source);
     this.principals = new LocalPrincipals(config.users);
     this.profiles = new ReportingProfiles(profileRepository);
+    this.explorer = new DataExplorer(new PgDataExplorer(profileRepository));
     this.reports = new OipReports(new PgReportRepository(profileRepository));
   }
   async start(): Promise<void> {

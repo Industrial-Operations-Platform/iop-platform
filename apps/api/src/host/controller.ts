@@ -335,6 +335,30 @@ export class PlatformController {
     const r = this.active(req);
     return operation(() => r.profiles.save(r.principals.resolve(req), body));
   }
+  @Post("analytics/messages")
+  @ApiBody({ type: C.MessageCatalogRequestDto })
+  @ApiCreatedResponse({ type: C.MessageCatalogDto })
+  async messages(
+    @Req() req: IncomingMessage,
+    @Body() body: C.MessageCatalogRequestDto,
+  ) {
+    const r = this.active(req);
+    return operation(() =>
+      r.explorer.messages(r.principals.resolve(req), body),
+    );
+  }
+  @Post("analytics/source-rows")
+  @ApiBody({ type: C.SourceRowsRequestDto })
+  @ApiCreatedResponse({ type: C.SourceRowsDto })
+  async sourceRows(
+    @Req() req: IncomingMessage,
+    @Body() body: C.SourceRowsRequestDto,
+  ) {
+    const r = this.active(req);
+    return operation(() =>
+      r.explorer.sourceRows(r.principals.resolve(req), body),
+    );
+  }
   @Post("analytics/report")
   @ApiBody({ type: C.ReportRequestDto })
   @ApiCreatedResponse({ type: C.ReportDto })

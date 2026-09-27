@@ -17,3 +17,14 @@ export interface ReportingProfileRepository {
 export interface ReportRepository {
   query(actor: string, selection: ReportRequest): Promise<ReportResult>;
 }
+
+export interface DataExplorerRepository {
+  sourceRows(
+    actor: string,
+    selection: import("../domain/source-rows").SourceRowsRequest,
+  ): Promise<import("../domain/source-rows").SourceRowsResult>;
+  messages(
+    actor: string,
+    after: string | null,
+  ): Promise<import("../domain/source-rows").MessageCatalog>;
+}

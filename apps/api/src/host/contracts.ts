@@ -342,3 +342,31 @@ export class ReportDto {
   @ApiProperty() pageCount!: number;
   @ApiProperty() unclassifiedCount!: number;
 }
+
+export class MessageCatalogRequestDto {
+  @ApiPropertyOptional() after?: string;
+}
+export class MessageCatalogDto {
+  @ApiProperty({ type: [String] }) values!: string[];
+  @ApiProperty({ type: String, nullable: true }) nextCursor!: string | null;
+}
+export class SourceSortDto {
+  @ApiProperty({
+    enum: ["sector", "area", "equipment", "message", "type", "messageGroup"],
+  })
+  field!: "sector" | "area" | "equipment" | "message" | "type" | "messageGroup";
+  @ApiProperty({ enum: ["asc", "desc"] }) direction!: "asc" | "desc";
+}
+export class SourceRowsRequestDto {
+  @ApiProperty() importId!: string;
+  @ApiProperty() page!: number;
+  @ApiProperty({ type: [SourceSortDto] }) sort!: SourceSortDto[];
+  @ApiPropertyOptional() revision?: string;
+}
+export class SourceRowsDto {
+  @ApiProperty() revision!: string;
+  @ApiProperty({ type: [ReportRecordDto] }) records!: ReportRecordDto[];
+  @ApiProperty() recordCount!: number;
+  @ApiProperty() page!: number;
+  @ApiProperty() pageCount!: number;
+}

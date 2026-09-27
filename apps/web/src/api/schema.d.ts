@@ -168,6 +168,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/analytics/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PlatformController_messages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/source-rows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PlatformController_sourceRows"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/analytics/report": {
         parameters: {
             query?: never;
@@ -354,6 +386,46 @@ export interface components {
             version: string;
             profile: components["schemas"]["ReportingProfileDto"];
         };
+        MessageCatalogRequestDto: {
+            after?: string;
+        };
+        MessageCatalogDto: {
+            values: string[];
+            nextCursor: string | null;
+        };
+        SourceSortDto: {
+            /** @enum {string} */
+            field: "sector" | "area" | "equipment" | "message" | "type" | "messageGroup";
+            /** @enum {string} */
+            direction: "asc" | "desc";
+        };
+        SourceRowsRequestDto: {
+            importId: string;
+            page: number;
+            sort: components["schemas"]["SourceSortDto"][];
+            revision?: string;
+        };
+        ReportRecordDto: {
+            area: string;
+            equipment: string;
+            message: string;
+            type: string;
+            messageGroup: string;
+            sector: string;
+            date: string;
+            importId: string;
+            line: number;
+            frequency: number;
+            seconds: number;
+            minutes: number;
+        };
+        SourceRowsDto: {
+            revision: string;
+            records: components["schemas"]["ReportRecordDto"][];
+            recordCount: number;
+            page: number;
+            pageCount: number;
+        };
         ReportRequestDto: {
             executive?: boolean;
             from: string;
@@ -420,20 +492,6 @@ export interface components {
             minutes: number;
             records: number;
             period: string;
-        };
-        ReportRecordDto: {
-            area: string;
-            equipment: string;
-            message: string;
-            type: string;
-            messageGroup: string;
-            sector: string;
-            date: string;
-            importId: string;
-            line: number;
-            frequency: number;
-            seconds: number;
-            minutes: number;
         };
         ReportDto: {
             monthlyExecutive?: components["schemas"]["MonthlyExecutiveDto"];
@@ -1320,6 +1378,146 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileResultDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PlatformController_messages: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageCatalogRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageCatalogDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PlatformController_sourceRows: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SourceRowsRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceRowsDto"];
                 };
             };
             /** @description Invalid bounded input or unavailable reference. */

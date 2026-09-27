@@ -123,3 +123,18 @@ For every 5xx, stderr receives only a JSON record with `event: api.request.faile
 error-occurrence correlation, not request-wide/distributed tracing or an audit log;
 4xx responses are not logged. Health success stays unchanged. Network/proxy errors
 may not follow this format, and HEAD responses have no body.
+
+## File exploration and message choices
+
+`POST /api/v1/analytics/messages` accepts an optional exact `after` cursor and returns
+up to 200 referenced, prepared Meldetext values plus `nextCursor`. Follow pages until
+null; unused historical catalog entries are excluded. Current `analytics.read` applies.
+
+`POST /api/v1/analytics/source-rows` takes an admitted `importId`, one-based `page`,
+ordered `sort` criteria and optional prior `revision`. It requires `imports.review`
+and `analytics.read`, applies exact source scope/RLS, verifies the projection and
+sorts the whole file before returning 50 rows. Criteria support sector, area,
+equipment, message, type and messageGroup with asc/desc; an empty list means source
+line order. Unknown/foreign imports do not disclose their data. Profile changes
+invalidate prior pages. Report row fields remain for API compatibility; the UI only
+browses contributing rows in the administrative file section.

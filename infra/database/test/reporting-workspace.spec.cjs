@@ -806,3 +806,45 @@ test("monthly Meldetext KPIs persist in configured order, use scoped history and
   expect(legacy.profile.executiveKpis).toHaveLength(4);
   expect((await runtime.reports.query("demo-a", query)).monthlyExecutive.kpis.map(x => x.message)).toEqual(legacy.profile.executiveKpis.map(x => x.message));
 });
+
+test("administrator file rows sort across pages and catalog choices include every current scoped message", async () => {
+  const sourceId="explorer-pagination";
+  const ref=new PlatformRuntime(new Pool({...configs.runtime,max:3}),{
+    ...runtimeConfig,local:{...runtimeConfig.local,source:{...runtimeConfig.local.source,id:sourceId}},
+    mappings:new SourceMappings({...runtimeConfig.mappings.configuration,sourceId}),
+  });
+  try {
+    const header=fixture("valid/Hitliste-20260701.csv").toString("utf16le").replace(/^\ufeff/,"").split(/\r?\n/)[0];
+    const lines=Array.from({length:235},(_,i)=>`"1";"0 0:00:30";"Area ${i%2?'B':'A'}";"=EQ-${String(i).padStart(3,'0')}";"Müll, ${String(i).padStart(3,'0')}";"Störung";"007"`);
+    const submitted=await ref.submit("demo-a","Hitliste-20260901.csv",Buffer.from("\ufeff"+header+"\r\n"+lines.join("\r\n")+"\r\n","utf16le"));
+    expect(submitted.outcome).toBe("succeeded");
+    const q={importId:submitted.importId,page:1,sort:[]};
+    const natural=await ref.explorer.sourceRows("demo-a",q);
+    expect(natural.recordCount).toBe(235);expect(natural.pageCount).toBe(5);
+    expect(natural.records.map(x=>x.line)).toEqual(Array.from({length:50},(_,i)=>i+2));
+    const sort=[{field:"area",direction:"asc"},{field:"equipment",direction:"desc"}];
+    const all=[];
+    for(let page=1;page<=5;page++)all.push(...(await ref.explorer.sourceRows("demo-a",{...q,page,sort,revision:natural.revision})).records);
+    const expected=Array.from({length:235},(_,i)=>({area:`Area ${i%2?'B':'A'}`,equipment:`=EQ-${String(i).padStart(3,'0')}`,line:i+2})).sort((a,b)=>a.area.localeCompare(b.area)||b.equipment.localeCompare(a.equipment));
+    expect(all.map(x=>({area:x.area,equipment:x.equipment,line:x.line}))).toEqual(expected);
+    for(const field of ["sector","area","equipment","message","type","messageGroup"]){
+      const ascending=await ref.explorer.sourceRows("demo-a",{...q,sort:[{field,direction:"asc"}]});
+      const descending=await ref.explorer.sourceRows("demo-a",{...q,sort:[{field,direction:"desc"}]});
+      const ordered=(rows,sign)=>rows.every((x,i)=>i===0||sign*Buffer.compare(Buffer.from(rows[i-1][field]),Buffer.from(x[field]))<=0);
+      expect(ordered(ascending.records,1)).toBe(true);expect(ordered(descending.records,-1)).toBe(true);
+    }
+    const first=await ref.explorer.messages("demo-a",{});
+    expect(first.values).toHaveLength(200);expect(first.nextCursor).toBe(first.values.at(-1));
+    const second=await ref.explorer.messages("demo-a",{after:first.nextCursor});
+    expect(second.values).toHaveLength(35);expect(second.nextCursor).toBeNull();
+    expect(new Set([...first.values,...second.values]).size).toBe(235);
+    expect((await runtime.explorer.messages("demo-a",{})).values.some(x=>x.startsWith("Müll, "))).toBe(false);
+    await expect(runtime.explorer.sourceRows("demo-a",q)).rejects.toMatchObject({code:"unavailable_reference"});
+    await expect(ref.explorer.sourceRows("demo-b",q)).rejects.toThrow();
+    const current=await ref.profiles.get("demo-a");await ref.profiles.save("demo-a",current);
+    await expect(ref.explorer.sourceRows("demo-a",{...q,page:2,revision:natural.revision})).rejects.toMatchObject({code:"analytics_revision_changed"});
+    await selectUser("demo-b");
+    await api("post","/analytics/source-rows").send(q).expect(403);
+    await api("post","/analytics/messages").send({}).expect(201);
+  } finally {await ref.close();}
+});
