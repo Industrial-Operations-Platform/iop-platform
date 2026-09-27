@@ -10,88 +10,88 @@ M15 — UX & Operational Experience. Proposed delivery slice.
 
 ## Goal
 
-Role-aware home. Resultado esperado: Home diferente según rol
+Role-aware home. Expected outcome: Home tailored to the user role
 
 ## User / business value
 
-Técnicos, responsables y administradores necesitan flujos coherentes y accesibles.
+Technicians, team leaders and administrators need consistent, accessible workflows.
 
 ## Context
 
-Ámbito: Cross-module user experience. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Cross-module user experience. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
 
 ## Desired state
 
-Home diferente según rol
+Home tailored to the user role
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-117.
-- Componer módulos existentes según rol; navegación visible no concede permisos de servidor.
+- Deliver only the outcome described for IOP-117.
+- Compose existing modules according to role; visible navigation does not grant server permissions.
 
 ## Acceptance criteria
 
-- [ ] Home diferente según rol
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Home tailored to the user role
+- [ ] The plan documents scenarios and necessary decisions without expanding scope.
+- [ ] Validation evidence and synchronized documentation are available.
 
 ## Domain considerations
 
-Componer módulos existentes según rol; navegación visible no concede permisos de servidor.
+Compose existing modules according to role; visible navigation does not grant server permissions.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt a decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permission and customer/site scope in relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes when applicable.
 
 ## Data considerations
 
-Las vistas consumen contratos autorizados y no crean copias divergentes de entidades.
+Views consume authorized contracts and do not create divergent copies of entities.
 
 ## API considerations
 
-Reutilizar contratos de búsqueda/lectura; definir paginación y límites solo para el alcance seleccionado.
+Reuse search/read contracts; define pagination and limits only for the selected scope.
 
 ## UI considerations
 
-Evaluar teclado, etiquetas, contraste y estados vacíos/error/carga en laptop y tablet; acordar objetivos verificables.
+Evaluate keyboard access, labels, contrast and empty/error/loading states on laptop and tablet; agree on verifiable targets.
 
 ## Dependencies
 
 [IOP-116](IOP-116-navigation.md), [IOP-029](IOP-029-rbac-enforcement.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies identify required contracts/capabilities, not numerical implementation
+order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the whole milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must specify executable commands and scenarios for the criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.

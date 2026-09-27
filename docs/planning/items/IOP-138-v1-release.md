@@ -10,21 +10,21 @@ M17 — v1 Validation & Release. Proposed delivery slice.
 
 ## Goal
 
-v1 release. Resultado esperado: Tag/release notes/version
+v1 release. Expected outcome: Tag/release notes/version
 
 ## User / business value
 
-Usuarios y administradores necesitan una versión demostrable, operable y documentada.
+Users and administrators need a demonstrable, operable and documented release.
 
 ## Context
 
-Ámbito: Validation and release readiness. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Validation and release readiness. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+owner-requested outline; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
 
 ## Desired state
 
@@ -32,67 +32,67 @@ Tag/release notes/version
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-138.
-- Verificar el alcance de v1 acordado, no exigir todas las ideas futuras del backlog.
-- Crear tag/release únicamente cuando la ejecución de esta tarea esté autorizada y sus gates aprobados. Registrar versión, notas, limitaciones y evidencias; el backlog no autoriza publicar ahora.
+- Deliver only the outcome described for IOP-138.
+- Verify the agreed v1 scope without requiring every future backlog idea.
+- Create a tag/release only when execution of this task is authorized and its gates are approved. Record the version, notes, limitations and evidence; the backlog does not authorize publication now.
 
 ## Acceptance criteria
 
 - [ ] Tag/release notes/version
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] The plan documents scenarios and necessary decisions without expanding scope.
+- [ ] Validation evidence and synchronized documentation are available.
 
 ## Domain considerations
 
-Verificar el alcance de v1 acordado, no exigir todas las ideas futuras del backlog.
+Verify the agreed v1 scope without requiring every future backlog idea.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to adopt a decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permission and customer/site scope in relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes when applicable.
 
 ## Data considerations
 
-Reconciliar evidencia y probar recuperación con datos autorizados o sintéticos.
+Reconcile evidence and test recovery with authorized or synthetic data.
 
 ## API considerations
 
-Validar contratos publicados y compatibilidad documentada; no introducir features durante cierre de release.
+Validate published contracts and documented compatibility; do not introduce features during release closure.
 
 ## UI considerations
 
-Validar el workflow acordado y documentación por persona; registrar limitaciones conocidas.
+Validate the agreed workflow and documentation by persona; record known limitations.
 
 ## Dependencies
 
 [IOP-130](IOP-130-pilot-metrics.md), [IOP-131](IOP-131-permission-validation.md), [IOP-132](IOP-132-final-reconciliation.md), [IOP-133](IOP-133-performance-acceptance.md), [IOP-134](IOP-134-deployment-guide.md), [IOP-135](IOP-135-admin-guide.md), [IOP-136](IOP-136-user-guide.md), [IOP-137](IOP-137-architecture-review.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies identify required contracts/capabilities, not numerical implementation
+order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the whole milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must specify executable commands and scenarios for the criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.
