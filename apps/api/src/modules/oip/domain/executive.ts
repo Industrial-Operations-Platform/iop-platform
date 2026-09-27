@@ -20,6 +20,7 @@ export interface MonthlyExecutive {
   month: string;
   importedDays: number;
   calendarDays: number;
+  analysisDays?: number;
   historicalDays: number;
   kpis: ExecutiveKpi[];
 }

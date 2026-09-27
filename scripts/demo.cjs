@@ -342,8 +342,11 @@ async function main() {
             profile: preset,
           });
       }
-      const a = await runtime.queries.availability(users[0].id);
-      const result = await runtime.queries.query(users[0].id, {
+      // Reconcile retained evidence, including dates excluded from user reports.
+      const { OipQueries } = require("../apps/api/dist/modules/oip/queries");
+      const verificationQueries = new OipQueries(runtime.pool, runtime.source);
+      const a = await verificationQueries.availability(users[0].id);
+      const result = await verificationQueries.query(users[0].id, {
         revision: a.revision,
         from: "2026-07-01",
         toExclusive: reference ? "2026-07-08" : "2026-07-04",

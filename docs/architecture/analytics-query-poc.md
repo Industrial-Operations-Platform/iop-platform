@@ -59,8 +59,12 @@ to scope, revision and dimension kind. The same ADR-0028 validation rules apply.
 ## Coverage and finite limits
 
 Determine admitted dates before dimension filtering, using the publication manifest
-including successful zero-fact imports. Return missing labels within the requested
-range separately. Distinguish no imports, admitted dates with no matching records,
+including successful zero-fact imports, then apply the configured analysis calendar.
+The Hitliste composition excludes Sundays by source reporting date in both legacy
+queries and the relational report API. Excluded dates contribute neither measures
+nor coverage and are not missing-date gaps. Revisions include the calendar policy.
+Administrative source-file reads retain all dates. Return missing eligible labels
+within the requested range separately. Distinguish no imports, admitted dates with no matching records,
 and matching records with zero-valued measures. Always expose unknown reporting
 windows; a site zone or imported label proves neither exporter zone nor a full day.
 

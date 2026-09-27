@@ -276,3 +276,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-152 — Complete and verify the local analytical POC](items/IOP-152-poc-readiness.md) | Completed |
 | [IOP-153 — Monthly Executive Overview and comparative KPIs](items/IOP-153-monthly-executive.md) | Completed |
 | [IOP-154 — Taskforce view and file administration](items/IOP-154-taskforce-administration.md) | Completed |
+| [IOP-155 — Exclude Sundays from analysis](items/IOP-155-analysis-calendar.md) | Completed |

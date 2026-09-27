@@ -1,6 +1,6 @@
 # POC delivery status
 
-The current local platform is implemented and technically verified through IOP-154. Start with
+The current local platform is implemented and technically verified through IOP-155. Start with
 `npm run local:up`; the [operator guide](../development/running-poc.md) owns execution
 instructions and seed reconciliation. The [POC scope](../product/scope-poc.md) owns
 product requirements. This page records delivery and outstanding acceptance.
@@ -18,6 +18,7 @@ product requirements. This page records delivery and outstanding acceptance.
 | Invalid-date recovery, selected-measure chart correctness and preparation save integrity and responsive active navigation; final Docker/history verification | [IOP-152](completed/IOP-152-poc-readiness-plan.md) |
 | Monthly area ranking, daily matrix/trend and persistent administrator-selected Meldetext KPIs with goal/history comparisons | [IOP-153](completed/IOP-153-monthly-executive-plan.md) |
 | Empty Start page, default Taskforce view, administrator tools, dropdown selectors and sortable per-file source rows | [IOP-154](completed/IOP-154-taskforce-administration-plan.md) |
+| Sunday exclusion across reports and KPI averages, eligible chart calendars, preserved Sunday source files and complete seed verification | [IOP-155](completed/IOP-155-analysis-calendar-plan.md) |
 
 Full-history totals come from persisted data, independently of the displayed page.
 Original CSV fields and durations remain traceable. Source-reported frequency is

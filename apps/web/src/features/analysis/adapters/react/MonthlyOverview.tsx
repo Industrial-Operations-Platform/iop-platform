@@ -45,13 +45,14 @@ export function MonthlyOverview({
   return (
     <>
       <p className="analysis-footnote">
-        {executive.month} · {executive.importedDays} of {executive.calendarDays}{" "}
-        days imported. Monthly totals include all matching rows. Missing dates
-        remain gaps. Lower KPI averages are better.
+        {executive.month} · {executive.importedDays} of{" "}
+        {executive.analysisDays ?? executive.calendarDays} eligible days
+        imported. Monthly totals include all eligible matching rows. Missing
+        dates remain gaps. Lower KPI averages are better.
       </p>
       {executive.importedDays === 0 && (
         <Panel variant="empty">
-          <h2>No imported dates in this month</h2>
+          <h2>No eligible imported dates in this month</h2>
           <p>Choose another month or import a daily CSV.</p>
         </Panel>
       )}
@@ -122,11 +123,11 @@ export function MonthlyOverview({
             })}
           </MetricGrid>
           <p className="analysis-footnote">
-            Daily averages divide by imported dates, including imported days
-            with no matching errors. Historical reference includes all{" "}
-            {executive.historicalDays} imported dates, including this month.
-            Explicit goals override the historical reference. Equal values are
-            neutral; percentages are undefined against zero.
+            Daily averages divide by eligible imported dates, including eligible
+            days with no matching errors. Historical reference includes all{" "}
+            {executive.historicalDays} eligible imported dates, including this
+            month. Explicit goals override the historical reference. Equal
+            values are neutral; percentages are undefined against zero.
           </p>
         </div>
       </div>

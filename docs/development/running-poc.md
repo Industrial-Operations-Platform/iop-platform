@@ -283,12 +283,19 @@ Switch to **Administration**, then expand **KPI settings & goals** to add/remove
 prepared error text from the database dropdown, label and measure, and save. Goals are occurrences/day
 or alarm minutes/day; changing measure clears the old goal. Leaving a goal blank
 uses the daily average across all imported history, including the selected month.
-The monthly average also divides by imported dates, including dates without that
+The monthly average also divides by eligible imported dates, including dates without that
 error. Cards retain month totals and explicitly label their reference. Missing
 dates stay gaps; an entirely unimported month has no average. Below reference is
 green, above is red, equal is neutral. A zero reference has no percentage change.
 Settings survive reloads and Docker restarts. A conflicting edit requires reloading
 saved settings before applying changes again.
+
+All analyses exclude Sundays by CSV reporting date, including both KPI totals and
+daily-average denominators. Daily graphs and heatmaps omit Sundays, and monthly
+coverage shows eligible days (for example, July 2026 has 27). Missing eligible
+dates remain gaps. Sunday imports remain available under **Files & source rows**;
+the analysis calendar does not erase or reject them. The month dropdown contains
+months with at least one eligible imported date.
 
 ## Taskforce and administration
 

@@ -599,19 +599,19 @@ test("owner reference files reconcile exact totals and all five sectors after ru
     ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 2 }), config);
     const r = await ref.reports.query("demo-a", selection);
     expect(r.totals).toMatchObject({
-      records: 1446,
-      frequency: 8496,
-      seconds: 1629521,
-      minutes: 1629521 / 60,
+      records: 1420,
+      frequency: 8272,
+      seconds: 1422439,
+      minutes: 1422439 / 60,
     });
     expect(
       Object.fromEntries(r.groups.map((x) => [x.key, x.frequency])),
     ).toEqual({
       "Halle A T3": 663,
       "Halle B Sky": 3009,
-      "Halle B Sh": 1624,
-      "Halle A T2": 1616,
-      "Halle A T1": 1583,
+      "Halle B Sh": 1607,
+      "Halle A T2": 1441,
+      "Halle A T1": 1551,
       "Nicht klassifiziert": 1,
     });
     expect(r.unclassifiedCount).toBe(1);
@@ -847,4 +847,68 @@ test("administrator file rows sort across pages and catalog choices include ever
     await api("post","/analytics/source-rows").send(q).expect(403);
     await api("post","/analytics/messages").send({}).expect(201);
   } finally {await ref.close();}
+});
+
+test("Sunday analysis exclusion preserves original files and excludes measures and denominators across analytical reads", async () => {
+  const sourceId = "analysis-calendar";
+  const ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 3 }), {
+    ...runtimeConfig,
+    local: { ...runtimeConfig.local, source: { ...runtimeConfig.local.source, id: sourceId } },
+    mappings: new SourceMappings({ ...runtimeConfig.mappings.configuration, sourceId }),
+  });
+  const header = "Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe";
+  const bytes = (frequency, message) => Buffer.from("\ufeff" + header + `\r\n${frequency};0 0:01:00;Area A;=007;${message};01;001\r\n`, "utf16le");
+  let sundayId;
+  try {
+    for (const [date, frequency, message] of [["20260704", 6, "Jam"], ["20260705", 999, "Sunday only"], ["20260706", 0, "Jam"], ["20260801", 9, "Jam"], ["20260802", 999, "Jam"], ["20260906", 999, "Sunday only"]]) {
+      const result = await ref.submit("demo-a", `Hitliste-${date}.csv`, bytes(frequency, message));
+      expect(result.outcome).toBe("succeeded");
+      if (date === "20260705") sundayId = result.importId;
+    }
+    const current = await ref.profiles.get("demo-a");
+    await ref.profiles.save("demo-a", { ...current, profile: { ...current.profile, executiveKpis: [
+      { id: "jam", label: "Jam", message: "Jam", metric: "frequency", goal: null },
+      { id: "duration", label: "Jam minutes", message: "Jam", metric: "duration", goal: 0.5 },
+    ] } });
+    const july = await ref.reports.query("demo-a", { ...selection, executive: true, dimension: "area" });
+    expect(july.excludedWeekdays).toEqual([7]);
+    expect(july.totals).toMatchObject({ records: 2, frequency: 6, seconds: 120, minutes: 2 });
+    expect(july.dates).toEqual(["2026-07-04", "2026-07-06", "2026-08-01"]);
+    expect(july.timeline.map(x => [x.period, x.frequency])).toEqual([["2026-07-04", 6], ["2026-07-06", 0]]);
+    expect(july.options.message).toEqual(["Jam"]);
+    expect(july.monthlyExecutive).toMatchObject({ importedDays: 2, calendarDays: 31, analysisDays: 27, historicalDays: 3 });
+    expect(july.monthlyExecutive.kpis[0]).toMatchObject({ total: 6, average: 3, historicalAverage: 5, reference: 5, status: "better", changePercent: -40 });
+    expect(july.monthlyExecutive.kpis[1]).toMatchObject({ total: 2, average: 1, historicalAverage: 1, reference: 0.5, status: "worse" });
+    for (const period of ["day", "week", "month"]) {
+      const report = await ref.reports.query("demo-a", { ...selection, period });
+      expect(report.totals).toEqual(july.totals);
+      expect(report.series.reduce((n, x) => n + x.frequency, 0)).toBe(6);
+      expect(report.monthly.reduce((n, x) => n + x.frequency, 0)).toBe(6);
+    }
+    const september = await ref.reports.query("demo-a", { ...selection, executive: true, dimension: "area", from: "2026-09-01", toExclusive: "2026-10-01" });
+    expect(september.totals.records).toBe(0);
+    expect(september.monthlyExecutive).toMatchObject({ importedDays: 0, analysisDays: 26 });
+    expect(september.monthlyExecutive.kpis[0]).toMatchObject({ total: 0, average: null, historicalAverage: 5, status: "unavailable" });
+    const availability = await ref.queries.availability("demo-a");
+    expect(availability.dates).toEqual(july.dates);
+    const legacy = await ref.queries.query("demo-a", { revision: availability.revision, from: "2026-07-01", toExclusive: "2026-08-01" });
+    expect(legacy).toMatchObject({ recordCount: 2, reportedFrequency: 6, accumulatedAlarmSeconds: 120 });
+    expect(legacy.missingDates).toHaveLength(25);
+    expect(legacy.missingDates.every(date => new Date(date + "T00:00:00Z").getUTCDay() !== 0)).toBe(true);
+    const options = await ref.queries.options("demo-a", { revision: availability.revision, kind: "message" });
+    expect(options.options).toHaveLength(1);
+    expect(options.options[0].label).toContain("Jam");
+    const rows = await ref.explorer.sourceRows("demo-a", { importId: sundayId, page: 1, sort: [] });
+    expect(rows.recordCount).toBe(1);
+    expect(rows.records[0]).toMatchObject({ date: "2026-07-05", message: "Sunday only", frequency: 999 });
+    expect((await ref.explorer.messages("demo-a", {})).values).toContain("Sunday only");
+    const retained = await admin("SELECT original_bytes FROM integrations.import_batches WHERE import_id=$1", [sundayId]);
+    expect(retained.rows[0].original_bytes).toEqual(bytes(999, "Sunday only"));
+    expect((await admin("SELECT count(*)::integer AS n FROM analytics.fact_hitliste WHERE source_id=$1", [sourceId])).rows[0].n).toBe(6);
+    // A skipped date must still have a complete, current relational projection.
+    await admin("DELETE FROM analytics.fact_hitliste WHERE import_id=$1", [sundayId]);
+    await expect(ref.reports.query("demo-a", selection)).rejects.toMatchObject({ code: "analytics_projection_unavailable" });
+  } finally {
+    await ref.close();
+  }
 });

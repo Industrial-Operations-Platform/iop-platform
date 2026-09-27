@@ -227,6 +227,7 @@ export class MonthlyExecutiveDto {
   @ApiProperty() month!: string;
   @ApiProperty() importedDays!: number;
   @ApiProperty() calendarDays!: number;
+  @ApiProperty({ required: false }) analysisDays?: number;
   @ApiProperty() historicalDays!: number;
   @ApiProperty({ type: [ExecutiveKpiDto] }) kpis!: ExecutiveKpiDto[];
 }
@@ -315,6 +316,12 @@ export class ExecutiveLeaderDto extends ReportRowDto {
     | "duration";
 }
 export class ReportDto {
+  @ApiProperty({
+    type: [Number],
+    required: false,
+    description: "Excluded ISO weekdays (Monday 1 through Sunday 7).",
+  })
+  excludedWeekdays?: number[];
   @ApiProperty({ type: MonthlyExecutiveDto, required: false })
   monthlyExecutive?: MonthlyExecutiveDto;
   @ApiProperty() revision!: string;

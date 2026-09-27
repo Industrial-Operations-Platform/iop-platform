@@ -74,7 +74,7 @@ Screenshot targets and improvement formulas are not invented metrics.
 Executive Overview shows a frequency-ranked area chart, an area/day matrix ordered
 by monthly frequency, and overlaid daily frequency/alarm-minute series with labelled
 axes. The month control is collapsible and uses a whole-field dropdown of imported months. Charts show up to 100 areas; monthly totals
-and KPI calculations include all matching facts.
+and KPI calculations include all eligible matching facts.
 
 Administrators select up to eight ordered Meldetext KPIs from the prepared database
 catalog, excluding already-selected messages. Choices load all catalog pages. Each
@@ -82,12 +82,19 @@ KPI has a label, frequency
 or duration measure, and an optional daily-average goal. Settings persist with the
 scoped reporting profile and its existing version checks. With no goal, compare the
 selected month's daily average against the daily average across all imported history,
-including that month. Both divide by imported dates, including dates without the
+including that month. Both divide by eligible imported dates, including dates without the
 chosen error; missing imports are excluded. Explicit goals override the reference.
 Lower is green, higher is red, equality is neutral, and a month without imported
 dates has no average. Zero references have no percentage change. Cards show monthly
 totals, average units and the reference so incomplete months remain interpretable.
 
+The configured Hitliste analysis calendar excludes Sundays, using the CSV reporting
+date. Exclusion applies to every report, ranking, option, daily/weekly/monthly
+series, analytical coverage, and both monthly/historical KPI totals and average
+denominators. Daily chart axes omit Sundays; they are not missing-data gaps.
+Monthly coverage counts eligible days. Saturday remains included. Sunday files
+can still be imported, retained and browsed in administrator Files & source rows;
+original evidence and the complete Meldetext settings catalog remain intact.
 
 ## Metric meaning and acceptance
 

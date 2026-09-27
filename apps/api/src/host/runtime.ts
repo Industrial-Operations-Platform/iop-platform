@@ -1,5 +1,6 @@
 import { DataExplorer } from "../modules/oip/application/data-explorer";
 import { PgDataExplorer } from "../modules/oip/adapters/postgres/data-explorer";
+import { hitlisteAnalysisCalendar } from "./adapters/hitliste-analysis-calendar";
 import { hitlisteReportingProfile } from "./adapters/hitliste-reporting-profile";
 import { createImportWorkflow } from "./adapters/import-gateway";
 import { evaluateSiteAccess } from "../modules/users-rbac";
@@ -211,11 +212,13 @@ export class PlatformRuntime {
       mappings,
       this.source,
     );
-    this.queries = new OipQueries(pool, this.source);
+    this.queries = new OipQueries(pool, this.source, hitlisteAnalysisCalendar);
     this.principals = new LocalPrincipals(config.users);
     this.profiles = new ReportingProfiles(profileRepository);
     this.explorer = new DataExplorer(new PgDataExplorer(profileRepository));
-    this.reports = new OipReports(new PgReportRepository(profileRepository));
+    this.reports = new OipReports(
+      new PgReportRepository(profileRepository, hitlisteAnalysisCalendar),
+    );
   }
   async start(): Promise<void> {
     const client = await this.pool.connect();

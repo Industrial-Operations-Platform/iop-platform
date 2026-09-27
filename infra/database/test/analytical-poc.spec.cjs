@@ -425,7 +425,7 @@ test("coverage, zero measures, exclusions, exact limits and bounded HTTP input r
     "Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe";
   for (const [date, frequency] of [
     ["20260801", Number.MAX_SAFE_INTEGER],
-    ["20260802", 1],
+    ["20260803", 1],
   ]) {
     const bytes = Buffer.from(
       "\uFEFF" +
@@ -455,7 +455,7 @@ test("coverage, zero measures, exclusions, exact limits and bounded HTTP input r
     .send({
       revision: b.revision,
       from: "2026-08-01",
-      toExclusive: "2026-08-03",
+      toExclusive: "2026-08-04",
     })
     .expect(422);
   expect(overflow.body.code).toBe("analytics_total_out_of_range");

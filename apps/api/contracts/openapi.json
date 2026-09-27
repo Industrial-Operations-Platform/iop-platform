@@ -1924,6 +1924,9 @@
           "calendarDays": {
             "type": "number"
           },
+          "analysisDays": {
+            "type": "number"
+          },
           "historicalDays": {
             "type": "number"
           },
@@ -2048,6 +2051,13 @@
       "ReportDto": {
         "type": "object",
         "properties": {
+          "excludedWeekdays": {
+            "description": "Excluded ISO weekdays (Monday 1 through Sunday 7).",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
           "monthlyExecutive": {
             "$ref": "#/components/schemas/MonthlyExecutiveDto"
           },

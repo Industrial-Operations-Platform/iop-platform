@@ -28,6 +28,7 @@ export interface ExecutiveLeader extends ReportRow {
   metric: "frequency" | "duration";
 }
 export interface ReportResult {
+  excludedWeekdays?: number[];
   monthlyExecutive?: MonthlyExecutive;
   revision: string;
   profileVersion: string;

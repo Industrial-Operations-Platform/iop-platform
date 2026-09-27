@@ -89,3 +89,49 @@ test("executive charts share frequency ordering and distinguish missing dates fr
   expect(series[0].data.slice(0, 4)).toEqual([10, null, 0, null]);
   expect(series[1].data.slice(0, 4)).toEqual([1, null, 0, null]);
 });
+
+test("daily charts omit excluded weekdays without filling missing eligible dates or dropping period anchors", () => {
+  const monthly = {
+    ...report,
+    excludedWeekdays: [7],
+    selection: {
+      from: "2026-07-01",
+      toExclusive: "2026-08-01",
+      period: "day",
+      dimension: "area",
+      metric: "frequency",
+    },
+    dates: ["2026-07-04", "2026-07-06"],
+    timeline: [{ period: "2026-07-04", frequency: 9, minutes: 2 }],
+    series: [],
+  } as unknown as Report;
+  for (const kind of ["daily-matrix", "daily-overlay", "trend"] as const) {
+    const axis = options(kind, monthly).xAxis as { data: string[] };
+    expect(axis.data).toHaveLength(27);
+    expect(axis.data).not.toContain("2026-07-05");
+    expect(axis.data[4]).toBe("2026-07-06");
+  }
+  const series = options("daily-overlay", monthly).series as {
+    data: (number | null)[];
+  }[];
+  expect(series[0].data.slice(3, 6)).toEqual([9, 0, null]);
+  const february = {
+    ...monthly,
+    selection: {
+      ...monthly.selection,
+      from: "2026-02-01",
+      toExclusive: "2026-03-01",
+      period: "month" as const,
+    },
+  };
+  expect((options("trend", february).xAxis as { data: string[] }).data).toEqual(
+    ["2026-02-01"],
+  );
+  const weekly = {
+    ...monthly,
+    selection: { ...monthly.selection, period: "week" as const },
+  };
+  expect((options("trend", weekly).xAxis as { data: string[] }).data[0]).toBe(
+    "2026-06-29",
+  );
+});

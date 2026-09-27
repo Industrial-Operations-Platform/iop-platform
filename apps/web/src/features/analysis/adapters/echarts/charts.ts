@@ -51,7 +51,11 @@ function calendar(report: Report): string[] {
     date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
   if (report.selection.period === "month") date.setUTCDate(1);
   while (date.getTime() < Date.parse(report.selection.toExclusive)) {
-    result.push(date.toISOString().slice(0, 10));
+    if (
+      report.selection.period !== "day" ||
+      !report.excludedWeekdays?.includes(date.getUTCDay() || 7)
+    )
+      result.push(date.toISOString().slice(0, 10));
     if (report.selection.period === "month")
       date.setUTCMonth(date.getUTCMonth() + 1);
     else

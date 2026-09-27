@@ -138,3 +138,15 @@ equipment, message, type and messageGroup with asc/desc; an empty list means sou
 line order. Unknown/foreign imports do not disclose their data. Profile changes
 invalidate prior pages. Report row fields remain for API compatibility; the UI only
 browses contributing rows in the administrative file section.
+
+### Analytical calendar
+
+The configured Hitliste source excludes ISO weekday 7 (Sunday). Host composition
+injects this policy into reporting and compatibility analytics adapters; the generic
+calendar defaults to no exclusions. Eligibility uses the source reporting DATE,
+independently of server/browser time zones. Reports expose `excludedWeekdays`, and
+monthly executive coverage adds `analysisDays` alongside unchanged `calendarDays`.
+Totals, ranking options, period series, admitted dates and both KPI daily averages
+exclude those dates. Revisions include the calendar policy. Projection integrity
+still covers every fact, including excluded dates. Import history, original bytes,
+file source-row browsing and the KPI message catalog retain excluded-date data.

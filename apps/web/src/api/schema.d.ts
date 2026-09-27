@@ -464,6 +464,7 @@ export interface components {
             month: string;
             importedDays: number;
             calendarDays: number;
+            analysisDays?: number;
             historicalDays: number;
             kpis: components["schemas"]["ExecutiveKpiDto"][];
         };
@@ -494,6 +495,8 @@ export interface components {
             period: string;
         };
         ReportDto: {
+            /** @description Excluded ISO weekdays (Monday 1 through Sunday 7). */
+            excludedWeekdays?: number[];
             monthlyExecutive?: components["schemas"]["MonthlyExecutiveDto"];
             revision: string;
             profileVersion: string;

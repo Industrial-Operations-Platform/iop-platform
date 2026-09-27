@@ -13,7 +13,31 @@ const {
 const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const next = (date) =>
   new Date(Date.parse(date) + 86400000).toISOString().slice(0, 10);
-async function seedHistory(runtime, actor, directory) {
+function seedReportReader(runtime) {
+  const {
+    PgReportRepository,
+  } = require("../../apps/api/dist/modules/oip/adapters/postgres/reports");
+  const {
+    PgReportingProfiles,
+  } = require("../../apps/api/dist/modules/oip/adapters/postgres/reporting-profiles");
+  const {
+    hitlisteReportingProfile,
+  } = require("../../apps/api/dist/host/adapters/hitliste-reporting-profile");
+  // Offline verification reads every retained date; it is not an analytical view.
+  return new PgReportRepository(
+    new PgReportingProfiles(
+      runtime.pool,
+      runtime.source,
+      hitlisteReportingProfile(runtime.config.mappings.configuration),
+    ),
+  );
+}
+async function seedHistory(
+  runtime,
+  actor,
+  directory,
+  verificationReports = seedReportReader(runtime),
+) {
   const path = join(directory, "manifest.json");
   if (!existsSync(path)) {
     console.log("No historical seed configured; daily imports are available.");
@@ -88,7 +112,7 @@ async function seedHistory(runtime, actor, directory) {
   }
   // One report snapshot reconciles every seed date, including projection integrity.
   const sortedDates = [...dates].sort();
-  const report = await runtime.reports.query(actor, {
+  const report = await verificationReports.query(actor, {
     from: sortedDates[0],
     toExclusive: next(sortedDates.at(-1)),
     dimension: "sector",

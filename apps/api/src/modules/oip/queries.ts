@@ -1,3 +1,5 @@
+import { AnalysisCalendar } from "./domain/analysis-calendar";
+import { eligibleReportingDate } from "./adapters/postgres/analysis-calendar";
 import type { Pool } from "pg";
 import {
   runSiteOperation,
@@ -21,11 +23,15 @@ import {
   type Group,
 } from "./analytics";
 
-const manifest = `SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb)
-  FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3`;
-const sourceCte = `source AS MATERIALIZED (SELECT f.*,p.raw_id,p.context FROM oip.facts f JOIN oip.publications p
+const manifest = (
+  calendar: AnalysisCalendar,
+) => `SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb)
+  FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${eligibleReportingDate(calendar)}`;
+const sourceCte = (
+  calendar: AnalysisCalendar,
+) => `source AS MATERIALIZED (SELECT f.*,p.raw_id,p.context FROM oip.facts f JOIN oip.publications p
   USING (organization_id,site_id,source_id,import_id,reporting_date)
-  WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3)`;
+  WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3 AND ${eligibleReportingDate(calendar, "f.reporting_date")})`;
 const dimensionsSql = (
   table: string,
 ) => `SELECT d.* FROM ${table} f CROSS JOIN LATERAL (VALUES
@@ -47,6 +53,7 @@ export class OipQueries {
   constructor(
     private readonly pool: Pick<Pool, "connect">,
     private readonly source: ImportSource,
+    private readonly calendar = new AnalysisCalendar(),
   ) {}
   private run<T>(
     actor: string,
@@ -78,6 +85,7 @@ export class OipQueries {
         digest([
           1,
           ...scopeTuple(this.source),
+          this.calendar.excludedWeekdays,
           publications.map((p) => p.id).sort(),
         ]),
       dates,
@@ -88,7 +96,7 @@ export class OipQueries {
   async availability(actor: string): Promise<Availability> {
     return this.run(actor, async (tx) => {
       const r = await tx.query(
-        `SELECT (${manifest}) AS publications`,
+        `SELECT (${manifest(this.calendar)}) AS publications`,
         scopeTuple(this.source),
       );
       return this.availabilityOf(
@@ -138,9 +146,9 @@ export class OipQueries {
     }
     return this.run(actor, async (tx) => {
       const r = await tx.query(
-        `WITH ${sourceCte}, dims AS (${dimensionsSql("source")}), opts AS
+        `WITH ${sourceCte(this.calendar)}, dims AS (${dimensionsSql("source")}), opts AS
         (SELECT reference,min(label) AS label,count(DISTINCT tuple) AS tuples FROM dims WHERE kind=$4 GROUP BY reference)
-        SELECT (${manifest}) AS publications,
+        SELECT (${manifest(this.calendar)}) AS publications,
         (SELECT coalesce(jsonb_agg(o ORDER BY reference),'[]'::jsonb) FROM (SELECT reference,label FROM opts WHERE reference COLLATE "C">$5 COLLATE "C" ORDER BY reference COLLATE "C" LIMIT $6) o) AS options,
         EXISTS(SELECT 1 FROM opts WHERE tuples>1) AS collision,
         ($5='' OR EXISTS(SELECT 1 FROM opts WHERE reference=$5)) AS anchor`,
@@ -208,7 +216,7 @@ export class OipQueries {
       anchor = { date: c.date, id: c.id, line: Number(c.line) };
     }
     return this.run(actor, async (tx) => {
-      const sql = `WITH ${sourceCte}, filtered AS MATERIALIZED (SELECT * FROM source WHERE reporting_date >= $4::date AND reporting_date < $5::date
+      const sql = `WITH ${sourceCte(this.calendar)}, filtered AS MATERIALIZED (SELECT * FROM source WHERE reporting_date >= $4::date AND reporting_date < $5::date
         AND ($6::text[] IS NULL OR sector_ref=ANY($6)) AND ($7::text[] IS NULL OR area_ref=ANY($7))
         AND ($8::text[] IS NULL OR equipment_ref=ANY($8)) AND ($9::text[] IS NULL OR message_ref=ANY($9))
         AND ($10::text[] IS NULL OR NOT message_ref=ANY($10))), dims AS (${dimensionsSql("source")}),
@@ -219,7 +227,7 @@ export class OipQueries {
             ('area',area_ref,payload->>'sourceArea'),('equipment',equipment_ref,(payload->>'sourceArea')||' / '||(payload->>'sourceEquipmentReference')),
             ('message',message_ref,(payload->>'sourceMessageText')||' ['||(payload->>'sourceMessageType')||' / '||(payload->>'sourceMessageGroup')||']')) d(kind,reference,label)
           GROUP BY d.kind,d.reference), ranked AS (SELECT *,row_number() OVER(PARTITION BY kind ORDER BY frequency::numeric DESC,reference COLLATE "C") AS rank FROM grouped)
-        SELECT (${manifest}) AS publications,
+        SELECT (${manifest(this.calendar)}) AS publications,
           (SELECT count(*)::integer FROM filtered) AS count,
           (SELECT coalesce(sum(reported_frequency),0)::text FROM filtered) AS frequency,
           (SELECT coalesce(sum(accumulated_alarm_seconds),0)::text FROM filtered) AS seconds,
@@ -299,7 +307,8 @@ export class OipQueries {
         day += 86400000
       ) {
         const date = new Date(day).toISOString().slice(0, 10);
-        if (!admittedDates.includes(date)) missingDates.push(date);
+        if (this.calendar.includes(date) && !admittedDates.includes(date))
+          missingDates.push(date);
       }
       return {
         revision: available.revision,

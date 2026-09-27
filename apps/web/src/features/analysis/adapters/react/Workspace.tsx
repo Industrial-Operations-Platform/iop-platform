@@ -1,3 +1,4 @@
+import { AnalysisCalendarNotice } from "./AnalysisCalendarNotice";
 import { SourceFiles } from "./SourceFiles";
 import { ExecutiveMonthControls, MonthlyOverview } from "./MonthlyOverview";
 import { ExecutiveSettings } from "./ExecutiveSettings";
@@ -370,6 +371,9 @@ function ReportWorkspace({
           ) : (
             report && (
               <>
+                <AnalysisCalendarNotice
+                  excludedWeekdays={report.excludedWeekdays}
+                />
                 {template === 0 && (
                   <MonthlyOverview
                     report={report}
@@ -378,10 +382,10 @@ function ReportWorkspace({
                 )}
                 {template !== 0 && (
                   <p className="analysis-footnote">
-                    All matching historical rows contribute to totals. Rankings
-                    show up to 100 of {number(report.groupCount)} groups; charts
-                    show the top 10 unless stated. Duration is accumulated alarm
-                    time, not plant downtime.
+                    All eligible matching historical rows contribute to totals.
+                    Rankings show up to 100 of {number(report.groupCount)}{" "}
+                    groups; charts show the top 10 unless stated. Duration is
+                    accumulated alarm time, not plant downtime.
                   </p>
                 )}
                 {template !== 0 &&

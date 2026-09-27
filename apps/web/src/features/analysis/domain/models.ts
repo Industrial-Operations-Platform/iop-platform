@@ -97,6 +97,7 @@ export interface MonthlyExecutive {
   month: string;
   importedDays: number;
   calendarDays: number;
+  analysisDays?: number;
   historicalDays: number;
   kpis: ExecutiveKpi[];
 }
@@ -170,6 +171,7 @@ export interface ExecutiveLeader extends ReportRow {
   metric: "frequency" | "duration";
 }
 export interface Report {
+  excludedWeekdays?: number[];
   monthlyExecutive?: MonthlyExecutive;
   revision: string;
   profileVersion: string;
