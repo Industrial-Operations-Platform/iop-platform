@@ -18,3 +18,5 @@ export {
 } from "./Surfaces";
 export { AppShell, IdentityRoot, PageHeading } from "./Layout";
 export { ViewNavigation } from "./ViewNavigation";
+export { ComparisonCard } from "./ComparisonCard";
+export { MonthPicker } from "./MonthPicker";

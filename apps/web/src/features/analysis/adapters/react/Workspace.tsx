@@ -1,3 +1,5 @@
+import { ExecutiveMonthControls, MonthlyOverview } from "./MonthlyOverview";
+import { ExecutiveSettings } from "./ExecutiveSettings";
 import { ReportFilters } from "./ReportFilters";
 import { Plot } from "./Plot";
 import { labels } from "./labels";
@@ -21,6 +23,7 @@ import {
 import { useEffect, useState } from "react";
 import {
   AnalysisWorkspace,
+  executiveSelection,
   drillInto,
   selectView,
   reportViews,
@@ -177,7 +180,21 @@ function ReportWorkspace({
       .then((x) => {
         if (active) {
           setHistory(x.history);
-          setSelection(x.selection ? selectView(x.selection, template) : null);
+          setSelection((current) =>
+            x.selection
+              ? template === 0
+                ? executiveSelection(
+                    current?.executive
+                      ? current.from.slice(0, 7)
+                      : new Date(
+                          Date.parse(x.selection!.toExclusive) - 86400000,
+                        )
+                          .toISOString()
+                          .slice(0, 7),
+                  )
+                : selectView(x.selection, template)
+              : null,
+          );
           if (!x.selection) setLoading(false);
         }
       })
@@ -222,11 +239,11 @@ function ReportWorkspace({
     if (selection) drill(selection.dimension, key);
   };
   const showFile = (date: string) => {
-    setTemplate(0);
+    setTemplate(5);
     setSelection({
       from: date,
       toExclusive: nextDate(date),
-      dimension: "sector",
+      dimension: "area",
       period: "day",
       metric: "frequency",
       page: 1,
@@ -270,7 +287,13 @@ function ReportWorkspace({
         />
       ) : (
         <>
-          {selection && (
+          {selection && template === 0 && (
+            <ExecutiveMonthControls
+              month={selection.from.slice(0, 7)}
+              onChange={(month) => setSelection(executiveSelection(month))}
+            />
+          )}
+          {selection && template !== 0 && (
             <ReportFilters
               key={JSON.stringify(selection)}
               selection={selection}
@@ -294,81 +317,94 @@ function ReportWorkspace({
             report && (
               <>
                 {template === 0 && (
-                  <ExecutiveKpis report={report} onSelect={drill} />
+                  <MonthlyOverview
+                    report={report}
+                    onArea={(area) => drill("area", area)}
+                  />
                 )}
-                <p className="analysis-footnote">
-                  All matching historical rows contribute to totals. Rankings
-                  show up to 100 of {number(report.groupCount)} groups; charts
-                  show the top 10 unless stated. Duration is accumulated alarm
-                  time, not plant downtime.
-                </p>
-                {report.totals.records === 0 ? (
-                  <Panel variant="empty">
-                    <h2>No matching records</h2>
-                    <p>Adjust the dates or dimension filters.</p>
-                  </Panel>
-                ) : (
-                  <div className="analysis-charts">
-                    {template === 5 ? (
-                      <>
-                        <Plot
-                          kind="trend"
-                          title="Frequency and duration over time"
-                          report={report}
-                          onSelect={select}
-                        />
-                        <Plot
-                          kind="heatmap"
-                          title="Group behavior by reporting period"
-                          report={report}
-                          onSelect={select}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Plot
-                          kind={template === 4 ? "messages" : "monthly"}
-                          title="Comparison between months"
-                          report={report}
-                          onSelect={select}
-                        />
-                        <Plot
-                          kind="scatter"
-                          title="Duration versus frequency · up to 100 groups"
-                          report={report}
-                          onSelect={select}
-                        />
-                        <Plot
-                          kind="frequency"
-                          title="Top groups by selected measure"
-                          report={report}
-                          onSelect={select}
-                        />
-                        <Plot
-                          kind="duration"
-                          title="Top groups by duration"
-                          report={report}
-                          onSelect={select}
-                        />
-                        {(template === 2 || template === 3) && (
-                          <>
-                            <Plot
-                              kind="trend"
-                              title="Frequency and duration over time"
-                              report={report}
-                              onSelect={select}
-                            />
-                            <Plot
-                              kind="heatmap"
-                              title="Group behavior by reporting period"
-                              report={report}
-                              onSelect={select}
-                            />
-                          </>
-                        )}
-                      </>
-                    )}
-                  </div>
+                {template !== 0 && (
+                  <p className="analysis-footnote">
+                    All matching historical rows contribute to totals. Rankings
+                    show up to 100 of {number(report.groupCount)} groups; charts
+                    show the top 10 unless stated. Duration is accumulated alarm
+                    time, not plant downtime.
+                  </p>
+                )}
+                {template !== 0 &&
+                  (report.totals.records === 0 ? (
+                    <Panel variant="empty">
+                      <h2>No matching records</h2>
+                      <p>Adjust the dates or dimension filters.</p>
+                    </Panel>
+                  ) : (
+                    <div className="analysis-charts">
+                      {template === 5 ? (
+                        <>
+                          <Plot
+                            kind="trend"
+                            title="Frequency and duration over time"
+                            report={report}
+                            onSelect={select}
+                          />
+                          <Plot
+                            kind="heatmap"
+                            title="Group behavior by reporting period"
+                            report={report}
+                            onSelect={select}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Plot
+                            kind={template === 4 ? "messages" : "monthly"}
+                            title="Comparison between months"
+                            report={report}
+                            onSelect={select}
+                          />
+                          <Plot
+                            kind="scatter"
+                            title="Duration versus frequency · up to 100 groups"
+                            report={report}
+                            onSelect={select}
+                          />
+                          <Plot
+                            kind="frequency"
+                            title="Top groups by selected measure"
+                            report={report}
+                            onSelect={select}
+                          />
+                          <Plot
+                            kind="duration"
+                            title="Top groups by duration"
+                            report={report}
+                            onSelect={select}
+                          />
+                          {(template === 2 || template === 3) && (
+                            <>
+                              <Plot
+                                kind="trend"
+                                title="Frequency and duration over time"
+                                report={report}
+                                onSelect={select}
+                              />
+                              <Plot
+                                kind="heatmap"
+                                title="Group behavior by reporting period"
+                                report={report}
+                                onSelect={select}
+                              />
+                            </>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ))}
+                {template === 0 && context.canImport && (
+                  <ExecutiveSettings
+                    application={application}
+                    messages={report.options.message ?? []}
+                    onSaved={() => setRefresh((x) => x + 1)}
+                  />
                 )}
                 <DataTables
                   report={report}
@@ -535,67 +571,6 @@ function DataTables({
         Next rows
       </Button>
     </Disclosure>
-  );
-}
-function ExecutiveKpis({
-  report,
-  onSelect,
-}: {
-  report: Report;
-  onSelect: (dimension: Dimension, key: string) => void;
-}) {
-  const priorities = [
-    ["sector", "Most recurrent sector"],
-    ["area", "Highest alarm duration area"],
-    ["equipment", "Most recurrent equipment"],
-    ["message", "Most frequent error"],
-  ] as const;
-  return (
-    <MetricGrid className="analysis-kpis" aria-label="Executive priorities">
-      {priorities.map(([dimension, title]) => {
-        const leader = report.executive.find((x) => x.dimension === dimension);
-        const duration = dimension === "area";
-        const total = duration
-          ? report.totals.seconds
-          : report.totals.frequency;
-        const measure = leader
-          ? duration
-            ? leader.seconds
-            : leader.frequency
-          : 0;
-        return (
-          <MetricCard
-            key={dimension}
-            label={title}
-            value={
-              leader && total > 0 ? number((100 * measure) / total) + "%" : "—"
-            }
-          >
-            {leader ? (
-              <>
-                <Button
-                  variant="text"
-                  className="analysis-kpi-label"
-                  onClick={() => onSelect(dimension, leader.key)}
-                >
-                  {leader.key || "(Empty value)"}
-                </Button>
-                <small>
-                  {number(duration ? leader.minutes : leader.frequency)}{" "}
-                  {duration ? "alarm minutes" : "occurrences"} · share of
-                  filtered {duration ? "duration" : "frequency"}
-                </small>
-              </>
-            ) : (
-              <small>
-                No {duration ? "alarm duration" : "occurrences"} in this
-                selection
-              </small>
-            )}
-          </MetricCard>
-        );
-      })}
-    </MetricGrid>
   );
 }
 function ImportWorkspace({

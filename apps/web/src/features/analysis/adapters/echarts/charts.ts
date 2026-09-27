@@ -30,6 +30,9 @@ use([
   SVGRenderer,
 ]);
 export type ChartKind =
+  | "area-ranking"
+  | "daily-matrix"
+  | "daily-overlay"
   | "frequency"
   | "duration"
   | "scatter"
@@ -74,6 +77,157 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
     textStyle: { fontFamily: identity.font, color: identity.chartText },
     legend: { type: "scroll", top: 0 },
   };
+  if (kind === "area-ranking") {
+    const rows = r.groups;
+    return {
+      ...base,
+      grid: { left: 15, right: 38, top: 15, bottom: 35, containLabel: true },
+      xAxis: {
+        type: "value",
+        name: "Frequency",
+        nameLocation: "middle",
+        nameGap: 25,
+      },
+      yAxis: {
+        type: "category",
+        inverse: true,
+        data: rows.map((x) => x.key),
+        axisLabel: { width: 150, overflow: "truncate" },
+      },
+      dataZoom: [
+        {
+          type: "slider",
+          yAxisIndex: 0,
+          right: 0,
+          width: 12,
+          startValue: 0,
+          endValue: Math.max(0, Math.min(14, rows.length - 1)),
+          filterMode: "empty",
+        },
+      ],
+      series: [
+        {
+          type: "bar",
+          barMaxWidth: 25,
+          itemStyle: { color: identity.chartFrequency },
+          data: rows.map((x) => ({ name: x.key, value: x.frequency })),
+        },
+      ],
+    };
+  }
+  if (kind === "daily-matrix") {
+    const dates = calendar(r),
+      keys = r.groups.map((x) => x.key),
+      coverage = new Set(r.dates);
+    const at = new Map(
+      r.series.map((x) => [JSON.stringify([x.key, x.period]), x.frequency]),
+    );
+    const points = keys.flatMap((key, row) =>
+      dates.flatMap((day, column) =>
+        coverage.has(day)
+          ? [[column, row, at.get(JSON.stringify([key, day])) ?? 0]]
+          : [],
+      ),
+    );
+    return {
+      ...base,
+      tooltip: {
+        position: "top",
+        renderMode: "richText",
+        formatter: (point: { value: number[] }) => {
+          const [column, row, frequency] = point.value;
+          return `${keys[row]}\n${dates[column]}\nFrequency: ${number(frequency)}`;
+        },
+      },
+      grid: { left: 15, right: 38, top: 35, bottom: 70, containLabel: true },
+      xAxis: {
+        type: "category",
+        position: "top",
+        data: dates,
+        axisLabel: {
+          formatter: (date: string) => String(Number(date.slice(8))),
+        },
+      },
+      yAxis: {
+        type: "category",
+        inverse: true,
+        data: keys,
+        axisLabel: { width: 145, overflow: "truncate" },
+      },
+      visualMap: {
+        min: 0,
+        max: Math.max(1, ...points.map((x) => x[2])),
+        orient: "horizontal",
+        left: "center",
+        bottom: 0,
+        inRange: { color: [identity.heatmapLow, identity.heatmapHigh] },
+      },
+      dataZoom: [
+        {
+          type: "slider",
+          yAxisIndex: 0,
+          right: 0,
+          width: 12,
+          startValue: 0,
+          endValue: Math.max(0, Math.min(14, keys.length - 1)),
+          filterMode: "empty",
+        },
+        { type: "inside", xAxisIndex: 0 },
+      ],
+      series: [{ type: "heatmap", data: points }],
+    };
+  }
+  if (kind === "daily-overlay") {
+    const dates = calendar(r),
+      at = new Map(r.timeline.map((x) => [x.period, x])),
+      coverage = new Set(r.dates);
+    return {
+      ...base,
+      legend: { type: "scroll", top: 0, data: ["Frequency", "Alarm minutes"] },
+      grid: { left: 15, right: 15, top: 65, bottom: 40, containLabel: true },
+      xAxis: {
+        type: "category",
+        data: dates,
+        name: "Day",
+        nameLocation: "middle",
+        nameGap: 25,
+        axisLabel: {
+          formatter: (date: string) => String(Number(date.slice(8))),
+        },
+      },
+      yAxis: [
+        { type: "value", name: "Frequency" },
+        { type: "value", name: "Alarm minutes", splitLine: { show: false } },
+      ],
+      series: [
+        {
+          name: "Frequency",
+          type: "line",
+          connectNulls: false,
+          showSymbol: true,
+          symbolSize: 4,
+          itemStyle: { color: identity.chartFrequency },
+          areaStyle: { opacity: 0.16 },
+          data: dates.map((d) =>
+            coverage.has(d) ? (at.get(d)?.frequency ?? 0) : null,
+          ),
+        },
+        {
+          name: "Alarm minutes",
+          type: "line",
+          yAxisIndex: 1,
+          connectNulls: false,
+          showSymbol: true,
+          symbolSize: 4,
+          itemStyle: { color: identity.chartComparison },
+          areaStyle: { opacity: 0.16 },
+          data: dates.map((d) =>
+            coverage.has(d) ? (at.get(d)?.minutes ?? 0) : null,
+          ),
+        },
+      ],
+    };
+  }
   const groups = (kind === "duration" ? r.durationGroups : r.groups).slice(
     0,
     10,
@@ -236,10 +390,20 @@ export function mountChart(
   const chart = init(element, undefined, { renderer: "svg" });
   chart.setOption(options(kind, report));
   chart.on("click", (params) => {
+    if (kind === "daily-matrix" && Array.isArray(params.value)) {
+      const group = report.groups[Number(params.value[1])];
+      if (group) onSelect(group.key);
+      return;
+    }
     if (
-      ["frequency", "duration", "scatter", "monthly", "messages"].includes(
-        kind,
-      ) &&
+      [
+        "area-ranking",
+        "frequency",
+        "duration",
+        "scatter",
+        "monthly",
+        "messages",
+      ].includes(kind) &&
       params.name
     )
       onSelect(params.name);

@@ -77,7 +77,31 @@ export interface ValueAlias {
   from: string;
   to: string;
 }
+export interface ExecutiveKpiDefinition {
+  id: string;
+  label: string;
+  message: string;
+  metric: "frequency" | "duration";
+  goal: number | null;
+}
+export interface ExecutiveKpi extends ExecutiveKpiDefinition {
+  total: number;
+  average: number | null;
+  historicalAverage: number | null;
+  reference: number | null;
+  referenceKind: "goal" | "historical";
+  changePercent: number | null;
+  status: "better" | "worse" | "equal" | "unavailable";
+}
+export interface MonthlyExecutive {
+  month: string;
+  importedDays: number;
+  calendarDays: number;
+  historicalDays: number;
+  kpis: ExecutiveKpi[];
+}
 export interface ReportingProfile {
+  executiveKpis?: ExecutiveKpiDefinition[];
   normalization: Normalization;
   unclassifiedLabel: string;
   areaSectors: AreaSector[];
@@ -88,6 +112,7 @@ export interface ProfileResult {
   profile: ReportingProfile;
 }
 export interface ReportRequest {
+  executive?: boolean;
   from: string;
   toExclusive: string;
   /** @enum {string} */
@@ -145,6 +170,7 @@ export interface ExecutiveLeader extends ReportRow {
   metric: "frequency" | "duration";
 }
 export interface Report {
+  monthlyExecutive?: MonthlyExecutive;
   revision: string;
   profileVersion: string;
   selection: ReportRequest;

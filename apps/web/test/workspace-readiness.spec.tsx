@@ -28,15 +28,13 @@ const profile: ProfileResult = {
 };
 function setup() {
   const gateway = {
-    context: jest
-      .fn()
-      .mockResolvedValue({
-        enabled: true,
-        canImport: true,
-        user: { id: "admin", name: "Administrator" },
-        users: [{ id: "admin", name: "Administrator" }],
-        scope: null,
-      }),
+    context: jest.fn().mockResolvedValue({
+      enabled: true,
+      canImport: true,
+      user: { id: "admin", name: "Administrator" },
+      users: [{ id: "admin", name: "Administrator" }],
+      scope: null,
+    }),
     availability: jest.fn().mockResolvedValue({ dates: ["2026-07-01"] }),
     history: jest.fn().mockResolvedValue([]),
     report: jest.fn().mockImplementation(
@@ -70,12 +68,10 @@ function setup() {
         }) as Report,
     ),
     profile: jest.fn().mockResolvedValue(profile),
-    saveProfile: jest
-      .fn()
-      .mockImplementation(async (value: ProfileResult) => ({
-        ...value,
-        version: "2",
-      })),
+    saveProfile: jest.fn().mockImplementation(async (value: ProfileResult) => ({
+      ...value,
+      version: "2",
+    })),
   };
   render(
     <WorkspaceApp
@@ -87,7 +83,11 @@ function setup() {
 
 test("invalid reporting dates show a recoverable error without unmounting the workspace", async () => {
   const gateway = setup();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Halle analysis" }),
+  );
   await screen.findByRole("heading", { name: "No matching records" });
+  const initialCalls = gateway.report.mock.calls.length;
   fireEvent.click(screen.getByText(/Date range ·/));
   fireEvent.change(screen.getByLabelText("To (exclusive)"), {
     target: { value: "2026-06-30" },
@@ -96,7 +96,7 @@ test("invalid reporting dates show a recoverable error without unmounting the wo
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Choose a reporting range",
   );
-  expect(gateway.report).toHaveBeenCalledTimes(1);
+  expect(gateway.report).toHaveBeenCalledTimes(initialCalls);
   fireEvent.click(screen.getByText(/Date range ·/));
   fireEvent.change(screen.getByLabelText("To (exclusive)"), {
     target: { value: "2026-07-02" },
@@ -104,7 +104,7 @@ test("invalid reporting dates show a recoverable error without unmounting the wo
   fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
   await screen.findByRole("heading", { name: "No matching records" });
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-  expect(gateway.report).toHaveBeenCalledTimes(2);
+  expect(gateway.report).toHaveBeenCalledTimes(initialCalls + 1);
 });
 
 test("preparation edits clear saved confirmation and cannot be overwritten during a save", async () => {

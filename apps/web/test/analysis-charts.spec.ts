@@ -43,3 +43,49 @@ test("frequency selection and independent duration ranking retain their measures
     series: [{ data: [{ name: "Area B", value: 25 }] }],
   });
 });
+
+test("executive charts share frequency ordering and distinguish missing dates from covered zero days", () => {
+  const monthly = {
+    ...report,
+    selection: {
+      from: "2026-07-01",
+      toExclusive: "2026-08-01",
+      period: "day",
+      dimension: "area",
+      metric: "frequency",
+    },
+    groups: [
+      { key: "Highest", frequency: 10, minutes: 1 },
+      { key: "Next", frequency: 3, minutes: 2 },
+    ],
+    dates: ["2026-07-01", "2026-07-03"],
+    series: [{ key: "Highest", period: "2026-07-01", frequency: 10 }],
+    timeline: [{ period: "2026-07-01", frequency: 10, minutes: 1 }],
+  } as Report;
+  expect(options("area-ranking", monthly)).toMatchObject({
+    yAxis: { inverse: true, data: ["Highest", "Next"] },
+  });
+  const matrix = options("daily-matrix", monthly);
+  expect(matrix).toMatchObject({
+    yAxis: { inverse: true, data: ["Highest", "Next"] },
+    series: [
+      {
+        data: [
+          [0, 0, 10],
+          [2, 0, 0],
+          [0, 1, 0],
+          [2, 1, 0],
+        ],
+      },
+    ],
+  });
+  expect((matrix.xAxis as { data: string[] }).data).toHaveLength(31);
+  const overlay = options("daily-overlay", monthly);
+  expect(overlay).toMatchObject({
+    yAxis: [{ name: "Frequency" }, { name: "Alarm minutes" }],
+    series: [{ connectNulls: false }, { yAxisIndex: 1, connectNulls: false }],
+  });
+  const series = overlay.series as { data: (number | null)[] }[];
+  expect(series[0].data.slice(0, 4)).toEqual([10, null, 0, null]);
+  expect(series[1].data.slice(0, 4)).toEqual([1, null, 0, null]);
+});

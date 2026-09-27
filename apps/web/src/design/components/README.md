@@ -13,6 +13,8 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `Field`, `Input`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
 | `FilterForm`, `Disclosure` | Form surface and native collapsible content; plain/panel/divided variants |
 | `Panel` | Content, chart, empty and metric surface treatments |
+| `MonthPicker` | Controlled calendar-month field using shared native input styling |
+| `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
 | `MetricGrid`, `MetricCard` | Responsive shared metric appearance; callers supply label/value/content |
 | `Table`, `TableViewport` | Semantic table appearance and bounded scrolling |
 | `Alert` | Error announcement and consistent error surface |

@@ -274,3 +274,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-150 — Reusable frontend identity components](items/IOP-150-reusable-ui.md) | Completed |
 | [IOP-151 — Consolidate current platform documentation](items/IOP-151-documentation-cleanup.md) | Completed |
 | [IOP-152 — Complete and verify the local analytical POC](items/IOP-152-poc-readiness.md) | Completed |
+| [IOP-153 — Monthly Executive Overview and comparative KPIs](items/IOP-153-monthly-executive.md) | Completed |

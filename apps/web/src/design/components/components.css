@@ -407,3 +407,24 @@
     gap: 0;
   }
 }
+
+.iop-ui .iop-comparison[data-state="better"] {
+  border-color: var(--iop-successBorder);
+  background: var(--iop-successSurface);
+}
+.iop-ui .iop-comparison[data-state="better"] .iop-metric-value,
+.iop-ui .iop-comparison[data-state="better"] .iop-comparison-result {
+  color: var(--iop-successInk);
+}
+.iop-ui .iop-comparison[data-state="worse"] {
+  border-color: var(--iop-errorBorder);
+  background: var(--iop-errorSurface);
+}
+.iop-ui .iop-comparison[data-state="worse"] .iop-metric-value,
+.iop-ui .iop-comparison[data-state="worse"] .iop-comparison-result {
+  color: var(--iop-errorInk);
+}
+.iop-ui .iop-comparison-result {
+  margin: 10px 0;
+  font-weight: 600;
+}

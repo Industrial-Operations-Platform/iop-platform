@@ -80,7 +80,7 @@ export class AnalysisWorkspace {
 
 /** View constraints are independent from the dimension used to group results. */
 export const reportViews = [
-  { title: "Executive Overview", dimension: "sector", filters: [] },
+  { title: "Executive Overview", dimension: "area", filters: [] },
   { title: "Halle analysis", dimension: "sector", filters: [] },
   { title: "Bereich analysis", dimension: "area", filters: ["sector", "area"] },
   {
@@ -112,9 +112,11 @@ export function selectView(
   current: ReportRequest,
   view: number,
 ): ReportRequest {
+  if (view === 0) return executiveSelection(current.from.slice(0, 7));
   const policy = reportViews[view];
   const allowed: readonly string[] = policy.filters;
   return changeSelection(current, {
+    executive: false,
     dimension: policy.dimension,
     ...(view < 2
       ? { metric: "frequency" as const, period: "day" as const }
@@ -146,5 +148,21 @@ export function drillInto(
       dimension,
       value,
     ),
+  };
+}
+
+/** The executive report always represents one complete calendar month. */
+export function executiveSelection(month: string): ReportRequest {
+  const [year, index] = month.split("-").map(Number);
+  return {
+    from: month + "-01",
+    toExclusive: new Date(Date.UTC(year, index, 1)).toISOString().slice(0, 10),
+    executive: true,
+    dimension: "area",
+    metric: "frequency",
+    period: "day",
+    filters: {},
+    search: "",
+    page: 1,
   };
 }

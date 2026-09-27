@@ -1,7 +1,7 @@
 # Local analytical POC scope
 
 The owner-confirmed workflow is **CSV → preparation → persistent history → analysis
-→ presentation**. This page consolidates the refinements delivered through IOP-150;
+→ presentation**. This page consolidates the refinements delivered through IOP-153;
 [delivery status](../planning/poc-delivery.md) owns evidence and open acceptance.
 The [operator guide](../development/running-poc.md) owns execution instructions.
 
@@ -47,7 +47,7 @@ Import/preparation is available to the same Administrator.
 
 | Template | Filter policy |
 | --- | --- |
-| Executive Overview | Date only; useful prioritization KPIs appear only here |
+| Executive Overview | One calendar month; configurable Meldetext KPIs appear only here |
 | Halle | Date only |
 | Bereich | Date, sector and area |
 | Equipment | Location filters plus equipment code |
@@ -56,7 +56,7 @@ Import/preparation is available to the same Administrator.
 
 Filters are subtle and collapsible, with the active selection summarized. Grouping
 is independent of filtering. Finer investigation preserves compatible constraints;
-returning to a broader template clears unsupported constraints. Chart/KPI drill-down
+returning to a broader template clears unsupported constraints. Chart/group drill-down
 opens a detail view that can show the selected constraint.
 
 Provide rankings, monthly comparisons, duration/frequency scatter, heatmaps and
@@ -65,6 +65,22 @@ are server-owned and independent of bounded chart groups and contributing-row pa
 Import volume/counts belong to file review, not KPI cards on every template.
 Pareto is deferred as a future function inside Executive Overview, with no separate tab.
 Screenshot targets and improvement formulas are not invented metrics.
+
+Executive Overview shows a frequency-ranked area chart, an area/day matrix ordered
+by monthly frequency, and overlaid daily frequency/alarm-minute series with labelled
+axes. The month control is collapsible. Charts show up to 100 areas; monthly totals
+and KPI calculations include all matching facts.
+
+Administrators configure up to eight ordered Meldetext KPIs with a label, frequency
+or duration measure, and an optional daily-average goal. Settings persist with the
+scoped reporting profile and its existing version checks. With no goal, compare the
+selected month's daily average against the daily average across all imported history,
+including that month. Both divide by imported dates, including dates without the
+chosen error; missing imports are excluded. Explicit goals override the reference.
+Lower is green, higher is red, equality is neutral, and a month without imported
+dates has no average. Zero references have no percentage change. Cards show monthly
+totals, average units and the reference so incomplete months remain interpretable.
+
 
 ## Metric meaning and acceptance
 

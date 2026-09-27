@@ -270,3 +270,22 @@ operator installation. See [testing](testing-poc.md) and
 - Storage is bounded to 1,000 retained attempts and 256 MiB original bytes across
   the dedicated database. Rejected inputs also consume retention. The native fixture
   reset does not reset the main Docker history; do not bypass quotas or delete volumes.
+
+## Monthly Executive Overview
+
+Select the Administrator and open Executive Overview. Expand the subtle Month
+control to choose a calendar month (initially the latest imported month). Area
+rankings and the daily heatmap use descending monthly frequency; scroll to inspect
+more areas. The daily graph overlays frequency and alarm minutes with labelled axes.
+Click a ranked area or heatmap cell to investigate that area in Bereich analysis.
+
+Expand **KPI settings & goals** to add/remove up to eight Meldetext cards, choose
+exact prepared error text, label and measure, and save. Goals are occurrences/day
+or alarm minutes/day; changing measure clears the old goal. Leaving a goal blank
+uses the daily average across all imported history, including the selected month.
+The monthly average also divides by imported dates, including dates without that
+error. Cards retain month totals and explicitly label their reference. Missing
+dates stay gaps; an entirely unimported month has no average. Below reference is
+green, above is red, equal is neutral. A zero reference has no percentage change.
+Settings survive reloads and Docker restarts. A conflicting edit requires reloading
+saved settings before applying changes again.

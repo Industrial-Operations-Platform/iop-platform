@@ -22,6 +22,8 @@ instead of adding disconnected literal colors to components or chart options.
 | Frequency / duration charts | `#138df4` / `#164f84` |
 | Comparison sequence | `#138df4`, `#2424a5`, `#f3773d`, `#147e8a`, `#a755ad` |
 | Heatmap low / high | `#e8f4ff` / `#0875cc` |
+| Better comparison ink / surface / border | `#18734a` / `#eef8f2` / `#b9dec8` |
+| Worse comparison | Existing error ink / surface / border tokens |
 | Keyboard focus | `#edaa30` |
 | Divided disclosure headings (preserved baseline) | `#174e69` |
 
@@ -54,3 +56,9 @@ The library is a React presentation adapter within ADR-0032, not a domain or API
 package. Feature adapters compose its slots and pass values/events; data fetching,
 report policy, permission decisions and ECharts remain outside the shared library.
 The analysis stylesheet now holds only feature arrangements and chart dimensions.
+
+Executive Overview composes ranking/matrix above daily trend/comparison cards.
+`ComparisonCard` uses the existing metric surface with semantic better/worse variants;
+neutral and unavailable states keep the baseline. Always pair color with comparison
+text. `MonthPicker` reuses labelled native input styling; KPI settings use the shared
+collapsible panel and controls. These are stable additions to identity v1.

@@ -81,3 +81,34 @@ test("drill-down carries location while grouping remains independent", () => {
   });
   expect(drillInto(regrouped, 3, "message", "Error").view).toBe(4);
 });
+
+test("Executive Overview rounds the current selection to one month and clears all hidden constraints", () => {
+  expect(
+    selectView(
+      {
+        ...historySelection(["2024-02-29"])!,
+        filters: { message: ["Jam"] },
+        metric: "duration",
+        page: 4,
+        search: "Jam",
+      },
+      0,
+    ),
+  ).toMatchObject({
+    from: "2024-02-01",
+    toExclusive: "2024-03-01",
+    executive: true,
+    dimension: "area",
+    period: "day",
+    metric: "frequency",
+    filters: {},
+    search: "",
+    page: 1,
+  });
+  const executive = selectView(historySelection(["2026-12-31"])!, 0);
+  expect(executive.toExclusive).toBe("2027-01-01");
+  expect(drillInto(executive, 0, "area", "Area A")).toMatchObject({
+    view: 2,
+    selection: { executive: false, filters: { area: ["Area A"] } },
+  });
+});
