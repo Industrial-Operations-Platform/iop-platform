@@ -100,7 +100,8 @@ publication approval remains separate from the local Docker update.
 
 Changed Markdown links, story/plan status, migration IDs and `git diff --check`
 were verified. Screenshots and test logs remain private local evidence under /tmp;
-no synthetic or real credentials were added to the repository.
+No operational credentials were added to the repository. Staged-index secret
+hygiene passed for 601 files; test credentials are explicitly synthetic fixtures.
 
 IOP-165 is complete for the requested local increment. Corporate identity binding,
 remote deployment, general user password recovery, multi-site/shared identities and
