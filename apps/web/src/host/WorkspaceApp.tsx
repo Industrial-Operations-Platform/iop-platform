@@ -5,6 +5,7 @@ import {
   SideNavigation,
   Button,
   Field,
+  IdentityRoot,
   Panel,
   Select,
 } from "../design/components";
@@ -73,6 +74,60 @@ export function WorkspaceApp({
     if (access) updateSession(await access.context());
   };
   const signedIn = context?.user && !context.mustChangePassword;
+  const signOut = () => {
+    if (!access) return;
+    setPending(true);
+    void access
+      .logout()
+      .then(updateSession)
+      .catch(setError)
+      .finally(() => setPending(false));
+  };
+  if (
+    access &&
+    (!context || (context.authentication === "password" && !signedIn))
+  ) {
+    return (
+      <IdentityRoot>
+        <main className="access-entry">
+          {!!error && (
+            <Alert>
+              {error instanceof Error ? error.message : "The operation failed."}
+            </Alert>
+          )}
+          {context ? (
+            <>
+              <LoginPanel
+                key={context.mustChangePassword ? "change" : "login"}
+                application={access}
+                changeRequired={!!context.mustChangePassword}
+                onSession={updateSession}
+              />
+              {context.user && (
+                <Button
+                  variant="secondary"
+                  onClick={signOut}
+                  disabled={pending}
+                >
+                  Sign out
+                </Button>
+              )}
+            </>
+          ) : (
+            <Panel>
+              <h1>Sign in to IOP</h1>
+              <Button
+                disabled={pending}
+                onClick={() => setConnectionAttempt((n) => n + 1)}
+              >
+                {pending ? "Connecting…" : "Retry connection"}
+              </Button>
+            </Panel>
+          )}
+        </main>
+      </IdentityRoot>
+    );
+  }
   return (
     <AppShell
       className="analysis-app"
@@ -103,14 +158,7 @@ export function WorkspaceApp({
               {context.user && access && (
                 <Button
                   variant="secondary"
-                  onClick={() => {
-                    setPending(true);
-                    void access
-                      .logout()
-                      .then(updateSession)
-                      .catch(setError)
-                      .finally(() => setPending(false));
-                  }}
+                  onClick={signOut}
                   disabled={pending}
                 >
                   Sign out
@@ -167,16 +215,7 @@ export function WorkspaceApp({
           {error instanceof Error ? error.message : "The operation failed."}
         </Alert>
       ) : null}
-      {context?.authentication === "password" &&
-      access &&
-      (!context.user || context.mustChangePassword) ? (
-        <LoginPanel
-          key={context.mustChangePassword ? "change" : "login"}
-          application={access}
-          changeRequired={!!context.mustChangePassword}
-          onSession={updateSession}
-        />
-      ) : page === "users" && context?.canAdminister && access ? (
+      {page === "users" && context?.canAdminister && access ? (
         <UserAdministration
           key={context.user?.id}
           application={access}

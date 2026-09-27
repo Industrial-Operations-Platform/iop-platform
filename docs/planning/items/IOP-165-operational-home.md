@@ -2,7 +2,8 @@
 
 ## Status and goal
 
-Completed locally on 2026-09-27. Requested by the owner on 2026-09-27 after accepting the existing
+Completed locally, including the owner-requested login layout correction.
+Requested by the owner on 2026-09-27 after accepting the existing
 charts as Data Analysis v1. Continue local Docker demonstrations; company-funded
 hosting and corporate identity integration remain later steps.
 
@@ -47,6 +48,9 @@ IOP-050–059 (workforce), IOP-060–075 (handover/maintenance) and IOP-106 (pro
 This story selects a bounded increment, not completion of those entire modules.
 
 ## Evidence and remaining work
+
+Follow-up completed: login and initial password change hide the workspace sidebar;
+see the [login layout evidence](../completed/IOP-165-login-layout-plan.md).
 
 [Completed home slice](../completed/IOP-165-operational-home-plan.md) and
 [completed access plan](../completed/IOP-165-transitional-access-plan.md). Temporary

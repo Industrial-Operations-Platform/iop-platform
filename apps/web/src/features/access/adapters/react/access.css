@@ -1,6 +1,11 @@
+.access-entry {
+  width: min(100%, 568px);
+  margin: 0 auto;
+  padding: clamp(32px, 12vh, 120px) 24px 40px;
+}
 .iop-ui .access-login {
   max-width: 520px;
-  margin: 30px auto;
+  margin: 0 auto 20px;
 }
 .access-login form {
   display: grid;
