@@ -4,6 +4,7 @@ import {
   type AnalysisGateway,
 } from "../src/features/analysis/application/workspace";
 import { WorkspaceApp } from "../src/host/WorkspaceApp";
+import { AccessApplication } from "../src/features/access/application/access";
 import type {
   ProfileResult,
   Report,
@@ -28,7 +29,7 @@ const profile: ProfileResult = {
     aliases: [{ field: "area", from: "Area,A", to: "Area A" }],
   },
 };
-function setup() {
+function setup(access?: AccessApplication) {
   const gateway = {
     messages: jest.fn().mockResolvedValue({ values: [], nextCursor: null }),
     context: jest.fn().mockResolvedValue({
@@ -80,10 +81,59 @@ function setup() {
   render(
     <WorkspaceApp
       application={new AnalysisWorkspace(gateway as unknown as AnalysisGateway)}
+      access={access}
     />,
   );
   return gateway;
 }
+
+test.each([true, false])(
+  "user management requires administration mode and permission (canAdminister=%s)",
+  async (canAdminister) => {
+    const users = jest.fn().mockResolvedValue([]);
+    setup(new AccessApplication({
+      context: jest.fn().mockResolvedValue({
+        enabled: true,
+        authentication: "password",
+        canImport: true,
+        canAdminister,
+        user: { id: "admin", name: "Administrator", profile: "administrator" },
+        users: [],
+        scope: null,
+      }),
+      users,
+      login: jest.fn(),
+      password: jest.fn(),
+      logout: jest.fn(),
+      create: jest.fn(),
+      change: jest.fn(),
+    }));
+    await screen.findByRole("heading", { name: "Welcome, Administrator" });
+    expect(screen.queryByRole("button", { name: "Users & profiles" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
+    await screen.findByText("Taskforce · Data Analysis");
+    expect(screen.queryByRole("button", { name: "Users & profiles" })).not.toBeInTheDocument();
+    expect(users).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Administration" }));
+    await screen.findByRole("heading", { name: "Add a daily CSV" });
+    if (canAdminister) {
+      fireEvent.click(screen.getByRole("button", { name: "Users & profiles" }));
+      await screen.findByRole("heading", { name: "Users & profiles" });
+      await waitFor(() => expect(users).toHaveBeenCalledTimes(1));
+      await waitFor(() => expect(screen.getByRole("button", { name: "Create user" })).toBeEnabled());
+    } else {
+      expect(screen.queryByRole("button", { name: "Users & profiles" })).not.toBeInTheDocument();
+      expect(users).not.toHaveBeenCalled();
+    }
+
+    fireEvent.click(screen.getByRole("button", { name: "Taskforce view" }));
+    await screen.findByText("Taskforce · Data Analysis");
+    expect(screen.queryByRole("button", { name: "Users & profiles" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Users & profiles" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Data analysis" })).toHaveAttribute("aria-current", "page");
+  },
+);
 
 test("direct detail entry uses months and an empty draft cannot replace applied results", async () => {
   const gateway = setup();
