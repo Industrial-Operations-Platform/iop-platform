@@ -1,3 +1,6 @@
+import type { HandoverApplication } from "../features/shift-handover/application/handover";
+import { HandoverWorkspace } from "../features/shift-handover/adapters/react/HandoverWorkspace";
+import { HandoverHighlights } from "../features/shift-handover/adapters/react/HandoverHighlights";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -21,11 +24,18 @@ import "../features/access/adapters/react/access.css";
 export function WorkspaceApp({
   application,
   access,
+  handover,
 }: {
   application: AnalysisWorkspace;
   access?: AccessApplication;
+  handover?: HandoverApplication;
 }) {
-  const [page, setPage] = useState<"start" | "analysis" | "users">("start");
+  const [page, setPage] = useState<"start" | "analysis" | "users" | "handover">(
+    "start",
+  );
+  const [handoverEntry, setHandoverEntry] = useState("");
+  const [handoverHighlights, setHandoverHighlights] = useState(false);
+  const [sector, setSector] = useState("");
   const [administration, setAdministration] = useState(false);
   const [context, setContext] = useState<SessionContext | null>(null),
     [error, setError] = useState<unknown>(),
@@ -74,7 +84,8 @@ export function WorkspaceApp({
     if (access) updateSession(await access.context());
   };
   const signedIn = context?.user && !context.mustChangePassword;
-  const showUserAdministration = signedIn && administration && context.canAdminister;
+  const showUserAdministration =
+    signedIn && administration && context.canAdminister;
   const signOut = () => {
     if (!access) return;
     setPending(true);
@@ -204,6 +215,9 @@ export function WorkspaceApp({
           items={[
             { id: "start", label: "Start" },
             { id: "analysis", label: "Data analysis" },
+            ...(handover && signedIn
+              ? [{ id: "handover" as const, label: "Shift Handover" }]
+              : []),
             ...(showUserAdministration
               ? [{ id: "users" as const, label: "Users & profiles" }]
               : []),
@@ -222,6 +236,17 @@ export function WorkspaceApp({
           application={access}
           onChanged={refreshSession}
         />
+      ) : page === "handover" && handover && signedIn ? (
+        <HandoverWorkspace
+          key={context.user?.id}
+          application={handover}
+          initialEntry={handoverEntry}
+          initialHighlights={handoverHighlights}
+          onEntryOpened={() => {
+            setHandoverEntry("");
+            setHandoverHighlights(false);
+          }}
+        />
       ) : page === "start" && context?.enabled && !error ? (
         <StartOverview
           key={context.user?.id ?? "no-user"}
@@ -233,6 +258,21 @@ export function WorkspaceApp({
               : undefined
           }
           authenticated={context.authentication === "password"}
+          onSectorChange={setSector}
+          operational={
+            handover && signedIn ? (
+              <HandoverHighlights
+                key={context.user?.id}
+                application={handover}
+                sector={sector}
+                open={(id, highlights) => {
+                  setHandoverEntry(id ?? "");
+                  setHandoverHighlights(!!highlights);
+                  setPage("handover");
+                }}
+              />
+            ) : undefined
+          }
           openAnalysis={() => {
             setAdministration(false);
             setPage("analysis");

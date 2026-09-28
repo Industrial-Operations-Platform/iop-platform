@@ -51,3 +51,12 @@ export function Actions({
 }) {
   return <div className={`iop-actions ${className}`}>{children}</div>;
 }
+
+export function Textarea({
+  className = "",
+  ...props
+}: ComponentProps<"textarea">) {
+  return (
+    <textarea {...props} className={`iop-input iop-textarea ${className}`} />
+  );
+}

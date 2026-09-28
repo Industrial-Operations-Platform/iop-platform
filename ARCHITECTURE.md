@@ -22,9 +22,11 @@ SQL drivers, transport schemas or presentation adapters.
 | `apps/api/src/modules/authentication/` | Provider-independent authentication use cases with local Argon2id and PostgreSQL session adapters |
 | `apps/api/src/modules/users-rbac/` | User administration, profile rules and scoped authorization with PostgreSQL adapters |
 | `apps/api/src/modules/integrations/` | Import lifecycle, CSV adapter, RAW retention, source-date admission and mapping snapshots |
+| `apps/api/src/modules/shift-handover/` | Operational entries, issue follow-up, immutable revisions and PostgreSQL storage under ADR-0036 |
 | `apps/api/src/modules/oip/` | Exact facts, analytical domain/use cases and outbound PostgreSQL reporting adapters |
 | `apps/web/src/features/analysis/` | Framework-free selection/use cases with HTTP, React and ECharts adapters |
 | `apps/web/src/features/access/` | Framework-free access use cases with HTTP and React login/administration adapters |
+| `apps/web/src/features/shift-handover/` | Journal/meeting use cases with HTTP and React adapters, composed into the workspace and Start |
 | `apps/web/src/host/` | Browser composition root and cross-feature workspace shell |
 | `apps/web/src/design/` | Shared identity tokens and reusable presentation components |
 
@@ -116,3 +118,8 @@ Industrial integrations are read-only; no plant control commands are included.
 See the [module map](docs/architecture/modules.md),
 [conceptual model](docs/architecture/data-model.md), [ADRs](docs/architecture/adr/)
 and [roadmap](ROADMAP.md). Proposed decisions are not accepted implementations.
+
+Shift Handover follows [ADR-0036](docs/architecture/adr/ADR-0036-shift-handover.md):
+operator-configured locations, explicit unverified equipment references and durable
+revision history, independent of analytics. [Setup and workflow](docs/development/shift-handover.md)
+document permissions and the deferred Workforce/Asset integrations.

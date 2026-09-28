@@ -323,3 +323,13 @@ Original CSV and immutable input facts are preserved. Reports join these catalog
 in one scoped SQL snapshot and reject missing/stale projection coverage. Physical
 FKs permit transient absence while reconstructing within a transaction; completed
 publication and visible reports require complete one-to-one source coverage.
+
+## Operational handover — IOP-168
+
+[ADR-0036](adr/ADR-0036-shift-handover.md) defines site-owned journal entries, exact
+external equipment references and immutable attributed revisions. Current snapshots
+and revision appends commit atomically; creation request keys are scoped to actor
+and site. Equipment references include namespace, code and configured location,
+without creating canonical assets from analytics. Authorship and responsibility
+reference same-site profiles. Calendar occurrence/deadline dates remain distinct
+from server creation instants. See [storage and operation](../development/shift-handover.md).

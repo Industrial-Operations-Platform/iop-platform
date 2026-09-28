@@ -48,7 +48,7 @@ beforeAll(async () => {
   };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(12);
+  expect(await migrate(configs.migrator)).toBe(13);
   await provision(configs);
   const hash = await new NodePasswords().hash(initial);
   for (const suffix of ["a", "b"]) {
@@ -250,6 +250,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     await page.getByLabel("Username", { exact: true }).fill("admin");
     await page.getByLabel("Password", { exact: true }).fill(chosen);
     await button("Sign in").click();
+    await button("Administration").click();
     await button("Users & profiles").click();
     await pw(
       page.getByRole("heading", { name: "Users & profiles" }),

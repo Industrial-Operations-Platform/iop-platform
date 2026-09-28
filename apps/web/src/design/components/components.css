@@ -496,3 +496,5 @@
 .iop-ui .iop-month-choices input {
   width: auto;
 }
+
+.iop-textarea { min-height: 6rem; resize: vertical; width: 100%; box-sizing: border-box; }

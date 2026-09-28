@@ -12,7 +12,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `IdentityRoot`, `AppShell` | Identity variables, typography, header, rail, main content and skip link |
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
 | `Button` | `primary`, `secondary`, `text`; native disabled and focus behavior |
-| `Field`, `Input`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
+| `Field`, `Input`, `Textarea`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
 | `ValueFilter` | Editable column value with native suggestions, unique accessible hint IDs and caller-owned matching semantics |
 | `FilterForm`, `Disclosure` | Form surface and native collapsible content; plain/panel/divided variants |
 | `Panel` | Content, chart, empty and metric surface treatments |

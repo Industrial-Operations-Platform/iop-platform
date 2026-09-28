@@ -47,3 +47,7 @@ provisioning/migration tools for that foundation stack. Consult the
 [database guide](../database/README.md) and
 [configuration contract](../../docs/development/local-configuration.md) when using
 those tools. Do not mix their credentials or volumes with the primary installation.
+
+Shift Handover uses the private `config/handover.json` created by the local launcher.
+Configure confirmed department/area identities there; no analytical imports are
+required. See [the operational guide](../../docs/development/shift-handover.md).

@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-In progress — implementation authorized following owner acceptance of [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md).
+Completed locally — first operational increment under [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md).
 Owner requested M7 on 2026-09-29. Keep the temporary login as delivered.
 
 ## Scope
@@ -20,25 +20,25 @@ separate. References and planned integration must preserve those boundaries.
 
 ## Acceptance
 
-- [ ] All four profiles can reach Shift Handover from the left navigation and
+- [x] All four profiles can reach Shift Handover from the left navigation and
   read authorized site history. Technicians can create durable entries.
-- [ ] Support configured Safety, Information, Successes, People, Performance
+- [x] Support configured Safety, Information, Successes, People, Performance
   and Problems categories and the requested meeting/matrix fields.
-- [ ] Capture department, optional area/equipment reference, short summary,
+- [x] Capture department, optional area/equipment reference, short summary,
   detail, author and occurrence/creation context; general site announcements
   do not require a fictional equipment reference.
-- [ ] Search/filter persistent department and equipment-reference history;
+- [x] Search/filter persistent department and equipment-reference history;
   preserve corrections and follow-up with actor/time evidence.
-- [ ] Track reported damage, inspection needs, repairs, blocked equipment and
+- [x] Track reported damage, inspection needs, repairs, blocked equipment and
   open issues without deriving equipment condition from alarm statistics.
-- [ ] Show a meeting summary and department matrix with responsibility,
+- [x] Show a meeting summary and department matrix with responsibility,
   deadlines and optional external work-order reference; pending issues survive
   date changes and later shift closure.
-- [ ] Start shows deliberately selected highlights and scoped sector context
+- [x] Start shows deliberately selected highlights and scoped sector context
   linking to the full entry. The module retains all entries.
-- [ ] Future M6 assignments may prefill location with an explicit override for
+- [x] Future M6 assignments may prefill location with an explicit override for
   assistance elsewhere; initial release supports manual location selection.
-- [ ] Apply shared visual components, English default UI, hexagonal boundaries,
+- [x] Apply shared visual components, English default UI, hexagonal boundaries,
   scoped permissions and database isolation; verify API, storage and browser paths.
 
 ## Dependencies and decisions
@@ -56,5 +56,10 @@ plant control, notifications, attachments or new deployment is authorized here.
 ## Evidence
 
 [Completed discovery plan](../completed/IOP-168-shift-handover-discovery-plan.md).
-ADR-0036 was explicitly accepted on 2026-09-29. The documentation increment
-delivers no operational behavior; implementation and its evidence follow.
+ADR-0036 was explicitly accepted on 2026-09-29. See the
+[implementation evidence](../completed/IOP-168-shift-handover-implementation-plan.md)
+and [operator guide](../../development/shift-handover.md). The owner approved the
+existing Halle/Bereich configuration as the initial operational catalog: 5
+departments and 89 areas are saved privately with stable IDs. Code and disposable
+test environments are validated; the operator's running Docker stack has not been
+rebuilt. Implementation merge/push remains subject to separate publication approval.

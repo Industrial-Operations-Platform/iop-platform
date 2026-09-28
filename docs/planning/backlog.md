@@ -17,8 +17,8 @@ IOP-165 delivers the operational home, temporary local authentication and four-p
 user administration under accepted ADR-0035. Corporate integration remains deferred.
 
 The owner requested operational M7 work on 2026-09-29 under
-[IOP-168](items/IOP-168-shift-handover.md). Requirements are captured; ADR-0036
-is Accepted by the owner and implementation is authorized.
+[IOP-168](items/IOP-168-shift-handover.md). The first journal increment is implemented
+and locally validated under Accepted ADR-0036, including operational history and selected Start highlights.
 
 IOP-001–006 and IOP-008 are Completed as design on this branch. Local API and web
 host implementation is completed under IOP-016/017. IOP-007, IOP-010, IOP-028
@@ -124,7 +124,8 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 The requested first operational increment is
 [IOP-168](items/IOP-168-shift-handover.md); the original parent stories below remain
-open. Its requirements/proposal do not complete their implementation.
+open. This bounded journal increment does not complete formal shifts, closure or
+canonical asset integration.
 
 | Task context | Status |
 | --- | --- |
@@ -300,4 +301,4 @@ open. Its requirements/proposal do not complete their implementation.
 | [IOP-165 — Operational home and transitional access](items/IOP-165-operational-home.md) | Completed |
 | [IOP-166 — Reset the file selection after successful import](items/IOP-166-import-form-reset.md) | Completed |
 | [IOP-167 — Restrict user management to administration mode](items/IOP-167-users-administration-mode.md) | Completed |
-| [IOP-168 — Operational Shift Handover](items/IOP-168-shift-handover.md) | In progress |
+| [IOP-168 — Operational Shift Handover](items/IOP-168-shift-handover.md) | Completed |

@@ -2,7 +2,7 @@
 
 Owner requirements captured on 2026-09-29 under
 [IOP-168](../planning/items/IOP-168-shift-handover.md).
-This is a delivery specification, not implemented behavior. Technical decisions
+This specifies the implemented first operational increment. Technical decisions
 and permission/lifecycle defaults are accepted in [ADR-0036](../architecture/adr/ADR-0036-shift-handover.md).
 
 ## Purpose and daily workflow
@@ -39,11 +39,11 @@ The generic domain stores category IDs, not customer-specific conditional logic.
 | Performance: Gesperrte Anlagen und offene Punkte | Performance | Reported equipment restrictions and open points |
 | Probleme | Problems | Challenge, cause, measure, responsible person and deadlines |
 
-| Field | Meaning / proposed behavior |
+| Field | Meaning / behavior |
 | --- | --- |
 | Date (`Datum`) | Date the work or observation occurred in the site calendar; default today, independently retain server creation time. No fabricated occurrence time. |
-| Summary (`Was?`) | Required short plain-text update, proposed maximum 240 characters |
-| Details | Optional expanded explanation, proposed maximum 4,000 characters |
+| Summary (`Was?`) | Required short plain-text update, maximum 240 characters |
+| Details | Optional expanded explanation, maximum 4,000 characters |
 | Department (`Abteilung` / `Halle`) | Scoped location selection; required for department work, optional for an explicitly site-wide announcement |
 | Area (`Bereich`) | Optional configured location within the selected department |
 | Equipment (`Betriebsmittelkennzeichen`) | Optional scoped external equipment reference; manual references must be visibly unverified until resolved by Asset Management |
@@ -57,7 +57,7 @@ The generic domain stores category IDs, not customer-specific conditional logic.
 | Feedback due (`Rückmeldung bis?`) | Separate optional date for the next response, not the completion deadline |
 | Follow-up | Explicit issue state: open, in progress, resolved; ordinary information has no issue state |
 | Discuss in meeting | Separate flag for meeting preparation |
-| Highlight on Start | Deliberate visibility selection; proposal limits publication management to explicit coordinator grants |
+| Highlight on Start | Deliberate visibility selection; the accepted permission contract limits publication management to explicit coordinator grants |
 
 Problem fields are progressive and may remain unknown at first report. Missing
 cause, assignee or deadline must not prevent reporting a safety concern or damage.
@@ -82,7 +82,7 @@ unresolved earlier entries. Initial date-based preparation does not claim a form
 shift identity or previous-shift interval before M6 exists.
 
 **Start:** show active highlights with summary, department, author/date, reported
-condition when supplied, and a link to the full entry. Proposed default: five most
+condition when supplied, and a link to the full entry. Default: five most
 recently highlighted entries, then a link to all active highlights. Highlight
 withdrawal removes prominence, not history. Show operational updates within sector
 context only through explicit location mappings; an unmapped department remains
@@ -124,3 +124,19 @@ Ultimo remains an external reference until an integration is separately requeste
   defaults do not prevent that override.
 - All profiles can navigate/read with their site grants; forged authors, foreign
   references, revoked access and unauthorized highlight management are denied.
+
+## Implementation notes
+
+The IOP-168 implementation uses 20-entry cursor pages and 25-revision history pages.
+Journal ordering is occurrence date, creation instant and ID descending; highlights
+use highlight time and ID. Meeting preparation retains a separately paginated list
+of unresolved issues across dates, with the other selected filters preserved.
+History queries use the current department/equipment link; earlier links and their
+original content remain visible in the entry's immutable revisions.
+
+Locations/categories are operator configuration, loaded at startup and scoped to
+one organization/site. Intermediate location nodes are supported; selecting an area
+requires it to belong to the selected department. Stable IDs must not be reassigned
+to another physical place. Existing snapshots preserve historical labels. See
+[setup and use](../development/shift-handover.md). Formal shift closure, canonical
+asset resolution and workforce defaults remain future module integration.

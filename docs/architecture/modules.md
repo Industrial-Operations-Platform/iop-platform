@@ -8,13 +8,12 @@ to implement every module, entity or lifecycle before the demonstration. Preserv
 scope and data invariants in delivered paths. The local selector is implemented
 under ADR-0018/0030/0034. [IOP-165](../planning/items/IOP-165-operational-home.md)
 implements temporary authenticated access and user administration under accepted
-[ADR-0035](adr/ADR-0035-transitional-authentication.md). Operational modules remain deferred, with honest Start
-placeholders. Existing identity, authorization and RLS requirements still apply.
+[ADR-0035](adr/ADR-0035-transitional-authentication.md). Shift Handover supplies operational entries and selected Start highlights under
+ADR-0036; Workforce, canonical Assets and Maintenance remain deferred. Existing identity, authorization and RLS requirements still apply.
 
 [IOP-168](../planning/items/IOP-168-shift-handover.md) captures the requested first
 Shift Handover increment. [ADR-0036](adr/ADR-0036-shift-handover.md) defines its accepted
-durable references and permissions before Workforce/Asset delivery; implementation
-is in progress. See the [product contract](../product/shift-handover.md).
+durable references and permissions before Workforce/Asset delivery; the first journal increment implements it. See the [product contract](../product/shift-handover.md).
 
 These are logical ownership boundaries, not generated packages or services.
 See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary.md).

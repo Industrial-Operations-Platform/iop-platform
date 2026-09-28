@@ -432,3 +432,12 @@ transaction under a source lock. Reset deletes only the selected source's derive
 facts/catalogs before its immutable facts/imports; it preserves preparation settings,
 foreign scope and identity grants. Use the [operator guide](../../docs/development/running-poc.md)
 for a non-destructive upgrade of an existing local installation.
+
+## Shift Handover — IOP-168
+
+Migration `20261001000000-shift-handover` adds site-scoped entries, exact equipment
+references and append-only revisions, plus contributor/coordinator role bundles.
+Existing active profiles with current site access receive explicit assignments;
+disabled memberships remain disabled. Runtime has no delete or revision-update
+privilege. The provisioning allowlist includes only the reviewed columns.
+See [setup, permissions and storage](../../docs/development/shift-handover.md).

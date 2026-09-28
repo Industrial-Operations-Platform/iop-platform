@@ -181,3 +181,10 @@ file source-row browsing and the KPI message catalog retain excluded-date data.
 JavaScript and the OpenAPI generator, never test files or retired source paths.
 Do not edit compiled files; rebuild after changing source. Database tooling follows
 the same clean-build policy in `npm run db:build`.
+
+## Shift Handover
+
+The host composes framework-free handover use cases with PostgreSQL, configured
+Platform Core locations and Users/RBAC lookup adapters. Routes under
+`/api/v1/handover` provide the site journal, immutable revision history, issue
+follow-up and selected Start highlights. See [the operational contract and guide](../../docs/development/shift-handover.md).

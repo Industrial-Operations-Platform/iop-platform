@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Alert, Button, Field, MetricCard, MetricGrid, PageHeading, Panel, Select,
   Table, TableViewport,
@@ -12,12 +12,14 @@ const formatNumber = (value: number) => new Intl.NumberFormat("en-GB", {
 }).format(value);
 
 /** Composes available analytical data; operational sources remain explicitly absent. */
-export function StartOverview({ application, context, openAnalysis, profileLabel, authenticated }: {
+export function StartOverview({ application, context, openAnalysis, profileLabel, authenticated, operational, onSectorChange }: {
   application: AnalysisWorkspace;
   context: DemoContext;
   openAnalysis: () => void;
   profileLabel?: string;
   authenticated?: boolean;
+  operational?: ReactNode;
+  onSectorChange?: (sector:string)=>void;
 }) {
   const [base, setBase] = useState<Report | null>(null);
   const [detail, setDetail] = useState<Report | null>(null);
@@ -33,6 +35,7 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
     setDetail(null);
     setSelection(null);
     setSector("");
+    onSectorChange?.("");
     setLoading(true);
     setError(undefined);
     if (!context.user) {
@@ -115,6 +118,7 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
               setDetail(null);
               setError(undefined);
               setSector(event.target.value);
+              onSectorChange?.(event.target.value);
             }}>
               <option value="">All sectors</option>
               {(base.options.sector ?? []).map((value) => <option key={value} value={value}>{value}</option>)}
@@ -146,7 +150,7 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
               {(base?.optionCounts.sector ?? 0) > (base?.options.sector?.length ?? 0) && <p>Sector choices are limited in this overview. Open Data Analysis to explore the full history.</p>}
             </>}
         </Panel>
-        <div className="analysis-home-grid">
+        {operational ?? <div className="analysis-home-grid">
           <Panel>
             <span className="analysis-home-label">Operational updates · Not connected</span>
             <h2>From your technicians</h2>
@@ -159,7 +163,7 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
             <p>Equipment restrictions, completed repairs and their sector will appear here.</p>
             <p className="analysis-home-muted">Status is unknown until operational records are available.</p>
           </Panel>
-        </div>
+        </div>}
       </>}
     </section>
   );

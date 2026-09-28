@@ -14,7 +14,7 @@ Workforce shift assignments, validated Asset Management identities and general
 audit delivery are not implemented. Existing analytical catalogs identify imported
 source values and can be rebuilt; they cannot own durable handover identity.
 
-Accepted ADR-0032 already defines the hexagonal architecture. This proposal addresses
+Accepted ADR-0032 already defines the hexagonal architecture. This decision addresses
 new cross-module reference ownership, record history and permission contracts,
 rather than selecting another framework or redesigning authentication.
 

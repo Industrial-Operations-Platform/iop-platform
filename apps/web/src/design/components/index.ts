@@ -5,6 +5,7 @@ export {
   FieldRow,
   FilterForm,
   Input,
+  Textarea,
   Select,
 } from "./Controls";
 export {
