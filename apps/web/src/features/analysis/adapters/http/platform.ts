@@ -1,4 +1,4 @@
-import type { components } from "./schema";
+import type { components } from "../../../../contracts/schema";
 export type Context = components["schemas"]["DemoContextDto"];
 export type ImportSummary = components["schemas"]["ImportSummaryDto"];
 export type ImportReview = components["schemas"]["ImportReviewDto"];

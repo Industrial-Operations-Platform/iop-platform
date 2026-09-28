@@ -18,6 +18,7 @@ services:
     env_file: .local-platform/setup.env
     environment: &local
       IOP_EXECUTION_MODE: local-container
+      IOP_AUTHENTICATION: password
       IOP_TRANSPORT: container
       HOST: 0.0.0.0
       PORT: '3000'

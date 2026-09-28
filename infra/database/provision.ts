@@ -108,6 +108,34 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
     allowedColumns.push(...facts); inserts.push(...facts);
     updates.push(...['sektor_id', 'bereich_id', 'betriebsmittel_id', 'meldetext_id', 'typ_id', 'meldegruppe_id', 'profile_version'].map(n => `analytics.fact_hitliste.${n}`));
   }
+  const accessInstalled = history.rows[0].object !== null && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20260930000000-transitional-access'",
+  )).rowCount === 1;
+  if (accessInstalled) {
+    schemas.push('authentication');
+    allowedColumns.push(...['organization_id', 'user_id', 'site_id', 'display_name', 'profile'].map(n => `users_rbac.profiles.${n}`));
+    inserts.push(...['organization_id', 'user_id', 'site_id', 'display_name', 'profile'].map(n => `users_rbac.profiles.${n}`));
+    updates.push(...['profile'].map(n => `users_rbac.profiles.${n}`));
+    allowedColumns.push(...['organization_id', 'user_id', 'role_id', 'is_active'].map(n => `users_rbac.organization_role_assignments.${n}`));
+    inserts.push(...['organization_id', 'user_id', 'role_id', 'is_active'].map(n => `users_rbac.organization_role_assignments.${n}`));
+    updates.push(...['is_active'].map(n => `users_rbac.organization_role_assignments.${n}`));
+    allowedColumns.push(...['organization_id', 'user_id', 'username', 'password_hash', 'must_change', 'version', 'failures', 'blocked_until'].map(n => `authentication.credentials.${n}`));
+    inserts.push(...['organization_id', 'user_id', 'username', 'password_hash', 'must_change', 'version', 'failures', 'blocked_until'].map(n => `authentication.credentials.${n}`));
+    updates.push(...['password_hash', 'must_change', 'version', 'failures', 'blocked_until'].map(n => `authentication.credentials.${n}`));
+    allowedColumns.push(...['digest', 'organization_id', 'user_id', 'credential_version', 'expires_at', 'revoked'].map(n => `authentication.sessions.${n}`));
+    inserts.push(...['digest', 'organization_id', 'user_id', 'credential_version', 'expires_at', 'revoked'].map(n => `authentication.sessions.${n}`));
+    updates.push(...['revoked'].map(n => `authentication.sessions.${n}`));
+    allowedColumns.push(...['organization_id', 'window_start', 'attempts'].map(n => `authentication.login_budget.${n}`));
+    inserts.push(...['organization_id', 'window_start', 'attempts'].map(n => `authentication.login_budget.${n}`));
+    updates.push(...['window_start', 'attempts'].map(n => `authentication.login_budget.${n}`));
+    allowedColumns.push(...['id', 'organization_id', 'actor_id', 'subject_id', 'action', 'detail', 'recorded_at'].map(n => `users_rbac.access_audit.${n}`));
+    inserts.push(...['id', 'organization_id', 'actor_id', 'subject_id', 'action', 'detail'].map(n => `users_rbac.access_audit.${n}`));
+    allowedColumns.push('users_rbac.site_role_assignments.is_active');
+    inserts.push('users_rbac.users.user_id','users_rbac.users.is_active',
+      ...['organization_id','user_id','is_active'].map(n => `users_rbac.organization_memberships.${n}`),
+      ...['organization_id','user_id','site_id','role_id'].map(n => `users_rbac.site_role_assignments.${n}`));
+    updates.push('users_rbac.organization_memberships.is_active','users_rbac.site_role_assignments.is_active');
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

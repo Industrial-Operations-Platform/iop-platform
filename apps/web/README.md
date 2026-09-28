@@ -38,10 +38,10 @@ For integration/browser prerequisites and actual CSV/history verification, use t
 [testing guide](../../docs/development/testing-poc.md). It distinguishes real database
 journeys from browser tests with intercepted HTTP responses.
 
-`src/features/analysis/adapters/http/schema.d.ts` derives from the reviewed API OpenAPI artifact, never Nest
+`src/contracts/schema.d.ts` derives from the reviewed API OpenAPI artifact, never Nest
 classes. After an authorized contract change, run `npm run openapi`, then
 `npm run contract --workspace @iop/web`, and review both diffs.
-HTTP responses are checked at the gateway boundary.
+Only HTTP adapters consume these generated bindings; application ports remain independent.
 
 ## Optional native development and build output
 
@@ -53,6 +53,8 @@ loopback on ports 5173 and 4173 and proxy same-origin API requests to port 3000.
 The retired fictional preview is removed. Every page load uses the connected
 workspace, including URLs retaining `?preview=1`. Only `src/main.tsx` remains at
 the source root; it mounts the host composition and shared `design/base.css`
-resets. Generated transport bindings and HTTP parsing stay inside the HTTP adapter.
+resets. Generated transport bindings live in `src/contracts`; HTTP parsing stays at the
+adapter boundary. `src/host/WorkspaceApp.tsx` composes the independent analysis and
+access features.
 Vite empties `dist/` before building, so only the current HTML and bundled assets
 remain. Tests and fixtures are not production build inputs.

@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --runInBand",
     "test:e2e": "playwright test",
-    "contract": "openapi-typescript ../api/contracts/openapi.json -o src/features/analysis/adapters/http/schema.d.ts",
+    "contract": "openapi-typescript ../api/contracts/openapi.json -o src/contracts/schema.d.ts",
     "contract:check": "node scripts/check-contract.mjs"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 # POC delivery status
 
-The current local platform is implemented and technically verified through IOP-158. Start with
+The local analytical platform is implemented through IOP-164. Start with
 `npm run local:up`; the [operator guide](../development/running-poc.md) owns execution
 instructions and seed reconciliation. The [POC scope](../product/scope-poc.md) owns
 product requirements. This page records delivery and outstanding acceptance.
@@ -30,11 +30,15 @@ downtime. Missing reporting dates do not mean zero failures.
 
 ## Open acceptance
 
-IOP-130 remains **In progress** for owner-observed usefulness. The earlier IOP-147
-experience received negative feedback; IOP-148–154 implement the subsequent requested
-corrections. Technical completion and publication do not substitute for that review.
+On 2026-09-27 the owner accepted the revised charts as **Data Analysis v1** and
+requested the next operational home/user increment under [IOP-165](items/IOP-165-operational-home.md).
+The earlier IOP-147 negative feedback remains historical evidence. IOP-130 stays
+**In progress** for consolidation of its measurement criteria, not missing usefulness
+feedback. Component acceptance does not publish or release the whole platform.
 See the [backlog](backlog.md) for the canonical item and all other task statuses.
-Deferred administration, authentication and operational modules are not POC blockers.
+Temporary local authentication and four-profile administration are implemented
+through IOP-165 under accepted ADR-0035. Other deferred operational modules are not v1
+analytical blockers. Start reuses live analysis and labels unavailable data explicitly.
 
 ## Historical evidence
 

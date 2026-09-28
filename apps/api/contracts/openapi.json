@@ -64,9 +64,65 @@
         ]
       }
     },
+    "/api/v1/session/context": {
+      "get": {
+        "operationId": "PlatformController_context[0]",
+        "parameters": [
+          {
+            "name": "X-IOP-Demo",
+            "in": "header",
+            "description": "Value 1 required on POST, together with an allowed Origin and local session cookie.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoContextDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid bounded input or unavailable reference.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Select a configured local demo user."
+          },
+          "403": {
+            "description": "Scope, current grants, host or browser origin denied."
+          },
+          "409": {
+            "description": "Revision changed or import capacity/recovery conflict."
+          },
+          "422": {
+            "description": "Exact analytical total exceeds the supported integer range."
+          },
+          "503": {
+            "description": "Local mode inactive, maintenance, busy upload or persistence unavailable."
+          }
+        },
+        "tags": [
+          "Local analytical POC"
+        ]
+      }
+    },
     "/api/v1/demo/context": {
       "get": {
-        "operationId": "PlatformController_context",
+        "operationId": "PlatformController_context[1]",
         "parameters": [
           {
             "name": "X-IOP-Demo",
@@ -1017,6 +1073,173 @@
           "Local analytical POC"
         ]
       }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AccessController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
+    },
+    "/api/v1/auth/password": {
+      "post": {
+        "operationId": "AccessController_password",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AccessController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "operationId": "AccessController_users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserProfileDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      },
+      "post": {
+        "operationId": "AccessController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedUserDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
+    },
+    "/api/v1/users/access": {
+      "post": {
+        "operationId": "AccessController_change",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
     }
   },
   "info": {
@@ -1115,6 +1338,9 @@
       "LocalUserDto": {
         "type": "object",
         "properties": {
+          "profile": {
+            "type": "string"
+          },
           "id": {
             "type": "string"
           },
@@ -1153,6 +1379,18 @@
       "DemoContextDto": {
         "type": "object",
         "properties": {
+          "authentication": {
+            "type": "string",
+            "enum": [
+              "password"
+            ]
+          },
+          "mustChangePassword": {
+            "type": "boolean"
+          },
+          "canAdminister": {
+            "type": "boolean"
+          },
           "canImport": {
             "type": "boolean"
           },
@@ -2590,6 +2828,150 @@
           "groups",
           "groupCounts",
           "reportingWindowStatus"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "SuccessDto": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok"
+        ]
+      },
+      "PasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true,
+            "minLength": 15,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "currentPassword",
+          "password"
+        ]
+      },
+      "UserProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string",
+            "enum": [
+              "administrator",
+              "technician",
+              "task-force",
+              "team-leader"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "username",
+          "profile",
+          "id",
+          "active"
+        ]
+      },
+      "NewUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string",
+            "enum": [
+              "administrator",
+              "technician",
+              "task-force",
+              "team-leader"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "username",
+          "profile"
+        ]
+      },
+      "CreatedUserDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserProfileDto"
+          },
+          "initialPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user",
+          "initialPassword"
+        ]
+      },
+      "ChangeUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string",
+            "enum": [
+              "administrator",
+              "technician",
+              "task-force",
+              "team-leader"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "profile",
+          "active"
         ]
       }
     }

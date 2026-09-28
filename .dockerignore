@@ -43,3 +43,4 @@
 !scripts/
 !scripts/local/
 !scripts/local/initialize.cjs
+!scripts/local/bootstrap-access.cjs

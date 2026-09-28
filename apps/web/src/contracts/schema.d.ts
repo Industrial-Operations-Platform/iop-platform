@@ -24,6 +24,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/session/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlatformController_context[0]"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/demo/context": {
         parameters: {
             query?: never;
@@ -31,7 +47,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["PlatformController_context"];
+        get: operations["PlatformController_context[1]"];
         put?: never;
         post?: never;
         delete?: never;
@@ -232,6 +248,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_password"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AccessController_users"];
+        put?: never;
+        post: operations["AccessController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_change"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -270,6 +366,7 @@ export interface components {
             status: "ok";
         };
         LocalUserDto: {
+            profile?: string;
             id: string;
             name: string;
         };
@@ -280,6 +377,10 @@ export interface components {
             siteTimeZone: string;
         };
         DemoContextDto: {
+            /** @enum {string} */
+            authentication?: "password";
+            mustChangePassword?: boolean;
+            canAdminister?: boolean;
             canImport: boolean;
             enabled: boolean;
             users: components["schemas"]["LocalUserDto"][];
@@ -624,6 +725,41 @@ export interface components {
             /** @enum {string} */
             reportingWindowStatus: "unknown";
         };
+        LoginDto: {
+            username: string;
+            password: string;
+        };
+        SuccessDto: {
+            ok: boolean;
+        };
+        PasswordDto: {
+            currentPassword: string;
+            password: string;
+        };
+        UserProfileDto: {
+            name: string;
+            username: string;
+            /** @enum {string} */
+            profile: "administrator" | "technician" | "task-force" | "team-leader";
+            id: string;
+            active: boolean;
+        };
+        NewUserDto: {
+            name: string;
+            username: string;
+            /** @enum {string} */
+            profile: "administrator" | "technician" | "task-force" | "team-leader";
+        };
+        CreatedUserDto: {
+            user: components["schemas"]["UserProfileDto"];
+            initialPassword: string;
+        };
+        ChangeUserDto: {
+            id: string;
+            /** @enum {string} */
+            profile: "administrator" | "technician" | "task-force" | "team-leader";
+            active: boolean;
+        };
     };
     responses: never;
     parameters: never;
@@ -689,7 +825,73 @@ export interface operations {
             };
         };
     };
-    PlatformController_context: {
+    "PlatformController_context[0]": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoContextDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PlatformController_context[1]": {
         parameters: {
             query?: never;
             header?: {
@@ -1717,6 +1919,136 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AccessController_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessDto"];
+                };
+            };
+        };
+    };
+    AccessController_password: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessDto"];
+                };
+            };
+        };
+    };
+    AccessController_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessDto"];
+                };
+            };
+        };
+    };
+    AccessController_users: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileDto"][];
+                };
+            };
+        };
+    };
+    AccessController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewUserDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatedUserDto"];
+                };
+            };
+        };
+    };
+    AccessController_change: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeUserDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessDto"];
+                };
             };
         };
     };

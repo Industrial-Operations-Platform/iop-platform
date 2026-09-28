@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class LocalUserDto {
+  @ApiPropertyOptional() profile?: string;
   @ApiProperty() id!: string;
   @ApiProperty() name!: string;
 }
@@ -10,6 +11,9 @@ export class DemoScopeDto {
   @ApiProperty() siteTimeZone!: string;
 }
 export class DemoContextDto {
+  @ApiPropertyOptional({ enum: ["password"] }) authentication?: "password";
+  @ApiPropertyOptional() mustChangePassword?: boolean;
+  @ApiPropertyOptional() canAdminister?: boolean;
   @ApiProperty() canImport!: boolean;
   @ApiProperty() enabled!: boolean;
   @ApiProperty({ type: [LocalUserDto] }) users!: LocalUserDto[];

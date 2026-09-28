@@ -152,11 +152,15 @@ function extract(backup) {
 function main() {
   const [command, backup, ...extra] = process.argv.slice(2);
   if (
-    !["up", "stop", "status"].includes(command) ||
+    !["up", "stop", "status", "admin"].includes(command) ||
     extra.length ||
-    (command !== "up" && backup)
+    (command !== "up" &&
+      !(command === "admin" && backup === "--reset") &&
+      backup)
   )
-    throw new Error("Use local:up [backup path], local:stop or local:status.");
+    throw new Error(
+      "Use local:up [backup path], local:stop, local:status or local:admin [--reset].",
+    );
   if (command === "up") {
     configuration();
     docker(["stop", "web", "api"]);
@@ -166,8 +170,18 @@ function main() {
     docker(["run", "--rm", "setup"]);
     docker(["up", "-d", "--wait", "api", "web"]);
     console.log(
-      "Platform ready at http://127.0.0.1:8080. Select Administrator to import or analyze.",
+      "Platform ready at http://127.0.0.1:8080. Sign in to use the platform. For first access, run npm run local:admin.",
     );
+  } else if (command === "admin") {
+    docker([
+      "run",
+      "--rm",
+      "-T",
+      "setup",
+      "node",
+      "scripts/local/bootstrap-access.cjs",
+      ...(backup ? [backup] : []),
+    ]);
   } else docker(command === "stop" ? ["stop"] : ["ps"]);
 }
 try {

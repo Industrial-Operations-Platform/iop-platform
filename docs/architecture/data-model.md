@@ -9,10 +9,10 @@ contract; original delivery handoffs below are not outstanding runtime blockers.
 The [local POC scope](../product/scope-poc.md) and [delivery map](../planning/poc-delivery.md)
 select the first analytical slices. The broader model below is not a requirement
 to implement every module, entity or lifecycle before the demonstration. Preserve
-scope and data invariants in delivered paths. Login/user administration and future
-operational modules are deferred; the local execution mechanism is Accepted, with implementation pending,
-in [ADR-0018](adr/ADR-0018-local-poc-execution-context.md), without changing accepted
-identity, authorization or RLS requirements by implication.
+scope and data invariants in delivered paths. Temporary local login and profile
+administration are delivered under [ADR-0035](adr/ADR-0035-transitional-authentication.md).
+Corporate identity binding and future operational modules remain deferred; existing
+identity, scoped authorization and RLS requirements continue to apply.
 
 This is primarily a conceptual baseline. The IOP-025 organization storage slice
 is implemented as described below. PostgreSQL is accepted;
@@ -34,6 +34,17 @@ Module ownership is defined in [modules](modules.md).
 | Ingestion | A source has import runs and preserved RAW records; normalized records retain source/run/record references and mapping version. |
 | Intelligence | Event occurrences or aggregates reference message definitions, source context and resolved assets where known. Assets and message definitions have an explicit many-to-many association. |
 | Audit | Records reference organization/site scope, actor, action, subject, time and correlation context; activity views are derived separately. |
+
+## Transitional access storage
+
+Authentication owns local credentials, session digests and login budgets. Users/RBAC
+owns organization/site profiles, organization access-administrator assignments and
+access-change audit, in addition to stable users/memberships/site grants. A profile
+selects fixed bundles; membership alone grants no permission. Disabling an account
+revokes sessions and local assignments while retaining its stable platform ID and
+historical references. The local installation supports one organization/site and
+exclusively owned local identities. See the [migration](../../infra/database/migrations/20260930000000-transitional-access.sql)
+for forced RLS, constraints and enumerated grants; corporate binding is future work.
 
 ## Asset identity and locator
 

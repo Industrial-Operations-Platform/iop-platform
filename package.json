@@ -42,7 +42,8 @@
     "analysis:load-reference": "node scripts/demo.cjs fixtures-reference",
     "local:up": "node scripts/local/platform.cjs up",
     "local:stop": "node scripts/local/platform.cjs stop",
-    "local:status": "node scripts/local/platform.cjs status"
+    "local:status": "node scripts/local/platform.cjs status",
+    "local:admin": "node scripts/local/platform.cjs admin"
   },
   "dependencies": {
     "node-pg-migrate": "9.0.0",

@@ -15,6 +15,7 @@ const names = [
   revision,
   "20260928000000-reporting-profiles",
   "20260929000000-hitliste-analytics",
+  "20260930000000-transitional-access",
 ];
 function target(env: NodeJS.ProcessEnv) {
   if (env.IOP_EXECUTION_MODE !== "local-demo" || env.NODE_ENV === "production")

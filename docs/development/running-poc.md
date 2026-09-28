@@ -1,8 +1,8 @@
 # Run and demonstrate the analytical POC
 
-The application supports **CSV → persistent history → analytical report templates**, with one local Administrator. This is a single trusted
-operator's loopback-only demonstration. Third-party authentication replaces the
-local user selector before shared use; no password or enterprise login is claimed.
+The application supports **CSV → persistent history → analytical report templates**, with individual local accounts. The Docker installation uses temporary password
+authentication under [ADR-0035](../architecture/adr/ADR-0035-transitional-authentication.md).
+It remains a loopback-only demonstration; corporate login and hosted/shared use are deferred.
 
 ## Primary local installation — Docker Compose
 
@@ -15,7 +15,9 @@ Port 8080 must be available. From the repository root:
 npm run local:up -- /absolute/path/to/wincc_local_20260729_123555.backup
 ```
 
-Open **http://127.0.0.1:8080** and select **Administrator**. Frontend, API and
+Run `npm run local:admin` once to issue the initial administrator login in your
+terminal. Open **http://127.0.0.1:8080**, sign in as **admin**, change the initial
+password and sign in again. Frontend, API and
 PostgreSQL are three separate services. Only the frontend is published to loopback;
 API and database ports remain internal. A temporary setup container provisions roles,
 executes migrations and imports the seed before the API starts. Business composition
@@ -64,6 +66,49 @@ and counts active restrictions, including a restricted month selection.
 **Clear filters** is always outside the disclosure and resets to all available
 months without dimension filters. Changes become visible in the local installation
 after rebuilding/restarting its web and API services, then reloading the browser.
+
+## Start overview
+
+After signing in, Start shows the current user's name and profile and the latest
+imported month's Data Analysis summary. Select a Sector / Halle to see its recorded
+Bereich groups; **Open Data Analysis** opens the full reporting workspace. Refresh
+the overview after new imports. Totals retain the report's calendar exclusions and
+coverage; alarm duration is not downtime or evidence of equipment condition.
+
+Weekly shifts/departments, technician publications and blocked/restored equipment
+are explicitly unavailable placeholders. No operational records are fabricated from
+alarm data.
+
+## Local accounts and profiles
+
+Open **Users & profiles** as Administrator to create users, assign one of the four
+profiles, or disable/reactivate a local account. Only Administrator has user
+administration and import/preparation tools. Technician, Task Force and Team Leader
+currently share analytical access; their differences await future modules.
+The API enforces these permissions even when called directly.
+
+Each new user receives an initial password shown once at creation. Deliver it to
+that user securely; they must choose a different password of 15–128 characters on
+first sign-in. There is no public registration or default password. Login is bounded
+to 20 attempts per minute for this installation and five failed attempts lock the
+account for 15 minutes. Sessions expire after eight hours; a new login replaces the
+previous session. Logout, password change and access changes revoke sessions.
+At least one active administrator must remain.
+
+`npm run local:admin` refuses to replace an existing login. For explicit recovery
+of the installation's original administrator, use `npm run local:admin -- --reset`;
+this issues a new initial password, restores its local administrator access and
+revokes its sessions. It requires an active identity owned exclusively by the
+configured organization and site. General user password recovery is deferred;
+there is no email service or corporate account binding yet.
+
+Local setup never reseeds existing account memberships after authentication is
+initialized. Existing platform IDs, analytical authorship and history are retained.
+User administration is limited to this installation's one organization/site; adding
+shared or multiple-site identities requires a separately reviewed integration.
+The legacy native demonstration selector remains only in explicit demo mode and
+is rejected by the Docker password-mode API. Never expose this HTTP stack to the
+LAN or internet; remote deployment requires HTTPS and secure cookies.
 
 ## Import, prepare and analyze
 

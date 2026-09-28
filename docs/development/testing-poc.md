@@ -34,7 +34,7 @@ The component commands retain their own builds so they also work independently.
 | --- | --- | --- |
 | `npm run typecheck` | API, web and database TypeScript checks | Type safety does not replace runtime tests. |
 | `npm test` | Builds; browser binding drift; API Jest/Supertest/process tests; web Jest/RTL; database configuration/CLI unit checks | Requires local listeners, but no Docker/browser. Includes real Nest injection, sanitized failures and OpenAPI drift. |
-| `npm run test:database` | Jest with disposable Testcontainers PostgreSQL; migrations, failed DDL rollback, reruns/concurrency, real-role denials and organization/site seed isolation | Includes actual-role import/query/reset isolation and a real Chromium CSV/history/user-switch journey. Requires Chromium as well as Docker. |
+| `npm run test:database` | Jest with disposable Testcontainers PostgreSQL; migrations, failed DDL rollback, reruns/concurrency, real-role denials and organization/site seed isolation | Includes actual-role import/query/reset isolation, a real Chromium CSV/history journey and local login/profile administration with direct forbidden-import checks. Requires Chromium as well as Docker. |
 | `npm run test:e2e` | Playwright Chromium against built web and API through the same-origin preview proxy; safe error recovery, navigation, responsive and accessible UI states | Exercises connected-workspace startup/recovery, the real health/context proxy and monthly filters/charts using explicit intercepted HTTP fixtures. The actual import journey runs in `test:database` against disposable PostgreSQL; neither is a Compose/Nginx certification. |
 
 ## Test placement and data isolation
@@ -65,13 +65,14 @@ interrupted run; never use broad volume deletion as test cleanup.
 | --- | --- |
 | CSV receipt and normalization | Known synthetic frequency/duration totals; exact budgets and one above; malformed/rejected input; renamed duplicate dates; no partial publication; bounded diagnostics and provenance. |
 | Local execution and persistence | Explicit grants/scope; missing and foreign access denied; real non-owner credentials; forced RLS, rollback/connection reuse and browser-origin rejection. Seed tests do not substitute for these. |
+| Temporary access | Initial password change, failed-login throttling, expiry/logout/revocation, four profiles, forbidden direct imports, scoped RLS and concurrent last-admin preservation. Framework-free use cases use replaceable ports; adapters use real PostgreSQL and Chromium. |
 | Overview and detail | Independent reconciled totals, shared filters and contributing rows; missing coverage and unknown reporting windows visible; unclassified records retained. |
 | Demonstration | Real import → overview → detail, duplicate/failure paths and separately guarded reset of the dedicated demo dataset. Record fixture size and observed timing without inventing a target. |
 
 Extend the nearest owning suite and keep expected, error and relevant denied-access
 cases together. HTTP tests use real application composition; database isolation
 checks use real roles; browser fixtures must be identified as such. No arbitrary
-coverage percentage, performance SLA, full login suite, worker tests, new testing
+coverage percentage, performance SLA, corporate-provider suite, worker tests, new testing
 framework or CI/hook implementation is introduced. IOP-021 owns future CI.
 
 See the [API guide](../../apps/api/README.md),

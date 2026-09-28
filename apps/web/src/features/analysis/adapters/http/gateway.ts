@@ -1,5 +1,5 @@
 import { api } from "./platform";
-import type { components } from "./schema";
+import type { components } from "../../../../contracts/schema";
 import type { AnalysisGateway } from "../../application/workspace";
 import type {
   ReportRequest,
