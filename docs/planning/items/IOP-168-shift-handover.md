@@ -2,8 +2,7 @@
 
 ## Status and authorization
 
-In progress — requirements and architecture proposal; implementation awaits
-acceptance of [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md).
+In progress — implementation authorized following owner acceptance of [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md).
 Owner requested M7 on 2026-09-29. Keep the temporary login as delivered.
 
 ## Scope
@@ -57,5 +56,5 @@ plant control, notifications, attachments or new deployment is authorized here.
 ## Evidence
 
 [Completed discovery plan](../completed/IOP-168-shift-handover-discovery-plan.md).
-Product and architectural choices beyond the owner's explicit requirements remain
-proposals. No operational feature is delivered by the documentation increment.
+ADR-0036 was explicitly accepted on 2026-09-29. The documentation increment
+delivers no operational behavior; implementation and its evidence follow.

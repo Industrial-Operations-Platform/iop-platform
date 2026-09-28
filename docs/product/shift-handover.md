@@ -3,7 +3,7 @@
 Owner requirements captured on 2026-09-29 under
 [IOP-168](../planning/items/IOP-168-shift-handover.md).
 This is a delivery specification, not implemented behavior. Technical decisions
-and proposed permission/lifecycle defaults await [ADR-0036](../architecture/adr/ADR-0036-shift-handover.md).
+and permission/lifecycle defaults are accepted in [ADR-0036](../architecture/adr/ADR-0036-shift-handover.md).
 
 ## Purpose and daily workflow
 

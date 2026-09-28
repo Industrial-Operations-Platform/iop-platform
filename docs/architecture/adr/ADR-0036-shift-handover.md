@@ -2,8 +2,8 @@
 
 ## Status
 
-Proposed, 2026-09-29, under [IOP-168](../../planning/items/IOP-168-shift-handover.md).
-No acceptance or runtime permission follows from documenting or publishing this ADR.
+Accepted by the owner on 2026-09-29, under [IOP-168](../../planning/items/IOP-168-shift-handover.md).
+The owner explicitly approved this decision and authorized implementation.
 
 ## Context
 
@@ -18,7 +18,7 @@ Accepted ADR-0032 already defines the hexagonal architecture. This proposal addr
 new cross-module reference ownership, record history and permission contracts,
 rather than selecting another framework or redesigning authentication.
 
-## Proposed decision
+## Decision
 
 ### Ownership and references
 
@@ -88,7 +88,7 @@ query windows and pages; return stable cursor pagination with explicit coverage.
 
 Keep current authentication and platform IDs. Introduce explicit site-role bundles;
 never expand `analytics-reader` into operational write permission or trust profile
-labels sent by the browser. Proposed grants are:
+labels sent by the browser. Accepted grants are:
 
 | Bundle / permission | Allowed behavior |
 | --- | --- |
@@ -98,7 +98,7 @@ labels sent by the browser. Proposed grants are:
 
 All four local profiles receive an explicit contributor assignment at their
 configured site. Administrator and Team Leader additionally receive coordinator
-assignments. This distinction is a proposal requiring acceptance, not inferred
+assignments. The owner explicitly accepted this distinction; it is not inferred
 from existing profile names. A contributor may nominate a responsible site user
 when creating their own issue; subsequent reassignment is coordinator-controlled.
 All contributors can mark their own topics for meeting discussion; discussion
@@ -142,8 +142,7 @@ catalog and explicit unverified references allow early delivery, with later alia
 resolution required for complete canonical equipment history.
 
 Separate contributor/coordinator grants provide reviewable highlight management.
-The owner may instead choose different bundles before acceptance; visibility for
-all profiles does not by itself select mutation authority.
+Visibility for all profiles does not by itself select mutation authority.
 
 ## Required verification before delivery
 

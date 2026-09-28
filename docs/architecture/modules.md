@@ -12,9 +12,9 @@ implements temporary authenticated access and user administration under accepted
 placeholders. Existing identity, authorization and RLS requirements still apply.
 
 [IOP-168](../planning/items/IOP-168-shift-handover.md) captures the requested first
-Shift Handover increment. [ADR-0036](adr/ADR-0036-shift-handover.md) proposes its
-durable references and permissions before Workforce/Asset delivery; it is not
-accepted or implemented. See the [product contract](../product/shift-handover.md).
+Shift Handover increment. [ADR-0036](adr/ADR-0036-shift-handover.md) defines its accepted
+durable references and permissions before Workforce/Asset delivery; implementation
+is in progress. See the [product contract](../product/shift-handover.md).
 
 These are logical ownership boundaries, not generated packages or services.
 See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary.md).

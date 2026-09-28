@@ -18,7 +18,7 @@ user administration under accepted ADR-0035. Corporate integration remains defer
 
 The owner requested operational M7 work on 2026-09-29 under
 [IOP-168](items/IOP-168-shift-handover.md). Requirements are captured; ADR-0036
-remains Proposed and dependent implementation awaits acceptance.
+is Accepted by the owner and implementation is authorized.
 
 IOP-001–006 and IOP-008 are Completed as design on this branch. Local API and web
 host implementation is completed under IOP-016/017. IOP-007, IOP-010, IOP-028
