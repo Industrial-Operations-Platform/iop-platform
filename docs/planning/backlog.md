@@ -16,6 +16,10 @@ as Data Analysis v1 on 2026-09-27; IOP-130 retains remaining measurement closure
 IOP-165 delivers the operational home, temporary local authentication and four-profile
 user administration under accepted ADR-0035. Corporate integration remains deferred.
 
+The owner requested operational M7 work on 2026-09-29 under
+[IOP-168](items/IOP-168-shift-handover.md). Requirements are captured; ADR-0036
+remains Proposed and dependent implementation awaits acceptance.
+
 IOP-001–006 and IOP-008 are Completed as design on this branch. Local API and web
 host implementation is completed under IOP-016/017. IOP-007, IOP-010, IOP-028
 and IOP-031 are Deferred beyond
@@ -117,6 +121,10 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-059 — Assignment history](items/IOP-059-assignment-history.md) | Proposed |
 
 ## M7 — Shift Handover
+
+The requested first operational increment is
+[IOP-168](items/IOP-168-shift-handover.md); the original parent stories below remain
+open. Its requirements/proposal do not complete their implementation.
 
 | Task context | Status |
 | --- | --- |
@@ -292,3 +300,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-165 — Operational home and transitional access](items/IOP-165-operational-home.md) | Completed |
 | [IOP-166 — Reset the file selection after successful import](items/IOP-166-import-form-reset.md) | Completed |
 | [IOP-167 — Restrict user management to administration mode](items/IOP-167-users-administration-mode.md) | Completed |
+| [IOP-168 — Operational Shift Handover](items/IOP-168-shift-handover.md) | In progress |
