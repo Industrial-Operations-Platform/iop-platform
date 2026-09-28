@@ -21,3 +21,5 @@ No API, permissions or persistence changes are required.
 ## Evidence and remaining work
 
 See the [completed execution plan](../completed/IOP-167-users-administration-mode-plan.md).
+The owner-approved Docker update and publication preparation are recorded in the
+[local update plan](../completed/IOP-167-local-publication-plan.md).

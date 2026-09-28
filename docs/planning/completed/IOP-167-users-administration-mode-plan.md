@@ -32,4 +32,5 @@ Branch: `fix/IOP-167-users-administration-mode`, created from clean `develop`.
 ## Closure
 
 Acceptance is complete; item/backlog synchronized and plan archived for review.
-Local commit only; publication requires the owner's approval.
+The owner subsequently approved publication and the Docker update; see the
+[follow-up evidence](IOP-167-local-publication-plan.md).
