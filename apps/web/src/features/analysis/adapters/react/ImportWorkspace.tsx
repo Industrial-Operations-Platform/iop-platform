@@ -89,6 +89,7 @@ function ImportFiles({
   setPending: (value: boolean) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<unknown>();
   const [review, setReview] = useState<ImportReview | null>(null);
@@ -106,9 +107,15 @@ function ImportFiles({
     setError(undefined);
     setReview(null);
     try {
-      setReview(
-        await application.gateway.upload(file.name, await file.arrayBuffer()),
+      const result = await application.gateway.upload(
+        file.name,
+        await file.arrayBuffer(),
       );
+      setReview(result);
+      if (result.outcome === "succeeded") {
+        setFile(null);
+        setFileInputKey((key) => key + 1);
+      }
       setConfirmed(false);
     } catch (e) {
       setError(e);
@@ -151,6 +158,7 @@ function ImportFiles({
           <Field>
             CSV file
             <Input
+              key={fileInputKey}
               type="file"
               accept=".csv"
               disabled={pending}

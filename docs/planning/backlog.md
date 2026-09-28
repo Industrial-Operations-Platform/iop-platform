@@ -290,3 +290,4 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-163 — Selected-month component totals and Pareto charts](items/IOP-163-component-pareto.md) | Completed |
 | [IOP-164 — Hexagonal boundaries and artifact cleanup](items/IOP-164-hexagonal-cleanup.md) | Completed |
 | [IOP-165 — Operational home and transitional access](items/IOP-165-operational-home.md) | Completed |
+| [IOP-166 — Reset the file selection after successful import](items/IOP-166-import-form-reset.md) | Completed |
