@@ -67,14 +67,23 @@ function setup(history: ImportSummary[] = []) {
     }),
   };
   const onImported = jest.fn();
-  render(
+  const application = new AnalysisWorkspace(gateway as unknown as AnalysisGateway);
+  const { rerender } = render(
     <ImportWorkspace
-      application={new AnalysisWorkspace(gateway as unknown as AnalysisGateway)}
+      application={application}
       history={history}
       onImported={onImported}
     />,
   );
-  return { gateway, onImported };
+  const refreshHistory = (nextHistory: ImportSummary[]) =>
+    rerender(
+      <ImportWorkspace
+        application={application}
+        history={nextHistory}
+        onImported={onImported}
+      />,
+    );
+  return { gateway, onImported, refreshHistory };
 }
 function selectFile(name = "Hitliste-20260701.csv") {
   const file = new File(["csv"], name, { type: "text/csv" });
@@ -135,6 +144,68 @@ test("known successful date claims block upload and open existing inspection", a
   expect(gateway.review).toHaveBeenCalledWith("file", false);
   expect(gateway.upload).not.toHaveBeenCalled();
 });
+
+test("successful import clears the file selection before refreshed history and allows the next file", async () => {
+  const { gateway, onImported, refreshHistory } = setup();
+  selectFile();
+  expect(
+    (screen.getByLabelText("CSV file") as HTMLInputElement).files,
+  ).toHaveLength(1);
+  fireEvent.click(screen.getByLabelText("Confirm reporting date: 2026-07-01"));
+  fireEvent.click(screen.getByRole("button", { name: "Import CSV" }));
+  await screen.findByRole("heading", { name: "Import complete" });
+  expect(onImported).toHaveBeenCalledTimes(1);
+  refreshHistory([
+    { ...review, receivedAt: "2026-07-02T00:00:00Z", submittedBy: "admin" },
+  ]);
+
+  const input = screen.getByLabelText("CSV file") as HTMLInputElement;
+  expect(input.files).toHaveLength(0);
+  expect(input).toHaveValue("");
+  expect(screen.queryByText(/Selected file:/)).not.toBeInTheDocument();
+  expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Import CSV" })).toBeDisabled();
+  expect(screen.getByRole("region", { name: "Import review" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Review" })).toBeVisible();
+  expect(gateway.upload).toHaveBeenCalledTimes(1);
+
+  selectFile();
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "already has an accepted file",
+  );
+  expect(screen.getByRole("button", { name: "Import CSV" })).toBeDisabled();
+  selectFile("Hitliste-20260702.csv");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    screen.getByLabelText("Confirm reporting date: 2026-07-02"),
+  ).not.toBeChecked();
+  expect(screen.getByRole("button", { name: "Import CSV" })).toBeDisabled();
+  fireEvent.click(screen.getByLabelText("Confirm reporting date: 2026-07-02"));
+  expect(screen.getByRole("button", { name: "Import CSV" })).toBeEnabled();
+});
+
+test.each([
+  ["rejected", "Import rejected"],
+  ["failed", "Import failed"],
+  ["received", "Awaiting final outcome"],
+])(
+  "preserves the selected file when the upload outcome is %s",
+  async (outcome, heading) => {
+    const { gateway } = setup();
+    gateway.upload.mockResolvedValueOnce({ ...review, outcome });
+    selectFile();
+    fireEvent.click(screen.getByLabelText("Confirm reporting date: 2026-07-01"));
+    fireEvent.click(screen.getByRole("button", { name: "Import CSV" }));
+    await screen.findByRole("heading", { name: heading });
+    expect(
+      (screen.getByLabelText("CSV file") as HTMLInputElement).files?.[0]?.name,
+    ).toBe("Hitliste-20260701.csv");
+    expect(screen.getByText(/Selected file:/)).toHaveTextContent(
+      "Hitliste-20260701.csv",
+    );
+  },
+);
 
 test("server duplicate races and partial rejected inspections are reported without success claims", async () => {
   const { gateway, onImported } = setup();
@@ -203,6 +274,12 @@ test("invalid calendar dates are blocked and interrupted uploads refresh history
     "review any received attempt",
   );
   expect(onImported).toHaveBeenCalledTimes(1);
+  expect(
+    (screen.getByLabelText("CSV file") as HTMLInputElement).files?.[0]?.name,
+  ).toBe("Hitliste-20260701.csv");
+  expect(screen.getByText(/Selected file:/)).toHaveTextContent(
+    "Hitliste-20260701.csv",
+  );
 });
 
 test("preparation and KPI editors mount separately and load the latest shared profile", async () => {
