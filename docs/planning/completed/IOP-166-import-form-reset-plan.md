@@ -37,4 +37,21 @@ Scope: [IOP-166](../items/IOP-166-import-form-reset.md).
 The file input remounts after success to reset browser-owned selection alongside
 React state. The review remains mounted and history still refreshes. No API,
 database, authentication or deployment changes. Browser/Docker validation was not
-run; behavior was verified through the React component tests.
+run during implementation; behavior was verified through the React component tests.
+
+## Authorized publication and local container update
+
+The owner approved merging the story into `develop`, pushing both branches to
+`origin`, and updating the local Docker application on 2026-09-28.
+Rebuild and recreate the `web` service using `compose.platform.yaml`, then verify
+container health and the served asset against the new build. The change only
+affects the frontend; existing API/database containers and volumes remain in place.
+Record the results before committing this follow-up and publishing both branches.
+
+- `docker compose -f compose.platform.yaml build web` and
+  `docker compose -f compose.platform.yaml up -d --no-deps --wait web` passed.
+- Web, API and database are healthy; only the web container was recreated.
+- HTTP requests to `http://127.0.0.1:8080/` and its JavaScript asset returned 200.
+  The served `/assets/index-MqoXVrLU.js` is byte-identical to the validated local
+  build (SHA-256 `4f11d22bd45e9cf118151a5ef94302dad79c3250598d4d965b08a0196bfd8882`).
+- After fetching `origin`, local and remote `develop` matched before integration.
