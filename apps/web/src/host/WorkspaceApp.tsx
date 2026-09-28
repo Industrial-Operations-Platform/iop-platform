@@ -74,6 +74,7 @@ export function WorkspaceApp({
     if (access) updateSession(await access.context());
   };
   const signedIn = context?.user && !context.mustChangePassword;
+  const showUserAdministration = signedIn && administration && context.canAdminister;
   const signOut = () => {
     if (!access) return;
     setPending(true);
@@ -203,7 +204,7 @@ export function WorkspaceApp({
           items={[
             { id: "start", label: "Start" },
             { id: "analysis", label: "Data analysis" },
-            ...(signedIn && context.canAdminister
+            ...(showUserAdministration
               ? [{ id: "users" as const, label: "Users & profiles" }]
               : []),
           ]}
@@ -215,7 +216,7 @@ export function WorkspaceApp({
           {error instanceof Error ? error.message : "The operation failed."}
         </Alert>
       ) : null}
-      {page === "users" && context?.canAdminister && access ? (
+      {page === "users" && showUserAdministration && access ? (
         <UserAdministration
           key={context.user?.id}
           application={access}
