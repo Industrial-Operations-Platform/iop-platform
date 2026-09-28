@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-Completed locally — first operational increment under [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md).
+Completed — first operational increment under [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md).
 Owner requested M7 on 2026-09-29. Keep the temporary login as delivered.
 
 ## Scope
@@ -61,5 +61,7 @@ ADR-0036 was explicitly accepted on 2026-09-29. See the
 and [operator guide](../../development/shift-handover.md). The owner approved the
 existing Halle/Bereich configuration as the initial operational catalog: 5
 departments and 89 areas are saved privately with stable IDs. Code and disposable
-test environments are validated; the operator's running Docker stack has not been
-rebuilt. Implementation merge/push remains subject to separate publication approval.
+test environments are validated. The owner subsequently authorized implementation
+merge/push and the local Docker update; the rebuilt stack is healthy and loads the
+approved catalog. Existing accounts were preserved and all 78 historical seed dates
+reconciled unchanged. See the [activation record](../completed/IOP-168-shift-handover-publication-plan.md).
