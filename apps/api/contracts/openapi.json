@@ -1240,6 +1240,151 @@
           "Local access"
         ]
       }
+    },
+    "/api/v1/handover/context": {
+      "get": {
+        "operationId": "HandoverController_context",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverContextDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/query": {
+      "post": {
+        "operationId": "HandoverController_query",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/entries": {
+      "post": {
+        "operationId": "HandoverController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverEntryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/change": {
+      "post": {
+        "operationId": "HandoverController_change",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverChangeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverEntryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/history": {
+      "post": {
+        "operationId": "HandoverController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
     }
   },
   "info": {
@@ -2972,6 +3117,484 @@
           "id",
           "profile",
           "active"
+        ]
+      },
+      "HandoverLocationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "sectorKey": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "department",
+              "area",
+              "location"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "parentId",
+          "sectorKey",
+          "role"
+        ]
+      },
+      "HandoverChoiceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label"
+        ]
+      },
+      "HandoverPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "HandoverContextDto": {
+        "type": "object",
+        "properties": {
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverLocationDto"
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverChoiceDto"
+            }
+          },
+          "people": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverPersonDto"
+            }
+          },
+          "canCoordinate": {
+            "type": "boolean"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "externalSystemLabel": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "locations",
+          "categories",
+          "people",
+          "canCoordinate",
+          "actorId",
+          "externalSystemLabel",
+          "timeZone"
+        ]
+      },
+      "HandoverSelectionDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "equipmentReferenceId": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "search": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "",
+              "none",
+              "open",
+              "in-progress",
+              "resolved",
+              "pending"
+            ]
+          },
+          "highlights": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "departmentId",
+          "areaId",
+          "equipmentReferenceId",
+          "categoryId",
+          "search",
+          "cursor",
+          "state",
+          "highlights"
+        ]
+      },
+      "HandoverContentDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "equipmentCode": {
+            "type": "string"
+          },
+          "equipmentNamespace": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "",
+              "damaged",
+              "inspection-needed",
+              "blocked",
+              "repaired",
+              "restored"
+            ]
+          },
+          "externalReference": {
+            "type": "string"
+          },
+          "challenge": {
+            "type": "string"
+          },
+          "cause": {
+            "type": "string"
+          },
+          "measure": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string"
+          },
+          "feedbackDueDate": {
+            "type": "string"
+          },
+          "discuss": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "date",
+          "categoryId",
+          "summary",
+          "details",
+          "departmentId",
+          "areaId",
+          "equipmentCode",
+          "equipmentNamespace",
+          "condition",
+          "externalReference",
+          "challenge",
+          "cause",
+          "measure",
+          "dueDate",
+          "feedbackDueDate",
+          "discuss"
+        ]
+      },
+      "HandoverEntryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "departmentLabel": {
+            "type": "string"
+          },
+          "areaLabel": {
+            "type": "string"
+          },
+          "categoryLabel": {
+            "type": "string"
+          },
+          "equipmentReferenceId": {
+            "type": "string"
+          },
+          "responsibleId": {
+            "type": "string"
+          },
+          "responsibleName": {
+            "type": "string"
+          },
+          "highlightedAt": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "content": {
+            "$ref": "#/components/schemas/HandoverContentDto"
+          },
+          "issueState": {
+            "type": "string",
+            "enum": [
+              "none",
+              "open",
+              "in-progress",
+              "resolved"
+            ]
+          },
+          "highlighted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "authorId",
+          "authorName",
+          "createdAt",
+          "updatedAt",
+          "departmentLabel",
+          "areaLabel",
+          "categoryLabel",
+          "equipmentReferenceId",
+          "responsibleId",
+          "responsibleName",
+          "highlightedAt",
+          "revision",
+          "content",
+          "issueState",
+          "highlighted"
+        ]
+      },
+      "HandoverPageDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverEntryDto"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "entries",
+          "nextCursor",
+          "total"
+        ]
+      },
+      "HandoverCreateDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "responsibleId": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/HandoverContentDto"
+          },
+          "issue": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "responsibleId",
+          "content",
+          "issue"
+        ]
+      },
+      "HandoverChangeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "correct",
+              "follow-up",
+              "state",
+              "assign",
+              "highlight"
+            ]
+          },
+          "content": {
+            "$ref": "#/components/schemas/HandoverContentDto"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "none",
+              "open",
+              "in-progress",
+              "resolved"
+            ]
+          },
+          "responsibleId": {
+            "type": "string"
+          },
+          "highlighted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "note",
+          "expectedRevision",
+          "action"
+        ]
+      },
+      "HandoverHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "before": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "before"
+        ]
+      },
+      "HandoverRevisionDto": {
+        "type": "object",
+        "properties": {
+          "entry": {
+            "$ref": "#/components/schemas/HandoverEntryDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry",
+          "actorId",
+          "actorName",
+          "action",
+          "note",
+          "at"
+        ]
+      },
+      "HandoverHistoryDto": {
+        "type": "object",
+        "properties": {
+          "entry": {
+            "$ref": "#/components/schemas/HandoverEntryDto"
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverRevisionDto"
+            }
+          },
+          "nextBefore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "entry",
+          "revisions",
+          "nextBefore"
         ]
       }
     }

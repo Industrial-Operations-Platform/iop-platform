@@ -93,6 +93,13 @@ async function main() {
       "UPDATE users_rbac.organization_memberships SET is_active=true WHERE organization_id=$1 AND user_id=$2",
       [org, user],
     );
+    for (const role of ["handover-contributor", "handover-coordinator"]) {
+      await client.query(
+        `INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id)
+        VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`,
+        [org, user, site, role],
+      );
+    }
     await client.query(
       "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE organization_id=$1 AND user_id=$2 AND site_id=$3",
       [org, user, site],

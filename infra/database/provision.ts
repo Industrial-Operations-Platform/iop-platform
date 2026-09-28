@@ -136,6 +136,21 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
       ...['organization_id','user_id','site_id','role_id'].map(n => `users_rbac.site_role_assignments.${n}`));
     updates.push('users_rbac.organization_memberships.is_active','users_rbac.site_role_assignments.is_active');
   }
+  const handoverInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261001000000-shift-handover'",
+  )).rowCount;
+  if (handoverInstalled) {
+    schemas.push('shift_handover');
+    for (const [table, columns] of Object.entries({
+      equipment_references: ['organization_id','site_id','id','namespace','code','department_id','area_id'],
+      entries: ['organization_id','site_id','id','author_id','responsible_id','equipment_id','occurrence_date','created_at','revision','snapshot','request_key','fingerprint'],
+      revisions: ['organization_id','site_id','entry_id','revision','actor_id','recorded_at','snapshot'],
+    })) {
+      allowedColumns.push(...columns.map(n=>`shift_handover.${table}.${n}`));
+      inserts.push(...columns.map(n=>`shift_handover.${table}.${n}`));
+    }
+    updates.push(...['responsible_id','equipment_id','occurrence_date','revision','snapshot'].map(n=>`shift_handover.entries.${n}`));
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

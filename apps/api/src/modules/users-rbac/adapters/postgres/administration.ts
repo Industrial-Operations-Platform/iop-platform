@@ -176,7 +176,12 @@ class PgAdministrationTransaction implements AdministrationTransaction {
       [org, id, active && profile === "administrator"],
     );
     // Restoration receives an explicit profile; old grants never silently reactivate.
-    for (const role of ["analytics-reader", "site-operator"]) {
+    for (const role of [
+      "analytics-reader",
+      "site-operator",
+      "handover-contributor",
+      "handover-coordinator",
+    ]) {
       await this.client.query(
         `INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id)
         VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`,

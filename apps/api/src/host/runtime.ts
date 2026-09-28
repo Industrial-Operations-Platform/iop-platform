@@ -1,3 +1,8 @@
+import { Handover } from "../modules/shift-handover/application/handover";
+import { PgHandover } from "../modules/shift-handover/adapters/postgres/store";
+import { sitePeople } from "../modules/users-rbac/adapters/postgres/site-people";
+import { handoverCatalog } from "./adapters/handover-catalog";
+import { randomUUID } from "node:crypto";
 import { startupAdministrator } from "../modules/users-rbac/adapters/postgres/administration";
 import { accessTransaction } from "../persistence/access-transaction";
 import { composeAccess } from "./access-composition";
@@ -47,6 +52,7 @@ export interface LocalUser {
 }
 export interface LocalIdentityConfiguration {
   passwordAuthentication?: boolean;
+  handover?: unknown;
   users: LocalUser[];
   origins: string[];
   local: LocalConfiguration;
@@ -143,6 +149,9 @@ export function readLocalIdentityConfiguration(
       throw new Error();
     return {
       users,
+      ...(env.IOP_HANDOVER_CONFIG_FILE
+        ? { handover: jsonFile(env.IOP_HANDOVER_CONFIG_FILE, 262144) }
+        : {}),
       origins,
       local,
       mappings,
@@ -188,6 +197,7 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly handover: Handover;
   readonly access: ReturnType<typeof composeAccess> | null;
   readonly source: ImportSource;
   readonly batches: ImportBatches;
@@ -217,6 +227,28 @@ export class PlatformRuntime {
       profileRevision: "aggregate-poc-v1",
       mappingRevision: mappings.configuration.mappingRevision,
     });
+    const catalog = handoverCatalog(
+      config.handover,
+      this.source,
+      this.source.siteTimeZone,
+    );
+    this.handover = new Handover(
+      new PgHandover(pool, this.source, {
+        allowed: async (tx, actor, permission) =>
+          (
+            await evaluateSiteAccess(tx, {
+              ...this.source,
+              userId: actor,
+              permissions: [permission],
+            })
+          ).allowed,
+        people: (tx) =>
+          sitePeople(tx, this.source.organizationId, this.source.siteId),
+      }),
+      catalog,
+      randomUUID,
+      () => new Date().toISOString(),
+    );
     this.access = config.passwordAuthentication
       ? composeAccess(pool, this.source)
       : null;

@@ -29,6 +29,7 @@ services:
       IOP_CONFIG_FILE: /config/scope.json
       IOP_LOCAL_IDENTITY_FILE: /config/users.json
       IOP_MAPPING_CONFIG_FILE: /config/mappings.json
+      IOP_HANDOVER_CONFIG_FILE: /config/handover.json
     volumes:
       - ./.local-platform/config:/config:ro
       - ./.local-platform/seed:/seed:ro

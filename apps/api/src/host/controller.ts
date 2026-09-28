@@ -1,3 +1,4 @@
+import { HandoverController } from "./handover-controller";
 import { AccessController } from "./access-controller";
 import { AuthenticationError } from "../modules/authentication/domain/identity";
 import { ImportBusyError } from "../modules/integrations/domain/imports";
@@ -429,7 +430,7 @@ export class PlatformModule {
   static register(runtime: PlatformRuntime | null): DynamicModule {
     return {
       module: PlatformModule,
-      controllers: [PlatformController, AccessController],
+      controllers: [PlatformController, AccessController, HandoverController],
       providers: [{ provide: PLATFORM_RUNTIME, useValue: runtime }],
     };
   }

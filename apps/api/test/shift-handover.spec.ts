@@ -1,0 +1,348 @@
+import {
+  Handover,
+  type Transaction,
+  type CreateEntry,
+} from "../src/modules/shift-handover/application/handover";
+import {
+  validContent,
+  validSelection,
+  emptySelection,
+  type Entry,
+  type Revision,
+} from "../src/modules/shift-handover/domain/handover";
+import { handoverCatalog } from "../src/host/adapters/handover-catalog";
+import { siteRoles } from "../src/modules/users-rbac/domain/profiles";
+import { decideSiteAccess } from "../src/modules/users-rbac/domain/authorization";
+const catalog = handoverCatalog(
+  {
+    organizationId: "org",
+    siteId: "site",
+    externalSystemLabel: "Work order",
+    categories: [{ id: "safety", label: "Safety" }],
+    locations: [
+      {
+        id: "dept",
+        label: "Department",
+        parentId: "",
+        role: "department",
+        sectorKey: "",
+      },
+      {
+        id: "area",
+        label: "Area",
+        parentId: "dept",
+        role: "area",
+        sectorKey: "",
+      },
+    ],
+  },
+  { organizationId: "org", siteId: "site" },
+  "UTC",
+);
+const input: CreateEntry = {
+  key: "request",
+  issue: true,
+  responsibleId: "colleague",
+  content: {
+    date: "2026-09-29",
+    categoryId: "safety",
+    summary: "Guard inspected",
+    details: "",
+    departmentId: "dept",
+    areaId: "area",
+    equipmentCode: "0001",
+    equipmentNamespace: "site",
+    condition: "inspection-needed",
+    externalReference: "00123",
+    challenge: "",
+    cause: "",
+    measure: "",
+    dueDate: "2026-10-02",
+    feedbackDueDate: "2026-09-30",
+    discuss: true,
+  },
+};
+function fixture() {
+  let entry: Entry | null = null,
+    prior: { entry: Entry; fingerprint: string } | null = null;
+  const revisions: Revision[] = [];
+  const tx: Transaction = {
+    coordinator: false,
+    people: async () => [
+      { id: "author", name: "Author" },
+      { id: "colleague", name: "Colleague" },
+      { id: "other", name: "Other" },
+    ],
+    get: async () => structuredClone(entry),
+    prior: async () => prior,
+    reference: async (c) => (c.equipmentCode ? "reference" : ""),
+    save: jest.fn(async (e, r, key) => {
+      entry = structuredClone(e);
+      revisions.push(structuredClone(r));
+      if (key)
+        prior = { entry: structuredClone(e), fingerprint: key.fingerprint };
+    }),
+    list: jest.fn(),
+    history: jest.fn(),
+  };
+  const app = new Handover(
+    { run: async (_actor, _permission, work) => work(tx) },
+    catalog,
+    () => "entry-id",
+    () => "2026-09-29T12:00:00.000Z",
+  );
+  return { app, tx, revisions, entry: () => entry! };
+}
+test("publishes attributed history and recovers an identical request without duplicating it", async () => {
+  const { app, tx, revisions } = fixture();
+  const first = await app.create("author", input);
+  expect(first).toMatchObject({
+    authorId: "author",
+    authorName: "Author",
+    responsibleName: "Colleague",
+    revision: 1,
+    issueState: "open",
+    equipmentReferenceId: "reference",
+    content: { externalReference: "00123" },
+  });
+  expect(await app.create("author", input)).toEqual(first);
+  expect(tx.save).toHaveBeenCalledTimes(1);
+  expect(revisions).toHaveLength(1);
+  await expect(
+    app.create("author", {
+      ...input,
+      content: { ...input.content, summary: "Changed request" },
+    }),
+  ).rejects.toMatchObject({ code: "handover_conflict" });
+});
+test("corrections retain old content, reject foreign authors and stale revisions", async () => {
+  const { app, revisions } = fixture();
+  await app.create("author", input);
+  const command = {
+    id: "entry-id",
+    action: "correct" as const,
+    expectedRevision: 1,
+    note: "Correct the observation",
+    content: { ...input.content, summary: "Guard replaced" },
+  };
+  await expect(app.change("other", command)).rejects.toMatchObject({
+    code: "handover_denied",
+  });
+  expect((await app.change("author", command)).revision).toBe(2);
+  expect(revisions[0].entry.content.summary).toBe("Guard inspected");
+  expect(revisions[1].entry.content.summary).toBe("Guard replaced");
+  await expect(app.change("author", command)).rejects.toMatchObject({
+    code: "handover_conflict",
+  });
+  await expect(
+    app.change("author", {
+      ...command,
+      expectedRevision: 2,
+      highlighted: true,
+    }),
+  ).rejects.toMatchObject({ code: "invalid_handover" });
+});
+test("assigned workers resolve and reopen with outcomes; unrelated workers only add attributed follow-up", async () => {
+  const { app, entry } = fixture();
+  await app.create("author", input);
+  await expect(
+    app.change("other", {
+      id: "entry-id",
+      action: "state",
+      expectedRevision: 1,
+      note: "Fixed",
+      state: "resolved",
+    }),
+  ).rejects.toMatchObject({ code: "handover_denied" });
+  await expect(
+    app.change("colleague", {
+      id: "entry-id",
+      action: "state",
+      expectedRevision: 1,
+      note: "",
+      state: "resolved",
+    }),
+  ).rejects.toMatchObject({ code: "invalid_handover" });
+  await app.change("colleague", {
+    id: "entry-id",
+    action: "state",
+    expectedRevision: 1,
+    note: "Verified repair",
+    state: "resolved",
+  });
+  expect(entry().content.condition).toBe("inspection-needed");
+  await app.change("author", {
+    id: "entry-id",
+    action: "state",
+    expectedRevision: 2,
+    note: "Condition recurred",
+    state: "open",
+  });
+  await app.change("other", {
+    id: "entry-id",
+    action: "follow-up",
+    expectedRevision: 3,
+    note: "Additional observation",
+  });
+  expect(entry().revision).toBe(4);
+});
+test("only a coordinator changes prominence or responsibility", async () => {
+  const { app, tx } = fixture();
+  await app.create("author", input);
+  const highlight = {
+    id: "entry-id",
+    action: "highlight" as const,
+    expectedRevision: 1,
+    note: "Important for the site",
+    highlighted: true,
+  };
+  await expect(app.change("author", highlight)).rejects.toMatchObject({
+    code: "handover_denied",
+  });
+  tx.coordinator = true;
+  expect((await app.change("other", highlight)).highlighted).toBe(true);
+  expect(
+    (
+      await app.change("other", {
+        id: "entry-id",
+        action: "assign",
+        expectedRevision: 2,
+        note: "Take over",
+        responsibleId: "other",
+      })
+    ).responsibleId,
+  ).toBe("other");
+  await expect(
+    app.change("other", {
+      id: "entry-id",
+      action: "assign",
+      expectedRevision: 3,
+      note: "Foreign",
+      responsibleId: "foreign",
+    }),
+  ).rejects.toMatchObject({ code: "handover_denied" });
+});
+test.each([
+  { date: "2026-02-30" },
+  { date: "2026-99-01" },
+  { departmentId: "foreign" },
+  { areaId: "foreign" },
+  { summary: "" },
+  { summary: "x".repeat(241) },
+  { categoryId: "foreign" },
+  { discuss: "yes" },
+  { departmentId: "", areaId: "" },
+])("rejects invalid content %p", (patch) => {
+  expect(() =>
+    validContent(
+      { ...input.content, ...patch } as typeof input.content,
+      catalog,
+    ),
+  ).toThrow("invalid_handover");
+});
+test("accepts incomplete safety reports and independent feedback deadlines, but rejects forged fields", () => {
+  expect(
+    validContent(
+      {
+        ...input.content,
+        cause: "",
+        dueDate: "",
+        feedbackDueDate: "2026-09-30",
+      },
+      catalog,
+    ).cause,
+  ).toBe("");
+  expect(() =>
+    validContent(
+      { ...input.content, authorId: "forged" } as typeof input.content,
+      catalog,
+    ),
+  ).toThrow();
+  expect(() =>
+    validSelection({ ...emptySelection, from: "2026-09-30", to: "2026-09-29" }),
+  ).toThrow();
+  expect(() =>
+    validSelection({ ...emptySelection, cursor: "invalid" }),
+  ).toThrow();
+});
+test.each([
+  "administrator",
+  "technician",
+  "team-leader",
+  "task-force",
+] as const)(
+  "%s receives explicit operational grants independently from analytics",
+  (profile) => {
+    const grants = siteRoles(profile).map((roleId) => ({
+      userActive: true,
+      membershipActive: true,
+      roleId,
+    }));
+    const req = {
+      userId: "user",
+      organizationId: "org",
+      siteId: "site",
+      permissions: ["handover.contribute"],
+    };
+    expect(decideSiteAccess(req, grants).allowed).toBe(true);
+    expect(
+      decideSiteAccess({ ...req, permissions: ["handover.coordinate"] }, grants)
+        .allowed,
+    ).toBe(["administrator", "team-leader"].includes(profile));
+    expect(
+      decideSiteAccess(req, [
+        {
+          userActive: true,
+          membershipActive: true,
+          roleId: "analytics-reader",
+        },
+      ]).allowed,
+    ).toBe(false);
+  },
+);
+
+test("configured location trees support intermediate levels and reject cycles or unknown parents", () => {
+  const nested = {
+    ...catalog,
+    locations: [
+      ...catalog.locations.map((l) =>
+        l.id === "area" ? { ...l, parentId: "group" } : l,
+      ),
+      {
+        id: "group",
+        label: "Intermediate location",
+        parentId: "dept",
+        role: "location" as const,
+        sectorKey: "",
+      },
+    ],
+  };
+  expect(validContent(input.content, nested).areaId).toBe("area");
+  const value = { ...nested, organizationId: "org", siteId: "site" };
+  const { timeZone, ...configuration } = value;
+  expect(
+    handoverCatalog(
+      configuration,
+      { organizationId: "org", siteId: "site" },
+      timeZone,
+    ).locations,
+  ).toHaveLength(3);
+  expect(() =>
+    handoverCatalog(
+      {
+        ...configuration,
+        locations: [
+          {
+            id: "loop",
+            label: "Loop",
+            parentId: "loop",
+            role: "location",
+            sectorKey: "",
+          },
+        ],
+      },
+      { organizationId: "org", siteId: "site" },
+      timeZone,
+    ),
+  ).toThrow();
+});

@@ -73,6 +73,27 @@ function configuration() {
   };
   privateFile("config/scope.json", JSON.stringify(scope, null, 2));
   privateFile(
+    "config/handover.json",
+    JSON.stringify(
+      {
+        organizationId: scope.organization.id,
+        siteId: scope.site.id,
+        locations: [],
+        externalSystemLabel: "Ultimo",
+        categories: [
+          "Safety",
+          "Information",
+          "Successes",
+          "People",
+          "Performance",
+          "Problems",
+        ].map((label) => ({ id: label.toLowerCase(), label })),
+      },
+      null,
+      2,
+    ),
+  );
+  privateFile(
     "config/users.json",
     JSON.stringify(
       {

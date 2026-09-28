@@ -328,6 +328,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/handover/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HandoverController_context"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/change": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_change"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -759,6 +839,122 @@ export interface components {
             /** @enum {string} */
             profile: "administrator" | "technician" | "task-force" | "team-leader";
             active: boolean;
+        };
+        HandoverLocationDto: {
+            id: string;
+            label: string;
+            parentId: string;
+            sectorKey: string;
+            /** @enum {string} */
+            role: "department" | "area" | "location";
+        };
+        HandoverChoiceDto: {
+            id: string;
+            label: string;
+        };
+        HandoverPersonDto: {
+            id: string;
+            name: string;
+        };
+        HandoverContextDto: {
+            locations: components["schemas"]["HandoverLocationDto"][];
+            categories: components["schemas"]["HandoverChoiceDto"][];
+            people: components["schemas"]["HandoverPersonDto"][];
+            canCoordinate: boolean;
+            actorId: string;
+            externalSystemLabel: string;
+            timeZone: string;
+        };
+        HandoverSelectionDto: {
+            from: string;
+            to: string;
+            departmentId: string;
+            areaId: string;
+            equipmentReferenceId: string;
+            categoryId: string;
+            search: string;
+            cursor: string;
+            /** @enum {string} */
+            state: "" | "none" | "open" | "in-progress" | "resolved" | "pending";
+            highlights: boolean;
+        };
+        HandoverContentDto: {
+            date: string;
+            categoryId: string;
+            summary: string;
+            details: string;
+            departmentId: string;
+            areaId: string;
+            equipmentCode: string;
+            equipmentNamespace: string;
+            /** @enum {string} */
+            condition: "" | "damaged" | "inspection-needed" | "blocked" | "repaired" | "restored";
+            externalReference: string;
+            challenge: string;
+            cause: string;
+            measure: string;
+            dueDate: string;
+            feedbackDueDate: string;
+            discuss: boolean;
+        };
+        HandoverEntryDto: {
+            id: string;
+            authorId: string;
+            authorName: string;
+            createdAt: string;
+            updatedAt: string;
+            departmentLabel: string;
+            areaLabel: string;
+            categoryLabel: string;
+            equipmentReferenceId: string;
+            responsibleId: string;
+            responsibleName: string;
+            highlightedAt: string;
+            revision: number;
+            content: components["schemas"]["HandoverContentDto"];
+            /** @enum {string} */
+            issueState: "none" | "open" | "in-progress" | "resolved";
+            highlighted: boolean;
+        };
+        HandoverPageDto: {
+            entries: components["schemas"]["HandoverEntryDto"][];
+            nextCursor: string;
+            total: number;
+        };
+        HandoverCreateDto: {
+            key: string;
+            responsibleId: string;
+            content: components["schemas"]["HandoverContentDto"];
+            issue: boolean;
+        };
+        HandoverChangeDto: {
+            id: string;
+            note: string;
+            expectedRevision: number;
+            /** @enum {string} */
+            action: "correct" | "follow-up" | "state" | "assign" | "highlight";
+            content?: components["schemas"]["HandoverContentDto"];
+            /** @enum {string} */
+            state?: "none" | "open" | "in-progress" | "resolved";
+            responsibleId?: string;
+            highlighted?: boolean;
+        };
+        HandoverHistoryRequestDto: {
+            id: string;
+            before: number;
+        };
+        HandoverRevisionDto: {
+            entry: components["schemas"]["HandoverEntryDto"];
+            actorId: string;
+            actorName: string;
+            action: string;
+            note: string;
+            at: string;
+        };
+        HandoverHistoryDto: {
+            entry: components["schemas"]["HandoverEntryDto"];
+            revisions: components["schemas"]["HandoverRevisionDto"][];
+            nextBefore: number;
         };
     };
     responses: never;
@@ -2048,6 +2244,117 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SuccessDto"];
+                };
+            };
+        };
+    };
+    HandoverController_context: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverContextDto"];
+                };
+            };
+        };
+    };
+    HandoverController_query: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverPageDto"];
+                };
+            };
+        };
+    };
+    HandoverController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverCreateDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverEntryDto"];
+                };
+            };
+        };
+    };
+    HandoverController_change: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverChangeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverEntryDto"];
+                };
+            };
+        };
+    };
+    HandoverController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverHistoryDto"];
                 };
             };
         };
