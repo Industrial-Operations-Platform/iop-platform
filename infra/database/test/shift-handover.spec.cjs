@@ -599,7 +599,11 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       await page.getByLabel("Username", { exact: true }).fill(id);
       await page.getByLabel("Password", { exact: true }).fill(password);
       await button("Sign in").click();
-      await pw(page.getByRole("region", { name: "Start page" })).toBeVisible();
+      await pw(
+        page.getByRole("region", {
+          name: id === "admin-a" ? "Administration overview" : "Start page",
+        }),
+      ).toBeVisible();
     };
     const post = (path, data) =>
       page.request.post(origin + "/api/v1/handover/" + path, {

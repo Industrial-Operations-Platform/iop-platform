@@ -25,3 +25,18 @@ created from develop. Owner explicitly approved merging all three story branches
 Expected files: integration conflicts in host/UI/tests/ADR/backlog; host equipment
 composition, role-preview presentation, affected browser fixtures, product/operator
 instructions and planning records. No new product scope or architectural pattern.
+
+## Integrated validation
+
+- Typechecking passed after both conflict resolutions. Root `npm test` passed:
+  18 secret-check tests, 325 API tests, 73 web tests and 77 database configuration
+  tests; builds and generated API/browser contracts match.
+- Real PostgreSQL suites (handover, transitional access, database lifecycle):
+  3 suites / 24 tests passed. Restricted Technician creates entries using imported
+  codes while direct analytical requests return 403; migration and profiles verified.
+- Full Playwright suite: 9 passed at desktop/mobile widths. Technician preview hides
+  analysis and Team Leader preview opens the six-section Daily overview.
+- Extended the month-comparison HTTP fixture for current operational Start requests;
+  all browser checks then passed. Inspected integrated mobile preview screenshot.
+- Baseline live totals: 4 users/credentials, 2 handover entries, 3 revisions;
+  analytical facts 60,735, frequency 316,864, exact seconds 79,968,310.

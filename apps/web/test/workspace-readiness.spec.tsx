@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import {
   AnalysisWorkspace,
   type AnalysisGateway,
@@ -88,50 +94,120 @@ function setup(access?: AccessApplication) {
 }
 
 test.each([true, false])(
-  "user management requires administration mode and permission (canAdminister=%s)",
+  "administration defaults respect capabilities and profile preview (canAdminister=%s)",
   async (canAdminister) => {
     const users = jest.fn().mockResolvedValue([]);
-    setup(new AccessApplication({
-      context: jest.fn().mockResolvedValue({
-        enabled: true,
-        authentication: "password",
-        canImport: true,
-        canAdminister,
-        user: { id: "admin", name: "Administrator", profile: "administrator" },
-        users: [],
-        scope: null,
+    const context = jest.fn().mockResolvedValue({
+      enabled: true,
+      authentication: "password",
+      canImport: true,
+      canAdminister,
+      user: { id: "admin", name: "Administrator", profile: "administrator" },
+      users: [],
+      scope: null,
+    });
+    const login = jest.fn();
+    const change = jest.fn();
+    setup(
+      new AccessApplication({
+        context,
+        users,
+        login,
+        change,
+        password: jest.fn(),
+        logout: jest.fn(),
+        create: jest.fn(),
       }),
-      users,
-      login: jest.fn(),
-      password: jest.fn(),
-      logout: jest.fn(),
-      create: jest.fn(),
-      change: jest.fn(),
-    }));
-    await screen.findByRole("heading", { name: "Welcome, Administrator" });
-    expect(screen.queryByRole("button", { name: "Users & profiles" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
-    await screen.findByText("Taskforce · Data Analysis");
-    expect(screen.queryByRole("button", { name: "Users & profiles" })).not.toBeInTheDocument();
-    expect(users).not.toHaveBeenCalled();
-
-    fireEvent.click(screen.getByRole("button", { name: "Administration" }));
-    await screen.findByRole("heading", { name: "Add a daily CSV" });
+    );
+    await screen.findByRole("region", { name: "Administration overview" });
+    expect(screen.getByRole("button", { name: "Import files" })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Data preparation" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "KPI settings & goals" }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole("combobox", { name: "Profile view" }),
+    ).not.toBeInTheDocument();
     if (canAdminister) {
-      fireEvent.click(screen.getByRole("button", { name: "Users & profiles" }));
+      fireEvent.click(screen.getByRole("button", { name: "Manage users" }));
       await screen.findByRole("heading", { name: "Users & profiles" });
       await waitFor(() => expect(users).toHaveBeenCalledTimes(1));
-      await waitFor(() => expect(screen.getByRole("button", { name: "Create user" })).toBeEnabled());
     } else {
-      expect(screen.queryByRole("button", { name: "Users & profiles" })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Users & profiles" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Manage users" }),
+      ).not.toBeInTheDocument();
       expect(users).not.toHaveBeenCalled();
     }
-
-    fireEvent.click(screen.getByRole("button", { name: "Taskforce view" }));
-    await screen.findByText("Taskforce · Data Analysis");
-    expect(screen.queryByRole("button", { name: "Users & profiles" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Users & profiles" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Data analysis" })).toHaveAttribute("aria-current", "page");
+    fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
+    await screen.findByText("Operations · Data Analysis");
+    expect(
+      screen.getByRole("button", { name: "Data administration" }),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "View as" }));
+    expect(
+      within(screen.getByRole("combobox", { name: "Profile view" }))
+        .getAllByRole("option")
+        .map((option) => option.textContent),
+    ).toEqual(["Administrator", "Technician", "Task Force", "Team Leader"]);
+    for (const [value, label] of [
+      ["technician", "Technician"],
+      ["task-force", "Task Force"],
+      ["team-leader", "Team Leader"],
+    ]) {
+      fireEvent.change(screen.getByRole("combobox", { name: "Profile view" }), {
+        target: { value },
+      });
+      await screen.findByRole("region", { name: "Start page" });
+      expect(
+        screen.getByRole("region", { name: "Profile preview" }),
+      ).toHaveTextContent(`Viewing as ${label}`);
+      expect(screen.getByText(`Profile: ${label}`)).toBeVisible();
+      expect(
+        screen.queryByRole("button", { name: "Users & profiles" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Data administration" }),
+      ).not.toBeInTheDocument();
+      if (value === "technician") {
+        expect(
+          screen.queryByRole("button", { name: "Open Data Analysis" }),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole("button", { name: "Data analysis" }),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole("region", { name: "Analytical summary" }),
+        ).not.toBeInTheDocument();
+      } else {
+        fireEvent.click(
+          screen.getByRole("button", { name: "Open Data Analysis" }),
+        );
+        await screen.findByText("Operations · Data Analysis");
+      }
+      expect(
+        screen.getByRole("region", { name: "Profile preview" }),
+      ).toBeVisible();
+    }
+    expect(login).not.toHaveBeenCalled();
+    expect(change).not.toHaveBeenCalled();
+    expect(context).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Administrator · Administrator")).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Return to administration" }),
+    );
+    await screen.findByRole("region", { name: "Administration overview" });
+    expect(
+      screen.queryByRole("region", { name: "Profile preview" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Data administration" }),
+    );
+    await screen.findByRole("heading", { name: "Add a daily CSV" });
   },
 );
 
@@ -161,9 +237,8 @@ test("direct detail entry uses months and an empty draft cannot replace applied 
 
 test("preparation edits clear saved confirmation and cannot be overwritten during a save", async () => {
   const gateway = setup();
-  fireEvent.click(await screen.findByRole("button", { name: "Data analysis" }));
   fireEvent.click(
-    await screen.findByRole("button", { name: "Administration" }),
+    await screen.findByRole("button", { name: "Data administration" }),
   );
   fireEvent.click(
     await screen.findByRole("button", { name: "Import & prepare" }),
@@ -208,56 +283,37 @@ test("preparation edits clear saved confirmation and cannot be overwritten durin
   expect(screen.queryByText(/Preparation saved\./)).not.toBeInTheDocument();
 });
 
-test("Start summarizes analytics without privileged reads and administrators explicitly enable tools", async () => {
+test("administration landing exposes tools without eagerly loading data and analysis retains admin navigation", async () => {
   const gateway = setup();
-  await screen.findByRole("region", { name: "Start page" });
-  await screen.findByRole("heading", { name: "Welcome, Administrator" });
-  await waitFor(() => expect(gateway.report).toHaveBeenCalledWith(
-    expect.objectContaining({ dimension: "sector", months: ["2026-07"] }),
-  ));
+  await screen.findByRole("region", { name: "Administration overview" });
   expect(gateway.history).not.toHaveBeenCalled();
   expect(gateway.profile).not.toHaveBeenCalled();
+  expect(gateway.report).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
   await waitFor(() => expect(gateway.report).toHaveBeenCalled());
   expect(gateway.history).not.toHaveBeenCalled();
-  expect(gateway.profile).not.toHaveBeenCalled();
   expect(
-    screen.queryByRole("button", { name: "Import & prepare" }),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByText(/Contributing source rows/),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.getByText("Taskforce · Data Analysis"),
+    screen.getByRole("button", { name: "Data administration" }),
   ).toBeVisible();
-  fireEvent.click(screen.getByRole("button", { name: "Administration" }));
-  await screen.findByRole("button", { name: "Import & prepare" });
-  await waitFor(() => expect(gateway.history).toHaveBeenCalled());
+  fireEvent.click(screen.getByRole("button", { name: "Data administration" }));
   await screen.findByRole("heading", { name: "Add a daily CSV" });
+  await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(1));
   const reportCalls = gateway.report.mock.calls.length;
-  expect(
-    screen.queryByRole("navigation", { name: "Analysis templates" }),
-  ).not.toBeInTheDocument();
-  expect(screen.queryByText(/Explore data/)).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Refresh history" }));
   await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(2));
   expect(gateway.report).toHaveBeenCalledTimes(reportCalls);
-  fireEvent.click(screen.getByRole("button", { name: "Taskforce view" }));
-  await waitFor(() =>
-    expect(
-      screen.queryByRole("button", { name: "Import & prepare" }),
-    ).not.toBeInTheDocument(),
-  );
-  expect(screen.queryByText("KPI settings & goals")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "IOP · Go to Start" }));
+  await screen.findByRole("region", { name: "Administration overview" });
+  fireEvent.click(screen.getByRole("button", { name: "Data preparation" }));
+  await screen.findByRole("button", { name: "Save historical preparation" });
 });
 
 test("administration works before the first import without analytical requests", async () => {
   const gateway = setup();
   gateway.availability.mockResolvedValue({ dates: [] });
   fireEvent.click(
-    await screen.findByRole("button", { name: "Administration" }),
+    await screen.findByRole("button", { name: "Data administration" }),
   );
-  fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
   await screen.findByRole("heading", { name: "Add a daily CSV" });
   fireEvent.click(screen.getByRole("button", { name: "KPI settings & goals" }));
   await waitFor(() =>
@@ -271,20 +327,109 @@ test("administration works before the first import without analytical requests",
   ).not.toBeInTheDocument();
 });
 
-test("Technician home has no analytical entry points or requests", async () => {
-  const gateway = setup(
-    new AccessApplication({
-      context: jest
-        .fn()
-        .mockResolvedValue({
+test.each(["technician", "task-force", "team-leader"])(
+  "%s keeps its operational home without admin tools",
+  async (profile) => {
+    setup(
+      new AccessApplication({
+        context: jest.fn().mockResolvedValue({
           enabled: true,
           authentication: "password",
           canImport: false,
-          canReadAnalytics: false,
-          user: { id: "tech", name: "Technician", profile: "technician" },
+          canAdminister: false,
+          user: { id: "worker", name: "Worker", profile },
           users: [],
           scope: null,
         }),
+        users: jest.fn(),
+        login: jest.fn(),
+        password: jest.fn(),
+        logout: jest.fn(),
+        create: jest.fn(),
+        change: jest.fn(),
+      }),
+    );
+    await screen.findByRole("heading", { name: "Welcome, Worker" });
+    expect(
+      screen.queryByRole("button", { name: "View as" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Data administration" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Users & profiles" }),
+    ).not.toBeInTheDocument();
+  },
+);
+
+test("signing out of a preview restores the next administrator session to administration", async () => {
+  const admin = {
+    enabled: true,
+    authentication: "password" as const,
+    canImport: true,
+    canAdminister: true,
+    user: { id: "admin", name: "Administrator", profile: "administrator" },
+    users: [],
+    scope: null,
+  };
+  const context = jest.fn().mockResolvedValue(admin);
+  const logout = jest.fn().mockImplementation(async () => {
+    context.mockResolvedValue({
+      ...admin,
+      user: null,
+      canImport: false,
+      canAdminister: false,
+    });
+  });
+  const login = jest.fn().mockImplementation(async () => {
+    context.mockResolvedValue(admin);
+  });
+  setup(
+    new AccessApplication({
+      context,
+      logout,
+      login,
+      users: jest.fn(),
+      password: jest.fn(),
+      create: jest.fn(),
+      change: jest.fn(),
+    }),
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "View as" }));
+  fireEvent.change(screen.getByRole("combobox", { name: "Profile view" }), {
+    target: { value: "technician" },
+  });
+  await screen.findByRole("region", { name: "Profile preview" });
+  fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+  await screen.findByRole("heading", { name: "Sign in to IOP" });
+  fireEvent.change(screen.getByLabelText("Username"), {
+    target: { value: "admin" },
+  });
+  fireEvent.change(screen.getByLabelText("Password"), {
+    target: { value: "test-only-input" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+  await screen.findByRole("region", { name: "Administration overview" });
+  expect(
+    screen.queryByRole("region", { name: "Profile preview" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Users & profiles" }),
+  ).toBeVisible();
+});
+
+test("Technician home has no analytical entry points or requests", async () => {
+  const gateway = setup(
+    new AccessApplication({
+      context: jest.fn().mockResolvedValue({
+        enabled: true,
+        authentication: "password",
+        canImport: false,
+        canReadAnalytics: false,
+        user: { id: "tech", name: "Technician", profile: "technician" },
+        users: [],
+        scope: null,
+      }),
       users: jest.fn(),
       login: jest.fn(),
       password: jest.fn(),

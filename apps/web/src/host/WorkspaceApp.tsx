@@ -21,6 +21,11 @@ import type { AccessApplication } from "../features/access/application/access";
 import { LoginPanel } from "../features/access/adapters/react/LoginPanel";
 import { UserAdministration } from "../features/access/adapters/react/UserAdministration";
 import "../features/access/adapters/react/access.css";
+import {
+  AdministrationOverview,
+  type AdministrationTool,
+} from "./AdministrationOverview";
+import { ProfileViewControl } from "./ProfileViewControl";
 export function WorkspaceApp({
   application,
   access,
@@ -30,14 +35,19 @@ export function WorkspaceApp({
   access?: AccessApplication;
   handover?: HandoverApplication;
 }) {
-  const [page, setPage] = useState<"start" | "analysis" | "users" | "handover">(
-    "start",
-  );
+  const [page, setPage] = useState<
+    "start" | "analysis" | "administration" | "users" | "handover"
+  >("start");
   const [handoverEntry, setHandoverEntry] = useState("");
   const [handoverHighlights, setHandoverHighlights] = useState(false);
   const [departmentId, setDepartmentId] = useState("");
   const [handoverPending, setHandoverPending] = useState(false);
-  const [administration, setAdministration] = useState(false);
+  const [preview, setPreview] = useState<{
+    userId: string;
+    profile: Profile;
+  } | null>(null);
+  const [administrationTool, setAdministrationTool] =
+    useState<AdministrationTool>("imports");
   const [context, setContext] = useState<SessionContext | null>(null),
     [error, setError] = useState<unknown>(),
     [pending, setPending] = useState(false),
@@ -61,7 +71,8 @@ export function WorkspaceApp({
     };
   }, [application, access, connectionAttempt]);
   const choose = async (id: string) => {
-    setAdministration(false);
+    setPage("start");
+    setPreview(null);
     setPending(true);
     setError(undefined);
     setContext((c) => (c ? { ...c, user: null } : c));
@@ -78,18 +89,40 @@ export function WorkspaceApp({
     setError(undefined);
     if (!next.user || next.mustChangePassword) {
       setPage("start");
-      setAdministration(false);
+      setPreview(null);
     }
   };
   const refreshSession = async () => {
     if (access) updateSession(await access.context());
   };
   const signedIn = context?.user && !context.mustChangePassword;
+  const canViewProfiles =
+    !!signedIn && !!(context.canImport || context.canAdminister);
+  const previewProfile =
+    canViewProfiles && preview?.userId === context?.user?.id
+      ? preview?.profile
+      : undefined;
+  const administration = canViewProfiles && !previewProfile;
+  const effectiveProfile = previewProfile ?? context?.user?.profile;
   const canReadAnalytics =
-    context?.canReadAnalytics !== false &&
-    context?.user?.profile !== "technician";
+    context?.canReadAnalytics !== false && effectiveProfile !== "technician";
   const showUserAdministration =
-    signedIn && administration && context.canAdminister;
+    administration && context?.canAdminister && !!access;
+  const selectProfile = (profile: Profile) => {
+    setPreview(
+      profile === "administrator" || !context?.user
+        ? null
+        : { userId: context.user.id, profile },
+    );
+    setHandoverEntry("");
+    setHandoverHighlights(false);
+    setHandoverPending(false);
+    setPage("start");
+  };
+  const openTool = (tool: AdministrationTool) => {
+    setAdministrationTool(tool);
+    setPage("administration");
+  };
   const signOut = () => {
     if (!access) return;
     setPending(true);
@@ -148,20 +181,15 @@ export function WorkspaceApp({
     <AppShell
       className="analysis-app"
       mainId="analysis-main"
-      skipLabel="Skip to analysis"
+      skipLabel="Skip to workspace"
       header={
         <>
-          {signedIn && context.canImport && (
-            <Button
-              variant="secondary"
-              aria-pressed={administration}
-              onClick={() => {
-                setAdministration((value) => !value);
-                setPage("analysis");
-              }}
-            >
-              {administration ? "Taskforce view" : "Administration"}
-            </Button>
+          {canViewProfiles && (
+            <ProfileViewControl
+              key={context?.user?.id}
+              profile={previewProfile ?? "administrator"}
+              onChange={selectProfile}
+            />
           )}
           {context?.authentication === "password" ? (
             <>
@@ -217,7 +245,15 @@ export function WorkspaceApp({
           selected={page}
           onSelect={setPage}
           items={[
-            { id: "start", label: "Start" },
+            { id: "start", label: administration ? "Administration" : "Start" },
+            ...(administration && context?.canImport
+              ? [
+                  {
+                    id: "administration" as const,
+                    label: "Data administration",
+                  },
+                ]
+              : []),
             ...(canReadAnalytics
               ? [{ id: "analysis" as const, label: "Data analysis" }]
               : []),
@@ -236,7 +272,28 @@ export function WorkspaceApp({
           {error instanceof Error ? error.message : "The operation failed."}
         </Alert>
       ) : null}
-      {page === "users" && showUserAdministration && access ? (
+      {previewProfile && (
+        <Panel aria-label="Profile preview">
+          <p>
+            Viewing as {profileLabels[previewProfile]} · Layout preview. Your
+            account, data access and permissions remain unchanged.
+          </p>
+          <Button
+            variant="secondary"
+            onClick={() => selectProfile("administrator")}
+          >
+            Return to administration
+          </Button>
+        </Panel>
+      )}
+      {page === "start" && administration ? (
+        <AdministrationOverview
+          canImport={!!context?.canImport}
+          canAdminister={!!showUserAdministration}
+          openTool={openTool}
+          openUsers={() => setPage("users")}
+        />
+      ) : page === "users" && showUserAdministration && access ? (
         <UserAdministration
           key={context.user?.id}
           application={access}
@@ -246,7 +303,7 @@ export function WorkspaceApp({
         <HandoverWorkspace
           key={context.user?.id}
           application={handover}
-          dailyOverview={context.user?.profile === "team-leader"}
+          dailyOverview={effectiveProfile === "team-leader"}
           initialEntry={handoverEntry}
           initialHighlights={handoverHighlights}
           initialPending={handoverPending}
@@ -266,9 +323,11 @@ export function WorkspaceApp({
           application={application}
           context={context}
           profileLabel={
-            context.user?.profile
-              ? profileLabels[context.user.profile as Profile]
-              : undefined
+            previewProfile
+              ? profileLabels[previewProfile]
+              : context.user?.profile
+                ? profileLabels[context.user.profile as Profile]
+                : undefined
           }
           canReadAnalytics={canReadAnalytics}
           authenticated={context.authentication === "password"}
@@ -288,17 +347,17 @@ export function WorkspaceApp({
               />
             ) : undefined
           }
-          openAnalysis={() => {
-            setAdministration(false);
-            setPage("analysis");
-          }}
+          openAnalysis={() => setPage("analysis")}
         />
       ) : context?.user && canReadAnalytics ? (
         <ReportWorkspace
-          key={context.user.id}
+          key={`${context.user.id}:${page}:${administrationTool}`}
           application={application}
           context={context}
-          administration={administration && context.canImport}
+          administration={
+            page === "administration" && administration && context.canImport
+          }
+          initialAdministrationTool={administrationTool}
         />
       ) : (
         <Panel variant="empty">

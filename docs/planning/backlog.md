@@ -303,4 +303,5 @@ canonical asset integration.
 | [IOP-167 — Restrict user management to administration mode](items/IOP-167-users-administration-mode.md) | Completed |
 | [IOP-168 — Operational Shift Handover](items/IOP-168-shift-handover.md) | Completed |
 | [IOP-169 — Handover board and guided follow-up](items/IOP-169-handover-board.md) | Completed |
+| [IOP-170 — Administrator workspace and profile views](items/IOP-170-administrator-workspace.md) | Completed |
 | [IOP-171 — Restrict Technician analytical access](items/IOP-171-technician-access.md) | Completed |

@@ -176,3 +176,12 @@ Contributor corrections retain the original date. Idempotent recovery of a saved
 request remains possible after midnight. A follow-up may atomically change issue
 state under the existing author/assignee/coordinator rules, with a required note,
 retained original snapshot and current latest-update summary.
+
+## Integrated Technician access — 2026-09-29
+
+The owner-approved IOP-169/170/171 publication retains the imported equipment picker
+for handover contributors after Technician loses analytical access. The host adapter
+checks `handover.read` for this bounded, location-filtered code lookup on the already
+scoped transaction. It exposes identifiers for reporting only; analytical report,
+source-row and availability endpoints continue to require their own permissions.
+No new grant or unscoped catalog is introduced.

@@ -21,6 +21,10 @@ for (const width of [1440, 375]) {
           users: [{ id: "reader", name: "Reader" }],
           scope: null,
         };
+      else if (path.endsWith("/handover/context"))
+        body = { actorId: "reader", locations: [], categories: [], people: [], timeZone: "UTC", canCoordinate: false, externalSystemLabel: "Work reference" };
+      else if (path.endsWith("/handover/query"))
+        body = { entries: [], total: 0, nextCursor: "" };
       else if (path.endsWith("/analytics/availability"))
         body = { dates, latestDate: dates[2] };
       else if (path.endsWith("/analytics/report")) {
