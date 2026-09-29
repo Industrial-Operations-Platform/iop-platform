@@ -57,7 +57,7 @@ for (const width of [1440, 375]) {
     await expect(
       page.getByText("Select a user in the header to open the workspace."),
     ).toBeVisible();
-    await page.getByRole("link", { name: "Skip to analysis" }).focus();
+    await page.getByRole("link", { name: "Skip to workspace" }).focus();
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/#analysis-main$/);
     expect(

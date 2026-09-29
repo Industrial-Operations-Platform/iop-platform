@@ -49,10 +49,12 @@ export function ReportWorkspace({
   application,
   context,
   administration,
+  initialAdministrationTool = "imports",
 }: {
   application: AnalysisWorkspace;
   context: DemoContext;
   administration: boolean;
+  initialAdministrationTool?: "imports" | "files" | "preparation" | "kpis";
 }) {
   const [selection, setSelection] = useState<ReportRequest | null>(null),
     [report, setReport] = useState<Report | null>(null),
@@ -62,7 +64,7 @@ export function ReportWorkspace({
     [loading, setLoading] = useState(true),
     [refresh, setRefresh] = useState(0),
     [template, setTemplate] = useState(0),
-    [fileView, setFileView] = useState(false);
+    [fileView, setFileView] = useState(initialAdministrationTool === "files");
   useEffect(() => {
     if (!administration) setFileView(false);
   }, [administration]);
@@ -145,7 +147,7 @@ export function ReportWorkspace({
         eyebrow={
           administration
             ? "Administration · Data Analysis"
-            : "Taskforce · Data Analysis"
+            : "Operations · Data Analysis"
         }
         description={
           administration
@@ -190,6 +192,11 @@ export function ReportWorkspace({
         />
       ) : administration ? (
         <ImportWorkspace
+          initialSection={
+            initialAdministrationTool === "files"
+              ? "imports"
+              : initialAdministrationTool
+          }
           application={application}
           history={history}
           onImported={() => setRefresh((x) => x + 1)}

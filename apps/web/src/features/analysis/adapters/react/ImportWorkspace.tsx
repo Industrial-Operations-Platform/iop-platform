@@ -31,13 +31,15 @@ export function ImportWorkspace({
   application,
   history,
   onImported,
+  initialSection = "imports",
 }: {
   application: AnalysisWorkspace;
   history: ImportSummary[];
   onImported: () => void;
+  initialSection?: "imports" | "preparation" | "kpis";
 }) {
   const [section, setSection] = useState<"imports" | "preparation" | "kpis">(
-    "imports",
+    initialSection,
   );
   const [pending, setPending] = useState(false);
   return (

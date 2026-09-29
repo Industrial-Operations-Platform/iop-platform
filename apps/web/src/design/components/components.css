@@ -468,6 +468,9 @@
 @media (max-width: 620px) {
   .iop-ui .iop-sidebar .iop-side-navigation {
     flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
   }
   .iop-ui .iop-side-navigation .iop-button {
     padding: 8px;

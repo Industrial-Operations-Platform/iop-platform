@@ -112,12 +112,12 @@ LAN or internet; remote deployment requires HTTPS and secure cookies.
 
 ## Import, prepare and analyze
 
-1. Switch to **Administration → Import & prepare → Import files**, select
+1. Switch to **Administration → Data administration → Import files**, select
    `Hitliste-YYYYMMDD.csv`, confirm the displayed reporting date and press **Import CSV**.
    Input is UTF-16 LE with BOM, semicolon-separated, at most 5 MiB. Existing reporting
    dates cannot be replaced. Review errors, duplicates and interrupted outcomes.
 2. Review the import outcome, saved/rejected counts and diagnostics. Known accepted
-   dates block another upload; the server also rejects duplicate races. Use **Taskforce view**
+   dates block another upload; the server also rejects duplicate races. Use **Data analysis**
    to return to reports and select the desired month or comparison months.
 3. Start in **Executive Overview**, then choose Halle, Bereich, equipment, errors or daily/monthly.
    Group by any source field; change the measure and day/week/month period. Filter
@@ -328,7 +328,7 @@ rankings and the daily heatmap use descending monthly frequency; scroll to inspe
 more areas. The daily graph overlays frequency and alarm minutes with labelled axes.
 Click a ranked area or heatmap cell to investigate that area in Bereich analysis.
 
-Switch to **Administration → Import & prepare → KPI settings & goals** to add/remove up to eight Meldetext cards, select
+Switch to **Administration → Data administration → KPI settings & goals** to add/remove up to eight Meldetext cards, select
 prepared error text from the database dropdown, label and measure, and save. Goals are occurrences/day
 or alarm minutes/day; changing measure clears the old goal. Leaving a goal blank
 uses the daily average across all imported history, including the selected month.
@@ -346,16 +346,21 @@ dates remain gaps. Sunday imports remain available under **Files & source rows**
 the analysis calendar does not erase or reject them. The month dropdown contains
 months with at least one eligible imported date.
 
-## Taskforce and administration
+## Operational views and administration
 
-The default Start page is intentionally empty. Choose **Data analysis** to view
-reports as Taskforce. **Administration** opens **Import & prepare** directly, with
-separate **Import files**, **Data preparation** and **KPI settings & goals** sections.
-Charts, report filters and analytical templates are not rendered or requested there.
-**Files & source rows** remains a separate administrator tool. **Taskforce view**
-returns to analysis. Settings are available even before the first successful import.
-Preparation and KPI editors load independently when opened, avoiding stale versions
-from simultaneously mounted editors.
+Administrators start on **Administration**, with visible shortcuts to user management,
+imports, source files, historical preparation and KPI settings. **Data administration**
+opens the import workspace; **Data analysis** opens operational reports without hiding
+administrative navigation. Settings remain available before the first import.
+Preparation and KPI editors load independently when opened.
+
+**View as** opens a selector for Administrator, Technician, Task Force and Team Leader.
+An operational selection previews that profile's workspace layout and hides administrative
+shortcuts. **Return to administration**, or selecting Administrator, restores the overview.
+The preview is local presentation only: the signed-in account, server permissions,
+accessible data and authorship do not change. It is not impersonation or a permission
+test. Signing out or selecting another demo user clears the preview. Ordinary users
+retain their operational Start page and do not see administrator controls.
 
 Import review shows the filename/date, source/admitted/rejected row counts, bytes,
 complete/partial inspection, valid/invalid inspected counts, import-time unclassified
