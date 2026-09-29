@@ -1,6 +1,6 @@
 # IOP-181 — Refine operational selection, matrix and personal entries
 
-Status: Completed and published; local Docker activation remains pending. Owner-requested visual refinement, 2026-09-30.
+Status: Completed and published; local Docker activated. Owner-requested visual refinement, 2026-09-30.
 
 ## Scope and acceptance
 
@@ -17,3 +17,5 @@ Context: [IOP-180](IOP-180-operational-visual-polish.md),
 Execution: [plan](../completed/IOP-181-handover-view-polish-plan.md).
 
 Publication: [evidence](../completed/IOP-181-publication-plan.md).
+
+Docker activation: [evidence](../completed/IOP-181-docker-activation-plan.md).

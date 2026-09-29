@@ -45,4 +45,4 @@ Scope: [item](../items/IOP-181-handover-view-polish.md).
 
 The requested UI refinement is complete. Item/backlog synchronized and plan archived.
 Owner-approved publication is complete; see the [publication evidence](IOP-181-publication-plan.md).
-Local Docker activation remains pending.
+Local Docker activation is complete; see the [activation evidence](IOP-181-docker-activation-plan.md).
