@@ -1,6 +1,6 @@
 # IOP-182 — Structured entry details and neutral Start selection
 
-Status: Completed. Owner-requested UI refinement, 2026-09-30.
+Status: Completed and published; local Docker activated. Owner-requested UI refinement, 2026-09-30.
 
 ## Scope and acceptance
 
@@ -13,3 +13,5 @@ Status: Completed. Owner-requested UI refinement, 2026-09-30.
 
 Context: [visual identity](../../design/visual-identity.md), Accepted ADR-0032/0036.
 Execution: [plan](../completed/IOP-182-entry-detail-neutral-start-plan.md).
+
+Publication and Docker activation: [evidence](../completed/IOP-182-publication-activation-plan.md).

@@ -40,5 +40,6 @@ Scope: [item](../items/IOP-182-entry-detail-neutral-start.md).
 
 ## Closure
 
-Acceptance is complete. Item/backlog synchronized; plan archived. Changes remain
-on the story branch pending owner authorization for merge and remote publication.
+Acceptance is complete. Item/backlog synchronized; plan archived. Owner-approved
+publication and Docker activation are complete; see the
+[execution evidence](IOP-182-publication-activation-plan.md).
