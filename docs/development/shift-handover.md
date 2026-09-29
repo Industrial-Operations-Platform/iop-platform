@@ -124,6 +124,30 @@ and publish/withdraw Start highlights. Every request checks current scoped grant
 profile labels in the browser do not grant authority. The native impersonation
 mode does not automatically receive operational roles or a profile directory.
 
+## Optional local demonstration entries
+
+With the local Docker stack running, `npm run local:handover-demo` previews a
+bounded dataset without writing. `npm run local:handover-demo -- --apply` explicitly
+inserts it; `npm run local:handover-demo -- --inspect` reports stored coverage.
+This is never part of startup, migrations or analytical import.
+
+Each configured department receives twelve `[DEMO]` entries: six for the seed day
+and six from 1–90 days earlier. Existing active contributors alternate as authors
+and responsible people. Examples include all categories, open/in-progress/resolved
+issues, reopening with earlier resolution evidence, overdue work and Start highlights.
+Equipment comes from current imported choices. `DEMO-ULTIMO-*` values are fictional
+references, not codes issued by Ultimo. All operational descriptions are synthetic.
+
+The local operator adapter uses existing application rules and runtime permissions,
+with a fixture-only clock to simulate historical contributions. Login, server date
+rules, credentials and grants remain unchanged. Preserve the private
+`.local-platform/handover-demo.json` manifest: it freezes dates, identities, scenarios
+and baseline digests. Reruns reuse request keys, resume unchanged fixture histories,
+and preserve subsequent user edits. They do not refresh dates or create duplicates.
+The command verifies original handover snapshots/history and analytical totals.
+These examples are persistent shared records; there is no automatic removal or
+destructive reset. Do not treat `[DEMO]` reports as actual equipment conditions.
+
 ## Storage, API and verification
 
 `shift_handover.entries` stores the current projection and original request identity;
