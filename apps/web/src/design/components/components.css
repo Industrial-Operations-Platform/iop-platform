@@ -497,4 +497,59 @@
   width: auto;
 }
 
-.iop-textarea { min-height: 6rem; resize: vertical; width: 100%; box-sizing: border-box; }
+.iop-textarea {
+  min-height: 6rem;
+  resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.iop-dialog {
+  box-sizing: border-box;
+  width: min(46rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  margin: auto;
+  padding: 1.5rem;
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  background: var(--iop-surface);
+  color: var(--iop-ink);
+  box-shadow: 0 16px 60px color-mix(in srgb, var(--iop-ink) 25%, transparent);
+}
+.iop-dialog::backdrop {
+  background: color-mix(in srgb, var(--iop-ink) 45%, transparent);
+}
+.iop-dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.iop-dialog-heading h2 {
+  margin: 0;
+}
+.iop-dialog .iop-panel {
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.iop-ui .iop-dialog .iop-field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.iop-ui .iop-dialog .iop-field-row .iop-field {
+  min-width: 0;
+  font-size: 0.875rem;
+}
+.iop-ui .iop-dialog .iop-field-row .iop-input,
+.iop-ui .iop-dialog .iop-field-row .iop-select {
+  font-size: 0.875rem;
+}
+@media (max-width: 520px) {
+  .iop-ui .iop-dialog .iop-field-row {
+    grid-template-columns: 1fr;
+  }
+}

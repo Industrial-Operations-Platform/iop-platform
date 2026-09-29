@@ -1,16 +1,20 @@
-import { HandoverFilters } from "./HandoverFilters";
 import { useEffect, useState } from "react";
 import {
   Actions,
   Alert,
   Button,
+  Dialog,
+  Field,
+  Input,
   PageHeading,
   Panel,
+  Select,
   ViewNavigation,
 } from "../../../../design/components";
 import type { HandoverApplication } from "../../application/handover";
 import {
   emptySelection,
+  type Choice,
   type Context,
   type Entry,
   type Page,
@@ -19,74 +23,99 @@ import {
 import { EntryCards, EntryMatrix, MeetingEntries } from "./Entries";
 import { EntryDetail } from "./EntryDetail";
 import { EntryForm, today } from "./EntryForm";
+import { HandoverFilters } from "./HandoverFilters";
+import { CategoryBoard } from "./CategoryBoard";
 import "./handover.css";
 const blankPage: Page = { entries: [], nextCursor: "", total: 0 };
+type View = "journal" | "matrix" | "meeting" | "mine";
 export function HandoverWorkspace({
   application,
   initialEntry = "",
   initialHighlights = false,
+  initialPending = false,
+  departmentId = "",
+  onDepartmentChange,
   onEntryOpened,
 }: {
   application: HandoverApplication;
   initialEntry?: string;
   initialHighlights?: boolean;
+  initialPending?: boolean;
+  departmentId?: string;
+  onDepartmentChange?: (id: string) => void;
   onEntryOpened?: () => void;
 }) {
   const [context, setContext] = useState<Context | null>(null),
-    [error, setError] = useState(""),
-    [loading, setLoading] = useState(true),
+    [error, setError] = useState("");
+  const [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [refresh, setRefresh] = useState(0);
-  const [view, setView] = useState<"journal" | "matrix" | "meeting">("journal"),
-    [selection, setSelection] = useState<Selection>({
-      ...emptySelection,
-      highlights: initialHighlights,
-    }),
-    [draft, setDraft] = useState<Selection>({
-      ...emptySelection,
-      highlights: initialHighlights,
-    });
-  const [page, setPage] = useState<Page>(blankPage),
-    [pending, setPending] = useState<Page>(blankPage),
-    [creating, setCreating] = useState(false),
+  const [view, setView] = useState<View>("journal");
+  const [selection, setSelection] = useState<Selection>({
+    ...emptySelection,
+    departmentId: initialHighlights ? "" : departmentId,
+    highlights: initialHighlights,
+    state: initialPending ? "pending" : "",
+  });
+  const [draft, setDraft] = useState(selection),
+    [searching, setSearching] = useState(false);
+  const [filtered, setFiltered] = useState(initialHighlights || initialPending);
+  const [page, setPage] = useState(blankPage),
+    [pending, setPending] = useState(blankPage);
+  const [sections, setSections] = useState<{ category: Choice; page: Page }[]>(
+    [],
+  );
+  const [creating, setCreating] = useState<string | null>(null),
     [detail, setDetail] = useState(initialEntry);
+  const board = view === "journal" && !filtered;
   useEffect(() => {
     onEntryOpened?.();
   }, []);
   useEffect(() => {
-    let current = true;
+    let active = true;
     setLoading(true);
     setError("");
-    void application
-      .open(selection, view === "meeting")
-      .then((result) => {
-        if (current) {
+    const load = async () => {
+      if (board) {
+        const result = await application.board(selection);
+        if (active) {
+          setContext(result.context);
+          setSections(result.sections);
+        }
+      } else {
+        const result = await application.open(selection, view === "meeting");
+        if (active) {
           setContext(result.context);
           setPage(result.current);
           setPending(result.pending);
         }
-      })
-      .catch((error) => {
-        if (current) setError(error.message);
+      }
+    };
+    void load()
+      .catch((e) => {
+        if (active) setError(e.message);
       })
       .finally(() => {
-        if (current) setLoading(false);
+        if (active) setLoading(false);
       });
     return () => {
-      current = false;
+      active = false;
     };
-  }, [application, selection, view, refresh]);
+  }, [application, selection, view, refresh, board]);
+  const apply = (next: Selection) => {
+    setSelection({ ...next, cursor: "" });
+    setDraft({ ...next, cursor: "" });
+  };
   const open = (id: string) => {
     setDetail(id);
-    setCreating(false);
+    setCreating(null);
   };
-  const history = (entry: Entry) => {
-    const s = {
+  const equipmentHistory = (entry: Entry) => {
+    apply({
       ...emptySelection,
       equipmentReferenceId: entry.equipmentReferenceId,
-    };
-    setDraft(s);
-    setSelection(s);
+    });
+    setFiltered(true);
     setView("journal");
     setDetail("");
   };
@@ -118,7 +147,7 @@ export function HandoverWorkspace({
         application={application}
         close={() => setDetail("")}
         onChanged={() => setRefresh((n) => n + 1)}
-        onEquipment={history}
+        onEquipment={equipmentHistory}
       />
     );
   return (
@@ -126,17 +155,31 @@ export function HandoverWorkspace({
       <PageHeading
         eyebrow="Operations"
         title="Shift Handover"
-        description="Share what happened. Keep the next team informed."
+        description="What happened. What needs attention. What comes next."
         actions={
           <Actions>
             <Button
-              disabled={!context || busy}
-              onClick={() => setCreating(true)}
+              disabled={!context}
+              onClick={() => {
+                setSearching(false);
+                setCreating("");
+              }}
             >
               New entry
             </Button>
             <Button
               variant="secondary"
+              disabled={!context}
+              onClick={() => {
+                setDraft(selection);
+                setSearching(true);
+              }}
+            >
+              Search history
+            </Button>
+            <Button
+              variant="text"
+              disabled={loading}
               onClick={() => setRefresh((n) => n + 1)}
             >
               Refresh
@@ -144,31 +187,58 @@ export function HandoverWorkspace({
           </Actions>
         }
       />
-      {error && <Alert>{error}</Alert>}
-      {creating && context && (
-        <EntryForm
-          context={context}
-          pending={busy}
-          onCancel={() => setCreating(false)}
-          onSave={async (content, issue, responsibleId) => {
-            setBusy(true);
-            setError("");
-            try {
-              const entry = await application.publish({
-                content,
-                issue,
-                responsibleId,
-              });
-              setCreating(false);
-              open(entry.id);
-              setRefresh((n) => n + 1);
-            } catch (e) {
-              setError(e instanceof Error ? e.message : "Publication failed.");
-            } finally {
-              setBusy(false);
-            }
-          }}
-        />
+      {context && (
+        <div className="handover-toolbar">
+          <Field>
+            Department / Halle
+            <Select
+              aria-label="Selected department"
+              value={selection.departmentId}
+              onChange={(e) => {
+                const id = e.target.value;
+                onDepartmentChange?.(id);
+                apply({
+                  ...selection,
+                  departmentId: id,
+                  areaId: "",
+                  equipmentReferenceId: "",
+                });
+              }}
+            >
+              <option value="">All departments</option>
+              {context.locations
+                .filter((l) => l.role === "department")
+                .map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.label}
+                  </option>
+                ))}
+            </Select>
+          </Field>
+          {view === "meeting" && (
+            <Field>
+              Meeting date
+              <Input
+                type="date"
+                aria-label="Meeting date"
+                value={selection.from}
+                onChange={(e) =>
+                  apply({
+                    ...selection,
+                    from: e.target.value,
+                    to: e.target.value,
+                  })
+                }
+              />
+            </Field>
+          )}
+          <p>
+            {today(context.timeZone)} ·{" "}
+            {view === "mine"
+              ? "Entries you published"
+              : "Select a department to catch up with your team"}
+          </p>
+        </div>
       )}
       <ViewNavigation
         label="Handover views"
@@ -177,107 +247,184 @@ export function HandoverWorkspace({
           { id: "journal", label: "Journal" },
           { id: "matrix", label: "Department matrix" },
           { id: "meeting", label: "Meeting preparation" },
+          { id: "mine", label: "My entries" },
         ]}
         onSelect={(next) => {
           setView(next);
-          if (
-            next === "meeting" &&
-            context &&
-            !selection.from &&
-            !selection.to
-          ) {
-            const date = today(context.timeZone);
-            const s = { ...selection, from: date, to: date, cursor: "" };
-            setSelection(s);
-            setDraft(s);
-          }
+          setFiltered(false);
+          const date = context ? today(context.timeZone) : "";
+          apply({
+            ...emptySelection,
+            departmentId: selection.departmentId,
+            mine: next === "mine",
+            ...(next === "meeting" ? { from: date, to: date } : {}),
+          });
         }}
       />
-      {context && (
-        <HandoverFilters
-          context={context}
-          draft={draft}
-          setDraft={setDraft}
-          disabled={loading || busy}
-          onApply={() => setSelection({ ...draft, cursor: "" })}
-          onReset={() => {
-            setDraft({ ...emptySelection });
-            setSelection({ ...emptySelection });
-          }}
-        />
+      {error && !creating && <Alert>{error}</Alert>}
+      {filtered && (
+        <Actions>
+          <p>
+            Filtered history
+            {selection.categoryId
+              ? ` · ${context?.categories.find((c) => c.id === selection.categoryId)?.label ?? ""}`
+              : ""}
+          </p>
+          <Button
+            variant="text"
+            onClick={() => {
+              setFiltered(false);
+              apply({
+                ...emptySelection,
+                departmentId: selection.departmentId,
+                mine: view === "mine",
+              });
+            }}
+          >
+            Clear search
+          </Button>
+        </Actions>
       )}
       {loading ? (
         <p role="status">Loading handover…</p>
       ) : (
         !error && (
           <>
-            <p>
-              {page.total} matching entries · Showing {page.entries.length}
-            </p>
-            {!page.entries.length && (
-              <Panel variant="empty">
-                <h2>No entries for this selection</h2>
-                <p>
-                  Publish an update or adjust the filters to read earlier
-                  history.
-                </p>
-              </Panel>
-            )}
-            {view === "matrix" ? (
-              <EntryMatrix
-                entries={page.entries}
-                externalLabel={
-                  context?.externalSystemLabel ?? "External reference"
-                }
+            {board ? (
+              <CategoryBoard
+                sections={sections}
+                add={setCreating}
                 open={open}
+                history={(categoryId) => {
+                  apply({ ...selection, categoryId });
+                  setFiltered(true);
+                }}
               />
-            ) : view === "meeting" ? (
+            ) : (
               <>
                 <p>
-                  Meeting dates select recorded updates. Open issues below
-                  include earlier dates.
+                  {page.total} entries · Showing {page.entries.length}
                 </p>
-                <MeetingEntries
-                  entries={page.entries}
-                  categories={context?.categories ?? []}
-                  open={open}
-                />
-              </>
-            ) : (
-              <EntryCards entries={page.entries} open={open} />
-            )}
-            {page.nextCursor && (
-              <Button
-                variant="secondary"
-                disabled={busy}
-                onClick={() => void more()}
-              >
-                More entries
-              </Button>
-            )}
-            {view === "meeting" && (
-              <section>
-                <h2>Open issues across dates</h2>
-                <p>
-                  {pending.total} unresolved · Showing {pending.entries.length}
-                </p>
-                <EntryCards entries={pending.entries} open={open} />
-                {!pending.entries.length && (
-                  <p>No unresolved issues for these filters.</p>
+                {!page.entries.length && (
+                  <Panel variant="empty">
+                    <h2>No updates for this selection</h2>
+                    <p>Share an update or search earlier history.</p>
+                  </Panel>
                 )}
-                {pending.nextCursor && (
+                {view === "matrix" ? (
+                  <EntryMatrix
+                    entries={page.entries}
+                    externalLabel={
+                      context?.externalSystemLabel ?? "Work reference"
+                    }
+                    open={open}
+                  />
+                ) : view === "meeting" ? (
+                  <MeetingEntries
+                    entries={page.entries}
+                    categories={context?.categories ?? []}
+                    open={open}
+                  />
+                ) : (
+                  <EntryCards entries={page.entries} open={open} />
+                )}
+                {page.nextCursor && (
                   <Button
                     variant="secondary"
                     disabled={busy}
-                    onClick={() => void more(true)}
+                    onClick={() => void more()}
                   >
-                    More open issues
+                    More entries
                   </Button>
                 )}
-              </section>
+                {view === "meeting" && (
+                  <Panel>
+                    <h2>Still open</h2>
+                    <p>
+                      {pending.total} unresolved issues, including earlier days.
+                    </p>
+                    <EntryCards entries={pending.entries} open={open} />
+                    {!pending.total && (
+                      <p>No unresolved issues for this selection.</p>
+                    )}
+                    {pending.nextCursor && (
+                      <Button
+                        variant="secondary"
+                        disabled={busy}
+                        onClick={() => void more(true)}
+                      >
+                        More open issues
+                      </Button>
+                    )}
+                  </Panel>
+                )}
+              </>
             )}
           </>
         )
+      )}
+      {searching && context && creating === null && (
+        <Dialog
+          title="Search handover history"
+          onClose={() => setSearching(false)}
+        >
+          <HandoverFilters
+            context={context}
+            draft={draft}
+            setDraft={setDraft}
+            disabled={busy}
+            onApply={() => {
+              apply(draft);
+              setFiltered(true);
+              setSearching(false);
+            }}
+            onReset={() =>
+              setDraft({
+                ...emptySelection,
+                departmentId: selection.departmentId,
+                mine: view === "mine",
+              })
+            }
+          />
+        </Dialog>
+      )}
+      {creating !== null && context && (
+        <Dialog
+          title="New handover entry"
+          busy={busy}
+          onClose={() => setCreating(null)}
+        >
+          {error && <Alert>{error}</Alert>}
+          <EntryForm
+            application={application}
+            context={context}
+            defaults={{
+              departmentId: selection.departmentId,
+              ...(creating ? { categoryId: creating } : {}),
+            }}
+            pending={busy}
+            onCancel={() => setCreating(null)}
+            onSave={async (content, issue, responsibleId) => {
+              setBusy(true);
+              setError("");
+              try {
+                const entry = await application.publish({
+                  content,
+                  issue,
+                  responsibleId,
+                });
+                open(entry.id);
+                setRefresh((n) => n + 1);
+              } catch (e) {
+                setError(
+                  e instanceof Error ? e.message : "Publication failed.",
+                );
+              } finally {
+                setBusy(false);
+              }
+            }}
+          />
+        </Dialog>
       )}
     </section>
   );

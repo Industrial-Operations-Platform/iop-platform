@@ -344,6 +344,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/handover/equipment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_equipment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/handover/query": {
         parameters: {
             query?: never;
@@ -865,7 +881,19 @@ export interface components {
             externalSystemLabel: string;
             timeZone: string;
         };
+        HandoverEquipmentRequestDto: {
+            departmentId: string;
+            areaId: string;
+            search: string;
+            after: string;
+        };
+        HandoverEquipmentPageDto: {
+            codes: string[];
+            nextCursor: string;
+        };
         HandoverSelectionDto: {
+            mine?: boolean;
+            attention?: boolean;
             from: string;
             to: string;
             departmentId: string;
@@ -877,6 +905,11 @@ export interface components {
             /** @enum {string} */
             state: "" | "none" | "open" | "in-progress" | "resolved" | "pending";
             highlights: boolean;
+        };
+        HandoverLatestUpdateDto: {
+            note: string;
+            actorName: string;
+            at: string;
         };
         HandoverContentDto: {
             date: string;
@@ -898,6 +931,7 @@ export interface components {
             discuss: boolean;
         };
         HandoverEntryDto: {
+            latestUpdate?: components["schemas"]["HandoverLatestUpdateDto"];
             id: string;
             authorId: string;
             authorName: string;
@@ -2263,6 +2297,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HandoverContextDto"];
+                };
+            };
+        };
+    };
+    HandoverController_equipment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverEquipmentRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverEquipmentPageDto"];
                 };
             };
         };

@@ -45,6 +45,7 @@ export interface Content {
 }
 export type IssueState = "none" | "open" | "in-progress" | "resolved";
 export interface Entry {
+  latestUpdate?: { note: string; actorName: string; at: string };
   id: string;
   authorId: string;
   authorName: string;
@@ -90,6 +91,8 @@ export interface Selection {
   state: "" | IssueState | "pending";
   search: string;
   highlights: boolean;
+  mine?: boolean;
+  attention?: boolean;
   cursor: string;
 }
 export const emptySelection: Selection = {
@@ -139,4 +142,15 @@ export function withinLocation(
     id = locations.find((location) => location.id === id)?.parentId ?? "";
   }
   return false;
+}
+
+export interface EquipmentSelection {
+  departmentId: string;
+  areaId: string;
+  search: string;
+  after: string;
+}
+export interface EquipmentPage {
+  codes: string[];
+  nextCursor: string;
 }

@@ -35,7 +35,8 @@ export function WorkspaceApp({
   );
   const [handoverEntry, setHandoverEntry] = useState("");
   const [handoverHighlights, setHandoverHighlights] = useState(false);
-  const [sector, setSector] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
+  const [handoverPending, setHandoverPending] = useState(false);
   const [administration, setAdministration] = useState(false);
   const [context, setContext] = useState<SessionContext | null>(null),
     [error, setError] = useState<unknown>(),
@@ -242,9 +243,13 @@ export function WorkspaceApp({
           application={handover}
           initialEntry={handoverEntry}
           initialHighlights={handoverHighlights}
+          initialPending={handoverPending}
+          departmentId={departmentId}
+          onDepartmentChange={setDepartmentId}
           onEntryOpened={() => {
             setHandoverEntry("");
             setHandoverHighlights(false);
+            setHandoverPending(false);
           }}
         />
       ) : page === "start" && context?.enabled && !error ? (
@@ -258,14 +263,15 @@ export function WorkspaceApp({
               : undefined
           }
           authenticated={context.authentication === "password"}
-          onSectorChange={setSector}
           operational={
             handover && signedIn ? (
               <HandoverHighlights
                 key={context.user?.id}
                 application={handover}
-                sector={sector}
-                open={(id, highlights) => {
+                departmentId={departmentId}
+                onDepartmentChange={setDepartmentId}
+                open={(id, highlights, pending) => {
+                  setHandoverPending(!!pending);
                   setHandoverEntry(id ?? "");
                   setHandoverHighlights(!!highlights);
                   setPage("handover");

@@ -158,3 +158,21 @@ profiles, create/reload/history/follow-up, earlier open issues, highlight inclus
 and withdrawal, direct entry navigation, manual location override, empty/error
 states and Start without analytical imports. Check desktop/narrow layouts and
 keyboard navigation; run repository tests and OpenAPI generation consistency.
+
+## Owner-requested refinement — 2026-09-29
+
+[IOP-169](../../planning/items/IOP-169-handover-board.md) records the owner's explicit
+choice to select equipment from current imported codes, filtered by configured
+department/area. A handover-owned lookup port is implemented through host composition
+and the analytical module's scoped read adapter. It returns exact code strings, never
+analytical row IDs. New/changed references must match this selection; unchanged
+historical references remain valid evidence after import/configuration changes.
+This selection is not canonical asset validation and cannot assert current health.
+No imports still allows site/department/area reports without equipment.
+
+The owner also requested current-day publication for workers: contributors create
+only on the current site-local date; coordinators may select historical dates.
+Contributor corrections retain the original date. Idempotent recovery of a saved
+request remains possible after midnight. A follow-up may atomically change issue
+state under the existing author/assignee/coordinator rules, with a required note,
+retained original snapshot and current latest-update summary.

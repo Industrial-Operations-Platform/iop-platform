@@ -302,4 +302,4 @@ canonical asset integration.
 | [IOP-166 — Reset the file selection after successful import](items/IOP-166-import-form-reset.md) | Completed |
 | [IOP-167 — Restrict user management to administration mode](items/IOP-167-users-administration-mode.md) | Completed |
 | [IOP-168 — Operational Shift Handover](items/IOP-168-shift-handover.md) | Completed |
-| [IOP-169 — Handover board and guided follow-up](items/IOP-169-handover-board.md) | In progress |
+| [IOP-169 — Handover board and guided follow-up](items/IOP-169-handover-board.md) | Completed |

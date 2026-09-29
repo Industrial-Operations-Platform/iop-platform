@@ -45,3 +45,33 @@ test("meeting selection retains earlier open issues and preserves department fil
     departmentId: "dept",
   });
 });
+
+test("the board loads each category independently so busy categories cannot hide other sections", async () => {
+  const list = jest.fn().mockImplementation(async (s) => ({
+    entries: [],
+    total: s.categoryId === "safety" ? 42 : 2,
+    nextCursor: "",
+  }));
+  const gateway = {
+    context: async () => ({
+      categories: [
+        { id: "safety", label: "Safety" },
+        { id: "people", label: "People" },
+      ],
+    }),
+    list,
+  } as unknown as Gateway;
+  const app = new HandoverApplication(gateway, () => "key");
+  const result = await app.board({
+    ...emptySelection,
+    departmentId: "department",
+  });
+  expect(result.sections.map((section) => section.page.total)).toEqual([42, 2]);
+  expect(list.mock.calls.every(([s]) => s.departmentId === "department")).toBe(
+    true,
+  );
+  await app.list({ mine: true, cursor: "next" });
+  expect(list).toHaveBeenLastCalledWith(
+    expect.objectContaining({ mine: true, cursor: "next" }),
+  );
+});

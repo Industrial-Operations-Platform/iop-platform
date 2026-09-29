@@ -55,8 +55,10 @@ export function EntryBody({ entry }: { entry: Entry }) {
 export function EntryCards({
   entries,
   open,
+  compact = false,
 }: {
   entries: Entry[];
+  compact?: boolean;
   open: (id: string) => void;
 }) {
   return (
@@ -68,7 +70,23 @@ export function EntryCards({
               {entry.content.summary}
             </Button>
           </h3>
-          <EntryBody entry={entry} />
+          {compact ? (
+            <>
+              <p>
+                {entry.areaLabel || entry.departmentLabel || "Site-wide"} ·{" "}
+                {issueLabel(entry.issueState)}
+                {entry.content.equipmentCode
+                  ? ` · ${entry.content.equipmentCode}`
+                  : ""}
+              </p>
+              <p className="handover-excerpt">
+                {entry.latestUpdate?.note || entry.content.details}
+              </p>
+              {entry.content.dueDate && <p>Due {entry.content.dueDate}</p>}
+            </>
+          ) : (
+            <EntryBody entry={entry} />
+          )}
         </Panel>
       ))}
     </div>

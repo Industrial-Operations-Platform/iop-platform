@@ -1,6 +1,6 @@
 # IOP-169 — Handover board and guided follow-up
 
-Status: In progress. Owner requested this refinement on 2026-09-29.
+Status: Completed locally. Owner requested this refinement on 2026-09-29.
 
 ## Scope and acceptance
 
@@ -31,4 +31,8 @@ refresh require a separate approval for this increment.
 permissions and history; the owner explicitly selected imported equipment suggestions
 for this increment. The adapter is composed by the host through a handover-owned
 lookup port, with analytical reads remaining in their owning module.
-[Execution plan](../active/IOP-169-handover-board-plan.md).
+[Execution plan](../completed/IOP-169-handover-board-plan.md).
+
+The bounded refinement is implemented and validated. See the execution record for
+API, browser, PostgreSQL and visual evidence. Publication and local Docker activation
+remain pending owner approval; IOP-168 is still the running local version.
