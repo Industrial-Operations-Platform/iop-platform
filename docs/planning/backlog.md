@@ -312,3 +312,4 @@ canonical asset integration.
 | [IOP-176 — Handover detail action spacing](items/IOP-176-handover-action-spacing.md) | Completed |
 | [IOP-177 — Enforce the shared platform visual identity](items/IOP-177-platform-visual-identity.md) | Completed |
 | [IOP-178 — Consistent journal cards and contextual detail navigation](items/IOP-178-handover-cards-navigation.md) | Completed |
+| [IOP-179 — Distinguish entry titles from section headings](items/IOP-179-handover-entry-title-style.md) | Completed |

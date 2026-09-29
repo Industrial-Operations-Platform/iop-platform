@@ -45,6 +45,7 @@ feature-specific typeface. Sizes below are CSS pixels before browser zoom.
 | --- | --- |
 | Page title | `pageTitleSize`: 28px; `headingWeight`: 700 |
 | Section / card heading | `sectionTitleSize`: 16px; `headingWeight`: 700 |
+| Clickable entry-summary title | `bodySize`: 14px; `labelWeight`: 600; `link` ink |
 | Body, actions and standard fields | `bodySize`: 14px |
 | Meeting card metadata | `captionSize`: 12.8px; muted ink |
 | Compact tables / filters | `compactSize`: 12px |
@@ -57,7 +58,9 @@ Existing chart titles, brand and metric roles keep dedicated shared tokens rathe
 than becoming alternate module themes. All stylesheet font sizes, weights, families
 and line heights must inherit or use canonical tokens. Colors must use semantic
 palette tokens; blue identifies primary actions, links and active navigation, while
-report text and titles remain navy. Preserve meaning without depending on color alone.
+report text and section headings remain navy. Clickable entry-summary titles use
+blue link ink and semibold weight to distinguish them from bold category headings.
+Preserve meaning without depending on color alone.
 
 Use `PageHeading` consistently in overview and detail screens. Detail navigation
 includes the module, current tab and current-page label inside the same heading;
@@ -66,7 +69,8 @@ view with its selection intact; the module action explicitly returns home. Use s
 and `Disclosure` variants for report content, actions and history. The detail action
 row keeps a visible gap after the latest-update divider. Journal and Meeting
 preparation use one feature-owned summary-card component, with a bordered clickable
-surface, bold navy title and muted department. Do not recreate that presentation
+surface, semibold blue title and muted department. This applies to Journal, Meeting
+preparation, Daily overview and the meeting open-issues list. Do not recreate that presentation
 as a blue-link list with separators in another tab.
 
 The workspace shell supplies profile-aware navigation; features supply their content.

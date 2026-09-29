@@ -195,6 +195,10 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+.iop-ui .handover-summary-card strong {
+  color: var(--iop-link);
+  font-weight: var(--iop-labelWeight);
+}
 .handover-summary-card span {
   font-size: var(--iop-captionSize);
   font-weight: var(--iop-regularWeight);

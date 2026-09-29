@@ -64,7 +64,8 @@ No automatic publication or local stack restart is implied by code validation.
 Open **Shift Handover** from the left navigation and select a department. The Journal
 board shows the three latest entries in each configured category, with full matching
 counts and a **View history** action. Journal and Meeting preparation reuse the
-same bordered summary cards: bold navy titles and muted department labels. Select
+same bordered summary cards: semibold blue entry titles and muted department labels,
+distinct from the bold navy category headings. Select
 a card for its full report, date, author and status. Each category's **+** opens a modal form with
 that category, the selected department and today's site-local date. Technicians and
 Task Force publish only on the current date; Team Leader and Administrator can
