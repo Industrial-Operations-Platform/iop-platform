@@ -1,6 +1,6 @@
 # IOP-179 — Shared entry-title hierarchy
 
-Status: Completed locally. Owner-authorized visual refinement, 2026-09-29.
+Status: Completed and published; local Docker activated. Owner-authorized visual refinement, 2026-09-29.
 Branch: `fix/IOP-179-handover-entry-title-style`, from clean `develop` at `3a20e64`.
 Scope: [item](../items/IOP-179-handover-entry-title-style.md).
 
@@ -30,4 +30,5 @@ Scope: [item](../items/IOP-179-handover-entry-title-style.md).
 - Logs: `/tmp/iop179-build.log`, `/tmp/iop179-web-tests.log`,
   `/tmp/iop179-browser.log`. Existing bundle-size warning remains.
 - Documentation links/statuses and diff whitespace verified. No new tests, API or
-  business logic changes. Publication and Docker activation remain pending approval.
+  business logic changes. [Publication and Docker activation](IOP-179-publication-plan.md)
+  are complete under explicit owner approval.
