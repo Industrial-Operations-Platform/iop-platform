@@ -314,3 +314,4 @@ canonical asset integration.
 | [IOP-178 — Consistent journal cards and contextual detail navigation](items/IOP-178-handover-cards-navigation.md) | Completed |
 | [IOP-179 — Distinguish entry titles from section headings](items/IOP-179-handover-entry-title-style.md) | Completed |
 | [IOP-180 — Polish operational summaries and shared visual hierarchy](items/IOP-180-operational-visual-polish.md) | Completed |
+| [IOP-181 — Refine operational selection, matrix and personal entries](items/IOP-181-handover-view-polish.md) | Completed |

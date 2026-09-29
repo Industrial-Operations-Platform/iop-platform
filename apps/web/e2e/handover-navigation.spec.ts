@@ -193,18 +193,31 @@ for (const width of [1440, 375]) {
     await expect(
       operational.getByRole("region", { name: "Open reports", exact: true }),
     ).toHaveCount(0);
-    const metrics = operational.locator(".iop-metric-grid");
-    const bounds = await metrics.boundingBox();
-    const parent = await operational.boundingBox();
-    expect(
-      Math.abs(bounds!.x + bounds!.width / 2 - parent!.x - parent!.width / 2),
-    ).toBeLessThan(2);
-    expect((await startViews.boundingBox())!.y).toBeGreaterThan(
-      bounds!.y + bounds!.height,
+    await expect(operational.locator(".iop-metric-grid")).toHaveCount(0);
+    await expect(startViews.getByRole("button")).toHaveCount(3);
+    await expect(startViews).toHaveCSS("position", "static");
+    const attentionCard = startViews.getByRole("button", {
+      name: /Needs attention/,
+    });
+    await expect(attentionCard).toHaveAccessibleDescription(
+      "Blocked equipment or overdue action / feedback.",
     );
-    await expect(startViews).toHaveCSS("position", "relative");
+    const attentionBounds = await attentionCard.boundingBox();
+    const reportsBounds = await startViews
+      .getByRole("button", { name: /Open reports/ })
+      .boundingBox();
+    if (width > 760) expect(attentionBounds!.y).toBe(reportsBounds!.y);
+    else
+      expect(reportsBounds!.y).toBeGreaterThan(
+        attentionBounds!.y + attentionBounds!.height,
+      );
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop180-start-${width}.png`,
+      path: `/tmp/iop181-start-${width}.png`,
       fullPage: true,
     });
     await startViews.getByRole("button", { name: /Open reports/ }).focus();
@@ -262,7 +275,7 @@ for (const width of [1440, 375]) {
     await expect(journalCard).toBeVisible();
     const journalStyle = await journalCard.evaluate(summaryStyle);
     await page.screenshot({
-      path: `/tmp/iop180-journal-${width}.png`,
+      path: `/tmp/iop181-journal-${width}.png`,
       fullPage: true,
     });
     await journalCard.click();
@@ -307,7 +320,7 @@ for (const width of [1440, 375]) {
       };
     });
     await page.screenshot({
-      path: `/tmp/iop180-meeting-${width}.png`,
+      path: `/tmp/iop181-meeting-${width}.png`,
       fullPage: true,
     });
     await meeting
@@ -392,7 +405,7 @@ for (const width of [1440, 375]) {
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop180-detail-${width}.png`,
+      path: `/tmp/iop181-detail-${width}.png`,
       fullPage: true,
     });
     const returnToMeeting = breadcrumb.getByRole("button", {
@@ -433,14 +446,14 @@ for (const width of [1440, 375]) {
       matrix.getByRole("cell", { name: "2026-09-29", exact: true }),
     ).toBeVisible();
     await page.screenshot({
-      path: `/tmp/iop180-matrix-${width}.png`,
+      path: `/tmp/iop181-matrix-${width}.png`,
       fullPage: true,
     });
     await matrix
       .getByRole("cell", { name: "In progress", exact: true })
       .scrollIntoViewIfNeeded();
     await page.screenshot({
-      path: `/tmp/iop180-matrix-status-${width}.png`,
+      path: `/tmp/iop181-matrix-status-${width}.png`,
       fullPage: true,
     });
     await page
@@ -494,8 +507,17 @@ for (const width of [1440, 375]) {
     await expect(path.locator('[aria-current="page"]')).toHaveText(
       "My entries",
     );
+    await page.screenshot({
+      path: `/tmp/iop181-mine-${width}.png`,
+      fullPage: true,
+    });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
     await page
-      .getByRole("button", { name: entry.content.summary, exact: true })
+      .getByRole("button", { name: entry.content.summary, exact: false })
       .click();
     await breadcrumb
       .getByRole("button", { name: "My entries", exact: true })
@@ -504,7 +526,7 @@ for (const width of [1440, 375]) {
       tabs.getByRole("button", { name: "My entries", exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
     await page
-      .getByRole("button", { name: entry.content.summary, exact: true })
+      .getByRole("button", { name: entry.content.summary, exact: false })
       .click();
     const moduleHome = detail.getByRole("button", {
       name: "Shift Handover",
@@ -543,7 +565,7 @@ for (const width of [1440, 375]) {
     };
     await assertAligned();
     await page.screenshot({
-      path: `/tmp/iop180-form-${width}.png`,
+      path: `/tmp/iop181-form-${width}.png`,
       fullPage: true,
     });
     await dialog.getByRole("button", { name: "More components" }).click();

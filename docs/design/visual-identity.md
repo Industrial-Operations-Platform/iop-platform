@@ -117,13 +117,13 @@ palette and flat surfaces; use emphasis purposefully:
 
 | Information | Reusable treatment |
 | --- | --- |
-| Paired summary totals | `MetricGrid layout="paired"`, centered, equal-width cards; `MetricCard tone="info"` for open work and `attention` only for nonzero attention totals |
+| Selectable operational totals | `ViewNavigation placement="summary"` combines three totals and descriptions with view selection; info for open work, attention only for nonzero attention totals, neutral for site-wide highlights |
 | Summary explanation | `iop-metric-description`: short muted caption under the figure |
 | Department/location | Semibold muted caption, subordinate to the blue entry title |
 | State and count | `Badge`: neutral, info, attention or success with explicit text; color never supplies the meaning alone |
 | Equipment reference and due date | Semibold ink; dates retain labelled date-only values, with no browser-inferred overdue state |
 | Supporting preview | Muted excerpt, at most two lines; full text remains available in Details |
-| Embedded view selection | `ViewNavigation placement="inline"` below totals, count badges and the same active underline as module navigation |
+| Embedded view selection | `ViewNavigation placement="inline"` for compact selectors; `summary` for descriptive selection cards, with an explicit selected outline and underlined label |
 | Collection/history action | `CollectionAction` with visible label, count badge and directional cue |
 | Manual reload | `RefreshButton` with icon, visible text, disabled/busy state and reduced-motion support |
 
@@ -138,3 +138,17 @@ Show one Start collection at a time with at most three entries and an explicit
 shown/total count. Open reports includes attention entries; site-wide highlights
 retain their separate scope. Empty collections show an explanatory state. Ordinary
 buttons preserve Tab/Enter/Space navigation without claiming ARIA tab semantics.
+
+## Operational collections — IOP-181
+
+Start combines counts and navigation in three equal selection cards, without a
+second row of duplicate metrics. Native department selection sits in a compact,
+labelled filter surface. Summary selectors stack on narrow screens, keeping all
+three choices visible. Neutral highlights do not imply successful equipment health.
+
+Department matrix uses a white bordered viewport, sticky muted column headings,
+shared state/category badges, labelled date columns and bounded detail excerpts;
+full prose remains available through the entry title. Keyboard users can focus and
+scroll the viewport. My entries reuses expanded summary cards in a responsive grid,
+with entry date, responsibility and due dates. Shared tokens supply all
+colors and typography; no urgency is inferred from the browser clock.

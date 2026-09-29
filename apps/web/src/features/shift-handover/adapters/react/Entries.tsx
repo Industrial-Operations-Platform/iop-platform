@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Panel,
   Table,
@@ -6,7 +7,7 @@ import {
 } from "../../../../design/components";
 import { EntrySummaryCards } from "./EntrySummaryCards";
 import type { Entry } from "../../domain/models";
-import { issueLabel } from "./entry-labels";
+import { issueLabel, issueTone } from "./entry-labels";
 export function EntryBody({ entry }: { entry: Entry }) {
   const c = entry.content;
   return (
@@ -83,7 +84,12 @@ export function EntryMatrix({
   open: (id: string) => void;
 }) {
   return (
-    <TableViewport>
+    <TableViewport
+      className="handover-matrix-surface"
+      tabIndex={0}
+      role="region"
+      aria-label="Scrollable department matrix"
+    >
       <Table className="handover-matrix">
         <colgroup>
           <col className="handover-matrix-date" />
@@ -115,20 +121,45 @@ export function EntryMatrix({
         <tbody>
           {entries.map((e) => (
             <tr key={e.id}>
-              <td>{e.content.date}</td>
+              <td>
+                <time dateTime={e.content.date}>{e.content.date}</time>
+              </td>
               <th scope="row">
                 <Button variant="text" onClick={() => open(e.id)}>
                   {e.content.summary}
                 </Button>
                 <small>
-                  {e.departmentLabel || "Site-wide"} · {e.categoryLabel}
+                  {e.departmentLabel || "Site-wide"}
+                  {e.areaLabel && ` · ${e.areaLabel}`}
                 </small>
+                <Badge>{e.categoryLabel}</Badge>
               </th>
-              <td>{e.content.details || "—"}</td>
-              <td>{e.content.externalReference || "—"}</td>
-              <td>{e.content.dueDate || "—"}</td>
+              <td>
+                <p className="handover-matrix-excerpt">
+                  {e.content.details || "No additional details."}
+                </p>
+              </td>
+              <td>
+                <span className="handover-matrix-reference-value">
+                  {e.content.externalReference || "—"}
+                </span>
+              </td>
+              <td>
+                {e.content.dueDate ? (
+                  <time dateTime={e.content.dueDate}>{e.content.dueDate}</time>
+                ) : (
+                  "—"
+                )}
+              </td>
               <td>{e.responsibleName || "Unassigned"}</td>
-              <td>{issueLabel(e.issueState)}</td>
+              <td>
+                <Badge tone={issueTone(e.issueState)}>
+                  {issueLabel(e.issueState)}
+                </Badge>
+                {e.content.condition === "blocked" && (
+                  <Badge tone="attention">Reported blocked</Badge>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

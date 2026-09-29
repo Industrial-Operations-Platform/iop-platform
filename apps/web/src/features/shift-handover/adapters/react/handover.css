@@ -46,7 +46,7 @@
   width: 23%;
 }
 .handover-matrix-details {
-  width: 23%;
+  width: 19%;
 }
 .handover-matrix-reference {
   width: 12%;
@@ -55,7 +55,7 @@
   width: 12%;
 }
 .handover-matrix-status {
-  width: 8%;
+  width: 12%;
 }
 .iop-ui .handover-matrix th,
 .iop-ui .handover-matrix td {
@@ -225,10 +225,6 @@
 .iop-ui .handover-highlights {
   margin-block: 1.25rem;
 }
-.handover-highlights > .iop-metric-grid {
-  --iop-metricGap: 1rem;
-  margin-block: 1.5rem;
-}
 
 .iop-ui .handover-summary-card:hover {
   background: var(--iop-canvas);
@@ -283,4 +279,126 @@
 
 .handover-highlights > .handover-section-heading {
   margin-bottom: 1rem;
+}
+
+.iop-ui .handover-department-filter {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  background: var(--iop-canvas);
+  font-size: var(--iop-captionSize);
+  font-weight: var(--iop-labelWeight);
+  color: var(--iop-muted);
+}
+.handover-department-filter .iop-select {
+  width: min(100%, 22rem);
+  min-height: 44px;
+}
+.handover-highlights > .handover-section-heading p {
+  color: var(--iop-muted);
+  margin-bottom: 0;
+}
+.handover-results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+.handover-results-heading h2,
+.handover-results-heading p {
+  margin: 0;
+}
+.handover-results-heading p {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.iop-ui .handover-matrix-surface {
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  max-height: 65vh;
+  margin-bottom: 0;
+}
+.iop-ui .handover-matrix caption {
+  padding: 1rem;
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.iop-ui .handover-matrix thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--iop-canvas);
+  color: var(--iop-muted);
+  padding-block: 0.8rem;
+}
+.iop-ui .handover-matrix tbody tr:hover,
+.iop-ui .handover-matrix tbody tr:focus-within {
+  background: var(--iop-activeSurface);
+}
+.iop-ui .handover-matrix tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+.iop-ui .handover-matrix tbody th {
+  border-left: 3px solid var(--iop-activeSurface);
+}
+.iop-ui .handover-matrix button {
+  font-size: var(--iop-bodySize);
+  font-weight: var(--iop-labelWeight);
+  line-height: var(--iop-captionLineHeight);
+  min-height: 44px;
+}
+.iop-ui .handover-matrix small {
+  font-size: var(--iop-compactSize);
+  margin-bottom: 0.5rem;
+}
+.handover-matrix-excerpt {
+  margin: 0;
+  color: var(--iop-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.handover-matrix time {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--iop-labelWeight);
+}
+.handover-matrix-reference-value {
+  color: var(--iop-muted);
+}
+.handover-matrix td .iop-badge {
+  overflow-wrap: normal;
+}
+.handover-matrix td .iop-badge + .iop-badge {
+  margin-top: 0.5rem;
+}
+.handover-personal-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 1rem;
+  margin-top: 0;
+}
+.iop-ui .handover-personal-cards .handover-summary-card {
+  padding: var(--iop-panelPadding);
+  gap: 0.65rem;
+  align-content: start;
+  border-radius: var(--iop-cardRadius);
+  border-top: 3px solid var(--iop-inputBorder);
+}
+@media (max-width: 900px) {
+  .handover-personal-cards {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .handover-department-filter .iop-select {
+    width: 100%;
+  }
 }

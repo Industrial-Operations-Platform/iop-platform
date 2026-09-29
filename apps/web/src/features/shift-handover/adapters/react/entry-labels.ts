@@ -6,3 +6,6 @@ export const issueLabel = (state: Entry["issueState"]) =>
     "in-progress": "In progress",
     resolved: "Resolved",
   })[state];
+
+export const issueTone = (state: Entry["issueState"]) =>
+  state === "resolved" ? "success" : state === "none" ? "neutral" : "info";

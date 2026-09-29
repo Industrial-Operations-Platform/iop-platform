@@ -4,8 +4,6 @@ import {
   Alert,
   Button,
   Field,
-  MetricCard,
-  MetricGrid,
   Panel,
   Select,
   RefreshButton,
@@ -97,8 +95,8 @@ export function HandoverHighlights({
         />
       </div>
       {context && (
-        <Field>
-          Department / Halle
+        <Field className="handover-department-filter">
+          <span>Department / Halle</span>
           <Select
             aria-label="Start department"
             value={departmentId}
@@ -121,24 +119,8 @@ export function HandoverHighlights({
         <Alert>{error}</Alert>
       ) : (
         <>
-          <MetricGrid layout="paired">
-            <MetricCard label="Open issues" value={pending.total} tone="info">
-              <p className="iop-metric-description">
-                Open or in progress, ready for follow-up.
-              </p>
-            </MetricCard>
-            <MetricCard
-              label="Needs attention"
-              value={attention.total}
-              tone={attention.total ? "attention" : "neutral"}
-            >
-              <p className="iop-metric-description">
-                Blocked equipment or overdue action / feedback.
-              </p>
-            </MetricCard>
-          </MetricGrid>
           <ViewNavigation
-            placement="inline"
+            placement="summary"
             label="Operational updates"
             selected={view}
             onSelect={setView}
@@ -147,12 +129,21 @@ export function HandoverHighlights({
                 id: "attention",
                 label: "Needs attention",
                 count: attention.total,
+                tone: attention.total ? "attention" : "neutral",
+                description: "Blocked equipment or overdue action / feedback.",
               },
-              { id: "pending", label: "Open reports", count: pending.total },
+              {
+                id: "pending",
+                label: "Open reports",
+                count: pending.total,
+                tone: "info",
+                description: "Open or in progress, ready for follow-up.",
+              },
               {
                 id: "highlights",
                 label: "Shift Handover",
                 count: highlights.total,
+                description: "Selected updates for everyone at your site.",
               },
             ]}
           />

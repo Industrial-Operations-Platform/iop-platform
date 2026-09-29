@@ -1,18 +1,22 @@
 import { Badge, Button } from "../../../../design/components";
-import { issueLabel } from "./entry-labels";
+import { issueLabel, issueTone } from "./entry-labels";
 import type { Entry } from "../../domain/models";
 
 export function EntrySummaryCards({
   entries,
   open,
   expanded = false,
+  personal = false,
 }: {
   entries: Entry[];
   open: (id: string) => void;
   expanded?: boolean;
+  personal?: boolean;
 }) {
   return (
-    <div className="handover-summary-cards">
+    <div
+      className={`handover-summary-cards${personal ? " handover-personal-cards" : ""}`}
+    >
       {entries.map((entry) => (
         <Button
           key={entry.id}
@@ -30,15 +34,7 @@ export function EntrySummaryCards({
           {expanded && (
             <>
               <span className="handover-card-tags">
-                <Badge
-                  tone={
-                    entry.issueState === "resolved"
-                      ? "success"
-                      : entry.issueState === "in-progress"
-                        ? "info"
-                        : "neutral"
-                  }
-                >
+                <Badge tone={issueTone(entry.issueState)}>
                   {issueLabel(entry.issueState)}
                 </Badge>
                 {entry.content.condition === "blocked" && (
@@ -54,6 +50,21 @@ export function EntrySummaryCards({
               {(entry.latestUpdate?.note || entry.content.details) && (
                 <span className="handover-excerpt">
                   {entry.latestUpdate?.note || entry.content.details}
+                </span>
+              )}
+              {personal && (
+                <span className="handover-card-tags">
+                  <span>
+                    Entry date{" "}
+                    <time dateTime={entry.content.date}>
+                      {entry.content.date}
+                    </time>
+                  </span>
+                  {entry.issueState !== "none" && (
+                    <span>
+                      Responsible · {entry.responsibleName || "Unassigned"}
+                    </span>
+                  )}
                 </span>
               )}
               {(entry.content.dueDate || entry.content.feedbackDueDate) && (

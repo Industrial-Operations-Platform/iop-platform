@@ -28,7 +28,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `Alert` | Error announcement and consistent error surface |
 | `SideNavigation` | Controlled page navigation with current-page semantics |
 | `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort; table headings vertically center plain labels and buttons together |
-| `ViewNavigation` | Typed controlled view selector with labelled navigation, pressed buttons, optional counts and bottom/inline placement |
+| `ViewNavigation` | Typed controlled view selector with labelled navigation, pressed buttons, optional counts and bottom/inline/summary placement; summary cards accept descriptions and neutral/info/attention tones |
 
 ```tsx
 import { useState } from "react";

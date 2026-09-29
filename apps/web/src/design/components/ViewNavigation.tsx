@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { Button } from "./Controls";
 import { Badge } from "./Surfaces";
 
@@ -16,11 +16,14 @@ export function ViewNavigation<T extends string | number>({
     label: string;
     count?: number;
     disabled?: boolean;
+    description?: string;
+    tone?: "neutral" | "info" | "attention";
   }[];
   selected: T;
   onSelect: (id: T) => void;
-  placement?: "bottom" | "inline";
+  placement?: "bottom" | "inline" | "summary";
 }) {
+  const descriptionId = useId();
   const navigation = useRef<HTMLElement>(null);
   useEffect(() => {
     const revealSelected = () => {
@@ -49,11 +52,25 @@ export function ViewNavigation<T extends string | number>({
         <Button
           key={item.id}
           disabled={item.disabled}
+          data-tone={item.tone ?? "neutral"}
+          aria-describedby={
+            item.description ? `${descriptionId}-${item.id}` : undefined
+          }
           aria-pressed={selected === item.id}
           onClick={() => onSelect(item.id)}
         >
-          {item.label}
-          {item.count !== undefined && <Badge>{item.count}</Badge>}
+          <span className="iop-view-label">{item.label}</span>
+          {item.count !== undefined && (
+            <Badge tone={item.tone}>{item.count}</Badge>
+          )}
+          {item.description && (
+            <span
+              className="iop-view-description"
+              id={`${descriptionId}-${item.id}`}
+            >
+              {item.description}
+            </span>
+          )}
         </Button>
       ))}
     </nav>

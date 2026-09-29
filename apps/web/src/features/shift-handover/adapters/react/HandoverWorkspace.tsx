@@ -422,26 +422,37 @@ export function HandoverWorkspace({
               </>
             ) : (
               <>
-                <p>
-                  {page.total} entries · Showing {page.entries.length}
-                </p>
+                <div className="handover-results-heading">
+                  <h2>{viewLabels[view]}</h2>
+                  <p>
+                    {page.total} entries · Showing {page.entries.length}
+                  </p>
+                </div>
                 {!page.entries.length && (
                   <Panel variant="empty">
                     <h2>No updates for this selection</h2>
                     <p>Share an update or search earlier history.</p>
                   </Panel>
                 )}
-                {view === "matrix" ? (
-                  <EntryMatrix
-                    entries={page.entries}
-                    externalLabel={
-                      context?.externalSystemLabel ?? "Work reference"
-                    }
-                    open={open}
-                  />
-                ) : (
-                  <EntryCards entries={page.entries} open={open} />
-                )}
+                {page.entries.length > 0 &&
+                  (view === "matrix" ? (
+                    <EntryMatrix
+                      entries={page.entries}
+                      externalLabel={
+                        context?.externalSystemLabel ?? "Work reference"
+                      }
+                      open={open}
+                    />
+                  ) : view === "mine" ? (
+                    <EntrySummaryCards
+                      entries={page.entries}
+                      open={open}
+                      expanded
+                      personal
+                    />
+                  ) : (
+                    <EntryCards entries={page.entries} open={open} />
+                  ))}
                 {page.nextCursor && (
                   <Button
                     variant="secondary"
