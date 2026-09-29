@@ -132,7 +132,7 @@ export function EntryDetail({
                 </p>
               </div>
             )}
-            <Actions>
+            <Actions className="handover-entry-actions">
               <Button
                 onClick={() => {
                   setInitialState(undefined);

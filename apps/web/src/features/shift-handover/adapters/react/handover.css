@@ -139,6 +139,9 @@
   padding: 0.8rem 0;
   border-bottom: 1px solid var(--iop-line);
 }
+.handover-entry-actions {
+  margin-top: 1rem;
+}
 .handover-preview p {
   margin: 0.3rem 0;
   font-size: 0.9rem;
