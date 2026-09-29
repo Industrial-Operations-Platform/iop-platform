@@ -2,7 +2,7 @@
 
 ## Status and request
 
-Completed locally. The owner requested administration to be active and visible by default,
+Completed. The owner requested administration to be active and visible by default,
 with a deliberate **View as** control listing the available profiles instead of a
 single Taskforce toggle.
 
@@ -24,10 +24,12 @@ single Taskforce toggle.
 This refines [IOP-167](IOP-167-users-administration-mode.md) under accepted
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md) and
 [ADR-0035](../../architecture/adr/ADR-0035-transitional-authentication.md).
-IOP-169 remains on its separate unpublished review branch; it is not a prerequisite.
+Implementation began independently from develop; the approved delivery integrates IOP-169 and IOP-171.
 
 ## Evidence and publication
 
 See the [completed execution plan](../completed/IOP-170-administrator-workspace-plan.md).
-The local branch is ready for review. Publication, integration with the separate
-IOP-169 handover branch and updating the running Docker stack remain unapproved.
+Integrated into develop, published to origin and activated in local Docker.
+See the [combined publication record](../completed/IOP-171-integrated-publication-plan.md).
+Technician preview hides analytical entry points; Team Leader preview uses Daily overview.
+The real account and its server permissions remain unchanged by preview.

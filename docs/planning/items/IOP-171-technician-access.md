@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-Completed locally. The owner explicitly confirmed on 2026-09-29 that Technician must not
+Completed. The owner explicitly confirmed on 2026-09-29 that Technician must not
 have access to Data Analysis. Administrator, Task Force and Team Leader retain it.
 
 ## Acceptance
@@ -18,14 +18,14 @@ have access to Data Analysis. Administrator, Task Force and Team Leader retain i
 
 The owner decision refines [ADR-0035](../../architecture/adr/ADR-0035-transitional-authentication.md)
 using existing permissions under [ADR-0014](../../architecture/adr/ADR-0014-scoped-rbac.md).
-The independent implementation starts from develop. IOP-169 and IOP-170 remain
-unpublished review branches; integrating them requires the already requested publication
-approval. Their eventual integration must retain the Technician restriction in View as
-and authorize the bounded handover equipment catalog through handover access rather
-than requiring access to analytical reports.
+Implementation began independently from develop, then the owner approved integration
+with IOP-169/170 and publication. Technician layout preview retains this restriction;
+the bounded handover equipment picker remains available through scoped handover access.
 
 ## Evidence and publication
 
 See the [completed execution plan](../completed/IOP-171-technician-access-plan.md).
-Code, migration and isolated browser/database checks are complete. Publishing and
-applying the migration to the running Docker stack still require owner approval.
+The integrated code is published to origin and running in local Docker. The migration
+is applied: Technician has handover access and no analytical grant. All existing accounts
+and historical data were preserved. See the
+[combined publication record](../completed/IOP-171-integrated-publication-plan.md).
