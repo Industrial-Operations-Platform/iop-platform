@@ -14,6 +14,7 @@ export class DemoContextDto {
   @ApiPropertyOptional({ enum: ["password"] }) authentication?: "password";
   @ApiPropertyOptional() mustChangePassword?: boolean;
   @ApiPropertyOptional() canAdminister?: boolean;
+  @ApiPropertyOptional() canReadAnalytics?: boolean;
   @ApiProperty() canImport!: boolean;
   @ApiProperty() enabled!: boolean;
   @ApiProperty({ type: [LocalUserDto] }) users!: LocalUserDto[];

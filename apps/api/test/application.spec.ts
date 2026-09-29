@@ -42,7 +42,7 @@ describe('API host', () => {
   });
 
   it('requires explicit demo activation before business access', async () => {
-    await request(app.getHttpServer()).get('/api/v1/demo/context').expect(200, { enabled: false, users: [], user: null, scope: null, canImport: false });
+    await request(app.getHttpServer()).get('/api/v1/demo/context').expect(200, { enabled: false, users: [], user: null, scope: null, canReadAnalytics: false, canImport: false });
     const log = jest.spyOn(console, 'error').mockImplementation(() => {});
     await request(app.getHttpServer()).get('/api/v1/imports').expect(503);
     log.mockRestore();

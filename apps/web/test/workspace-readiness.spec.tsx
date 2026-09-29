@@ -270,3 +270,39 @@ test("administration works before the first import without analytical requests",
     screen.queryByRole("navigation", { name: "Analysis templates" }),
   ).not.toBeInTheDocument();
 });
+
+test("Technician home has no analytical entry points or requests", async () => {
+  const gateway = setup(
+    new AccessApplication({
+      context: jest
+        .fn()
+        .mockResolvedValue({
+          enabled: true,
+          authentication: "password",
+          canImport: false,
+          canReadAnalytics: false,
+          user: { id: "tech", name: "Technician", profile: "technician" },
+          users: [],
+          scope: null,
+        }),
+      users: jest.fn(),
+      login: jest.fn(),
+      password: jest.fn(),
+      logout: jest.fn(),
+      create: jest.fn(),
+      change: jest.fn(),
+    }),
+  );
+  await screen.findByRole("heading", { name: "Welcome, Technician" });
+  expect(
+    screen.queryByRole("button", { name: "Data analysis" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Open Data Analysis" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("region", { name: "Analytical summary" }),
+  ).not.toBeInTheDocument();
+  expect(gateway.availability).not.toHaveBeenCalled();
+  expect(gateway.report).not.toHaveBeenCalled();
+});

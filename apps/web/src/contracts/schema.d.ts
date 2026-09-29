@@ -461,6 +461,7 @@ export interface components {
             authentication?: "password";
             mustChangePassword?: boolean;
             canAdminister?: boolean;
+            canReadAnalytics?: boolean;
             canImport: boolean;
             enabled: boolean;
             users: components["schemas"]["LocalUserDto"][];

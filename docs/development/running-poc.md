@@ -83,8 +83,10 @@ alarm data.
 
 Open **Users & profiles** as Administrator to create users, assign one of the four
 profiles, or disable/reactivate a local account. Only Administrator has user
-administration and import/preparation tools. Technician, Task Force and Team Leader
-currently share analytical access; their differences await future modules.
+administration and import/preparation tools. Administrator, Task Force and Team Leader
+can open Data Analysis. Technician has an operational Start page and Shift Handover,
+without analytical navigation, summaries or API access. Existing Technician analytical
+grants are removed at their configured site by the next database migration.
 The API enforces these permissions even when called directly.
 
 Each new user receives an initial password shown once at creation. Deliver it to

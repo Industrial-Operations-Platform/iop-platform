@@ -10,6 +10,7 @@ export interface DemoScope {
   siteTimeZone: string;
 }
 export interface DemoContext {
+  canReadAnalytics?: boolean;
   canImport: boolean;
   enabled: boolean;
   users: LocalUser[];

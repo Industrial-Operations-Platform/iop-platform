@@ -22,6 +22,7 @@ export interface SessionContext {
   authentication?: "password";
   mustChangePassword?: boolean;
   canAdminister?: boolean;
+  canReadAnalytics?: boolean;
   canImport: boolean;
   user: { id: string; name: string; profile?: string } | null;
   users: { id: string; name: string }[];

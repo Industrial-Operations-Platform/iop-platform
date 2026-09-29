@@ -71,5 +71,7 @@ export function siteRoles(profile: Profile): readonly string[] {
       ]
     : profile === "team-leader"
       ? ["analytics-reader", "handover-contributor", "handover-coordinator"]
-      : ["analytics-reader", "handover-contributor"];
+      : profile === "technician"
+        ? ["handover-contributor"]
+        : ["analytics-reader", "handover-contributor"];
 }

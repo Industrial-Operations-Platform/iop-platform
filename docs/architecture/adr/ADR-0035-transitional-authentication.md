@@ -31,10 +31,10 @@ bootstrap is an explicit operator command, separate from runtime credentials.
 
 | Profile | Current assignments |
 | --- | --- |
-| Administrator | Organization access admin; site operator and analytics reader at the configured local site |
-| Technician | Analytics reader at the configured local site |
-| Task Force | Same as Technician |
-| Team Leader | Same as Technician |
+| Administrator | Organization access admin; site operator, analytics reader and handover contributor/coordinator at the configured local site |
+| Technician | Handover contributor at the configured local site; no analytical access (IOP-171 refinement below) |
+| Task Force | Analytics reader and handover contributor at the configured local site |
+| Team Leader | Analytics reader and handover contributor/coordinator at the configured local site |
 
 These are presentation profiles over [ADR-0014](ADR-0014-scoped-rbac.md) bundles.
 No publication, workforce-management or maintenance permission is granted before
@@ -102,3 +102,13 @@ References: [OWASP password storage](https://cheatsheetseries.owasp.org/cheatshe
 and [session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
 These sources guide credential/session protection; product scope and identity
 migration choices above are project decisions, not external requirements.
+
+## Owner-approved Technician restriction — 2026-09-29
+
+Under [IOP-171](../../planning/items/IOP-171-technician-access.md), Technician no longer
+receives `analytics-reader`. Existing Technician grants at their exact configured site
+are deactivated by migration. Administrator, Task Force and Team Leader retain their
+analytical assignments. Technician retains the operational handover contributor role.
+This supersedes the earlier identical analytical capabilities for all worker profiles.
+Session capability checks must not require analytics access just to return identity or
+import availability. Current scoped grants remain authoritative on every API operation.

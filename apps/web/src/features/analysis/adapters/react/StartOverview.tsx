@@ -12,13 +12,14 @@ const formatNumber = (value: number) => new Intl.NumberFormat("en-GB", {
 }).format(value);
 
 /** Composes available analytical data; operational sources remain explicitly absent. */
-export function StartOverview({ application, context, openAnalysis, profileLabel, authenticated, operational, onSectorChange }: {
+export function StartOverview({ application, context, openAnalysis, profileLabel, authenticated, operational, onSectorChange, canReadAnalytics = true }: {
   application: AnalysisWorkspace;
   context: DemoContext;
   openAnalysis: () => void;
   profileLabel?: string;
   authenticated?: boolean;
   operational?: ReactNode;
+  canReadAnalytics?: boolean;
   onSectorChange?: (sector:string)=>void;
 }) {
   const [base, setBase] = useState<Report | null>(null);
@@ -38,7 +39,7 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
     onSectorChange?.("");
     setLoading(true);
     setError(undefined);
-    if (!context.user) {
+    if (!context.user || !canReadAnalytics) {
       setLoading(false);
       return;
     }
@@ -59,10 +60,10 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
       if (active) setLoading(false);
     });
     return () => { active = false; };
-  }, [application, context.user?.id, refresh]);
+  }, [application, context.user?.id, refresh, canReadAnalytics]);
 
   useEffect(() => {
-    if (!sector || !selection) return;
+    if (!canReadAnalytics || !sector || !selection) return;
     let active = true;
     setLoading(true);
     setError(undefined);
@@ -72,7 +73,7 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
       .catch((reason) => { if (active) setError(reason); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [application, sector, selection]);
+  }, [application, sector, selection, canReadAnalytics]);
 
   const report = sector ? detail : base;
   return (
@@ -80,8 +81,8 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
       <PageHeading
         eyebrow="Your workspace"
         title={context.user ? `Welcome, ${context.user.name}` : "Welcome to IOP"}
-        description="Your week, operational updates and the latest analytical history."
-        actions={<Button onClick={openAnalysis}>Open Data Analysis</Button>}
+        description={canReadAnalytics ? "Your week, operational updates and the latest analytical history." : "Your week and operational updates."}
+        actions={canReadAnalytics ? <Button onClick={openAnalysis}>Open Data Analysis</Button> : undefined}
       />
       {!context.user ? (
         <Panel variant="empty">
@@ -103,7 +104,7 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
             <p className="analysis-home-muted">No workforce information is available yet.</p>
           </Panel>
         </div>
-        <Panel className="analysis-home-summary" aria-label="Analytical summary">
+        {canReadAnalytics && <Panel className="analysis-home-summary" aria-label="Analytical summary">
           <div className="analysis-home-heading">
             <div>
               <span className="analysis-home-label">Data Analysis · v1</span>
@@ -149,7 +150,7 @@ export function StartOverview({ application, context, openAnalysis, profileLabel
               {report.groupCount > report.groups.length && <p>Showing {report.groups.length} of {report.groupCount} groups. Open Data Analysis for more detail. Totals include all matching records.</p>}
               {(base?.optionCounts.sector ?? 0) > (base?.options.sector?.length ?? 0) && <p>Sector choices are limited in this overview. Open Data Analysis to explore the full history.</p>}
             </>}
-        </Panel>
+        </Panel>}
         {operational ?? <div className="analysis-home-grid">
           <Panel>
             <span className="analysis-home-label">Operational updates · Not connected</span>

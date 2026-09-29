@@ -84,6 +84,9 @@ export function WorkspaceApp({
     if (access) updateSession(await access.context());
   };
   const signedIn = context?.user && !context.mustChangePassword;
+  const canReadAnalytics =
+    context?.canReadAnalytics !== false &&
+    context?.user?.profile !== "technician";
   const showUserAdministration =
     signedIn && administration && context.canAdminister;
   const signOut = () => {
@@ -214,7 +217,9 @@ export function WorkspaceApp({
           onSelect={setPage}
           items={[
             { id: "start", label: "Start" },
-            { id: "analysis", label: "Data analysis" },
+            ...(canReadAnalytics
+              ? [{ id: "analysis" as const, label: "Data analysis" }]
+              : []),
             ...(handover && signedIn
               ? [{ id: "handover" as const, label: "Shift Handover" }]
               : []),
@@ -247,7 +252,9 @@ export function WorkspaceApp({
             setHandoverHighlights(false);
           }}
         />
-      ) : page === "start" && context?.enabled && !error ? (
+      ) : (page === "start" || (page === "analysis" && !canReadAnalytics)) &&
+        context?.enabled &&
+        !error ? (
         <StartOverview
           key={context.user?.id ?? "no-user"}
           application={application}
@@ -257,6 +264,7 @@ export function WorkspaceApp({
               ? profileLabels[context.user.profile as Profile]
               : undefined
           }
+          canReadAnalytics={canReadAnalytics}
           authenticated={context.authentication === "password"}
           onSectorChange={setSector}
           operational={
@@ -278,7 +286,7 @@ export function WorkspaceApp({
             setPage("analysis");
           }}
         />
-      ) : context?.user ? (
+      ) : context?.user && canReadAnalytics ? (
         <ReportWorkspace
           key={context.user.id}
           application={application}

@@ -149,7 +149,7 @@ beforeAll(async () => {
   const directory = mkdtempSync(join(tmpdir(), "iop-168-migrations-"));
   try {
     for (const file of readdirSync(join(__dirname, "../migrations")).filter(
-      (f) => f.endsWith(".sql") && !f.includes("shift-handover"),
+      (f) => f.endsWith(".sql") && f < "20261001000000",
     ))
       copyFileSync(
         join(__dirname, "../migrations", file),
@@ -215,7 +215,12 @@ beforeAll(async () => {
       });
     }
   }
-  expect(await migrate(configs.migrator)).toBe(1);
+  await db("bootstrap", (c) =>
+    c.query(
+      "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','tech-a','site-a2','analytics-reader',true)",
+    ),
+  );
+  expect(await migrate(configs.migrator)).toBe(2);
   await provision(configs);
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
@@ -245,6 +250,45 @@ test("migration assigns all four profiles, preserves disabled membership and pre
       )
     ).rows,
   ).toHaveLength(0);
+});
+test("upgrade revokes existing technician analytical grants at the profile site and retains operational access", async () => {
+  for (const id of ["tech-a", "admin-a", "task-a", "lead-a"]) {
+    const check = () =>
+      runSiteOperation(
+        pool,
+        { ...scope, userId: id, permissions: ["analytics.read"] },
+        async () => true,
+      );
+    if (id === "tech-a") await expect(check()).rejects.toThrow("not permitted");
+    else await expect(check()).resolves.toBe(true);
+    await expect(
+      runSiteOperation(
+        pool,
+        {
+          ...scope,
+          userId: id,
+          permissions: ["handover.read", "handover.contribute"],
+        },
+        async () => true,
+      ),
+    ).resolves.toBe(true);
+  }
+  const rows = await db("bootstrap", (c) =>
+    c.query(
+      "SELECT site_id,is_active FROM users_rbac.site_role_assignments WHERE organization_id='org-a' AND user_id='tech-a' AND role_id='analytics-reader' ORDER BY site_id",
+    ),
+  );
+  expect(rows.rows).toEqual([
+    { site_id: "site-a", is_active: false },
+    { site_id: "site-a2", is_active: true },
+  ]);
+  const policies = await db("bootstrap", (c) =>
+    c.query(
+      "SELECT policyname FROM pg_policies WHERE policyname='technician_access_migration'",
+    ),
+  );
+  expect(policies.rows).toEqual([]);
+  expect(await migrate(configs.migrator)).toBe(0);
 });
 test("durable publication, equipment history, filters, idempotency and concurrent revision conflict", async () => {
   const request = {
@@ -543,7 +587,49 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
         headers: { Origin: origin, "X-IOP-Demo": "1" },
       });
     expect((await post("query", emptySelection)).status()).toBe(401);
+    const analyticalRequests = [];
+    page.on("request", (request) => {
+      if (request.url().includes("/api/v1/analytics/"))
+        analyticalRequests.push(request.url());
+    });
     await login("tech-a");
+    await pw(button("Data analysis")).toHaveCount(0);
+    await pw(button("Open Data Analysis")).toHaveCount(0);
+    await pw(
+      page.getByRole("region", { name: "Analytical summary" }),
+    ).toHaveCount(0);
+    expect(analyticalRequests).toEqual([]);
+    const technicianContext = await (
+      await page.request.get(origin + "/api/v1/session/context")
+    ).json();
+    expect(technicianContext.canReadAnalytics).toBe(false);
+    expect(technicianContext.canImport).toBe(false);
+    expect(
+      (
+        await page.request.get(origin + "/api/v1/analytics/availability")
+      ).status(),
+    ).toBe(403);
+    expect(
+      (
+        await page.request.post(origin + "/api/v1/analytics/report", {
+          data: {
+            from: "2026-09-01",
+            toExclusive: "2026-10-01",
+            dimension: "sector",
+            period: "month",
+            metric: "frequency",
+            filters: {},
+            search: "",
+            page: 1,
+          },
+          headers: { Origin: origin, "X-IOP-Demo": "1" },
+        })
+      ).status(),
+    ).toBe(403);
+    await page.screenshot({
+      path: "/tmp/iop-171-technician-start.png",
+      fullPage: true,
+    });
     await pw(button("Administration")).toHaveCount(0);
     await button("Shift Handover").click();
     await button("New entry").click();
@@ -723,10 +809,13 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
         exact: true,
       }),
     ).toBeVisible();
-    await page.getByLabel("From", { exact: true }).fill("2026-09-29");
-    await page.getByLabel("Through", { exact: true }).fill("2026-09-29");
+    // Use a date outside the fixture history, independent of the browser's current date.
+    await page.getByLabel("From", { exact: true }).fill("2000-01-01");
+    await page.getByLabel("Through", { exact: true }).fill("2000-01-01");
     await button("Apply filters").click();
-    await pw(page.getByText("0 matching entries · Showing 0", {exact:true})).toBeVisible();
+    await pw(
+      page.getByText("0 matching entries · Showing 0", { exact: true }),
+    ).toBeVisible();
     await pw(button("Paging 22")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.screenshot({

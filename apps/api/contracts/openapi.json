@@ -1536,6 +1536,9 @@
           "canAdminister": {
             "type": "boolean"
           },
+          "canReadAnalytics": {
+            "type": "boolean"
+          },
           "canImport": {
             "type": "boolean"
           },

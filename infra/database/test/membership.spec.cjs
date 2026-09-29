@@ -40,7 +40,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(13);
+  expect(await migrate(configs.migrator)).toBe(14);
   for (const org of ['org-a', 'org-b']) {
     await seedOrganization({ ...env, IOP_SEED_ORGANIZATION_ID: org, IOP_SEED_ORGANIZATION_NAME: 'Fictional Organization' });
   }

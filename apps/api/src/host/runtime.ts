@@ -33,7 +33,10 @@ import {
   loadConfiguration,
   type LocalConfiguration,
 } from "./configuration";
-import { runSiteOperation } from "../persistence/site-operation";
+import {
+  runSiteOperation,
+  SiteAccessDeniedError,
+} from "../persistence/site-operation";
 import {
   ImportBatches,
   SourceMappings,
@@ -365,23 +368,31 @@ export class PlatformRuntime {
       throw error;
     }
   }
-  async canImport(actor: string): Promise<boolean> {
-    const context = {
-      userId: actor,
-      organizationId: this.source.organizationId,
-      siteId: this.source.siteId,
-    };
-    return runSiteOperation(
-      this.pool,
-      { ...context, permissions: ["analytics.read"] },
-      async (tx) =>
-        (
-          await evaluateSiteAccess(tx, {
-            ...context,
-            permissions: ["imports.submit", "imports.review"],
-          })
-        ).allowed,
-    );
+  canImport(actor: string): Promise<boolean> {
+    return this.canPerform(actor, ["imports.submit", "imports.review"]);
+  }
+  canReadAnalytics(actor: string): Promise<boolean> {
+    return this.canPerform(actor, ["analytics.read"]);
+  }
+  private async canPerform(
+    actor: string,
+    permissions: string[],
+  ): Promise<boolean> {
+    try {
+      return await runSiteOperation(
+        this.pool,
+        {
+          userId: actor,
+          organizationId: this.source.organizationId,
+          siteId: this.source.siteId,
+          permissions,
+        },
+        async () => true,
+      );
+    } catch (error) {
+      if (error instanceof SiteAccessDeniedError) return false;
+      throw error;
+    }
   }
   protect(request: IncomingMessage, apiPort: number): void {
     if (!this.lease) throw new ServiceUnavailableException();

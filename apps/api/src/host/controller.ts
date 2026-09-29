@@ -154,6 +154,7 @@ export class PlatformController {
         users: [],
         user: null,
         scope: null,
+        canReadAnalytics: false,
         canImport: false,
       };
     const r = this.runtime;
@@ -169,6 +170,9 @@ export class PlatformController {
           enabled: true,
           authentication: "password",
           mustChangePassword: principal.mustChangePassword,
+          canReadAnalytics:
+            canUse &&
+            (await operation(async () => r.canReadAnalytics(principal.userId))),
           canAdminister:
             canUse && (await r.access.users.canAdminister(principal.userId)),
           canImport:
@@ -192,6 +196,7 @@ export class PlatformController {
         return {
           enabled: true,
           authentication: "password",
+          canReadAnalytics: false,
           canImport: false,
           canAdminister: false,
           mustChangePassword: false,
@@ -217,6 +222,7 @@ export class PlatformController {
     }
     return {
       enabled: true,
+      canReadAnalytics: !!actor,
       canImport: actor
         ? await operation(async () => r.canImport(actor!))
         : false,
@@ -255,6 +261,7 @@ export class PlatformController {
     );
     return {
       enabled: true,
+      canReadAnalytics: true,
       canImport: await operation(async () => r.canImport(body.userId)),
       users: r.config.users,
       user: r.config.users.find((u) => u.id === body.userId)!,

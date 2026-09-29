@@ -48,7 +48,7 @@ beforeAll(async () => {
   };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(13);
+  expect(await migrate(configs.migrator)).toBe(14);
   await provision(configs);
   const hash = await new NodePasswords().hash(initial);
   for (const suffix of ["a", "b"]) {
@@ -368,8 +368,59 @@ test("browser login, first password change, profiles, logout and direct HTTP den
   }
 });
 
+test("changing and restoring Technician never reinstates analytical grants", async () => {
+  const administrators = (await access.users.list("admin-a")).filter(
+    (user) => user.profile === "administrator" && user.active,
+  );
+  const administrator = administrators[0]?.id ?? "admin-a";
+  const created = await access.users.create(administrator, {
+    name: "Profile transition",
+    username: "profile-transition",
+    profile: "task-force",
+  });
+  const request = {
+    userId: created.user.id,
+    organizationId: "org-a",
+    siteId: "site-a",
+    permissions: ["analytics.read"],
+  };
+  await expect(runSiteOperation(pool, request, async () => true)).resolves.toBe(
+    true,
+  );
+  await access.users.change(administrator, created.user.id, "technician", true);
+  await expect(
+    runSiteOperation(pool, request, async () => true),
+  ).rejects.toThrow("not permitted");
+  await access.users.change(
+    administrator,
+    created.user.id,
+    "technician",
+    false,
+  );
+  await access.users.change(administrator, created.user.id, "technician", true);
+  await expect(
+    runSiteOperation(pool, request, async () => true),
+  ).rejects.toThrow("not permitted");
+  await expect(
+    runSiteOperation(
+      pool,
+      { ...request, permissions: ["handover.read"] },
+      async () => true,
+    ),
+  ).resolves.toBe(true);
+  await access.users.change(
+    administrator,
+    created.user.id,
+    "team-leader",
+    true,
+  );
+  await expect(runSiteOperation(pool, request, async () => true)).resolves.toBe(
+    true,
+  );
+});
+
 test.each(["technician", "task-force", "team-leader"])(
-  "%s gets analytical access but cannot import or administer",
+  "%s receives its configured analytical access and cannot import or administer",
   async (profile) => {
     const created = await access.users.create("admin-a", {
       name: profile,
@@ -392,8 +443,21 @@ test.each(["technician", "task-force", "team-leader"])(
       siteId: "site-a",
       permissions: ["analytics.read"],
     };
+    if (profile === "technician") {
+      await expect(
+        runSiteOperation(pool, request, async () => true),
+      ).rejects.toThrow("not permitted");
+    } else {
+      await expect(
+        runSiteOperation(pool, request, async () => true),
+      ).resolves.toBe(true);
+    }
     await expect(
-      runSiteOperation(pool, request, async () => true),
+      runSiteOperation(
+        pool,
+        { ...request, permissions: ["handover.read", "handover.contribute"] },
+        async () => true,
+      ),
     ).resolves.toBe(true);
     await expect(
       runSiteOperation(
