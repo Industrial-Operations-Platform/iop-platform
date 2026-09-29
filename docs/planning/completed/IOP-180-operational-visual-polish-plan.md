@@ -1,6 +1,6 @@
 # IOP-180 — Operational visual polish
 
-Status: Completed. Authorized by the owner's design request on 2026-09-29.
+Status: Completed and published; local Docker activated. Authorized by the owner's design request on 2026-09-29.
 Branch: `feature/IOP-180-operational-visual-polish`, from clean `develop`.
 Scope: [item](../items/IOP-180-operational-visual-polish.md).
 
@@ -55,6 +55,5 @@ Scope: [item](../items/IOP-180-operational-visual-polish.md).
 
 ## Closure
 
-All requested implementation criteria are complete. This story is committed locally
-for review; publication/merge and local Docker activation await owner authorization.
-The running Docker build has not been replaced.
+All requested implementation criteria are complete. Owner-approved publication and
+local Docker activation are complete; see the [publication evidence](IOP-180-publication-plan.md).

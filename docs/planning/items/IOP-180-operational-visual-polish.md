@@ -1,6 +1,6 @@
 # IOP-180 — Polish operational summaries and shared visual hierarchy
 
-Status: Completed; local review branch, not published. Owner-requested Start and Journal design refinement, 2026-09-29.
+Status: Completed and published; local Docker activated. Owner-requested Start and Journal design refinement, 2026-09-29.
 
 ## Scope and acceptance
 
@@ -20,3 +20,5 @@ Status: Completed; local review branch, not published. Owner-requested Start and
 Dependencies: completed IOP-177/178/179; Accepted ADR-0032/0036 and the
 [visual identity](../../design/visual-identity.md).
 Execution: [plan](../completed/IOP-180-operational-visual-polish-plan.md).
+
+Publication and activation: [evidence](../completed/IOP-180-publication-plan.md).
