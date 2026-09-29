@@ -1,3 +1,4 @@
+import { importedEquipmentCodes } from "../modules/oip/adapters/postgres/equipment-codes";
 import { Handover } from "../modules/shift-handover/application/handover";
 import { PgHandover } from "../modules/shift-handover/adapters/postgres/store";
 import { sitePeople } from "../modules/users-rbac/adapters/postgres/site-people";
@@ -242,6 +243,35 @@ export class PlatformRuntime {
               permissions: [permission],
             })
           ).allowed,
+        equipment: async (
+          tx,
+          actor,
+          departmentId,
+          areaId,
+          search,
+          after,
+          exact = false,
+        ) => {
+          const allowed = await evaluateSiteAccess(tx, {
+            ...this.source,
+            userId: actor,
+            permissions: ["analytics.read"],
+          });
+          if (!allowed.allowed) return { codes: [], nextCursor: "" };
+          const department = catalog.locations.find(
+            (l) => l.id === departmentId,
+          );
+          const area = catalog.locations.find((l) => l.id === areaId);
+          if (!department?.sectorKey || !area)
+            return { codes: [], nextCursor: "" };
+          return importedEquipmentCodes(tx, this.source, {
+            sector: department.sectorKey,
+            area: area.label,
+            search,
+            after,
+            exact,
+          });
+        },
         people: (tx) =>
           sitePeople(tx, this.source.organizationId, this.source.siteId),
       }),

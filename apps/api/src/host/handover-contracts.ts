@@ -61,7 +61,14 @@ export class HandoverContextDto {
   @ApiProperty() externalSystemLabel!: string;
   @ApiProperty() timeZone!: string;
 }
+export class HandoverLatestUpdateDto {
+  @ApiProperty() note!: string;
+  @ApiProperty() actorName!: string;
+  @ApiProperty() at!: string;
+}
 export class HandoverEntryDto {
+  @ApiPropertyOptional({ type: HandoverLatestUpdateDto })
+  latestUpdate?: HandoverLatestUpdateDto;
   @ApiProperty() id!: string;
   @ApiProperty() authorId!: string;
   @ApiProperty() authorName!: string;
@@ -102,6 +109,8 @@ export class HandoverChangeDto {
   @ApiPropertyOptional() highlighted?: boolean;
 }
 export class HandoverSelectionDto {
+  @ApiPropertyOptional() mine?: boolean;
+  @ApiPropertyOptional() attention?: boolean;
   @ApiProperty() from!: string;
   @ApiProperty() to!: string;
   @ApiProperty() departmentId!: string;
@@ -138,4 +147,15 @@ export class HandoverHistoryDto {
   @ApiProperty({ type: [HandoverRevisionDto] })
   revisions!: HandoverRevisionDto[];
   @ApiProperty() nextBefore!: number;
+}
+
+export class HandoverEquipmentRequestDto {
+  @ApiProperty() departmentId!: string;
+  @ApiProperty() areaId!: string;
+  @ApiProperty() search!: string;
+  @ApiProperty() after!: string;
+}
+export class HandoverEquipmentPageDto {
+  @ApiProperty({ type: [String] }) codes!: string[];
+  @ApiProperty() nextCursor!: string;
 }

@@ -1,5 +1,7 @@
 import {
   HandoverError,
+  siteDate,
+  withinLocation,
   exact,
   text,
   validContent,
@@ -19,6 +21,7 @@ import {
 } from "../domain/handover";
 export interface Transaction {
   coordinator: boolean;
+  equipment: EquipmentLookup["search"];
   people(): Promise<Person[]>;
   get(id: string): Promise<Entry | null>;
   prior(key: string): Promise<{ fingerprint: string; entry: Entry } | null>;
@@ -54,6 +57,16 @@ export interface ChangeEntry {
   responsibleId?: string;
   highlighted?: boolean;
 }
+export interface EquipmentLookup {
+  search(
+    actor: string,
+    departmentId: string,
+    areaId: string,
+    search: string,
+    after: string,
+    exact?: boolean,
+  ): Promise<{ codes: string[]; nextCursor: string }>;
+}
 export class Handover {
   constructor(
     private readonly store: Store,
@@ -68,6 +81,63 @@ export class Handover {
       canCoordinate: tx.coordinator,
       actorId: actor,
     }));
+  }
+  async equipmentChoices(
+    actor: string,
+    input: {
+      departmentId: string;
+      areaId: string;
+      search: string;
+      after: string;
+    },
+  ) {
+    exact(input, ["departmentId", "areaId", "search", "after"]);
+    const departmentId = text(input.departmentId, 64, true),
+      areaId = text(input.areaId, 64, true);
+    const search = text(input.search, 160),
+      after = text(input.after, 160);
+    if (
+      !this.catalog.locations.some(
+        (l) => l.id === departmentId && l.role === "department",
+      ) ||
+      !this.catalog.locations.some(
+        (l) =>
+          l.id === areaId &&
+          l.role === "area" &&
+          withinLocation(l.id, departmentId, this.catalog.locations),
+      )
+    )
+      throw new HandoverError("invalid_handover");
+    return this.store.run(actor, "handover.read", (tx) =>
+      tx.equipment(actor, departmentId, areaId, search, after),
+    );
+  }
+  private async requireEquipment(
+    tx: Transaction,
+    actor: string,
+    content: Content,
+    prior?: Content,
+  ) {
+    if (!content.equipmentCode) return;
+    if (
+      prior &&
+      ["equipmentCode", "equipmentNamespace", "departmentId", "areaId"].every(
+        (key) => content[key as keyof Content] === prior[key as keyof Content],
+      )
+    )
+      return;
+    if (!content.areaId || content.equipmentNamespace !== "site-equipment")
+      throw new HandoverError("handover_equipment_unavailable");
+    const result = await tx.equipment(
+      actor,
+      content.departmentId,
+      content.areaId,
+      content.equipmentCode,
+      "",
+      true,
+    );
+    if (!result.codes.includes(content.equipmentCode))
+      throw new HandoverError("handover_equipment_unavailable");
   }
   async list(actor: string, input: Selection) {
     const selection = validSelection(input);
@@ -103,6 +173,12 @@ export class Handover {
       const people = await tx.people(),
         author = this.person(people, actor),
         at = this.now();
+      if (
+        !tx.coordinator &&
+        content.date !== siteDate(at, this.catalog.timeZone)
+      )
+        throw new HandoverError("handover_today_only");
+      await this.requireEquipment(tx, actor, content);
       const entry: Entry = {
         id: this.ids(),
         authorId: actor,
@@ -139,7 +215,7 @@ export class Handover {
   async change(actor: string, input: ChangeEntry): Promise<Entry> {
     const fields: Record<string, string[]> = {
       correct: ["content"],
-      "follow-up": [],
+      "follow-up": Object.hasOwn(input ?? {}, "state") ? ["state"] : [],
       state: ["state"],
       assign: ["responsibleId"],
       highlight: ["highlighted"],
@@ -162,10 +238,17 @@ export class Handover {
         author = this.person(people, actor);
       if (input.action === "correct") {
         requireEditor(entry, actor, tx.coordinator);
-        entry.content = validContent(input.content!, this.catalog);
+        const content = validContent(input.content!, this.catalog);
+        if (!tx.coordinator && content.date !== entry.content.date)
+          throw new HandoverError("handover_today_only");
+        await this.requireEquipment(tx, actor, content, entry.content);
+        entry.content = content;
         Object.assign(entry, this.labels(entry.content));
         entry.equipmentReferenceId = await tx.reference(entry.content);
-      } else if (input.action === "state")
+      } else if (
+        input.action === "state" ||
+        (input.action === "follow-up" && input.state !== undefined)
+      )
         changeIssue(entry, actor, tx.coordinator, input.state!, note);
       else if (input.action === "assign") {
         if (!tx.coordinator) throw new HandoverError("handover_denied");
@@ -184,6 +267,12 @@ export class Handover {
       }
       entry.revision++;
       entry.updatedAt = this.now();
+      if (input.action === "follow-up" || input.action === "state")
+        entry.latestUpdate = {
+          note,
+          actorName: author.name,
+          at: entry.updatedAt,
+        };
       await tx.save(entry, {
         entry,
         actorId: actor,

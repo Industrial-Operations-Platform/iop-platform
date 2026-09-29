@@ -1262,6 +1262,37 @@
         ]
       }
     },
+    "/api/v1/handover/equipment": {
+      "post": {
+        "operationId": "HandoverController_equipment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverEquipmentRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverEquipmentPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
+    },
     "/api/v1/handover/query": {
       "post": {
         "operationId": "HandoverController_query",
@@ -3225,9 +3256,56 @@
           "timeZone"
         ]
       },
+      "HandoverEquipmentRequestDto": {
+        "type": "object",
+        "properties": {
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "search": {
+            "type": "string"
+          },
+          "after": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "departmentId",
+          "areaId",
+          "search",
+          "after"
+        ]
+      },
+      "HandoverEquipmentPageDto": {
+        "type": "object",
+        "properties": {
+          "codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "codes",
+          "nextCursor"
+        ]
+      },
       "HandoverSelectionDto": {
         "type": "object",
         "properties": {
+          "mine": {
+            "type": "boolean"
+          },
+          "attention": {
+            "type": "boolean"
+          },
           "from": {
             "type": "string"
           },
@@ -3278,6 +3356,25 @@
           "cursor",
           "state",
           "highlights"
+        ]
+      },
+      "HandoverLatestUpdateDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "note",
+          "actorName",
+          "at"
         ]
       },
       "HandoverContentDto": {
@@ -3362,6 +3459,9 @@
       "HandoverEntryDto": {
         "type": "object",
         "properties": {
+          "latestUpdate": {
+            "$ref": "#/components/schemas/HandoverLatestUpdateDto"
+          },
           "id": {
             "type": "string"
           },

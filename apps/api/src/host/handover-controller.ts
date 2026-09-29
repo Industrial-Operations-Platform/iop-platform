@@ -64,6 +64,15 @@ export class HandoverController {
   context(@Req() req: IncomingMessage) {
     return this.operation(req, (r, a) => r.handover.context(a));
   }
+  @Post("equipment")
+  @ApiBody({ type: C.HandoverEquipmentRequestDto })
+  @ApiCreatedResponse({ type: C.HandoverEquipmentPageDto })
+  equipment(
+    @Req() req: IncomingMessage,
+    @Body() body: C.HandoverEquipmentRequestDto,
+  ) {
+    return this.operation(req, (r, a) => r.handover.equipmentChoices(a, body));
+  }
   @Post("query")
   @ApiBody({ type: C.HandoverSelectionDto })
   @ApiCreatedResponse({ type: C.HandoverPageDto })
