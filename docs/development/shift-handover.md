@@ -102,9 +102,10 @@ The selected department is shared with Start during the current session; M6 defa
 assignments are not yet connected.
 
 Entry detail prioritizes the current report, latest follow-up and immutable history.
-The highlighted **Shift Handover** name and the sidebar destination both return
-to the module's Journal home while retaining the selected department. The adjacent
-reload icon refreshes the current entry and has a labelled keyboard-accessible control.
+The detail keeps the module heading and shows **Shift Handover / Details**.
+Select **Shift Handover** in that breadcrumb or the sidebar to return to the module's
+Journal home while retaining the selected department. Entries load when opened and
+update automatically after saving changes; there is no manual refresh control.
 **Add follow-up** opens a modal with an optional issue-state transition. **Close issue**
 prefills Resolved and requires a resolution outcome; **Reopen issue** retains prior
 resolution evidence. An informational entry can first be tracked as an issue. Only
@@ -118,8 +119,8 @@ not inferred equipment health. It shows a bounded preview and links to full list
 Site-wide highlights remain separate; the analytical snapshot is compact and the
 full tables remain in Data Analysis.
 
-There is no hard-delete action. On a revision conflict, reload before applying the
-change. On an interrupted publication, retry the unchanged form to recover the
+There is no hard-delete action. On a revision conflict, return to the Journal and
+reopen the entry before applying the change. On an interrupted publication, retry the unchanged form to recover the
 saved entry instead of creating a duplicate.
 
 All four profiles can read, publish and add attributed follow-up. Authors can

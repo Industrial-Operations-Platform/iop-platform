@@ -308,3 +308,4 @@ canonical asset integration.
 | [IOP-172 — Department summary spacing](items/IOP-172-department-summary-spacing.md) | Completed |
 | [IOP-173 — Handover demonstration data](items/IOP-173-handover-demo-data.md) | Completed |
 | [IOP-174 — Handover navigation and layout](items/IOP-174-handover-navigation-layout.md) | Completed |
+| [IOP-175 — Consistent handover detail heading](items/IOP-175-handover-detail-heading.md) | Completed |
