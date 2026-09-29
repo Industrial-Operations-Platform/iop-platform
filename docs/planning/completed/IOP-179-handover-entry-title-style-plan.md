@@ -19,7 +19,7 @@ Scope: [item](../items/IOP-179-handover-entry-title-style.md).
 
 - One scoped rule styles every shared summary-card title with link ink (`#076bb5`)
   and weight 600. Section headings retain navy ink (`#172b43`) and weight 700;
-  title/body sizes remain 14px/16px respectively. Existing canonical tokens are reused.
+  entry/section title sizes remain 14px/16px respectively. Existing canonical tokens are reused.
 - Confirmed all consumers: Journal category previews, Meeting preparation/Daily
   overview canvas, and meeting pending entries. No duplicated per-view CSS.
 - Web build/typecheck and all 74 web tests passed. Both existing browser journeys
