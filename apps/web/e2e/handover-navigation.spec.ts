@@ -41,7 +41,6 @@ for (const width of [1440, 375]) {
         discuss: true,
       },
     };
-    let historyReads = 0;
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
       if (path.endsWith("/session/context"))
@@ -102,7 +101,6 @@ for (const width of [1440, 375]) {
         });
       }
       if (path.endsWith("/handover/history")) {
-        historyReads++;
         return route.fulfill({
           json: {
             entry,
@@ -141,6 +139,21 @@ for (const width of [1440, 375]) {
     });
     const home = navigation.getByRole("button", { name: "Shift Handover" });
     await home.click();
+    const heading = page.getByRole("heading", {
+      name: "Shift Handover",
+      exact: true,
+    });
+    const headingStyle = await heading.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        color: style.color,
+      };
+    });
+    await expect(
+      page.getByRole("button", { name: "Refresh", exact: true }),
+    ).toHaveCount(0);
     await page
       .getByRole("combobox", { name: "Selected department" })
       .selectOption("hall-a");
@@ -154,14 +167,44 @@ for (const width of [1440, 375]) {
     await expect(
       detail.getByRole("heading", { name: entry.content.summary }),
     ).toBeVisible();
-    const reads = historyReads;
-    await detail.getByRole("button", { name: "Reload entry" }).click();
-    await expect.poll(() => historyReads).toBe(reads + 1);
+    const breadcrumb = detail.getByRole("navigation", { name: "Breadcrumb" });
+    await expect(breadcrumb.getByRole("heading", { level: 1 })).toHaveText(
+      "Shift Handover/Details",
+    );
     await expect(
-      detail.getByRole("heading", { name: entry.content.summary }),
+      breadcrumb.getByText("Operations", { exact: true }),
     ).toBeVisible();
+    await expect(
+      breadcrumb.getByText(
+        "What happened. What needs attention. What comes next.",
+      ),
+    ).toBeVisible();
+    await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText(
+      "Details",
+    );
+    const moduleLink = breadcrumb.getByRole("button", {
+      name: "Shift Handover",
+      exact: true,
+    });
+    const detailStyle = await moduleLink.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        color: style.color,
+      };
+    });
+    expect(detailStyle).toEqual(headingStyle);
+    await expect(
+      detail.getByRole("button", { name: "Reload entry" }),
+    ).toHaveCount(0);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop174-detail-${width}.png`,
+      path: `/tmp/iop175-detail-${width}.png`,
       fullPage: true,
     });
     // Regression: selecting the already-active sidebar destination must leave detail.
@@ -182,14 +225,14 @@ for (const width of [1440, 375]) {
       matrix.getByRole("cell", { name: "2026-09-29", exact: true }),
     ).toBeVisible();
     await page.screenshot({
-      path: `/tmp/iop174-matrix-${width}.png`,
+      path: `/tmp/iop175-matrix-${width}.png`,
       fullPage: true,
     });
     await matrix
       .getByRole("cell", { name: "In progress", exact: true })
       .scrollIntoViewIfNeeded();
     await page.screenshot({
-      path: `/tmp/iop174-matrix-status-${width}.png`,
+      path: `/tmp/iop175-matrix-status-${width}.png`,
       fullPage: true,
     });
     await matrix.getByRole("button", { name: entry.content.summary }).click();
@@ -228,7 +271,7 @@ for (const width of [1440, 375]) {
     };
     await assertAligned();
     await page.screenshot({
-      path: `/tmp/iop174-form-${width}.png`,
+      path: `/tmp/iop175-form-${width}.png`,
       fullPage: true,
     });
     await dialog.getByRole("button", { name: "More components" }).click();

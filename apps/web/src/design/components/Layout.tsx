@@ -66,7 +66,7 @@ export function PageHeading({
   description,
   actions,
 }: {
-  title: string;
+  title: ReactNode;
   eyebrow?: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;

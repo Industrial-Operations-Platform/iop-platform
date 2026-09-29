@@ -13,26 +13,27 @@
 .handover-component-picker p {
   margin: 0;
 }
-.handover-detail-navigation {
+.handover-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 0.3em;
 }
 .iop-ui .handover-home {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  min-height: 0;
+  color: inherit;
+  text-align: left;
 }
 .iop-ui .handover-home:hover {
+  color: var(--iop-activeInk);
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
-.iop-ui .handover-reload {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
+.handover-breadcrumb-separator {
   color: var(--iop-muted);
-}
-.iop-ui .handover-reload:hover {
-  color: var(--iop-activeInk);
 }
 .iop-ui .handover-matrix {
   table-layout: fixed;

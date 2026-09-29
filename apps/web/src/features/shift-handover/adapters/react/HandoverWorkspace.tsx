@@ -8,7 +8,6 @@ import {
   Disclosure,
   Field,
   Input,
-  PageHeading,
   Panel,
   Select,
   ViewNavigation,
@@ -30,6 +29,7 @@ import { EntryDetail } from "./EntryDetail";
 import { EntryForm, today } from "./EntryForm";
 import { HandoverFilters } from "./HandoverFilters";
 import { CategoryBoard } from "./CategoryBoard";
+import { HandoverHeading } from "./HandoverHeading";
 import "./handover.css";
 const blankPage: Page = { entries: [], nextCursor: "", total: 0 };
 type View = "journal" | "matrix" | "meeting" | "mine";
@@ -212,10 +212,7 @@ export function HandoverWorkspace({
     );
   return (
     <section aria-label="Shift Handover" className="handover-workspace">
-      <PageHeading
-        eyebrow="Operations"
-        title="Shift Handover"
-        description="What happened. What needs attention. What comes next."
+      <HandoverHeading
         actions={
           <Actions>
             <Button
@@ -239,13 +236,6 @@ export function HandoverWorkspace({
                 Search history
               </Button>
             )}
-            <Button
-              variant="text"
-              disabled={loading || busy}
-              onClick={() => setRefresh((n) => n + 1)}
-            >
-              Refresh
-            </Button>
           </Actions>
         }
       />
