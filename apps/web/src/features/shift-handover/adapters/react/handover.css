@@ -216,3 +216,11 @@
     min-height: 0;
   }
 }
+
+.iop-ui .handover-highlights {
+  margin-block: 1.25rem;
+}
+.handover-highlights > .iop-metric-grid {
+  --iop-metricGap: 1.5rem;
+  margin-block: 1.5rem;
+}
