@@ -1,9 +1,11 @@
+import { MeetingCanvas, MeetingCards } from "./MeetingCanvas";
 import { useEffect, useState } from "react";
 import {
   Actions,
   Alert,
   Button,
   Dialog,
+  Disclosure,
   Field,
   Input,
   PageHeading,
@@ -11,7 +13,10 @@ import {
   Select,
   ViewNavigation,
 } from "../../../../design/components";
-import type { HandoverApplication } from "../../application/handover";
+import {
+  meetingSelection,
+  type HandoverApplication,
+} from "../../application/handover";
 import {
   emptySelection,
   type Choice,
@@ -20,7 +25,7 @@ import {
   type Page,
   type Selection,
 } from "../../domain/models";
-import { EntryCards, EntryMatrix, MeetingEntries } from "./Entries";
+import { EntryCards, EntryMatrix } from "./Entries";
 import { EntryDetail } from "./EntryDetail";
 import { EntryForm, today } from "./EntryForm";
 import { HandoverFilters } from "./HandoverFilters";
@@ -30,6 +35,7 @@ const blankPage: Page = { entries: [], nextCursor: "", total: 0 };
 type View = "journal" | "matrix" | "meeting" | "mine";
 export function HandoverWorkspace({
   application,
+  dailyOverview = false,
   initialEntry = "",
   initialHighlights = false,
   initialPending = false,
@@ -38,6 +44,7 @@ export function HandoverWorkspace({
   onEntryOpened,
 }: {
   application: HandoverApplication;
+  dailyOverview?: boolean;
   initialEntry?: string;
   initialHighlights?: boolean;
   initialPending?: boolean;
@@ -68,6 +75,7 @@ export function HandoverWorkspace({
   const [creating, setCreating] = useState<string | null>(null),
     [detail, setDetail] = useState(initialEntry);
   const board = view === "journal" && !filtered;
+  const meetingLabel = dailyOverview ? "Daily overview" : "Meeting preparation";
   useEffect(() => {
     onEntryOpened?.();
   }, []);
@@ -76,14 +84,30 @@ export function HandoverWorkspace({
     setLoading(true);
     setError("");
     const load = async () => {
-      if (board) {
-        const result = await application.board(selection);
+      if (board || view === "meeting") {
+        const selected =
+          view === "meeting"
+            ? meetingSelection(
+                selection.from,
+                selection.departmentId,
+                dailyOverview,
+              )
+            : selection;
+        const result = await application.board(selected);
+        const issues =
+          view === "meeting" && !dailyOverview
+            ? await application.list({
+                departmentId: selected.departmentId,
+                state: "pending",
+              })
+            : blankPage;
         if (active) {
           setContext(result.context);
           setSections(result.sections);
+          setPending(issues);
         }
       } else {
-        const result = await application.open(selection, view === "meeting");
+        const result = await application.open(selection, false);
         if (active) {
           setContext(result.context);
           setPage(result.current);
@@ -101,7 +125,7 @@ export function HandoverWorkspace({
     return () => {
       active = false;
     };
-  }, [application, selection, view, refresh, board]);
+  }, [application, selection, view, refresh, board, dailyOverview]);
   const apply = (next: Selection) => {
     setSelection({ ...next, cursor: "" });
     setDraft({ ...next, cursor: "" });
@@ -138,6 +162,40 @@ export function HandoverWorkspace({
       setBusy(false);
     }
   };
+  const moreCategory = async (categoryId: string) => {
+    const section = sections.find((s) => s.category.id === categoryId);
+    if (!section?.page.nextCursor) return;
+    setBusy(true);
+    setError("");
+    try {
+      const next = await application.list({
+        ...meetingSelection(
+          selection.from,
+          selection.departmentId,
+          dailyOverview,
+        ),
+        categoryId,
+        cursor: section.page.nextCursor,
+      });
+      setSections((current) =>
+        current.map((s) =>
+          s.category.id === categoryId
+            ? {
+                ...s,
+                page: {
+                  ...next,
+                  entries: [...s.page.entries, ...next.entries],
+                },
+              }
+            : s,
+        ),
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load entries.");
+    } finally {
+      setBusy(false);
+    }
+  };
   if (detail && context)
     return (
       <EntryDetail
@@ -167,19 +225,21 @@ export function HandoverWorkspace({
             >
               New entry
             </Button>
-            <Button
-              variant="secondary"
-              disabled={!context}
-              onClick={() => {
-                setDraft(selection);
-                setSearching(true);
-              }}
-            >
-              Search history
-            </Button>
+            {view !== "meeting" && (
+              <Button
+                variant="secondary"
+                disabled={!context}
+                onClick={() => {
+                  setDraft(selection);
+                  setSearching(true);
+                }}
+              >
+                Search history
+              </Button>
+            )}
             <Button
               variant="text"
-              disabled={loading}
+              disabled={loading || busy}
               onClick={() => setRefresh((n) => n + 1)}
             >
               Refresh
@@ -189,40 +249,46 @@ export function HandoverWorkspace({
       />
       {context && (
         <div className="handover-toolbar">
-          <Field>
-            Department / Halle
-            <Select
-              aria-label="Selected department"
-              value={selection.departmentId}
-              onChange={(e) => {
-                const id = e.target.value;
-                onDepartmentChange?.(id);
-                apply({
-                  ...selection,
-                  departmentId: id,
-                  areaId: "",
-                  equipmentReferenceId: "",
-                });
-              }}
-            >
-              <option value="">All departments</option>
-              {context.locations
-                .filter((l) => l.role === "department")
-                .map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.label}
-                  </option>
-                ))}
-            </Select>
-          </Field>
+          {!(view === "meeting" && dailyOverview) && (
+            <Field>
+              Department / Halle
+              <Select
+                disabled={busy}
+                aria-label="Selected department"
+                value={selection.departmentId}
+                onChange={(e) => {
+                  const id = e.target.value;
+                  onDepartmentChange?.(id);
+                  apply({
+                    ...selection,
+                    departmentId: id,
+                    areaId: "",
+                    equipmentReferenceId: "",
+                  });
+                }}
+              >
+                <option value="">All departments</option>
+                {context.locations
+                  .filter((l) => l.role === "department")
+                  .map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.label}
+                    </option>
+                  ))}
+              </Select>
+            </Field>
+          )}
           {view === "meeting" && (
             <Field>
-              Meeting date
+              {dailyOverview ? "Overview date" : "Meeting date"}
               <Input
                 type="date"
-                aria-label="Meeting date"
+                aria-label={dailyOverview ? "Overview date" : "Meeting date"}
+                required
+                disabled={busy}
                 value={selection.from}
                 onChange={(e) =>
+                  e.target.value &&
                   apply({
                     ...selection,
                     from: e.target.value,
@@ -233,10 +299,12 @@ export function HandoverWorkspace({
             </Field>
           )}
           <p>
-            {today(context.timeZone)} ·{" "}
-            {view === "mine"
-              ? "Entries you published"
-              : "Select a department to catch up with your team"}
+            {view === "meeting" ? selection.from : today(context.timeZone)} ·{" "}
+            {view === "meeting" && dailyOverview
+              ? "All users · All departments"
+              : view === "mine"
+                ? "Entries you published"
+                : "Select a department to catch up with your team"}
           </p>
         </div>
       )}
@@ -244,12 +312,17 @@ export function HandoverWorkspace({
         label="Handover views"
         selected={view}
         items={[
-          { id: "journal", label: "Journal" },
-          { id: "matrix", label: "Department matrix" },
-          { id: "meeting", label: "Meeting preparation" },
-          { id: "mine", label: "My entries" },
+          { id: "journal", label: "Journal", disabled: busy || !context },
+          {
+            id: "matrix",
+            label: "Department matrix",
+            disabled: busy || !context,
+          },
+          { id: "meeting", label: meetingLabel, disabled: busy || !context },
+          { id: "mine", label: "My entries", disabled: busy || !context },
         ]}
         onSelect={(next) => {
+          if (busy || !context) return;
           setView(next);
           setFiltered(false);
           const date = context ? today(context.timeZone) : "";
@@ -257,7 +330,9 @@ export function HandoverWorkspace({
             ...emptySelection,
             departmentId: selection.departmentId,
             mine: next === "mine",
-            ...(next === "meeting" ? { from: date, to: date } : {}),
+            ...(next === "meeting"
+              ? meetingSelection(date, selection.departmentId, dailyOverview)
+              : {}),
           });
         }}
       />
@@ -300,6 +375,34 @@ export function HandoverWorkspace({
                   setFiltered(true);
                 }}
               />
+            ) : view === "meeting" ? (
+              <>
+                <h2>{meetingLabel}</h2>
+                <MeetingCanvas
+                  sections={sections}
+                  open={open}
+                  more={moreCategory}
+                  busy={busy}
+                />
+                {!dailyOverview && (
+                  <Disclosure
+                    summary={`Earlier and current open issues · ${pending.total}`}
+                    variant="panel"
+                  >
+                    <MeetingCards entries={pending.entries} open={open} />
+                    {!pending.total && <p>No unresolved issues.</p>}
+                    {pending.nextCursor && (
+                      <Button
+                        variant="secondary"
+                        disabled={busy}
+                        onClick={() => void more(true)}
+                      >
+                        More open issues
+                      </Button>
+                    )}
+                  </Disclosure>
+                )}
+              </>
             ) : (
               <>
                 <p>
@@ -319,12 +422,6 @@ export function HandoverWorkspace({
                     }
                     open={open}
                   />
-                ) : view === "meeting" ? (
-                  <MeetingEntries
-                    entries={page.entries}
-                    categories={context?.categories ?? []}
-                    open={open}
-                  />
                 ) : (
                   <EntryCards entries={page.entries} open={open} />
                 )}
@@ -336,27 +433,6 @@ export function HandoverWorkspace({
                   >
                     More entries
                   </Button>
-                )}
-                {view === "meeting" && (
-                  <Panel>
-                    <h2>Still open</h2>
-                    <p>
-                      {pending.total} unresolved issues, including earlier days.
-                    </p>
-                    <EntryCards entries={pending.entries} open={open} />
-                    {!pending.total && (
-                      <p>No unresolved issues for this selection.</p>
-                    )}
-                    {pending.nextCursor && (
-                      <Button
-                        variant="secondary"
-                        disabled={busy}
-                        onClick={() => void more(true)}
-                      >
-                        More open issues
-                      </Button>
-                    )}
-                  </Panel>
                 )}
               </>
             )}

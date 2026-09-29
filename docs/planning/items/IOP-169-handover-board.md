@@ -36,3 +36,10 @@ lookup port, with analytical reads remaining in their owning module.
 The bounded refinement is implemented and validated. See the execution record for
 API, browser, PostgreSQL and visual evidence. Publication and local Docker activation
 remain pending owner approval; IOP-168 is still the running local version.
+
+## Meeting canvas refinement
+
+The owner additionally requested six persistent category sections with title/department
+cards. Team Leader uses Daily overview: all authors and departments on the selected
+day, default today. Preparation retains earlier open work separately.
+[Refinement plan](../completed/IOP-169-meeting-canvas-plan.md).

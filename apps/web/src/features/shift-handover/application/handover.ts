@@ -83,3 +83,17 @@ export class HandoverApplication {
     return { current, pending };
   }
 }
+
+/** Daily leadership review deliberately starts with all authors and departments. */
+export function meetingSelection(
+  date: string,
+  departmentId: string,
+  dailyOverview: boolean,
+): Selection {
+  return {
+    ...emptySelection,
+    from: date,
+    to: date,
+    departmentId: dailyOverview ? "" : departmentId,
+  };
+}

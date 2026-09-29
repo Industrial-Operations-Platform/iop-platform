@@ -241,6 +241,7 @@ export function WorkspaceApp({
         <HandoverWorkspace
           key={context.user?.id}
           application={handover}
+          dailyOverview={context.user?.profile === "team-leader"}
           initialEntry={handoverEntry}
           initialHighlights={handoverHighlights}
           initialPending={handoverPending}

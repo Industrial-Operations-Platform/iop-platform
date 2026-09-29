@@ -774,6 +774,61 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await button("Sign out").click();
     await login("lead-a");
     await button("Shift Handover").click();
+    await page.getByLabel("Selected department").selectOption("department");
+    await button("My entries").click();
+    const dayNote = {
+      ...content("Daily overview note"),
+      date: new Date().toISOString().slice(0, 10),
+      categoryId: "people",
+      departmentId: "",
+      areaId: "",
+      equipmentCode: "",
+      condition: "",
+    };
+    expect(
+      (
+        await post("entries", {
+          key: randomUUID(),
+          content: dayNote,
+          issue: false,
+          responsibleId: "",
+        })
+      ).status(),
+    ).toBe(201);
+    await button("Daily overview").click();
+    await pw(
+      page.getByRole("heading", { name: "Daily overview", exact: true }),
+    ).toBeVisible();
+    await pw(page.getByLabel("Selected department")).toHaveCount(0);
+    await pw(button("Meeting preparation")).toHaveCount(0);
+    await pw(button("Browser repair corrected Workshop")).toBeVisible();
+    await pw(button("Daily overview note Site-wide information")).toBeVisible();
+    await pw(page.getByText(/Earlier and current open issues/)).toHaveCount(0);
+    for (const category of config.categories)
+      await pw(
+        page.getByRole("region", { name: `${category.label} section` }),
+      ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: join(artifacts, "daily-mobile.png"),
+      fullPage: true,
+    });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.screenshot({
+      path: join(artifacts, "daily-desktop.png"),
+      fullPage: true,
+    });
+    await page.getByLabel("Overview date").fill("2026-09-28");
+    await pw(button("Daily overview note Site-wide information")).toHaveCount(
+      0,
+    );
+    await page.getByRole("button", { name: /More Problems entries/ }).click();
+    await pw(button("Paging 0 Workshop")).toBeVisible();
+    await button("Journal").click();
     await button("Search history").click();
     await page
       .getByLabel("Search", { exact: true })
@@ -832,16 +887,13 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     }
     await button("Meeting preparation").click();
     await pw(
-      page.getByRole("heading", {
-        name: "Still open",
-        exact: true,
-      }),
+      page.getByRole("heading", { name: "Meeting preparation", exact: true }),
     ).toBeVisible();
     await page.getByLabel("Meeting date", { exact: true }).fill("2026-09-27");
-    await pw(
-      page.getByText("0 entries · Showing 0", { exact: true }),
-    ).toBeVisible();
-    await pw(button("Paging 22")).toBeVisible();
+    await pw(page.getByText("No entries for this day.")).toHaveCount(6);
+    await pw(button("Paging 22 Workshop")).not.toBeVisible();
+    await page.getByText(/Earlier and current open issues/).click();
+    await pw(button("Paging 22 Workshop")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.screenshot({
       path: join(artifacts, "meeting-desktop.png"),

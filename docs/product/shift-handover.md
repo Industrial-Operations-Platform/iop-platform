@@ -76,10 +76,16 @@ resolved issue remains searchable. Unverified references are explicitly labelled
 person. Include category, follow-up state and an entry link. The problem detail
 exposes challenge, cause, measure and feedback deadline without widening every row.
 
-**Meeting preparation:** group entries by configured category and department.
-Separate the chosen meeting date/range from the open-issues list, which includes
-unresolved earlier entries. Initial date-based preparation does not claim a formal
-shift identity or previous-shift interval before M6 exists.
+**Meeting preparation:** show a canvas with the six configured category sections,
+including empty sections, and compact title/department cards. Each section has its
+own pagination and full matching count. The selected day defaults to today; earlier
+unresolved work stays separate in a collapsed disclosure. Full problem analysis,
+responsibility and deadlines are available by opening a card.
+
+**Team Leader daily overview:** the same canvas covers all authors and departments
+at the authorized site on the selected day. Reset personal/search/department filters
+when entering it and keep earlier open issues out of this day-only view. Dates label
+entry occurrences; this is not a formal shift identity or an inferred live plant state.
 
 **Start:** prioritize open department reports with full counts. Attention means an
 unresolved blocked report or an overdue action/feedback deadline; it is not a live

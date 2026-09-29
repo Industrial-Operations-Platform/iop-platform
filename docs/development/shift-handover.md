@@ -85,7 +85,17 @@ current site user. Meeting discussion and Start highlighting are separate choice
 Use **Search history** intentionally to open text, date, location, category and
 status filters. Search stays closed during entry creation. **My entries** filters by
 the authenticated author on the server, including later pages; Department matrix
-keeps the tabular view, and Meeting preparation includes earlier unresolved issues.
+keeps the tabular view. **Meeting preparation** is a six-section category canvas for
+the selected day and department, including empty sections. Each compact card shows
+only its title and department; open it for the full problem fields and history.
+Each section has independent full counts and pagination (20 entries per page).
+Earlier/current unresolved issues are available in a separate collapsed disclosure.
+
+For **Team Leader**, the tab is **Daily overview**. It defaults to today and includes
+all authors and departments at the authorized site for the selected day. It does not
+inherit department, personal-history or search filters and does not mix earlier open
+issues into the daily canvas. The date labels the entry's occurrence date, not the
+instant of a later follow-up. This presentation does not grant additional access.
 The selected department is shared with Start during the current session; M6 default
 assignments are not yet connected.
 

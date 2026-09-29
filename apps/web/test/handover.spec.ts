@@ -75,3 +75,24 @@ test("the board loads each category independently so busy categories cannot hide
     expect.objectContaining({ mine: true, cursor: "next" }),
   );
 });
+
+test("daily overview covers the exact selected day and all departments and authors", async () => {
+  const { meetingSelection } = await import(
+    "../src/features/shift-handover/application/handover"
+  );
+  const selected = meetingSelection("2026-09-29", "selected-department", true);
+  expect(selected).toEqual({
+    ...emptySelection,
+    from: "2026-09-29",
+    to: "2026-09-29",
+    departmentId: "",
+  });
+  expect(selected.mine).not.toBe(true);
+  expect(
+    meetingSelection("2026-09-28", "selected-department", false),
+  ).toMatchObject({
+    from: "2026-09-28",
+    to: "2026-09-28",
+    departmentId: "selected-department",
+  });
+});
