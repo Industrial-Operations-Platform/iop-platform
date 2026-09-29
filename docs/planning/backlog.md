@@ -309,3 +309,4 @@ canonical asset integration.
 | [IOP-173 — Handover demonstration data](items/IOP-173-handover-demo-data.md) | Completed |
 | [IOP-174 — Handover navigation and layout](items/IOP-174-handover-navigation-layout.md) | Completed |
 | [IOP-176 — Handover detail action spacing](items/IOP-176-handover-action-spacing.md) | Completed |
+| [IOP-177 — Enforce the shared platform visual identity](items/IOP-177-platform-visual-identity.md) | In progress |
