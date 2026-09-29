@@ -8,6 +8,7 @@ import {
   PageHeading,
   Panel,
   Select,
+  RefreshButton,
 } from "../../../../design/components";
 import {
   AnalysisWorkspace,
@@ -184,13 +185,11 @@ export function StartOverview({
                       : "Latest imported month"}
                   </p>
                 </div>
-                <Button
-                  variant="secondary"
-                  disabled={loading}
+                <RefreshButton
+                  label="Refresh overview"
+                  busy={loading}
                   onClick={() => setRefresh((n) => n + 1)}
-                >
-                  Refresh overview
-                </Button>
+                />
               </div>
               {!operational && base && (
                 <Field>

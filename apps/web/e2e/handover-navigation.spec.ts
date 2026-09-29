@@ -62,6 +62,7 @@ for (const width of [1440, 375]) {
         discuss: true,
       },
     };
+    const selections: Record<string, unknown>[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
       if (path.endsWith("/session/context"))
@@ -113,11 +114,16 @@ for (const width of [1440, 375]) {
         });
       if (path.endsWith("/handover/query")) {
         const selection = route.request().postDataJSON();
+        selections.push(selection);
         const entries =
           selection.categoryId && selection.categoryId !== "problems"
             ? []
             : [entry];
-        const paginated = !selection.categoryId && !selection.state;
+        const paginated =
+          !selection.categoryId &&
+          !selection.state &&
+          !selection.attention &&
+          !selection.highlights;
         return route.fulfill({
           json: {
             entries: selection.cursor
@@ -175,6 +181,59 @@ for (const width of [1440, 375]) {
       name: "Main navigation",
     });
     const home = navigation.getByRole("button", { name: "Shift Handover" });
+    const operational = page.getByRole("region", {
+      name: "Operational handover updates",
+    });
+    const startViews = operational.getByRole("navigation", {
+      name: "Operational updates",
+    });
+    await expect(
+      startViews.getByRole("button", { name: /Needs attention/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      operational.getByRole("region", { name: "Open reports", exact: true }),
+    ).toHaveCount(0);
+    const metrics = operational.locator(".iop-metric-grid");
+    const bounds = await metrics.boundingBox();
+    const parent = await operational.boundingBox();
+    expect(
+      Math.abs(bounds!.x + bounds!.width / 2 - parent!.x - parent!.width / 2),
+    ).toBeLessThan(2);
+    expect((await startViews.boundingBox())!.y).toBeGreaterThan(
+      bounds!.y + bounds!.height,
+    );
+    await expect(startViews).toHaveCSS("position", "relative");
+    await page.screenshot({
+      path: `/tmp/iop180-start-${width}.png`,
+      fullPage: true,
+    });
+    await startViews.getByRole("button", { name: /Open reports/ }).focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      operational
+        .getByRole("region", { name: "Open reports", exact: true })
+        .getByRole("button", { name: entry.content.summary, exact: false }),
+    ).toBeVisible();
+    await startViews.getByRole("button", { name: /Shift Handover/ }).click();
+    await expect(operational.getByText(/Site-wide highlights/)).toBeVisible();
+    await operational.getByRole("button", { name: "Refresh updates" }).click();
+    await expect(
+      startViews.getByRole("button", { name: /Shift Handover/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await page
+      .getByRole("combobox", { name: "Start department" })
+      .selectOption("hall-a");
+    await startViews.getByRole("button", { name: /Needs attention/ }).click();
+    await operational
+      .getByRole("button", { name: /View all attention items/ })
+      .click();
+    await expect(
+      page.getByText("Filtered history", { exact: true }),
+    ).toBeVisible();
+    expect(selections.at(-1)).toMatchObject({
+      departmentId: "hall-a",
+      attention: true,
+    });
     await home.click();
     const heading = page.getByRole("heading", {
       level: 1,
@@ -203,7 +262,7 @@ for (const width of [1440, 375]) {
     await expect(journalCard).toBeVisible();
     const journalStyle = await journalCard.evaluate(summaryStyle);
     await page.screenshot({
-      path: `/tmp/iop178-journal-${width}.png`,
+      path: `/tmp/iop180-journal-${width}.png`,
       fullPage: true,
     });
     await journalCard.click();
@@ -248,7 +307,7 @@ for (const width of [1440, 375]) {
       };
     });
     await page.screenshot({
-      path: `/tmp/iop178-meeting-${width}.png`,
+      path: `/tmp/iop180-meeting-${width}.png`,
       fullPage: true,
     });
     await meeting
@@ -333,7 +392,7 @@ for (const width of [1440, 375]) {
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop178-detail-${width}.png`,
+      path: `/tmp/iop180-detail-${width}.png`,
       fullPage: true,
     });
     const returnToMeeting = breadcrumb.getByRole("button", {
@@ -374,14 +433,14 @@ for (const width of [1440, 375]) {
       matrix.getByRole("cell", { name: "2026-09-29", exact: true }),
     ).toBeVisible();
     await page.screenshot({
-      path: `/tmp/iop178-matrix-${width}.png`,
+      path: `/tmp/iop180-matrix-${width}.png`,
       fullPage: true,
     });
     await matrix
       .getByRole("cell", { name: "In progress", exact: true })
       .scrollIntoViewIfNeeded();
     await page.screenshot({
-      path: `/tmp/iop178-matrix-status-${width}.png`,
+      path: `/tmp/iop180-matrix-status-${width}.png`,
       fullPage: true,
     });
     await page
@@ -484,7 +543,7 @@ for (const width of [1440, 375]) {
     };
     await assertAligned();
     await page.screenshot({
-      path: `/tmp/iop178-form-${width}.png`,
+      path: `/tmp/iop180-form-${width}.png`,
       fullPage: true,
     });
     await dialog.getByRole("button", { name: "More components" }).click();

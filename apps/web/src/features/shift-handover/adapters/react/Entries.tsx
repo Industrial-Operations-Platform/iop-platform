@@ -4,14 +4,9 @@ import {
   Table,
   TableViewport,
 } from "../../../../design/components";
+import { EntrySummaryCards } from "./EntrySummaryCards";
 import type { Entry } from "../../domain/models";
-export const issueLabel = (state: Entry["issueState"]) =>
-  ({
-    none: "Information",
-    open: "Open",
-    "in-progress": "In progress",
-    resolved: "Resolved",
-  })[state];
+import { issueLabel } from "./entry-labels";
 export function EntryBody({ entry }: { entry: Entry }) {
   const c = entry.content;
   return (
@@ -61,6 +56,8 @@ export function EntryCards({
   compact?: boolean;
   open: (id: string) => void;
 }) {
+  if (compact)
+    return <EntrySummaryCards entries={entries} open={open} expanded />;
   return (
     <div className="handover-list">
       {entries.map((entry) => (
@@ -70,23 +67,7 @@ export function EntryCards({
               {entry.content.summary}
             </Button>
           </h3>
-          {compact ? (
-            <>
-              <p>
-                {entry.areaLabel || entry.departmentLabel || "Site-wide"} ·{" "}
-                {issueLabel(entry.issueState)}
-                {entry.content.equipmentCode
-                  ? ` · ${entry.content.equipmentCode}`
-                  : ""}
-              </p>
-              <p className="handover-excerpt">
-                {entry.latestUpdate?.note || entry.content.details}
-              </p>
-              {entry.content.dueDate && <p>Due {entry.content.dueDate}</p>}
-            </>
-          ) : (
-            <EntryBody entry={entry} />
-          )}
+          <EntryBody entry={entry} />
         </Panel>
       ))}
     </div>

@@ -69,13 +69,13 @@ view with its selection intact; the module action explicitly returns home. Use s
 and `Disclosure` variants for report content, actions and history. The detail action
 row keeps a visible gap after the latest-update divider. Journal and Meeting
 preparation use one feature-owned summary-card component, with a bordered clickable
-surface, semibold blue title and muted department. This applies to Journal, Meeting
+surface, semibold blue title and semibold muted department. This applies to Journal, Meeting
 preparation, Daily overview and the meeting open-issues list. Do not recreate that presentation
 as a blue-link list with separators in another tab.
 
 The workspace shell supplies profile-aware navigation; features supply their content.
 Start includes operational summaries and optional analytical evidence. Module tabs
-use the shared bottom navigation. This contract governs their appearance rather than
+use the shared bottom navigation; embedded summaries use its inline placement. This contract governs their appearance rather than
 fixing a particular set of pages or permissions.
 
 Verification includes stylesheet identity guards, architecture checks, browser
@@ -109,3 +109,32 @@ collapsible panel and controls. These are stable additions to identity v1.
 and priority beside the label. Native month/message/file selects open from the full
 field and support keyboard arrows and scrolling; do not replace them with manual
 text entry. Source-row tables belong to administration, outside report templates.
+
+## Operational hierarchy — IOP-180
+
+The owner requested a more readable Start and Journal on 2026-09-29. Preserve the
+palette and flat surfaces; use emphasis purposefully:
+
+| Information | Reusable treatment |
+| --- | --- |
+| Paired summary totals | `MetricGrid layout="paired"`, centered, equal-width cards; `MetricCard tone="info"` for open work and `attention` only for nonzero attention totals |
+| Summary explanation | `iop-metric-description`: short muted caption under the figure |
+| Department/location | Semibold muted caption, subordinate to the blue entry title |
+| State and count | `Badge`: neutral, info, attention or success with explicit text; color never supplies the meaning alone |
+| Equipment reference and due date | Semibold ink; dates retain labelled date-only values, with no browser-inferred overdue state |
+| Supporting preview | Muted excerpt, at most two lines; full text remains available in Details |
+| Embedded view selection | `ViewNavigation placement="inline"` below totals, count badges and the same active underline as module navigation |
+| Collection/history action | `CollectionAction` with visible label, count badge and directional cue |
+| Manual reload | `RefreshButton` with icon, visible text, disabled/busy state and reduced-motion support |
+
+Start uses the feature-owned `EntrySummaryCards` expanded variant. Journal and
+Meeting keep the compact title/department variant. Both share title, location,
+border, hover and keyboard-focus treatment. Do not create parallel preview-card
+styles. Keep arbitrary report text intact rather than attempting to bold matching
+customer words inside prose. Attention is a report-based signal, not equipment
+health. Existing semantic error tokens provide restrained attention emphasis.
+
+Show one Start collection at a time with at most three entries and an explicit
+shown/total count. Open reports includes attention entries; site-wide highlights
+retain their separate scope. Empty collections show an explanatory state. Ordinary
+buttons preserve Tab/Enter/Space navigation without claiming ARIA tab semantics.

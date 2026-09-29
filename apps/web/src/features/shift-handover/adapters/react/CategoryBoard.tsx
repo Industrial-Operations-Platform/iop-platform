@@ -1,4 +1,4 @@
-import { Button, Panel } from "../../../../design/components";
+import { Button, CollectionAction, Panel } from "../../../../design/components";
 import type { Choice, Page } from "../../domain/models";
 import { EntrySummaryCards } from "./EntrySummaryCards";
 export function CategoryBoard({
@@ -33,9 +33,12 @@ export function CategoryBoard({
               No updates yet. Share what the next team should know.
             </p>
           )}
-          <Button variant="text" onClick={() => history(category.id)}>
-            View history · {page.total}
-          </Button>
+          <CollectionAction
+            count={page.total}
+            onClick={() => history(category.id)}
+          >
+            View history
+          </CollectionAction>
         </Panel>
       ))}
     </div>

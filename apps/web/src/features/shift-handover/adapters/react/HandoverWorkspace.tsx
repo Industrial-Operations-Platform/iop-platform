@@ -40,6 +40,7 @@ export function HandoverWorkspace({
   initialEntry = "",
   initialHighlights = false,
   initialPending = false,
+  initialAttention = false,
   departmentId = "",
   onDepartmentChange,
   onEntryOpened,
@@ -50,6 +51,7 @@ export function HandoverWorkspace({
   initialEntry?: string;
   initialHighlights?: boolean;
   initialPending?: boolean;
+  initialAttention?: boolean;
   departmentId?: string;
   onDepartmentChange?: (id: string) => void;
   onEntryOpened?: () => void;
@@ -65,11 +67,14 @@ export function HandoverWorkspace({
     ...emptySelection,
     departmentId: initialHighlights ? "" : departmentId,
     highlights: initialHighlights,
+    attention: initialAttention,
     state: initialPending ? "pending" : "",
   });
   const [draft, setDraft] = useState(selection),
     [searching, setSearching] = useState(false);
-  const [filtered, setFiltered] = useState(initialHighlights || initialPending);
+  const [filtered, setFiltered] = useState(
+    initialHighlights || initialPending || initialAttention,
+  );
   const [page, setPage] = useState(blankPage),
     [pending, setPending] = useState(blankPage);
   const [sections, setSections] = useState<{ category: Choice; page: Page }[]>(

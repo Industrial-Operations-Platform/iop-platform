@@ -13,6 +13,8 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | --- | --- |
 | `IdentityRoot`, `AppShell` | Identity variables, typography, header, rail, main content and skip link |
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
+| `RefreshButton`, `CollectionAction` | Labelled reload with busy/reduced-motion behavior; collection link with count and direction |
+| `Badge` | Neutral/info/attention/success semantic metadata; caller supplies meaningful text |
 | `Button` | `primary`, `secondary`, `text`; native disabled and focus behavior |
 | `Field`, `Input`, `Textarea`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
 | `ValueFilter` | Editable column value with native suggestions, unique accessible hint IDs and caller-owned matching semantics |
@@ -21,12 +23,12 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `MonthMultiPicker` | Checkbox selection of nonconsecutive calendar months |
 | `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
 | `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
-| `MetricGrid`, `MetricCard` | Responsive shared metric appearance; callers supply label/value/content |
+| `MetricGrid`, `MetricCard` | Responsive shared metric appearance; `layout="paired"` centers two cards; `tone` adds neutral/info/attention emphasis; use `iop-metric-description` for supporting text |
 | `Table`, `TableViewport` | Semantic table appearance and bounded scrolling |
 | `Alert` | Error announcement and consistent error surface |
 | `SideNavigation` | Controlled page navigation with current-page semantics |
 | `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort; table headings vertically center plain labels and buttons together |
-| `ViewNavigation` | Typed controlled view selector with labelled navigation and pressed buttons |
+| `ViewNavigation` | Typed controlled view selector with labelled navigation, pressed buttons, optional counts and bottom/inline placement |
 
 ```tsx
 import { useState } from "react";

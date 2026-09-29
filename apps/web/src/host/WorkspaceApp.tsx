@@ -42,6 +42,7 @@ export function WorkspaceApp({
   const [handoverEntry, setHandoverEntry] = useState("");
   const [handoverHighlights, setHandoverHighlights] = useState(false);
   const [departmentId, setDepartmentId] = useState("");
+  const [handoverAttention, setHandoverAttention] = useState(false);
   const [handoverPending, setHandoverPending] = useState(false);
   const [preview, setPreview] = useState<{
     userId: string;
@@ -118,6 +119,7 @@ export function WorkspaceApp({
     setHandoverEntry("");
     setHandoverHighlights(false);
     setHandoverPending(false);
+    setHandoverAttention(false);
     setPage("start");
   };
   const openTool = (tool: AdministrationTool) => {
@@ -128,6 +130,7 @@ export function WorkspaceApp({
     setHandoverEntry("");
     setHandoverHighlights(false);
     setHandoverPending(false);
+    setHandoverAttention(false);
     setHandoverVisit((visit) => visit + 1);
     setPage("handover");
   };
@@ -318,12 +321,14 @@ export function WorkspaceApp({
           initialEntry={handoverEntry}
           initialHighlights={handoverHighlights}
           initialPending={handoverPending}
+          initialAttention={handoverAttention}
           departmentId={departmentId}
           onDepartmentChange={setDepartmentId}
           onEntryOpened={() => {
             setHandoverEntry("");
             setHandoverHighlights(false);
             setHandoverPending(false);
+            setHandoverAttention(false);
           }}
         />
       ) : (page === "start" || (page === "analysis" && !canReadAnalytics)) &&
@@ -349,10 +354,11 @@ export function WorkspaceApp({
                 application={handover}
                 departmentId={departmentId}
                 onDepartmentChange={setDepartmentId}
-                open={(id, highlights, pending) => {
-                  setHandoverPending(!!pending);
+                open={(id, collection) => {
+                  setHandoverAttention(collection === "attention");
+                  setHandoverPending(collection === "pending");
                   setHandoverEntry(id ?? "");
-                  setHandoverHighlights(!!highlights);
+                  setHandoverHighlights(collection === "highlights");
                   setPage("handover");
                 }}
               />

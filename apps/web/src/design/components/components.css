@@ -562,3 +562,126 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Operational summaries share semantic emphasis without changing analytical metrics. */
+.iop-ui .iop-metric-grid--paired {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(100%, 52rem);
+  margin-inline: auto;
+}
+.iop-ui .iop-metric-grid--paired .iop-metric-label {
+  font-size: var(--iop-captionSize);
+  font-weight: var(--iop-labelWeight);
+  color: var(--iop-ink);
+}
+.iop-ui .iop-metric-description {
+  margin: 0.5rem 0 0;
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.iop-ui .iop-metric--info {
+  background: var(--iop-activeSurface);
+}
+.iop-ui .iop-metric--attention {
+  background: var(--iop-errorSurface);
+  border-color: var(--iop-errorBorder);
+}
+.iop-ui .iop-metric--attention .iop-metric-value {
+  color: var(--iop-errorInk);
+}
+.iop-ui .iop-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 1.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--iop-controlRadius);
+  background: var(--iop-canvas);
+  color: var(--iop-muted);
+  font-size: var(--iop-compactSize);
+  font-weight: var(--iop-labelWeight);
+  line-height: var(--iop-captionLineHeight);
+  font-variant-numeric: tabular-nums;
+}
+.iop-ui .iop-badge--info {
+  background: var(--iop-activeSurface);
+  color: var(--iop-activeInk);
+}
+.iop-ui .iop-badge--attention {
+  background: var(--iop-errorSurface);
+  color: var(--iop-errorInk);
+}
+.iop-ui .iop-badge--success {
+  background: var(--iop-successSurface);
+  color: var(--iop-successInk);
+}
+.iop-ui .iop-refresh,
+.iop-ui .iop-collection-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: var(--iop-captionSize);
+  font-weight: var(--iop-labelWeight);
+}
+.iop-ui .iop-refresh {
+  flex-shrink: 0;
+}
+.iop-ui .iop-collection-action {
+  margin-top: 0.85rem;
+  color: var(--iop-activeInk);
+}
+.iop-ui :is(.iop-refresh, .iop-collection-action):hover:not(:disabled) {
+  background: var(--iop-activeSurface);
+  border-color: var(--iop-inputBorder);
+}
+.iop-refresh-spinning {
+  animation: iop-spin 1.2s linear infinite;
+}
+@keyframes iop-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .iop-refresh-spinning {
+    animation: none;
+  }
+}
+.iop-ui .iop-view-navigation--inline {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  padding: 0;
+  gap: 0.25rem;
+  border-top: 0;
+  border-bottom: 1px solid var(--iop-line);
+}
+.iop-ui .iop-view-navigation--inline .iop-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-right: 0;
+}
+.iop-ui .iop-view-navigation--inline .iop-button[aria-pressed="true"] {
+  color: var(--iop-activeInk);
+  background: var(--iop-activeSurface);
+  border-radius: var(--iop-controlRadius) var(--iop-controlRadius) 0 0;
+}
+.iop-ui
+  .iop-view-navigation--inline
+  .iop-button[aria-pressed="true"]
+  .iop-badge {
+  background: var(--iop-surface);
+  color: var(--iop-activeInk);
+}
+@media (max-width: 420px) {
+  .iop-ui .iop-metric-grid--paired {
+    gap: 0.6rem;
+  }
+  .iop-ui .iop-metric-grid--paired .iop-panel--metric {
+    padding: 0.75rem;
+  }
+}

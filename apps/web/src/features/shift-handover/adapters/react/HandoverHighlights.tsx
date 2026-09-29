@@ -8,6 +8,9 @@ import {
   MetricGrid,
   Panel,
   Select,
+  RefreshButton,
+  CollectionAction,
+  ViewNavigation,
 } from "../../../../design/components";
 import type { HandoverApplication } from "../../application/handover";
 import type { Context, Page } from "../../domain/models";
@@ -23,8 +26,14 @@ export function HandoverHighlights({
   application: HandoverApplication;
   departmentId: string;
   onDepartmentChange: (id: string) => void;
-  open: (id?: string, highlights?: boolean, pending?: boolean) => void;
+  open: (
+    id?: string,
+    collection?: "highlights" | "pending" | "attention",
+  ) => void;
 }) {
+  const [view, setView] = useState<"attention" | "pending" | "highlights">(
+    "attention",
+  );
   const [context, setContext] = useState<Context | null>(null);
   const [pending, setPending] = useState(blank),
     [attention, setAttention] = useState(blank),
@@ -60,21 +69,32 @@ export function HandoverHighlights({
       active = false;
     };
   }, [application, departmentId, refresh]);
-  const urgentIds = new Set(attention.entries.slice(0, 3).map((e) => e.id));
+  const selected = { attention, pending, highlights }[view];
+  const viewLabel = {
+    attention: "Needs attention",
+    pending: "Open reports",
+    highlights: "Shift Handover",
+  }[view];
+  const emptyMessage = {
+    attention: "No issues need attention for this selection.",
+    pending: "No open issues have been reported for this selection.",
+    highlights: "No active highlights.",
+  }[view];
   return (
-    <Panel className="handover-highlights" aria-label="Operational handover updates">
+    <Panel
+      className="handover-highlights"
+      aria-label="Operational handover updates"
+    >
       <div className="handover-section-heading">
         <div>
           <h2>Your department at a glance</h2>
           <p>Open work and important updates for the next team.</p>
         </div>
-        <Button
-          variant="text"
-          disabled={loading}
+        <RefreshButton
+          label="Refresh updates"
+          busy={loading}
           onClick={() => setRefresh((n) => n + 1)}
-        >
-          Refresh updates
-        </Button>
+        />
       </div>
       {context && (
         <Field>
@@ -101,49 +121,77 @@ export function HandoverHighlights({
         <Alert>{error}</Alert>
       ) : (
         <>
-          <MetricGrid>
-            <MetricCard label="Open issues" value={pending.total} />
-            <MetricCard label="Needs attention" value={attention.total}>
-              <p>Blocked equipment or overdue action / feedback.</p>
+          <MetricGrid layout="paired">
+            <MetricCard label="Open issues" value={pending.total} tone="info">
+              <p className="iop-metric-description">
+                Open or in progress, ready for follow-up.
+              </p>
+            </MetricCard>
+            <MetricCard
+              label="Needs attention"
+              value={attention.total}
+              tone={attention.total ? "attention" : "neutral"}
+            >
+              <p className="iop-metric-description">
+                Blocked equipment or overdue action / feedback.
+              </p>
             </MetricCard>
           </MetricGrid>
-          {attention.total > 0 && (
-            <section>
-              <h3>Needs attention</h3>
-              <EntryCards
-                compact
-                entries={attention.entries.slice(0, 3)}
-                open={(id) => open(id)}
-              />
-            </section>
-          )}
-          <section>
-            <h3>Open reports</h3>
+          <ViewNavigation
+            placement="inline"
+            label="Operational updates"
+            selected={view}
+            onSelect={setView}
+            items={[
+              {
+                id: "attention",
+                label: "Needs attention",
+                count: attention.total,
+              },
+              { id: "pending", label: "Open reports", count: pending.total },
+              {
+                id: "highlights",
+                label: "Shift Handover",
+                count: highlights.total,
+              },
+            ]}
+          />
+          <section
+            className="handover-highlight-content"
+            aria-label={viewLabel}
+          >
+            <div className="handover-section-heading">
+              <h3>{viewLabel}</h3>
+              <p className="handover-muted">
+                {view === "highlights"
+                  ? "Site-wide highlights"
+                  : departmentId
+                    ? "Selected department"
+                    : "All departments"}
+                {selected.total > 0 &&
+                  ` · Showing ${Math.min(selected.entries.length, 3)} of ${selected.total}`}
+              </p>
+            </div>
             <EntryCards
               compact
-              entries={pending.entries
-                .filter((e) => !urgentIds.has(e.id))
-                .slice(0, 3)}
+              entries={selected.entries.slice(0, 3)}
               open={(id) => open(id)}
             />
-            {!pending.total && (
-              <p>No open issues have been reported for this selection.</p>
+            {!selected.total && (
+              <p className="handover-empty">{emptyMessage}</p>
             )}
-            <Button variant="text" onClick={() => open(undefined, false, true)}>
-              View all open issues · {pending.total}
-            </Button>
-          </section>
-          <section>
-            <h3>Shift Handover · Highlights</h3>
-            <EntryCards
-              compact
-              entries={highlights.entries.slice(0, 3)}
-              open={(id) => open(id)}
-            />
-            {!highlights.total && <p>No active highlights.</p>}
-            <Button variant="text" onClick={() => open(undefined, true)}>
-              View all highlights · {highlights.total}
-            </Button>
+            {selected.total > 0 && (
+              <CollectionAction
+                count={selected.total}
+                onClick={() => open(undefined, view)}
+              >
+                {view === "highlights"
+                  ? "View all highlights"
+                  : view === "pending"
+                    ? "View all open issues"
+                    : "View all attention items"}
+              </CollectionAction>
+            )}
           </section>
         </>
       )}

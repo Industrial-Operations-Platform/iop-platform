@@ -1,6 +1,8 @@
 export {
   Actions,
   Button,
+  RefreshButton,
+  CollectionAction,
   Field,
   FieldRow,
   FilterForm,
@@ -10,6 +12,7 @@ export {
 } from "./Controls";
 export {
   Alert,
+  Badge,
   Disclosure,
   MetricCard,
   MetricGrid,

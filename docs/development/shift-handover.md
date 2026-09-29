@@ -64,7 +64,7 @@ No automatic publication or local stack restart is implied by code validation.
 Open **Shift Handover** from the left navigation and select a department. The Journal
 board shows the three latest entries in each configured category, with full matching
 counts and a **View history** action. Journal and Meeting preparation reuse the
-same bordered summary cards: semibold blue entry titles and muted department labels,
+same bordered summary cards: semibold blue entry titles and semibold muted department labels,
 distinct from the bold navy category headings. Select
 a card for its full report, date, author and status. Each category's **+** opens a modal form with
 that category, the selected department and today's site-local date. Technicians and
@@ -120,7 +120,13 @@ original. **Correct entry** remains a separate, reasoned action for factual mist
 
 Start presents open issues and attention counts for the chosen department, prioritizing
 blocked reports or overdue action/feedback dates. These are report-based signals,
-not inferred equipment health. It shows a bounded preview and links to full lists.
+not inferred equipment health. Centered summary cards precede inline Needs attention,
+Open reports and Shift Handover selectors. One collection is visible at a time,
+with up to three shared summary cards and access to the complete filtered list.
+Open reports includes issues that also need attention. Expanded previews emphasize
+location, state, equipment reference and labelled deadlines; Journal/Meeting retain
+compact title/location cards. History actions pair a label with a count badge;
+refresh uses the shared busy-aware icon/text control.
 Site-wide highlights remain separate; the analytical snapshot is compact and the
 full tables remain in Data Analysis.
 

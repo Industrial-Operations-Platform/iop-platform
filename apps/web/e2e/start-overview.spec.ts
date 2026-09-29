@@ -90,6 +90,10 @@ for (const width of [1440, 375]) {
     await expect(page.getByText("123", { exact: true })).toBeVisible();
     await expect(page.getByRole("table")).toHaveCount(0);
     await expect(page.getByText(/No workforce information/)).toBeVisible();
+    await page
+      .getByRole("navigation", { name: "Operational updates" })
+      .getByRole("button", { name: /Open reports/ })
+      .click();
     await expect(
       page.getByText(/No open issues have been reported/),
     ).toBeVisible();
