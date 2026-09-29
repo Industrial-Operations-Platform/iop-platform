@@ -54,7 +54,7 @@ const config = {
       label: "Workshop",
       parentId: "",
       role: "department",
-      sectorKey: "sector-a",
+      sectorKey: "Workshop",
     },
     {
       id: "area",
@@ -76,6 +76,7 @@ const config = {
 };
 const password = "Synthetic handover password 168";
 let container, configs, pool, app, access;
+let clockTick = 0;
 async function db(role, work) {
   const c = new Client(configs[role]);
   await c.connect();
@@ -96,12 +97,16 @@ function service(target = scope, connection = pool) {
         })
       ).allowed,
     people: (tx) => sitePeople(tx, target.organizationId, target.siteId),
+    equipment: async () => ({ codes: ["0001"], nextCursor: "" }),
   });
   return new Handover(
     store,
     handoverCatalog({ ...config, ...target }, target, "UTC"),
     randomUUID,
-    () => new Date().toISOString(),
+    () =>
+      new Date(
+        Date.parse("2026-09-28T12:00:00.000Z") + clockTick++,
+      ).toISOString(),
   );
 }
 const content = (summary = "Replaced guard") => ({
@@ -483,7 +488,7 @@ test("full history pagination, pending carryover and highlight withdrawal retain
     (await app.list("tech-a", { ...emptySelection, state: "pending" })).total,
   ).toBeGreaterThan(0);
 });
-test("browser journal, matrix, meeting, correction and highlights work for all profiles without analytical imports", async () => {
+test("browser board, dialogs, equipment, matrix, meeting and follow-up work for all profiles", async () => {
   const { PlatformRuntime } = require("../../../apps/api/dist/host/runtime");
   const {
     SourceMappings,
@@ -518,6 +523,21 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
   let http, server, browser;
   try {
     await runtime.start();
+    expect(
+      await runtime.handover.equipmentChoices("tech-a", {
+        departmentId: "department",
+        areaId: "area",
+        search: "",
+        after: "",
+      }),
+    ).toEqual({ codes: [], nextCursor: "" });
+    const bytes = Buffer.from(
+      "\ufeffHäufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe\r\n1;0 0:01:00;Conveyor;BROWSER-01;Synthetic check;01;001\r\n",
+      "utf16le",
+    );
+    expect(
+      (await runtime.submit("admin-a", "Hitliste-20260701.csv", bytes)).outcome,
+    ).toBe("succeeded");
     http = await createApplication(runtime);
     await http.listen(0, "127.0.0.1");
     const port = http.getHttpServer().address().port;
@@ -632,7 +652,29 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
     });
     await pw(button("Administration")).toHaveCount(0);
     await button("Shift Handover").click();
-    await button("New entry").click();
+    await pw(page.getByLabel("Search", { exact: true })).toHaveCount(0);
+    await page.getByLabel("Selected department").selectOption("department");
+    await pw(button("Add Safety entry")).toBeVisible();
+    mkdirSync("/tmp/iop-169-browser", { recursive: true });
+    await page.screenshot({
+      path: "/tmp/iop-169-browser/board-desktop.png",
+      fullPage: true,
+    });
+    await button("Add Safety entry").click();
+    await pw(
+      page.getByRole("dialog", { name: "New handover entry" }),
+    ).toBeVisible();
+    await pw(page.getByLabel("Date", { exact: true })).toBeDisabled();
+    await pw(page.getByLabel("Category", { exact: true })).toHaveValue(
+      "safety",
+    );
+    await pw(
+      page.getByLabel("Department / Halle", { exact: true }),
+    ).toHaveValue("department");
+    await page.keyboard.press("Escape");
+    await pw(page.getByRole("dialog")).toHaveCount(0);
+    await pw(button("Add Safety entry")).toBeFocused();
+    await button("Add Safety entry").click();
     await page
       .getByLabel("Summary", { exact: true })
       .fill("Browser repair report");
@@ -642,10 +684,33 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
     await page
       .getByLabel("Area / Bereich", { exact: true })
       .selectOption("area");
-    await page.getByLabel("Equipment code", { exact: true }).fill("BROWSER-01");
+    await page
+      .getByLabel("Betriebsmittelkennzeichen", { exact: true })
+      .selectOption("BROWSER-01");
     await page
       .getByLabel("Reported condition", { exact: true })
       .selectOption("inspection-needed");
+    await page.screenshot({
+      path: "/tmp/iop-169-browser/create-desktop.png",
+      fullPage: false,
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({
+      path: "/tmp/iop-169-browser/create-mobile.png",
+      fullPage: false,
+    });
+    expect(
+      await page
+        .getByRole("dialog")
+        .evaluate((el) => el.scrollWidth <= el.clientWidth),
+    ).toBe(true);
+    await page.keyboard.press("Tab");
+    expect(
+      await page
+        .getByRole("dialog")
+        .evaluate((el) => el.contains(document.activeElement)),
+    ).toBe(true);
+    await page.setViewportSize({ width: 1440, height: 1000 });
     await page
       .getByText("Details, work reference and problem analysis", {
         exact: true,
@@ -670,6 +735,40 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
       })
     ).json();
     const id = results.entries[0].id;
+    const queryEquipment = (data) =>
+      post("equipment", {
+        departmentId: "department",
+        areaId: "area",
+        search: "",
+        after: "",
+        ...data,
+      });
+    expect((await (await queryEquipment({})).json()).codes).toEqual([
+      "BROWSER-01",
+    ]);
+    expect((await queryEquipment({ areaId: "foreign" })).status()).toBe(400);
+    expect((await queryEquipment({ search: "missing" })).status()).toBe(201);
+    expect(
+      (
+        await post("entries", {
+          key: randomUUID(),
+          content: { ...results.entries[0].content, equipmentCode: "INVENTED" },
+          issue: false,
+          responsibleId: "",
+        })
+      ).status(),
+    ).toBe(400);
+    expect(
+      (
+        await post("entries", {
+          key: randomUUID(),
+          content: { ...results.entries[0].content, date: "2000-01-01" },
+          issue: false,
+          responsibleId: "",
+        })
+      ).status(),
+    ).toBe(400);
+
     expect(
       (
         await post("change", {
@@ -685,7 +784,11 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
       (
         await post("entries", {
           key: randomUUID(),
-          content: content(),
+          content: {
+            ...content(),
+            date: new Date().toISOString().slice(0, 10),
+            equipmentCode: "BROWSER-01",
+          },
           issue: true,
           responsibleId: "other-site",
         })
@@ -716,12 +819,13 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
         exact: true,
       }),
     ).toBeVisible();
+    await button("Add follow-up").click();
     await page
-      .getByLabel("Note / reason", { exact: true })
+      .getByLabel("Update / reason", { exact: true })
       .fill("Follow-up from the technician");
     await button("Save update").click();
     await pw(page.getByText(/Revision 3 · follow-up/)).toBeVisible();
-    const artifacts = "/tmp/iop-168-browser";
+    const artifacts = "/tmp/iop-169-browser";
     mkdirSync(artifacts, { recursive: true });
     await page.screenshot({
       path: join(artifacts, "detail-desktop.png"),
@@ -729,16 +833,19 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
     });
     await button("Equipment reference history").click();
     await pw(button("Browser repair corrected")).toBeVisible();
+    await button("My entries").click();
+    await pw(button("Browser repair corrected")).toBeVisible();
     await button("Department matrix").click();
     await pw(
       page.getByRole("table", { name: "Department handover matrix" }),
     ).toBeVisible();
     await page.reload();
     await button("Shift Handover").click();
+    await button("Search history").click();
     await page
       .getByLabel("Search", { exact: true })
       .fill("Browser repair corrected");
-    await button("Apply filters").click();
+    await button("Search entries").click();
     await pw(button("Browser repair corrected")).toBeVisible();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.screenshot({
@@ -753,29 +860,90 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
     await button("Sign out").click();
     await login("lead-a");
     await button("Shift Handover").click();
+    await page.getByLabel("Selected department").selectOption("department");
+    await button("My entries").click();
+    const dayNote = {
+      ...content("Daily overview note"),
+      date: new Date().toISOString().slice(0, 10),
+      categoryId: "people",
+      departmentId: "",
+      areaId: "",
+      equipmentCode: "",
+      condition: "",
+    };
+    expect(
+      (
+        await post("entries", {
+          key: randomUUID(),
+          content: dayNote,
+          issue: false,
+          responsibleId: "",
+        })
+      ).status(),
+    ).toBe(201);
+    await button("Daily overview").click();
+    await pw(
+      page.getByRole("heading", { name: "Daily overview", exact: true }),
+    ).toBeVisible();
+    await pw(page.getByLabel("Selected department")).toHaveCount(0);
+    await pw(button("Meeting preparation")).toHaveCount(0);
+    await pw(button("Browser repair corrected Workshop")).toBeVisible();
+    await pw(button("Daily overview note Site-wide information")).toBeVisible();
+    await pw(page.getByText(/Earlier and current open issues/)).toHaveCount(0);
+    for (const category of config.categories)
+      await pw(
+        page.getByRole("region", { name: `${category.label} section` }),
+      ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: join(artifacts, "daily-mobile.png"),
+      fullPage: true,
+    });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.screenshot({
+      path: join(artifacts, "daily-desktop.png"),
+      fullPage: true,
+    });
+    await page.getByLabel("Overview date").fill("2026-09-28");
+    await pw(button("Daily overview note Site-wide information")).toHaveCount(
+      0,
+    );
+    await page.getByRole("button", { name: /More Problems entries/ }).click();
+    await pw(button("Paging 0 Workshop")).toBeVisible();
+    await button("Journal").click();
+    await button("Search history").click();
     await page
       .getByLabel("Search", { exact: true })
       .fill("Browser repair corrected");
-    await button("Apply filters").click();
+    await button("Search entries").click();
     await button("Browser repair corrected").click();
+    await button("Add follow-up").click();
     await page
       .getByLabel("Update type", { exact: true })
       .selectOption("highlight");
     await page
-      .getByLabel("Note / reason", { exact: true })
+      .getByLabel("Update / reason", { exact: true })
       .fill("Read before starting the shift");
     await button("Save update").click();
     await pw(page.getByText(/Revision 4 · highlight/)).toBeVisible();
     await button("Start").click();
-    await pw(button("Browser repair corrected")).toBeVisible();
-    await button("Browser repair corrected").click();
+    await pw(button("Browser repair corrected").first()).toBeVisible();
+    await page.screenshot({
+      path: "/tmp/iop-169-browser/start-mobile.png",
+      fullPage: true,
+    });
+    await button("Browser repair corrected").first().click();
     await pw(
       page.getByRole("heading", {
         name: "Browser repair corrected",
         exact: true,
       }),
     ).toBeVisible();
-    await page.getByLabel("Update type", { exact: true }).selectOption("state");
+    await button("Close issue").click();
     await page
       .getByLabel("Issue state", { exact: true })
       .selectOption("resolved");
@@ -783,12 +951,13 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
       .getByLabel("Resolution outcome", { exact: true })
       .fill("Checked with the incoming team");
     await button("Save update").click();
-    await pw(page.getByText(/Revision 5 · state/)).toBeVisible();
+    await pw(page.getByText(/Revision 5 · follow-up/)).toBeVisible();
+    await button("Add follow-up").click();
     await page
       .getByLabel("Update type", { exact: true })
       .selectOption("highlight");
     await page
-      .getByLabel("Note / reason", { exact: true })
+      .getByLabel("Update / reason", { exact: true })
       .fill("Team informed");
     await button("Save update").click();
     await pw(page.getByText(/Revision 6 · highlight/)).toBeVisible();
@@ -804,19 +973,13 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
     }
     await button("Meeting preparation").click();
     await pw(
-      page.getByRole("heading", {
-        name: "Open issues across dates",
-        exact: true,
-      }),
+      page.getByRole("heading", { name: "Meeting preparation", exact: true }),
     ).toBeVisible();
-    // Use a date outside the fixture history, independent of the browser's current date.
-    await page.getByLabel("From", { exact: true }).fill("2000-01-01");
-    await page.getByLabel("Through", { exact: true }).fill("2000-01-01");
-    await button("Apply filters").click();
-    await pw(
-      page.getByText("0 matching entries · Showing 0", { exact: true }),
-    ).toBeVisible();
-    await pw(button("Paging 22")).toBeVisible();
+    await page.getByLabel("Meeting date", { exact: true }).fill("2026-09-27");
+    await pw(page.getByText("No entries for this day.")).toHaveCount(6);
+    await pw(button("Paging 22 Workshop")).not.toBeVisible();
+    await page.getByText(/Earlier and current open issues/).click();
+    await pw(button("Paging 22 Workshop")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.screenshot({
       path: join(artifacts, "meeting-desktop.png"),
@@ -830,3 +993,67 @@ test("browser journal, matrix, meeting, correction and highlights work for all p
     await runtime.close();
   }
 }, 120000);
+
+test("own history filters server-side across pages and attention excludes resolved issues", async () => {
+  const first = await app.list("tech-a", {
+    ...emptySelection,
+    mine: true,
+    search: "Paging",
+  });
+  const second = await app.list("tech-a", {
+    ...emptySelection,
+    mine: true,
+    search: "Paging",
+    cursor: first.nextCursor,
+  });
+  expect(first.total).toBe(23);
+  expect([...first.entries, ...second.entries]).toHaveLength(23);
+  expect(
+    (
+      await app.list("lead-a", {
+        ...emptySelection,
+        mine: true,
+        search: "Paging",
+      })
+    ).total,
+  ).toBe(0);
+  const issue = await app.create("lead-a", {
+    key: randomUUID(),
+    content: {
+      ...content("Attention test"),
+      condition: "blocked",
+      dueDate: "2000-01-01",
+    },
+    issue: true,
+    responsibleId: "",
+  });
+  expect(
+    (
+      await app.list("tech-a", {
+        ...emptySelection,
+        attention: true,
+        search: "Attention test",
+      })
+    ).total,
+  ).toBe(1);
+  const closed = await app.change("lead-a", {
+    id: issue.id,
+    expectedRevision: 1,
+    action: "follow-up",
+    state: "resolved",
+    note: "Completed and checked",
+  });
+  expect(closed.latestUpdate.note).toBe("Completed and checked");
+  expect(
+    (
+      await app.list("tech-a", {
+        ...emptySelection,
+        attention: true,
+        search: "Attention test",
+      })
+    ).total,
+  ).toBe(0);
+  const history = await app.history("tech-a", issue.id);
+  expect(history.revisions).toHaveLength(2);
+  expect(history.revisions[1].entry.issueState).toBe("open");
+});

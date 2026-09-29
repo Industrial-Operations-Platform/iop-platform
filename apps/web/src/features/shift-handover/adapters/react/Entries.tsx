@@ -55,8 +55,10 @@ export function EntryBody({ entry }: { entry: Entry }) {
 export function EntryCards({
   entries,
   open,
+  compact = false,
 }: {
   entries: Entry[];
+  compact?: boolean;
   open: (id: string) => void;
 }) {
   return (
@@ -68,7 +70,23 @@ export function EntryCards({
               {entry.content.summary}
             </Button>
           </h3>
-          <EntryBody entry={entry} />
+          {compact ? (
+            <>
+              <p>
+                {entry.areaLabel || entry.departmentLabel || "Site-wide"} ·{" "}
+                {issueLabel(entry.issueState)}
+                {entry.content.equipmentCode
+                  ? ` · ${entry.content.equipmentCode}`
+                  : ""}
+              </p>
+              <p className="handover-excerpt">
+                {entry.latestUpdate?.note || entry.content.details}
+              </p>
+              {entry.content.dueDate && <p>Due {entry.content.dueDate}</p>}
+            </>
+          ) : (
+            <EntryBody entry={entry} />
+          )}
         </Panel>
       ))}
     </div>
@@ -126,56 +144,5 @@ export function EntryMatrix({
         </tbody>
       </Table>
     </TableViewport>
-  );
-}
-
-export function MeetingEntries({
-  entries,
-  categories,
-  open,
-}: {
-  entries: Entry[];
-  categories: { id: string; label: string }[];
-  open: (id: string) => void;
-}) {
-  const categoryIds = [
-    ...new Set([
-      ...categories.map((c) => c.id),
-      ...entries.map((e) => e.content.categoryId),
-    ]),
-  ];
-  return (
-    <>
-      {categoryIds.map((categoryId) => {
-        const group = entries.filter(
-          (entry) => entry.content.categoryId === categoryId,
-        );
-        if (!group.length) return null;
-        const departments = [
-          ...new Set(group.map((entry) => entry.content.departmentId)),
-        ];
-        return (
-          <section key={categoryId}>
-            <h2>
-              {categories.find((c) => c.id === categoryId)?.label ??
-                group[0].categoryLabel}
-            </h2>
-            {departments.map((departmentId) => {
-              const updates = group.filter(
-                (entry) => entry.content.departmentId === departmentId,
-              );
-              return (
-                <section key={departmentId}>
-                  <h3>
-                    {updates[0].departmentLabel || "Site-wide information"}
-                  </h3>
-                  <EntryCards entries={updates} open={open} />
-                </section>
-              );
-            })}
-          </section>
-        );
-      })}
-    </>
   );
 }

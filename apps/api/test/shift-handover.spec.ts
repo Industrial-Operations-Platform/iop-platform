@@ -5,6 +5,7 @@ import {
 } from "../src/modules/shift-handover/application/handover";
 import {
   validContent,
+  siteDate,
   validSelection,
   emptySelection,
   type Entry,
@@ -51,7 +52,7 @@ const input: CreateEntry = {
     departmentId: "dept",
     areaId: "area",
     equipmentCode: "0001",
-    equipmentNamespace: "site",
+    equipmentNamespace: "site-equipment",
     condition: "inspection-needed",
     externalReference: "00123",
     challenge: "",
@@ -68,6 +69,7 @@ function fixture() {
   const revisions: Revision[] = [];
   const tx: Transaction = {
     coordinator: false,
+    equipment: jest.fn(async () => ({ codes: ["0001"], nextCursor: "" })),
     people: async () => [
       { id: "author", name: "Author" },
       { id: "colleague", name: "Colleague" },
@@ -345,4 +347,93 @@ test("configured location trees support intermediate levels and reject cycles or
       timeZone,
     ),
   ).toThrow();
+});
+
+test("contributors create only today, coordinators can backdate, and corrections cannot move a contributor's date", async () => {
+  const { app, tx } = fixture();
+  const backdated = {
+    ...input,
+    content: { ...input.content, date: "2026-09-28" },
+  };
+  await expect(app.create("author", backdated)).rejects.toMatchObject({
+    code: "handover_today_only",
+  });
+  tx.coordinator = true;
+  const entry = await app.create("author", backdated);
+  tx.coordinator = false;
+  await expect(
+    app.change("author", {
+      id: entry.id,
+      expectedRevision: 1,
+      action: "correct",
+      note: "Change date",
+      content: input.content,
+    }),
+  ).rejects.toMatchObject({ code: "handover_today_only" });
+  expect(await app.create("author", backdated)).toEqual(entry);
+});
+test("equipment admission validates exact source codes while unchanged historical references survive catalog changes", async () => {
+  const { app, tx } = fixture();
+  await expect(
+    app.create("author", {
+      ...input,
+      content: { ...input.content, equipmentCode: "invented" },
+    }),
+  ).rejects.toMatchObject({ code: "handover_equipment_unavailable" });
+  const entry = await app.create("author", input);
+  tx.equipment = async () => ({ codes: [], nextCursor: "" });
+  await expect(
+    app.change("author", {
+      id: entry.id,
+      expectedRevision: 1,
+      action: "correct",
+      note: "Clarify",
+      content: { ...input.content, summary: "Clarified" },
+    }),
+  ).resolves.toMatchObject({ revision: 2 });
+  await expect(
+    app.equipmentChoices("author", {
+      departmentId: "dept",
+      areaId: "foreign",
+      search: "",
+      after: "",
+    }),
+  ).rejects.toMatchObject({ code: "invalid_handover" });
+});
+test("follow-up and resolution commit one attributed revision and preserve original content", async () => {
+  const { app, revisions, tx } = fixture();
+  const original = await app.create("author", input);
+  await expect(
+    app.change("other", {
+      id: original.id,
+      expectedRevision: 1,
+      action: "follow-up",
+      note: "Unauthorized closure",
+      state: "resolved",
+    }),
+  ).rejects.toMatchObject({ code: "handover_denied" });
+  const updated = await app.change("colleague", {
+    id: original.id,
+    expectedRevision: 1,
+    action: "follow-up",
+    note: "Repaired and checked",
+    state: "resolved",
+  });
+  expect(updated).toMatchObject({
+    revision: 2,
+    issueState: "resolved",
+    latestUpdate: { note: "Repaired and checked", actorName: "Colleague" },
+  });
+  expect(updated.content).toEqual(original.content);
+  expect(revisions[0].entry.issueState).toBe("open");
+  expect(tx.save).toHaveBeenCalledTimes(2);
+});
+
+test("current-day rules use the site calendar across UTC midnight and DST", () => {
+  expect(siteDate("2026-09-29T22:30:00.000Z", "Europe/Zurich")).toBe(
+    "2026-09-30",
+  );
+  expect(siteDate("2026-10-25T23:30:00.000Z", "Europe/Zurich")).toBe(
+    "2026-10-26",
+  );
 });

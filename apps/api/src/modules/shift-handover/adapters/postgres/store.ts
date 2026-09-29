@@ -5,7 +5,11 @@ import {
   SiteAccessDeniedError,
   type SiteTransaction,
 } from "../../../../persistence/site-operation";
-import type { Store, Transaction } from "../../application/handover";
+import type {
+  Store,
+  Transaction,
+  EquipmentLookup,
+} from "../../application/handover";
 import type {
   Entry,
   Content,
@@ -26,6 +30,10 @@ export interface AccessLookup {
     permission: string,
   ): Promise<boolean>;
   people(tx: SiteTransaction): Promise<Person[]>;
+  equipment(
+    tx: SiteTransaction,
+    ...args: Parameters<EquipmentLookup["search"]>
+  ): ReturnType<EquipmentLookup["search"]>;
 }
 export class PgHandover implements Store {
   constructor(
@@ -55,8 +63,13 @@ export class PgHandover implements Store {
           "handover.coordinate",
         );
         return work(
-          new PgTransaction(tx, this.scope, actor, coordinator, () =>
-            this.lookup.people(tx),
+          new PgTransaction(
+            tx,
+            this.scope,
+            actor,
+            coordinator,
+            () => this.lookup.people(tx),
+            (...args) => this.lookup.equipment(tx, ...args),
           ),
         );
       },
@@ -70,6 +83,7 @@ class PgTransaction implements Transaction {
     private readonly actor: string,
     readonly coordinator: boolean,
     readonly people: () => Promise<Person[]>,
+    readonly equipment: EquipmentLookup["search"],
   ) {}
   private get selectors() {
     return [this.scope.organizationId, this.scope.siteId];
@@ -175,6 +189,8 @@ class PgTransaction implements Transaction {
       s.highlights,
       cursorDate ?? "",
       cursorId ?? "",
+      s.mine ? this.actor : "",
+      s.attention ?? false,
     ];
     const r = await this.tx.query(
       `WITH matching AS (
@@ -184,8 +200,13 @@ class PgTransaction implements Transaction {
       AND ($5='' OR snapshot->'content'->>'departmentId'=$5) AND ($6='' OR snapshot->'content'->>'areaId'=$6)
       AND ($7='' OR equipment_id=$7) AND ($8='' OR snapshot->'content'->>'categoryId'=$8)
       AND ($9='' OR ($9='pending' AND snapshot->>'issueState' IN ('open','in-progress')) OR snapshot->>'issueState'=$9)
-      AND ($10='' OR strpos(lower(concat_ws(' ',snapshot->'content'->>'summary',snapshot->'content'->>'details',snapshot->'content'->>'equipmentCode',snapshot->'content'->>'externalReference',snapshot->'content'->>'challenge',snapshot->'content'->>'cause',snapshot->'content'->>'measure',snapshot->>'departmentLabel',snapshot->>'areaLabel')),lower($10))>0)
+      AND ($10='' OR strpos(lower(concat_ws(' ',snapshot->'content'->>'summary',snapshot->'content'->>'details',snapshot->'content'->>'equipmentCode',snapshot->'content'->>'externalReference',snapshot->'content'->>'challenge',snapshot->'content'->>'cause',snapshot->'content'->>'measure',snapshot->>'departmentLabel',snapshot->>'areaLabel',snapshot->'latestUpdate'->>'note',snapshot->>'authorName')),lower($10))>0)
       AND (NOT $11 OR snapshot->>'highlighted'='true')
+      AND ($14='' OR author_id=$14)
+      AND (NOT $15 OR (snapshot->>'issueState' IN ('open','in-progress') AND
+        (snapshot->'content'->>'condition'='blocked'
+        OR NULLIF(snapshot->'content'->>'dueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date
+        OR NULLIF(snapshot->'content'->>'feedbackDueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date)))
     ), page AS (SELECT * FROM matching WHERE $12='' OR (sort_key,id)<($12,$13) ORDER BY sort_key DESC,id DESC LIMIT 21)
     SELECT (SELECT count(*)::integer FROM matching) AS total,coalesce((SELECT jsonb_agg(jsonb_build_object('entry',snapshot,'sort',sort_key) ORDER BY sort_key DESC,id DESC) FROM page),'[]'::jsonb) AS results`,
       values,

@@ -4,7 +4,9 @@ export class HandoverError extends Error {
       | "invalid_handover"
       | "handover_denied"
       | "handover_missing"
-      | "handover_conflict",
+      | "handover_conflict"
+      | "handover_today_only"
+      | "handover_equipment_unavailable",
   ) {
     super(code);
   }
@@ -56,6 +58,7 @@ export interface Content {
 }
 export type IssueState = "none" | "open" | "in-progress" | "resolved";
 export interface Entry {
+  latestUpdate?: { note: string; actorName: string; at: string };
   id: string;
   authorId: string;
   authorName: string;
@@ -101,6 +104,8 @@ export interface Selection {
   state: "" | IssueState | "pending";
   search: string;
   highlights: boolean;
+  mine?: boolean;
+  attention?: boolean;
   cursor: string;
 }
 export const emptySelection: Selection = {
@@ -224,7 +229,16 @@ export function validContent(input: Content, catalog: Catalog): Content {
   return value;
 }
 export function validSelection(input: Selection): Selection {
-  exact(input, Object.keys(emptySelection));
+  exact(input, [
+    ...Object.keys(emptySelection),
+    ...(Object.hasOwn(input ?? {}, "mine") ? ["mine"] : []),
+    ...(Object.hasOwn(input ?? {}, "attention") ? ["attention"] : []),
+  ]);
+  if (
+    (input.mine !== undefined && typeof input.mine !== "boolean") ||
+    (input.attention !== undefined && typeof input.attention !== "boolean")
+  )
+    invalid();
   const result = { ...input, from: date(input.from), to: date(input.to) };
   for (const key of [
     "departmentId",
@@ -301,4 +315,13 @@ export function withinLocation(
     id = locations.find((location) => location.id === id)?.parentId ?? "";
   }
   return false;
+}
+
+export function siteDate(instant: string, timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(instant));
 }

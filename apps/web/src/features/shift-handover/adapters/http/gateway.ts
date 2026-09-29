@@ -1,8 +1,17 @@
 import type { Gateway } from "../../application/handover";
-import type { Selection, CreateEntry, ChangeEntry } from "../../domain/models";
+import type {
+  EquipmentSelection,
+  Selection,
+  CreateEntry,
+  ChangeEntry,
+} from "../../domain/models";
 import type { components } from "../../../../contracts/schema";
 type Schema = components["schemas"];
 const messages: Record<string, string> = {
+  handover_today_only:
+    "New entries must use today’s date at your site. Historical dates require a coordinator.",
+  handover_equipment_unavailable:
+    "Choose a Betriebsmittelkennzeichen from the imported equipment list for this department and area.",
   handover_denied: "You do not have permission for this handover operation.",
   handover_missing: "This entry is unavailable.",
   handover_conflict:
@@ -30,6 +39,9 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   return data;
 }
 export class HttpHandoverGateway implements Gateway {
+  equipment(selection: EquipmentSelection) {
+    return request<Schema["HandoverEquipmentPageDto"]>("equipment", selection);
+  }
   context() {
     return request<Schema["HandoverContextDto"]>("context");
   }

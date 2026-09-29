@@ -31,6 +31,17 @@ export function HandoverFilters({
         onApply();
       }}
     >
+      <Field>
+        Search
+        <Input
+          autoFocus
+          type="search"
+          maxLength={240}
+          placeholder="Summary, equipment code or work reference"
+          value={draft.search}
+          onChange={(e) => setDraft({ ...draft, search: e.target.value })}
+        />
+      </Field>
       <FieldRow>
         <Field>
           From
@@ -137,15 +148,6 @@ export function HandoverFilters({
             <option value="none">Information</option>
           </Select>
         </Field>
-        <Field>
-          Search
-          <Input
-            maxLength={240}
-            placeholder="Summary, equipment code or work reference"
-            value={draft.search}
-            onChange={(e) => setDraft({ ...draft, search: e.target.value })}
-          />
-        </Field>
       </FieldRow>
       <Field layout="inline">
         <Input
@@ -163,7 +165,7 @@ export function HandoverFilters({
       )}
       <Actions>
         <Button type="submit" disabled={disabled}>
-          Apply filters
+          Search entries
         </Button>
         <Button
           variant="secondary"
@@ -171,7 +173,7 @@ export function HandoverFilters({
             onReset();
           }}
         >
-          Reset filters
+          Clear fields
         </Button>
       </Actions>
     </FilterForm>

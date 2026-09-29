@@ -81,3 +81,7 @@ library from importing features or transport adapters.
 
 `ViewNavigation` keeps the selected button visible inside its horizontal viewport
 on selection and window resize, without moving keyboard focus.
+
+`Dialog` uses the native modal element for focus containment and an inert background.
+It provides a labelled heading, Escape/close handling and focus restoration. Callers
+control visibility, pending state and form content; no business rules live here.

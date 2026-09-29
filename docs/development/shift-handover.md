@@ -45,8 +45,9 @@ roles, not mandatory physical hierarchy depths. All fields in the example are
 required; empty strings explicitly represent absent optional mapping/parent values.
 
 Use `sectorKey` on a department only when there is an explicit mapping to the key
-returned by the analytical sector selector (currently the displayed sector label). It connects the Start sector selection
-to operational updates; it is not a physical identity or asset-validation claim.
+returned by the analytical sector selector (currently the displayed sector label). It scopes imported equipment choices together with the exact configured area label;
+it is not a physical identity or asset-validation claim. Start and handover share
+the operational department selection independently of analytical availability.
 Do not reuse IDs for different places. Retain category IDs and locations referenced
 by existing entries so they remain selectable when correcting historical records.
 Renamed labels do not overwrite retained entry snapshots.
@@ -60,21 +61,58 @@ No automatic publication or local stack restart is implied by code validation.
 
 ## Worker workflow
 
-Open **Shift Handover** from the left navigation. Create an entry with date, category
-and short summary. Select department/area and an equipment code where relevant;
-use site-wide information for general notices. Equipment references are explicitly
-unverified until the future asset module resolves them. Optional condition reports
-record an observation, not the authoritative live plant state.
+Open **Shift Handover** from the left navigation and select a department. The Journal
+board shows the three latest entries in each configured category, with full matching
+counts and a **View history** action. Each category's **+** opens a modal form with
+that category, the selected department and today's site-local date. Technicians and
+Task Force publish only on the current date; Team Leader and Administrator can
+select historical dates. The API enforces this rule independently of the browser.
+
+Select an area to choose a **Betriebsmittelkennzeichen** from imported equipment.
+Use **Find equipment** and **More equipment** for the bounded list (50 per page).
+Arbitrary new codes are rejected by the API. Unchanged older references remain
+readable/correctable even if absent from current imports. Equipment references are
+still unverified external identifiers, not canonical assets. Reports without equipment
+remain available when no codes are imported. Reporting damaged, blocked or inspection-
+needed equipment initially selects **Track as an open issue**, which can be reviewed
+before publication.
 
 Expand details for the Ultimo-generated code, challenge, cause, measure, completion
 and feedback dates. Codes remain text, preserving leading zeros. An issue can be
 published before cause, responsibility or deadlines are known. Its assignee is a
 current site user. Meeting discussion and Start highlighting are separate choices.
 
-Use Journal filters to catch up after leave, Department matrix for the tabular
-handover, or Meeting preparation for category-grouped updates and earlier open
-issues. Entry detail opens the equipment-reference history, corrections and prior
-revisions. A resolution requires an outcome; reopening preserves that evidence.
+Use **Search history** intentionally to open text, date, location, category and
+status filters. Search stays closed during entry creation. **My entries** filters by
+the authenticated author on the server, including later pages; Department matrix
+keeps the tabular view. **Meeting preparation** is a six-section category canvas for
+the selected day and department, including empty sections. Each compact card shows
+only its title and department; open it for the full problem fields and history.
+Each section has independent full counts and pagination (20 entries per page).
+Earlier/current unresolved issues are available in a separate collapsed disclosure.
+
+For **Team Leader**, the tab is **Daily overview**. It defaults to today and includes
+all authors and departments at the authorized site for the selected day. It does not
+inherit department, personal-history or search filters and does not mix earlier open
+issues into the daily canvas. The date labels the entry's occurrence date, not the
+instant of a later follow-up. This presentation does not grant additional access.
+The selected department is shared with Start during the current session; M6 default
+assignments are not yet connected.
+
+Entry detail prioritizes the current report, latest follow-up and immutable history.
+**Add follow-up** opens a modal with an optional issue-state transition. **Close issue**
+prefills Resolved and requires a resolution outcome; **Reopen issue** retains prior
+resolution evidence. An informational entry can first be tracked as an issue. Only
+authors, assignees and coordinators may change issue state; other workers can add
+notes. Follow-up and its state change commit as one revision without modifying the
+original. **Correct entry** remains a separate, reasoned action for factual mistakes.
+
+Start presents open issues and attention counts for the chosen department, prioritizing
+blocked reports or overdue action/feedback dates. These are report-based signals,
+not inferred equipment health. It shows a bounded preview and links to full lists.
+Site-wide highlights remain separate; the analytical snapshot is compact and the
+full tables remain in Data Analysis.
+
 There is no hard-delete action. On a revision conflict, reload before applying the
 change. On an interrupted publication, retry the unchanged form to recover the
 saved entry instead of creating a duplicate.
@@ -98,7 +136,7 @@ checks and actor/site-scoped idempotency for creation. The existing analytics-on
 maintenance command does not erase this operational history.
 
 The versioned API provides `GET /api/v1/handover/context` and POST operations under
-`/api/v1/handover/{query,entries,change,history}`. OpenAPI owns transport schemas;
+`/api/v1/handover/{query,entries,change,history,equipment}`. OpenAPI owns transport schemas;
 server domain/use cases own rules. Query pages expose full matching counts and a
 next cursor; revision history exposes `nextBefore`. No request accepts client
 organization/site selectors or trusted client authorship. Scope comes from the
@@ -113,6 +151,6 @@ npm run test:database
 ```
 
 The database suite includes an isolated real PostgreSQL/Playwright handover journey
-and writes screenshots to `/tmp/iop-168-browser`. It does not modify the operator's
+and writes screenshots to `/tmp/iop-169-browser`. It does not modify the operator's
 running stack. The [implementation plan](../planning/completed/IOP-168-shift-handover-implementation-plan.md)
 records actual executed evidence and remaining limitations.

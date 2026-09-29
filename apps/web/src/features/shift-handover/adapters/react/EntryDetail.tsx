@@ -1,13 +1,12 @@
+import { FollowUpForm } from "./FollowUpForm";
 import { useEffect, useState } from "react";
 import {
   Actions,
   Alert,
   Button,
   Disclosure,
-  Field,
+  Dialog,
   Panel,
-  Select,
-  Textarea,
 } from "../../../../design/components";
 import type { HandoverApplication } from "../../application/handover";
 import type {
@@ -39,12 +38,8 @@ export function EntryDetail({
     [busy, setBusy] = useState(false),
     [attempt, setAttempt] = useState(0),
     [editing, setEditing] = useState(false);
-  const [action, setAction] = useState<
-      "follow-up" | "state" | "assign" | "highlight"
-    >("follow-up"),
-    [note, setNote] = useState(""),
-    [state, setState] = useState<IssueState>("open"),
-    [responsible, setResponsible] = useState("");
+  const [following, setFollowing] = useState(false);
+  const [initialState, setInitialState] = useState<IssueState | undefined>();
   useEffect(() => {
     let current = true;
     setHistory(null);
@@ -54,7 +49,6 @@ export function EntryDetail({
       .then((h) => {
         if (current) {
           setHistory(h);
-          setResponsible(h.entry.responsibleId);
         }
       })
       .catch((e) => {
@@ -70,7 +64,7 @@ export function EntryDetail({
     try {
       await application.change(input);
       setEditing(false);
-      setNote("");
+      setFollowing(false);
       setAttempt((n) => n + 1);
       onChanged();
     } catch (e) {
@@ -96,7 +90,7 @@ export function EntryDetail({
           Reload entry
         </Button>
       </Actions>
-      {error && <Alert>{error}</Alert>}
+      {error && !editing && !following && <Alert>{error}</Alert>}
       {!history && !error && <p role="status">Loading entry…</p>}
       {e && (
         <>
@@ -107,7 +101,54 @@ export function EntryDetail({
               Recorded {new Date(e.createdAt).toLocaleString()} · Revision{" "}
               {e.revision}
             </p>
+            {(e.latestUpdate ||
+              history.revisions.find(
+                (r) => r.action === "follow-up" || r.action === "state",
+              )) && (
+              <div className="handover-preview">
+                <h3>Latest update</h3>
+                <p className="handover-prose">
+                  {e.latestUpdate?.note ??
+                    history.revisions.find(
+                      (r) => r.action === "follow-up" || r.action === "state",
+                    )?.note}
+                </p>
+              </div>
+            )}
             <Actions>
+              <Button
+                onClick={() => {
+                  setInitialState(undefined);
+                  setFollowing(true);
+                }}
+              >
+                Add follow-up
+              </Button>
+              {canProgress && e.issueState !== "none" && (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setInitialState(
+                      e.issueState === "resolved" ? "open" : "resolved",
+                    );
+                    setFollowing(true);
+                  }}
+                >
+                  {e.issueState === "resolved" ? "Reopen issue" : "Close issue"}
+                </Button>
+              )}
+              {canProgress && e.issueState === "none" && (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setInitialState("open");
+                    setFollowing(true);
+                  }}
+                >
+                  Track as issue
+                </Button>
+              )}
+
               {canEdit && (
                 <Button
                   variant="secondary"
@@ -124,131 +165,48 @@ export function EntryDetail({
               )}
             </Actions>
           </Panel>
-          {editing ? (
-            <EntryForm
-              key={e.revision}
-              context={context}
-              entry={e}
-              pending={busy}
-              onCancel={() => setEditing(false)}
-              onSave={(content, _issue, _responsible, note) =>
-                change({
-                  id: e.id,
-                  expectedRevision: e.revision,
-                  action: "correct",
-                  note,
-                  content,
-                })
-              }
-            />
-          ) : (
-            <Panel>
-              <form
-                className="handover-form"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  void change({
+          {editing && (
+            <Dialog
+              title="Correct entry"
+              busy={busy}
+              onClose={() => setEditing(false)}
+            >
+              {error && <Alert>{error}</Alert>}
+              <EntryForm
+                application={application}
+                key={e.revision}
+                context={context}
+                entry={e}
+                pending={busy}
+                onCancel={() => setEditing(false)}
+                onSave={(content, _issue, _responsible, note) =>
+                  change({
                     id: e.id,
                     expectedRevision: e.revision,
-                    action,
+                    action: "correct",
                     note,
-                    ...(action === "state"
-                      ? { state }
-                      : action === "assign"
-                        ? { responsibleId: responsible }
-                        : action === "highlight"
-                          ? { highlighted: !e.highlighted }
-                          : {}),
-                  });
-                }}
-              >
-                <h3>Follow-up and coordination</h3>
-                <Field>
-                  Update type
-                  <Select
-                    aria-label="Update type"
-                    disabled={busy}
-                    value={action}
-                    onChange={(event) => {
-                      setAction(event.target.value as typeof action);
-                      setState(
-                        e.issueState === "open" ? "in-progress" : "open",
-                      );
-                    }}
-                  >
-                    <option value="follow-up">Add follow-up</option>
-                    {canProgress && (
-                      <option value="state">Change issue state</option>
-                    )}
-                    {context.canCoordinate && e.issueState !== "none" && (
-                      <option value="assign">Assign responsibility</option>
-                    )}
-                    {context.canCoordinate && (
-                      <option value="highlight">
-                        {e.highlighted
-                          ? "Withdraw Start highlight"
-                          : "Highlight on Start"}
-                      </option>
-                    )}
-                  </Select>
-                </Field>
-                {action === "state" && (
-                  <Field>
-                    Issue state
-                    <Select
-                      aria-label="Issue state"
-                      value={state}
-                      onChange={(event) =>
-                        setState(event.target.value as IssueState)
-                      }
-                    >
-                      {(["open", "in-progress", "resolved"] as const)
-                        .filter(
-                          (s) =>
-                            s !== e.issueState &&
-                            (e.issueState !== "none" || s === "open"),
-                        )
-                        .map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                    </Select>
-                  </Field>
-                )}
-                {action === "assign" && (
-                  <Field>
-                    Responsible person
-                    <Select
-                      aria-label="Responsible person"
-                      value={responsible}
-                      onChange={(event) => setResponsible(event.target.value)}
-                    >
-                      <option value="">Unassigned</option>
-                      {context.people.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name}
-                        </option>
-                      ))}
-                    </Select>
-                  </Field>
-                )}
-                <Field>
-                  {action === "state" && state === "resolved"
-                    ? "Resolution outcome"
-                    : "Note / reason"}
-                  <Textarea
-                    required
-                    maxLength={4000}
-                    value={note}
-                    onChange={(event) => setNote(event.target.value)}
-                  />
-                </Field>
-                <Button type="submit" disabled={busy}>
-                  {busy ? "Saving…" : "Save update"}
-                </Button>
-              </form>
-            </Panel>
+                    content,
+                  })
+                }
+              />
+            </Dialog>
+          )}
+          {following && (
+            <Dialog
+              title="Follow-up and coordination"
+              busy={busy}
+              onClose={() => setFollowing(false)}
+            >
+              {error && <Alert>{error}</Alert>}
+              <FollowUpForm
+                entry={e}
+                context={context}
+                pending={busy}
+                initialState={initialState}
+                onSave={change}
+                onCancel={() => setFollowing(false)}
+              />
+            </Dialog>
           )}
           <Panel>
             <h3>History</h3>

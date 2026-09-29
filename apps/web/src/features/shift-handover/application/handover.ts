@@ -1,5 +1,7 @@
 import {
   emptySelection,
+  type EquipmentSelection,
+  type EquipmentPage,
   type Context,
   type Entry,
   type Page,
@@ -9,6 +11,7 @@ import {
   type ChangeEntry,
 } from "../domain/models";
 export interface Gateway {
+  equipment(selection: EquipmentSelection): Promise<EquipmentPage>;
   context(): Promise<Context>;
   list(selection: Selection): Promise<Page>;
   history(id: string, before: number): Promise<History>;
@@ -21,6 +24,19 @@ export class HandoverApplication {
     private readonly gateway: Gateway,
     private readonly newKey: () => string,
   ) {}
+  equipment(selection: EquipmentSelection) {
+    return this.gateway.equipment(selection);
+  }
+  async board(selection: Selection) {
+    const context = await this.context();
+    const sections = await Promise.all(
+      context.categories.map(async (category) => ({
+        category,
+        page: await this.list({ ...selection, categoryId: category.id }),
+      })),
+    );
+    return { context, sections };
+  }
   context() {
     return this.gateway.context();
   }
@@ -66,4 +82,18 @@ export class HandoverApplication {
     ]);
     return { current, pending };
   }
+}
+
+/** Daily leadership review deliberately starts with all authors and departments. */
+export function meetingSelection(
+  date: string,
+  departmentId: string,
+  dailyOverview: boolean,
+): Selection {
+  return {
+    ...emptySelection,
+    from: date,
+    to: date,
+    departmentId: dailyOverview ? "" : departmentId,
+  };
 }

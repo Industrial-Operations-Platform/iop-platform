@@ -1,3 +1,5 @@
+import type { HandoverApplication } from "../../application/handover";
+import { EquipmentPicker } from "./EquipmentPicker";
 import { withinLocation } from "../../domain/models";
 import { useState } from "react";
 import {
@@ -22,12 +24,16 @@ export function today(timeZone: string): string {
 }
 export function EntryForm({
   context,
+  application,
+  defaults,
   entry,
   pending,
   onSave,
   onCancel,
 }: {
   context: Context;
+  application: HandoverApplication;
+  defaults?: Partial<Content>;
   entry?: Entry;
   pending: boolean;
   onSave: (
@@ -56,6 +62,7 @@ export function EntryForm({
       dueDate: "",
       feedbackDueDate: "",
       discuss: false,
+      ...defaults,
     },
   );
   const [issue, setIssue] = useState(
@@ -74,7 +81,6 @@ export function EntryForm({
           void onSave(value, issue, responsible, note);
         }}
       >
-        <h2>{entry ? "Correct entry" : "Share an update"}</h2>
         <p>
           Write the short update you would share at handover. Add details when
           needed.
@@ -86,6 +92,7 @@ export function EntryForm({
               <Input
                 type="date"
                 required
+                disabled={!context.canCoordinate}
                 value={value.date}
                 onChange={(e) => field("date", e.target.value)}
               />
@@ -108,6 +115,7 @@ export function EntryForm({
           <Field>
             Summary
             <Input
+              autoFocus
               required
               maxLength={240}
               value={value.summary}
@@ -181,30 +189,36 @@ export function EntryForm({
             </p>
           )}
           <FieldRow>
-            <Field>
-              Equipment code
-              <Input
-                disabled={!value.departmentId}
-                maxLength={160}
-                value={value.equipmentCode}
-                onChange={(e) =>
-                  setValue((v) => ({
-                    ...v,
-                    equipmentCode: e.target.value,
-                    ...(!e.target.value ? { condition: "" } : {}),
-                  }))
-                }
-              />
-            </Field>
+            <EquipmentPicker
+              application={application}
+              departmentId={value.departmentId}
+              areaId={value.areaId}
+              value={value.equipmentCode}
+              disabled={pending}
+              onChange={(equipmentCode) =>
+                setValue((v) => ({
+                  ...v,
+                  equipmentCode,
+                  equipmentNamespace: "site-equipment",
+                  ...(!equipmentCode ? { condition: "" } : {}),
+                }))
+              }
+            />
             <Field>
               Reported condition
               <Select
                 aria-label="Reported condition"
                 disabled={!value.equipmentCode}
                 value={value.condition}
-                onChange={(e) =>
-                  field("condition", e.target.value as Content["condition"])
-                }
+                onChange={(e) => {
+                  field("condition", e.target.value as Content["condition"]);
+                  if (
+                    ["damaged", "inspection-needed", "blocked"].includes(
+                      e.target.value,
+                    )
+                  )
+                    setIssue(true);
+                }}
               >
                 <option value="">Not reported</option>
                 <option value="damaged">Damaged</option>
