@@ -1,6 +1,6 @@
 # IOP-176 — Handover detail action spacing
 
-Status: Completed locally. Owner-authorized screenshot feedback, 2026-09-29.
+Status: Completed and published. Owner-authorized screenshot feedback, 2026-09-29.
 Branch: `fix/IOP-176-handover-action-spacing`, from clean `develop`.
 Scope: [item](../items/IOP-176-handover-action-spacing.md).
 
@@ -26,4 +26,5 @@ Scope: [item](../items/IOP-176-handover-action-spacing.md).
   `/tmp/iop176-detail-375.png`: clear divider/button separation at both sizes.
 - Logs: `/tmp/iop176-build.log` and `/tmp/iop176-browser.log`.
 - Documentation links/statuses and diff whitespace verified. No new tests for
-  this small CSS correction. Publication and Docker activation remain pending.
+  this small CSS correction. [Publication](IOP-176-publication-plan.md) is complete;
+  Docker activation remains pending.

@@ -1,6 +1,6 @@
 # IOP-176 — Publication
 
-Status: In progress. The owner explicitly approved merging
+Status: Completed. The owner explicitly approved merging
 `fix/IOP-176-handover-action-spacing` into `develop` and pushing both branches to
 `origin` on 2026-09-29. This plan is authored on that existing story branch.
 Scope: [item](../items/IOP-176-handover-action-spacing.md).
@@ -16,3 +16,12 @@ Validation reuses the [implementation evidence](../completed/IOP-176-handover-ac
 when integration introduces no code changes; check documentation links and diff.
 The separate IOP-175 branch remains pending review. Docker activation, stage/master
 promotion, history rewriting and branch deletion are outside this approval.
+
+## Publication evidence
+
+Origin/develop and local develop both started at `8a76431`. The validated spacing
+fix is `1afadf3`; publication planning is `cd6cf76`. Develop fast-forwarded without
+conflicts or code changes. Atomic push succeeded, and `git ls-remote` verified
+both approved remote branches at `cd6cf7628e42d2fca9983e519842e433bc169e9e`.
+The completion documentation follows through the same approved publication path.
+Documentation links and `git diff --check` passed. No runtime activation occurred.
