@@ -1,6 +1,6 @@
 # IOP-178 — Journal cards and view-aware breadcrumbs
 
-Status: Completed locally. Owner-authorized UI correction, 2026-09-29.
+Status: Completed and published; local Docker activated. Owner-authorized UI correction, 2026-09-29.
 Branch: `fix/IOP-178-handover-cards-navigation`, from clean develop at `fa0b82b`.
 Scope: [item](../items/IOP-178-handover-cards-navigation.md).
 
@@ -25,7 +25,8 @@ Scope: [item](../items/IOP-178-handover-cards-navigation.md).
 
 The existing React adapter owns selection/presentation; domain/application and
 shared component boundaries stay unchanged under Accepted ADR-0032/0036.
-Publication and local Docker activation will be requested for the validated result.
+Publication and local Docker activation were explicitly approved and completed;
+see the [activation record](IOP-178-publication-plan.md).
 
 ## Evidence and closure
 
@@ -46,4 +47,5 @@ Publication and local Docker activation will be requested for the validated resu
 - Logs: `/tmp/iop178-build.log`, `/tmp/iop178-web-tests.log`,
   `/tmp/iop178-boundaries.log`, `/tmp/iop178-browser.log`.
 - Documentation links, IDs/statuses and diff whitespace verified. No domain/API or
-  live-data changes. Publication and Docker activation remain pending approval.
+  live-data changes. [Publication and Docker activation](IOP-178-publication-plan.md)
+  are complete.

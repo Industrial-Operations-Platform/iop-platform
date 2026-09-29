@@ -1,6 +1,6 @@
 # IOP-178 — Consistent journal cards and contextual detail navigation
 
-Status: Completed locally. Owner screenshot feedback, 2026-09-29.
+Status: Completed and published; local Docker activated. Owner screenshot feedback, 2026-09-29.
 
 ## Scope and acceptance
 
@@ -19,3 +19,5 @@ React presentation changes only, within Accepted ADR-0032/0036. No domain/API,
 permission or persistence changes. This refines IOP-175's home-only breadcrumb.
 
 Execution: [plan](../completed/IOP-178-handover-cards-navigation-plan.md).
+
+Publication and activation: [evidence](../completed/IOP-178-publication-plan.md).
