@@ -117,7 +117,7 @@ palette and flat surfaces; use emphasis purposefully:
 
 | Information | Reusable treatment |
 | --- | --- |
-| Selectable operational totals | `ViewNavigation placement="summary"` combines three totals and descriptions with view selection; info for open work, attention only for nonzero attention totals, neutral for site-wide highlights |
+| Selectable operational totals | `ViewNavigation placement="summary"` combines three totals and descriptions with view selection; neutral white surfaces for all three collections, with a dark selected border and underlined label |
 | Summary explanation | `iop-metric-description`: short muted caption under the figure |
 | Department/location | Semibold muted caption, subordinate to the blue entry title |
 | State and count | `Badge`: neutral, info, attention or success with explicit text; color never supplies the meaning alone |
@@ -152,3 +152,18 @@ full prose remains available through the entry title. Keyboard users can focus a
 scroll the viewport. My entries reuses expanded summary cards in a responsive grid,
 with entry date, responsibility and due dates. Shared tokens supply all
 colors and typography; no urgency is inferred from the browser clock.
+
+
+## Entry detail and neutral selection — IOP-182
+
+Start selection cards use white surfaces and neutral counters. A dark outline,
+strong top border and underlined label identify the active view; semantic urgency
+colors remain on entry status badges. Counts, descriptions and keyboard focus stay
+visible. This owner-requested refinement supersedes the colored Start selectors.
+
+Entry details preserve the summary hierarchy through location, state/condition
+badges and emphasized equipment codes with an explicit unverified label. Full
+prose and challenge/cause/measure appear beside a neutral facts panel for ownership,
+references and labelled dates; both stack on narrow screens. Recorded metadata is
+muted, actions remain separated, and historical revisions use bordered disclosures
+with the same complete content layout. Reuse shared tokens and components.

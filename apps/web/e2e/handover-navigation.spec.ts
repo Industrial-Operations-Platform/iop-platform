@@ -16,7 +16,7 @@ function summaryStyle(element: Element) {
   };
 }
 
-for (const width of [1440, 375]) {
+for (const width of [1440, 820, 375]) {
   test(`handover home navigation, component form and populated matrix at ${width}px`, async ({
     page,
   }) => {
@@ -54,11 +54,11 @@ for (const width of [1440, 375]) {
         equipmentNamespace: "site-equipment",
         condition: "inspection-needed",
         externalReference: "DEMO-ULTIMO-001",
-        challenge: "",
-        cause: "",
-        measure: "",
+        challenge: "Recurring vibration during operation",
+        cause: "Bearing wear requires confirmation",
+        measure: "Inspect the bearing and record the findings",
         dueDate: "2026-09-30",
-        feedbackDueDate: "",
+        feedbackDueDate: "2026-10-01",
         discuss: true,
       },
     };
@@ -202,6 +202,10 @@ for (const width of [1440, 375]) {
     await expect(attentionCard).toHaveAccessibleDescription(
       "Blocked equipment or overdue action / feedback.",
     );
+    for (const card of await startViews.getByRole("button").all()) {
+      await expect(card).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    }
+    await expect(attentionCard).toHaveCSS("border-top-color", "rgb(23, 43, 67)");
     const attentionBounds = await attentionCard.boundingBox();
     const reportsBounds = await startViews
       .getByRole("button", { name: /Open reports/ })
@@ -217,11 +221,16 @@ for (const width of [1440, 375]) {
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop181-start-${width}.png`,
+      path: `/tmp/iop182-start-${width}.png`,
       fullPage: true,
     });
     await startViews.getByRole("button", { name: /Open reports/ }).focus();
     await page.keyboard.press("Enter");
+    await expect(
+      startViews.getByRole("button", { name: /Open reports/ }),
+    ).toHaveCSS("border-top-color", "rgb(23, 43, 67)");
+    await expect(attentionCard).toHaveAttribute("aria-pressed", "false");
+    await expect(attentionCard).toHaveCSS("border-top-color", "rgb(203, 215, 226)");
     await expect(
       operational
         .getByRole("region", { name: "Open reports", exact: true })
@@ -275,7 +284,7 @@ for (const width of [1440, 375]) {
     await expect(journalCard).toBeVisible();
     const journalStyle = await journalCard.evaluate(summaryStyle);
     await page.screenshot({
-      path: `/tmp/iop181-journal-${width}.png`,
+      path: `/tmp/iop182-journal-${width}.png`,
       fullPage: true,
     });
     await journalCard.click();
@@ -320,7 +329,7 @@ for (const width of [1440, 375]) {
       };
     });
     await page.screenshot({
-      path: `/tmp/iop181-meeting-${width}.png`,
+      path: `/tmp/iop182-meeting-${width}.png`,
       fullPage: true,
     });
     await meeting
@@ -357,6 +366,33 @@ for (const width of [1440, 375]) {
         };
       }),
     ).toEqual(panelStyle);
+    const content = detail.locator(".handover-detail-panel");
+    await expect(content.getByText("In progress", { exact: true })).toBeVisible();
+    await expect(
+      content.getByText("Unverified reference", { exact: true }),
+    ).toBeVisible();
+    for (const value of [
+      entry.content.details,
+      entry.content.challenge,
+      entry.content.cause,
+      entry.content.measure,
+      entry.content.externalReference,
+      entry.content.dueDate,
+      entry.content.feedbackDueDate,
+    ]) {
+      await expect(content.getByText(value, { exact: true })).toBeVisible();
+    }
+    const descriptionBounds = await content
+      .locator(".handover-detail-description")
+      .boundingBox();
+    const factsBounds = await content
+      .locator(".handover-detail-facts")
+      .boundingBox();
+    if (width > 1000) expect(factsBounds!.x).toBeGreaterThan(descriptionBounds!.x);
+    else
+      expect(factsBounds!.y).toBeGreaterThanOrEqual(
+        descriptionBounds!.y + descriptionBounds!.height,
+      );
     const latestUpdate = await detail
       .getByRole("heading", { name: "Latest update" })
       .locator("..")
@@ -405,9 +441,23 @@ for (const width of [1440, 375]) {
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop181-detail-${width}.png`,
+      path: `/tmp/iop182-detail-${width}.png`,
       fullPage: true,
     });
+    const revision = detail.locator("details").first();
+    await revision.locator("summary").click();
+    await expect(
+      revision.getByText(entry.content.measure, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      revision.getByText(entry.content.feedbackDueDate, { exact: true }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await revision.locator("summary").click();
     const returnToMeeting = breadcrumb.getByRole("button", {
       name: "Meeting preparation",
       exact: true,
@@ -446,14 +496,14 @@ for (const width of [1440, 375]) {
       matrix.getByRole("cell", { name: "2026-09-29", exact: true }),
     ).toBeVisible();
     await page.screenshot({
-      path: `/tmp/iop181-matrix-${width}.png`,
+      path: `/tmp/iop182-matrix-${width}.png`,
       fullPage: true,
     });
     await matrix
       .getByRole("cell", { name: "In progress", exact: true })
       .scrollIntoViewIfNeeded();
     await page.screenshot({
-      path: `/tmp/iop181-matrix-status-${width}.png`,
+      path: `/tmp/iop182-matrix-status-${width}.png`,
       fullPage: true,
     });
     await page
@@ -508,7 +558,7 @@ for (const width of [1440, 375]) {
       "My entries",
     );
     await page.screenshot({
-      path: `/tmp/iop181-mine-${width}.png`,
+      path: `/tmp/iop182-mine-${width}.png`,
       fullPage: true,
     });
     expect(
@@ -565,7 +615,7 @@ for (const width of [1440, 375]) {
     };
     await assertAligned();
     await page.screenshot({
-      path: `/tmp/iop181-form-${width}.png`,
+      path: `/tmp/iop182-form-${width}.png`,
       fullPage: true,
     });
     await dialog.getByRole("button", { name: "More components" }).click();

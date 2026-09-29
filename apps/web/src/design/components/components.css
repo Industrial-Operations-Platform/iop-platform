@@ -700,7 +700,7 @@
 }
 .iop-ui .iop-view-navigation--summary .iop-button {
   --view-ink: var(--iop-muted);
-  --view-surface: var(--iop-canvas);
+  --view-surface: var(--iop-surface);
   --view-border: var(--iop-inputBorder);
   display: grid;
   grid-template-columns: 1fr auto;
@@ -727,11 +727,12 @@
   --view-border: var(--iop-errorInk);
 }
 .iop-ui .iop-view-navigation--summary .iop-button[aria-pressed="true"] {
-  border-color: var(--view-border);
-  outline: 1px solid var(--view-border);
+  border-color: var(--iop-ink);
+  outline: 1px solid var(--iop-ink);
   outline-offset: -2px;
+  --view-ink: var(--iop-ink);
 }
-.iop-ui .iop-view-navigation--summary .iop-button:hover {
+.iop-ui .iop-view-navigation--summary .iop-button:not([aria-pressed="true"]):hover {
   border-color: var(--view-border);
 }
 .iop-ui .iop-view-navigation--summary .iop-button:focus-visible {

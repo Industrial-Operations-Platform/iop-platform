@@ -129,14 +129,12 @@ export function HandoverHighlights({
                 id: "attention",
                 label: "Needs attention",
                 count: attention.total,
-                tone: attention.total ? "attention" : "neutral",
                 description: "Blocked equipment or overdue action / feedback.",
               },
               {
                 id: "pending",
                 label: "Open reports",
                 count: pending.total,
-                tone: "info",
                 description: "Open or in progress, ready for follow-up.",
               },
               {

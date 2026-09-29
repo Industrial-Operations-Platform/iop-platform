@@ -315,3 +315,4 @@ canonical asset integration.
 | [IOP-179 — Distinguish entry titles from section headings](items/IOP-179-handover-entry-title-style.md) | Completed |
 | [IOP-180 — Polish operational summaries and shared visual hierarchy](items/IOP-180-operational-visual-polish.md) | Completed |
 | [IOP-181 — Refine operational selection, matrix and personal entries](items/IOP-181-handover-view-polish.md) | Completed |
+| [IOP-182 — Structured entry details and neutral Start selection](items/IOP-182-entry-detail-neutral-start.md) | Completed |

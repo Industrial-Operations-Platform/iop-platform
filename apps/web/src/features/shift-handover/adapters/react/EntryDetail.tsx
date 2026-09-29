@@ -16,7 +16,7 @@ import type {
   IssueState,
   ChangeEntry,
 } from "../../domain/models";
-import { EntryBody } from "./Entries";
+import { EntryDetailBody } from "./EntryDetailBody";
 import { EntryForm } from "./EntryForm";
 import { HandoverHeading } from "./HandoverHeading";
 export function EntryDetail({
@@ -88,10 +88,10 @@ export function EntryDetail({
       {!history && !error && <p role="status">Loading entry…</p>}
       {e && (
         <>
-          <Panel>
+          <Panel className="handover-detail-panel">
             <h2>{e.content.summary}</h2>
-            <EntryBody entry={e} />
-            <p>
+            <EntryDetailBody entry={e} />
+            <p className="handover-detail-recorded">
               Recorded {new Date(e.createdAt).toLocaleString()} · Revision{" "}
               {e.revision}
             </p>
@@ -202,17 +202,18 @@ export function EntryDetail({
               />
             </Dialog>
           )}
-          <Panel>
+          <Panel className="handover-detail-history">
             <h3>History</h3>
             <p>Earlier versions and follow-up remain available.</p>
             {history.revisions.map((r) => (
               <Disclosure
+                variant="panel"
                 key={r.entry.revision}
                 summary={`Revision ${r.entry.revision} · ${r.action} · ${r.actorName} · ${new Date(r.at).toLocaleString()}`}
               >
                 <p className="handover-prose">{r.note}</p>
                 <h4>{r.entry.content.summary}</h4>
-                <EntryBody entry={r.entry} />
+                <EntryDetailBody entry={r.entry} />
               </Disclosure>
             ))}
             {!!history.nextBefore && (

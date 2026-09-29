@@ -143,6 +143,101 @@
 .handover-entry-actions {
   margin-top: var(--iop-sectionGap);
 }
+.handover-detail-panel > h2 {
+  margin-top: 0;
+}
+.handover-detail-body {
+  overflow-wrap: anywhere;
+}
+.handover-detail-context {
+  display: grid;
+  gap: 0.75rem;
+  padding-bottom: var(--iop-sectionGap);
+  border-bottom: 1px solid var(--iop-line);
+  color: var(--iop-muted);
+}
+.handover-detail-context p {
+  margin: 0;
+}
+.handover-detail-context .handover-card-location {
+  font-weight: var(--iop-labelWeight);
+}
+.handover-detail-reference {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
+}
+.handover-detail-reference .handover-muted {
+  font-size: var(--iop-captionSize);
+}
+.handover-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 30%);
+  align-items: start;
+  gap: 1.5rem;
+  padding-top: var(--iop-sectionGap);
+}
+.handover-detail-description h3 {
+  margin: 0;
+}
+.handover-detail-description > p {
+  margin-block: 0.75rem 1.5rem;
+}
+.handover-detail-follow-up {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  border-top: 1px solid var(--iop-line);
+  padding-top: var(--iop-sectionGap);
+  margin-bottom: 0;
+}
+.handover-detail-follow-up dt {
+  font-weight: var(--iop-labelWeight);
+}
+.handover-detail-follow-up dd,
+.handover-detail-facts dd {
+  margin: 0.4rem 0 0;
+}
+.handover-detail-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: var(--iop-panelPadding);
+  background: var(--iop-canvas);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+}
+.handover-detail-facts dt {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.handover-detail-facts dd {
+  font-weight: var(--iop-labelWeight);
+}
+.handover-detail-dates {
+  border-top: 1px solid var(--iop-line);
+  padding-top: 1rem;
+}
+.handover-detail-recorded {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+  margin-top: var(--iop-sectionGap);
+}
+.handover-detail-history .iop-disclosure + .iop-disclosure {
+  margin-top: 0.75rem;
+}
+@media (max-width: 1000px) {
+  .handover-detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .handover-detail-follow-up {
+    grid-template-columns: 1fr;
+  }
+}
 .handover-preview p {
   margin: 0.3rem 0;
   font-size: var(--iop-bodySize);
