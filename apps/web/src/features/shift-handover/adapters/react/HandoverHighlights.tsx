@@ -62,7 +62,7 @@ export function HandoverHighlights({
   }, [application, departmentId, refresh]);
   const urgentIds = new Set(attention.entries.slice(0, 3).map((e) => e.id));
   return (
-    <Panel aria-label="Operational handover updates">
+    <Panel className="handover-highlights" aria-label="Operational handover updates">
       <div className="handover-section-heading">
         <div>
           <h2>Your department at a glance</h2>
