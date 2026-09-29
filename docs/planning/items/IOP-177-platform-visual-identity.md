@@ -1,6 +1,6 @@
 # IOP-177 — Enforce the shared platform visual identity
 
-Status: In progress. Owner requested on 2026-09-29 that Meeting preparation's
+Status: Completed and published; local Docker activated. Owner requested on 2026-09-29 that Meeting preparation's
 typography, colors and sizes define the platform identity, with blue action accents,
 and that generated changes respect both that identity and hexagonal/clean-code rules.
 
@@ -20,4 +20,4 @@ into this story branch, merging the result into develop, publishing both story
 branches and develop to origin, and updating local Docker. Preserve existing data.
 No new architecture, authentication or business behavior is requested.
 
-Execution: [plan](../active/IOP-177-platform-visual-identity-plan.md).
+Execution: [plan](../completed/IOP-177-platform-visual-identity-plan.md).

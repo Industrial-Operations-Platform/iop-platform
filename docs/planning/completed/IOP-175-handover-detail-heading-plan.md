@@ -1,6 +1,6 @@
 # IOP-175 — Consistent handover detail heading
 
-Status: Completed locally. Owner-authorized screenshot feedback, 2026-09-29.
+Status: Completed and published; local Docker activated. Owner-authorized screenshot feedback, 2026-09-29.
 Branch: `fix/IOP-175-handover-detail-heading`, created from clean `develop`.
 Scope: [item](../items/IOP-175-handover-detail-heading.md).
 
@@ -45,4 +45,5 @@ No new architectural pattern or story translation is required.
   existing Node 24 runtime at `/tmp/iop-147-bin`. Browser servers required execution
   outside the sandbox to bind local ports.
 - Documentation links/statuses and `git diff --check` passed. No API/domain changes
-  or real-data mutations. Publication and local Docker activation remain pending.
+  or real-data mutations. [Publication and local Docker activation](IOP-177-platform-visual-identity-plan.md)
+  are complete under the owner-approved IOP-177 integration.

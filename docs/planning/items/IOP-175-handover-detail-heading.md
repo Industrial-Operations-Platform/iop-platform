@@ -1,6 +1,6 @@
 # IOP-175 — Consistent handover detail heading
 
-Status: Completed locally. Requested by the owner on 2026-09-29 after reviewing
+Status: Completed and published; local Docker activated. Requested by the owner on 2026-09-29 after reviewing
 the Shift Handover list and entry detail screenshots.
 
 ## Scope and acceptance
@@ -17,3 +17,5 @@ This supersedes the detail reload icon requested in
 Accepted ADR-0032/0036; no API, domain or storage changes.
 
 Execution: [plan](../completed/IOP-175-handover-detail-heading-plan.md).
+
+Integration and activation: [IOP-177 evidence](../completed/IOP-177-platform-visual-identity-plan.md).

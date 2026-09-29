@@ -27,4 +27,4 @@ Scope: [item](../items/IOP-176-handover-action-spacing.md).
 - Logs: `/tmp/iop176-build.log` and `/tmp/iop176-browser.log`.
 - Documentation links/statuses and diff whitespace verified. No new tests for
   this small CSS correction. [Publication](IOP-176-publication-plan.md) is complete;
-  Docker activation remains pending.
+  [Docker activation](IOP-177-platform-visual-identity-plan.md) is complete.

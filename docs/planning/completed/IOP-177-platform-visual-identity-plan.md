@@ -1,6 +1,6 @@
 # IOP-177 — Platform identity and local activation
 
-Status: In progress. Branch: `feature/IOP-177-platform-visual-identity`, created
+Status: Completed and published; local Docker activated. Branch: `feature/IOP-177-platform-visual-identity`, created
 from clean develop at `3a0a40e`. [Scope](../items/IOP-177-platform-visual-identity.md).
 
 ## Changes and steps
@@ -48,4 +48,26 @@ the canonical identity/component pattern suffice; no new architectural decision.
 - API tests initially hit sandbox loopback restrictions; the authorized rerun
   passed. Node 24.21.0 was used throughout.
 
-Publication and served-build verification remain to be recorded below.
+## Publication and activation evidence
+
+- Code commit `d5ea43e` includes the identity changes and the integrated IOP-175/176
+  fixes. Develop fast-forwarded from `3a0a40e`; atomic publication of IOP-175,
+  IOP-177 and develop to origin succeeded. Completion documentation follows the
+  same approved publication path.
+- `docker compose -f compose.platform.yaml up -d --build --no-deps --wait web`
+  succeeded. Web container `51f4dcdef84f` is healthy; API `f4e3559daf58` and database
+  `0a4dce3d3541` retain their previous identities and remain healthy. No setup,
+  migration, data seeding, account changes or volume operations were performed.
+- Root and proxied `/health` respond successfully. Served JS
+  `index-aRGxPejt.js` and CSS `index-U-gp7uDn.css` match the validated local build
+  byte-for-byte. Verified breadcrumb styling, canonical title sizing and action
+  spacing, with no detail reload icon or label.
+- Both handover browser scenarios passed again against the actual Docker-served
+  app at `http://127.0.0.1:8080` (1440px/375px). API calls used intercepted fixtures,
+  so validation did not modify operational records.
+- Also inspected administration desktop, Start mobile and analytics desktop
+  screenshots from the eight browser journeys; shared headings/cards remained intact.
+- Activation evidence: `/tmp/iop177-docker-update.log`,
+  `/tmp/iop177-live-browser.log`, `/tmp/iop177-served-verification.json`.
+- Documentation links/statuses, diff whitespace and staged secret hygiene passed.
+  Existing open browser tabs must reload once to load the updated asset URLs.
