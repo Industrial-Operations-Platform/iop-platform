@@ -4,6 +4,79 @@
   gap: 1rem;
   min-width: 0;
 }
+
+.handover-component-picker {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.handover-component-picker p {
+  margin: 0;
+}
+.handover-detail-navigation {
+  align-items: center;
+}
+.iop-ui .handover-home {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.iop-ui .handover-home:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.iop-ui .handover-reload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  color: var(--iop-muted);
+}
+.iop-ui .handover-reload:hover {
+  color: var(--iop-activeInk);
+}
+.iop-ui .handover-matrix {
+  table-layout: fixed;
+  min-width: 64rem;
+}
+.handover-matrix-date {
+  width: 11%;
+}
+.handover-matrix-summary {
+  width: 23%;
+}
+.handover-matrix-details {
+  width: 23%;
+}
+.handover-matrix-reference {
+  width: 12%;
+}
+.handover-matrix-person {
+  width: 12%;
+}
+.handover-matrix-status {
+  width: 8%;
+}
+.iop-ui .handover-matrix th,
+.iop-ui .handover-matrix td {
+  vertical-align: middle;
+  padding: 1rem 0.75rem;
+  overflow-wrap: anywhere;
+}
+.iop-ui
+  .handover-matrix
+  :is(th, td):is(:first-child, :nth-child(5), :last-child) {
+  text-align: center;
+}
+.handover-matrix :is(th, td):is(:first-child, :nth-child(5)) {
+  white-space: nowrap;
+}
+.handover-matrix button {
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.handover-matrix small {
+  margin-top: 0.5rem;
+}
 .handover-fields {
   border: 0;
   padding: 0;

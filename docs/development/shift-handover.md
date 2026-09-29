@@ -68,8 +68,10 @@ that category, the selected department and today's site-local date. Technicians 
 Task Force publish only on the current date; Team Leader and Administrator can
 select historical dates. The API enforces this rule independently of the browser.
 
-Select an area to choose a **Betriebsmittelkennzeichen** from imported equipment.
-Use **Find equipment** and **More equipment** for the bounded list (50 per page).
+Select an area to choose a **Betriebsmittelkennzeichen** from imported codes. This
+identifies a component, such as a sensor or motor. Use **Find component** and
+**More components** for the bounded list (50 per page). Reported condition aligns
+with the identifier select; lookup feedback and pagination remain below that row.
 Arbitrary new codes are rejected by the API. Unchanged older references remain
 readable/correctable even if absent from current imports. Equipment references are
 still unverified external identifiers, not canonical assets. Reports without equipment
@@ -100,6 +102,9 @@ The selected department is shared with Start during the current session; M6 defa
 assignments are not yet connected.
 
 Entry detail prioritizes the current report, latest follow-up and immutable history.
+The highlighted **Shift Handover** name and the sidebar destination both return
+to the module's Journal home while retaining the selected department. The adjacent
+reload icon refreshes the current entry and has a labelled keyboard-accessible control.
 **Add follow-up** opens a modal with an optional issue-state transition. **Close issue**
 prefills Resolved and requires a resolution outcome; **Reopen issue** retains prior
 resolution evidence. An informational entry can first be tracked as an issue. Only

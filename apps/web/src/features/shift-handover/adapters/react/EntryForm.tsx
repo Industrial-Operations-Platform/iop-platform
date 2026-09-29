@@ -188,22 +188,21 @@ export function EntryForm({
               information.
             </p>
           )}
-          <FieldRow>
-            <EquipmentPicker
-              application={application}
-              departmentId={value.departmentId}
-              areaId={value.areaId}
-              value={value.equipmentCode}
-              disabled={pending}
-              onChange={(equipmentCode) =>
-                setValue((v) => ({
-                  ...v,
-                  equipmentCode,
-                  equipmentNamespace: "site-equipment",
-                  ...(!equipmentCode ? { condition: "" } : {}),
-                }))
-              }
-            />
+          <EquipmentPicker
+            application={application}
+            departmentId={value.departmentId}
+            areaId={value.areaId}
+            value={value.equipmentCode}
+            disabled={pending}
+            onChange={(equipmentCode) =>
+              setValue((v) => ({
+                ...v,
+                equipmentCode,
+                equipmentNamespace: "site-equipment",
+                ...(!equipmentCode ? { condition: "" } : {}),
+              }))
+            }
+          >
             <Field>
               Reported condition
               <Select
@@ -228,10 +227,10 @@ export function EntryForm({
                 <option value="restored">Restored</option>
               </Select>
             </Field>
-          </FieldRow>
+          </EquipmentPicker>
           {value.equipmentCode && (
             <p>
-              Equipment reference · Unverified. This report records an
+              Component reference · Unverified. This report records an
               observation.
             </p>
           )}

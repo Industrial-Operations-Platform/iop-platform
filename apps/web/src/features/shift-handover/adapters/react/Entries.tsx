@@ -103,7 +103,16 @@ export function EntryMatrix({
 }) {
   return (
     <TableViewport>
-      <Table>
+      <Table className="handover-matrix">
+        <colgroup>
+          <col className="handover-matrix-date" />
+          <col className="handover-matrix-summary" />
+          <col className="handover-matrix-details" />
+          <col className="handover-matrix-reference" />
+          <col className="handover-matrix-date" />
+          <col className="handover-matrix-person" />
+          <col className="handover-matrix-status" />
+        </colgroup>
         <caption>Department handover matrix</caption>
         <thead>
           <tr>

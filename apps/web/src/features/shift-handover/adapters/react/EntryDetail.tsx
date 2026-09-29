@@ -78,16 +78,33 @@ export function EntryDetail({
     canProgress = !!e && (canEdit || e.responsibleId === context.actorId);
   return (
     <section aria-label="Handover entry" className="handover-workspace">
-      <Actions>
-        <Button variant="secondary" onClick={close}>
-          Back to handover
+      <Actions className="handover-detail-navigation">
+        <Button variant="text" className="handover-home" onClick={close}>
+          Shift Handover
         </Button>
         <Button
           variant="text"
-          disabled={busy}
+          className="handover-reload"
+          aria-label="Reload entry"
+          title="Reload entry"
+          disabled={busy || (!history && !error)}
           onClick={() => setAttempt((n) => n + 1)}
         >
-          Reload entry
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20 7v5h-5" />
+            <path d="M20 12a8 8 0 1 0-2.3 5.7M20 12a8 8 0 0 0-2.3-5.7" />
+          </svg>
         </Button>
       </Actions>
       {error && !editing && !following && <Alert>{error}</Alert>}

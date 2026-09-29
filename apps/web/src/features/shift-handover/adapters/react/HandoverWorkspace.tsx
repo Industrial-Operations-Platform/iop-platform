@@ -42,6 +42,7 @@ export function HandoverWorkspace({
   departmentId = "",
   onDepartmentChange,
   onEntryOpened,
+  onHome,
 }: {
   application: HandoverApplication;
   dailyOverview?: boolean;
@@ -51,6 +52,7 @@ export function HandoverWorkspace({
   departmentId?: string;
   onDepartmentChange?: (id: string) => void;
   onEntryOpened?: () => void;
+  onHome?: () => void;
 }) {
   const [context, setContext] = useState<Context | null>(null),
     [error, setError] = useState("");
@@ -203,7 +205,7 @@ export function HandoverWorkspace({
         id={detail}
         context={context}
         application={application}
-        close={() => setDetail("")}
+        close={onHome ?? (() => setDetail(""))}
         onChanged={() => setRefresh((n) => n + 1)}
         onEquipment={equipmentHistory}
       />

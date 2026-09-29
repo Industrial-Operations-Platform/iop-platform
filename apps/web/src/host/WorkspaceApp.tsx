@@ -38,6 +38,7 @@ export function WorkspaceApp({
   const [page, setPage] = useState<
     "start" | "analysis" | "administration" | "users" | "handover"
   >("start");
+  const [handoverVisit, setHandoverVisit] = useState(0);
   const [handoverEntry, setHandoverEntry] = useState("");
   const [handoverHighlights, setHandoverHighlights] = useState(false);
   const [departmentId, setDepartmentId] = useState("");
@@ -122,6 +123,13 @@ export function WorkspaceApp({
   const openTool = (tool: AdministrationTool) => {
     setAdministrationTool(tool);
     setPage("administration");
+  };
+  const openHandoverHome = () => {
+    setHandoverEntry("");
+    setHandoverHighlights(false);
+    setHandoverPending(false);
+    setHandoverVisit((visit) => visit + 1);
+    setPage("handover");
   };
   const signOut = () => {
     if (!access) return;
@@ -243,7 +251,9 @@ export function WorkspaceApp({
       navigation={
         <SideNavigation
           selected={page}
-          onSelect={setPage}
+          onSelect={(next) =>
+            next === "handover" ? openHandoverHome() : setPage(next)
+          }
           items={[
             { id: "start", label: administration ? "Administration" : "Start" },
             ...(administration && context?.canImport
@@ -301,7 +311,8 @@ export function WorkspaceApp({
         />
       ) : page === "handover" && handover && signedIn ? (
         <HandoverWorkspace
-          key={context.user?.id}
+          key={`${context.user?.id}:${handoverVisit}`}
+          onHome={openHandoverHome}
           application={handover}
           dailyOverview={effectiveProfile === "team-leader"}
           initialEntry={handoverEntry}

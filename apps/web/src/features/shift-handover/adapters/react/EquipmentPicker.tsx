@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
   Field,
+  FieldRow,
   Input,
   Select,
 } from "../../../../design/components";
@@ -16,6 +17,7 @@ export function EquipmentPicker({
   value,
   onChange,
   disabled,
+  children,
 }: {
   application: HandoverApplication;
   departmentId: string;
@@ -23,6 +25,7 @@ export function EquipmentPicker({
   value: string;
   onChange: (value: string) => void;
   disabled: boolean;
+  children: ReactNode;
 }) {
   const [search, setSearch] = useState("");
   const queryKey = JSON.stringify([departmentId, areaId, search]);
@@ -62,40 +65,49 @@ export function EquipmentPicker({
     };
   }, [application, departmentId, areaId, search]);
   return (
-    <div>
-      <Field>
-        Find equipment
-        <Input
-          type="search"
-          disabled={disabled || !areaId}
-          placeholder="Filter Betriebsmittelkennzeichen"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </Field>
-      <Field>
-        Betriebsmittelkennzeichen
-        <Select
-          aria-label="Betriebsmittelkennzeichen"
-          disabled={disabled || !areaId || loading}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        >
-          <option value="">No specific equipment</option>
-          {value && !page.codes.includes(value) && (
-            <option value={value}>{value} · Current selection</option>
-          )}
-          {page.codes.map((code) => (
-            <option key={code} value={code}>
-              {code}
-            </option>
-          ))}
-        </Select>
-      </Field>
+    <div className="handover-component-picker">
+      <FieldRow>
+        <Field>
+          Find component
+          <Input
+            type="search"
+            disabled={disabled || !areaId}
+            placeholder="Filter Betriebsmittelkennzeichen"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Field>
+      </FieldRow>
+      <FieldRow>
+        <Field>
+          Betriebsmittelkennzeichen
+          <Select
+            aria-label="Betriebsmittelkennzeichen"
+            disabled={disabled || !areaId || loading}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          >
+            <option value="">No specific component</option>
+            {value && !page.codes.includes(value) && (
+              <option value={value}>{value} · Current selection</option>
+            )}
+            {page.codes.map((code) => (
+              <option key={code} value={code}>
+                {code}
+              </option>
+            ))}
+          </Select>
+        </Field>
+        {children}
+      </FieldRow>
+      <p className="handover-muted">
+        Betriebsmittelkennzeichen identifies a component, such as a sensor or
+        motor.
+      </p>
       {!areaId ? (
-        <p>Select an area to choose equipment.</p>
+        <p>Select an area to choose a component.</p>
       ) : loading ? (
-        <p role="status">Loading equipment…</p>
+        <p role="status">Loading components…</p>
       ) : (
         !page.codes.length && (
           <p>No imported codes match. You can still report on this area.</p>
@@ -121,14 +133,14 @@ export function EquipmentPicker({
             } catch (e) {
               if (currentQuery.current === queryKey)
                 setError(
-                  e instanceof Error ? e.message : "Could not load equipment.",
+                  e instanceof Error ? e.message : "Could not load components.",
                 );
             } finally {
               if (currentQuery.current === queryKey) setLoading(false);
             }
           }}
         >
-          More equipment
+          More components
         </Button>
       )}
     </div>

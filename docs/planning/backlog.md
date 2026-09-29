@@ -306,3 +306,4 @@ canonical asset integration.
 | [IOP-170 — Administrator workspace and profile views](items/IOP-170-administrator-workspace.md) | Completed |
 | [IOP-171 — Restrict Technician analytical access](items/IOP-171-technician-access.md) | Completed |
 | [IOP-173 — Handover demonstration data](items/IOP-173-handover-demo-data.md) | Completed |
+| [IOP-174 — Handover navigation and layout](items/IOP-174-handover-navigation-layout.md) | Completed |
