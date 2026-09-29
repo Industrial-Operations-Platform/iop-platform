@@ -1,6 +1,6 @@
 # IOP-173 — Handover demonstration data
 
-Status: Completed locally. The owner requested representative placeholder entries across
+Status: Completed and published. The owner requested representative placeholder entries across
 users and departments, with historical dates, closed issues and different states.
 
 Populate the local running installation with clearly marked `[DEMO]` entries using
@@ -16,10 +16,12 @@ Keep the seed explicit, bounded and repeatable without duplicating or overwritin
 previous entries. No migration, automatic startup seed or new product behavior.
 
 The request authorizes inserting these examples into the local running database.
-Git publication remains a separate approval; IOP-172 remains on its review branch.
+The owner subsequently approved Git publication; IOP-172 remains on its review branch.
 
 Delivered 60 examples across five departments and four users, with 125 immutable
 revisions. The requested data is active in local Docker. Existing records and
 analytical totals are unchanged; repeat execution is verified. See the
 [execution evidence](../completed/IOP-173-handover-demo-data-plan.md) and
 [operator guide](../../development/shift-handover.md#optional-local-demonstration-entries).
+The story and develop are published to origin; see the
+[publication record](../completed/IOP-173-publication-plan.md).

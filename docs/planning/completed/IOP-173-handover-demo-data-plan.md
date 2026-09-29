@@ -48,4 +48,5 @@ Local logs: `/tmp/iop173-api-tests.log`, `/tmp/iop173-demo-tests.log`,
 `/tmp/iop173-live-repeat.log` and `/tmp/iop173-live-inspect.log`.
 The manifest is private and ignored. No new users, credentials or sessions were
 created. The running services were not rebuilt; IOP-172 remains separately pending
-publication. This story's Git publication awaits owner approval.
+publication. The owner subsequently approved this story's
+[Git publication](IOP-173-publication-plan.md), now completed.
