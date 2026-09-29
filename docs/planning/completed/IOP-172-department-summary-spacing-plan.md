@@ -18,5 +18,5 @@ inspection confirmed the spacing at both widths. Logs: `/tmp/iop172-build.log`
 and `/tmp/iop172-browser.log`. `git diff --check` passed.
 
 The summary uses a scoped class, 24 px metric grid margins/gap and 20 px panel
-margins. Shared tokens elsewhere are unchanged. Docker remains on `3346955`;
-publication and runtime update await approval for this increment.
+margins. Shared tokens elsewhere are unchanged. The owner subsequently approved
+[publication and runtime activation](IOP-174-integrated-publication-plan.md), now complete.

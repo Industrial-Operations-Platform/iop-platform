@@ -39,4 +39,6 @@ cells; narrow screens scroll within the existing table viewport.
 
 No application/domain or persistence changes, live-data mutations, service rebuild,
 new permissions or architectural patterns. The approved IOP-173 story and develop
-were verified on origin at `51eed07`. This UI increment remains local for review.
+were verified on origin at `51eed07`. The owner subsequently approved this UI
+increment's [integrated publication and Docker activation](IOP-174-integrated-publication-plan.md),
+now complete with existing data preserved.

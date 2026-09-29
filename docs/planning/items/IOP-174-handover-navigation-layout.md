@@ -1,6 +1,6 @@
 # IOP-174 — Handover navigation and layout
 
-Status: Completed locally. Owner requested these fixes on 2026-09-29 after reviewing
+Status: Completed and published. Owner requested these fixes on 2026-09-29 after reviewing
 the populated handover screens.
 
 - Align Reported condition with the component identifier select regardless of
@@ -15,8 +15,9 @@ the populated handover screens.
 
 Reuse shared components and scoped feature CSS under Accepted ADR-0032/0036.
 No domain, persistence, authentication or imported-data changes. IOP-173 publication
-was approved separately and completed; this new UI increment needs its own review.
+was approved separately and completed; the owner subsequently approved this UI increment.
 
 Implemented and validated at desktop/mobile sizes. See the
 [execution evidence](../completed/IOP-174-handover-navigation-layout-plan.md).
-Publication and local Docker rebuild remain pending approval for this increment.
+Publication and the local Docker rebuild are complete; see the
+[activation record](../completed/IOP-174-integrated-publication-plan.md).
