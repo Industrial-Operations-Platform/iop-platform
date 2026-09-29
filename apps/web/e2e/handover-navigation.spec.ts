@@ -14,6 +14,11 @@ for (const width of [1440, 375]) {
       createdAt: "2026-09-29T08:00:00Z",
       updatedAt: "2026-09-29T08:00:00Z",
       revision: 1,
+      latestUpdate: {
+        note: "The symptom returned during the next shift. Reopened for inspection.",
+        actorName: "Alex",
+        at: "2026-09-29T08:00:00Z",
+      },
       departmentLabel: "Halle A T1",
       areaLabel: "ATK",
       categoryLabel: "Problems",
@@ -146,6 +151,7 @@ for (const width of [1440, 375]) {
     const headingStyle = await heading.evaluate((element) => {
       const style = getComputedStyle(element);
       return {
+        fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         color: style.color,
@@ -158,7 +164,40 @@ for (const width of [1440, 375]) {
       .getByRole("combobox", { name: "Selected department" })
       .selectOption("hall-a");
     await page
-      .getByRole("button", { name: entry.content.summary, exact: true })
+      .getByRole("button", { name: "Meeting preparation", exact: true })
+      .click();
+    const meeting = page.getByRole("region", { name: "Problems section" });
+    await expect(
+      meeting.getByRole("button", {
+        name: entry.content.summary,
+        exact: false,
+      }),
+    ).toBeVisible();
+    const sectionStyle = await meeting
+      .getByRole("heading", { name: "Problems", exact: true })
+      .evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          fontFamily: style.fontFamily,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+          color: style.color,
+        };
+      });
+    const panelStyle = await meeting.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        background: style.backgroundColor,
+        border: style.borderTopColor,
+        radius: style.borderRadius,
+      };
+    });
+    await page.screenshot({
+      path: `/tmp/iop177-meeting-${width}.png`,
+      fullPage: true,
+    });
+    await meeting
+      .getByRole("button", { name: entry.content.summary, exact: false })
       .click();
     const detail = page.getByRole("region", {
       name: "Handover entry",
@@ -167,6 +206,40 @@ for (const width of [1440, 375]) {
     await expect(
       detail.getByRole("heading", { name: entry.content.summary }),
     ).toBeVisible();
+    const reportHeading = detail.getByRole("heading", {
+      name: entry.content.summary,
+    });
+    expect(
+      await reportHeading.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          fontFamily: style.fontFamily,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+          color: style.color,
+        };
+      }),
+    ).toEqual(sectionStyle);
+    expect(
+      await reportHeading.locator("..").evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          background: style.backgroundColor,
+          border: style.borderTopColor,
+          radius: style.borderRadius,
+        };
+      }),
+    ).toEqual(panelStyle);
+    const latestUpdate = await detail
+      .getByRole("heading", { name: "Latest update" })
+      .locator("..")
+      .boundingBox();
+    const followUp = await detail
+      .getByRole("button", { name: "Add follow-up" })
+      .boundingBox();
+    expect(
+      followUp!.y - (latestUpdate!.y + latestUpdate!.height),
+    ).toBeGreaterThanOrEqual(16);
     const breadcrumb = detail.getByRole("navigation", { name: "Breadcrumb" });
     await expect(breadcrumb.getByRole("heading", { level: 1 })).toHaveText(
       "Shift Handover/Details",
@@ -189,6 +262,7 @@ for (const width of [1440, 375]) {
     const detailStyle = await moduleLink.evaluate((element) => {
       const style = getComputedStyle(element);
       return {
+        fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontWeight: style.fontWeight,
         color: style.color,
@@ -204,7 +278,7 @@ for (const width of [1440, 375]) {
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop175-detail-${width}.png`,
+      path: `/tmp/iop177-detail-${width}.png`,
       fullPage: true,
     });
     // Regression: selecting the already-active sidebar destination must leave detail.
@@ -225,14 +299,14 @@ for (const width of [1440, 375]) {
       matrix.getByRole("cell", { name: "2026-09-29", exact: true }),
     ).toBeVisible();
     await page.screenshot({
-      path: `/tmp/iop175-matrix-${width}.png`,
+      path: `/tmp/iop177-matrix-${width}.png`,
       fullPage: true,
     });
     await matrix
       .getByRole("cell", { name: "In progress", exact: true })
       .scrollIntoViewIfNeeded();
     await page.screenshot({
-      path: `/tmp/iop175-matrix-status-${width}.png`,
+      path: `/tmp/iop177-matrix-status-${width}.png`,
       fullPage: true,
     });
     await matrix.getByRole("button", { name: entry.content.summary }).click();
@@ -271,7 +345,7 @@ for (const width of [1440, 375]) {
     };
     await assertAligned();
     await page.screenshot({
-      path: `/tmp/iop175-form-${width}.png`,
+      path: `/tmp/iop177-form-${width}.png`,
       fullPage: true,
     });
     await dialog.getByRole("button", { name: "More components" }).click();

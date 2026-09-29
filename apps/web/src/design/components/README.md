@@ -2,7 +2,9 @@
 
 Use this public barrel for new React presentation adapters. Wrap a page in
 `AppShell`, or wrap an embedded composition once in `IdentityRoot`. Both apply the
-canonical [identity tokens](../identity.ts). `AppShell` accepts an optional
+canonical [identity tokens](../identity.ts). Meeting preparation is the owner-selected
+visual reference across the platform: use its shared typography and surfaces with
+blue action accents in every module and detail view. `AppShell` accepts an optional
 `brandAction` with an accessible label and caller-owned click handler; without it,
 the brand remains static. Components contain no feature models,
 HTTP requests, permissions, report calculations or chart-library dependencies.
@@ -66,7 +68,11 @@ Keep table captions and column/row headers in the caller's semantic markup.
 `Disclosure` uses native `details/summary` keyboard behavior. View navigation uses
 ordinary buttons; it does not claim the keyboard model of ARIA tabs.
 
-Reuse variants before writing additional CSS. Keep colors, typefaces and surface
+Reuse variants before writing additional CSS. Font sizes, weights, line heights
+and families in stylesheets must inherit or use `identity.ts` tokens. Use
+`PageHeading` for page/detail titles and keep module navigation in the same visual
+hierarchy. Feature CSS may arrange content but must not define a competing theme.
+The stylesheet identity guard checks token use and undefined references. Keep colors, typefaces and surface
 rules in the shared identity/component layer; feature CSS should arrange feature
 content. Intentional identity changes require the owner's request and a documented
 revision to the [visual identity](../../../../../docs/design/visual-identity.md).

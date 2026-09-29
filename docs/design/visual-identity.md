@@ -1,14 +1,16 @@
 # IOP visual identity — v1
 
-The owner explicitly requested preserving the existing analytical workspace's colors
-and styles on 2026-09-27. This is the baseline for future iterations, not a theme to
-regenerate with each feature. Change the identity only when explicitly requested;
-record intentional revisions here and inspect desktop and narrow layouts.
+The owner selected **Meeting preparation** as the platform-wide visual reference
+on 2026-09-29, refining the preserved analytical identity from 2026-09-27. Its font,
+navy headings, muted labels, white bordered surfaces and restrained blue actions
+apply to Start, Shift Handover, report details, Data Analysis, forms and administration.
+New and generated code must reuse this identity. Change it only on explicit owner
+request; record revisions here and inspect desktop and narrow layouts.
 
 ## Canonical implementation
 
 [`identity.ts`](../../apps/web/src/design/identity.ts) is the single source for palette,
-font and card tokens. The shared `IdentityRoot` (also used by `AppShell`) exposes these as `--iop-*` CSS
+typography, spacing and card tokens. The shared `IdentityRoot` (also used by `AppShell`) exposes these as `--iop-*` CSS
 variables; the ECharts adapter imports the same tokens. Both are outer adapters:
 style choices do not enter domain/application code. Extend semantic tokens here
 instead of adding disconnected literal colors to components or chart options.
@@ -33,14 +35,44 @@ shadows/gradients. Report cards use 8px corners; metric cards use 7px corners, 1
 padding, 29px figures at weight 650 and 14px gaps. Existing narrow-screen reductions
 remain in the shared [component stylesheet](../../apps/web/src/design/components/components.css).
 
-The header contains user selection and the authorized Administration/Taskforce toggle.
-The left rail contains Start and Data analysis. Start has an intentionally empty body.
-Report templates sit along the bottom. Executive Overview alone contains analytical
-KPI cards; investigation tabs prioritize charts and detail. File volumes use the
-same card treatment within import review. Pareto is a future Overview function.
+## Typography and hierarchy
 
-Verification includes browser checks for the card palette, responsive overflow,
-actual import/analysis navigation and manually inspected screenshots. The opt-in
+Use the existing `Inter, system-ui, sans-serif` stack. Inter is not bundled; when it
+is unavailable the same system fallback applies to every view. Do not load a
+feature-specific typeface. Sizes below are CSS pixels before browser zoom.
+
+| Semantic role | Token / value |
+| --- | --- |
+| Page title | `pageTitleSize`: 28px; `headingWeight`: 700 |
+| Section / card heading | `sectionTitleSize`: 16px; `headingWeight`: 700 |
+| Body, actions and standard fields | `bodySize`: 14px |
+| Meeting card metadata | `captionSize`: 12.8px; muted ink |
+| Compact tables / filters | `compactSize`: 12px |
+| Fine print / analytical labels | `smallSize`: 11px |
+| Uppercase page context | `eyebrowSize`: 10px |
+| Emphasized labels | `labelWeight`: 600 |
+| Content panel padding / action separation | `panelPadding`: 20px / `sectionGap`: 16px |
+
+Existing chart titles, brand and metric roles keep dedicated shared tokens rather
+than becoming alternate module themes. All stylesheet font sizes, weights, families
+and line heights must inherit or use canonical tokens. Colors must use semantic
+palette tokens; blue identifies primary actions, links and active navigation, while
+report text and titles remain navy. Preserve meaning without depending on color alone.
+
+Use `PageHeading` consistently in overview and detail screens. Detail navigation
+may compose a module-name action and current-page label inside the same heading;
+retain its context, type scale and description. Use shared `Panel`, `Button`, `Field`
+and `Disclosure` variants for report content, actions and history. The detail action
+row keeps a visible gap after the latest-update divider.
+
+The workspace shell supplies profile-aware navigation; features supply their content.
+Start includes operational summaries and optional analytical evidence. Module tabs
+use the shared bottom navigation. This contract governs their appearance rather than
+fixing a particular set of pages or permissions.
+
+Verification includes stylesheet identity guards, architecture checks, browser
+comparisons between Meeting preparation and detail, responsive overflow, actual
+module navigation and manually inspected screenshots. The opt-in
 legacy fixture preview is outside this identity baseline.
 
 

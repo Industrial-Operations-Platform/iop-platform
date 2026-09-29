@@ -1,6 +1,6 @@
 /* Analysis-specific arrangements; shared appearance belongs to design/components. */
 .analysis-footnote {
-  font-size: 11px;
+  font-size: var(--iop-smallSize);
   color: var(--iop-muted);
   margin: 14px 0;
 }
@@ -50,7 +50,7 @@
 .iop-ui .analysis-kpi-label {
   display: block;
   margin: 8px 0;
-  font-weight: 600;
+  font-weight: var(--iop-labelWeight);
   overflow-wrap: anywhere;
   max-width: 100%;
 }
@@ -123,8 +123,8 @@
 }
 .analysis-home-label {
   color: var(--iop-muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--iop-compactSize);
+  font-weight: var(--iop-labelWeight);
 }
 .analysis-home-muted { color: var(--iop-muted); }
 .iop-ui .analysis-home-summary { margin: 18px 0; }

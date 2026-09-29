@@ -39,6 +39,21 @@ functions cohesive, names clear, errors explicit and business rules unduplicated
 verify architecture and relevant behavior before completion. Document exceptions
 rather than silently mixing HTTP, React, persistence and domain responsibilities.
 
+## Visual identity
+
+All generated or manually authored UI changes must follow the canonical
+[visual identity](../design/visual-identity.md). The owner selected Meeting
+preparation as the platform-wide reference on 2026-09-29: its typography, navy
+text, muted labels, white bordered cards and blue action accents apply to every
+module, including detail views, forms and administration.
+
+Read that contract before frontend changes. Reuse `IdentityRoot`, shared components
+and `identity.ts` tokens; do not invent feature-local fonts, palettes or type scales.
+Extend a semantic shared role when needed. Preserve the page heading and navigation
+hierarchy when entering details. Check actual desktop/mobile rendering, run the
+identity and architecture guards, and inspect the running build when activation is
+requested. Passing static checks does not replace visual or clean-code review.
+
 ## Sources of truth
 
 | Document | Responsibility |

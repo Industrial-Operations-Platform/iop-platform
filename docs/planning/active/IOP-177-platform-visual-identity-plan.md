@@ -26,3 +26,26 @@ from clean develop at `3a0a40e`. [Scope](../items/IOP-177-platform-visual-identi
 
 IOP-175 integration is explicitly authorized. Existing Accepted ADR-0032/0036 and
 the canonical identity/component pattern suffice; no new architectural decision.
+
+## Implementation evidence
+
+- Integrated IOP-175 at `1c5f280`; only the backlog required conflict resolution,
+  retaining IOP-175, IOP-176 and IOP-177. The source keeps both heading and spacing fixes.
+- Typography and panel/action spacing roles now live in `identity.ts`; existing
+  palette and chart roles remain intact. Handover preview body copy is normalized
+  from 14.4px to the shared 14px body role. No domain/application edits.
+- Shared workflow and identity/component documentation now require the owner's
+  Meeting preparation reference, shared tokens/components, visual review and
+  existing hexagonal/clean-code checks for future generated/manual UI changes.
+- Web build/typecheck passed (existing bundle-size warning). All 74 web tests and
+  325 API tests passed, including identity and hexagonal boundary guards.
+- Eight browser journeys passed at 1440px/375px across handover, administration,
+  Start and monthly analytics. Meeting/detail checks compare actual computed font,
+  size, weight, ink, card background/border/radius and verify the 16px action gap.
+- Visually inspected `/tmp/iop177-meeting-1440.png`,
+  `/tmp/iop177-detail-{1440,375}.png`. Logs:
+  `/tmp/iop177-{build,web-tests,api-tests,browser}.log`.
+- API tests initially hit sandbox loopback restrictions; the authorized rerun
+  passed. Node 24.21.0 was used throughout.
+
+Publication and served-build verification remain to be recorded below.

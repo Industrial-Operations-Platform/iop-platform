@@ -3,7 +3,7 @@
   color: var(--iop-ink);
   background: var(--iop-canvas);
   min-height: 100vh;
-  font-size: 14px;
+  font-size: var(--iop-bodySize);
 }
 .iop-ui * {
   box-sizing: border-box;
@@ -54,30 +54,36 @@
   outline: 3px solid var(--iop-focus);
   outline-offset: 3px;
 }
+.iop-ui h1,
+.iop-ui h2,
+.iop-ui h3,
+.iop-ui strong {
+  font-weight: var(--iop-headingWeight);
+}
 .iop-ui h1 {
-  font-size: 28px;
-  line-height: 1.2;
+  font-size: var(--iop-pageTitleSize);
+  line-height: var(--iop-titleLineHeight);
   margin: 5px 0 10px;
 }
 .iop-ui h2 {
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: var(--iop-sectionTitleSize);
+  line-height: var(--iop-captionLineHeight);
   margin: 0 0 12px;
 }
 .iop-ui h3 {
-  font-size: 16px;
+  font-size: var(--iop-sectionTitleSize);
 }
 .iop-ui p {
-  line-height: 1.6;
+  line-height: var(--iop-bodyLineHeight);
 }
 .iop-ui a {
   color: var(--iop-link);
 }
 .iop-ui small {
   display: block;
-  font-size: 11px;
+  font-size: var(--iop-smallSize);
   color: var(--iop-muted);
-  line-height: 1.5;
+  line-height: var(--iop-captionLineHeight);
 }
 .iop-ui .iop-field {
   display: flex;
@@ -99,15 +105,15 @@
 }
 .iop-ui .iop-field-row .iop-field {
   gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--iop-smallSize);
+  font-weight: var(--iop-labelWeight);
   flex: 1;
   min-width: 130px;
 }
 .iop-ui .iop-field-row .iop-input,
 .iop-ui .iop-field-row .iop-select {
   width: 100%;
-  font-size: 12px;
+  font-size: var(--iop-compactSize);
 }
 .iop-ui .iop-actions {
   display: flex;
@@ -130,7 +136,7 @@
   background: var(--iop-surface);
   border: 1px solid var(--iop-line);
   border-radius: var(--iop-cardRadius);
-  padding: 20px;
+  padding: var(--iop-panelPadding);
   margin-top: 0;
   min-width: 0;
 }
@@ -139,8 +145,8 @@
 }
 .iop-ui .iop-panel--chart h2 {
   text-align: center;
-  font-weight: 550;
-  font-size: 15px;
+  font-weight: var(--iop-chartTitleWeight);
+  font-size: var(--iop-chartTitleSize);
 }
 .iop-ui .iop-panel--empty {
   padding: 55px 30px;
@@ -158,20 +164,20 @@
 .iop-ui .iop-metric-label {
   display: block;
   color: var(--iop-muted);
-  font-size: 11px;
+  font-size: var(--iop-smallSize);
 }
 .iop-ui .iop-metric-value {
   display: block;
   font-size: var(--iop-metricSize);
-  line-height: 1.3;
+  line-height: var(--iop-metricLineHeight);
   margin-top: 8px;
   font-variant-numeric: tabular-nums;
   font-weight: var(--iop-metricWeight);
 }
 .iop-ui .iop-disclosure > summary {
   cursor: pointer;
-  font-weight: 600;
-  line-height: 1.6;
+  font-weight: var(--iop-labelWeight);
+  line-height: var(--iop-bodyLineHeight);
 }
 .iop-ui .iop-disclosure[open] > summary {
   margin-bottom: 15px;
@@ -180,7 +186,7 @@
   background: var(--iop-surface);
   border: 1px solid var(--iop-line);
   border-radius: var(--iop-cardRadius);
-  padding: 20px;
+  padding: var(--iop-panelPadding);
 }
 .iop-ui .iop-disclosure--divided {
   margin: 18px 0;
@@ -195,7 +201,7 @@
 .iop-ui .iop-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: var(--iop-compactSize);
 }
 .iop-ui .iop-table th,
 .iop-ui .iop-table td {
@@ -206,7 +212,7 @@
 }
 .iop-ui .iop-table th {
   vertical-align: middle;
-  font-weight: 600;
+  font-weight: var(--iop-labelWeight);
 }
 .iop-ui .iop-table caption {
   text-align: left;
@@ -247,8 +253,8 @@
   padding: 25px 15px;
 }
 .iop-ui .iop-brand {
-  font-size: 25px;
-  font-weight: 800;
+  font-size: var(--iop-brandSize);
+  font-weight: var(--iop-brandWeight);
   letter-spacing: 1px;
   padding: 0 0 0 12px;
 }
@@ -263,8 +269,8 @@
 }
 .iop-ui .iop-brand span {
   display: block;
-  font-size: 10px;
-  font-weight: 500;
+  font-size: var(--iop-eyebrowSize);
+  font-weight: var(--iop-mediumWeight);
   letter-spacing: 0;
   color: var(--iop-muted);
   margin-top: 6px;
@@ -299,7 +305,7 @@
 }
 .iop-ui .iop-eyebrow {
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: var(--iop-eyebrowSize);
   letter-spacing: 1px;
 }
 .iop-ui .iop-view-navigation {
@@ -372,7 +378,7 @@
     padding: 12px 15px;
   }
   .iop-ui .iop-brand {
-    font-size: 19px;
+    font-size: var(--iop-brandCompactSize);
     padding: 0;
   }
   .iop-ui .iop-brand span {
@@ -399,7 +405,7 @@
     gap: 12px;
   }
   .iop-ui .iop-metric-value {
-    font-size: 24px;
+    font-size: var(--iop-metricCompactSize);
   }
   .iop-ui .iop-panel--metric {
     padding: 14px;
@@ -439,7 +445,7 @@
 }
 .iop-ui .iop-comparison-result {
   margin: 10px 0;
-  font-weight: 600;
+  font-weight: var(--iop-labelWeight);
 }
 
 .iop-ui .iop-sidebar .iop-side-navigation {
@@ -545,11 +551,11 @@
 }
 .iop-ui .iop-dialog .iop-field-row .iop-field {
   min-width: 0;
-  font-size: 0.875rem;
+  font-size: var(--iop-bodySize);
 }
 .iop-ui .iop-dialog .iop-field-row .iop-input,
 .iop-ui .iop-dialog .iop-field-row .iop-select {
-  font-size: 0.875rem;
+  font-size: var(--iop-bodySize);
 }
 @media (max-width: 520px) {
   .iop-ui .iop-dialog .iop-field-row {
