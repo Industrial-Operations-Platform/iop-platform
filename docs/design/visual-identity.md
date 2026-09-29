@@ -60,10 +60,14 @@ palette tokens; blue identifies primary actions, links and active navigation, wh
 report text and titles remain navy. Preserve meaning without depending on color alone.
 
 Use `PageHeading` consistently in overview and detail screens. Detail navigation
-may compose a module-name action and current-page label inside the same heading;
-retain its context, type scale and description. Use shared `Panel`, `Button`, `Field`
+includes the module, current tab and current-page label inside the same heading;
+retain its context, type scale and description. The tab breadcrumb returns to that
+view with its selection intact; the module action explicitly returns home. Use shared `Panel`, `Button`, `Field`
 and `Disclosure` variants for report content, actions and history. The detail action
-row keeps a visible gap after the latest-update divider.
+row keeps a visible gap after the latest-update divider. Journal and Meeting
+preparation use one feature-owned summary-card component, with a bordered clickable
+surface, bold navy title and muted department. Do not recreate that presentation
+as a blue-link list with separators in another tab.
 
 The workspace shell supplies profile-aware navigation; features supply their content.
 Start includes operational summaries and optional analytical evidence. Module tabs

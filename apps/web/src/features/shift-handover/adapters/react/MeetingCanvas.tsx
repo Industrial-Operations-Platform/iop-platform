@@ -1,29 +1,6 @@
 import { Button, Panel } from "../../../../design/components";
-import type { Choice, Entry, Page } from "../../domain/models";
-
-export function MeetingCards({
-  entries,
-  open,
-}: {
-  entries: Entry[];
-  open: (id: string) => void;
-}) {
-  return (
-    <div className="handover-meeting-cards">
-      {entries.map((entry) => (
-        <Button
-          key={entry.id}
-          variant="secondary"
-          className="handover-meeting-card"
-          onClick={() => open(entry.id)}
-        >
-          <strong>{entry.content.summary}</strong>
-          <span>{entry.departmentLabel || "Site-wide information"}</span>
-        </Button>
-      ))}
-    </div>
-  );
-}
+import type { Choice, Page } from "../../domain/models";
+import { EntrySummaryCards } from "./EntrySummaryCards";
 
 export function MeetingCanvas({
   sections,
@@ -48,7 +25,7 @@ export function MeetingCanvas({
             <h3>{category.label}</h3>
             <span>{page.total}</span>
           </div>
-          <MeetingCards entries={page.entries} open={open} />
+          <EntrySummaryCards entries={page.entries} open={open} />
           {!page.total && (
             <p className="handover-muted">No entries for this day.</p>
           )}

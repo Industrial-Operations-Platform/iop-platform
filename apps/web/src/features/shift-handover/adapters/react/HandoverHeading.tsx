@@ -3,16 +3,20 @@ import { Button, PageHeading } from "../../../../design/components";
 
 export function HandoverHeading({
   onHome,
+  viewLabel,
+  onBack,
   actions,
 }: {
-  onHome?: () => void;
+  onHome: () => void;
+  viewLabel: string;
+  onBack?: () => void;
   actions?: ReactNode;
 }) {
-  const heading = (
-    <PageHeading
-      eyebrow="Operations"
-      title={
-        onHome ? (
+  return (
+    <nav aria-label="Breadcrumb">
+      <PageHeading
+        eyebrow="Operations"
+        title={
           <span className="handover-breadcrumb">
             <Button variant="text" className="handover-home" onClick={onHome}>
               Shift Handover
@@ -20,15 +24,31 @@ export function HandoverHeading({
             <span aria-hidden="true" className="handover-breadcrumb-separator">
               /
             </span>
-            <span aria-current="page">Details</span>
+            {onBack ? (
+              <>
+                <Button
+                  variant="text"
+                  className="handover-home"
+                  onClick={onBack}
+                >
+                  {viewLabel}
+                </Button>
+                <span
+                  aria-hidden="true"
+                  className="handover-breadcrumb-separator"
+                >
+                  /
+                </span>
+                <span aria-current="page">Details</span>
+              </>
+            ) : (
+              <span aria-current="page">{viewLabel}</span>
+            )}
           </span>
-        ) : (
-          "Shift Handover"
-        )
-      }
-      description="What happened. What needs attention. What comes next."
-      actions={actions}
-    />
+        }
+        description="What happened. What needs attention. What comes next."
+        actions={actions}
+      />
+    </nav>
   );
-  return onHome ? <nav aria-label="Breadcrumb">{heading}</nav> : heading;
 }

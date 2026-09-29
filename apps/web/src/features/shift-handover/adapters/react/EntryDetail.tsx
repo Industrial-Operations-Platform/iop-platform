@@ -24,6 +24,8 @@ export function EntryDetail({
   context,
   application,
   close,
+  onHome,
+  viewLabel,
   onChanged,
   onEquipment,
 }: {
@@ -31,6 +33,8 @@ export function EntryDetail({
   context: Context;
   application: HandoverApplication;
   close: () => void;
+  onHome: () => void;
+  viewLabel: string;
   onChanged: () => void;
   onEquipment: (entry: Entry) => void;
 }) {
@@ -79,7 +83,7 @@ export function EntryDetail({
     canProgress = !!e && (canEdit || e.responsibleId === context.actorId);
   return (
     <section aria-label="Handover entry" className="handover-workspace">
-      <HandoverHeading onHome={close} />
+      <HandoverHeading onHome={onHome} viewLabel={viewLabel} onBack={close} />
       {error && !editing && !following && <Alert>{error}</Alert>}
       {!history && !error && <p role="status">Loading entry…</p>}
       {e && (

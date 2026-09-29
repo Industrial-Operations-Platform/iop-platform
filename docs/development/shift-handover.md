@@ -63,7 +63,9 @@ No automatic publication or local stack restart is implied by code validation.
 
 Open **Shift Handover** from the left navigation and select a department. The Journal
 board shows the three latest entries in each configured category, with full matching
-counts and a **View history** action. Each category's **+** opens a modal form with
+counts and a **View history** action. Journal and Meeting preparation reuse the
+same bordered summary cards: bold navy titles and muted department labels. Select
+a card for its full report, date, author and status. Each category's **+** opens a modal form with
 that category, the selected department and today's site-local date. Technicians and
 Task Force publish only on the current date; Team Leader and Administrator can
 select historical dates. The API enforces this rule independently of the browser.
@@ -102,9 +104,11 @@ The selected department is shared with Start during the current session; M6 defa
 assignments are not yet connected.
 
 Entry detail prioritizes the current report, latest follow-up and immutable history.
-The detail keeps the module heading and shows **Shift Handover / Details**.
-Select **Shift Handover** in that breadcrumb or the sidebar to return to the module's
-Journal home while retaining the selected department. Entries load when opened and
+The heading always names the current tab, for example **Shift Handover / Department
+matrix**. Opening a report adds **Details** to that path. Select the preceding tab
+name to return to the same view with its department, meeting date, search filters
+and already-loaded pages retained. Select **Shift Handover** in the breadcrumb or
+the sidebar for an explicit return to Journal home with the selected department. Entries load when opened and
 update automatically after saving changes; there is no manual refresh control.
 **Add follow-up** opens a modal with an optional issue-state transition. **Close issue**
 prefills Resolved and requires a resolution outcome; **Reopen issue** retains prior

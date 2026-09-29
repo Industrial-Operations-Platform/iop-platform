@@ -1,6 +1,6 @@
 import { Button, Panel } from "../../../../design/components";
 import type { Choice, Page } from "../../domain/models";
-import { issueLabel } from "./Entries";
+import { EntrySummaryCards } from "./EntrySummaryCards";
 export function CategoryBoard({
   sections,
   add,
@@ -27,20 +27,7 @@ export function CategoryBoard({
               +
             </Button>
           </div>
-          {page.entries.slice(0, 3).map((entry) => (
-            <article className="handover-preview" key={entry.id}>
-              <Button variant="text" onClick={() => open(entry.id)}>
-                {entry.content.summary}
-              </Button>
-              <p>
-                {entry.areaLabel || entry.departmentLabel || "Site-wide"} ·{" "}
-                {entry.content.date}
-              </p>
-              <p>
-                {entry.authorName} · {issueLabel(entry.issueState)}
-              </p>
-            </article>
-          ))}
+          <EntrySummaryCards entries={page.entries.slice(0, 3)} open={open} />
           {!page.total && (
             <p className="handover-muted">
               No updates yet. Share what the next team should know.

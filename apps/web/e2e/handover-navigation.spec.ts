@@ -1,5 +1,21 @@
 import { expect, test } from "@playwright/test";
 
+function summaryStyle(element: Element) {
+  const card = getComputedStyle(element);
+  const title = getComputedStyle(element.querySelector("strong")!);
+  const subtitle = getComputedStyle(element.querySelector("span")!);
+  return {
+    background: card.backgroundColor,
+    border: card.borderTopColor,
+    radius: card.borderRadius,
+    padding: card.padding,
+    font: title.font,
+    ink: title.color,
+    subtitleFont: subtitle.font,
+    muted: subtitle.color,
+  };
+}
+
 for (const width of [1440, 375]) {
   test(`handover home navigation, component form and populated matrix at ${width}px`, async ({
     page,
@@ -101,8 +117,24 @@ for (const width of [1440, 375]) {
           selection.categoryId && selection.categoryId !== "problems"
             ? []
             : [entry];
+        const paginated = !selection.categoryId && !selection.state;
         return route.fulfill({
-          json: { entries, total: entries.length, nextCursor: "" },
+          json: {
+            entries: selection.cursor
+              ? [
+                  {
+                    ...entry,
+                    id: "entry-b",
+                    content: {
+                      ...entry.content,
+                      summary: "Second loaded report",
+                    },
+                  },
+                ]
+              : entries,
+            total: paginated ? 2 : entries.length,
+            nextCursor: paginated && !selection.cursor ? "page-2" : "",
+          },
         });
       }
       if (path.endsWith("/handover/history")) {
@@ -145,8 +177,7 @@ for (const width of [1440, 375]) {
     const home = navigation.getByRole("button", { name: "Shift Handover" });
     await home.click();
     const heading = page.getByRole("heading", {
-      name: "Shift Handover",
-      exact: true,
+      level: 1,
     });
     const headingStyle = await heading.evaluate((element) => {
       const style = getComputedStyle(element);
@@ -163,9 +194,28 @@ for (const width of [1440, 375]) {
     await page
       .getByRole("combobox", { name: "Selected department" })
       .selectOption("hall-a");
-    await page
+    const path = page.getByRole("navigation", { name: "Breadcrumb" });
+    const tabs = page.getByRole("navigation", { name: "Handover views" });
+    await expect(path.locator('[aria-current="page"]')).toHaveText("Journal");
+    const journalCard = page
+      .getByRole("region", { name: "Problems", exact: true })
+      .getByRole("button", { name: entry.content.summary, exact: false });
+    await expect(journalCard).toBeVisible();
+    const journalStyle = await journalCard.evaluate(summaryStyle);
+    await page.screenshot({
+      path: `/tmp/iop178-journal-${width}.png`,
+      fullPage: true,
+    });
+    await journalCard.click();
+    await path.getByRole("button", { name: "Journal", exact: true }).click();
+    await expect(journalCard).toBeVisible();
+    await tabs
       .getByRole("button", { name: "Meeting preparation", exact: true })
       .click();
+    await expect(path.locator('[aria-current="page"]')).toHaveText(
+      "Meeting preparation",
+    );
+    await page.getByLabel("Meeting date", { exact: true }).fill("2026-09-28");
     const meeting = page.getByRole("region", { name: "Problems section" });
     await expect(
       meeting.getByRole("button", {
@@ -173,6 +223,11 @@ for (const width of [1440, 375]) {
         exact: false,
       }),
     ).toBeVisible();
+    expect(
+      await meeting
+        .getByRole("button", { name: entry.content.summary, exact: false })
+        .evaluate(summaryStyle),
+    ).toEqual(journalStyle);
     const sectionStyle = await meeting
       .getByRole("heading", { name: "Problems", exact: true })
       .evaluate((element) => {
@@ -193,7 +248,7 @@ for (const width of [1440, 375]) {
       };
     });
     await page.screenshot({
-      path: `/tmp/iop177-meeting-${width}.png`,
+      path: `/tmp/iop178-meeting-${width}.png`,
       fullPage: true,
     });
     await meeting
@@ -242,7 +297,7 @@ for (const width of [1440, 375]) {
     ).toBeGreaterThanOrEqual(16);
     const breadcrumb = detail.getByRole("navigation", { name: "Breadcrumb" });
     await expect(breadcrumb.getByRole("heading", { level: 1 })).toHaveText(
-      "Shift Handover/Details",
+      "Shift Handover/Meeting preparation/Details",
     );
     await expect(
       breadcrumb.getByText("Operations", { exact: true }),
@@ -278,13 +333,33 @@ for (const width of [1440, 375]) {
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop177-detail-${width}.png`,
+      path: `/tmp/iop178-detail-${width}.png`,
       fullPage: true,
     });
+    const returnToMeeting = breadcrumb.getByRole("button", {
+      name: "Meeting preparation",
+      exact: true,
+    });
+    await returnToMeeting.focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      tabs.getByRole("button", { name: "Meeting preparation", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByLabel("Meeting date", { exact: true })).toHaveValue(
+      "2026-09-28",
+    );
+    await expect(
+      page.getByRole("combobox", { name: "Selected department" }),
+    ).toHaveValue("hall-a");
+    await meeting
+      .getByRole("button", { name: entry.content.summary, exact: false })
+      .click();
     // Regression: selecting the already-active sidebar destination must leave detail.
     await home.click();
     await expect(
-      page.getByRole("heading", { name: "Shift Handover", exact: true }),
+      page
+        .getByRole("navigation", { name: "Breadcrumb" })
+        .locator('[aria-current="page"]'),
     ).toBeVisible();
     await expect(
       page.getByRole("combobox", { name: "Selected department" }),
@@ -299,17 +374,79 @@ for (const width of [1440, 375]) {
       matrix.getByRole("cell", { name: "2026-09-29", exact: true }),
     ).toBeVisible();
     await page.screenshot({
-      path: `/tmp/iop177-matrix-${width}.png`,
+      path: `/tmp/iop178-matrix-${width}.png`,
       fullPage: true,
     });
     await matrix
       .getByRole("cell", { name: "In progress", exact: true })
       .scrollIntoViewIfNeeded();
     await page.screenshot({
-      path: `/tmp/iop177-matrix-status-${width}.png`,
+      path: `/tmp/iop178-matrix-status-${width}.png`,
       fullPage: true,
     });
+    await page
+      .getByRole("button", { name: "More entries", exact: true })
+      .click();
+    await expect(
+      matrix.getByRole("button", { name: "Second loaded report", exact: true }),
+    ).toBeVisible();
     await matrix.getByRole("button", { name: entry.content.summary }).click();
+    await expect(breadcrumb.getByRole("heading", { level: 1 })).toHaveText(
+      "Shift Handover/Department matrix/Details",
+    );
+    await breadcrumb
+      .getByRole("button", { name: "Department matrix", exact: true })
+      .click();
+    await expect(
+      tabs.getByRole("button", { name: "Department matrix", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      matrix.getByRole("button", { name: "Second loaded report", exact: true }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Search history", exact: true })
+      .click();
+    const search = page.getByRole("dialog", {
+      name: "Search handover history",
+    });
+    await search
+      .getByRole("searchbox", { name: "Search", exact: true })
+      .fill("bearing");
+    await search
+      .getByRole("button", { name: "Search entries", exact: true })
+      .click();
+    await matrix.getByRole("button", { name: entry.content.summary }).click();
+    await breadcrumb
+      .getByRole("button", { name: "Department matrix", exact: true })
+      .click();
+    await expect(
+      page.getByText("Filtered history", { exact: true }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Search history", exact: true })
+      .click();
+    await expect(
+      search.getByRole("searchbox", { name: "Search", exact: true }),
+    ).toHaveValue("bearing");
+    await search
+      .getByRole("button", { name: "Close Search handover history" })
+      .click();
+    await tabs.getByRole("button", { name: "My entries", exact: true }).click();
+    await expect(path.locator('[aria-current="page"]')).toHaveText(
+      "My entries",
+    );
+    await page
+      .getByRole("button", { name: entry.content.summary, exact: true })
+      .click();
+    await breadcrumb
+      .getByRole("button", { name: "My entries", exact: true })
+      .click();
+    await expect(
+      tabs.getByRole("button", { name: "My entries", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await page
+      .getByRole("button", { name: entry.content.summary, exact: true })
+      .click();
     const moduleHome = detail.getByRole("button", {
       name: "Shift Handover",
       exact: true,
@@ -317,7 +454,9 @@ for (const width of [1440, 375]) {
     await moduleHome.focus();
     await page.keyboard.press("Enter");
     await expect(
-      page.getByRole("heading", { name: "Shift Handover", exact: true }),
+      page
+        .getByRole("navigation", { name: "Breadcrumb" })
+        .locator('[aria-current="page"]'),
     ).toBeVisible();
     await expect(
       page.getByRole("combobox", { name: "Selected department" }),
@@ -345,7 +484,7 @@ for (const width of [1440, 375]) {
     };
     await assertAligned();
     await page.screenshot({
-      path: `/tmp/iop177-form-${width}.png`,
+      path: `/tmp/iop178-form-${width}.png`,
       fullPage: true,
     });
     await dialog.getByRole("button", { name: "More components" }).click();

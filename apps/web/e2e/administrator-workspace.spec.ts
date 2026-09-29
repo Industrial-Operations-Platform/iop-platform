@@ -122,6 +122,11 @@ for (const width of [1440, 375]) {
         await page
           .getByRole("button", { name: "Daily overview", exact: true })
           .click();
+        await expect(
+          page
+            .getByRole("navigation", { name: "Breadcrumb" })
+            .locator('[aria-current="page"]'),
+        ).toHaveText("Daily overview");
         await expect(page.getByText("No entries for this day.")).toHaveCount(6);
         await expect(
           page.getByLabel("Overview date", { exact: true }),

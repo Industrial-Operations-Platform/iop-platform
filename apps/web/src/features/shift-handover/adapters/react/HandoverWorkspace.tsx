@@ -1,4 +1,5 @@
-import { MeetingCanvas, MeetingCards } from "./MeetingCanvas";
+import { MeetingCanvas } from "./MeetingCanvas";
+import { EntrySummaryCards } from "./EntrySummaryCards";
 import { useEffect, useState } from "react";
 import {
   Actions,
@@ -78,6 +79,12 @@ export function HandoverWorkspace({
     [detail, setDetail] = useState(initialEntry);
   const board = view === "journal" && !filtered;
   const meetingLabel = dailyOverview ? "Daily overview" : "Meeting preparation";
+  const viewLabels: Record<View, string> = {
+    journal: "Journal",
+    matrix: "Department matrix",
+    meeting: meetingLabel,
+    mine: "My entries",
+  };
   useEffect(() => {
     onEntryOpened?.();
   }, []);
@@ -131,6 +138,18 @@ export function HandoverWorkspace({
   const apply = (next: Selection) => {
     setSelection({ ...next, cursor: "" });
     setDraft({ ...next, cursor: "" });
+  };
+  const goHome = () => {
+    if (onHome) {
+      onHome();
+      return;
+    }
+    setDetail("");
+    setView("journal");
+    setFiltered(false);
+    setSearching(false);
+    setCreating(null);
+    apply({ ...emptySelection, departmentId: selection.departmentId });
   };
   const open = (id: string) => {
     setDetail(id);
@@ -205,7 +224,9 @@ export function HandoverWorkspace({
         id={detail}
         context={context}
         application={application}
-        close={onHome ?? (() => setDetail(""))}
+        viewLabel={viewLabels[view]}
+        onHome={goHome}
+        close={() => setDetail("")}
         onChanged={() => setRefresh((n) => n + 1)}
         onEquipment={equipmentHistory}
       />
@@ -213,6 +234,8 @@ export function HandoverWorkspace({
   return (
     <section aria-label="Shift Handover" className="handover-workspace">
       <HandoverHeading
+        viewLabel={viewLabels[view]}
+        onHome={goHome}
         actions={
           <Actions>
             <Button
@@ -303,16 +326,13 @@ export function HandoverWorkspace({
       <ViewNavigation
         label="Handover views"
         selected={view}
-        items={[
-          { id: "journal", label: "Journal", disabled: busy || !context },
-          {
-            id: "matrix",
-            label: "Department matrix",
+        items={(Object.entries(viewLabels) as [View, string][]).map(
+          ([id, label]) => ({
+            id,
+            label,
             disabled: busy || !context,
-          },
-          { id: "meeting", label: meetingLabel, disabled: busy || !context },
-          { id: "mine", label: "My entries", disabled: busy || !context },
-        ]}
+          }),
+        )}
         onSelect={(next) => {
           if (busy || !context) return;
           setView(next);
@@ -381,7 +401,7 @@ export function HandoverWorkspace({
                     summary={`Earlier and current open issues · ${pending.total}`}
                     variant="panel"
                   >
-                    <MeetingCards entries={pending.entries} open={open} />
+                    <EntrySummaryCards entries={pending.entries} open={open} />
                     {!pending.total && <p>No unresolved issues.</p>}
                     {pending.nextCursor && (
                       <Button

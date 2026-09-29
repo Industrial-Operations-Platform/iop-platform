@@ -147,10 +147,6 @@
   margin: 0.3rem 0;
   font-size: var(--iop-bodySize);
 }
-.handover-preview button {
-  text-align: left;
-  overflow-wrap: anywhere;
-}
 .handover-muted,
 .handover-toolbar p {
   color: var(--iop-muted);
@@ -185,12 +181,12 @@
 .handover-meeting-section h3 {
   margin: 0;
 }
-.handover-meeting-cards {
+.handover-summary-cards {
   display: grid;
   gap: 0.6rem;
   margin-top: 0.8rem;
 }
-.iop-ui .handover-meeting-card {
+.iop-ui .handover-summary-card {
   display: grid;
   gap: 0.35rem;
   width: 100%;
@@ -199,7 +195,7 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
-.handover-meeting-card span {
+.handover-summary-card span {
   font-size: var(--iop-captionSize);
   font-weight: var(--iop-regularWeight);
   color: var(--iop-muted);
