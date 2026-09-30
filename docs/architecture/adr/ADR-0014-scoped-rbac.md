@@ -254,5 +254,8 @@ to `workforce-planner` for Team Leader and Administrator; and
 `workforce.administer` to `workforce-administrator` for Administrator only.
 These reuse the accepted scoped-role mechanism and current-grant checks. Import,
 configuration and logical removal require administer; operational assignment
-changes require plan. This does not accept any previously Proposed ADR. See
+changes require plan. The owner’s follow-up also explicitly permits Team Leaders
+and Administrators to enter/update personal schedules by week using `workforce.plan`;
+file imports and standalone schedule deletion remain administrator-only. No new role
+or inheritance is introduced. This does not accept any previously Proposed ADR. See
 [IOP-184](../../planning/items/IOP-184-m6-workforce.md).

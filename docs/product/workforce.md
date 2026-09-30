@@ -8,7 +8,7 @@ M6 IOP-050–059. This local operational module is independent of Data Analysis.
 | Profile | Operational view | Changes |
 | --- | --- | --- |
 | Technician | Own day first; colleagues by zone, floating support and shift leaders | None |
-| Team Leader | Monday–Sunday board, daily schedules and separate leader section | Assign/reassign workers, zones, floating/maintenance duties and phone responsibility |
+| Team Leader | Monday–Sunday board, daily schedules and separate leader section | Enter/update weekly personal schedules; assign/reassign workers, zones, floating/maintenance duties and phone responsibility |
 | Administrator | Planning plus import, configuration and workforce profiles | Personal schedules, monthly CSV/email import, teams, shifts, zones, profiles and logical deletion |
 | Task Force | Daily operational visibility | None |
 
@@ -18,10 +18,27 @@ preview changes presentation only; every API operation rechecks the actual accou
 Personal schedules state when a person is available. Assignments state where they
 work during that availability. Importing a schedule never guesses a zone. There
 must be a compatible work/maintenance schedule before a leader can assign a person.
+It can be entered manually by the Team Leader/Administrator, or imported by an
+Administrator.
 Training, compensation, vacation, accident, sickness and days off are explicit
 statuses. An absent source day is unknown, not an invented day off. Assignment
 conflicts are checked across midnight; adjacent non-overlapping assignments permit
 floating workers to move between zones. Leaders have separate duties and rows.
+
+## Manual weekly entry
+
+Team Leaders and Administrators select a person and a week in **Weekly schedules**.
+Existing values load into seven dated cards. A configured shift or absence status
+can be applied to selected days, with Monday–Friday selected initially. Individual
+rows support another shift, status or working interval. Presets respect their active
+weekdays; unknown days stay empty. Only changed days are submitted in one save.
+
+Week updates recheck the current scoped grant and each day's revision, and validate
+the complete proposed week, neighboring overnight schedules and existing zone/phone
+assignments. An invalid or stale row prevents every write. Updating personal hours
+does not move or delete workplace assignments: incompatible assignments must first
+be corrected within the valid interval, or removed by an Administrator and replanned.
+Technicians cannot edit weekly schedules. CSV/email remains an optional admin tool.
 
 ## Initial configuration
 

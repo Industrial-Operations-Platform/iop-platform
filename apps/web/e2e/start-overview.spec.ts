@@ -94,7 +94,7 @@ for (const width of [1440, 375]) {
     ).toBeVisible();
     await expect(page.getByText("123", { exact: true })).toBeVisible();
     await expect(page.getByRole("table")).toHaveCount(0);
-    await expect(page.getByText(/No schedule imported/)).toBeVisible();
+    await expect(page.getByText(/No schedule yet/)).toBeVisible();
     await page
       .getByRole("navigation", { name: "Operational updates" })
       .getByRole("button", { name: /Open reports/ })

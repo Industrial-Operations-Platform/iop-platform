@@ -16,7 +16,7 @@ export const german: Readonly<Record<string, string>> = {
   "Sick leave": "Krankheit",
   Off: "Frei",
   Work: "Arbeit",
-  "No schedule imported": "Kein Dienstplan importiert",
+  "No schedule yet": "Noch kein Dienstplan",
   "No assignment yet": "Noch kein Einsatz zugeteilt",
   "Coverage gaps": "Unbesetzte Bereiche",
   Date: "Datum",
@@ -46,7 +46,7 @@ export const german: Readonly<Record<string, string>> = {
   "Paste CSV or email content": "CSV oder E-Mail-Inhalt einfügen",
   Format: "Format",
   Email: "E-Mail",
-  "Imported schedules": "Importierte Dienstpläne",
+  "Personal schedules": "Persönliche Dienstpläne",
   "No records for this date.": "Keine Einträge für dieses Datum.",
   "Select a person": "Person auswählen",
   "Import completed.": "Import abgeschlossen.",
@@ -91,8 +91,8 @@ export const german: Readonly<Record<string, string>> = {
   Unchanged: "Unverändert",
   "The plan changed or has dependent assignments. Reload before saving.":
     "Der Plan wurde geändert oder enthält abhängige Einsätze. Vor dem Speichern neu laden.",
-  "Import a compatible working schedule for this person first.":
-    "Zuerst einen passenden Dienstplan für diese Person importieren.",
+  "Enter or import a compatible working schedule for this person first.":
+    "Zuerst einen passenden Dienstplan für diese Person erfassen oder importieren.",
   "This person or phone is already assigned during this interval.":
     "Diese Person oder dieses Handy ist in diesem Zeitraum bereits zugeteilt.",
   "Check the plan fields and dates.": "Bitte die Planfelder und Daten prüfen.",
@@ -780,4 +780,26 @@ export const german: Readonly<Record<string, string>> = {
   "The operation could not be completed. Check the input and try again.":
     "Der Vorgang konnte nicht abgeschlossen werden. Prüfe die Eingaben und versuche es erneut.",
   "The passwords do not match.": "Die Passwörter stimmen nicht überein.",
+  "Weekly schedules": "Wochendienstplan",
+  "Enter weekly shifts": "Wochenschichten erfassen",
+  "Edit week": "Woche bearbeiten",
+  "Choose a person, apply a shift to selected days, then adjust individual days.":
+    "Wähle eine Person, übertrage eine Schicht auf ausgewählte Tage und passe einzelne Tage an.",
+  "Custom work hours": "Individuelle Arbeitszeiten",
+  "Saved {0} schedule days.": "{0} Dienstplantage gespeichert.",
+  "Apply shift or status": "Schicht oder Status übernehmen",
+  "Choose a shift or status": "Schicht oder Status auswählen",
+  "Apply to selected days": "Auf ausgewählte Tage anwenden",
+  "Select weekdays": "Montag bis Freitag auswählen",
+  "Select all days": "Alle Tage auswählen",
+  "Clear selection": "Auswahl aufheben",
+  "Shift presets apply only on their configured active days. Unplanned days stay empty.":
+    "Schichtvorlagen gelten nur an ihren konfigurierten Wochentagen. Ungeplante Tage bleiben leer.",
+  "Shift or status": "Schicht oder Status",
+  "Not planned": "Nicht geplant",
+  "Existing assignment": "Bestehender Einsatz",
+  "Existing zone and phone assignments are kept. A conflicting schedule change is rejected without saving any day.":
+    "Bestehende Bereichs- und Handyzuweisungen bleiben erhalten. Bei einem Konflikt wird kein Tag gespeichert.",
+  "Save week": "Woche speichern",
+  "Discard edits": "Änderungen verwerfen",
 };

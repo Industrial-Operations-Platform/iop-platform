@@ -33,6 +33,7 @@ function application(data: Board) {
   const gateway: Gateway = {
     board: jest.fn(async () => data),
     save: jest.fn(),
+    saveWeek: jest.fn(),
     preview: jest.fn(),
     commit: jest.fn(),
     history: jest.fn(),
@@ -53,6 +54,7 @@ test("technician opens personal day and colleagues without import or planning ac
   ).toBeVisible();
   expect(screen.getByRole("heading", { name: "Other zones" })).toBeVisible();
   expect(screen.queryByRole("button", { name: "Assign" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Weekly schedules" })).toBeNull();
   expect(screen.queryByRole("button", { name: "Schedule import" })).toBeNull();
 });
 test("leader opens weekly plan, can assign, and cannot import", async () => {
@@ -68,6 +70,9 @@ test("leader opens weekly plan, can assign, and cannot import", async () => {
     await screen.findByRole("table", { name: "Weekly plan" }),
   ).toBeVisible();
   expect(screen.queryByRole("button", { name: "Schedule import" })).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "Weekly schedules" }),
+  ).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "Assign" }));
   expect(
     screen.getByRole("heading", { name: "Assignment details" }),
@@ -79,25 +84,23 @@ test("administrator import edits invalidate an old preview", async () => {
     canPlan: true,
     canAdminister: true,
   });
-  jest
-    .mocked(gateway.preview)
-    .mockResolvedValue([
-      {
-        id: "tech_2026-09-30",
-        expectedRevision: 0,
-        outcome: "create",
-        data: {
-          userId: "tech",
-          date: "2026-09-30",
-          status: "work",
-          start: "05:00",
-          end: "14:15",
-          startsAt: "",
-          endsAt: "",
-          source: "csv",
-        },
+  jest.mocked(gateway.preview).mockResolvedValue([
+    {
+      id: "tech_2026-09-30",
+      expectedRevision: 0,
+      outcome: "create",
+      data: {
+        userId: "tech",
+        date: "2026-09-30",
+        status: "work",
+        start: "05:00",
+        end: "14:15",
+        startsAt: "",
+        endsAt: "",
+        source: "csv",
       },
-    ]);
+    },
+  ]);
   render(
     <WorkforceWorkspace
       application={app}

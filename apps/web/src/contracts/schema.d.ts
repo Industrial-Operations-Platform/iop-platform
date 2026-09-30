@@ -56,6 +56,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workforce/schedules/week": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_saveWeek"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workforce/preview": {
         parameters: {
             query?: never;
@@ -611,6 +627,28 @@ export interface components {
             deleted: boolean;
             data: Record<string, never>;
         };
+        WorkforceWeekDayDto: {
+            /** Format: date */
+            date: string;
+            /** @enum {string} */
+            status: "work" | "compensation" | "training" | "maintenance" | "vacation" | "accident" | "sick" | "off";
+            start: string;
+            end: string;
+            expectedRevision: number;
+        };
+        WorkforceWeekDto: {
+            userId: string;
+            /**
+             * Format: date
+             * @description Monday starting the edited week.
+             */
+            weekStart: string;
+            days: components["schemas"]["WorkforceWeekDayDto"][];
+        };
+        WorkforceResultDto: {
+            changed: number;
+            unchanged: number;
+        };
         WorkforceImportDto: {
             /** @enum {string} */
             format: "csv" | "email";
@@ -632,10 +670,6 @@ export interface components {
         WorkforceCommitDto: {
             input: components["schemas"]["WorkforceImportDto"];
             revisions: components["schemas"]["WorkforceImportRevisionDto"][];
-        };
-        WorkforceResultDto: {
-            changed: number;
-            unchanged: number;
         };
         WorkforceHistoryRequestDto: {
             /** @enum {string} */
@@ -1295,6 +1329,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WorkforceRecordDto"];
+                };
+            };
+        };
+    };
+    WorkforceController_saveWeek: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkforceWeekDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforceResultDto"];
                 };
             };
         };

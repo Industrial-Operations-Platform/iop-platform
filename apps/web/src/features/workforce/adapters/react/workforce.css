@@ -53,3 +53,31 @@
   gap: 8px;
   align-content: start;
 }
+
+.workforce-week-fields {
+  display: grid;
+  gap: var(--iop-sectionGap);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.workforce-week-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: var(--iop-sectionGap);
+}
+.workforce-week-day {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 14px;
+  min-width: 0;
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: 8px;
+}
+.workforce-existing-duty {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}

@@ -1,3 +1,4 @@
+import type { WeeklyScheduleInput } from "../../domain/weekly-schedule";
 import type { Gateway } from "../../application/workforce";
 import type {
   Board,
@@ -15,7 +16,7 @@ const messages: Record<string, string> = {
     "The plan changed or has dependent assignments. Reload before saving.",
   workforce_missing: "The plan entry is unavailable.",
   workforce_schedule_required:
-    "Import a compatible working schedule for this person first.",
+    "Enter or import a compatible working schedule for this person first.",
   workforce_overlap:
     "This person or phone is already assigned during this interval.",
   workforce_time_ambiguous:
@@ -41,6 +42,12 @@ async function request<T>(path: string, body: unknown): Promise<T> {
 export class HttpWorkforceGateway implements Gateway {
   board(from: string, to: string) {
     return request<Board>("board", { from, to });
+  }
+  saveWeek(input: WeeklyScheduleInput) {
+    return request<{ changed: number; unchanged: number }>(
+      "schedules/week",
+      input,
+    );
   }
   save(input: SaveInput) {
     return request<RecordEntry>("save", input);

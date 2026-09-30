@@ -1165,7 +1165,9 @@ test("M6 grants, import transaction, RLS, phone conflict and retained revisions"
     changed: 0,
     unchanged: 2,
   });
-  expect(await workforce.history("admin-a", "schedule", "tech-a_2026-09-30")).toHaveLength(1);
+  expect(
+    await workforce.history("admin-a", "schedule", "tech-a_2026-09-30"),
+  ).toHaveLength(1);
   const assignment = {
     kind: "assignment",
     id: "m6-assignment",
@@ -1212,6 +1214,63 @@ test("M6 grants, import transaction, RLS, phone conflict and retained revisions"
       (await c.query("SELECT * FROM workforce.records")).rows,
     ).toHaveLength(0);
     await expect(c.query("DELETE FROM workforce.records")).rejects.toThrow();
+  });
+});
+test("weekly schedules allow planners, reject readers and retain atomic revision history", async () => {
+  const workforce = workforceService();
+  const week = {
+    userId: "tech-a",
+    weekStart: "2026-11-02",
+    days: [
+      {
+        date: "2026-11-02",
+        status: "work",
+        start: "05:00",
+        end: "14:15",
+        expectedRevision: 0,
+      },
+      {
+        date: "2026-11-03",
+        status: "off",
+        start: "",
+        end: "",
+        expectedRevision: 0,
+      },
+    ],
+  };
+  await expect(workforce.saveWeek("tech-a", week)).rejects.toThrow();
+  await expect(
+    workforceService({ organizationId: "org-b", siteId: "site-b" }).saveWeek(
+      "lead-a",
+      week,
+    ),
+  ).rejects.toThrow();
+  expect(await workforce.saveWeek("lead-a", week)).toEqual({
+    changed: 2,
+    unchanged: 0,
+  });
+  const revised = {
+    ...week,
+    days: week.days.map((day) => ({ ...day, expectedRevision: 1 })),
+  };
+  expect(await workforce.saveWeek("lead-a", revised)).toEqual({
+    changed: 0,
+    unchanged: 2,
+  });
+  revised.days[0].start = "06:00";
+  revised.days[1].expectedRevision = 0;
+  await expect(workforce.saveWeek("lead-a", revised)).rejects.toMatchObject({
+    code: "workforce_conflict",
+  });
+  const history = await workforce.history(
+    "tech-a",
+    "schedule",
+    "tech-a_2026-11-02",
+  );
+  expect(history).toHaveLength(1);
+  expect(history[0]).toMatchObject({
+    actorId: "lead-a",
+    record: { data: { start: "05:00", source: "manual" } },
   });
 });
 test("administrator logical deletion retains author name, journal history and audit; final administrator is protected", async () => {

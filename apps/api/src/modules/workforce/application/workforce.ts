@@ -1,4 +1,9 @@
 import {
+  sameSchedule,
+  validateWeek,
+  type WeeklyScheduleInput,
+} from "../domain/weekly-schedule";
+import {
   assert,
   date,
   identifier,
@@ -240,7 +245,11 @@ export class Workforce {
       source,
     };
   }
-  private async checkScheduleChange(tx: Transaction, schedule: Schedule) {
+  private async checkScheduleChange(
+    tx: Transaction,
+    schedule: Schedule,
+    replacingDates: ReadonlySet<string> = new Set(),
+  ) {
     const entries = await tx.records(
       this.previousDate(schedule.date),
       this.nextDate(schedule.date),
@@ -261,6 +270,7 @@ export class Workforce {
         if (
           other.userId === schedule.userId &&
           other.date !== schedule.date &&
+          !replacingDates.has(other.date) &&
           schedule.startsAt &&
           other.startsAt
         )
@@ -352,6 +362,60 @@ export class Workforce {
     }
     return a;
   }
+  saveWeek(actor: string, input: WeeklyScheduleInput) {
+    validateWeek(input);
+    return this.store.run(actor, "workforce.plan", async (tx) => {
+      assert((await tx.people()).some((person) => person.id === input.userId));
+      const replacingDates = new Set(input.days.map((day) => day.date));
+      const prepared = [];
+      for (const day of input.days) {
+        const schedule = this.schedule(
+          { ...day, userId: input.userId },
+          "manual",
+        );
+        const id = `${input.userId}_${day.date}`;
+        const prior = await tx.get("schedule", id);
+        // Revision zero means no active day, including a retained tombstone.
+        assert(
+          (prior && !prior.deleted ? prior.revision : 0) ===
+            day.expectedRevision,
+          "workforce_conflict",
+        );
+        await this.checkScheduleChange(tx, schedule, replacingDates);
+        prepared.push({
+          id,
+          schedule,
+          revision: prior?.revision ?? 0,
+          unchanged:
+            !!prior &&
+            !prior.deleted &&
+            sameSchedule(prior.data as Schedule, schedule),
+        });
+      }
+      const working = prepared
+        .filter((day) => day.schedule.startsAt)
+        .sort((a, b) => a.schedule.startsAt.localeCompare(b.schedule.startsAt));
+      for (let i = 1; i < working.length; i++)
+        assert(
+          !overlaps(working[i - 1].schedule, working[i].schedule),
+          "workforce_overlap",
+        );
+      let changed = 0;
+      for (const day of prepared) {
+        if (day.unchanged) continue;
+        await this.write(
+          tx,
+          actor,
+          "schedule",
+          day.id,
+          day.schedule,
+          day.revision,
+        );
+        changed++;
+      }
+      return { changed, unchanged: prepared.length - changed };
+    });
+  }
   preview(actor: string, input: ImportInput) {
     return this.store.run(actor, "workforce.administer", (tx) =>
       this.prepare(tx, input),
@@ -375,20 +439,7 @@ export class Workforce {
       const prior = await tx.get("schedule", id);
       const previous = prior?.data as Schedule | undefined;
       const unchanged =
-        !!prior &&
-        !prior.deleted &&
-        !!previous &&
-        (
-          [
-            "userId",
-            "date",
-            "status",
-            "start",
-            "end",
-            "startsAt",
-            "endsAt",
-          ] as const
-        ).every((field) => previous[field] === data[field]);
+        !!prior && !prior.deleted && !!previous && sameSchedule(previous, data);
       prepared.push({
         id,
         data,

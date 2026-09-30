@@ -126,6 +126,37 @@
         ]
       }
     },
+    "/api/v1/workforce/schedules/week": {
+      "post": {
+        "operationId": "WorkforceController_saveWeek",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkforceWeekDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkforceResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
     "/api/v1/workforce/preview": {
       "post": {
         "operationId": "WorkforceController_preview",
@@ -1882,6 +1913,86 @@
           "data"
         ]
       },
+      "WorkforceWeekDayDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "work",
+              "compensation",
+              "training",
+              "maintenance",
+              "vacation",
+              "accident",
+              "sick",
+              "off"
+            ]
+          },
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "date",
+          "status",
+          "start",
+          "end",
+          "expectedRevision"
+        ]
+      },
+      "WorkforceWeekDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "weekStart": {
+            "type": "string",
+            "format": "date",
+            "description": "Monday starting the edited week."
+          },
+          "days": {
+            "minItems": 1,
+            "maxItems": 7,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceWeekDayDto"
+            }
+          }
+        },
+        "required": [
+          "userId",
+          "weekStart",
+          "days"
+        ]
+      },
+      "WorkforceResultDto": {
+        "type": "object",
+        "properties": {
+          "changed": {
+            "type": "number"
+          },
+          "unchanged": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "changed",
+          "unchanged"
+        ]
+      },
       "WorkforceImportDto": {
         "type": "object",
         "properties": {
@@ -1966,21 +2077,6 @@
         "required": [
           "input",
           "revisions"
-        ]
-      },
-      "WorkforceResultDto": {
-        "type": "object",
-        "properties": {
-          "changed": {
-            "type": "number"
-          },
-          "unchanged": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "changed",
-          "unchanged"
         ]
       },
       "WorkforceHistoryRequestDto": {

@@ -1,5 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import type { Kind, Payloads } from "../modules/workforce/domain/workforce";
+import type {
+  Kind,
+  Payloads,
+  ScheduleStatus,
+} from "../modules/workforce/domain/workforce";
 export class WorkforceRangeDto {
   @ApiProperty({ format: "date" }) from!: string;
   @ApiProperty({ format: "date" }) to!: string;
@@ -76,4 +80,34 @@ export class WorkforceRevisionDto {
   @ApiProperty() actorName!: string;
   @ApiProperty() at!: string;
   @ApiProperty() action!: string;
+}
+
+export class WorkforceWeekDayDto {
+  @ApiProperty({ format: "date" }) date!: string;
+  @ApiProperty({
+    enum: [
+      "work",
+      "compensation",
+      "training",
+      "maintenance",
+      "vacation",
+      "accident",
+      "sick",
+      "off",
+    ],
+  })
+  status!: ScheduleStatus;
+  @ApiProperty() start!: string;
+  @ApiProperty() end!: string;
+  @ApiProperty({ minimum: 0 }) expectedRevision!: number;
+}
+export class WorkforceWeekDto {
+  @ApiProperty() userId!: string;
+  @ApiProperty({
+    format: "date",
+    description: "Monday starting the edited week.",
+  })
+  weekStart!: string;
+  @ApiProperty({ type: [WorkforceWeekDayDto], minItems: 1, maxItems: 7 })
+  days!: WorkforceWeekDayDto[];
 }

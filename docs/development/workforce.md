@@ -30,6 +30,23 @@ password travels through stdin, is never printed and is never a built-in default
 Do not use this fixture command as production provisioning. Existing private
 handover/source data and original imports are preserved.
 
+## Enter or update a week without files
+
+Open **Workforce & shifts → Weekly schedules** (**Personal & Schichten →
+Wochendienstplan** in German), choose any date in the required week and select a
+person. Existing schedules appear Monday through Sunday. Choose a shift/status and
+**Apply to selected days**, adjust exceptions, then **Save week**. Monday–Friday is
+preselected; select the weekend only when needed. A shift preset skips weekdays on
+which it is inactive. Unchanged and unknown days are left alone. **Edit week** on
+an existing personal schedule opens that person's weekly editor.
+
+Both Team Leader and Administrator may use this editor. The whole save fails on
+stale revisions, overlapping availability or incompatible current assignments;
+refresh stale data and correct the conflicting interval or have an Administrator
+remove an incompatible assignment before replanning. A manual change records its
+actor, revision and `manual` source, preserving older imported revisions. It does
+not silently change zones or phone holders.
+
 ## Manual source contract
 
 UTF-8 CSV uses this exact header and five unquoted, single-line columns:
@@ -83,7 +100,11 @@ are retained. This source adapter is distinct from analytical RAW import storage
 POST routes under `/api/v1/workforce`: `board` (`from`, `to`, maximum 93 inclusive
 days), `save` (`kind`, `id`, `expectedRevision`, `deleted`, kind-specific `data`),
 `preview` (`format`, `text`, `userId`), `import` (`input`, `revisions`) and `history`
-(`kind`, `id`). Kinds: `settings`, `worker`, `schedule`, `assignment`. Settings contain
+(`kind`, `id`). `schedules/week` accepts `userId`, Monday `weekStart` and 1–7
+changed `days` containing `date`, `status`, `start`, `end`, `expectedRevision`. It
+requires `workforce.plan` and returns changed/unchanged counts. Revision 0 means
+no active schedule; recreating a logically deleted day continues its retained
+revision sequence. Kinds: `settings`, `worker`, `schedule`, `assignment`. Settings contain
 `shifts`, `targets`, `teams`; workers link a user to a team/home target; schedules
 contain a person/date/status/local interval; assignments contain a person/date/shift/
 zone/duty/phone/interval. Resolved instants and label snapshots are server-owned.
@@ -110,4 +131,6 @@ checks. The Workforce unit suite checks no-write preview, atomic/idempotent impo
 permissions, overlapping people/phones, stale revisions, deletion and DST. The
 PostgreSQL handover integration fixture additionally checks M6 grants, forced RLS,
 concurrent conflicts and non-cascading user/entry removal. Web tests verify role
-views, import-preview invalidation and dictionary coverage.
+views, import-preview invalidation, weekly preset/edit/save behavior and dictionary
+coverage. Weekly application/SQL tests also prove atomic rollback, current planner
+grants, unchanged-day idempotency and neighbor/batch overlap handling.

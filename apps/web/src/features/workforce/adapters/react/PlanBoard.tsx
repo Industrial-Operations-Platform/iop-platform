@@ -188,7 +188,7 @@ export function DailyPlan({
             {personal.data.end && "– " + personal.data.end}
           </p>
         ) : (
-          <p>{t("No schedule imported")}</p>
+          <p>{t("No schedule yet")}</p>
         )}
         <div className="workforce-card-grid">
           {own.map((r) => (
@@ -274,7 +274,7 @@ export function ScheduleList({
 }) {
   return (
     <Panel>
-      <h2>{t("Imported schedules")}</h2>
+      <h2>{t("Personal schedules")}</h2>
       <TableViewport>
         <Table>
           <thead>

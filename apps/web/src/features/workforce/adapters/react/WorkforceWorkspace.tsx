@@ -24,6 +24,7 @@ import { AssignmentForm } from "./AssignmentForm";
 import { DailyPlan, PlanBoard, ScheduleList } from "./PlanBoard";
 import { ScheduleImport } from "./ScheduleImport";
 import { Configuration } from "./Configuration";
+import { WeeklySchedule } from "./WeeklySchedule";
 import { ManualSchedule } from "./ManualSchedule";
 import { RecordDetails } from "./RecordDetails";
 import "./workforce.css";
@@ -52,6 +53,7 @@ export function WorkforceWorkspace({
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
     [form, setForm] = useState(false),
+    [schedulePerson, setSchedulePerson] = useState(""),
     [selected, setSelected] = useState<RecordEntry>(),
     [history, setHistory] = useState<Revision[]>([]);
   const dates = weekDates(date),
@@ -175,12 +177,18 @@ export function WorkforceWorkspace({
             placement="tabs"
             onSelect={(value) => {
               setTab(value);
+              setSchedulePerson("");
               setForm(false);
               setSelected(undefined);
             }}
             items={[
               { id: "day", label: t("My day") },
-              ...(canPlan ? [{ id: "week", label: t("Weekly plan") }] : []),
+              ...(canPlan
+                ? [
+                    { id: "week", label: t("Weekly plan") },
+                    { id: "schedules", label: t("Weekly schedules") },
+                  ]
+                : []),
               ...(canAdminister
                 ? [
                     { id: "import", label: t("Schedule import") },
@@ -208,6 +216,21 @@ export function WorkforceWorkspace({
               <h2>{selected.personName || t("Assignment details")}</h2>
               <RecordDetails record={selected} />
               <Actions>
+                {selected.kind === "schedule" &&
+                  "userId" in selected.data &&
+                  canPlan && (
+                    <Button
+                      onClick={() => {
+                        setSchedulePerson(
+                          (selected.data as { userId: string }).userId,
+                        );
+                        setTab("schedules");
+                        setSelected(undefined);
+                      }}
+                    >
+                      {t("Edit week")}
+                    </Button>
+                  )}
                 {selected.kind === "assignment" && canPlan && (
                   <Button onClick={() => setForm(true)}>{t("Edit")}</Button>
                 )}
@@ -262,6 +285,16 @@ export function WorkforceWorkspace({
               )}
               {(tab === "day" || tab === "week") && canPlan && (
                 <ScheduleList board={board} date={date} select={select} />
+              )}
+              {tab === "schedules" && canPlan && (
+                <WeeklySchedule
+                  board={board}
+                  weekStart={from}
+                  application={application}
+                  loading={pending}
+                  refresh={refresh}
+                  initialUserId={schedulePerson}
+                />
               )}
               {tab === "import" && canAdminister && (
                 <>

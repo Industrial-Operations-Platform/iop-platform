@@ -2,7 +2,7 @@
 
 ## Status
 
-Completed
+Completed, including manual weekly scheduling.
 
 ## Authorized scope
 
@@ -42,3 +42,14 @@ that partial absences are not represented. Do not infer them. Corporate database
 connectivity, payroll and automatic roster optimization are deferred.
 
 [Execution plan](../completed/IOP-184-m6-workforce-plan.md)
+
+## Follow-up: manual weekly schedules
+
+The owner additionally requests Team Leader/Administrator entry and updates of a
+person's shifts by week because collecting emails is tedious. Provide an editable
+Monday–Sunday schedule with a configured-shift shortcut across selected days,
+existing values, day-specific edits and one atomic save. Technicians remain readers;
+CSV/email imports remain administrator-only. Preserve revision history and existing
+zone/phone assignments; reject conflicting or stale changes without partial writes.
+
+[Weekly continuation plan](../completed/IOP-184-weekly-schedules-plan.md).

@@ -1,3 +1,4 @@
+import type { WeeklyScheduleInput } from "../domain/weekly-schedule";
 import type {
   Board,
   ImportInput,
@@ -9,6 +10,9 @@ import type {
 } from "../domain/models";
 export interface Gateway {
   board(from: string, to: string): Promise<Board>;
+  saveWeek(
+    input: WeeklyScheduleInput,
+  ): Promise<{ changed: number; unchanged: number }>;
   save(input: SaveInput): Promise<RecordEntry>;
   preview(input: ImportInput): Promise<Preview[]>;
   commit(
@@ -24,6 +28,9 @@ export class WorkforceApplication {
   ) {}
   board(from: string, to: string) {
     return this.gateway.board(from, to);
+  }
+  saveWeek(input: WeeklyScheduleInput) {
+    return this.gateway.saveWeek(input);
   }
   save(input: Omit<SaveInput, "id"> & { id?: string }) {
     return this.gateway.save({ ...input, id: input.id || this.ids() });

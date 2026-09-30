@@ -56,7 +56,7 @@ export function WorkforceToday({
             {today} ·{" "}
             {schedule
               ? t(statusLabels[schedule.data.status])
-              : t("No schedule imported")}
+              : t("No schedule yet")}
           </p>
           {own.map((r) => (
             <p key={r.id}>

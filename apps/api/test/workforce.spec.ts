@@ -278,3 +278,165 @@ test("phone renaming keeps exclusivity and the maintenance phone ID stays reserv
     }),
   ).rejects.toMatchObject({ code: "workforce_invalid" });
 });
+
+const manualWeek = {
+  userId: "tech",
+  weekStart: "2026-09-28",
+  days: [
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30",
+    "2026-10-01",
+    "2026-10-02",
+  ].map((date) => ({
+    date,
+    status: "work" as const,
+    start: "05:00",
+    end: "14:15",
+    expectedRevision: 0,
+  })),
+};
+test("leader enters a week and updates one day; technician remains read-only and unchanged days retain history", async () => {
+  const { app } = setup();
+  await expect(app.saveWeek("tech", manualWeek)).rejects.toMatchObject({
+    code: "workforce_denied",
+  });
+  expect(await app.saveWeek("lead", manualWeek)).toEqual({
+    changed: 5,
+    unchanged: 0,
+  });
+  const update = {
+    ...manualWeek,
+    days: [
+      {
+        ...manualWeek.days[2],
+        start: "13:45",
+        end: "23:00",
+        expectedRevision: 1,
+      },
+    ],
+  };
+  expect(await app.saveWeek("lead", update)).toEqual({
+    changed: 1,
+    unchanged: 0,
+  });
+  const history = await app.history("tech", "schedule", "tech_2026-09-30");
+  expect(history).toHaveLength(2);
+  expect(history[1]).toMatchObject({
+    actorId: "lead",
+    record: { data: { start: "13:45", source: "manual" } },
+  });
+  expect(
+    await app.saveWeek("admin", {
+      ...update,
+      days: [{ ...update.days[0], expectedRevision: 2 }],
+    }),
+  ).toEqual({ changed: 0, unchanged: 1 });
+  expect(await app.history("tech", "schedule", "tech_2026-09-28")).toHaveLength(
+    1,
+  );
+});
+test("weekly stale, malformed and out-of-week input cannot partially overwrite the schedule", async () => {
+  const { app } = setup();
+  await app.saveWeek("lead", manualWeek);
+  const changed = {
+    ...manualWeek,
+    days: manualWeek.days.map((day) => ({
+      ...day,
+      start: "13:45",
+      end: "23:00",
+      expectedRevision: 1,
+    })),
+  };
+  changed.days[4].expectedRevision = 0;
+  await expect(app.saveWeek("lead", changed)).rejects.toMatchObject({
+    code: "workforce_conflict",
+  });
+  expect(await app.history("tech", "schedule", "tech_2026-09-28")).toHaveLength(
+    1,
+  );
+  for (const invalid of [
+    { ...manualWeek, weekStart: "2026-09-29" },
+    { ...manualWeek, days: [{ ...manualWeek.days[0], date: "2026-10-05" }] },
+    { ...manualWeek, days: [manualWeek.days[0], manualWeek.days[0]] },
+    { ...manualWeek, days: [] },
+  ])
+    expect(() => app.saveWeek("lead", invalid)).toThrow("workforce_invalid");
+});
+test("weekly edits preserve zone assignments and roll back every day on a dependent interval conflict", async () => {
+  const { app, records } = setup();
+  await app.import("admin", source, await app.preview("admin", source));
+  await app.save("lead", assignment);
+  await expect(
+    app.saveWeek("lead", {
+      ...manualWeek,
+      days: [
+        manualWeek.days[0],
+        {
+          ...manualWeek.days[2],
+          start: "13:45",
+          end: "23:00",
+          expectedRevision: 1,
+        },
+      ],
+    }),
+  ).rejects.toMatchObject({ code: "workforce_conflict" });
+  expect(records.has("scheduletech_2026-09-28")).toBe(false);
+  expect(records.get("assignmentassignment")?.revision).toBe(1);
+});
+test("weekly overlap validation uses the whole proposed week plus unchanged neighboring dates", async () => {
+  const { app } = setup();
+  await app.saveWeek("lead", { ...manualWeek, days: [manualWeek.days[1]] });
+  const replacement = {
+    ...manualWeek,
+    days: [
+      { ...manualWeek.days[0], start: "22:00", end: "06:00" },
+      {
+        ...manualWeek.days[1],
+        start: "08:00",
+        end: "17:00",
+        expectedRevision: 1,
+      },
+    ],
+  };
+  expect(await app.saveWeek("lead", replacement)).toEqual({
+    changed: 2,
+    unchanged: 0,
+  });
+  await expect(
+    app.saveWeek("lead", {
+      ...manualWeek,
+      days: [{ ...manualWeek.days[1], expectedRevision: 2 }],
+    }),
+  ).rejects.toMatchObject({ code: "workforce_overlap" });
+  const overnight = {
+    ...manualWeek,
+    userId: "other",
+    days: [
+      { ...manualWeek.days[0], start: "22:00", end: "06:00" },
+      manualWeek.days[1],
+    ],
+  };
+  await expect(app.saveWeek("lead", overnight)).rejects.toMatchObject({
+    code: "workforce_overlap",
+  });
+  const priorSunday = {
+    ...manualWeek,
+    weekStart: "2026-09-21",
+    days: [
+      {
+        ...manualWeek.days[0],
+        date: "2026-09-27",
+        start: "22:00",
+        end: "06:00",
+      },
+    ],
+  };
+  await app.saveWeek("lead", priorSunday);
+  await expect(
+    app.saveWeek("lead", {
+      ...manualWeek,
+      days: [{ ...manualWeek.days[0], expectedRevision: 1 }],
+    }),
+  ).rejects.toMatchObject({ code: "workforce_overlap" });
+});

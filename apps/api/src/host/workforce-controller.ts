@@ -64,6 +64,14 @@ export class WorkforceController {
   save(@Req() req: IncomingMessage, @Body() body: C.WorkforceSaveDto) {
     return this.operation(req, (r, a) => r.workforce.save(a, body));
   }
+  @Post("schedules/week")
+  @ApiBody({ type: C.WorkforceWeekDto })
+  @ApiCreatedResponse({ type: C.WorkforceResultDto })
+  saveWeek(@Req() req: IncomingMessage, @Body() body: C.WorkforceWeekDto) {
+    return this.operation(req, (runtime, actor) =>
+      runtime.workforce.saveWeek(actor, body),
+    );
+  }
   @Post("preview")
   @ApiBody({ type: C.WorkforceImportDto })
   @ApiCreatedResponse({ type: [C.WorkforcePreviewDto] })
