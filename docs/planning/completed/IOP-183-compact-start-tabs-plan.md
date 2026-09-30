@@ -40,6 +40,6 @@ Scope: [item](../items/IOP-183-compact-start-tabs.md).
 
 ## Closure
 
-Acceptance is complete. Item/backlog synchronized and plan archived. Local commit
-prepared for owner review; merging, pushing and activation are not part of this
-completed implementation increment.
+Acceptance is complete. Item/backlog synchronized and plan archived. Owner-approved publication is complete; see the
+[publication evidence](IOP-183-publication-plan.md). Docker activation remains
+outside this increment.

@@ -1,6 +1,6 @@
 # IOP-183 — Compact Start category tabs
 
-Status: Completed. Owner-requested visual refinement, 2026-09-30.
+Status: Completed and published. Owner-requested visual refinement, 2026-09-30.
 
 ## Scope and acceptance
 
@@ -15,3 +15,5 @@ Context: [visual identity](../../design/visual-identity.md), Accepted
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md).
 Supersedes the Start card presentation in IOP-182.
 Execution: [plan](../completed/IOP-183-compact-start-tabs-plan.md).
+
+Publication: [verified execution](../completed/IOP-183-publication-plan.md).
