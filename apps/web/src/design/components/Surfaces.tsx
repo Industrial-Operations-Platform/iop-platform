@@ -104,5 +104,11 @@ export function TableViewport({
   className = "",
   ...props
 }: ComponentProps<"div">) {
-  return <div {...props} className={`iop-table-viewport ${className}`} />;
+  return (
+    <div
+      tabIndex={0}
+      {...props}
+      className={`iop-table-viewport ${className}`}
+    />
+  );
 }

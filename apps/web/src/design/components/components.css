@@ -20,7 +20,11 @@
   border-radius: var(--iop-controlRadius);
   padding: 9px 13px;
   cursor: pointer;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: var(--iop-captionLineHeight);
   min-height: 44px;
   max-width: 100%;
   white-space: normal;
@@ -35,10 +39,9 @@
   border-color: var(--iop-line);
 }
 .iop-ui .iop-button--text {
-  border: 0;
+  border-color: transparent;
   background: transparent;
   color: var(--iop-activeInk);
-  padding: 0;
   text-align: left;
 }
 .iop-ui .iop-input,
@@ -195,8 +198,11 @@
 }
 .iop-ui .iop-table-viewport {
   overflow: auto;
-  max-height: 430px;
+  max-height: 65vh;
   margin-bottom: 20px;
+  background: var(--iop-surface);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
 }
 .iop-ui .iop-table {
   width: 100%;
@@ -207,8 +213,8 @@
 .iop-ui .iop-table td {
   text-align: left;
   border-bottom: 1px solid var(--iop-line);
-  padding: 10px;
-  vertical-align: top;
+  padding: 12px;
+  vertical-align: middle;
 }
 .iop-ui .iop-table th {
   vertical-align: middle;
@@ -217,7 +223,8 @@
 .iop-ui .iop-table caption {
   text-align: left;
   font-weight: var(--iop-metricWeight);
-  padding: 15px 0;
+  padding: 14px 12px;
+  color: var(--iop-muted);
 }
 .iop-ui .iop-alert {
   background: var(--iop-errorSurface);
@@ -706,7 +713,7 @@
   flex-wrap: wrap;
   gap: 0.25rem 0.5rem;
   min-width: 0;
-  padding: 0.65rem 0.5rem;
+  padding: 0.5rem;
   border-right: 0;
   font-weight: var(--iop-labelWeight);
 }
@@ -828,6 +835,8 @@
   min-height: 0;
   color: inherit;
   text-align: left;
+  padding: 0;
+  border: 0;
 }
 .iop-ui .iop-breadcrumb-link:hover {
   color: var(--iop-activeInk);
@@ -969,5 +978,53 @@
   }
   .iop-department-scope .iop-select {
     width: 100%;
+  }
+}
+
+.iop-ui .iop-button:not(:disabled):hover {
+  filter: brightness(0.97);
+}
+.iop-ui .iop-button--text:not(:disabled):hover {
+  background: var(--iop-activeSurface);
+}
+.iop-ui .iop-button--danger {
+  color: var(--iop-errorInk);
+  background: var(--iop-surface);
+  border-color: var(--iop-errorBorder);
+}
+.iop-ui .iop-icon-button {
+  width: 44px;
+  flex: 0 0 44px;
+  padding: 0;
+}
+.iop-ui .iop-form-actions {
+  border-top: 1px solid var(--iop-line);
+  padding-top: var(--iop-sectionGap);
+  margin-top: var(--iop-sectionGap);
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+.iop-ui .iop-table thead th {
+  background: var(--iop-canvas);
+  color: var(--iop-muted);
+}
+.iop-ui .iop-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.iop-ui .iop-table tbody tr:hover,
+.iop-ui .iop-table tbody tr:focus-within {
+  background: var(--iop-activeSurface);
+}
+.iop-ui .iop-table tbody tr:last-child > :is(th, td) {
+  border-bottom: 0;
+}
+
+@media (max-width: 620px) {
+  .iop-ui .iop-view-navigation--tabs.iop-view-navigation--scrollable {
+    grid-auto-columns: minmax(115px, 1fr);
+    overflow-x: auto;
   }
 }

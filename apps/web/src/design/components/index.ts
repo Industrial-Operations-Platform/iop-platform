@@ -1,6 +1,7 @@
 export {
   Actions,
   Button,
+  DeleteButton,
   RefreshButton,
   CollectionAction,
   Field,

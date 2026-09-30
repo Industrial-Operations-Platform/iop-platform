@@ -38,7 +38,6 @@
 .iop-ui .handover-matrix th,
 .iop-ui .handover-matrix td {
   vertical-align: middle;
-  padding: 1rem 0.75rem;
   overflow-wrap: anywhere;
 }
 .iop-ui
@@ -374,34 +373,7 @@
   font-size: var(--iop-captionSize);
 }
 .iop-ui .handover-matrix-surface {
-  background: var(--iop-surface);
-  border: 1px solid var(--iop-line);
-  border-radius: var(--iop-cardRadius);
-  max-height: 65vh;
   margin-bottom: 0;
-}
-.iop-ui .handover-matrix caption {
-  padding: 1rem;
-  color: var(--iop-muted);
-  font-size: var(--iop-captionSize);
-}
-.iop-ui .handover-matrix thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: var(--iop-canvas);
-  color: var(--iop-muted);
-  padding-block: 0.8rem;
-}
-.iop-ui .handover-matrix tbody tr:hover,
-.iop-ui .handover-matrix tbody tr:focus-within {
-  background: var(--iop-activeSurface);
-}
-.iop-ui .handover-matrix tbody tr:last-child :is(th, td) {
-  border-bottom: 0;
-}
-.iop-ui .handover-matrix tbody th {
-  border-left: 3px solid var(--iop-activeSurface);
 }
 .iop-ui .handover-matrix button {
   font-size: var(--iop-bodySize);

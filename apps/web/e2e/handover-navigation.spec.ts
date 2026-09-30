@@ -416,7 +416,7 @@ for (const width of [1440, 820, 375]) {
     );
     await expect(
       breadcrumb.getByText("Operations", { exact: true }),
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(
       breadcrumb.getByText(
         "What happened. What needs attention. What comes next.",

@@ -2,6 +2,34 @@ import { t } from "../../localization/i18n";
 import type { ComponentProps, ReactNode } from "react";
 import { Badge } from "./Surfaces";
 
+export function DeleteButton({
+  label,
+  className = "",
+  ...props
+}: Omit<ComponentProps<"button">, "children"> & { label: string }) {
+  return (
+    <Button
+      {...props}
+      variant="danger"
+      className={`iop-icon-button ${className}`}
+      aria-label={label}
+      title={label}
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        aria-hidden="true"
+      >
+        <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" />
+      </svg>
+    </Button>
+  );
+}
+
 export function RefreshButton({
   busy,
   label = "Refresh",
@@ -62,7 +90,9 @@ export function Button({
   type = "button",
   className = "",
   ...props
-}: ComponentProps<"button"> & { variant?: "primary" | "secondary" | "text" }) {
+}: ComponentProps<"button"> & {
+  variant?: "primary" | "secondary" | "text" | "danger";
+}) {
   return (
     <button
       {...props}

@@ -46,7 +46,7 @@ export function ViewNavigation<T extends string | number>({
   return (
     <nav
       ref={navigation}
-      className={`iop-view-navigation iop-view-navigation--${placement}`}
+      className={`iop-view-navigation iop-view-navigation--${placement} ${placement === "tabs" && items.length > 3 ? "iop-view-navigation--scrollable" : ""}`}
       aria-label={t(label)}
     >
       {items.map((item) => (
