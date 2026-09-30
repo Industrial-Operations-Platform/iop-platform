@@ -81,3 +81,14 @@ See the [API guide](../../apps/api/README.md),
 Actual IOP-020 results belong in its execution plan, not inferred from this guide.
 
 See [POC secrets hygiene](secrets-poc.md) for staged-index checks and private credential handling.
+
+## Workforce regression evidence
+
+M6 adds role-specific daily/weekly views, administrator import preview and atomic
+commit, JSONB-safe idempotency, person/phone overlap checks, overnight/DST handling,
+logical deletion and retained names. See the [Workforce guide](workforce.md).
+`apps/api/test/workforce.spec.ts` owns application/time/source cases;
+`infra/database/test/shift-handover.spec.cjs` owns current grants, real PostgreSQL
+concurrency/RLS and retained operational records. Browser units cover role views,
+preview invalidation and the shared German catalog. Start browser fixtures include
+Workforce responses separately from their analytical/Handover test data.

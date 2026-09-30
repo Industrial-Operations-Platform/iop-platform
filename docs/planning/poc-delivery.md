@@ -48,3 +48,11 @@ describes the pre-integration baseline; its runtime blockers were resolved by IO
 It is not an outstanding-work checklist. Native fixture/reset tools and `?preview=1`
 remain optional developer support; current acceptance uses the real import/report
 workflow described in the operator guide.
+
+## Operational increments
+
+[M6 Workforce](../product/workforce.md) is implemented under
+[IOP-184](items/IOP-184-m6-workforce.md): schedules/imports, role-specific planning,
+retained operational history, English/German presentation and platform identity.
+This extends the local application without closing IOP-130 or changing analytical
+metric semantics. Authentication and Shift Handover retain their existing ownership.

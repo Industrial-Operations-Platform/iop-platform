@@ -176,3 +176,10 @@ count badges. Mark the active category with the shared blue bottom border and na
 text. Remove card descriptions and large figures. On narrow screens, wrap label
 and count content within the row; preserve native button keyboard behavior and
 visible focus. Counts continue to show the full existing collection totals.
+
+## Platform mark and localization
+
+IOP-184 adds the connected-cell [SVG mark](../../apps/web/public/iop-mark.svg),
+reused by `PlatformMark` and the browser favicon. Its navy/white/blue colors come
+from this identity. German and English interface text share the presentation
+dictionary; localized text must use the same component hierarchy and tokens.

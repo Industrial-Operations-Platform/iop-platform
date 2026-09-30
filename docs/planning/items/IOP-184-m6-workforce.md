@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress
+Completed
 
 ## Authorized scope
 
@@ -15,6 +15,8 @@ intermediate confirmation, and requests one final review branch for develop.
 No remote publication or develop promotion was requested.
 
 ## Acceptance
+
+All criteria below are implemented and validated; see the execution record.
 
 - Scoped Workforce profiles/teams, configurable shift definitions and named zones.
 - Monday–Sunday planning with early/late/middle shifts and separate leader duties.
@@ -39,4 +41,4 @@ work, explicit Ferien means vacation, omitted Sunday is unknown. The email warns
 that partial absences are not represented. Do not infer them. Corporate database
 connectivity, payroll and automatic roster optimization are deferred.
 
-[Execution plan](../active/IOP-184-m6-workforce-plan.md)
+[Execution plan](../completed/IOP-184-m6-workforce-plan.md)

@@ -109,16 +109,16 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 | Task context | Status |
 | --- | --- |
-| [IOP-050 — Technician/team profiles](items/IOP-050-workforce-profiles.md) | Proposed |
-| [IOP-051 — Team model](items/IOP-051-team-model.md) | Proposed |
-| [IOP-052 — Shift type configuration](items/IOP-052-shift-types.md) | Proposed |
-| [IOP-053 — Shift instances](items/IOP-053-shift-instances.md) | Proposed |
-| [IOP-054 — Workplace/assignment targets](items/IOP-054-assignment-targets.md) | Proposed |
-| [IOP-055 — Technician assignments](items/IOP-055-shift-assignments.md) | Proposed |
-| [IOP-056 — Springer/floating assignment](items/IOP-056-floating-assignments.md) | Proposed |
-| [IOP-057 — Personal schedule view](items/IOP-057-my-schedule.md) | Proposed |
-| [IOP-058 — Team Leader planning view](items/IOP-058-team-planning-view.md) | Proposed |
-| [IOP-059 — Assignment history](items/IOP-059-assignment-history.md) | Proposed |
+| [IOP-050 — Technician/team profiles](items/IOP-050-workforce-profiles.md) | Completed |
+| [IOP-051 — Team model](items/IOP-051-team-model.md) | Completed |
+| [IOP-052 — Shift type configuration](items/IOP-052-shift-types.md) | Completed |
+| [IOP-053 — Shift instances](items/IOP-053-shift-instances.md) | Completed |
+| [IOP-054 — Workplace/assignment targets](items/IOP-054-assignment-targets.md) | Completed |
+| [IOP-055 — Technician assignments](items/IOP-055-shift-assignments.md) | Completed |
+| [IOP-056 — Springer/floating assignment](items/IOP-056-floating-assignments.md) | Completed |
+| [IOP-057 — Personal schedule view](items/IOP-057-my-schedule.md) | Completed |
+| [IOP-058 — Team Leader planning view](items/IOP-058-team-planning-view.md) | Completed |
+| [IOP-059 — Assignment history](items/IOP-059-assignment-history.md) | Completed |
 
 ## M7 — Shift Handover
 
@@ -317,4 +317,4 @@ canonical asset integration.
 | [IOP-181 — Refine operational selection, matrix and personal entries](items/IOP-181-handover-view-polish.md) | Completed |
 | [IOP-182 — Structured entry details and neutral Start selection](items/IOP-182-entry-detail-neutral-start.md) | Completed |
 | [IOP-183 — Compact Start category tabs](items/IOP-183-compact-start-tabs.md) | Completed |
-| [IOP-184 — M6 Workforce delivery](items/IOP-184-m6-workforce.md) | In progress |
+| [IOP-184 — M6 Workforce delivery](items/IOP-184-m6-workforce.md) | Completed |

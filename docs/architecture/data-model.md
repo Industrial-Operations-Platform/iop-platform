@@ -333,3 +333,13 @@ and site. Equipment references include namespace, code and configured location,
 without creating canonical assets from analytics. Authorship and responsibility
 reference same-site profiles. Calendar occurrence/deadline dates remain distinct
 from server creation instants. See [storage and operation](../development/shift-handover.md).
+
+## M6 runtime records
+
+Workforce stores site-scoped typed settings, worker links, personal schedules and
+assignments in `workforce.records`, with append-only `workforce.revisions`. Shift
+instances retain their site business date, local hours and resolved UTC instants.
+Phone references use stable zone IDs; names and assignment labels are snapshots.
+`users_rbac.profiles.deleted_at` hides a logically removed profile while keeping
+identity references and journal authors intact. Handover entry tombstones preserve
+all revisions. See the [Workforce guide](../development/workforce.md).

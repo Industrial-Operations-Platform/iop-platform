@@ -404,3 +404,6 @@ or `iop-analysis-data` volumes still need its credentials and installation ident
 IOP-164 retained all three after verifying that their associated volumes exist.
 Build output in application/database `dist/` directories is disposable and regenerated
 from current sources; it is not database state.
+
+Workforce planning, manual schedule imports, German/English language selection and
+synthetic workforce provisioning are documented in the [Workforce guide](workforce.md).

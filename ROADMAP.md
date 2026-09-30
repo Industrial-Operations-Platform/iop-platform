@@ -22,10 +22,13 @@ Any resulting change needs its own scope and execution plan.
 
 - Third-party authentication and operating controls before shared use.
 - Pareto as a function within Executive Overview, not a separate POC tab.
-- External connections, full audit, workers, assets/maps, workforce, handovers,
+- External connections, full audit, workers, assets/maps,
   maintenance and improvement tracking when explicitly selected.
 
 The [backlog](docs/planning/backlog.md) owns task statuses and capability groups;
 the [v1 proposal](docs/product/scope-v1.md) describes the broader product direction.
 These are not extra POC exit gates or commitments to delivery dates.
 Follow the [workflow](docs/planning/workflow.md) when selecting work.
+
+M6 Workforce is delivered by [IOP-184](docs/planning/items/IOP-184-m6-workforce.md);
+corporate schedule connectivity remains deferred behind the manual import port.

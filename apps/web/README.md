@@ -55,6 +55,14 @@ workspace, including URLs retaining `?preview=1`. Only `src/main.tsx` remains at
 the source root; it mounts the host composition and shared `design/base.css`
 resets. Generated transport bindings live in `src/contracts`; HTTP parsing stays at the
 adapter boundary. `src/host/WorkspaceApp.tsx` composes the independent analysis and
-access features.
+access, Shift Handover and Workforce features.
 Vite empties `dist/` before building, so only the current HTML and bundled assets
 remain. Tests and fixtures are not production build inputs.
+
+## Workforce, localization and identity
+
+Workforce provides technician daily visibility, leader weekly planning and
+administrator schedule import/configuration. The shared English/German dictionary
+selects the browser language automatically and persists explicit overrides.
+The SVG mark in `public/iop-mark.svg` is reused by the shell and favicon and copied
+into the web image. See the [Workforce guide](../../docs/development/workforce.md).

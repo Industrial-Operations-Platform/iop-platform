@@ -2,96 +2,37 @@
 
 ## Status
 
-Proposed
+Completed — implemented and validated through IOP-184.
 
-## Milestone
+## Scope and authorization
 
-M6 — Workforce & Shift Management. Proposed delivery slice.
+M6 — Workforce & Shift Management. Expected outcome: A person can be assigned to a zone/function.
+The owner authorized the full M6 implementation on 2026-09-30 through
+[IOP-184](IOP-184-m6-workforce.md), including local commits without intermediate
+confirmation. This replaces the earlier documentation-only proposal.
 
-## Goal
+## Delivered behavior
 
-Workplace/assignment targets. Expected outcome: A person can be assigned to a zone/function
+Site-owned targets retain current Halle names and can be renamed. Zone, floating, leadership and maintenance duties identify the assignment function; phone responsibility uses stable target IDs.
 
-## User / business value
+Teams, shifts and assignment rules remain generic. Current Halle names and
+Springer wording belong to site configuration/presentation, outside the core.
+See the canonical [product contract](../../product/workforce.md) and
+[implementation/import guide](../../development/workforce.md).
 
-Technicians and leaders need to know who works where and when.
+## Acceptance and evidence
 
-## Context
+- [x] A person can be assigned to a zone/function.
+- [x] Scoped server authorization, site-time semantics and relevant conflicts are implemented.
+- [x] Final validation and synchronized documentation are recorded in the
+  [M6 execution plan](../completed/IOP-184-m6-workforce-plan.md).
 
-Scope: Workforce and Shift Management. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; inclusion in the backlog does not authorize implementation.
-
-## Current state
-
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
-
-## Desired state
-
-A person can be assigned to a zone/function
-
-## Requirements
-
-- Deliver only the outcome described for IOP-054.
-- Teams, shifts and assignments are generic; Springer and local names are labels/configuration.
-
-## Acceptance criteria
-
-- [ ] A person can be assigned to a zone/function
-- [ ] The plan documents required scenarios and decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
-
-## Domain considerations
-
-Teams, shifts and assignments are generic; Springer and local names are labels/configuration.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope for relevant operations and references.
-Do not include secrets, drawings or production data in the repository. Keep industrial
-integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Separate workforce profiles from authenticated users; handle the site time zone, midnight and daylight-saving changes.
-
-## API considerations
-
-Validate planning permissions and personal access; define conflicts without assuming universal exclusivity.
-
-## UI considerations
-
-Show clear intervals and site context; do not implement automatic optimization or payroll.
-
-## Dependencies
+## Dependencies and boundaries
 
 [IOP-026](IOP-026-site-model.md)
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
-
-## Non-goals
-
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must define executable commands and scenarios for the criteria below using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+This delivery uses existing scoped identities and Accepted ADR-0014, ADR-0016,
+ADR-0032 and ADR-0036 patterns; it does not accept Proposed decisions or complete
+broader dependency stories by inference. Corporate connectivity, payroll,
+automatic roster optimization and inference of partial absences remain outside
+this increment. Owner acceptance of the operational product remains a review step.

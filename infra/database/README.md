@@ -362,9 +362,9 @@ origin/local-only checks and actual import/read/reset/browser evidence.
 ## Internal import batches (IOP-042)
 
 The seventh migration implements [Accepted ADR-0027](../../docs/architecture/adr/ADR-0027-poc-import-publication.md).
-At that increment, six-migration databases applied one migration. The current
-installation has eleven migrations, including OIP aggregates, guarded demo maintenance,
-reporting profiles and relational Hitliste analytics.
+At that increment, six-migration databases applied one migration. The installation now has sixteen migrations, including OIP aggregates, guarded
+demo maintenance, reporting profiles, relational Hitliste analytics, local access,
+Handover and Workforce.
 Use the normal provision/migrate commands. There is no automatic startup migration,
 import endpoint, new environment variable or demo reset command in this slice.
 
@@ -415,8 +415,8 @@ source cells is logged. HTTP retrieval headers belong to the host adapter.
 ## Relational analytical tables — IOP-148
 
 Migration `20260929000000-hitliste-analytics` adds the scoped `analytics` schema
-with six catalogs and `fact_hitliste` (20 total application/metadata tables across
-11 migrations). See the [relationship model](../../docs/architecture/data-model.md#relational-hitliste-analytical-projection--iop-148)
+with six catalogs and `fact_hitliste` (20 application/metadata tables across
+11 migrations at that increment). See the [relationship model](../../docs/architecture/data-model.md#relational-hitliste-analytical-projection--iop-148)
 and [ADR-0033](../../docs/architecture/adr/ADR-0033-relational-hitliste-analytics.md).
 The source-specific catalogs belong to the OIP persistence adapter, not Platform Core.
 
@@ -441,3 +441,13 @@ Existing active profiles with current site access receive explicit assignments;
 disabled memberships remain disabled. Runtime has no delete or revision-update
 privilege. The provisioning allowlist includes only the reviewed columns.
 See [setup, permissions and storage](../../docs/development/shift-handover.md).
+
+## Workforce and retained profiles — IOP-184
+
+`20261003000000-workforce` adds scoped records, append-only revisions and the three
+Workforce permission bundles. `20261004000000-logical-profile-deletion` adds the
+profile deletion marker; account removal revokes access without cascading into
+operational history. Both follow forced organization/site RLS and column-limited
+runtime grants, with no DELETE grant. The current schema contains 31 application/
+metadata tables across 16 migrations. Existing data survives this additive upgrade.
+See [Workforce operation and fixtures](../../docs/development/workforce.md).

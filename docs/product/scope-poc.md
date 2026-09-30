@@ -3,6 +3,10 @@
 The owner-confirmed workflow is **CSV → preparation → persistent history → analysis
 → presentation**. This page consolidates the refinements delivered through IOP-154;
 [delivery status](../planning/poc-delivery.md) owns evidence and open acceptance.
+This is the historical analytical slice; local authentication/administration,
+Shift Handover and [M6 Workforce](workforce.md) are now separately implemented.
+The current shell opens Administration for administrators and Start for operators;
+Data Analysis remains an independent workspace.
 The [operator guide](../development/running-poc.md) owns execution instructions.
 
 ## Runtime and user
@@ -130,10 +134,11 @@ reset/reload path; the main Docker installation preserves historical data on res
 
 ## Deferred scope
 
-Shared-use authentication/provider choice, account and membership administration,
-live industrial integrations, a general integration registry, workers, full audit,
+Shared-use identity-provider choice, live industrial integrations, a general
+integration registry, workers and platform-wide audit,
 production retention/backup/restore, exports, shared hosting, assets/maps/surveys,
-workforce, handovers, maintenance and improvement tracking are separately scoped.
+maintenance and improvement tracking remain separately scoped. Local account
+administration, Shift Handover and M6 Workforce have their own delivered contracts.
 Basic validation, safe configuration, explicit authorization, useful errors and tests
 remain part of every delivered slice. POC completion does not complete those future
 parents or certify shared-use v1.

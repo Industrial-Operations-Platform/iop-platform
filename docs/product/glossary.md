@@ -22,6 +22,12 @@
 | Normalization | Validated conversion to canonical identifiers, types, units and time semantics while retaining provenance. |
 | Operational intelligence | Analysis of events and operational context to support human decisions. |
 | Shift | Planned or actual work interval in site time context. |
+| Workforce profile | Site-scoped team/home-zone association for a platform user; separate from authentication. |
+| Personal schedule | Imported or administrator-entered daily availability/status; does not determine the workplace. |
+| Assignment | Dated operational duty and interval within personal availability, optionally carrying a zone and phone responsibility. |
+| Floating support | Generic duty allowing rotation between zones; Springer is local presentation vocabulary. |
+| Phone responsibility | Exclusive holder during an interval, referenced by a stable zone or maintenance identity. |
+| Logical deletion | Removal from active views and access while retaining original records, names and revision history. |
 | Handover | Structured transfer of operational context and open issues between shifts. |
 | Maintenance record | Work concerning an asset, with status, responsibility and outcome. |
 | Authentication | Verification of identity; distinct from permission decisions. |
@@ -60,5 +66,5 @@ Accepted [ADR-0016](../architecture/adr/ADR-0016-time-and-timezone-model.md) def
 | Reporting period | Known half-open interval with interpretation metadata, or an explicitly unresolved source period label. |
 | Half-open interval | Includes its start and excludes its end: `[start, end)`. |
 | Elapsed duration | Difference between resolved instants in a stated unit; distinct from accumulated alarm duration. |
-| Shift business date | Local start date labeling a future shift instance, including overnight shifts. |
+| Shift business date | Local start date labeling a shift instance or assignment, including overnight shifts. |
 | Time ambiguity | A local clock value is missing or repeated because of an offset change; requires explicit handling. |

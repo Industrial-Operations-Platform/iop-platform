@@ -9,7 +9,7 @@ scope and data invariants in delivered paths. The local selector is implemented
 under ADR-0018/0030/0034. [IOP-165](../planning/items/IOP-165-operational-home.md)
 implements temporary authenticated access and user administration under accepted
 [ADR-0035](adr/ADR-0035-transitional-authentication.md). Shift Handover supplies operational entries and selected Start highlights under
-ADR-0036; Workforce, canonical Assets and Maintenance remain deferred. Existing identity, authorization and RLS requirements still apply.
+ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); canonical Assets and Maintenance remain deferred. Existing identity, authorization and RLS requirements still apply.
 
 [IOP-168](../planning/items/IOP-168-shift-handover.md) captures the requested first
 Shift Handover increment. [ADR-0036](adr/ADR-0036-shift-handover.md) defines its accepted
@@ -164,3 +164,7 @@ service reuses ADR-0026 authorization/transactions and invokes an injected ownin
 OIP publication/reconciliation contract. No production OIP receiver, parser or HTTP
 activation is introduced. See the [batch model](import-batches-poc.md) and
 [internal integration guide](../../infra/database/README.md#internal-import-batches-iop-042).
+
+Workforce owns personal availability, teams, shift definitions, assignments and
+revision history. Its source decoder belongs to Integrations; scoped people come
+from Users/RBAC through host composition. See [Workforce](../product/workforce.md).

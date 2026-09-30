@@ -188,3 +188,11 @@ The host composes framework-free handover use cases with PostgreSQL, configured
 Platform Core locations and Users/RBAC lookup adapters. Routes under
 `/api/v1/handover` provide the site journal, immutable revision history, issue
 follow-up and selected Start highlights. See [the operational contract and guide](../../docs/development/shift-handover.md).
+
+## Workforce
+
+The host composes Workforce planning, site-clock and PostgreSQL adapters with the
+Users/RBAC directory and Integrations CSV/email decoder. `/api/v1/workforce` exposes
+board, save, preview, import and history operations with current scoped grants.
+Administrator profile/entry removal is logical and retains original author names.
+See [formats, permissions and validation](../../docs/development/workforce.md).

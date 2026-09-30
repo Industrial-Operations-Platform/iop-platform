@@ -22,6 +22,9 @@ SQL drivers, transport schemas or presentation adapters.
 | `apps/api/src/modules/authentication/` | Provider-independent authentication use cases with local Argon2id and PostgreSQL session adapters |
 | `apps/api/src/modules/users-rbac/` | User administration, profile rules and scoped authorization with PostgreSQL adapters |
 | `apps/api/src/modules/integrations/` | Import lifecycle, CSV adapter, RAW retention, source-date admission and mapping snapshots |
+| `apps/api/src/modules/workforce/` | Personal schedules, scoped planning, teams, assignments and retained revisions |
+| `apps/web/src/features/workforce/` | Framework-free planning use cases with HTTP/React role views |
+| `apps/web/src/localization/` | Shared English/German presentation resources and locale selection |
 | `apps/api/src/modules/shift-handover/` | Operational entries, issue follow-up, immutable revisions and PostgreSQL storage under ADR-0036 |
 | `apps/api/src/modules/oip/` | Exact facts, analytical domain/use cases and outbound PostgreSQL reporting adapters |
 | `apps/web/src/features/analysis/` | Framework-free selection/use cases with HTTP, React and ECharts adapters |
@@ -113,7 +116,7 @@ Public `/health` proves process response only. Use the [API guide](apps/api/READ
 and [testing guide](docs/development/testing-poc.md) for executable checks.
 
 Shared authentication, administration, external connections, workers, physical assets,
-other operational modules and production operating controls remain separately scoped.
+remaining operational modules and production operating controls remain separately scoped.
 Industrial integrations are read-only; no plant control commands are included.
 See the [module map](docs/architecture/modules.md),
 [conceptual model](docs/architecture/data-model.md), [ADRs](docs/architecture/adr/)
@@ -123,3 +126,9 @@ Shift Handover follows [ADR-0036](docs/architecture/adr/ADR-0036-shift-handover.
 operator-configured locations, explicit unverified equipment references and durable
 revision history, independent of analytics. [Setup and workflow](docs/development/shift-handover.md)
 document permissions and the deferred Workforce/Asset integrations.
+
+Workforce is delivered under [IOP-184](docs/planning/items/IOP-184-m6-workforce.md).
+It reuses accepted scoped authorization and revision patterns. Personal availability
+and operational assignments remain separate; Integrations decodes manual sources.
+[Module contract](docs/product/workforce.md) and [implementation guide](docs/development/workforce.md)
+cover time resolution, role boundaries, import preview, logical deletion and retained names.

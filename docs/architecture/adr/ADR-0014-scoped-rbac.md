@@ -245,3 +245,14 @@ modules, data model, glossary and affected ADR follow-up notes are synchronized.
 IOP-006 is complete as design; no implementation or adjacent story is activated.
 Official OWASP and Nest sources informed the evaluation; acceptance came from the
 owner's explicit confirmation. Runtime authorization verification remains future work.
+
+## M6 permission catalog extension
+
+The owner's explicit 2026-09-30 M6 request assigns `workforce.read` to the
+`workforce-reader` site bundle for all four operational profiles; `workforce.plan`
+to `workforce-planner` for Team Leader and Administrator; and
+`workforce.administer` to `workforce-administrator` for Administrator only.
+These reuse the accepted scoped-role mechanism and current-grant checks. Import,
+configuration and logical removal require administer; operational assignment
+changes require plan. This does not accept any previously Proposed ADR. See
+[IOP-184](../../planning/items/IOP-184-m6-workforce.md).
