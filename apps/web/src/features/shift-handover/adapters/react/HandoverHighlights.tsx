@@ -120,7 +120,7 @@ export function HandoverHighlights({
       ) : (
         <>
           <ViewNavigation
-            placement="summary"
+            placement="tabs"
             label="Operational updates"
             selected={view}
             onSelect={setView}
@@ -129,19 +129,16 @@ export function HandoverHighlights({
                 id: "attention",
                 label: "Needs attention",
                 count: attention.total,
-                description: "Blocked equipment or overdue action / feedback.",
               },
               {
                 id: "pending",
                 label: "Open reports",
                 count: pending.total,
-                description: "Open or in progress, ready for follow-up.",
               },
               {
                 id: "highlights",
                 label: "Shift Handover",
                 count: highlights.total,
-                description: "Selected updates for everyone at your site.",
               },
             ]}
           />

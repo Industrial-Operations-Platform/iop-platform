@@ -196,41 +196,43 @@ for (const width of [1440, 820, 375]) {
     await expect(operational.locator(".iop-metric-grid")).toHaveCount(0);
     await expect(startViews.getByRole("button")).toHaveCount(3);
     await expect(startViews).toHaveCSS("position", "static");
-    const attentionCard = startViews.getByRole("button", {
+    const attentionTab = startViews.getByRole("button", {
       name: /Needs attention/,
     });
-    await expect(attentionCard).toHaveAccessibleDescription(
-      "Blocked equipment or overdue action / feedback.",
-    );
+    await expect(startViews.locator(".iop-view-description")).toHaveCount(0);
     for (const card of await startViews.getByRole("button").all()) {
       await expect(card).toHaveCSS("background-color", "rgb(255, 255, 255)");
     }
-    await expect(attentionCard).toHaveCSS("border-top-color", "rgb(23, 43, 67)");
-    const attentionBounds = await attentionCard.boundingBox();
+    await expect(attentionTab).toHaveCSS("border-bottom-color", "rgb(8, 123, 213)");
+    const attentionBounds = await attentionTab.boundingBox();
     const reportsBounds = await startViews
       .getByRole("button", { name: /Open reports/ })
       .boundingBox();
-    if (width > 760) expect(attentionBounds!.y).toBe(reportsBounds!.y);
-    else
-      expect(reportsBounds!.y).toBeGreaterThan(
-        attentionBounds!.y + attentionBounds!.height,
-      );
+    expect(attentionBounds!.y).toBe(reportsBounds!.y);
+    expect(attentionBounds!.width).toBeCloseTo(reportsBounds!.width, 0);
+    expect(attentionBounds!.height).toBeLessThanOrEqual(width > 760 ? 52 : 90);
+    const tabsBounds = await startViews.boundingBox();
+    expect(attentionBounds!.width * 3).toBeCloseTo(tabsBounds!.width, 0);
+    for (const tab of await startViews.getByRole("button").all()) {
+      await expect(tab.locator(".iop-badge")).toHaveText("1");
+      await expect(tab.locator(".iop-badge")).toHaveCSS("font-size", "12px");
+    }
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop182-start-${width}.png`,
+      path: `/tmp/iop183-start-${width}.png`,
       fullPage: true,
     });
     await startViews.getByRole("button", { name: /Open reports/ }).focus();
     await page.keyboard.press("Enter");
     await expect(
       startViews.getByRole("button", { name: /Open reports/ }),
-    ).toHaveCSS("border-top-color", "rgb(23, 43, 67)");
-    await expect(attentionCard).toHaveAttribute("aria-pressed", "false");
-    await expect(attentionCard).toHaveCSS("border-top-color", "rgb(203, 215, 226)");
+    ).toHaveCSS("border-bottom-color", "rgb(8, 123, 213)");
+    await expect(attentionTab).toHaveAttribute("aria-pressed", "false");
+    await expect(attentionTab).toHaveCSS("border-bottom-color", "rgba(0, 0, 0, 0)");
     await expect(
       operational
         .getByRole("region", { name: "Open reports", exact: true })

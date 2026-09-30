@@ -686,6 +686,37 @@
   }
 }
 
+/* Compact category tabs share the available width and keep totals beside labels. */
+.iop-ui .iop-view-navigation--tabs {
+  position: static;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--iop-line);
+  overflow: visible;
+  z-index: auto;
+}
+.iop-ui .iop-view-navigation--tabs .iop-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  min-width: 0;
+  padding: 0.65rem 0.5rem;
+  border-right: 0;
+  font-weight: var(--iop-labelWeight);
+}
+.iop-ui .iop-view-navigation--tabs .iop-button:not([aria-pressed="true"]):hover {
+  background: var(--iop-canvas);
+}
+.iop-ui .iop-view-navigation--tabs .iop-button:focus-visible {
+  outline-offset: -3px;
+}
+
 /* Descriptive view cards combine the collection total with its selection control. */
 .iop-ui .iop-view-navigation--summary {
   position: static;

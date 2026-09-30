@@ -21,7 +21,7 @@ export function ViewNavigation<T extends string | number>({
   }[];
   selected: T;
   onSelect: (id: T) => void;
-  placement?: "bottom" | "inline" | "summary";
+  placement?: "bottom" | "inline" | "summary" | "tabs";
 }) {
   const descriptionId = useId();
   const navigation = useRef<HTMLElement>(null);

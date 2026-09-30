@@ -117,7 +117,7 @@ palette and flat surfaces; use emphasis purposefully:
 
 | Information | Reusable treatment |
 | --- | --- |
-| Selectable operational totals | `ViewNavigation placement="summary"` combines three totals and descriptions with view selection; neutral white surfaces for all three collections, with a dark selected border and underlined label |
+| Selectable operational totals | `ViewNavigation placement="tabs"` combines labels and small count badges in an equal-width row with a blue active underline |
 | Summary explanation | `iop-metric-description`: short muted caption under the figure |
 | Department/location | Semibold muted caption, subordinate to the blue entry title |
 | State and count | `Badge`: neutral, info, attention or success with explicit text; color never supplies the meaning alone |
@@ -141,10 +141,11 @@ buttons preserve Tab/Enter/Space navigation without claiming ARIA tab semantics.
 
 ## Operational collections — IOP-181
 
-Start combines counts and navigation in three equal selection cards, without a
+Start combines counts and navigation in three compact, equal-width tabs, without a
 second row of duplicate metrics. Native department selection sits in a compact,
-labelled filter surface. Summary selectors stack on narrow screens, keeping all
-three choices visible. Neutral highlights do not imply successful equipment health.
+labelled filter surface. Tabs remain in one row on narrow screens, allowing their
+contents to wrap while keeping all three choices visible. Neutral highlights do
+not imply successful equipment health.
 
 Department matrix uses a white bordered viewport, sticky muted column headings,
 shared state/category badges, labelled date columns and bounded detail excerpts;
@@ -156,10 +157,9 @@ colors and typography; no urgency is inferred from the browser clock.
 
 ## Entry detail and neutral selection — IOP-182
 
-Start selection cards use white surfaces and neutral counters. A dark outline,
-strong top border and underlined label identify the active view; semantic urgency
-colors remain on entry status badges. Counts, descriptions and keyboard focus stay
-visible. This owner-requested refinement supersedes the colored Start selectors.
+Start uses white surfaces and neutral counters; semantic urgency colors remain
+on entry status badges. IOP-183 supersedes the original outlined selection cards
+with compact tabs as specified below.
 
 Entry details preserve the summary hierarchy through location, state/condition
 badges and emphasized equipment codes with an explicit unverified label. Full
@@ -167,3 +167,12 @@ prose and challenge/cause/measure appear beside a neutral facts panel for owners
 references and labelled dates; both stack on narrow screens. Recorded metadata is
 muted, actions remain separated, and historical revisions use bordered disclosures
 with the same complete content layout. Reuse shared tokens and components.
+
+## Compact Start tabs — IOP-183
+
+Use shared `ViewNavigation placement="tabs"` for the Start categories: one row
+filling the available width, equal-width controls, standard body labels and small
+count badges. Mark the active category with the shared blue bottom border and navy
+text. Remove card descriptions and large figures. On narrow screens, wrap label
+and count content within the row; preserve native button keyboard behavior and
+visible focus. Counts continue to show the full existing collection totals.
