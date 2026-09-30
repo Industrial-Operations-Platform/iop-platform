@@ -317,3 +317,4 @@ canonical asset integration.
 | [IOP-181 — Refine operational selection, matrix and personal entries](items/IOP-181-handover-view-polish.md) | Completed |
 | [IOP-182 — Structured entry details and neutral Start selection](items/IOP-182-entry-detail-neutral-start.md) | Completed |
 | [IOP-183 — Compact Start category tabs](items/IOP-183-compact-start-tabs.md) | Completed |
+| [IOP-184 — M6 Workforce delivery](items/IOP-184-m6-workforce.md) | In progress |
