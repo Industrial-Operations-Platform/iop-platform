@@ -35,4 +35,6 @@ References: [IOP-184](IOP-184-m6-workforce.md),
 
 On 2026-10-01 the owner approved merging the story into `develop`, pushing both
 branches to `origin` and updating the local Docker application.
-[Publication and activation plan](../active/IOP-185-publication-activation-plan.md).
+Both branches are published, and the updated API/web containers are healthy at
+`http://127.0.0.1:8080`; the existing database and persistent data were retained.
+[Publication and activation evidence](../completed/IOP-185-publication-activation-plan.md).
