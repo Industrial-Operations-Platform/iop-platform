@@ -24,3 +24,9 @@ References: [IOP-185](IOP-185-administration-workforce-ui.md),
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md).
 
 [Execution evidence](../completed/IOP-186-table-card-alignment-plan.md)
+
+## Approved publication and activation
+
+On 2026-10-01 the owner approved merging the story into `develop`, publishing
+both branches to `origin` and updating the local Docker application.
+[Publication and activation plan](../active/IOP-186-publication-activation-plan.md).
