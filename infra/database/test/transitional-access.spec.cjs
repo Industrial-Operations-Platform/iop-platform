@@ -279,6 +279,16 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     await pw(credential).toBeVisible();
     const secret = await credential.textContent();
     await button("Dismiss initial password").click();
+    await button("User details for browser-colleague").click();
+    const details = page.getByRole("dialog", { name: "User details" });
+    await details.getByLabel("Name", { exact: true }).fill("Updated browser colleague");
+    await details.getByRole("button", { name: "Save changes" }).click();
+    await pw(details).toHaveCount(0);
+    await pw(button("User details for browser-colleague")).toHaveText("Updated browser colleague");
+    const recentChanges = await page.request.get(origin + "/api/v1/users/activity");
+    expect(recentChanges.status()).toBe(200);
+    expect(await recentChanges.json()).toEqual(expect.arrayContaining([expect.objectContaining({ action: "user.name_changed", subjectName: "Updated browser colleague" })]));
+
     const artifacts = "/tmp/iop-165-access-browser";
     mkdirSync(artifacts, { recursive: true });
     await page.screenshot({
@@ -330,6 +340,9 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     await pw(page.getByRole("region", { name: "Start page" })).toBeVisible();
     await pw(button("Users & profiles")).toHaveCount(0);
     await pw(button("Administration")).toHaveCount(0);
+    expect((await page.request.get(origin + "/api/v1/users/activity")).status()).toBe(403);
+    expect((await post("/users/details", { id: "admin-a", name: "Forbidden", profile: "technician", active: true })).status()).toBe(403);
+
     expect((await page.request.get(origin + "/api/v1/users")).status()).toBe(
       403,
     );
@@ -428,6 +441,94 @@ test("scoped name editing preserves identity, session, permissions and an audit 
   await expect(
     access.users.rename("admin-a", id, "Deleted edit"),
   ).rejects.toMatchObject({ code: "access_denied" });
+});
+
+test("account details and recent activity retain organization scope and atomic writes", async () => {
+  const created = await access.users.create("admin-a", {
+    name: "Before details",
+    username: "details-tech",
+    profile: "technician",
+  });
+  const id = created.user.id;
+  await access.users.update("admin-a", {
+    id,
+    name: "After details",
+    profile: "team-leader",
+    active: true,
+  });
+  expect(
+    (await access.users.list("admin-a")).find((user) => user.id === id),
+  ).toMatchObject({
+    name: "After details",
+    profile: "team-leader",
+    active: true,
+  });
+  await expect(access.users.activity(id)).rejects.toMatchObject({
+    code: "access_denied",
+  });
+  await expect(
+    other.users.update("admin-b", {
+      id,
+      name: "Foreign edit",
+      profile: "technician",
+      active: true,
+    }),
+  ).rejects.toMatchObject({ code: "access_denied" });
+  const activity = await access.users.activity("admin-a");
+  expect(activity.length).toBeLessThanOrEqual(20);
+  expect(activity).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        subjectName: "After details",
+        action: "user.name_changed",
+        recordedAt: expect.any(String),
+      }),
+      expect.objectContaining({
+        subjectName: "After details",
+        action: "user.access_changed",
+      }),
+    ]),
+  );
+  expect(
+    (await other.users.activity("admin-b")).some(
+      (event) => event.subjectName === "After details",
+    ),
+  ).toBe(false);
+  // A rename in an administrator transaction must roll back with any later failure.
+  const {
+    PgAdministration,
+  } = require("../../../apps/api/dist/modules/users-rbac/adapters/postgres/administration");
+  const failingStore = new PgAdministration(
+    pool,
+    { organizationId: "org-a", siteId: "site-a" },
+    { names: async () => new Map() },
+  );
+  const {
+    UserAdministration,
+  } = require("../../../apps/api/dist/modules/users-rbac/application/administration");
+  const failingService = new UserAdministration(failingStore, async () => {
+    throw new Error("unused");
+  });
+  await expect(
+    failingService.update("admin-a", {
+      id,
+      name: "Must roll back",
+      profile: "technician",
+      active: true,
+    }),
+  ).rejects.toMatchObject({ code: "access_denied" });
+  expect(
+    (await access.users.list("admin-a")).find((user) => user.id === id).name,
+  ).toBe("After details");
+  await access.users.remove("admin-a", id);
+  expect(await access.users.activity("admin-a")).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        subjectName: "After details",
+        action: "user.deleted",
+      }),
+    ]),
+  );
 });
 
 test("changing and restoring Technician never reinstates analytical grants", async () => {

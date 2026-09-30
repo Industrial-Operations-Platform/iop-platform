@@ -1,4 +1,6 @@
 import type {
+  AccessActivity,
+  UserDetails,
   NewUser,
   Profile,
   SessionContext,
@@ -11,6 +13,8 @@ export interface AccessGateway {
   logout(): Promise<void>;
   rename(id: string, name: string): Promise<void>;
   users(): Promise<UserProfile[]>;
+  activity(): Promise<AccessActivity[]>;
+  update(user: UserDetails): Promise<void>;
   remove?(id: string): Promise<void>;
   create(
     user: NewUser,
@@ -47,6 +51,12 @@ export class AccessApplication {
   }
   users() {
     return this.gateway.users();
+  }
+  activity() {
+    return this.gateway.activity();
+  }
+  update(user: UserDetails) {
+    return this.gateway.update(user);
   }
   create(user: NewUser) {
     return this.gateway.create(user);

@@ -33,3 +33,12 @@ export interface SessionContext {
     siteTimeZone: string;
   } | null;
 }
+
+export interface AccessActivity {
+  id: string;
+  actorName: string;
+  subjectName: string;
+  action: string;
+  recordedAt: string;
+}
+export type UserDetails = Omit<UserProfile, "username">;

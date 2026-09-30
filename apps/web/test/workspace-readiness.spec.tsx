@@ -117,24 +117,25 @@ test.each([true, false])(
         password: jest.fn(),
         logout: jest.fn(),
         rename: jest.fn(),
+        update: jest.fn(),
+        activity: jest.fn(async () => []),
         create: jest.fn(),
       }),
     );
     await screen.findByRole("region", { name: "Administration overview" });
-    expect(screen.getByRole("button", { name: "Import files" })).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "Data preparation" }),
+      screen.getByRole("heading", { name: "Latest file received" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "KPI settings & goals" }),
-    ).toBeVisible();
+      screen.queryByRole("button", { name: "Import files" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("combobox", { name: "Profile view" }),
     ).not.toBeInTheDocument();
     if (canAdminister) {
-      fireEvent.click(screen.getByRole("button", { name: "Manage users" }));
+      fireEvent.click(screen.getByRole("button", { name: "Users & profiles" }));
       await screen.findByRole("heading", { name: "Users & profiles" });
-      await waitFor(() => expect(users).toHaveBeenCalledTimes(1));
+      await waitFor(() => expect(users).toHaveBeenCalledTimes(2));
     } else {
       expect(
         screen.queryByRole("button", { name: "Users & profiles" }),
@@ -286,21 +287,21 @@ test("preparation edits clear saved confirmation and cannot be overwritten durin
   expect(screen.queryByText(/Preparation saved\./)).not.toBeInTheDocument();
 });
 
-test("administration landing exposes tools without eagerly loading data and analysis retains admin navigation", async () => {
+test("administration landing loads its latest file and analysis retains admin navigation", async () => {
   const gateway = setup();
   await screen.findByRole("region", { name: "Administration overview" });
-  expect(gateway.history).not.toHaveBeenCalled();
+  expect(gateway.history).toHaveBeenCalledTimes(1);
   expect(gateway.profile).not.toHaveBeenCalled();
   expect(gateway.report).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
   await waitFor(() => expect(gateway.report).toHaveBeenCalled());
-  expect(gateway.history).not.toHaveBeenCalled();
+  expect(gateway.history).toHaveBeenCalledTimes(1);
   expect(
     screen.getByRole("button", { name: "Data administration" }),
   ).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "Data administration" }));
   await screen.findByRole("heading", { name: "Add a daily CSV" });
-  await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(2));
   const reportCalls = gateway.report.mock.calls.length;
   await waitFor(() =>
     expect(
@@ -308,11 +309,14 @@ test("administration landing exposes tools without eagerly loading data and anal
     ).toBeEnabled(),
   );
   fireEvent.click(screen.getByRole("button", { name: "Refresh history" }));
-  await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(2));
+  await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(3));
   expect(gateway.report).toHaveBeenCalledTimes(reportCalls);
   fireEvent.click(screen.getByRole("button", { name: "IOP · Go to Start" }));
   await screen.findByRole("region", { name: "Administration overview" });
-  fireEvent.click(screen.getByRole("button", { name: "Data preparation" }));
+  fireEvent.click(screen.getByRole("button", { name: "Data administration" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Data preparation" }),
+  );
   await screen.findByRole("button", { name: "Save historical preparation" });
 });
 
@@ -349,11 +353,13 @@ test.each(["technician", "task-force", "team-leader"])(
           users: [],
           scope: null,
         }),
-        users: jest.fn(),
+        users: jest.fn(async () => []),
         login: jest.fn(),
         password: jest.fn(),
         logout: jest.fn(),
         rename: jest.fn(),
+        update: jest.fn(),
+        activity: jest.fn(async () => []),
         create: jest.fn(),
         change: jest.fn(),
       }),
@@ -398,8 +404,10 @@ test("signing out of a preview restores the next administrator session to admini
       context,
       logout,
       rename: jest.fn(),
+      update: jest.fn(),
+      activity: jest.fn(async () => []),
       login,
-      users: jest.fn(),
+      users: jest.fn(async () => []),
       password: jest.fn(),
       create: jest.fn(),
       change: jest.fn(),
@@ -440,11 +448,13 @@ test("Technician home has no analytical entry points or requests", async () => {
         users: [],
         scope: null,
       }),
-      users: jest.fn(),
+      users: jest.fn(async () => []),
       login: jest.fn(),
       password: jest.fn(),
       logout: jest.fn(),
       rename: jest.fn(),
+      update: jest.fn(),
+      activity: jest.fn(async () => []),
       create: jest.fn(),
       change: jest.fn(),
     }),

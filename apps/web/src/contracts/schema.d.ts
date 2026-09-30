@@ -408,6 +408,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AccessController_activity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_update"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/access": {
         parameters: {
             query?: never;
@@ -1088,6 +1120,20 @@ export interface components {
         CreatedUserDto: {
             user: components["schemas"]["UserProfileDto"];
             initialPassword: string;
+        };
+        AccessActivityDto: {
+            id: string;
+            actorName: string;
+            subjectName: string;
+            action: string;
+            recordedAt: string;
+        };
+        UpdateUserDto: {
+            id: string;
+            /** @enum {string} */
+            profile: "administrator" | "technician" | "task-force" | "team-leader";
+            active: boolean;
+            name: string;
         };
         ChangeUserDto: {
             id: string;
@@ -2645,6 +2691,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreatedUserDto"];
+                };
+            };
+        };
+    };
+    AccessController_activity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessActivityDto"][];
+                };
+            };
+        };
+    };
+    AccessController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessDto"];
                 };
             };
         };

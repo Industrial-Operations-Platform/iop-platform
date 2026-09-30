@@ -59,10 +59,17 @@ export function WorkforceWorkspace({
     [schedulePerson, setSchedulePerson] = useState(""),
     [selected, setSelected] = useState<RecordEntry>(),
     [history, setHistory] = useState<Revision[]>([]);
-  const goHome = () => {
+  const leaveDetails = () => {
     setSelected(undefined);
     setForm(false);
     setHistory([]);
+  };
+  const goHome = () => {
+    leaveDetails();
+    setSchedulePerson("");
+    setTab(
+      profile === "team-leader" || profile === "administrator" ? "week" : "day",
+    );
   };
   useEffect(() => {
     goHome();
@@ -152,7 +159,7 @@ export function WorkforceWorkspace({
         section="Workforce & shifts"
         view={viewLabel}
         onHome={goHome}
-        onBack={selected ? goHome : undefined}
+        onBack={selected ? leaveDetails : undefined}
         description={`${t("Times use the site time zone.")} ${timeZone}`}
         actions={
           !selected && (
@@ -315,6 +322,7 @@ export function WorkforceWorkspace({
                   loading={pending}
                   refresh={refresh}
                   initialUserId={schedulePerson}
+                  cancel={goHome}
                 />
               )}
               {tab === "import" && canAdminister && (

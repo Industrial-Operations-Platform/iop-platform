@@ -17,6 +17,8 @@ function fixture() {
     password: jest.fn(),
     logout: jest.fn(),
     rename: jest.fn(),
+    update: jest.fn(),
+    activity: jest.fn(async () => []),
     users: jest.fn(),
     create: jest.fn(),
     change: jest.fn(),

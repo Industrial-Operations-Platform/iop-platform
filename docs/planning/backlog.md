@@ -318,4 +318,4 @@ canonical asset integration.
 | [IOP-182 — Structured entry details and neutral Start selection](items/IOP-182-entry-detail-neutral-start.md) | Completed |
 | [IOP-183 — Compact Start category tabs](items/IOP-183-compact-start-tabs.md) | Completed |
 | [IOP-184 — M6 Workforce delivery](items/IOP-184-m6-workforce.md) | Completed |
-| [IOP-185 — Administration and Workforce interface consistency](items/IOP-185-administration-workforce-ui.md) | In progress |
+| [IOP-185 — Administration and Workforce interface consistency](items/IOP-185-administration-workforce-ui.md) | Completed |

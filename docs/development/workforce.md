@@ -139,7 +139,11 @@ grants, unchanged-day idempotency and neighbor/batch overlap handling.
 
 Use the globe and DE/EN control at the upper right to switch language. Click your
 name in the account header to edit it; administrators can also click a user's name
-in Users & profiles. `POST /api/v1/users/name` accepts only `id` and `name` and
+in Users & profiles to open full account details. The administrator-only
+`POST /api/v1/users/details` saves `id`, `name`, `profile` and `active` in one
+scoped transaction; username and stable user ID remain read-only.
+`GET /api/v1/users/activity` returns up to 20 recent scoped account audit records,
+including logically deleted profiles. `POST /api/v1/users/name` accepts only `id` and `name` and
 requires self ownership or scoped administrator authority. Apply migration
 `20261005000000-profile-display-name` with the migrator before activating the API.
 
@@ -148,3 +152,12 @@ section or preceding view name to return; clicking the active sidebar section al
 returns without losing the selected date. Detail facts and history retain their
 saved labels. The shared design controls enforce title-first pages, icon-only
 reloads and the same department/Halle selector on Start and Shift Handover.
+
+Weekly plan groups configured shifts beneath each date, preserving historical
+shift/zone labels. The matrix scrolls inside its shared table viewport; shift labels
+appear once per day, above all zone rows. My day groups leader cards by shift while
+retaining their actual working hours. Configuration places Add beside each section
+heading and Save in a separate footer. Weekly entry has selected-day styling and a
+Cancel action for both new entry and Edit week; cancellation discards unsaved drafts
+and returns to the role's landing view without a write. The section heading and
+active sidebar item also return home, preserving the selected date.

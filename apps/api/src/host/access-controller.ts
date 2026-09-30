@@ -29,6 +29,8 @@ import {
   PasswordDto,
   SuccessDto,
   UserProfileDto,
+  UpdateUserDto,
+  AccessActivityDto,
 } from "./access-contracts";
 function bodyFields(body: unknown, fields: string[]): void {
   if (
@@ -151,6 +153,25 @@ export class AccessController {
     return accessOperation(async () =>
       r.access!.users.create(await r.actor(req), body),
     );
+  }
+  @Get("users/activity")
+  @ApiOkResponse({ type: [AccessActivityDto] })
+  async activity(@Req() req: IncomingMessage) {
+    const r = this.active(req);
+    return accessOperation(async () =>
+      r.access!.users.activity(await r.actor(req)),
+    );
+  }
+  @Post("users/details")
+  @ApiBody({ type: UpdateUserDto })
+  @ApiCreatedResponse({ type: SuccessDto })
+  async update(@Req() req: IncomingMessage, @Body() body: UpdateUserDto) {
+    bodyFields(body, ["id", "name", "profile", "active"]);
+    const r = this.active(req);
+    await accessOperation(async () =>
+      r.access!.users.update(await r.actor(req), body),
+    );
+    return { ok: true };
   }
   @Post("users/access")
   @ApiBody({ type: ChangeUserDto })

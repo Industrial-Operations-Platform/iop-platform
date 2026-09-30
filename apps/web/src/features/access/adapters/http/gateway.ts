@@ -1,5 +1,7 @@
 import type { AccessGateway } from "../../application/access";
 import type {
+  AccessActivity,
+  UserDetails,
   NewUser,
   Profile,
   SessionContext,
@@ -53,6 +55,14 @@ export class HttpAccessGateway implements AccessGateway {
   }
   async users(): Promise<UserProfile[]> {
     return request<components["schemas"]["UserProfileDto"][]>("/users");
+  }
+  async activity(): Promise<AccessActivity[]> {
+    return request<components["schemas"]["AccessActivityDto"][]>(
+      "/users/activity",
+    );
+  }
+  async update(user: UserDetails) {
+    await request("/users/details", user);
   }
   async create(
     user: NewUser,

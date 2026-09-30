@@ -28,6 +28,16 @@ export class UserProfileDto extends NewUserDto {
   @ApiProperty() id!: string;
   @ApiProperty() active!: boolean;
 }
+export class UpdateUserDto extends ChangeUserDto {
+  @ApiProperty({ minLength: 1, maxLength: 100 }) name!: string;
+}
+export class AccessActivityDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() actorName!: string;
+  @ApiProperty() subjectName!: string;
+  @ApiProperty() action!: string;
+  @ApiProperty() recordedAt!: string;
+}
 export class CreatedUserDto {
   @ApiProperty({ type: UserProfileDto }) user!: UserProfileDto;
   @ApiProperty() initialPassword!: string;

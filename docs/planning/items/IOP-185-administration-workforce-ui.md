@@ -1,6 +1,6 @@
 # IOP-185 — Administration and Workforce interface consistency
 
-Status: In progress
+Status: Completed
 
 ## Authorized request
 
@@ -29,4 +29,4 @@ References: [IOP-184](IOP-184-m6-workforce.md),
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md),
 [ADR-0035](../../architecture/adr/ADR-0035-transitional-authentication.md).
 
-[Execution plan](../active/IOP-185-administration-workforce-ui-plan.md)
+[Execution plan](../completed/IOP-185-administration-workforce-ui-plan.md)

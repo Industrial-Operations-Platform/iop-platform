@@ -204,3 +204,20 @@ icon action, with its visible text retained when space allows.
 Handover. Use its white bordered surface and dark, semibold label/control text;
 feature adapters supply choices and filtering behavior. Use shared labelled facts
 for Workforce details instead of concatenating all fields into a prose line.
+
+## Administration and Workforce consistency — IOP-185
+
+Action variants share spacing, radius, height and focus behavior; color expresses
+priority or destructive intent. `DeleteButton` supplies a labelled trash icon.
+Form footers use `iop-form-actions` to separate Cancel/Save from editing controls.
+Use the common bordered, keyboard-scrollable `TableViewport`, muted sticky headers
+and row hover/focus treatment across modules. Features may set column widths and
+alignment, but should not recreate the table theme. More than three tabs use a
+horizontal viewport on narrow screens to prevent label collisions.
+
+Keep logout at the far right after identity and language. Administration summarizes
+persisted account activity and the latest source file; management belongs in its
+own sections. Account details contain the editable fields; list rows keep compact
+access actions. Workforce uses date groups with shift subcolumns and daily shift
+headings above leader cards. Configuration Add actions sit beside section headings,
+with Save in a separated footer. These refinements preserve identity v1 tokens.

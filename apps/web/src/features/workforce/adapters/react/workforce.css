@@ -32,16 +32,16 @@
   background: var(--iop-activeSurface);
 }
 .workforce-board {
-  min-width: 1300px;
+  min-width: 100%;
 }
 .workforce-board td {
   vertical-align: top;
-  min-width: 150px;
+  min-width: 165px;
 }
 .workforce-slot {
   display: grid;
   gap: 6px;
-  padding-bottom: 12px;
+  align-content: start;
 }
 .workforce-shift-label,
 .workforce-empty {
@@ -94,4 +94,74 @@
 .iop-ui .workforce-date-toolbar .iop-input {
   width: auto;
   min-height: 40px;
+}
+
+.iop-ui .workforce-board .workforce-day-heading {
+  text-align: left;
+  border-left: 1px solid var(--iop-line);
+}
+.iop-ui .workforce-board .workforce-day-start {
+  border-left: 1px solid var(--iop-line);
+}
+.iop-ui .workforce-board tbody th,
+.iop-ui .workforce-board thead th[rowspan] {
+  position: sticky;
+  left: 0;
+  background: var(--iop-canvas);
+  min-width: 130px;
+}
+.workforce-leader-shift {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+.iop-ui .workforce-leader-shift h3 {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--iop-line);
+}
+.workforce-config-fields {
+  display: grid;
+  gap: 24px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.workforce-config-section {
+  display: grid;
+  gap: var(--iop-sectionGap);
+}
+.workforce-config-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.iop-ui .workforce-config-heading h2 {
+  margin: 0;
+}
+.workforce-config-row {
+  padding: var(--iop-sectionGap);
+  background: var(--iop-canvas);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+}
+.workforce-week-preset {
+  padding: var(--iop-sectionGap);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  background: var(--iop-canvas);
+}
+.iop-ui .workforce-selection-actions {
+  gap: 10px;
+  align-items: center;
+}
+.workforce-week-day--selected {
+  border-color: var(--iop-primary);
+  background: var(--iop-activeSurface);
+}
+.iop-ui .workforce-week-editor .iop-form-actions {
+  margin-top: 0;
 }

@@ -78,6 +78,7 @@ function renderEditor() {
       application={new WorkforceApplication(gateway, () => "id")}
       loading={false}
       refresh={refresh}
+      cancel={jest.fn()}
     />,
   );
   fireEvent.change(screen.getByLabelText("Person"), {

@@ -82,6 +82,7 @@ test("last administrator protection runs before a persistence mutation", async (
     active: true,
   };
   const tx: AdministrationTransaction = {
+    activity: jest.fn(),
     rename: jest.fn(),
     list: async () => [administrator],
     create: jest.fn(),
@@ -123,6 +124,7 @@ test("display names are validated and self-service never receives administrator 
   const rename = jest.fn(),
     renameSelf = jest.fn();
   const tx: AdministrationTransaction = {
+    activity: jest.fn(),
     list: jest.fn(),
     create: jest.fn(),
     change: jest.fn(),
@@ -146,4 +148,52 @@ test("display names are validated and self-service never receives administrator 
       code: "invalid_user",
     });
   expect(renameSelf).toHaveBeenCalledTimes(1);
+});
+
+test("complete account edits validate last-admin protection before renaming and share a transaction", async () => {
+  const administrator: UserProfile = {
+    id: "admin",
+    name: "Admin",
+    username: "admin",
+    profile: "administrator",
+    active: true,
+  };
+  const target: UserProfile = {
+    id: "tech",
+    name: "Before",
+    username: "tech",
+    profile: "technician",
+    active: true,
+  };
+  const tx: AdministrationTransaction = {
+    list: async () => [administrator, target],
+    activity: jest.fn(),
+    rename: jest.fn(),
+    create: jest.fn(),
+    change: jest.fn(),
+  };
+  const asAdministrator = jest.fn(async (_actor, work) => work(tx));
+  const service = new UserAdministration(
+    { self: jest.fn(), renameSelf: jest.fn(), asAdministrator },
+    jest.fn(),
+  );
+  await expect(
+    service.update("admin", {
+      ...administrator,
+      name: "Renamed",
+      active: false,
+    }),
+  ).rejects.toMatchObject({ code: "last_administrator" });
+  expect(tx.rename).not.toHaveBeenCalled();
+  await service.update("admin", {
+    ...target,
+    name: "  After  ",
+    profile: "team-leader",
+  });
+  expect(tx.rename).toHaveBeenCalledWith("tech", "After");
+  expect(tx.change).toHaveBeenCalledWith("tech", "team-leader", true);
+  expect(asAdministrator).toHaveBeenCalledTimes(2);
+  jest.mocked(tx.change).mockClear();
+  await service.update("admin", { ...target, name: "Only the name" });
+  expect(tx.change).not.toHaveBeenCalled();
 });

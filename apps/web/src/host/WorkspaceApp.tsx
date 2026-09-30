@@ -254,29 +254,6 @@ export function WorkspaceApp({
                   </small>
                 </Button>
               )}
-              {context.user && access && (
-                <Button
-                  variant="secondary"
-                  className="iop-sign-out"
-                  aria-label={t("Sign out")}
-                  title={t("Sign out")}
-                  onClick={signOut}
-                  disabled={pending}
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    aria-hidden="true"
-                  >
-                    <path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h12" />
-                  </svg>
-                  <span>{t("Sign out")}</span>
-                </Button>
-              )}
             </div>
           ) : (
             <Field layout="inline">
@@ -299,6 +276,29 @@ export function WorkspaceApp({
             </Field>
           )}
           <LanguageControl />
+          {context?.authentication === "password" && context.user && access && (
+            <Button
+              variant="secondary"
+              className="iop-sign-out"
+              aria-label={t("Sign out")}
+              title={t("Sign out")}
+              onClick={signOut}
+              disabled={pending}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                aria-hidden="true"
+              >
+                <path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h12" />
+              </svg>
+              <span>{t("Sign out")}</span>
+            </Button>
+          )}
         </>
       }
       brandAction={{
@@ -395,8 +395,9 @@ export function WorkspaceApp({
         <AdministrationOverview
           canImport={!!context?.canImport}
           canAdminister={!!showUserAdministration}
-          openTool={openTool}
-          openUsers={() => setPage("users")}
+          access={access}
+          analysis={application}
+          timeZone={context.scope?.siteTimeZone ?? "UTC"}
         />
       ) : page === "users" && showUserAdministration && access ? (
         <UserAdministration

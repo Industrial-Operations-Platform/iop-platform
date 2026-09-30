@@ -1,7 +1,10 @@
-import { EditNameDialog } from "./EditNameDialog";
+import { UserDetailsDialog } from "./UserDetailsDialog";
 import { t } from "../../../../localization/i18n";
 import { useEffect, useState } from "react";
 import {
+  Actions,
+  Badge,
+  DeleteButton,
   Alert,
   Button,
   Field,
@@ -18,11 +21,6 @@ import {
   type Profile,
   type UserProfile,
 } from "../../domain/access";
-const options = Object.entries(profileLabels).map(([value, label]) => (
-  <option key={value} value={value}>
-    {t(label)}
-  </option>
-));
 export function UserAdministration({
   application,
   onChanged,
@@ -30,7 +28,7 @@ export function UserAdministration({
   application: AccessApplication;
   onChanged: () => Promise<void>;
 }) {
-  const [editingName, setEditingName] = useState<UserProfile | null>(null);
+  const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [users, setUsers] = useState<UserProfile[]>([]),
     [error, setError] = useState(""),
     [pending, setPending] = useState(false),
@@ -74,14 +72,19 @@ export function UserAdministration({
       setPending(false);
     }
   }
+  const options = Object.entries(profileLabels).map(([value, label]) => (
+    <option key={value} value={value}>
+      {t(label)}
+    </option>
+  ));
   return (
-    <>
-      {editingName && (
-        <EditNameDialog
-          name={editingName.name}
-          close={() => setEditingName(null)}
-          save={async (name) => {
-            await application.rename(editingName.id, name);
+    <div className="access-administration">
+      {editingUser && (
+        <UserDetailsDialog
+          user={editingUser}
+          close={() => setEditingUser(null)}
+          save={async (details) => {
+            await application.update(details);
             await onChanged();
             setRefresh((v) => v + 1);
           }}
@@ -212,60 +215,54 @@ export function UserAdministration({
                   <th scope="row">
                     <Button
                       variant="text"
-                      onClick={() => setEditingName(user)}
+                      className="access-user-link"
+                      onClick={() => setEditingUser(user)}
                       disabled={pending}
-                      aria-label={t("Edit name for {0}", [user.username])}
+                      aria-label={t("User details for {0}", [user.username])}
                     >
                       {user.name}
                     </Button>
                     <br />
                     <small>{user.username}</small>
                   </th>
+                  <td>{t(profileLabels[user.profile])}</td>
                   <td>
-                    <Select
-                      aria-label={t("Profile for {0}", [user.username])}
-                      value={user.profile}
-                      disabled={pending}
-                      onChange={(e) =>
-                        void change(
-                          user,
-                          e.target.value as Profile,
-                          user.active,
-                        )
-                      }
-                    >
-                      {options}
-                    </Select>
+                    <Badge tone={user.active ? "success" : "neutral"}>
+                      {user.active ? t("Active") : t("Disabled")}
+                    </Badge>
                   </td>
-                  <td>{user.active ? t("Active") : t("Disabled")}</td>
                   <td>
-                    <Button
-                      variant="secondary"
-                      disabled={pending}
-                      onClick={() =>
-                        void change(user, user.profile, !user.active)
-                      }
-                    >
-                      {user.active ? t("Disable") : t("Enable")} {user.username}
-                    </Button>
-                    <Button
-                      variant="text"
-                      disabled={pending}
-                      onClick={() => {
-                        setPending(true);
-                        setError("");
-                        void application
-                          .remove(user.id)
-                          .then(async () => {
-                            await onChanged();
-                            setRefresh((n) => n + 1);
-                          })
-                          .catch((e) => setError(e.message))
-                          .finally(() => setPending(false));
-                      }}
-                    >
-                      {t("Delete profile")}
-                    </Button>
+                    <Actions className="access-row-actions">
+                      <Button
+                        variant="secondary"
+                        aria-label={t(
+                          user.active ? "Disable {0}" : "Enable {0}",
+                          [user.username],
+                        )}
+                        disabled={pending}
+                        onClick={() =>
+                          void change(user, user.profile, !user.active)
+                        }
+                      >
+                        {user.active ? t("Disable") : t("Enable")}
+                      </Button>
+                      <DeleteButton
+                        label={t("Delete profile for {0}", [user.username])}
+                        disabled={pending}
+                        onClick={() => {
+                          setPending(true);
+                          setError("");
+                          void application
+                            .remove(user.id)
+                            .then(async () => {
+                              await onChanged();
+                              setRefresh((n) => n + 1);
+                            })
+                            .catch((e) => setError(e.message))
+                            .finally(() => setPending(false));
+                        }}
+                      />
+                    </Actions>
                   </td>
                 </tr>
               ))}
@@ -273,6 +270,6 @@ export function UserAdministration({
           </Table>
         </TableViewport>
       </Panel>
-    </>
+    </div>
   );
 }

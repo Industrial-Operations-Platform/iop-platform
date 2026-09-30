@@ -7,6 +7,7 @@ import {
 import type {
   AdministrationStore,
   AdministrationTransaction,
+  AccessActivity,
 } from "../../application/administration";
 import {
   AccessError,
@@ -111,6 +112,23 @@ class PgAdministrationTransaction implements AdministrationTransaction {
     private readonly actor: string,
     private readonly credentials: CredentialPersistence,
   ) {}
+  async activity(): Promise<AccessActivity[]> {
+    const result = await this.client.query(
+      `SELECT a.id, COALESCE(actor.display_name,a.actor_id) AS "actorName",
+        subject.display_name AS "subjectName", a.action, a.recorded_at AS "recordedAt"
+       FROM users_rbac.access_audit a
+       JOIN users_rbac.profiles subject ON subject.organization_id=a.organization_id
+         AND subject.user_id=a.subject_id AND subject.site_id=$2
+       LEFT JOIN users_rbac.profiles actor ON actor.organization_id=a.organization_id
+         AND actor.user_id=a.actor_id AND actor.site_id=$2
+       WHERE a.organization_id=$1 ORDER BY a.recorded_at DESC,a.id DESC LIMIT 20`,
+      [this.scope.organizationId, this.scope.siteId],
+    );
+    return result.rows.map((row) => ({
+      ...row,
+      recordedAt: row.recordedAt.toISOString(),
+    }));
+  }
   async list(): Promise<UserProfile[]> {
     const result = await this.client.query(
       userQuery + " ORDER BY p.display_name,p.user_id LIMIT 201",

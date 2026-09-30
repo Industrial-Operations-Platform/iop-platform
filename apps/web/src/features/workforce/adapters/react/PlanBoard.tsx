@@ -18,15 +18,25 @@ export function AssignmentCard({
   record,
   board,
   select,
+  showShift = true,
 }: {
   record: RecordEntry<"assignment">;
   board: Board;
   select: (r: RecordEntry) => void;
+  showShift?: boolean;
 }) {
   const a = record.data;
   return (
     <button className="workforce-assignment" onClick={() => select(record)}>
       <strong>{record.personName}</strong>
+      {showShift && (
+        <Badge>
+          {board.settings.shifts.find((shift) => shift.id === a.shiftId)
+            ?.label ??
+            a.shiftLabel ??
+            a.shiftId}
+        </Badge>
+      )}
       <span>
         {a.start}–{a.end}
       </span>
@@ -85,16 +95,26 @@ export function PlanBoard({
       test: (r: RecordEntry<"assignment">) => r.data.duty === "maintenance",
     },
   ];
+  const shifts = visibleShifts(board).sort((a, b) =>
+    a.start.localeCompare(b.start),
+  );
   return (
     <Panel>
-      <TableViewport>
+      <TableViewport aria-label={t("Weekly plan")}>
         <Table className="workforce-board">
           <caption>{t("Weekly plan")}</caption>
           <thead>
             <tr>
-              <th>{t("Zone")}</th>
+              <th rowSpan={2} scope="col">
+                {t("Zone")}
+              </th>
               {dates.map((date) => (
-                <th key={date}>
+                <th
+                  key={date}
+                  colSpan={Math.max(1, shifts.length)}
+                  scope="colgroup"
+                  className="workforce-day-heading"
+                >
                   {new Intl.DateTimeFormat(locale(), {
                     weekday: "short",
                     day: "2-digit",
@@ -104,52 +124,66 @@ export function PlanBoard({
                 </th>
               ))}
             </tr>
+            <tr>
+              {dates.flatMap((date) =>
+                shifts.length
+                  ? shifts.map((shift, index) => (
+                      <th
+                        key={date + shift.id}
+                        scope="col"
+                        className={index === 0 ? "workforce-day-start" : ""}
+                      >
+                        {shift.label}
+                        <small>
+                          {shift.start}–{shift.end}
+                        </small>
+                      </th>
+                    ))
+                  : [
+                      <th key={date} scope="col">
+                        {t("No shifts configured")}
+                      </th>,
+                    ],
+              )}
+            </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row.id}>
                 <th scope="row">{row.label}</th>
-                {dates.map((date) => (
-                  <td key={date}>
-                    {visibleShifts(board)
-                      .filter(
-                        (s) =>
-                          s.days.includes(new Date(date).getUTCDay()) ||
-                          assignments.some(
-                            (r) =>
-                              r.data.date === date &&
-                              r.data.shiftId === s.id &&
-                              row.test(r),
-                          ),
-                      )
-                      .map((shift) => {
+                {dates.flatMap((date) =>
+                  shifts.length
+                    ? shifts.map((shift, index) => {
                         const found = assignments.filter(
-                          (r) =>
-                            r.data.date === date &&
-                            r.data.shiftId === shift.id &&
-                            row.test(r),
+                          (record) =>
+                            record.data.date === date &&
+                            record.data.shiftId === shift.id &&
+                            row.test(record),
                         );
                         return (
-                          <div className="workforce-slot" key={shift.id}>
-                            <span className="workforce-shift-label">
-                              {shift.label}
-                            </span>
-                            {found.map((r) => (
-                              <AssignmentCard
-                                key={r.id}
-                                record={r}
-                                board={board}
-                                select={select}
-                              />
-                            ))}
-                            {!found.length && (
-                              <span className="workforce-empty">—</span>
-                            )}
-                          </div>
+                          <td
+                            key={date + shift.id}
+                            className={index === 0 ? "workforce-day-start" : ""}
+                          >
+                            <div className="workforce-slot">
+                              {found.map((record) => (
+                                <AssignmentCard
+                                  key={record.id}
+                                  record={record}
+                                  board={board}
+                                  select={select}
+                                  showShift={false}
+                                />
+                              ))}
+                              {!found.length && (
+                                <span className="workforce-empty">—</span>
+                              )}
+                            </div>
+                          </td>
                         );
-                      })}
-                  </td>
-                ))}
+                      })
+                    : [<td key={date}>—</td>],
+                )}
               </tr>
             ))}
           </tbody>
@@ -205,16 +239,38 @@ export function DailyPlan({
       <Panel>
         <h2>{t("Shift leaders")}</h2>
         <div className="workforce-card-grid">
-          {assignments
-            .filter((r) => r.data.duty === "leader")
-            .map((r) => (
-              <AssignmentCard
-                key={r.id}
-                record={r}
-                board={board}
-                select={select}
-              />
-            ))}
+          {visibleShifts(board)
+            .sort((a, b) => a.start.localeCompare(b.start))
+            .map((shift) => {
+              const leaders = assignments.filter(
+                (record) =>
+                  record.data.duty === "leader" &&
+                  record.data.shiftId === shift.id,
+              );
+              return (
+                <section
+                  className="workforce-leader-shift"
+                  key={shift.id}
+                  aria-label={shift.label}
+                >
+                  <h3>{shift.label}</h3>
+                  {leaders.map((record) => (
+                    <AssignmentCard
+                      key={record.id}
+                      record={record}
+                      board={board}
+                      select={select}
+                      showShift={false}
+                    />
+                  ))}
+                  {!leaders.length && (
+                    <p className="workforce-empty">
+                      {t("No shift leader assigned")}
+                    </p>
+                  )}
+                </section>
+              );
+            })}
         </div>
       </Panel>
       <Panel>

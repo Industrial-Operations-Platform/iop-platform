@@ -51,6 +51,8 @@ for (const width of [1440, 375]) {
         await route.fulfill({
           json: { entries: [], total: 0, nextCursor: null },
         });
+      } else if (path.endsWith("/users") || path.endsWith("/users/activity")) {
+        await route.fulfill({ json: [] });
       } else if (path.endsWith("/imports")) {
         await route.fulfill({ json: [] });
       } else throw new Error(`Unexpected request: ${path}`);
@@ -59,18 +61,15 @@ for (const width of [1440, 375]) {
     await expect(
       page.getByRole("region", { name: "Administration overview" }),
     ).toBeVisible();
-    for (const name of [
-      "Manage users",
-      "Import files",
-      "Files & source rows",
-      "Data preparation",
-      "KPI settings & goals",
-    ]) {
-      await expect(
-        page.getByRole("button", { name, exact: true }),
-      ).toBeVisible();
-    }
-    expect(requests.every((path) => path.endsWith("/session/context"))).toBe(
+    await expect(page.getByText("Total users", { exact: true })).toBeVisible();
+    await expect(page.getByText("No files received yet.")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Recent account changes" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Import files", exact: true }),
+    ).toHaveCount(0);
+    expect(requests.some((path) => path.endsWith("/users/activity"))).toBe(
       true,
     );
     expect(
@@ -105,7 +104,9 @@ for (const width of [1440, 375]) {
       await expect(
         page.getByRole("button", { name: "Data administration" }),
       ).toHaveCount(0);
-      await expect(page.getByText("Alex · Administrator")).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Edit your name" }),
+      ).toContainText("Alex");
       if (profile === "technician") {
         await expect(
           page.getByRole("button", { name: "Data analysis", exact: true }),
@@ -160,7 +161,7 @@ for (const width of [1440, 375]) {
       page.getByRole("region", { name: "Administration overview" }),
     ).toBeVisible();
     await page
-      .getByRole("button", { name: "Import files", exact: true })
+      .getByRole("button", { name: "Data administration", exact: true })
       .click();
     await expect(
       page.getByRole("heading", { name: "Add a daily CSV" }),

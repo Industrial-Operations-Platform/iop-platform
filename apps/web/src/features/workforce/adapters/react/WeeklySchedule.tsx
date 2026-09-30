@@ -58,7 +58,9 @@ export function WeeklySchedule({
   loading,
   refresh,
   initialUserId = "",
+  cancel,
 }: {
+  cancel: () => void;
   initialUserId?: string;
   board: Board;
   weekStart: string;
@@ -106,7 +108,7 @@ export function WeeklySchedule({
     }
   };
   return (
-    <Panel>
+    <Panel className="workforce-week-editor">
       <h2>{t("Enter weekly shifts")}</h2>
       <p>
         {t(
@@ -145,7 +147,7 @@ export function WeeklySchedule({
           </Field>
           {userId && (
             <>
-              <FieldRow>
+              <FieldRow className="workforce-week-preset">
                 <Field>
                   {t("Apply shift or status")}
                   <Select
@@ -174,9 +176,9 @@ export function WeeklySchedule({
                   {t("Apply to selected days")}
                 </Button>
               </FieldRow>
-              <Actions>
+              <Actions className="workforce-selection-actions">
                 <Button
-                  variant="text"
+                  variant="secondary"
                   onClick={() =>
                     setSelected(drafts.slice(0, 5).map((day) => day.date))
                   }
@@ -184,12 +186,12 @@ export function WeeklySchedule({
                   {t("Select weekdays")}
                 </Button>
                 <Button
-                  variant="text"
+                  variant="secondary"
                   onClick={() => setSelected(drafts.map((day) => day.date))}
                 >
                   {t("Select all days")}
                 </Button>
-                <Button variant="text" onClick={() => setSelected([])}>
+                <Button variant="secondary" onClick={() => setSelected([])}>
                   {t("Clear selection")}
                 </Button>
               </Actions>
@@ -207,7 +209,7 @@ export function WeeklySchedule({
                   );
                   return (
                     <section
-                      className="workforce-week-day"
+                      className={`workforce-week-day ${selected.includes(day.date) ? "workforce-week-day--selected" : ""}`}
                       key={day.date}
                       aria-label={dayLabel(day.date)}
                     >
@@ -289,10 +291,14 @@ export function WeeklySchedule({
                   "Existing zone and phone assignments are kept. A conflicting schedule change is rejected without saving any day.",
                 )}
               </p>
-              <Actions>
-                <Button type="submit" disabled={!changes.length}>
-                  {t(pending ? "Saving…" : "Save week")} ({changes.length})
-                </Button>
+            </>
+          )}
+          <Actions className="iop-form-actions">
+            <Button variant="secondary" onClick={cancel}>
+              {t("Cancel")}
+            </Button>
+            {userId && (
+              <>
                 <Button
                   variant="secondary"
                   disabled={!changes.length}
@@ -304,9 +310,12 @@ export function WeeklySchedule({
                 >
                   {t("Discard edits")}
                 </Button>
-              </Actions>
-            </>
-          )}
+                <Button type="submit" disabled={!changes.length}>
+                  {t(pending ? "Saving…" : "Save week")} ({changes.length})
+                </Button>
+              </>
+            )}
+          </Actions>
         </fieldset>
       </form>
     </Panel>

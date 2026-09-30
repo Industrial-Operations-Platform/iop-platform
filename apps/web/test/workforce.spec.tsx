@@ -176,18 +176,14 @@ test("detail returns through its section, subsection and a repeated sidebar visi
       name: "Workforce & shifts My day Details",
     }),
   ).toBeVisible();
-  expect(
-    screen.queryByRole("button", { name: "Close" }),
-  ).toBeNull();
+  expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
   expect(screen.getByText("05:00–14:15")).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "My day" }));
   expect(
     screen.getByRole("heading", { name: "Your assignment" }),
   ).toBeVisible();
   open();
-  fireEvent.click(
-    screen.getByRole("button", { name: "Workforce & shifts" }),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Workforce & shifts" }));
   expect(
     screen.getByRole("heading", { name: "Your assignment" }),
   ).toBeVisible();
@@ -203,4 +199,34 @@ test("detail returns through its section, subsection and a repeated sidebar visi
   expect(
     screen.getByRole("heading", { name: "Your assignment" }),
   ).toBeVisible();
+});
+
+test("weekly entry cancellation and module heading return to the planning home without saving", async () => {
+  const { app, gateway } = application({ ...board, canPlan: true });
+  render(
+    <WorkforceWorkspace
+      application={app}
+      profile="team-leader"
+      timeZone="UTC"
+    />,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Weekly schedules" }),
+  );
+  fireEvent.change(screen.getByLabelText("Person"), {
+    target: { value: "tech" },
+  });
+  fireEvent.change(screen.getByLabelText("Apply shift or status"), {
+    target: { value: "shift:early" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Apply to selected days" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+  expect(screen.getByRole("table", { name: "Weekly plan" })).toBeVisible();
+  expect(gateway.saveWeek).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Weekly schedules" }));
+  expect(screen.getByLabelText("Person")).toHaveValue("");
+  fireEvent.click(screen.getByRole("button", { name: "Workforce & shifts" }));
+  expect(screen.getByRole("table", { name: "Weekly plan" })).toBeVisible();
 });

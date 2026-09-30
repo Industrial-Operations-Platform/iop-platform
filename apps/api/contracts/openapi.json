@@ -1402,6 +1402,61 @@
         ]
       }
     },
+    "/api/v1/users/activity": {
+      "get": {
+        "operationId": "AccessController_activity",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccessActivityDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
+    },
+    "/api/v1/users/details": {
+      "post": {
+        "operationId": "AccessController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
+    },
     "/api/v1/users/access": {
       "post": {
         "operationId": "AccessController_change",
@@ -3773,6 +3828,64 @@
         "required": [
           "user",
           "initialPassword"
+        ]
+      },
+      "AccessActivityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "subjectName": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "recordedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "actorName",
+          "subjectName",
+          "action",
+          "recordedAt"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string",
+            "enum": [
+              "administrator",
+              "technician",
+              "task-force",
+              "team-leader"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "id",
+          "profile",
+          "active",
+          "name"
         ]
       },
       "ChangeUserDto": {

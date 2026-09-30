@@ -82,7 +82,10 @@ alarm data.
 ## Local accounts and profiles
 
 Open **Users & profiles** as Administrator to create users, assign one of the four
-profiles, or disable/reactivate a local account. Only Administrator has user
+profiles, or disable/reactivate a local account. Click a name to open account details:
+username and user ID are read-only; name, profile and access save atomically. The
+list offers only enable/disable and an accessible trash action for logical deletion.
+Only Administrator has user
 administration and import/preparation tools. Administrator, Task Force and Team Leader
 can open Data Analysis. Technician has an operational Start page and Shift Handover,
 without analytical navigation, summaries or API access. Existing Technician analytical
@@ -350,8 +353,10 @@ months with at least one eligible imported date.
 
 ## Operational views and administration
 
-Administrators start on **Administration**, with visible shortcuts to user management,
-imports, source files, historical preparation and KPI settings. **Data administration**
+Administrators start on **Administration**, showing active/disabled account totals,
+the latest received analytical file (including outcome) and the latest 20 recorded
+account changes in the site time zone. Activity uses retained access audit; it is
+not a cross-module audit feed. Create/manage users in **Users & profiles**. **Data administration**
 opens the import workspace; **Data analysis** opens operational reports without hiding
 administrative navigation. Settings remain available before the first import.
 Preparation and KPI editors load independently when opened.

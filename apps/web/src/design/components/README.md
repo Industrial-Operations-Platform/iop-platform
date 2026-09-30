@@ -15,7 +15,8 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
 | `RefreshButton`, `CollectionAction` | Labelled reload with busy/reduced-motion behavior; collection link with count and direction |
 | `Badge` | Neutral/info/attention/success semantic metadata; caller supplies meaningful text |
-| `Button` | `primary`, `secondary`, `text`; native disabled and focus behavior |
+| `DeleteButton` | Shared trash icon with required accessible label/title and danger styling |
+| `Button` | `primary`, `secondary`, `text`, `danger`; common sizing, radius, spacing and native disabled/focus behavior |
 | `Field`, `Input`, `Textarea`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
 | `ValueFilter` | Editable column value with native suggestions, unique accessible hint IDs and caller-owned matching semantics |
 | `FilterForm`, `Disclosure` | Form surface and native collapsible content; plain/panel/divided variants |
@@ -24,7 +25,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
 | `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
 | `MetricGrid`, `MetricCard` | Responsive shared metric appearance; `layout="paired"` centers two cards; `tone` adds neutral/info/attention emphasis; use `iop-metric-description` for supporting text |
-| `Table`, `TableViewport` | Semantic table appearance and bounded scrolling |
+| `Table`, `TableViewport` | Common bordered viewport, muted sticky headers, row hover/focus and keyboard-accessible bounded scrolling |
 | `Alert` | Error announcement and consistent error surface |
 | `SideNavigation` | Controlled page navigation with current-page semantics |
 | `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort; table headings vertically center plain labels and buttons together |
@@ -100,3 +101,9 @@ callbacks for detail navigation. Sidebar selection must return to the section vi
 even when that same section is already active. Use `RefreshButton` for icon-only
 reload actions and `DepartmentScope` for the shared white department/Halle context.
 Preserve accessible names and keyboard focus when using compact icon controls.
+
+Use `Actions className="iop-form-actions"` for a separated, right-aligned form
+footer. Text actions keep the same control dimensions; semantic title links and
+clickable cards retain their context-specific presentation. Tab navigation with
+more than three choices scrolls horizontally on narrow screens; shorter category
+groups continue to share one row. Sign out is last in header DOM and visual order.

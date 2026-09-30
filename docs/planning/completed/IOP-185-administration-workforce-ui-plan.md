@@ -1,6 +1,6 @@
 # IOP-185 execution plan
 
-Status: In progress
+Status: Completed — 2026-10-01
 Branch: `feature/IOP-185-administration-workforce-ui`, created from clean `develop`.
 Scope: [request and acceptance](../items/IOP-185-administration-workforce-ui.md).
 
@@ -68,3 +68,11 @@ Validated on 2026-10-01 with Node 24.21.0:
 Boundaries: immutable username/user ID stay read-only. Activity covers account
 changes, not all modules; the latest file comes from analytical import history.
 Build retains the existing large-bundle advisory. No stack activation/publication.
+
+
+## Closure
+
+All acceptance criteria are delivered. Shared presentation commit: `23acb26`.
+The remaining coherent commit contains account/overview behavior, Workforce layouts,
+localization, tests and synchronized operator documentation. Owner review and any
+publication remain separate from local completion.

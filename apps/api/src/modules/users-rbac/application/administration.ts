@@ -12,8 +12,16 @@ export interface IssuedCredential {
   secret: string;
   hash: string;
 }
+export interface AccessActivity {
+  id: string;
+  actorName: string;
+  subjectName: string;
+  action: string;
+  recordedAt: string;
+}
 export interface AdministrationTransaction {
   list(): Promise<UserProfile[]>;
+  activity(): Promise<AccessActivity[]>;
   rename(id: string, name: string): Promise<void>;
   remove?(id: string): Promise<void>;
   create(user: NewUser, credentialHash: string): Promise<UserProfile>;
@@ -46,6 +54,21 @@ export class UserAdministration {
   }
   list(actor: string): Promise<UserProfile[]> {
     return this.store.asAdministrator(actor, (tx) => tx.list());
+  }
+  activity(actor: string): Promise<AccessActivity[]> {
+    return this.store.asAdministrator(actor, (tx) => tx.activity());
+  }
+  async update(
+    actor: string,
+    user: Omit<UserProfile, "username">,
+  ): Promise<void> {
+    return this.updateDetails(
+      actor,
+      user.id,
+      user.profile,
+      user.active,
+      displayName(user.name),
+    );
   }
   async create(
     actor: string,
@@ -84,11 +107,20 @@ export class UserAdministration {
       await tx.remove(id);
     });
   }
-  async change(
+  change(
     actor: string,
     id: string,
     profile: Profile,
     active: boolean,
+  ): Promise<void> {
+    return this.updateDetails(actor, id, profile, active);
+  }
+  private async updateDetails(
+    actor: string,
+    id: string,
+    profile: Profile,
+    active: boolean,
+    name?: string,
   ): Promise<void> {
     if (
       typeof id !== "string" ||
@@ -108,7 +140,9 @@ export class UserAdministration {
         users.filter((user) => user.active && user.profile === "administrator")
           .length,
       );
-      await tx.change(id, profile, active);
+      if (name !== undefined) await tx.rename(id, name);
+      if (target.profile !== profile || target.active !== active)
+        await tx.change(id, profile, active);
     });
   }
 }

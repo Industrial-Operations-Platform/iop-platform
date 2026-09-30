@@ -33,3 +33,45 @@
   display: grid;
   gap: 1.25rem;
 }
+
+.access-details-form {
+  display: grid;
+  gap: var(--iop-sectionGap);
+}
+.access-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: var(--iop-sectionGap);
+}
+.iop-ui .access-account-facts {
+  margin: 0;
+}
+.iop-ui .access-user-link {
+  padding: 0;
+  justify-content: flex-start;
+  font-weight: var(--iop-labelWeight);
+}
+.iop-ui .access-row-actions {
+  flex-wrap: nowrap;
+  align-items: center;
+}
+.access-row-actions > .iop-button:first-child {
+  min-width: 86px;
+}
+.administration-file-name {
+  overflow-wrap: anywhere;
+}
+
+.access-administration,
+.administration-overview {
+  display: grid;
+  gap: var(--iop-sectionGap);
+}
+.iop-ui .administration-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 620px) {
+  .iop-ui .administration-metrics {
+    grid-template-columns: 1fr;
+  }
+}
