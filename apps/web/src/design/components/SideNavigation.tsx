@@ -1,3 +1,4 @@
+import { t, locale } from "../../localization/i18n";
 import { Button } from "./Controls";
 export function SideNavigation<T extends string>({
   items,
@@ -11,7 +12,7 @@ export function SideNavigation<T extends string>({
   label?: string;
 }) {
   return (
-    <nav className="iop-side-navigation" aria-label={label}>
+    <nav className="iop-side-navigation" aria-label={t(label)}>
       {items.map((item) => (
         <Button
           key={item.id}
@@ -19,7 +20,7 @@ export function SideNavigation<T extends string>({
           aria-current={selected === item.id ? "page" : undefined}
           onClick={() => onSelect(item.id)}
         >
-          {item.label}
+          {t(item.label)}
         </Button>
       ))}
     </nav>

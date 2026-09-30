@@ -1,3 +1,4 @@
+import { locale, t } from "../../../../localization/i18n";
 import { FollowUpForm } from "./FollowUpForm";
 import { useEffect, useState } from "react";
 import {
@@ -79,28 +80,33 @@ export function EntryDetail({
     }
   };
   const e = history?.entry,
-    canEdit = !!e && (context.canCoordinate || e.authorId === context.actorId),
-    canProgress = !!e && (canEdit || e.responsibleId === context.actorId);
+    canEdit =
+      !!e &&
+      !e.deleted &&
+      (context.canCoordinate || e.authorId === context.actorId),
+    canProgress =
+      !!e && !e.deleted && (canEdit || e.responsibleId === context.actorId);
   return (
-    <section aria-label="Handover entry" className="handover-workspace">
+    <section aria-label={t("Handover entry")} className="handover-workspace">
       <HandoverHeading onHome={onHome} viewLabel={viewLabel} onBack={close} />
       {error && !editing && !following && <Alert>{error}</Alert>}
-      {!history && !error && <p role="status">Loading entry…</p>}
+      {!history && !error && <p role="status">{t("Loading entry…")}</p>}
       {e && (
         <>
           <Panel className="handover-detail-panel">
             <h2>{e.content.summary}</h2>
             <EntryDetailBody entry={e} />
             <p className="handover-detail-recorded">
-              Recorded {new Date(e.createdAt).toLocaleString()} · Revision{" "}
-              {e.revision}
+              {t("Recorded ")}
+              {new Date(e.createdAt).toLocaleString(locale())}
+              {t(" · Revision")} {e.revision}
             </p>
             {(e.latestUpdate ||
               history.revisions.find(
                 (r) => r.action === "follow-up" || r.action === "state",
               )) && (
               <div className="handover-preview">
-                <h3>Latest update</h3>
+                <h3>{t("Latest update")}</h3>
                 <p className="handover-prose">
                   {e.latestUpdate?.note ??
                     history.revisions.find(
@@ -110,13 +116,32 @@ export function EntryDetail({
               </div>
             )}
             <Actions className="handover-entry-actions">
+              {context.canDelete && !e.deleted && (
+                <Button
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => {
+                    setBusy(true);
+                    void application
+                      .remove(e)
+                      .then(() => {
+                        onChanged();
+                        close();
+                      })
+                      .catch((reason) => setError(reason.message))
+                      .finally(() => setBusy(false));
+                  }}
+                >
+                  {t("Delete entry")}
+                </Button>
+              )}
               <Button
                 onClick={() => {
                   setInitialState(undefined);
                   setFollowing(true);
                 }}
               >
-                Add follow-up
+                {t("Add follow-up ")}
               </Button>
               {canProgress && e.issueState !== "none" && (
                 <Button
@@ -128,7 +153,9 @@ export function EntryDetail({
                     setFollowing(true);
                   }}
                 >
-                  {e.issueState === "resolved" ? "Reopen issue" : "Close issue"}
+                  {e.issueState === "resolved"
+                    ? t("Reopen issue")
+                    : t("Close issue")}
                 </Button>
               )}
               {canProgress && e.issueState === "none" && (
@@ -139,7 +166,7 @@ export function EntryDetail({
                     setFollowing(true);
                   }}
                 >
-                  Track as issue
+                  {t("Track as issue ")}
                 </Button>
               )}
 
@@ -149,19 +176,19 @@ export function EntryDetail({
                   disabled={busy}
                   onClick={() => setEditing((v) => !v)}
                 >
-                  Correct entry
+                  {t("Correct entry ")}
                 </Button>
               )}
               {e.equipmentReferenceId && (
                 <Button variant="secondary" onClick={() => onEquipment(e)}>
-                  Equipment reference history
+                  {t("Equipment reference history ")}
                 </Button>
               )}
             </Actions>
           </Panel>
           {editing && (
             <Dialog
-              title="Correct entry"
+              title={t("Correct entry")}
               busy={busy}
               onClose={() => setEditing(false)}
             >
@@ -187,7 +214,7 @@ export function EntryDetail({
           )}
           {following && (
             <Dialog
-              title="Follow-up and coordination"
+              title={t("Follow-up and coordination")}
               busy={busy}
               onClose={() => setFollowing(false)}
             >
@@ -203,13 +230,18 @@ export function EntryDetail({
             </Dialog>
           )}
           <Panel className="handover-detail-history">
-            <h3>History</h3>
-            <p>Earlier versions and follow-up remain available.</p>
+            <h3>{t("History")}</h3>
+            <p>{t("Earlier versions and follow-up remain available.")}</p>
             {history.revisions.map((r) => (
               <Disclosure
                 variant="panel"
                 key={r.entry.revision}
-                summary={`Revision ${r.entry.revision} · ${r.action} · ${r.actorName} · ${new Date(r.at).toLocaleString()}`}
+                summary={t("Revision {0} · {1} · {2} · {3}", [
+                  r.entry.revision,
+                  r.action,
+                  r.actorName,
+                  new Date(r.at).toLocaleString(locale()),
+                ])}
               >
                 <p className="handover-prose">{r.note}</p>
                 <h4>{r.entry.content.summary}</h4>
@@ -235,7 +267,7 @@ export function EntryDetail({
                     .finally(() => setBusy(false));
                 }}
               >
-                Earlier revisions
+                {t("Earlier revisions ")}
               </Button>
             )}
           </Panel>

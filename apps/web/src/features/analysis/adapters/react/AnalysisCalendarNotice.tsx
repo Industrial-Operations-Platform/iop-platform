@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 export function AnalysisCalendarNotice({
   excludedWeekdays = [],
 }: {
@@ -16,10 +17,11 @@ export function AnalysisCalendarNotice({
   ];
   return (
     <p className="analysis-footnote">
-      Excluded from analysis:{" "}
-      {excludedWeekdays.map((day) => weekdays[day]).join(", ")}. Totals, charts
-      and KPI averages use eligible reporting dates. Original files remain
-      available in administration.
+      {t("Excluded from analysis:")}{" "}
+      {excludedWeekdays.map((day) => weekdays[day]).join(t(", "))}
+      {t(
+        ". Totals, charts and KPI averages use eligible reporting dates. Original files remain available in administration. ",
+      )}
     </p>
   );
 }

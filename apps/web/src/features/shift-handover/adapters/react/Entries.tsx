@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import {
   Badge,
   Button,
@@ -15,13 +16,15 @@ export function EntryBody({ entry }: { entry: Entry }) {
       <p className="handover-meta">
         {entry.categoryLabel} · {c.date} · {entry.authorName} ·{" "}
         {issueLabel(entry.issueState)}
-        {entry.highlighted ? " · Highlighted" : ""}
-        {c.discuss ? " · Discuss in meeting" : ""}
+        {entry.highlighted ? t(" · Highlighted") : ""}
+        {c.discuss ? t(" · Discuss in meeting") : ""}
       </p>
       <p>
-        {entry.departmentLabel || "Site-wide"}
+        {entry.departmentLabel || t("Site-wide")}
         {entry.areaLabel ? ` / ${entry.areaLabel}` : ""}
-        {c.equipmentCode ? ` / ${c.equipmentCode} · Unverified reference` : ""}
+        {c.equipmentCode
+          ? t(" / {0} · Unverified reference", [c.equipmentCode])
+          : ""}
       </p>
       {c.details && <p className="handover-prose">{c.details}</p>}
       <dl className="handover-facts">
@@ -33,14 +36,14 @@ export function EntryBody({ entry }: { entry: Entry }) {
           Measure: c.measure,
           Responsible:
             entry.responsibleName ||
-            (entry.issueState !== "none" ? "Unassigned" : ""),
+            (entry.issueState !== "none" ? t("Unassigned") : ""),
           "Due date": c.dueDate,
           "Feedback due": c.feedbackDueDate,
         })
           .filter(([, v]) => v)
           .map(([label, value]) => (
-            <div key={label}>
-              <dt>{label}</dt>
+            <div key={t(label)}>
+              <dt>{t(label)}</dt>
               <dd className="handover-prose">{value}</dd>
             </div>
           ))}
@@ -88,7 +91,7 @@ export function EntryMatrix({
       className="handover-matrix-surface"
       tabIndex={0}
       role="region"
-      aria-label="Scrollable department matrix"
+      aria-label={t("Scrollable department matrix")}
     >
       <Table className="handover-matrix">
         <colgroup>
@@ -100,17 +103,17 @@ export function EntryMatrix({
           <col className="handover-matrix-person" />
           <col className="handover-matrix-status" />
         </colgroup>
-        <caption>Department handover matrix</caption>
+        <caption>{t("Department handover matrix")}</caption>
         <thead>
           <tr>
             {[
-              "Date",
-              "What?",
-              "Details",
+              t("Date"),
+              t("What?"),
+              t("Details"),
               externalLabel,
-              "Due date",
-              "Responsible person",
-              "Status",
+              t("Due date"),
+              t("Responsible person"),
+              t("Status"),
             ].map((c) => (
               <th key={c} scope="col">
                 {c}
@@ -129,14 +132,14 @@ export function EntryMatrix({
                   {e.content.summary}
                 </Button>
                 <small>
-                  {e.departmentLabel || "Site-wide"}
+                  {e.departmentLabel || t("Site-wide")}
                   {e.areaLabel && ` · ${e.areaLabel}`}
                 </small>
                 <Badge>{e.categoryLabel}</Badge>
               </th>
               <td>
                 <p className="handover-matrix-excerpt">
-                  {e.content.details || "No additional details."}
+                  {e.content.details || t("No additional details.")}
                 </p>
               </td>
               <td>
@@ -151,13 +154,13 @@ export function EntryMatrix({
                   "—"
                 )}
               </td>
-              <td>{e.responsibleName || "Unassigned"}</td>
+              <td>{e.responsibleName || t("Unassigned")}</td>
               <td>
                 <Badge tone={issueTone(e.issueState)}>
                   {issueLabel(e.issueState)}
                 </Badge>
                 {e.content.condition === "blocked" && (
-                  <Badge tone="attention">Reported blocked</Badge>
+                  <Badge tone="attention">{t("Reported blocked")}</Badge>
                 )}
               </td>
             </tr>

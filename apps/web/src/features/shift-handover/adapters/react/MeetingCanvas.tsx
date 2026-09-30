@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { Button, Panel } from "../../../../design/components";
 import type { Choice, Page } from "../../domain/models";
 import { EntrySummaryCards } from "./EntrySummaryCards";
@@ -14,20 +15,23 @@ export function MeetingCanvas({
   busy: boolean;
 }) {
   return (
-    <div className="handover-meeting-canvas" aria-label="Daily category canvas">
+    <div
+      className="handover-meeting-canvas"
+      aria-label={t("Daily category canvas")}
+    >
       {sections.map(({ category, page }) => (
         <Panel
           key={category.id}
-          aria-label={`${category.label} section`}
+          aria-label={t("{0} section", [t(category.label)])}
           className="handover-meeting-section"
         >
           <div className="handover-section-heading">
-            <h3>{category.label}</h3>
+            <h3>{t(category.label)}</h3>
             <span>{page.total}</span>
           </div>
           <EntrySummaryCards entries={page.entries} open={open} />
           {!page.total && (
-            <p className="handover-muted">No entries for this day.</p>
+            <p className="handover-muted">{t("No entries for this day.")}</p>
           )}
           {page.nextCursor && (
             <Button
@@ -35,8 +39,11 @@ export function MeetingCanvas({
               disabled={busy}
               onClick={() => void more(category.id)}
             >
-              More {category.label} entries · {page.entries.length} of{" "}
-              {page.total}
+              {t("More ")}
+              {t(category.label)}
+              {t(" entries · ")}
+              {page.entries.length}
+              {t(" of")} {page.total}
             </Button>
           )}
         </Panel>

@@ -1,3 +1,4 @@
+import { t } from "../../localization/i18n";
 import type { ComponentProps, ReactNode } from "react";
 import { Badge } from "./Surfaces";
 
@@ -16,7 +17,7 @@ export function RefreshButton({
       variant="secondary"
       className={`iop-refresh ${className}`}
       disabled={busy || props.disabled}
-      aria-label={label}
+      aria-label={t(label)}
       aria-busy={busy}
     >
       <svg
@@ -32,7 +33,7 @@ export function RefreshButton({
         <path d="M20 7v5h-5M4 17v-5h5" />
         <path d="M6.1 7a7 7 0 0 1 11.5-1L20 9M4 15l2.4 3A7 7 0 0 0 17.9 17" />
       </svg>
-      <span>{busy ? "Updating…" : "Refresh"}</span>
+      <span>{busy ? t("Updating…") : t("Refresh")}</span>
     </Button>
   );
 }

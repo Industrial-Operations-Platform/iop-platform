@@ -1,3 +1,4 @@
+import { t } from "../../localization/i18n";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Button } from "./Controls";
 
@@ -41,7 +42,7 @@ export function Dialog({
         <h2 id={titleId}>{title}</h2>
         <Button
           variant="text"
-          aria-label={`Close ${title}`}
+          aria-label={t("Close {0}", [title])}
           disabled={busy}
           onClick={onClose}
         >

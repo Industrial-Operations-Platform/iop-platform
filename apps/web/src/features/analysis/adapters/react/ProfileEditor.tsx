@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -59,22 +60,23 @@ export function ProfileEditor({
   const profile = value?.profile;
   return (
     <Panel className="analysis-import">
-      <h2>Data preparation & sector classification</h2>
+      <h2>{t("Data preparation & sector classification")}</h2>
       <p>
-        Saving applies these rules to the complete historical analysis. Original
-        files and imported values remain preserved.
+        {t(
+          "Saving applies these rules to the complete historical analysis. Original files and imported values remain preserved. ",
+        )}
       </p>
       <p>
-        <strong>Types:</strong> Häufigkeit → integer; Dauer → exact seconds,
-        displayed as minutes; Bereich, Betriebsmittelkennzeichen, Meldetext, Typ
-        and Meldegruppe → text. Commas, umlauts and code punctuation are
-        preserved.
+        <strong>{t("Types:")}</strong>
+        {t(
+          " Häufigkeit → integer; Dauer → exact seconds, displayed as minutes; Bereich, Betriebsmittelkennzeichen, Meldetext, Typ and Meldegruppe → text. Commas, umlauts and code punctuation are preserved. ",
+        )}
       </p>
       {error ? (
         <Alert>
           {error instanceof Error
             ? error.message
-            : "Preparation could not be saved."}
+            : t("Preparation could not be saved.")}
         </Alert>
       ) : null}
       {value && profile && (
@@ -102,9 +104,9 @@ export function ProfileEditor({
                   />
                   {
                     {
-                      trim: "Trim outer spaces",
-                      unicodeNfc: "Normalize Unicode (NFC)",
-                      collapseWhitespace: "Collapse repeated spaces",
+                      trim: t("Trim outer spaces"),
+                      unicodeNfc: t("Normalize Unicode (NFC)"),
+                      collapseWhitespace: t("Collapse repeated spaces"),
                     }[key]
                   }
                 </Field>
@@ -113,14 +115,19 @@ export function ProfileEditor({
           </div>
           <Disclosure
             variant="divided"
-            summary={<>Area → sector rules ({profile.areaSectors.length})</>}
+            summary={
+              <>
+                {t("Area → sector rules (")}
+                {profile.areaSectors.length})
+              </>
+            }
           >
             <div className="analysis-rule-table">
               {profile.areaSectors.map((rule, i) => (
                 <div key={i}>
                   <Input
                     disabled={pending}
-                    aria-label={`Area ${i + 1}`}
+                    aria-label={t("Area {0}", [i + 1])}
                     value={rule.area}
                     onChange={(e) =>
                       edit({
@@ -136,7 +143,7 @@ export function ProfileEditor({
                   />
                   <Input
                     disabled={pending}
-                    aria-label={`Sector ${i + 1}`}
+                    aria-label={t("Sector {0}", [i + 1])}
                     value={rule.sector}
                     onChange={(e) =>
                       edit({
@@ -164,7 +171,8 @@ export function ProfileEditor({
                       })
                     }
                   >
-                    Remove rule {i + 1}
+                    {t("Remove rule ")}
+                    {i + 1}
                   </Button>
                 </div>
               ))}
@@ -184,22 +192,28 @@ export function ProfileEditor({
                 })
               }
             >
-              Add area rule
+              {t("Add area rule ")}
             </Button>
           </Disclosure>
           <Disclosure
             variant="divided"
-            summary={<>Explicit value corrections ({profile.aliases.length})</>}
+            summary={
+              <>
+                {t("Explicit value corrections (")}
+                {profile.aliases.length})
+              </>
+            }
           >
             <p>
-              Replace one exact source value for analysis. No automatic spelling
-              guesses.
+              {t(
+                "Replace one exact source value for analysis. No automatic spelling guesses. ",
+              )}
             </p>
             {profile.aliases.map((alias, i) => (
               <div className="analysis-alias" key={i}>
                 <Select
                   disabled={pending}
-                  aria-label={`Correction field ${i + 1}`}
+                  aria-label={t("Correction field {0}", [i + 1])}
                   value={alias.field}
                   onChange={(e) =>
                     edit({
@@ -236,7 +250,7 @@ export function ProfileEditor({
                   <Input
                     disabled={pending}
                     key={k}
-                    aria-label={`${k} value ${i + 1}`}
+                    aria-label={t("{0} value {1}", [k, i + 1])}
                     value={alias[k]}
                     onChange={(e) =>
                       edit({
@@ -263,7 +277,8 @@ export function ProfileEditor({
                     })
                   }
                 >
-                  Remove correction {i + 1}
+                  {t("Remove correction ")}
+                  {i + 1}
                 </Button>
               </div>
             ))}
@@ -282,15 +297,17 @@ export function ProfileEditor({
                 })
               }
             >
-              Add value correction
+              {t("Add value correction ")}
             </Button>
           </Disclosure>
           <Button disabled={pending} onClick={() => void save()}>
-            {pending ? "Saving…" : "Save historical preparation"}
+            {pending ? t("Saving…") : t("Save historical preparation")}
           </Button>
           {saved && (
             <p role="status">
-              Preparation saved. Return to analysis to see the updated history.
+              {t(
+                "Preparation saved. Return to analysis to see the updated history. ",
+              )}
             </p>
           )}
         </>

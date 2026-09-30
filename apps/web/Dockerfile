@@ -7,6 +7,7 @@ COPY apps/web/package.json apps/web/package.json
 RUN npm ci --workspace @iop/web --include-workspace-root=false
 COPY apps/web/tsconfig.json apps/web/vite.config.ts apps/web/index.html apps/web/
 COPY apps/web/src apps/web/src
+COPY apps/web/public apps/web/public
 WORKDIR /app/apps/web
 RUN npm run build
 # Preserve dependency notices alongside the distributed browser artifact.

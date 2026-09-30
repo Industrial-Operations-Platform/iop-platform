@@ -1,3 +1,4 @@
+import { t } from "../../localization/i18n";
 import { useId } from "react";
 import { Field, Input } from "./Controls";
 
@@ -20,9 +21,9 @@ export function ValueFilter({
   const id = useId();
   return (
     <Field className="iop-value-filter">
-      {label}
+      {t(label)}
       <Input
-        aria-label={label + " filter"}
+        aria-label={label + t(" filter")}
         aria-describedby={id + "-hint"}
         list={id}
         value={value}

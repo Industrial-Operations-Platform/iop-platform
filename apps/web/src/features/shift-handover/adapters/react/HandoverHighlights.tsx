@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { useEffect, useState } from "react";
 import {
   Actions,
@@ -81,28 +82,28 @@ export function HandoverHighlights({
   return (
     <Panel
       className="handover-highlights"
-      aria-label="Operational handover updates"
+      aria-label={t("Operational handover updates")}
     >
       <div className="handover-section-heading">
         <div>
-          <h2>Your department at a glance</h2>
-          <p>Open work and important updates for the next team.</p>
+          <h2>{t("Your department at a glance")}</h2>
+          <p>{t("Open work and important updates for the next team.")}</p>
         </div>
         <RefreshButton
-          label="Refresh updates"
+          label={t("Refresh updates")}
           busy={loading}
           onClick={() => setRefresh((n) => n + 1)}
         />
       </div>
       {context && (
         <Field className="handover-department-filter">
-          <span>Department / Halle</span>
+          <span>{t("Department / Halle")}</span>
           <Select
-            aria-label="Start department"
+            aria-label={t("Start department")}
             value={departmentId}
             onChange={(e) => onDepartmentChange(e.target.value)}
           >
-            <option value="">All departments</option>
+            <option value="">{t("All departments")}</option>
             {context.locations
               .filter((l) => l.role === "department")
               .map((l) => (
@@ -114,30 +115,30 @@ export function HandoverHighlights({
         </Field>
       )}
       {loading ? (
-        <p role="status">Loading operational updates…</p>
+        <p role="status">{t("Loading operational updates…")}</p>
       ) : error ? (
         <Alert>{error}</Alert>
       ) : (
         <>
           <ViewNavigation
             placement="tabs"
-            label="Operational updates"
+            label={t("Operational updates")}
             selected={view}
             onSelect={setView}
             items={[
               {
                 id: "attention",
-                label: "Needs attention",
+                label: t("Needs attention"),
                 count: attention.total,
               },
               {
                 id: "pending",
-                label: "Open reports",
+                label: t("Open reports"),
                 count: pending.total,
               },
               {
                 id: "highlights",
-                label: "Shift Handover",
+                label: t("Shift Handover"),
                 count: highlights.total,
               },
             ]}
@@ -150,12 +151,15 @@ export function HandoverHighlights({
               <h3>{viewLabel}</h3>
               <p className="handover-muted">
                 {view === "highlights"
-                  ? "Site-wide highlights"
+                  ? t("Site-wide highlights")
                   : departmentId
-                    ? "Selected department"
-                    : "All departments"}
+                    ? t("Selected department")
+                    : t("All departments")}
                 {selected.total > 0 &&
-                  ` · Showing ${Math.min(selected.entries.length, 3)} of ${selected.total}`}
+                  t(" · Showing {0} of {1}", [
+                    Math.min(selected.entries.length, 3),
+                    selected.total,
+                  ])}
               </p>
             </div>
             <EntryCards
@@ -172,10 +176,10 @@ export function HandoverHighlights({
                 onClick={() => open(undefined, view)}
               >
                 {view === "highlights"
-                  ? "View all highlights"
+                  ? t("View all highlights")
                   : view === "pending"
-                    ? "View all open issues"
-                    : "View all attention items"}
+                    ? t("View all open issues")
+                    : t("View all attention items")}
               </CollectionAction>
             )}
           </section>
@@ -183,7 +187,7 @@ export function HandoverHighlights({
       )}
       <Actions>
         <Button variant="secondary" onClick={() => open()}>
-          Open Shift Handover
+          {t("Open Shift Handover ")}
         </Button>
       </Actions>
     </Panel>

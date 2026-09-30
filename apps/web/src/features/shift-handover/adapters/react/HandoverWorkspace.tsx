@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { MeetingCanvas } from "./MeetingCanvas";
 import { EntrySummaryCards } from "./EntrySummaryCards";
 import { useEffect, useState } from "react";
@@ -237,7 +238,7 @@ export function HandoverWorkspace({
       />
     );
   return (
-    <section aria-label="Shift Handover" className="handover-workspace">
+    <section aria-label={t("Shift Handover")} className="handover-workspace">
       <HandoverHeading
         viewLabel={viewLabels[view]}
         onHome={goHome}
@@ -250,7 +251,7 @@ export function HandoverWorkspace({
                 setCreating("");
               }}
             >
-              New entry
+              {t("New entry ")}
             </Button>
             {view !== "meeting" && (
               <Button
@@ -261,7 +262,7 @@ export function HandoverWorkspace({
                   setSearching(true);
                 }}
               >
-                Search history
+                {t("Search history ")}
               </Button>
             )}
           </Actions>
@@ -271,10 +272,10 @@ export function HandoverWorkspace({
         <div className="handover-toolbar">
           {!(view === "meeting" && dailyOverview) && (
             <Field>
-              Department / Halle
+              {t("Department / Halle ")}
               <Select
                 disabled={busy}
-                aria-label="Selected department"
+                aria-label={t("Selected department")}
                 value={selection.departmentId}
                 onChange={(e) => {
                   const id = e.target.value;
@@ -287,7 +288,7 @@ export function HandoverWorkspace({
                   });
                 }}
               >
-                <option value="">All departments</option>
+                <option value="">{t("All departments")}</option>
                 {context.locations
                   .filter((l) => l.role === "department")
                   .map((l) => (
@@ -300,10 +301,12 @@ export function HandoverWorkspace({
           )}
           {view === "meeting" && (
             <Field>
-              {dailyOverview ? "Overview date" : "Meeting date"}
+              {dailyOverview ? t("Overview date") : t("Meeting date")}
               <Input
                 type="date"
-                aria-label={dailyOverview ? "Overview date" : "Meeting date"}
+                aria-label={
+                  dailyOverview ? t("Overview date") : t("Meeting date")
+                }
                 required
                 disabled={busy}
                 value={selection.from}
@@ -321,15 +324,15 @@ export function HandoverWorkspace({
           <p>
             {view === "meeting" ? selection.from : today(context.timeZone)} ·{" "}
             {view === "meeting" && dailyOverview
-              ? "All users · All departments"
+              ? t("All users · All departments")
               : view === "mine"
-                ? "Entries you published"
-                : "Select a department to catch up with your team"}
+                ? t("Entries you published")
+                : t("Select a department to catch up with your team")}
           </p>
         </div>
       )}
       <ViewNavigation
-        label="Handover views"
+        label={t("Handover views")}
         selected={view}
         items={(Object.entries(viewLabels) as [View, string][]).map(
           ([id, label]) => ({
@@ -357,7 +360,7 @@ export function HandoverWorkspace({
       {filtered && (
         <Actions>
           <p>
-            Filtered history
+            {t("Filtered history ")}
             {selection.categoryId
               ? ` · ${context?.categories.find((c) => c.id === selection.categoryId)?.label ?? ""}`
               : ""}
@@ -373,12 +376,12 @@ export function HandoverWorkspace({
               });
             }}
           >
-            Clear search
+            {t("Clear search ")}
           </Button>
         </Actions>
       )}
       {loading ? (
-        <p role="status">Loading handover…</p>
+        <p role="status">{t("Loading handover…")}</p>
       ) : (
         !error && (
           <>
@@ -403,18 +406,20 @@ export function HandoverWorkspace({
                 />
                 {!dailyOverview && (
                   <Disclosure
-                    summary={`Earlier and current open issues · ${pending.total}`}
+                    summary={t("Earlier and current open issues · {0}", [
+                      pending.total,
+                    ])}
                     variant="panel"
                   >
                     <EntrySummaryCards entries={pending.entries} open={open} />
-                    {!pending.total && <p>No unresolved issues.</p>}
+                    {!pending.total && <p>{t("No unresolved issues.")}</p>}
                     {pending.nextCursor && (
                       <Button
                         variant="secondary"
                         disabled={busy}
                         onClick={() => void more(true)}
                       >
-                        More open issues
+                        {t("More open issues ")}
                       </Button>
                     )}
                   </Disclosure>
@@ -425,13 +430,15 @@ export function HandoverWorkspace({
                 <div className="handover-results-heading">
                   <h2>{viewLabels[view]}</h2>
                   <p>
-                    {page.total} entries · Showing {page.entries.length}
+                    {page.total}
+                    {t(" entries · Showing ")}
+                    {page.entries.length}
                   </p>
                 </div>
                 {!page.entries.length && (
                   <Panel variant="empty">
-                    <h2>No updates for this selection</h2>
-                    <p>Share an update or search earlier history.</p>
+                    <h2>{t("No updates for this selection")}</h2>
+                    <p>{t("Share an update or search earlier history.")}</p>
                   </Panel>
                 )}
                 {page.entries.length > 0 &&
@@ -439,7 +446,7 @@ export function HandoverWorkspace({
                     <EntryMatrix
                       entries={page.entries}
                       externalLabel={
-                        context?.externalSystemLabel ?? "Work reference"
+                        context?.externalSystemLabel ?? t("Work reference")
                       }
                       open={open}
                     />
@@ -459,7 +466,7 @@ export function HandoverWorkspace({
                     disabled={busy}
                     onClick={() => void more()}
                   >
-                    More entries
+                    {t("More entries ")}
                   </Button>
                 )}
               </>
@@ -469,7 +476,7 @@ export function HandoverWorkspace({
       )}
       {searching && context && creating === null && (
         <Dialog
-          title="Search handover history"
+          title={t("Search handover history")}
           onClose={() => setSearching(false)}
         >
           <HandoverFilters
@@ -494,7 +501,7 @@ export function HandoverWorkspace({
       )}
       {creating !== null && context && (
         <Dialog
-          title="New handover entry"
+          title={t("New handover entry")}
           busy={busy}
           onClose={() => setCreating(null)}
         >

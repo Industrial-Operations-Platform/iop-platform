@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { AnalysisCalendarNotice } from "./AnalysisCalendarNotice";
 import { SourceFiles } from "./SourceFiles";
 import { ExecutiveMonthControls, MonthlyOverview } from "./MonthlyOverview";
@@ -41,7 +42,7 @@ function Notice({ error }: { error: unknown }) {
     <Alert>
       {error instanceof Error
         ? error.message
-        : "The operation could not be completed."}
+        : t("The operation could not be completed.")}
     </Alert>
   ) : null;
 }
@@ -139,20 +140,20 @@ export function ReportWorkspace({
       <PageHeading
         title={
           administration && fileView
-            ? "Files & source rows"
+            ? t("Files & source rows")
             : administration
-              ? "Import & prepare"
-              : "Data analysis"
+              ? t("Import & prepare")
+              : t("Data analysis")
         }
         eyebrow={
           administration
-            ? "Administration · Data Analysis"
-            : "Operations · Data Analysis"
+            ? t("Administration · Data Analysis")
+            : t("Operations · Data Analysis")
         }
         description={
           administration
-            ? "Manage daily files, import quality and reporting settings."
-            : "Daily files. One persistent reporting history."
+            ? t("Manage daily files, import quality and reporting settings.")
+            : t("Daily files. One persistent reporting history.")
         }
         actions={
           <Actions>
@@ -162,7 +163,7 @@ export function ReportWorkspace({
                 aria-pressed={!fileView}
                 onClick={() => setFileView(false)}
               >
-                Import & prepare
+                {t("Import & prepare ")}
               </Button>
             )}
             {administration && (
@@ -171,14 +172,14 @@ export function ReportWorkspace({
                 aria-pressed={fileView}
                 onClick={() => setFileView(true)}
               >
-                Files & source rows
+                {t("Files & source rows ")}
               </Button>
             )}
             <Button
               variant="secondary"
               onClick={() => setRefresh((x) => x + 1)}
             >
-              Refresh history
+              {t("Refresh history ")}
             </Button>
           </Actions>
         }
@@ -221,14 +222,14 @@ export function ReportWorkspace({
             />
           )}
           {loading ? (
-            <p role="status">Loading historical analysis…</p>
+            <p role="status">{t("Loading historical analysis…")}</p>
           ) : !selection ? (
             <Panel variant="empty">
-              <h2>Your history starts with a CSV</h2>
+              <h2>{t("Your history starts with a CSV")}</h2>
               <p>
                 {administration
-                  ? "Open Import & prepare to add a daily file."
-                  : "An administrator can import daily files for analysis."}
+                  ? t("Open Import & prepare to add a daily file.")
+                  : t("An administrator can import daily files for analysis.")}
               </p>
             </Panel>
           ) : (
@@ -245,17 +246,20 @@ export function ReportWorkspace({
                 )}
                 {template !== 0 && (
                   <p className="analysis-footnote">
-                    All eligible matching historical rows contribute to totals.
-                    Rankings show up to 100 of {number(report.groupCount)}{" "}
-                    groups; charts show the top 10 unless stated. Duration is
-                    accumulated alarm time, not plant downtime.
+                    {t(
+                      "All eligible matching historical rows contribute to totals. Rankings show up to 100 of ",
+                    )}
+                    {number(report.groupCount)}{" "}
+                    {t(
+                      "groups; charts show the top 10 unless stated. Duration is accumulated alarm time, not plant downtime. ",
+                    )}
                   </p>
                 )}
                 {template !== 0 &&
                   (report.totals.records === 0 ? (
                     <Panel variant="empty">
-                      <h2>No matching records</h2>
-                      <p>Adjust the dates or dimension filters.</p>
+                      <h2>{t("No matching records")}</h2>
+                      <p>{t("Adjust the dates or dimension filters.")}</p>
                     </Panel>
                   ) : (
                     <div className="analysis-charts">
@@ -263,13 +267,13 @@ export function ReportWorkspace({
                         <>
                           <Plot
                             kind="trend"
-                            title="Frequency and duration over time"
+                            title={t("Frequency and duration over time")}
                             report={report}
                             onSelect={select}
                           />
                           <Plot
                             kind="heatmap"
-                            title="Group behavior by reporting period"
+                            title={t("Group behavior by reporting period")}
                             report={report}
                             onSelect={select}
                           />
@@ -278,25 +282,27 @@ export function ReportWorkspace({
                         <>
                           <Plot
                             kind={template === 4 ? "messages" : "monthly"}
-                            title="Comparison between months"
+                            title={t("Comparison between months")}
                             report={report}
                             onSelect={select}
                           />
                           <Plot
                             kind="scatter"
-                            title="Duration versus frequency · up to 100 groups"
+                            title={t(
+                              "Duration versus frequency · up to 100 groups",
+                            )}
                             report={report}
                             onSelect={select}
                           />
                           <Plot
                             kind="frequency"
-                            title="Top 10 by frequency · Pareto"
+                            title={t("Top 10 by frequency · Pareto")}
                             report={report}
                             onSelect={select}
                           />
                           <Plot
                             kind="duration"
-                            title="Top 10 by duration · Pareto"
+                            title={t("Top 10 by duration · Pareto")}
                             report={report}
                             onSelect={select}
                           />
@@ -304,13 +310,13 @@ export function ReportWorkspace({
                             <>
                               <Plot
                                 kind="trend"
-                                title="Frequency and duration over time"
+                                title={t("Frequency and duration over time")}
                                 report={report}
                                 onSelect={select}
                               />
                               <Plot
                                 kind="heatmap"
-                                title="Group behavior by reporting period"
+                                title={t("Group behavior by reporting period")}
                                 report={report}
                                 onSelect={select}
                               />
@@ -322,15 +328,15 @@ export function ReportWorkspace({
                   ))}
                 <DataTables report={report} onSelect={select} />
                 <p className="analysis-footnote">
-                  Reporting dates come from file names; reporting windows are
-                  unknown. Missing dates are not zero activity. Monthly
-                  comparisons use only imported dates.
+                  {t(
+                    "Reporting dates come from file names; reporting windows are unknown. Missing dates are not zero activity. Monthly comparisons use only imported dates. ",
+                  )}
                 </p>
               </>
             )
           )}
           <ViewNavigation
-            label="Analysis templates"
+            label={t("Analysis templates")}
             selected={template}
             items={reportViews.map(({ title }, id) => ({ id, label: title }))}
             onSelect={(i) => {
@@ -354,17 +360,20 @@ function DataTables({
     <Disclosure
       className="analysis-data"
       variant="panel"
-      summary={<> Explore data · rankings and trends </>}
+      summary={<>{t(" Explore data · rankings and trends ")}</>}
     >
       <TableViewport>
         <Table>
-          <caption>Group totals · {labels[report.selection.dimension]}</caption>
+          <caption>
+            {t("Group totals · ")}
+            {labels[report.selection.dimension]}
+          </caption>
           <thead>
             <tr>
-              <th>Group</th>
-              <th>Frequency</th>
-              <th>Minutes</th>
-              <th>Rows</th>
+              <th>{t("Group")}</th>
+              <th>{t("Frequency")}</th>
+              <th>{t("Minutes")}</th>
+              <th>{t("Rows")}</th>
             </tr>
           </thead>
           <tbody>
@@ -387,12 +396,12 @@ function DataTables({
       </TableViewport>
       <TableViewport>
         <Table>
-          <caption>Historical trend</caption>
+          <caption>{t("Historical trend")}</caption>
           <thead>
             <tr>
-              <th>Period</th>
-              <th>Frequency</th>
-              <th>Minutes</th>
+              <th>{t("Period")}</th>
+              <th>{t("Frequency")}</th>
+              <th>{t("Minutes")}</th>
             </tr>
           </thead>
           <tbody>

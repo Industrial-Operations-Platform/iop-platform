@@ -1,3 +1,4 @@
+import { t } from "../localization/i18n";
 import { Actions, Button, PageHeading, Panel } from "../design/components";
 
 export type AdministrationTool = "imports" | "files" | "preparation" | "kpis";
@@ -14,45 +15,53 @@ export function AdministrationOverview({
   openUsers: () => void;
 }) {
   return (
-    <section aria-label="Administration overview">
+    <section aria-label={t("Administration overview")}>
       <PageHeading
-        eyebrow="Platform administration"
-        title="Administration"
-        description="Manage platform access, source data and reporting settings."
+        eyebrow={t("Platform administration")}
+        title={t("Administration")}
+        description={t(
+          "Manage platform access, source data and reporting settings.",
+        )}
       />
       <div className="analysis-home-grid">
         {canAdminister && (
           <Panel>
-            <h2>Users & profiles</h2>
-            <p>Create accounts, assign profiles and manage platform access.</p>
-            <Button onClick={openUsers}>Manage users</Button>
+            <h2>{t("Users & profiles")}</h2>
+            <p>
+              {t(
+                "Create accounts, assign profiles and manage platform access.",
+              )}
+            </p>
+            <Button onClick={openUsers}>{t("Manage users")}</Button>
           </Panel>
         )}
         {canImport && (
           <>
             <Panel>
-              <h2>Imports & source data</h2>
+              <h2>{t("Imports & source data")}</h2>
               <p>
-                Add daily files and review their saved history and source rows.
+                {t(
+                  "Add daily files and review their saved history and source rows. ",
+                )}
               </p>
               <Actions>
                 <Button onClick={() => openTool("imports")}>
-                  Import files
+                  {t("Import files ")}
                 </Button>
                 <Button variant="secondary" onClick={() => openTool("files")}>
-                  Files & source rows
+                  {t("Files & source rows ")}
                 </Button>
               </Actions>
             </Panel>
             <Panel>
-              <h2>Reporting settings</h2>
-              <p>Maintain historical preparation rules and KPI goals.</p>
+              <h2>{t("Reporting settings")}</h2>
+              <p>{t("Maintain historical preparation rules and KPI goals.")}</p>
               <Actions>
                 <Button onClick={() => openTool("preparation")}>
-                  Data preparation
+                  {t("Data preparation ")}
                 </Button>
                 <Button variant="secondary" onClick={() => openTool("kpis")}>
-                  KPI settings & goals
+                  {t("KPI settings & goals ")}
                 </Button>
               </Actions>
             </Panel>

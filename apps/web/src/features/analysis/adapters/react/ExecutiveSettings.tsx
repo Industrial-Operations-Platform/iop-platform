@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -81,13 +82,13 @@ export function ExecutiveSettings({
     <Disclosure
       className="analysis-executive-settings"
       variant="panel"
-      summary="KPI settings & goals"
+      summary={t("KPI settings & goals")}
       open={initiallyExpanded || undefined}
     >
       <p>
-        Choose up to eight KPIs. Choose an exact prepared Meldetext for each
-        KPI. Goals use the same daily-average unit as the KPI; leave a goal
-        empty to compare with all imported history. Lower is better.
+        {t(
+          "Choose up to eight KPIs. Choose an exact prepared Meldetext for each KPI. Goals use the same daily-average unit as the KPI; leave a goal empty to compare with all imported history. Lower is better. ",
+        )}
       </p>
       {error && <Alert>{error}</Alert>}
       <form
@@ -106,7 +107,8 @@ export function ExecutiveSettings({
           return (
             <FieldRow className="analysis-kpi-setting" key={definition.id}>
               <Field>
-                Label {index + 1}
+                {t("Label ")}
+                {index + 1}
                 <Input
                   required
                   maxLength={160}
@@ -116,9 +118,10 @@ export function ExecutiveSettings({
                 />
               </Field>
               <Field>
-                Meldetext {index + 1}
+                {t("Meldetext ")}
+                {index + 1}
                 <Select
-                  aria-label={`Meldetext ${index + 1}`}
+                  aria-label={t("Meldetext {0}", [index + 1])}
                   required
                   disabled={pending}
                   value={definition.message}
@@ -134,12 +137,13 @@ export function ExecutiveSettings({
                   }
                 >
                   <option value="" disabled>
-                    Select an error
+                    {t("Select an error ")}
                   </option>
                   {definition.message &&
                     !messages.includes(definition.message) && (
                       <option value={definition.message}>
-                        {definition.message} (not in current history)
+                        {definition.message}
+                        {t(" (not in current history) ")}
                       </option>
                     )}
                   {messages
@@ -158,7 +162,8 @@ export function ExecutiveSettings({
                 </Select>
               </Field>
               <Field>
-                Measure {index + 1}
+                {t("Measure ")}
+                {index + 1}
                 <Select
                   disabled={pending}
                   value={definition.metric}
@@ -169,12 +174,13 @@ export function ExecutiveSettings({
                     })
                   }
                 >
-                  <option value="frequency">Occurrences/day</option>
-                  <option value="duration">Alarm minutes/day</option>
+                  <option value="frequency">{t("Occurrences/day")}</option>
+                  <option value="duration">{t("Alarm minutes/day")}</option>
                 </Select>
               </Field>
               <Field>
-                Goal {index + 1}
+                {t("Goal ")}
+                {index + 1}
                 <Input
                   type="number"
                   min="0"
@@ -194,7 +200,8 @@ export function ExecutiveSettings({
                 variant="secondary"
                 onClick={() => edit(definitions.filter((_, i) => i !== index))}
               >
-                Remove KPI {index + 1}
+                {t("Remove KPI ")}
+                {index + 1}
               </Button>
             </FieldRow>
           );
@@ -222,10 +229,10 @@ export function ExecutiveSettings({
             ])
           }
         >
-          Add KPI
+          {t("Add KPI ")}
         </Button>{" "}
         <Button type="submit" disabled={!value || pending}>
-          {pending ? "Saving KPI settings…" : "Save KPI settings"}
+          {pending ? t("Saving KPI settings…") : t("Save KPI settings")}
         </Button>{" "}
         <Button
           disabled={pending}
@@ -235,10 +242,10 @@ export function ExecutiveSettings({
             setReload((n) => n + 1);
           }}
         >
-          Reload saved settings
+          {t("Reload saved settings ")}
         </Button>
       </form>
-      {saved && <p role="status">KPI settings saved.</p>}
+      {saved && <p role="status">{t("KPI settings saved.")}</p>}
     </Disclosure>
   );
 }

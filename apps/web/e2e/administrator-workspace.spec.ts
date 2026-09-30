@@ -1,3 +1,4 @@
+import { emptyWorkforce } from "./workforce-fixture";
 import { expect, test } from "@playwright/test";
 
 for (const width of [1440, 375]) {
@@ -9,6 +10,10 @@ for (const width of [1440, 375]) {
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
       requests.push(path);
+      if (path.endsWith("/workforce/board")) {
+        await route.fulfill({ json: emptyWorkforce });
+        return;
+      }
       if (path.endsWith("/session/context")) {
         await route.fulfill({
           json: {

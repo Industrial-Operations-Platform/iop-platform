@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { useState } from "react";
 import {
   Actions,
@@ -40,7 +41,7 @@ export function FollowUpForm({
   return (
     <form
       className="handover-form"
-      aria-label="Follow-up and coordination"
+      aria-label={t("Follow-up and coordination")}
       onSubmit={(event) => {
         event.preventDefault();
         void onSave({
@@ -61,33 +62,33 @@ export function FollowUpForm({
       <fieldset disabled={pending} className="handover-fields">
         {context.canCoordinate && (
           <Field>
-            Update type
+            {t("Update type ")}
             <Select
-              aria-label="Update type"
+              aria-label={t("Update type")}
               value={action}
               onChange={(e) => setAction(e.target.value as typeof action)}
             >
-              <option value="follow-up">Add follow-up</option>
+              <option value="follow-up">{t("Add follow-up")}</option>
               {entry.issueState !== "none" && (
-                <option value="assign">Assign responsibility</option>
+                <option value="assign">{t("Assign responsibility")}</option>
               )}
               <option value="highlight">
                 {entry.highlighted
-                  ? "Withdraw Start highlight"
-                  : "Highlight on Start"}
+                  ? t("Withdraw Start highlight")
+                  : t("Highlight on Start")}
               </option>
             </Select>
           </Field>
         )}
         {action === "follow-up" && canProgress && (
           <Field>
-            Issue state
+            {t("Issue state ")}
             <Select
-              aria-label="Issue state"
+              aria-label={t("Issue state")}
               value={state}
               onChange={(e) => setState(e.target.value as typeof state)}
             >
-              <option value="">Keep current state</option>
+              <option value="">{t("Keep current state")}</option>
               {(["open", "in-progress", "resolved"] as const)
                 .filter(
                   (s) =>
@@ -97,10 +98,10 @@ export function FollowUpForm({
                 .map((s) => (
                   <option key={s} value={s}>
                     {s === "resolved"
-                      ? "Resolved · Close issue"
+                      ? t("Resolved · Close issue")
                       : s === "open"
-                        ? "Open"
-                        : "In progress"}
+                        ? t("Open")
+                        : t("In progress")}
                   </option>
                 ))}
             </Select>
@@ -108,13 +109,13 @@ export function FollowUpForm({
         )}
         {action === "assign" && (
           <Field>
-            Responsible person
+            {t("Responsible person ")}
             <Select
-              aria-label="Responsible person"
+              aria-label={t("Responsible person")}
               value={responsible}
               onChange={(e) => setResponsible(e.target.value)}
             >
-              <option value="">Unassigned</option>
+              <option value="">{t("Unassigned")}</option>
               {context.people.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -125,8 +126,8 @@ export function FollowUpForm({
         )}
         <Field>
           {state === "resolved" && action === "follow-up"
-            ? "Resolution outcome"
-            : "Update / reason"}
+            ? t("Resolution outcome")
+            : t("Update / reason")}
           <Textarea
             autoFocus
             required
@@ -136,14 +137,16 @@ export function FollowUpForm({
           />
         </Field>
         <p>
-          This update is added to the history. The original report is retained.
+          {t(
+            "This update is added to the history. The original report is retained. ",
+          )}
         </p>
         <Actions>
           <Button type="submit" disabled={pending}>
-            {pending ? "Saving…" : "Save update"}
+            {pending ? t("Saving…") : t("Save update")}
           </Button>
           <Button variant="secondary" onClick={onCancel}>
-            Cancel
+            {t("Cancel ")}
           </Button>
         </Actions>
       </fieldset>

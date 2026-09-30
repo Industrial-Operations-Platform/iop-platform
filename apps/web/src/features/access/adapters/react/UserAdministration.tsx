@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -18,7 +19,7 @@ import {
 } from "../../domain/access";
 const options = Object.entries(profileLabels).map(([value, label]) => (
   <option key={value} value={value}>
-    {label}
+    {t(label)}
   </option>
 ));
 export function UserAdministration({
@@ -74,40 +75,50 @@ export function UserAdministration({
   return (
     <>
       <PageHeading
-        title="Users & profiles"
-        eyebrow="Administration"
-        description="Create individual accounts and assign access to this local site."
+        title={t("Users & profiles")}
+        eyebrow={t("Administration")}
+        description={t(
+          "Create individual accounts and assign access to this local site.",
+        )}
       />
       <Panel>
-        <h2>Available profiles</h2>
+        <h2>{t("Available profiles")}</h2>
         <p>
-          <strong>Administrator:</strong> user administration, imports,
-          preparation and analysis.
+          <strong>{t("Administrator:")}</strong>
+          {t(
+            " user administration, imports, workforce configuration, planning and analysis. ",
+          )}
         </p>
         <p>
-          <strong>Technician · Task Force · Team Leader:</strong> the same
-          analytical access for now. Permissions will evolve with future
-          modules.
+          <strong>{t("Technician · Task Force · Team Leader:")}</strong>
+          {t(
+            " technicians read their daily plan; Team Leaders plan assignments; Task Force reads operational and analytical data. ",
+          )}
         </p>
       </Panel>
       {error && <Alert>{error}</Alert>}
       {issued && (
-        <Panel aria-label="Initial credentials">
-          <h2>Account created: {issued.username}</h2>
+        <Panel aria-label={t("Initial credentials")}>
+          <h2>
+            {t("Account created: ")}
+            {issued.username}
+          </h2>
           <p>
-            Initial password: <code>{issued.secret}</code>
+            {t("Initial password: ")}
+            <code>{issued.secret}</code>
           </p>
           <p>
-            Give this password to the user securely. It is shown once and must
-            be changed at first sign-in.
+            {t(
+              "Give this password to the user securely. It is shown once and must be changed at first sign-in. ",
+            )}
           </p>
           <Button variant="secondary" onClick={() => setIssued(null)}>
-            Dismiss initial password
+            {t("Dismiss initial password ")}
           </Button>
         </Panel>
       )}
       <Panel>
-        <h2>Create a user</h2>
+        <h2>{t("Create a user")}</h2>
         <form
           className="access-user-form"
           onSubmit={(event) => {
@@ -131,7 +142,7 @@ export function UserAdministration({
           }}
         >
           <Field>
-            Name
+            {t("Name ")}
             <Input
               required
               maxLength={100}
@@ -141,7 +152,7 @@ export function UserAdministration({
             />
           </Field>
           <Field>
-            Username
+            {t("Username ")}
             <Input
               required
               minLength={3}
@@ -154,9 +165,9 @@ export function UserAdministration({
             />
           </Field>
           <Field>
-            Profile
+            {t("Profile ")}
             <Select
-              aria-label="Profile"
+              aria-label={t("Profile")}
               value={profile}
               onChange={(e) => setProfile(e.target.value as Profile)}
               disabled={pending}
@@ -165,22 +176,22 @@ export function UserAdministration({
             </Select>
           </Field>
           <Button type="submit" disabled={pending}>
-            Create user
+            {t("Create user ")}
           </Button>
         </form>
       </Panel>
       <Panel>
-        <h2>Users</h2>
-        {pending && <p role="status">Updating users…</p>}
+        <h2>{t("Users")}</h2>
+        {pending && <p role="status">{t("Updating users…")}</p>}
         <TableViewport>
           <Table>
-            <caption>Accounts for this site</caption>
+            <caption>{t("Accounts for this site")}</caption>
             <thead>
               <tr>
-                <th scope="col">User</th>
-                <th scope="col">Profile</th>
-                <th scope="col">Status</th>
-                <th scope="col">Access</th>
+                <th scope="col">{t("User")}</th>
+                <th scope="col">{t("Profile")}</th>
+                <th scope="col">{t("Status")}</th>
+                <th scope="col">{t("Access")}</th>
               </tr>
             </thead>
             <tbody>
@@ -193,7 +204,7 @@ export function UserAdministration({
                   </th>
                   <td>
                     <Select
-                      aria-label={`Profile for ${user.username}`}
+                      aria-label={t("Profile for {0}", [user.username])}
                       value={user.profile}
                       disabled={pending}
                       onChange={(e) =>
@@ -207,7 +218,7 @@ export function UserAdministration({
                       {options}
                     </Select>
                   </td>
-                  <td>{user.active ? "Active" : "Disabled"}</td>
+                  <td>{user.active ? t("Active") : t("Disabled")}</td>
                   <td>
                     <Button
                       variant="secondary"
@@ -216,7 +227,25 @@ export function UserAdministration({
                         void change(user, user.profile, !user.active)
                       }
                     >
-                      {user.active ? "Disable" : "Enable"} {user.username}
+                      {user.active ? t("Disable") : t("Enable")} {user.username}
+                    </Button>
+                    <Button
+                      variant="text"
+                      disabled={pending}
+                      onClick={() => {
+                        setPending(true);
+                        setError("");
+                        void application
+                          .remove(user.id)
+                          .then(async () => {
+                            await onChanged();
+                            setRefresh((n) => n + 1);
+                          })
+                          .catch((e) => setError(e.message))
+                          .finally(() => setPending(false));
+                      }}
+                    >
+                      {t("Delete profile")}
                     </Button>
                   </td>
                 </tr>

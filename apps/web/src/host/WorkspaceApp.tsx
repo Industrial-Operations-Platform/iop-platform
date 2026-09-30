@@ -1,7 +1,13 @@
+import { WorkforceToday } from "../features/workforce/adapters/react/WorkforceToday";
+import { WorkforceWorkspace } from "../features/workforce/adapters/react/WorkforceWorkspace";
+import type { WorkforceApplication } from "../features/workforce/application/workforce";
+import { LanguageControl } from "../localization/LanguageControl";
+import { language, subscribeLanguage, t } from "../localization/i18n";
+import { PlatformMark } from "../design/components/PlatformMark";
 import type { HandoverApplication } from "../features/shift-handover/application/handover";
 import { HandoverWorkspace } from "../features/shift-handover/adapters/react/HandoverWorkspace";
 import { HandoverHighlights } from "../features/shift-handover/adapters/react/HandoverHighlights";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   Alert,
   AppShell,
@@ -30,13 +36,19 @@ export function WorkspaceApp({
   application,
   access,
   handover,
+  workforce,
 }: {
   application: AnalysisWorkspace;
   access?: AccessApplication;
   handover?: HandoverApplication;
+  workforce?: WorkforceApplication;
 }) {
+  const currentLanguage = useSyncExternalStore(subscribeLanguage, language);
+  useEffect(() => {
+    document.documentElement.lang = currentLanguage;
+  }, [currentLanguage]);
   const [page, setPage] = useState<
-    "start" | "analysis" | "administration" | "users" | "handover"
+    "start" | "analysis" | "administration" | "users" | "handover" | "workforce"
   >("start");
   const [handoverVisit, setHandoverVisit] = useState(0);
   const [handoverEntry, setHandoverEntry] = useState("");
@@ -150,9 +162,12 @@ export function WorkspaceApp({
     return (
       <IdentityRoot>
         <main className="access-entry">
+          <LanguageControl />
           {!!error && (
             <Alert>
-              {error instanceof Error ? error.message : "The operation failed."}
+              {error instanceof Error
+                ? error.message
+                : t("The operation failed.")}
             </Alert>
           )}
           {context ? (
@@ -169,18 +184,18 @@ export function WorkspaceApp({
                   onClick={signOut}
                   disabled={pending}
                 >
-                  Sign out
+                  {t("Sign out ")}
                 </Button>
               )}
             </>
           ) : (
             <Panel>
-              <h1>Sign in to IOP</h1>
+              <h1>{t("Sign in to IOP")}</h1>
               <Button
                 disabled={pending}
                 onClick={() => setConnectionAttempt((n) => n + 1)}
               >
-                {pending ? "Connecting…" : "Retry connection"}
+                {pending ? t("Connecting…") : t("Retry connection")}
               </Button>
             </Panel>
           )}
@@ -192,9 +207,10 @@ export function WorkspaceApp({
     <AppShell
       className="analysis-app"
       mainId="analysis-main"
-      skipLabel="Skip to workspace"
+      skipLabel={t("Skip to workspace")}
       header={
         <>
+          <LanguageControl />
           {canViewProfiles && (
             <ProfileViewControl
               key={context?.user?.id}
@@ -207,7 +223,7 @@ export function WorkspaceApp({
               {context.user && (
                 <span>
                   {context.user.name} ·{" "}
-                  {profileLabels[context.user.profile as Profile] ?? "User"}
+                  {t(profileLabels[context.user.profile as Profile] ?? "User")}
                 </span>
               )}
               {context.user && access && (
@@ -216,21 +232,21 @@ export function WorkspaceApp({
                   onClick={signOut}
                   disabled={pending}
                 >
-                  Sign out
+                  {t("Sign out ")}
                 </Button>
               )}
             </>
           ) : (
             <Field layout="inline">
-              User{" "}
+              {t("User")}{" "}
               <Select
-                aria-label="Demo user"
+                aria-label={t("Demo user")}
                 value={context?.user?.id ?? ""}
                 disabled={pending}
                 onChange={(e) => void choose(e.target.value)}
               >
                 <option value="" disabled>
-                  Select a user
+                  {t("Select a user ")}
                 </option>
                 {context?.users.map((u) => (
                   <option key={u.id} value={u.id}>
@@ -243,12 +259,14 @@ export function WorkspaceApp({
         </>
       }
       brandAction={{
-        label: "IOP · Go to Start",
+        label: t("IOP · Go to Start"),
         onClick: () => setPage("start"),
       }}
       brand={
         <>
-          IOP<span>Industrial Operations Platform</span>
+          <PlatformMark />
+          {t(" IOP")}
+          <span>{t("Industrial Operations Platform")}</span>
         </>
       }
       navigation={
@@ -258,23 +276,29 @@ export function WorkspaceApp({
             next === "handover" ? openHandoverHome() : setPage(next)
           }
           items={[
-            { id: "start", label: administration ? "Administration" : "Start" },
+            {
+              id: "start",
+              label: administration ? t("Administration") : t("Start"),
+            },
             ...(administration && context?.canImport
               ? [
                   {
                     id: "administration" as const,
-                    label: "Data administration",
+                    label: t("Data administration"),
                   },
                 ]
               : []),
             ...(canReadAnalytics
-              ? [{ id: "analysis" as const, label: "Data analysis" }]
+              ? [{ id: "analysis" as const, label: t("Data analysis") }]
+              : []),
+            ...(workforce && signedIn
+              ? [{ id: "workforce" as const, label: t("Workforce & shifts") }]
               : []),
             ...(handover && signedIn
-              ? [{ id: "handover" as const, label: "Shift Handover" }]
+              ? [{ id: "handover" as const, label: t("Shift Handover") }]
               : []),
             ...(showUserAdministration
-              ? [{ id: "users" as const, label: "Users & profiles" }]
+              ? [{ id: "users" as const, label: t("Users & profiles") }]
               : []),
           ]}
         />
@@ -282,24 +306,34 @@ export function WorkspaceApp({
     >
       {error ? (
         <Alert>
-          {error instanceof Error ? error.message : "The operation failed."}
+          {error instanceof Error ? error.message : t("The operation failed.")}
         </Alert>
       ) : null}
       {previewProfile && (
-        <Panel aria-label="Profile preview">
+        <Panel aria-label={t("Profile preview")}>
           <p>
-            Viewing as {profileLabels[previewProfile]} · Layout preview. Your
-            account, data access and permissions remain unchanged.
+            {t("Viewing as ")}
+            {t(profileLabels[previewProfile])}
+            {t(
+              " · Layout preview. Your account, data access and permissions remain unchanged. ",
+            )}
           </p>
           <Button
             variant="secondary"
             onClick={() => selectProfile("administrator")}
           >
-            Return to administration
+            {t("Return to administration ")}
           </Button>
         </Panel>
       )}
-      {page === "start" && administration ? (
+      {page === "workforce" && workforce && signedIn ? (
+        <WorkforceWorkspace
+          key={`${context.user?.id}:${effectiveProfile}`}
+          application={workforce}
+          profile={effectiveProfile}
+          timeZone={context.scope?.siteTimeZone ?? "Europe/Zurich"}
+        />
+      ) : page === "start" && administration ? (
         <AdministrationOverview
           canImport={!!context?.canImport}
           canAdminister={!!showUserAdministration}
@@ -347,6 +381,15 @@ export function WorkspaceApp({
           }
           canReadAnalytics={canReadAnalytics}
           authenticated={context.authentication === "password"}
+          workforce={
+            workforce && signedIn ? (
+              <WorkforceToday
+                application={workforce}
+                timeZone={context.scope?.siteTimeZone ?? "Europe/Zurich"}
+                open={() => setPage("workforce")}
+              />
+            ) : undefined
+          }
           operational={
             handover && signedIn ? (
               <HandoverHighlights
@@ -378,18 +421,18 @@ export function WorkspaceApp({
         />
       ) : (
         <Panel variant="empty">
-          <h1>Data analysis</h1>
+          <h1>{t("Data analysis")}</h1>
           <p>
             {context?.enabled
-              ? "Select a user in the header to open the workspace."
-              : "Connect the local API to open the analytical workspace."}
+              ? t("Select a user in the header to open the workspace.")
+              : t("Connect the local API to open the analytical workspace.")}
           </p>
           {(!context?.enabled || !!error) && (
             <Button
               disabled={pending}
               onClick={() => setConnectionAttempt((n) => n + 1)}
             >
-              {pending ? "Connecting…" : "Retry connection"}
+              {pending ? t("Connecting…") : t("Retry connection")}
             </Button>
           )}
         </Panel>

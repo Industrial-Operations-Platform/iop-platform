@@ -10,6 +10,7 @@ test("the shared presentation library has no feature, transport or business depe
       expect(
         dependency === "react" ||
           dependency === "../identity" ||
+          dependency === "../../localization/i18n" ||
           dependency.startsWith("./"),
       ).toBe(true);
     expect(text).not.toMatch(/\b(?:fetch|localStorage)\b|features\/|\/api\//);

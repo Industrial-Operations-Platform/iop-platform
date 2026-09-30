@@ -1,3 +1,4 @@
+import { t, locale } from "../../localization/i18n";
 import { useEffect, useId, useRef } from "react";
 import { Button } from "./Controls";
 import { Badge } from "./Surfaces";
@@ -46,7 +47,7 @@ export function ViewNavigation<T extends string | number>({
     <nav
       ref={navigation}
       className={`iop-view-navigation iop-view-navigation--${placement}`}
-      aria-label={label}
+      aria-label={t(label)}
     >
       {items.map((item) => (
         <Button
@@ -59,7 +60,7 @@ export function ViewNavigation<T extends string | number>({
           aria-pressed={selected === item.id}
           onClick={() => onSelect(item.id)}
         >
-          <span className="iop-view-label">{item.label}</span>
+          <span className="iop-view-label">{t(item.label)}</span>
           {item.count !== undefined && (
             <Badge tone={item.tone}>{item.count}</Badge>
           )}
@@ -68,7 +69,7 @@ export function ViewNavigation<T extends string | number>({
               className="iop-view-description"
               id={`${descriptionId}-${item.id}`}
             >
-              {item.description}
+              {t(item.description)}
             </span>
           )}
         </Button>

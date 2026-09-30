@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { Badge, Button } from "../../../../design/components";
 import { issueLabel, issueTone } from "./entry-labels";
 import type { Entry } from "../../domain/models";
@@ -26,7 +27,7 @@ export function EntrySummaryCards({
         >
           <strong>{entry.content.summary}</strong>
           <span className="handover-card-location">
-            {entry.departmentLabel || "Site-wide information"}
+            {entry.departmentLabel || t("Site-wide information")}
             {expanded && entry.areaLabel && (
               <span className="handover-card-area"> · {entry.areaLabel}</span>
             )}
@@ -38,7 +39,7 @@ export function EntrySummaryCards({
                   {issueLabel(entry.issueState)}
                 </Badge>
                 {entry.content.condition === "blocked" && (
-                  <Badge tone="attention">Reported blocked</Badge>
+                  <Badge tone="attention">{t("Reported blocked")}</Badge>
                 )}
                 <span>{entry.categoryLabel}</span>
               </span>
@@ -55,14 +56,15 @@ export function EntrySummaryCards({
               {personal && (
                 <span className="handover-card-tags">
                   <span>
-                    Entry date{" "}
+                    {t("Entry date")}{" "}
                     <time dateTime={entry.content.date}>
                       {entry.content.date}
                     </time>
                   </span>
                   {entry.issueState !== "none" && (
                     <span>
-                      Responsible · {entry.responsibleName || "Unassigned"}
+                      {t("Responsible · ")}
+                      {entry.responsibleName || t("Unassigned")}
                     </span>
                   )}
                 </span>
@@ -71,7 +73,7 @@ export function EntrySummaryCards({
                 <span className="handover-card-dates">
                   {entry.content.dueDate && (
                     <span>
-                      Due{" "}
+                      {t("Due")}{" "}
                       <time dateTime={entry.content.dueDate}>
                         {entry.content.dueDate}
                       </time>
@@ -79,7 +81,7 @@ export function EntrySummaryCards({
                   )}
                   {entry.content.feedbackDueDate && (
                     <span>
-                      Feedback{" "}
+                      {t("Feedback")}{" "}
                       <time dateTime={entry.content.feedbackDueDate}>
                         {entry.content.feedbackDueDate}
                       </time>

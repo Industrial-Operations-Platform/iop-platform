@@ -1,3 +1,4 @@
+import { t, locale } from "../../localization/i18n";
 import type { ComponentProps, ReactNode } from "react";
 
 export function Panel({
@@ -34,8 +35,16 @@ export function Disclosure({
     </details>
   );
 }
-export function Alert({ className = "", ...props }: ComponentProps<"p">) {
-  return <p role="alert" {...props} className={`iop-alert ${className}`} />;
+export function Alert({
+  className = "",
+  children,
+  ...props
+}: ComponentProps<"p">) {
+  return (
+    <p role="alert" {...props} className={`iop-alert ${className}`}>
+      {typeof children === "string" ? t(children) : children}
+    </p>
+  );
 }
 export function MetricGrid({
   layout = "default",
@@ -67,7 +76,9 @@ export function MetricCard({
       variant="metric"
       className={`iop-metric--${tone} ${className}`}
     >
-      <span className="iop-metric-label">{label}</span>
+      <span className="iop-metric-label">
+        {typeof label === "string" ? t(label) : label}
+      </span>
       <strong className="iop-metric-value">{value}</strong>
       {children}
     </Panel>

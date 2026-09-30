@@ -1,3 +1,4 @@
+import { t, locale } from "../../localization/i18n";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { identityVariables } from "../identity";
 import "./components.css";
@@ -74,9 +75,17 @@ export function PageHeading({
   return (
     <div className="iop-page-heading">
       <div>
-        {eyebrow && <p className="iop-eyebrow">{eyebrow}</p>}
-        <h1>{title}</h1>
-        {description && <p>{description}</p>}
+        {eyebrow && (
+          <p className="iop-eyebrow">
+            {typeof eyebrow === "string" ? t(eyebrow) : eyebrow}
+          </p>
+        )}
+        <h1>{typeof title === "string" ? t(title) : title}</h1>
+        {description && (
+          <p>
+            {typeof description === "string" ? t(description) : description}
+          </p>
+        )}
       </div>
       {actions}
     </div>

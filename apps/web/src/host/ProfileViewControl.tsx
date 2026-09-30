@@ -1,3 +1,4 @@
+import { t } from "../localization/i18n";
 import { useState } from "react";
 import { Button, Field, Select } from "../design/components";
 import { profileLabels, type Profile } from "../features/access/domain/access";
@@ -18,11 +19,11 @@ export function ProfileViewControl({
         aria-controls="workspace-profile-view"
         onClick={() => setExpanded((value) => !value)}
       >
-        View as
+        {t("View as ")}
       </Button>
       {expanded && (
         <Field layout="inline">
-          Profile view
+          {t("Profile view ")}
           <Select
             id="workspace-profile-view"
             value={profile}
@@ -30,7 +31,7 @@ export function ProfileViewControl({
           >
             {Object.entries(profileLabels).map(([value, label]) => (
               <option key={value} value={value}>
-                {label}
+                {t(label)}
               </option>
             ))}
           </Select>

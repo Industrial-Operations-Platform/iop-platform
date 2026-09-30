@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import type { HandoverApplication } from "../../application/handover";
 import { EquipmentPicker } from "./EquipmentPicker";
 import { withinLocation } from "../../domain/models";
@@ -75,20 +76,21 @@ export function EntryForm({
   return (
     <Panel>
       <form
-        aria-label={entry ? "Correct entry" : "New handover entry"}
+        aria-label={entry ? t("Correct entry") : t("New handover entry")}
         onSubmit={(e) => {
           e.preventDefault();
           void onSave(value, issue, responsible, note);
         }}
       >
         <p>
-          Write the short update you would share at handover. Add details when
-          needed.
+          {t(
+            "Write the short update you would share at handover. Add details when needed. ",
+          )}
         </p>
         <fieldset disabled={pending} className="handover-fields">
           <FieldRow>
             <Field>
-              Date
+              {t("Date ")}
               <Input
                 type="date"
                 required
@@ -98,22 +100,22 @@ export function EntryForm({
               />
             </Field>
             <Field>
-              Category
+              {t("Category ")}
               <Select
-                aria-label="Category"
+                aria-label={t("Category")}
                 value={value.categoryId}
                 onChange={(e) => field("categoryId", e.target.value)}
               >
                 {context.categories.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.label}
+                    {t(c.label)}
                   </option>
                 ))}
               </Select>
             </Field>
           </FieldRow>
           <Field>
-            Summary
+            {t("Summary ")}
             <Input
               autoFocus
               required
@@ -124,9 +126,9 @@ export function EntryForm({
           </Field>
           <FieldRow>
             <Field>
-              Department / Halle
+              {t("Department / Halle ")}
               <Select
-                aria-label="Department / Halle"
+                aria-label={t("Department / Halle")}
                 value={value.departmentId}
                 onChange={(e) =>
                   setValue((v) => ({
@@ -138,7 +140,7 @@ export function EntryForm({
                   }))
                 }
               >
-                <option value="">Site-wide information</option>
+                <option value="">{t("Site-wide information")}</option>
                 {context.locations
                   .filter((l) => l.role === "department")
                   .map((l) => (
@@ -149,9 +151,9 @@ export function EntryForm({
               </Select>
             </Field>
             <Field>
-              Area / Bereich
+              {t("Area / Bereich ")}
               <Select
-                aria-label="Area / Bereich"
+                aria-label={t("Area / Bereich")}
                 value={value.areaId}
                 disabled={!value.departmentId}
                 onChange={(e) =>
@@ -163,7 +165,7 @@ export function EntryForm({
                   }))
                 }
               >
-                <option value="">No specific area</option>
+                <option value="">{t("No specific area")}</option>
                 {context.locations
                   .filter(
                     (l) =>
@@ -184,8 +186,9 @@ export function EntryForm({
           </FieldRow>
           {!context.locations.length && (
             <p>
-              No departments are configured yet. You can publish site-wide
-              information.
+              {t(
+                "No departments are configured yet. You can publish site-wide information. ",
+              )}
             </p>
           )}
           <EquipmentPicker
@@ -204,9 +207,9 @@ export function EntryForm({
             }
           >
             <Field>
-              Reported condition
+              {t("Reported condition ")}
               <Select
-                aria-label="Reported condition"
+                aria-label={t("Reported condition")}
                 disabled={!value.equipmentCode}
                 value={value.condition}
                 onChange={(e) => {
@@ -219,19 +222,22 @@ export function EntryForm({
                     setIssue(true);
                 }}
               >
-                <option value="">Not reported</option>
-                <option value="damaged">Damaged</option>
-                <option value="inspection-needed">Inspection needed</option>
-                <option value="blocked">Blocked</option>
-                <option value="repaired">Repaired</option>
-                <option value="restored">Restored</option>
+                <option value="">{t("Not reported")}</option>
+                <option value="damaged">{t("Damaged")}</option>
+                <option value="inspection-needed">
+                  {t("Inspection needed")}
+                </option>
+                <option value="blocked">{t("Blocked")}</option>
+                <option value="repaired">{t("Repaired")}</option>
+                <option value="restored">{t("Restored")}</option>
               </Select>
             </Field>
           </EquipmentPicker>
           {value.equipmentCode && (
             <p>
-              Component reference · Unverified. This report records an
-              observation.
+              {t(
+                "Component reference · Unverified. This report records an observation. ",
+              )}
             </p>
           )}
           <Field layout="inline">
@@ -240,14 +246,14 @@ export function EntryForm({
               checked={value.discuss}
               onChange={(e) => field("discuss", e.target.checked)}
             />
-            Discuss in meeting
+            {t("Discuss in meeting ")}
           </Field>
           <Disclosure
-            summary="Details, work reference and problem analysis"
+            summary={t("Details, work reference and problem analysis")}
             variant="panel"
           >
             <Field>
-              Details
+              {t("Details ")}
               <Textarea
                 maxLength={4000}
                 value={value.details}
@@ -255,7 +261,8 @@ export function EntryForm({
               />
             </Field>
             <Field>
-              {context.externalSystemLabel} reference
+              {context.externalSystemLabel}
+              {t(" reference ")}
               <Input
                 maxLength={160}
                 value={value.externalReference}
@@ -274,7 +281,7 @@ export function EntryForm({
             ))}
             <FieldRow>
               <Field>
-                Due date
+                {t("Due date ")}
                 <Input
                   type="date"
                   value={value.dueDate}
@@ -282,7 +289,7 @@ export function EntryForm({
                 />
               </Field>
               <Field>
-                Feedback due
+                {t("Feedback due ")}
                 <Input
                   type="date"
                   value={value.feedbackDueDate}
@@ -302,17 +309,17 @@ export function EntryForm({
                     if (!e.target.checked) setResponsible("");
                   }}
                 />
-                Track as an open issue
+                {t("Track as an open issue ")}
               </Field>
               {issue && (
                 <Field>
-                  Responsible person
+                  {t("Responsible person ")}
                   <Select
-                    aria-label="Responsible person"
+                    aria-label={t("Responsible person")}
                     value={responsible}
                     onChange={(e) => setResponsible(e.target.value)}
                   >
-                    <option value="">Unassigned</option>
+                    <option value="">{t("Unassigned")}</option>
                     {context.people.map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.name}
@@ -325,7 +332,7 @@ export function EntryForm({
           )}
           {entry && (
             <Field>
-              Reason for correction
+              {t("Reason for correction ")}
               <Textarea
                 required
                 maxLength={4000}
@@ -337,13 +344,13 @@ export function EntryForm({
           <Actions>
             <Button type="submit" disabled={pending}>
               {pending
-                ? "Saving…"
+                ? t("Saving…")
                 : entry
-                  ? "Save correction"
-                  : "Publish update"}
+                  ? t("Save correction")
+                  : t("Publish update")}
             </Button>
             <Button variant="secondary" onClick={onCancel}>
-              Cancel
+              {t("Cancel ")}
             </Button>
           </Actions>
         </fieldset>

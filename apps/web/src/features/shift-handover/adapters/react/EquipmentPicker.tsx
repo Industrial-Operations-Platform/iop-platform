@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -68,11 +69,11 @@ export function EquipmentPicker({
     <div className="handover-component-picker">
       <FieldRow>
         <Field>
-          Find component
+          {t("Find component ")}
           <Input
             type="search"
             disabled={disabled || !areaId}
-            placeholder="Filter Betriebsmittelkennzeichen"
+            placeholder={t("Filter Betriebsmittelkennzeichen")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -80,16 +81,19 @@ export function EquipmentPicker({
       </FieldRow>
       <FieldRow>
         <Field>
-          Betriebsmittelkennzeichen
+          {t("Betriebsmittelkennzeichen ")}
           <Select
-            aria-label="Betriebsmittelkennzeichen"
+            aria-label={t("Betriebsmittelkennzeichen")}
             disabled={disabled || !areaId || loading}
             value={value}
             onChange={(e) => onChange(e.target.value)}
           >
-            <option value="">No specific component</option>
+            <option value="">{t("No specific component")}</option>
             {value && !page.codes.includes(value) && (
-              <option value={value}>{value} · Current selection</option>
+              <option value={value}>
+                {value}
+                {t(" · Current selection")}
+              </option>
             )}
             {page.codes.map((code) => (
               <option key={code} value={code}>
@@ -101,16 +105,19 @@ export function EquipmentPicker({
         {children}
       </FieldRow>
       <p className="handover-muted">
-        Betriebsmittelkennzeichen identifies a component, such as a sensor or
-        motor.
+        {t(
+          "Betriebsmittelkennzeichen identifies a component, such as a sensor or motor. ",
+        )}
       </p>
       {!areaId ? (
-        <p>Select an area to choose a component.</p>
+        <p>{t("Select an area to choose a component.")}</p>
       ) : loading ? (
-        <p role="status">Loading components…</p>
+        <p role="status">{t("Loading components…")}</p>
       ) : (
         !page.codes.length && (
-          <p>No imported codes match. You can still report on this area.</p>
+          <p>
+            {t("No imported codes match. You can still report on this area.")}
+          </p>
         )
       )}
       {error && <Alert>{error}</Alert>}
@@ -140,7 +147,7 @@ export function EquipmentPicker({
             }
           }}
         >
-          More components
+          {t("More components ")}
         </Button>
       )}
     </div>

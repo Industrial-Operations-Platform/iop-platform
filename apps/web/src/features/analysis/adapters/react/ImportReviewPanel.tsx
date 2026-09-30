@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import {
   MetricCard,
   MetricGrid,
@@ -28,58 +29,65 @@ export function ImportReviewPanel({
   originalUrl: string;
 }) {
   return (
-    <Panel className="analysis-import" aria-label="Import review">
+    <Panel className="analysis-import" aria-label={t("Import review")}>
       <h2>{importOutcome(review)}</h2>
       <p role="status">
-        {review.originalFilename} · Reporting date:{" "}
-        <strong>{review.reportingDate}</strong>
+        {review.originalFilename}
+        {t(" · Reporting date:")} <strong>{review.reportingDate}</strong>
       </p>
-      {review.reasonCode && <p>Reason: {review.reasonCode}</p>}
+      {review.reasonCode && (
+        <p>
+          {t("Reason: ")}
+          {review.reasonCode}
+        </p>
+      )}
       {review.reasonCode === "duplicate-date" && (
         <p>
-          This date already has an accepted file. The existing data was
-          preserved; this upload added no rows.
+          {t(
+            "This date already has an accepted file. The existing data was preserved; this upload added no rows. ",
+          )}
         </p>
       )}
       {review.outcome === "received" && (
         <p>
-          The final outcome is not yet known. Use Review or Recover import
-          outcome in the history before attempting another upload.
+          {t(
+            "The final outcome is not yet known. Use Review or Recover import outcome in the history before attempting another upload. ",
+          )}
         </p>
       )}
       <MetricGrid
         className="analysis-import-counts"
-        aria-label="File import volume"
+        aria-label={t("File import volume")}
       >
         {[
-          ["Source rows", review.dataRecordCount],
-          ["Admitted rows", review.admittedRecordCount],
-          ["Rejected rows", review.rejectedRecordCount],
-          ["File size · bytes", review.byteLength],
+          [t("Source rows"), review.dataRecordCount],
+          [t("Admitted rows"), review.admittedRecordCount],
+          [t("Rejected rows"), review.rejectedRecordCount],
+          [t("File size · bytes"), review.byteLength],
         ].map(([label, value]) => (
           <MetricCard
-            key={label}
-            label={label}
-            value={value === null ? "Unknown" : number(Number(value))}
+            key={t(String(label))}
+            label={t(String(label))}
+            value={value === null ? t("Unknown") : number(Number(value))}
           />
         ))}
       </MetricGrid>
       <p>
-        Inspection:{" "}
+        {t("Inspection:")}{" "}
         {review.inspectionComplete
           ? "complete"
-          : "partial — counts may be incomplete"}
+          : t("partial — counts may be incomplete")}
         .
       </p>
       <TableViewport>
         <Table>
-          <caption>Import inspection details</caption>
+          <caption>{t("Import inspection details")}</caption>
           <thead>
             <tr>
-              <th>Valid inspected rows</th>
-              <th>Invalid inspected rows</th>
-              <th>Unclassified rows at import</th>
-              <th>Repeated rows within file</th>
+              <th>{t("Valid inspected rows")}</th>
+              <th>{t("Invalid inspected rows")}</th>
+              <th>{t("Unclassified rows at import")}</th>
+              <th>{t("Repeated rows within file")}</th>
             </tr>
           </thead>
           <tbody>
@@ -93,26 +101,26 @@ export function ImportReviewPanel({
         </Table>
       </TableViewport>
       <p>
-        Inspection counts describe checked source rows; admitted rows confirm
-        what was saved. Repeated rows within a file are separate from a
-        duplicate reporting date.
+        {t(
+          "Inspection counts describe checked source rows; admitted rows confirm what was saved. Repeated rows within a file are separate from a duplicate reporting date. ",
+        )}
       </p>
       {review.diagnostics.length > 0 && (
         <TableViewport>
           <Table>
-            <caption>Import diagnostics</caption>
+            <caption>{t("Import diagnostics")}</caption>
             <thead>
               <tr>
-                <th>Line</th>
-                <th>Field</th>
-                <th>Issue</th>
+                <th>{t("Line")}</th>
+                <th>{t("Field")}</th>
+                <th>{t("Issue")}</th>
               </tr>
             </thead>
             <tbody>
               {review.diagnostics.map((d, i) => (
                 <tr key={i}>
                   <td>{d.line ?? "—"}</td>
-                  <td>{d.field ?? "File"}</td>
+                  <td>{d.field ?? t("File")}</td>
                   <td>{d.reason ?? d.code}</td>
                 </tr>
               ))}
@@ -122,11 +130,12 @@ export function ImportReviewPanel({
       )}
       {review.diagnosticsTruncated && (
         <p>
-          Only the first diagnostics are shown. Download the original file to
-          investigate the remaining rows.
+          {t(
+            "Only the first diagnostics are shown. Download the original file to investigate the remaining rows. ",
+          )}
         </p>
       )}
-      <a href={originalUrl}>Download preserved original</a>
+      <a href={originalUrl}>{t("Download preserved original")}</a>
     </Panel>
   );
 }

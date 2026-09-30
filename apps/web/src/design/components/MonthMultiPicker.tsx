@@ -1,3 +1,4 @@
+import { t, locale } from "../../localization/i18n";
 import { Input } from "./Controls";
 
 /** Checkboxes allow nonconsecutive months without modifier keys. */
@@ -12,7 +13,7 @@ export function MonthMultiPicker({
 }) {
   return (
     <fieldset className="iop-month-picker">
-      <legend>Months to compare</legend>
+      <legend>{t("Months to compare")}</legend>
       <div className="iop-month-choices">
         {[...new Set([...months, ...value])]
           .sort()
@@ -30,7 +31,7 @@ export function MonthMultiPicker({
                   )
                 }
               />
-              {new Intl.DateTimeFormat("en-GB", {
+              {new Intl.DateTimeFormat(locale(), {
                 month: "long",
                 year: "numeric",
                 timeZone: "UTC",

@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { withinLocation } from "../../domain/models";
 import {
   Actions,
@@ -32,19 +33,19 @@ export function HandoverFilters({
       }}
     >
       <Field>
-        Search
+        {t("Search ")}
         <Input
           autoFocus
           type="search"
           maxLength={240}
-          placeholder="Summary, equipment code or work reference"
+          placeholder={t("Summary, equipment code or work reference")}
           value={draft.search}
           onChange={(e) => setDraft({ ...draft, search: e.target.value })}
         />
       </Field>
       <FieldRow>
         <Field>
-          From
+          {t("From ")}
           <Input
             type="date"
             value={draft.from}
@@ -52,7 +53,7 @@ export function HandoverFilters({
           />
         </Field>
         <Field>
-          Through
+          {t("Through ")}
           <Input
             type="date"
             value={draft.to}
@@ -60,9 +61,9 @@ export function HandoverFilters({
           />
         </Field>
         <Field>
-          Department filter
+          {t("Department filter ")}
           <Select
-            aria-label="Department filter"
+            aria-label={t("Department filter")}
             value={draft.departmentId}
             onChange={(e) =>
               setDraft({
@@ -73,7 +74,7 @@ export function HandoverFilters({
               })
             }
           >
-            <option value="">All departments</option>
+            <option value="">{t("All departments")}</option>
             {context.locations
               .filter((l) => l.role === "department")
               .map((l) => (
@@ -84,9 +85,9 @@ export function HandoverFilters({
           </Select>
         </Field>
         <Field>
-          Area filter
+          {t("Area filter ")}
           <Select
-            aria-label="Area filter"
+            aria-label={t("Area filter")}
             value={draft.areaId}
             onChange={(e) =>
               setDraft({
@@ -96,7 +97,7 @@ export function HandoverFilters({
               })
             }
           >
-            <option value="">All areas</option>
+            <option value="">{t("All areas")}</option>
             {context.locations
               .filter(
                 (l) =>
@@ -116,24 +117,24 @@ export function HandoverFilters({
           </Select>
         </Field>
         <Field>
-          Category filter
+          {t("Category filter ")}
           <Select
-            aria-label="Category filter"
+            aria-label={t("Category filter")}
             value={draft.categoryId}
             onChange={(e) => setDraft({ ...draft, categoryId: e.target.value })}
           >
-            <option value="">All categories</option>
+            <option value="">{t("All categories")}</option>
             {context.categories.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.label}
+                {t(c.label)}
               </option>
             ))}
           </Select>
         </Field>
         <Field>
-          Issue filter
+          {t("Issue filter ")}
           <Select
-            aria-label="Issue filter"
+            aria-label={t("Issue filter")}
             value={draft.state}
             onChange={(e) =>
               setDraft({
@@ -142,10 +143,10 @@ export function HandoverFilters({
               })
             }
           >
-            <option value="">All entries</option>
-            <option value="pending">Open and in progress</option>
-            <option value="resolved">Resolved</option>
-            <option value="none">Information</option>
+            <option value="">{t("All entries")}</option>
+            <option value="pending">{t("Open and in progress")}</option>
+            <option value="resolved">{t("Resolved")}</option>
+            <option value="none">{t("Information")}</option>
           </Select>
         </Field>
       </FieldRow>
@@ -155,17 +156,18 @@ export function HandoverFilters({
           checked={draft.highlights}
           onChange={(e) => setDraft({ ...draft, highlights: e.target.checked })}
         />
-        Start highlights only
+        {t("Start highlights only ")}
       </Field>
       {draft.equipmentReferenceId && (
         <p>
-          Filtering one unverified equipment reference. Reset filters to see all
-          entries.
+          {t(
+            "Filtering one unverified equipment reference. Reset filters to see all entries. ",
+          )}
         </p>
       )}
       <Actions>
         <Button type="submit" disabled={disabled}>
-          Search entries
+          {t("Search entries ")}
         </Button>
         <Button
           variant="secondary"
@@ -173,7 +175,7 @@ export function HandoverFilters({
             onReset();
           }}
         >
-          Clear fields
+          {t("Clear fields ")}
         </Button>
       </Actions>
     </FilterForm>

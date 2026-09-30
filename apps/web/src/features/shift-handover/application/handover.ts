@@ -13,6 +13,7 @@ import {
 export interface Gateway {
   equipment(selection: EquipmentSelection): Promise<EquipmentPage>;
   context(): Promise<Context>;
+  remove?(id:string,expectedRevision:number):Promise<Entry>;
   list(selection: Selection): Promise<Page>;
   history(id: string, before: number): Promise<History>;
   create(input: CreateEntry): Promise<Entry>;
@@ -45,6 +46,10 @@ export class HandoverApplication {
   }
   history(id: string, before = 0) {
     return this.gateway.history(id, before);
+  }
+  remove(entry:Entry) {
+    if(!this.gateway.remove) throw new Error("Entry deletion is unavailable.");
+    return this.gateway.remove(entry.id,entry.revision);
   }
   change(input: ChangeEntry) {
     return this.gateway.change(input);

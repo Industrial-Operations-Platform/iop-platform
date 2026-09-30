@@ -1,3 +1,4 @@
+import { locale, t } from "../../../../localization/i18n";
 import { useState } from "react";
 import {
   Alert,
@@ -45,13 +46,17 @@ export function ImportWorkspace({
   return (
     <>
       <ViewNavigation
-        label="Administration sections"
+        label={t("Administration sections")}
         selected={section}
         onSelect={setSection}
         items={[
-          { id: "imports", label: "Import files", disabled: pending },
-          { id: "preparation", label: "Data preparation", disabled: pending },
-          { id: "kpis", label: "KPI settings & goals", disabled: pending },
+          { id: "imports", label: t("Import files"), disabled: pending },
+          {
+            id: "preparation",
+            label: t("Data preparation"),
+            disabled: pending,
+          },
+          { id: "kpis", label: t("KPI settings & goals"), disabled: pending },
         ]}
       />
       {section === "imports" && (
@@ -142,14 +147,16 @@ function ImportFiles({
   return (
     <>
       <Panel className="analysis-import">
-        <h2>Add a daily CSV</h2>
+        <h2>{t("Add a daily CSV")}</h2>
         <p>
-          Files and accepted rows persist in the database. An existing reporting
-          date cannot be replaced.
+          {t(
+            "Files and accepted rows persist in the database. An existing reporting date cannot be replaced. ",
+          )}
         </p>
         <p>
-          Hitliste-YYYYMMDD.csv · UTF-16 LE with BOM · semicolon separated ·
-          maximum 5 MiB.
+          {t(
+            "Hitliste-YYYYMMDD.csv · UTF-16 LE with BOM · semicolon separated · maximum 5 MiB. ",
+          )}
         </p>
         <form
           onSubmit={(e) => {
@@ -158,7 +165,7 @@ function ImportFiles({
           }}
         >
           <Field>
-            CSV file
+            {t("CSV file ")}
             <Input
               key={fileInputKey}
               type="file"
@@ -175,17 +182,20 @@ function ImportFiles({
           {file && (
             <>
               <p>
-                Selected file: <strong>{file.name}</strong> ·{" "}
-                {file.size.toLocaleString("en")} bytes
+                {t("Selected file: ")}
+                <strong>{file.name}</strong> ·{" "}
+                {file.size.toLocaleString(locale())}
+                {t(" bytes ")}
               </p>
               {!date && (
                 <Alert>
-                  Use a filename with a valid reporting date:
-                  Hitliste-YYYYMMDD.csv.
+                  {t(
+                    "Use a filename with a valid reporting date: Hitliste-YYYYMMDD.csv. ",
+                  )}
                 </Alert>
               )}
               {invalidSize && (
-                <Alert>Choose a nonempty CSV of at most 5 MiB.</Alert>
+                <Alert>{t("Choose a nonempty CSV of at most 5 MiB.")}</Alert>
               )}
               {date && (
                 <Field layout="inline">
@@ -195,40 +205,45 @@ function ImportFiles({
                     disabled={pending || !!duplicate}
                     onChange={(e) => setConfirmed(e.target.checked)}
                   />
-                  Confirm reporting date: {date}
+                  {t("Confirm reporting date: ")}
+                  {date}
                 </Field>
               )}
               {duplicate && (
                 <Alert>
-                  This reporting date already has an accepted file:{" "}
-                  {duplicate.originalFilename}. Review the existing import;
-                  uploading it again would not add data.
+                  {t("This reporting date already has an accepted file:")}{" "}
+                  {duplicate.originalFilename}
+                  {t(
+                    ". Review the existing import; uploading it again would not add data. ",
+                  )}
                   <Button
                     variant="secondary"
                     disabled={pending}
                     onClick={() => void inspect(duplicate.importId)}
                   >
-                    Review existing import
+                    {t("Review existing import ")}
                   </Button>
                 </Alert>
               )}
               <p>
-                The server validates the CSV and reports row counts and
-                diagnostics after processing.
+                {t(
+                  "The server validates the CSV and reports row counts and diagnostics after processing. ",
+                )}
               </p>
             </>
           )}
           <Button type="submit" disabled={!canUpload}>
-            {pending ? "Processing CSV…" : "Import CSV"}
+            {pending ? t("Processing CSV…") : t("Import CSV")}
           </Button>
         </form>
         {error ? (
           <Alert>
             {error instanceof Error
               ? error.message
-              : "The import operation could not be completed."}{" "}
-            Refresh import history and review any received attempt before
-            retrying.
+              : t("The import operation could not be completed.")}{" "}
+            {t(
+              "Refresh import history and review any received attempt before retrying. ",
+            )}
           </Alert>
         ) : null}
       </Panel>
@@ -239,24 +254,25 @@ function ImportFiles({
         />
       )}
       <Panel className="analysis-import">
-        <h2>Import history</h2>
+        <h2>{t("Import history")}</h2>
         <p>
-          Review accepted files and unsuccessful attempts. Counts shown here are
-          saved rows; Review includes inspection details.
+          {t(
+            "Review accepted files and unsuccessful attempts. Counts shown here are saved rows; Review includes inspection details. ",
+          )}
         </p>
         {history.length === 0 ? (
-          <p>No import attempts are available yet.</p>
+          <p>{t("No import attempts are available yet.")}</p>
         ) : (
           <TableViewport>
             <Table>
               <thead>
                 <tr>
-                  <th>File / reporting date</th>
-                  <th>Received</th>
-                  <th>Outcome</th>
-                  <th>Admitted rows</th>
-                  <th>Bytes</th>
-                  <th>Actions</th>
+                  <th>{t("File / reporting date")}</th>
+                  <th>{t("Received")}</th>
+                  <th>{t("Outcome")}</th>
+                  <th>{t("Admitted rows")}</th>
+                  <th>{t("Bytes")}</th>
+                  <th>{t("Actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -271,21 +287,21 @@ function ImportFiles({
                       {importOutcome(h)}
                       {h.reasonCode && <small>{h.reasonCode}</small>}
                     </td>
-                    <td>{h.admittedRecordCount ?? "Unknown"}</td>
+                    <td>{h.admittedRecordCount ?? t("Unknown")}</td>
                     <td>{h.byteLength}</td>
                     <td>
                       <Button
                         disabled={pending}
                         onClick={() => void inspect(h.importId)}
                       >
-                        Review
+                        {t("Review ")}
                       </Button>
                       {h.outcome === "received" && (
                         <Button
                           disabled={pending}
                           onClick={() => void inspect(h.importId, true)}
                         >
-                          Recover import outcome
+                          {t("Recover import outcome ")}
                         </Button>
                       )}
                     </td>

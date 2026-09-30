@@ -1,3 +1,4 @@
+import { emptyWorkforce } from "./workforce-fixture";
 import { expect, test } from "@playwright/test";
 
 for (const width of [1440, 375]) {
@@ -9,6 +10,10 @@ for (const width of [1440, 375]) {
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
       requests.push(path);
+      if (path.endsWith("/workforce/board")) {
+        await route.fulfill({ json: emptyWorkforce });
+        return;
+      }
       if (path.endsWith("/session/context")) {
         await route.fulfill({
           json: {
@@ -89,7 +94,7 @@ for (const width of [1440, 375]) {
     ).toBeVisible();
     await expect(page.getByText("123", { exact: true })).toBeVisible();
     await expect(page.getByRole("table")).toHaveCount(0);
-    await expect(page.getByText(/No workforce information/)).toBeVisible();
+    await expect(page.getByText(/No schedule imported/)).toBeVisible();
     await page
       .getByRole("navigation", { name: "Operational updates" })
       .getByRole("button", { name: /Open reports/ })

@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { changeSourceFilter } from "../../domain/source-filters";
 import { useEffect, useState } from "react";
 import {
@@ -95,20 +96,22 @@ export function SourceFileFilters({
         variant="plain"
         summary={
           <>
-            Column filters{count ? ` · ${count} active` : ""}
-            {draftKey !== appliedKey ? " · changes pending" : ""}
+            {t("Column filters")}
+            {count ? t(" · {0} active", [count]) : ""}
+            {draftKey !== appliedKey ? t(" · changes pending") : ""}
           </>
         }
       >
         <p>
-          Choices follow the filters above. Changing a filter clears the
-          following filters.
+          {t(
+            "Choices follow the filters above. Changing a filter clears the following filters. ",
+          )}
         </p>
         <FieldRow>
           {columns.map(({ field, label }) => (
             <ValueFilter
               key={field}
-              label={label}
+              label={t(label)}
               value={draft[field] ?? ""}
               options={current?.options?.[field]}
               inputMode={
@@ -120,7 +123,9 @@ export function SourceFileFilters({
               }
               hint={
                 field === "minutes"
-                  ? "Exact minutes, rounded to 2 decimals (for example, 1.25)."
+                  ? t(
+                      "Exact minutes, rounded to 2 decimals (for example, 1.25).",
+                    )
                   : undefined
               }
               onChange={(value) => {
@@ -132,12 +137,21 @@ export function SourceFileFilters({
         </FieldRow>
         <p role="status">
           {pending
-            ? "Updating compatible choices…"
+            ? t("Updating compatible choices…")
             : failed
-              ? "Could not validate these filters. Check the values and try again."
+              ? t(
+                  "Could not validate these filters. Check the values and try again.",
+                )
               : current?.recordCount === 0
-                ? "No matching combination. Choose a suggested value or clear the filters."
-                : `${current?.recordCount} matching rows available.${draftKey !== appliedKey ? " Apply filters to update the table." : ""}`}
+                ? t(
+                    "No matching combination. Choose a suggested value or clear the filters.",
+                  )
+                : t("{0} matching rows available.{1}", [
+                    current?.recordCount,
+                    draftKey !== appliedKey
+                      ? t(" Apply filters to update the table.")
+                      : "",
+                  ])}
         </p>
         {failed && (
           <Button
@@ -147,15 +161,15 @@ export function SourceFileFilters({
               setRetry((value) => value + 1);
             }}
           >
-            Retry choices
+            {t("Retry choices ")}
           </Button>
         )}
         <FieldRow>
           <Button type="submit" disabled={!canApply}>
-            Apply filters
+            {t("Apply filters ")}
           </Button>
           <Button variant="secondary" onClick={() => onApply({})}>
-            Clear filters
+            {t("Clear filters ")}
           </Button>
         </FieldRow>
       </Disclosure>

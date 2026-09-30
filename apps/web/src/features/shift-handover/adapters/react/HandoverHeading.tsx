@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import type { ReactNode } from "react";
 import { Button, PageHeading } from "../../../../design/components";
 
@@ -13,13 +14,13 @@ export function HandoverHeading({
   actions?: ReactNode;
 }) {
   return (
-    <nav aria-label="Breadcrumb">
+    <nav aria-label={t("Breadcrumb")}>
       <PageHeading
-        eyebrow="Operations"
+        eyebrow={t("Operations")}
         title={
           <span className="handover-breadcrumb">
             <Button variant="text" className="handover-home" onClick={onHome}>
-              Shift Handover
+              {t("Shift Handover ")}
             </Button>
             <span aria-hidden="true" className="handover-breadcrumb-separator">
               /
@@ -39,14 +40,14 @@ export function HandoverHeading({
                 >
                   /
                 </span>
-                <span aria-current="page">Details</span>
+                <span aria-current="page">{t("Details")}</span>
               </>
             ) : (
               <span aria-current="page">{viewLabel}</span>
             )}
           </span>
         }
-        description="What happened. What needs attention. What comes next."
+        description={t("What happened. What needs attention. What comes next.")}
         actions={actions}
       />
     </nav>

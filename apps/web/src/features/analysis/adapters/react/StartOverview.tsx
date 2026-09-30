@@ -1,3 +1,4 @@
+import { locale, t } from "../../../../localization/i18n";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Alert,
@@ -19,7 +20,7 @@ import type { DemoContext, Report, ReportRequest } from "../../domain/models";
 import { AnalysisCalendarNotice } from "./AnalysisCalendarNotice";
 
 const formatNumber = (value: number) =>
-  new Intl.NumberFormat("en-GB", {
+  new Intl.NumberFormat(locale(), {
     maximumFractionDigits: 1,
   }).format(value);
 
@@ -31,6 +32,7 @@ export function StartOverview({
   profileLabel,
   authenticated,
   operational,
+  workforce,
   onSectorChange,
   canReadAnalytics = true,
 }: {
@@ -40,6 +42,7 @@ export function StartOverview({
   profileLabel?: string;
   authenticated?: boolean;
   operational?: ReactNode;
+  workforce?: ReactNode;
   canReadAnalytics?: boolean;
   onSectorChange?: (sector: string) => void;
 }) {
@@ -117,83 +120,95 @@ export function StartOverview({
 
   const report = sector ? detail : base;
   return (
-    <section className="analysis-start" aria-label="Start page">
+    <section className="analysis-start" aria-label={t("Start page")}>
       <PageHeading
-        eyebrow="Your workspace"
+        eyebrow={t("Your workspace")}
         title={
-          context.user ? `Welcome, ${context.user.name}` : "Welcome to IOP"
+          context.user
+            ? t("Welcome, {0}", [context.user.name])
+            : t("Welcome to IOP")
         }
-        description="Your department, open work and important updates."
+        description={t("Your department, open work and important updates.")}
         actions={
           canReadAnalytics ? (
-            <Button onClick={openAnalysis}>Open Data Analysis</Button>
+            <Button onClick={openAnalysis}>{t("Open Data Analysis")}</Button>
           ) : undefined
         }
       />
       {!context.user ? (
         <Panel variant="empty">
-          <h2>Select your local user</h2>
-          <p>Select a user in the header to see the available information.</p>
+          <h2>{t("Select your local user")}</h2>
+          <p>
+            {t("Select a user in the header to see the available information.")}
+          </p>
         </Panel>
       ) : (
         <>
           <div className="analysis-home-grid">
             <Panel>
-              <span className="analysis-home-label">Profile</span>
+              <span className="analysis-home-label">{t("Profile")}</span>
               <h2>{context.user.name}</h2>
               <p>
                 {authenticated
-                  ? "Local account"
-                  : "Local demonstration account"}
+                  ? t("Local account")
+                  : t("Local demonstration account")}
               </p>
               <p className="analysis-home-muted">
                 {profileLabel
-                  ? `Profile: ${profileLabel}`
-                  : "Team and role profile: not configured."}
+                  ? t("Profile: {0}", [profileLabel])
+                  : t("Team and role profile: not configured.")}
               </p>
             </Panel>
-            <Panel>
-              <span className="analysis-home-label">
-                Your week · Not connected
-              </span>
-              <h2>Shifts & departments</h2>
-              <p>Your weekly shifts and departments worked will appear here.</p>
-              <p className="analysis-home-muted">
-                No workforce information is available yet.
-              </p>
-            </Panel>
+            {workforce ?? (
+              <Panel>
+                <span className="analysis-home-label">
+                  {t("Your week · Not connected ")}
+                </span>
+                <h2>{t("Shifts & departments")}</h2>
+                <p>
+                  {t(
+                    "Your weekly shifts and departments worked will appear here.",
+                  )}
+                </p>
+                <p className="analysis-home-muted">
+                  {t("No workforce information is available yet. ")}
+                </p>
+              </Panel>
+            )}
           </div>
           {operational}
           {canReadAnalytics && (
             <Panel
               className="analysis-home-summary"
-              aria-label="Analytical summary"
+              aria-label={t("Analytical summary")}
             >
               <div className="analysis-home-heading">
                 <div>
                   <span className="analysis-home-label">
-                    Data Analysis · v1
+                    {t("Data Analysis · v1 ")}
                   </span>
                   <h2>
                     {operational
-                      ? "Site-wide analytical snapshot"
-                      : "Analytical snapshot"}
+                      ? t("Site-wide analytical snapshot")
+                      : t("Analytical snapshot")}
                   </h2>
                   <p>
                     {selection
-                      ? `Latest imported month · ${selection.from.slice(0, 7)}`
-                      : "Latest imported month"}
+                      ? t("Latest imported month · {0}", [
+                          selection.from.slice(0, 7),
+                        ])
+                      : t("Latest imported month")}
                   </p>
                 </div>
                 <RefreshButton
-                  label="Refresh overview"
+                  label={t("Refresh overview")}
                   busy={loading}
                   onClick={() => setRefresh((n) => n + 1)}
                 />
               </div>
               {!operational && base && (
                 <Field>
-                  Sector / Halle
+                  {t("Sector / Halle ")}
                   <Select
                     value={sector}
                     disabled={loading}
@@ -204,7 +219,7 @@ export function StartOverview({
                       onSectorChange?.(event.target.value);
                     }}
                   >
-                    <option value="">All sectors</option>
+                    <option value="">{t("All sectors")}</option>
                     {(base.options.sector ?? []).map((value) => (
                       <option key={value} value={value}>
                         {value}
@@ -214,27 +229,28 @@ export function StartOverview({
                 </Field>
               )}
               {loading ? (
-                <p role="status">Loading analytical overview…</p>
+                <p role="status">{t("Loading analytical overview…")}</p>
               ) : error ? (
                 <Alert>
                   {error instanceof Error
                     ? error.message
-                    : "The overview could not be loaded. Try refreshing."}
+                    : t("The overview could not be loaded. Try refreshing.")}
                 </Alert>
               ) : !report ? (
                 <p>
-                  No analytical history is available yet. An authorized operator
-                  can import a daily CSV in Data Analysis.
+                  {t(
+                    "No analytical history is available yet. An authorized operator can import a daily CSV in Data Analysis. ",
+                  )}
                 </p>
               ) : (
                 <>
                   <MetricGrid>
                     <MetricCard
-                      label="Reported alarm frequency"
+                      label={t("Reported alarm frequency")}
                       value={formatNumber(report.totals.frequency)}
                     />
                     <MetricCard
-                      label="Imported dates this month"
+                      label={t("Imported dates this month")}
                       value={
                         report.dates.filter(
                           (date) =>
@@ -246,10 +262,11 @@ export function StartOverview({
                   </MetricGrid>
                   <p className="analysis-home-muted">
                     {sector
-                      ? `Areas classified under ${sector}.`
-                      : "Recorded activity by sector."}{" "}
-                    Alarm totals do not indicate whether equipment is blocked or
-                    repaired. Missing dates do not mean zero activity.
+                      ? t("Areas classified under {0}.", [sector])
+                      : t("Recorded activity by sector.")}{" "}
+                    {t(
+                      "Alarm totals do not indicate whether equipment is blocked or repaired. Missing dates do not mean zero activity. ",
+                    )}
                   </p>
                   <AnalysisCalendarNotice
                     excludedWeekdays={report.excludedWeekdays}
@@ -262,28 +279,34 @@ export function StartOverview({
             <div className="analysis-home-grid">
               <Panel>
                 <span className="analysis-home-label">
-                  Operational updates · Not connected
+                  {t("Operational updates · Not connected ")}
                 </span>
-                <h2>From your technicians</h2>
+                <h2>{t("From your technicians")}</h2>
                 <p>
-                  Important published reports, repair notes and handovers will
-                  appear here.
+                  {t(
+                    "Important published reports, repair notes and handovers will appear here. ",
+                  )}
                 </p>
                 <p className="analysis-home-muted">
-                  There is no publication source yet. This is a placeholder.
+                  {t(
+                    "There is no publication source yet. This is a placeholder. ",
+                  )}
                 </p>
               </Panel>
               <Panel>
                 <span className="analysis-home-label">
-                  Equipment status · Not connected
+                  {t("Equipment status · Not connected ")}
                 </span>
-                <h2>Blocked & restored equipment</h2>
+                <h2>{t("Blocked & restored equipment")}</h2>
                 <p>
-                  Equipment restrictions, completed repairs and their sector
-                  will appear here.
+                  {t(
+                    "Equipment restrictions, completed repairs and their sector will appear here. ",
+                  )}
                 </p>
                 <p className="analysis-home-muted">
-                  Status is unknown until operational records are available.
+                  {t(
+                    "Status is unknown until operational records are available. ",
+                  )}
                 </p>
               </Panel>
             </div>

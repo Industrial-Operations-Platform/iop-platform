@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { useState } from "react";
 import {
   Button,
@@ -63,8 +64,9 @@ export function ReportFilters({
         variant="plain"
         summary={
           <>
-            Months · {appliedMonths.join(", ")}
-            {activeCount > 0 ? ` · ${activeCount} active` : ""}
+            {t("Months · ")}
+            {appliedMonths.join(t(", "))}
+            {activeCount > 0 ? t(" · {0} active", [activeCount]) : ""}
           </>
         }
       >
@@ -74,17 +76,20 @@ export function ReportFilters({
           onChange={setDraftMonths}
         />
         <p>
-          Select one or more months, then apply. Selected months stay active in
-          all detail views. Clear filters restores all available months.
+          {t(
+            "Select one or more months, then apply. Selected months stay active in all detail views. Clear filters restores all available months. ",
+          )}
         </p>
-        {!draftMonths.length && <p role="alert">Select at least one month.</p>}
+        {!draftMonths.length && (
+          <p role="alert">{t("Select at least one month.")}</p>
+        )}
         <FieldRow>
           {view > 1 && (
             <>
               <Field>
-                Group by
+                {t("Group by ")}
                 <Select
-                  aria-label="Group by"
+                  aria-label={t("Group by")}
                   value={draft.dimension}
                   onChange={(e) =>
                     setDraft({
@@ -101,9 +106,9 @@ export function ReportFilters({
                 </Select>
               </Field>
               <Field>
-                Measure
+                {t("Measure ")}
                 <Select
-                  aria-label="Measure"
+                  aria-label={t("Measure")}
                   value={draft.metric}
                   onChange={(e) =>
                     setDraft({
@@ -112,14 +117,14 @@ export function ReportFilters({
                     })
                   }
                 >
-                  <option value="frequency">Frequency</option>
-                  <option value="duration">Duration · minutes</option>
+                  <option value="frequency">{t("Frequency")}</option>
+                  <option value="duration">{t("Duration · minutes")}</option>
                 </Select>
               </Field>
               <Field>
-                Period
+                {t("Period ")}
                 <Select
-                  aria-label="Period"
+                  aria-label={t("Period")}
                   value={draft.period}
                   onChange={(e) =>
                     setDraft({
@@ -128,15 +133,15 @@ export function ReportFilters({
                     })
                   }
                 >
-                  <option value="day">Daily</option>
-                  <option value="week">Weekly</option>
-                  <option value="month">Monthly</option>
+                  <option value="day">{t("Daily")}</option>
+                  <option value="week">{t("Weekly")}</option>
+                  <option value="month">{t("Monthly")}</option>
                 </Select>
               </Field>
             </>
           )}
           <Button type="submit" disabled={!draftMonths.length}>
-            Apply filters
+            {t("Apply filters ")}
           </Button>
         </FieldRow>
         {view > 1 && (
@@ -150,7 +155,9 @@ export function ReportFilters({
                   options={report?.options[d]}
                   hint={
                     d === "duration"
-                      ? "Exact seconds for this filter. Type an exact value; up to 200 suggestions."
+                      ? t(
+                          "Exact seconds for this filter. Type an exact value; up to 200 suggestions.",
+                        )
                       : undefined
                   }
                   onChange={(value) =>
@@ -171,7 +178,7 @@ export function ReportFilters({
         className="analysis-clear-filters"
         onClick={clear}
       >
-        Clear filters
+        {t("Clear filters ")}
       </Button>
     </FilterForm>
   );

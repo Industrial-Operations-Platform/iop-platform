@@ -1,3 +1,4 @@
+import { t, locale } from "../../localization/i18n";
 import { Field, Select } from "./Controls";
 
 /** Native selects open from the entire field and support scrolling and arrow keys. */
@@ -15,15 +16,15 @@ export function MonthPicker({
   const choices = [...new Set([value, ...months])].sort().reverse();
   return (
     <Field>
-      {label}
+      {t(label)}
       <Select
-        aria-label={label}
+        aria-label={t(label)}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       >
         {choices.map((month) => (
           <option key={month} value={month}>
-            {new Intl.DateTimeFormat("en-GB", {
+            {new Intl.DateTimeFormat(locale(), {
               month: "long",
               year: "numeric",
               timeZone: "UTC",

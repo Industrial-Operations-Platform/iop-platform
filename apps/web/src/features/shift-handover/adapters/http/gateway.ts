@@ -42,6 +42,7 @@ export class HttpHandoverGateway implements Gateway {
   equipment(selection: EquipmentSelection) {
     return request<Schema["HandoverEquipmentPageDto"]>("equipment", selection);
   }
+  remove(id:string,expectedRevision:number) { return request<Schema["HandoverEntryDto"]>("remove",{id,expectedRevision}); }
   context() {
     return request<Schema["HandoverContextDto"]>("context");
   }

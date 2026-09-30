@@ -1,0 +1,55 @@
+.workforce-workspace {
+  display: grid;
+  gap: var(--iop-sectionGap);
+}
+.workforce-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--iop-sectionGap);
+}
+.workforce-assignment {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: var(--iop-surface);
+  color: var(--iop-ink);
+  border: 1px solid var(--iop-line);
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+}
+.workforce-assignment strong {
+  color: var(--iop-link);
+  font-weight: var(--iop-labelWeight);
+}
+.workforce-assignment span {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.workforce-assignment:hover {
+  background: var(--iop-activeSurface);
+}
+.workforce-board {
+  min-width: 1300px;
+}
+.workforce-board td {
+  vertical-align: top;
+  min-width: 150px;
+}
+.workforce-slot {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 12px;
+}
+.workforce-shift-label,
+.workforce-empty {
+  color: var(--iop-muted);
+  font-size: var(--iop-compactSize);
+}
+.workforce-zone {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}

@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import {
   SourceFileFilters,
   sourceSortColumns as columns,
@@ -71,18 +72,18 @@ export function SourceFiles({
   if (!files.length)
     return (
       <Panel variant="empty">
-        <h2>No imported files to browse</h2>
-        <p>Import a daily CSV first.</p>
+        <h2>{t("No imported files to browse")}</h2>
+        <p>{t("Import a daily CSV first.")}</p>
       </Panel>
     );
   const file = files.find((x) => x.importId === selection?.importId);
   return (
     <Panel>
-      <h2>Contributing source rows</h2>
+      <h2>{t("Contributing source rows")}</h2>
       <Field>
-        Imported file
+        {t("Imported file ")}
         <Select
-          aria-label="Imported file"
+          aria-label={t("Imported file")}
           value={selection?.importId ?? ""}
           onChange={(e) =>
             setSelection({ importId: e.target.value, page: 1, sort: [] })
@@ -112,16 +113,18 @@ export function SourceFiles({
         />
       )}
       <p>
-        Click a column title to cycle ascending, descending and off. Numbers
-        show sorting priority across the whole file.
+        {t(
+          "Click a column title to cycle ascending, descending and off. Numbers show sorting priority across the whole file. ",
+        )}
       </p>
       <p>
-        Prepared values reflect the current reporting rules. The preserved
-        original remains unchanged.
+        {t(
+          "Prepared values reflect the current reporting rules. The preserved original remains unchanged. ",
+        )}
       </p>
       {file && (
         <a href={application.gateway.originalUrl(file.importId)}>
-          Download preserved original
+          {t("Download preserved original ")}
         </a>
       )}
       {error && (
@@ -133,23 +136,27 @@ export function SourceFiles({
               setSelection({ ...selection, revision: undefined, page: 1 })
             }
           >
-            Reload file
+            {t("Reload file ")}
           </Button>
         </>
       )}
-      {loading && <p role="status">Loading source rows…</p>}
+      {loading && <p role="status">{t("Loading source rows…")}</p>}
       {result && selection && (
         <>
           <TableViewport>
             <Table>
               <caption>
-                {file?.originalFilename} · {number(result.recordCount)} of{" "}
-                {number(result.totalRecordCount ?? result.recordCount)} rows ·
-                page {result.page} of {Math.max(1, result.pageCount)}
+                {file?.originalFilename} · {number(result.recordCount)}
+                {t(" of")}{" "}
+                {number(result.totalRecordCount ?? result.recordCount)}
+                {t(" rows · page ")}
+                {result.page}
+                {t(" of ")}
+                {Math.max(1, result.pageCount)}
               </caption>
               <thead>
                 <tr>
-                  <th scope="col">Line</th>
+                  <th scope="col">{t("Line")}</th>
                   {columns.map((column) => {
                     const index = selection.sort.findIndex(
                         (x) => x.field === column.field,
@@ -175,8 +182,8 @@ export function SourceFiles({
                       </SortableHeader>
                     );
                   })}
-                  <th scope="col">Häufigkeit</th>
-                  <th scope="col">Dauer · minutes</th>
+                  <th scope="col">{t("Häufigkeit")}</th>
+                  <th scope="col">{t("Dauer · minutes")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -195,7 +202,9 @@ export function SourceFiles({
           </TableViewport>
           {result.recordCount === 0 && (
             <p>
-              No rows match these filters. Clear or adjust the column filters.
+              {t(
+                "No rows match these filters. Clear or adjust the column filters. ",
+              )}
             </p>
           )}
           <Button
@@ -208,7 +217,7 @@ export function SourceFiles({
               })
             }
           >
-            Previous rows
+            {t("Previous rows ")}
           </Button>{" "}
           <Button
             disabled={result.page >= result.pageCount}
@@ -220,12 +229,12 @@ export function SourceFiles({
               })
             }
           >
-            Next rows
+            {t("Next rows ")}
           </Button>
         </>
       )}
       {history.length >= 1000 && (
-        <small>Showing the most recent 1,000 import attempts.</small>
+        <small>{t("Showing the most recent 1,000 import attempts.")}</small>
       )}
     </Panel>
   );

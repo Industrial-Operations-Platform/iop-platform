@@ -1,3 +1,4 @@
+import { t, locale } from "../../../../localization/i18n";
 import { identity, chartPalette } from "../../../../design/identity";
 import { init, use, type EChartsCoreOption } from "echarts/core";
 import {
@@ -43,7 +44,7 @@ export type ChartKind =
   | "heatmap"
   | "messages";
 export const number = (n: number) =>
-  new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(n);
+  new Intl.NumberFormat(locale(), { maximumFractionDigits: 2 }).format(n);
 const value = (r: ReportRow, metric: string) =>
   metric === "duration" ? r.minutes : r.frequency;
 export function pareto(report: Report, metric: "frequency" | "duration") {
@@ -133,7 +134,7 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       grid: { left: 15, right: 38, top: 15, bottom: 35, containLabel: true },
       xAxis: {
         type: "value",
-        name: "Frequency",
+        name: t("Frequency"),
         nameLocation: "middle",
         nameGap: 25,
       },
@@ -237,7 +238,7 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       xAxis: {
         type: "category",
         data: dates,
-        name: "Day",
+        name: t("Day"),
         nameLocation: "middle",
         nameGap: 25,
         axisLabel: {
@@ -245,12 +246,12 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
         },
       },
       yAxis: [
-        { type: "value", name: "Frequency" },
-        { type: "value", name: "Alarm minutes", splitLine: { show: false } },
+        { type: "value", name: t("Frequency") },
+        { type: "value", name: t("Alarm minutes"), splitLine: { show: false } },
       ],
       series: [
         {
-          name: "Frequency",
+          name: t("Frequency"),
           type: "line",
           connectNulls: false,
           showSymbol: true,
@@ -262,7 +263,7 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
           ),
         },
         {
-          name: "Alarm minutes",
+          name: t("Alarm minutes"),
           type: "line",
           yAxisIndex: 1,
           connectNulls: false,
@@ -317,7 +318,7 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       },
       series: [
         {
-          name: "Total",
+          name: t("Total"),
           type: "bar",
           data: points.map(({ row, inLeadingShare }) => ({
             name: row.key,
@@ -328,7 +329,7 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
           barMaxWidth: 28,
         },
         {
-          name: "Cumulative %",
+          name: t("Cumulative %"),
           type: "line",
           xAxisIndex: 1,
           data: points.map(({ row, percent }) => ({
@@ -360,11 +361,11 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       tooltip: { trigger: "item", renderMode: "richText" },
       xAxis: {
         type: "value",
-        name: "Duration (minutes)",
+        name: t("Duration (minutes)"),
         nameLocation: "middle",
         nameGap: 27,
       },
-      yAxis: { type: "value", name: "Frequency" },
+      yAxis: { type: "value", name: t("Frequency") },
       series: [
         {
           type: "scatter",
@@ -431,8 +432,8 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       grid: { left: 20, right: 28, top: 52, bottom: 78, containLabel: true },
       xAxis: { type: "category", data: dates },
       yAxis: [
-        { type: "value", name: "Frequency" },
-        { type: "value", name: "Minutes" },
+        { type: "value", name: t("Frequency") },
+        { type: "value", name: t("Minutes") },
       ],
       dataZoom: [
         { type: "inside" },
@@ -440,13 +441,13 @@ export function options(kind: ChartKind, r: Report): EChartsCoreOption {
       ],
       series: [
         {
-          name: "Frequency",
+          name: t("Frequency"),
           type: "line",
           connectNulls: false,
           data: dates.map((d) => at.get(d)?.frequency ?? null),
         },
         {
-          name: "Duration (minutes)",
+          name: t("Duration (minutes)"),
           type: "line",
           yAxisIndex: 1,
           connectNulls: false,

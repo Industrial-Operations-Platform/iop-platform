@@ -1,3 +1,4 @@
+import { emptyWorkforce } from "./workforce-fixture";
 import { expect, test } from "@playwright/test";
 
 function summaryStyle(element: Element) {
@@ -65,6 +66,10 @@ for (const width of [1440, 820, 375]) {
     const selections: Record<string, unknown>[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
+      if (path.endsWith("/workforce/board")) {
+        await route.fulfill({ json: emptyWorkforce });
+        return;
+      }
       if (path.endsWith("/session/context"))
         return route.fulfill({
           json: {
@@ -407,7 +412,7 @@ for (const width of [1440, 820, 375]) {
     ).toBeGreaterThanOrEqual(16);
     const breadcrumb = detail.getByRole("navigation", { name: "Breadcrumb" });
     await expect(breadcrumb.getByRole("heading", { level: 1 })).toHaveText(
-      "Shift Handover/Meeting preparation/Details",
+      /^Shift Handover\s*\/Meeting preparation\/Details$/,
     );
     await expect(
       breadcrumb.getByText("Operations", { exact: true }),
@@ -516,7 +521,7 @@ for (const width of [1440, 820, 375]) {
     ).toBeVisible();
     await matrix.getByRole("button", { name: entry.content.summary }).click();
     await expect(breadcrumb.getByRole("heading", { level: 1 })).toHaveText(
-      "Shift Handover/Department matrix/Details",
+      /^Shift Handover\s*\/Department matrix\/Details$/,
     );
     await breadcrumb
       .getByRole("button", { name: "Department matrix", exact: true })

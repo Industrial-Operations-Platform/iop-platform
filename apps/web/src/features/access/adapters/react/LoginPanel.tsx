@@ -1,3 +1,4 @@
+import { t } from "../../../../localization/i18n";
 import { useState } from "react";
 import {
   Alert,
@@ -25,11 +26,15 @@ export function LoginPanel({
     [error, setError] = useState("");
   return (
     <Panel className="access-login">
-      <h1>{changeRequired ? "Choose your own password" : "Sign in to IOP"}</h1>
+      <h1>
+        {changeRequired ? t("Choose your own password") : t("Sign in to IOP")}
+      </h1>
       <p>
         {changeRequired
-          ? "Replace the initial password before opening your workspace. Sign in again after the change."
-          : "Use the individual account created by your administrator."}
+          ? t(
+              "Replace the initial password before opening your workspace. Sign in again after the change.",
+            )
+          : t("Use the individual account created by your administrator.")}
       </p>
       <form
         onSubmit={(event) => {
@@ -56,7 +61,7 @@ export function LoginPanel({
       >
         {!changeRequired && (
           <Field>
-            Username
+            {t("Username ")}
             <Input
               autoComplete="username"
               required
@@ -69,7 +74,7 @@ export function LoginPanel({
         )}
         {changeRequired && (
           <Field>
-            Current initial password
+            {t("Current initial password ")}
             <Input
               type="password"
               autoComplete="current-password"
@@ -81,7 +86,7 @@ export function LoginPanel({
           </Field>
         )}
         <Field>
-          {changeRequired ? "New password" : "Password"}
+          {changeRequired ? t("New password") : t("Password")}
           <Input
             type="password"
             autoComplete={changeRequired ? "new-password" : "current-password"}
@@ -95,7 +100,7 @@ export function LoginPanel({
         </Field>
         {changeRequired && (
           <Field>
-            Confirm new password
+            {t("Confirm new password ")}
             <Input
               type="password"
               autoComplete="new-password"
@@ -109,10 +114,10 @@ export function LoginPanel({
         {error && <Alert>{error}</Alert>}
         <Button type="submit" disabled={pending}>
           {pending
-            ? "Please wait…"
+            ? t("Please wait…")
             : changeRequired
-              ? "Change password"
-              : "Sign in"}
+              ? t("Change password")
+              : t("Sign in")}
         </Button>
       </form>
     </Panel>
