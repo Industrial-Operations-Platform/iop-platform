@@ -30,3 +30,9 @@ References: [IOP-184](IOP-184-m6-workforce.md),
 [ADR-0035](../../architecture/adr/ADR-0035-transitional-authentication.md).
 
 [Execution plan](../completed/IOP-185-administration-workforce-ui-plan.md)
+
+## Approved publication and activation
+
+On 2026-10-01 the owner approved merging the story into `develop`, pushing both
+branches to `origin` and updating the local Docker application.
+[Publication and activation plan](../active/IOP-185-publication-activation-plan.md).
