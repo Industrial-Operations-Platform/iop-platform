@@ -29,4 +29,7 @@ References: [IOP-185](IOP-185-administration-workforce-ui.md),
 
 On 2026-10-01 the owner approved merging the story into `develop`, publishing
 both branches to `origin` and updating the local Docker application.
-[Publication and activation plan](../active/IOP-186-publication-activation-plan.md).
+Both branches are published, and Docker serves the validated UI at
+`http://127.0.0.1:8080`. All services are healthy; the existing API and database
+containers and persistent data were retained.
+[Publication and activation evidence](../completed/IOP-186-publication-activation-plan.md).

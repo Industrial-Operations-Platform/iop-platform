@@ -1,6 +1,6 @@
 # IOP-186 — Approved publication and Docker activation
 
-Status: In progress
+Status: Completed — 2026-10-01
 
 Branch: `fix/IOP-186-table-card-alignment`, originally from `develop`.
 Scope: [story](../items/IOP-186-table-card-alignment.md).
@@ -36,3 +36,22 @@ documentation links/status and `git diff --check`.
   The current web image is `92220fecb29a`.
 
 No stage/master promotion, force pushes, branch deletion, seed or credential resets.
+
+## Completion evidence
+
+- Fast-forwarded `develop` to `8e6744b`, including implementation `a32be0a`,
+  and atomically pushed the story and `develop` to `origin`. Remote hashes matched.
+- `docker compose -f compose.platform.yaml build web` and
+  `docker compose -f compose.platform.yaml up -d --no-deps --wait web` succeeded.
+  New web image: `5a3e3d739c9e`; container: `20ba59397d0a`.
+- All three services are healthy. Database container `0a4dce3d3541`, its persistent
+  volume and API container `6c95a639e22a` were retained unchanged.
+- `/`, `/health` and `/api/v1/session/context` returned HTTP 200 at
+  `http://127.0.0.1:8080`. Served `index-Cuefl0JB.js` and `index-B_p0hXmz.css`
+  match the validated local production build byte for byte.
+- Reused the passing tests and desktop/mobile screenshots from the
+  [implementation evidence](IOP-186-table-card-alignment-plan.md). Browser inventory
+  was empty, so a fresh signed-in UI inspection was unavailable; deployed asset
+  parity confirms the already-inspected build is served by Docker.
+- Completion documentation passed local link/status checks and `git diff --check`;
+  it follows the same approved story/develop commit and publication sequence.
