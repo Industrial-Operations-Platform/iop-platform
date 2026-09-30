@@ -183,3 +183,24 @@ IOP-184 adds the connected-cell [SVG mark](../../apps/web/public/iop-mark.svg),
 reused by `PlatformMark` and the browser favicon. Its navy/white/blue colors come
 from this identity. German and English interface text share the presentation
 dictionary; localized text must use the same component hierarchy and tokens.
+
+## Shared navigation and compact account controls — M6 refinement
+
+All page titles start with the section name. Do not place platform/module labels
+such as IOP or Operations above them. `PageHeading` deliberately has no eyebrow
+property. Operational sections use shared `SectionHeading`: the section returns
+home, the subsection returns to its collection and Details marks the current page.
+Clicking the active sidebar section also leaves its detail view. Do not add a Close
+button as the only navigation out of an operational detail page.
+
+Use the shared icon-only `RefreshButton` for reload actions, with an accessible
+name, hover title, disabled busy state and reduced-motion support. Keep date and
+reload controls aligned. The top-right language control combines a globe with DE
+or EN; language names are not repeated in the header. Account name and role occupy
+two readable lines; the name opens profile editing. Logout is a quiet labelled
+icon action, with its visible text retained when space allows.
+
+`DepartmentScope` is the common department/Halle selector for Start and Shift
+Handover. Use its white bordered surface and dark, semibold label/control text;
+feature adapters supply choices and filtering behavior. Use shared labelled facts
+for Workforce details instead of concatenating all fields into a prose line.

@@ -53,3 +53,14 @@ CSV/email imports remain administrator-only. Preserve revision history and exist
 zone/phone assignments; reject conflicting or stale changes without partial writes.
 
 [Weekly continuation plan](../completed/IOP-184-weekly-schedules-plan.md).
+
+### Presentation and account follow-up
+
+The owner requested compact globe/language controls, a clearer account header,
+icon-only refresh actions, shared title/breadcrumb and department/Halle styling,
+reliable Workforce detail navigation and self/admin display-name editing, followed
+by a local Docker update. This is a continuation on the unmerged final M6 branch;
+no promotion or publication is requested. See the [visual identity](../../design/visual-identity.md)
+and [operator notes](../../development/workforce.md) for the resulting conventions.
+Validation and local activation are recorded in the
+[completed refinement](../completed/IOP-184-interface-refinement.md).

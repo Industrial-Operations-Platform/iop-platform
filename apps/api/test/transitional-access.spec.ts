@@ -59,14 +59,12 @@ test("the attempt budget prevents password work and session issuance", async () 
 });
 test("initial-change sessions cannot authorize business access", async () => {
   const { service, tx } = authenticationFixture();
-  jest
-    .mocked(tx.session)
-    .mockResolvedValue({
-      userId: "stable-id",
-      mustChangePassword: true,
-      version: 1,
-      credentialHash: "hash",
-    });
+  jest.mocked(tx.session).mockResolvedValue({
+    userId: "stable-id",
+    mustChangePassword: true,
+    version: 1,
+    credentialHash: "hash",
+  });
   await expect(service.principal("a".repeat(43))).rejects.toMatchObject({
     code: "password_change_required",
   });
@@ -84,12 +82,14 @@ test("last administrator protection runs before a persistence mutation", async (
     active: true,
   };
   const tx: AdministrationTransaction = {
+    rename: jest.fn(),
     list: async () => [administrator],
     create: jest.fn(),
     change: jest.fn(),
   };
   const service = new UserAdministration(
     {
+      renameSelf: jest.fn(),
       self: async () => administrator,
       asAdministrator: async (_actor, work) => work(tx),
     },
@@ -106,7 +106,7 @@ test("last administrator protection runs before a persistence mutation", async (
 test("invalid profiles never enter an administrator transaction", async () => {
   const asAdministrator = jest.fn();
   const service = new UserAdministration(
-    { self: jest.fn(), asAdministrator },
+    { self: jest.fn(), renameSelf: jest.fn(), asAdministrator },
     jest.fn(),
   );
   await expect(
@@ -117,4 +117,33 @@ test("invalid profiles never enter an administrator transaction", async () => {
     }),
   ).rejects.toMatchObject({ code: "invalid_user" });
   expect(asAdministrator).not.toHaveBeenCalled();
+});
+
+test("display names are validated and self-service never receives administrator capabilities", async () => {
+  const rename = jest.fn(),
+    renameSelf = jest.fn();
+  const tx: AdministrationTransaction = {
+    list: jest.fn(),
+    create: jest.fn(),
+    change: jest.fn(),
+    rename,
+  };
+  const asAdministrator = jest
+    .fn()
+    .mockImplementation(async (_actor, work) => work(tx));
+  const service = new UserAdministration(
+    { self: jest.fn(), renameSelf, asAdministrator },
+    jest.fn(),
+  );
+  await service.rename("tech", "tech", "  New Name  ");
+  expect(renameSelf).toHaveBeenCalledWith("tech", "New Name");
+  expect(asAdministrator).not.toHaveBeenCalled();
+  await service.rename("admin", "tech", "Another Name");
+  expect(asAdministrator).toHaveBeenCalledTimes(1);
+  expect(rename).toHaveBeenCalledWith("tech", "Another Name");
+  for (const value of ["", "   ", "a".repeat(101), "Name\nInjected", null])
+    await expect(service.rename("tech", "tech", value)).rejects.toMatchObject({
+      code: "invalid_user",
+    });
+  expect(renameSelf).toHaveBeenCalledTimes(1);
 });

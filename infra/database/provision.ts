@@ -172,6 +172,10 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
     allowedColumns.push('users_rbac.profiles.deleted_at');
     updates.push('users_rbac.profiles.deleted_at');
   }
+  const displayNameInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261005000000-profile-display-name'",
+  )).rowCount;
+  if (displayNameInstalled) updates.push('users_rbac.profiles.display_name');
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

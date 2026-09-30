@@ -116,6 +116,7 @@ test.each([true, false])(
         change,
         password: jest.fn(),
         logout: jest.fn(),
+        rename: jest.fn(),
         create: jest.fn(),
       }),
     );
@@ -144,7 +145,7 @@ test.each([true, false])(
       expect(users).not.toHaveBeenCalled();
     }
     fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
-    await screen.findByText("Operations · Data Analysis");
+    await screen.findByRole("heading", { name: "Data analysis" });
     expect(
       screen.getByRole("button", { name: "Data administration" }),
     ).toBeVisible();
@@ -187,7 +188,7 @@ test.each([true, false])(
         fireEvent.click(
           screen.getByRole("button", { name: "Open Data Analysis" }),
         );
-        await screen.findByText("Operations · Data Analysis");
+        await screen.findByRole("heading", { name: "Data analysis" });
       }
       expect(
         screen.getByRole("region", { name: "Profile preview" }),
@@ -196,7 +197,9 @@ test.each([true, false])(
     expect(login).not.toHaveBeenCalled();
     expect(change).not.toHaveBeenCalled();
     expect(context).toHaveBeenCalledTimes(1);
-    expect(screen.getByText("Administrator · Administrator")).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Edit your name" }),
+    ).toHaveTextContent("Administrator");
     fireEvent.click(
       screen.getByRole("button", { name: "Return to administration" }),
     );
@@ -299,6 +302,11 @@ test("administration landing exposes tools without eagerly loading data and anal
   await screen.findByRole("heading", { name: "Add a daily CSV" });
   await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(1));
   const reportCalls = gateway.report.mock.calls.length;
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Refresh history" }),
+    ).toBeEnabled(),
+  );
   fireEvent.click(screen.getByRole("button", { name: "Refresh history" }));
   await waitFor(() => expect(gateway.history).toHaveBeenCalledTimes(2));
   expect(gateway.report).toHaveBeenCalledTimes(reportCalls);
@@ -345,6 +353,7 @@ test.each(["technician", "task-force", "team-leader"])(
         login: jest.fn(),
         password: jest.fn(),
         logout: jest.fn(),
+        rename: jest.fn(),
         create: jest.fn(),
         change: jest.fn(),
       }),
@@ -388,6 +397,7 @@ test("signing out of a preview restores the next administrator session to admini
     new AccessApplication({
       context,
       logout,
+      rename: jest.fn(),
       login,
       users: jest.fn(),
       password: jest.fn(),
@@ -434,6 +444,7 @@ test("Technician home has no analytical entry points or requests", async () => {
       login: jest.fn(),
       password: jest.fn(),
       logout: jest.fn(),
+      rename: jest.fn(),
       create: jest.fn(),
       change: jest.fn(),
     }),

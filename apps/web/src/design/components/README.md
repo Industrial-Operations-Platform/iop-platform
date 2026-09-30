@@ -93,3 +93,10 @@ on selection and window resize, without moving keyboard focus.
 `Dialog` uses the native modal element for focus containment and an inert background.
 It provides a labelled heading, Escape/close handling and focus restoration. Callers
 control visibility, pending state and form content; no business rules live here.
+
+Title-first navigation is mandatory for new sections: `PageHeading` has no eyebrow
+API. Compose operational views with `SectionHeading`, including section/subsection
+callbacks for detail navigation. Sidebar selection must return to the section view,
+even when that same section is already active. Use `RefreshButton` for icon-only
+reload actions and `DepartmentScope` for the shared white department/Halle context.
+Preserve accessible names and keyboard focus when using compact icon controls.

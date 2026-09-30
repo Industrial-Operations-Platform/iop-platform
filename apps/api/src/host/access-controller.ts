@@ -1,4 +1,4 @@
-import { RemoveUserDto } from "./access-contracts";
+import { RemoveUserDto, RenameUserDto } from "./access-contracts";
 import {
   Body,
   Controller,
@@ -165,6 +165,17 @@ export class AccessController {
         body.profile,
         body.active,
       ),
+    );
+    return { ok: true };
+  }
+  @Post("users/name")
+  @ApiBody({ type: RenameUserDto })
+  @ApiCreatedResponse({ type: SuccessDto })
+  async rename(@Req() req: IncomingMessage, @Body() body: RenameUserDto) {
+    bodyFields(body, ["id", "name"]);
+    const r = this.active(req);
+    await accessOperation(async () =>
+      r.access!.users.rename(await r.actor(req), body.id, body.name),
     );
     return { ok: true };
   }

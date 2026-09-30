@@ -1433,6 +1433,37 @@
         ]
       }
     },
+    "/api/v1/users/name": {
+      "post": {
+        "operationId": "AccessController_rename",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
+    },
     "/api/v1/users/remove": {
       "post": {
         "operationId": "AccessController_remove",
@@ -3767,6 +3798,23 @@
           "id",
           "profile",
           "active"
+        ]
+      },
+      "RenameUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "id",
+          "name"
         ]
       },
       "RemoveUserDto": {

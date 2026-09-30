@@ -81,3 +81,17 @@
   color: var(--iop-muted);
   font-size: var(--iop-captionSize);
 }
+
+.iop-ui .workforce-date-toolbar {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+.iop-ui .workforce-date-toolbar .iop-field {
+  margin: 0;
+  gap: 0.65rem;
+}
+.iop-ui .workforce-date-toolbar .iop-input {
+  width: auto;
+  min-height: 40px;
+}

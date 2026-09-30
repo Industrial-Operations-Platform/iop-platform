@@ -13,28 +13,6 @@
 .handover-component-picker p {
   margin: 0;
 }
-.handover-breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.3em;
-}
-.iop-ui .handover-home {
-  font: inherit;
-  letter-spacing: inherit;
-  line-height: inherit;
-  min-height: 0;
-  color: inherit;
-  text-align: left;
-}
-.iop-ui .handover-home:hover {
-  color: var(--iop-activeInk);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-.handover-breadcrumb-separator {
-  color: var(--iop-muted);
-}
 .iop-ui .handover-matrix {
   table-layout: fixed;
   min-width: 64rem;
@@ -376,24 +354,6 @@
   margin-bottom: 1rem;
 }
 
-.iop-ui .handover-department-filter {
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
-  padding: 0.85rem 1rem;
-  margin-bottom: 1.25rem;
-  border: 1px solid var(--iop-line);
-  border-radius: var(--iop-cardRadius);
-  background: var(--iop-canvas);
-  font-size: var(--iop-captionSize);
-  font-weight: var(--iop-labelWeight);
-  color: var(--iop-muted);
-}
-.handover-department-filter .iop-select {
-  width: min(100%, 22rem);
-  min-height: 44px;
-}
 .handover-highlights > .handover-section-heading p {
   color: var(--iop-muted);
   margin-bottom: 0;
@@ -493,7 +453,7 @@
   }
 }
 @media (max-width: 520px) {
-  .handover-department-filter .iop-select {
+  .iop-department-scope .iop-select {
     width: 100%;
   }
 }

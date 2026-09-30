@@ -9,8 +9,9 @@ export interface AccessGateway {
   login(username: string, password: string): Promise<void>;
   password(currentPassword: string, password: string): Promise<void>;
   logout(): Promise<void>;
+  rename(id: string, name: string): Promise<void>;
   users(): Promise<UserProfile[]>;
-  remove?(id:string):Promise<void>;
+  remove?(id: string): Promise<void>;
   create(
     user: NewUser,
   ): Promise<{ user: UserProfile; initialPassword: string }>;
@@ -41,13 +42,16 @@ export class AccessApplication {
     await this.gateway.logout();
     return this.context();
   }
+  rename(id: string, name: string) {
+    return this.gateway.rename(id, name);
+  }
   users() {
     return this.gateway.users();
   }
   create(user: NewUser) {
     return this.gateway.create(user);
   }
-  remove(id:string) {
+  remove(id: string) {
     if (!this.gateway.remove) throw new Error("User deletion is unavailable.");
     return this.gateway.remove(id);
   }

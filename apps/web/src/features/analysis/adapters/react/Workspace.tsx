@@ -8,6 +8,7 @@ import { Plot } from "./Plot";
 import { labels } from "./labels";
 import {
   Actions,
+  RefreshButton,
   Alert,
   Button,
   Disclosure,
@@ -92,7 +93,7 @@ export function ReportWorkspace({
                   : selectView(x.selection, template)
                 : null,
           );
-          if (!x.selection) setLoading(false);
+          if (!x.selection || administration) setLoading(false);
         }
       })
       .catch((e) => {
@@ -145,11 +146,6 @@ export function ReportWorkspace({
               ? t("Import & prepare")
               : t("Data analysis")
         }
-        eyebrow={
-          administration
-            ? t("Administration · Data Analysis")
-            : t("Operations · Data Analysis")
-        }
         description={
           administration
             ? t("Manage daily files, import quality and reporting settings.")
@@ -175,12 +171,11 @@ export function ReportWorkspace({
                 {t("Files & source rows ")}
               </Button>
             )}
-            <Button
-              variant="secondary"
+            <RefreshButton
+              label="Refresh history"
+              busy={loading}
               onClick={() => setRefresh((x) => x + 1)}
-            >
-              {t("Refresh history ")}
-            </Button>
+            />
           </Actions>
         }
       />

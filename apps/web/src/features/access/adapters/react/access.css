@@ -23,3 +23,13 @@
 .access-user-form + * {
   margin-top: 18px;
 }
+
+.access-language {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+}
+.access-name-form {
+  display: grid;
+  gap: 1.25rem;
+}

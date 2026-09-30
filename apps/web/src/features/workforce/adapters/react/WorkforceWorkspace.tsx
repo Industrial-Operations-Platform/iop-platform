@@ -6,7 +6,8 @@ import {
   Button,
   Field,
   Input,
-  PageHeading,
+  SectionHeading,
+  RefreshButton,
   Panel,
   ViewNavigation,
 } from "../../../../design/components";
@@ -32,10 +33,12 @@ export function WorkforceWorkspace({
   application,
   profile,
   timeZone,
+  homeVisit = 0,
 }: {
   application: WorkforceApplication;
   profile?: string;
   timeZone: string;
+  homeVisit?: number;
 }) {
   const today = new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -56,6 +59,23 @@ export function WorkforceWorkspace({
     [schedulePerson, setSchedulePerson] = useState(""),
     [selected, setSelected] = useState<RecordEntry>(),
     [history, setHistory] = useState<Revision[]>([]);
+  const goHome = () => {
+    setSelected(undefined);
+    setForm(false);
+    setHistory([]);
+  };
+  useEffect(() => {
+    goHome();
+  }, [homeVisit]);
+  const viewLabel = (
+    {
+      day: "My day",
+      week: "Weekly plan",
+      schedules: "Weekly schedules",
+      import: "Schedule import",
+      config: "Configuration",
+    } as Record<string, string>
+  )[tab];
   const dates = weekDates(date),
     from = dates[0],
     to = dates[6];
@@ -128,42 +148,44 @@ export function WorkforceWorkspace({
     : 0;
   return (
     <div className="workforce-workspace">
-      <PageHeading
-        eyebrow="IOP"
-        title={t("Workforce & shifts")}
+      <SectionHeading
+        section="Workforce & shifts"
+        view={viewLabel}
+        onHome={goHome}
+        onBack={selected ? goHome : undefined}
         description={`${t("Times use the site time zone.")} ${timeZone}`}
         actions={
-          <Actions>
-            <Field>
-              {t("Date")}
-              <Input
-                aria-label={t("Date")}
-                type="date"
-                value={date}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    setDate(e.target.value);
+          !selected && (
+            <Actions className="workforce-date-toolbar">
+              <Field layout="inline">
+                {t("Date")}
+                <Input
+                  aria-label={t("Date")}
+                  type="date"
+                  value={date}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      setDate(e.target.value);
+                      setSelected(undefined);
+                      setForm(false);
+                    }
+                  }}
+                />
+              </Field>
+              <RefreshButton busy={pending} onClick={refresh} />
+              {canPlan && (
+                <Button
+                  disabled={pending}
+                  onClick={() => {
                     setSelected(undefined);
-                    setForm(false);
-                  }
-                }}
-              />
-            </Field>
-            <Button variant="secondary" disabled={pending} onClick={refresh}>
-              {t("Refresh")}
-            </Button>
-            {canPlan && (
-              <Button
-                disabled={pending}
-                onClick={() => {
-                  setSelected(undefined);
-                  setForm(true);
-                }}
-              >
-                {t("Assign")}
-              </Button>
-            )}
-          </Actions>
+                    setForm(true);
+                  }}
+                >
+                  {t("Assign")}
+                </Button>
+              )}
+            </Actions>
+          )
         }
       />
       {error && <Alert>{t(error)}</Alert>}
@@ -171,32 +193,34 @@ export function WorkforceWorkspace({
       {pending && !board && <Panel>{t("Loading…")}</Panel>}
       {board && (
         <>
-          <ViewNavigation
-            label={t("Workforce & shifts")}
-            selected={tab}
-            placement="tabs"
-            onSelect={(value) => {
-              setTab(value);
-              setSchedulePerson("");
-              setForm(false);
-              setSelected(undefined);
-            }}
-            items={[
-              { id: "day", label: t("My day") },
-              ...(canPlan
-                ? [
-                    { id: "week", label: t("Weekly plan") },
-                    { id: "schedules", label: t("Weekly schedules") },
-                  ]
-                : []),
-              ...(canAdminister
-                ? [
-                    { id: "import", label: t("Schedule import") },
-                    { id: "config", label: t("Configuration") },
-                  ]
-                : []),
-            ]}
-          />
+          {!selected && (
+            <ViewNavigation
+              label={t("Workforce & shifts")}
+              selected={tab}
+              placement="tabs"
+              onSelect={(value) => {
+                setTab(value);
+                setSchedulePerson("");
+                setForm(false);
+                setSelected(undefined);
+              }}
+              items={[
+                { id: "day", label: t("My day") },
+                ...(canPlan
+                  ? [
+                      { id: "week", label: t("Weekly plan") },
+                      { id: "schedules", label: t("Weekly schedules") },
+                    ]
+                  : []),
+                ...(canAdminister
+                  ? [
+                      { id: "import", label: t("Schedule import") },
+                      { id: "config", label: t("Configuration") },
+                    ]
+                  : []),
+              ]}
+            />
+          )}
           {form && canPlan ? (
             <AssignmentForm
               key={selected?.id ?? date}
@@ -254,12 +278,9 @@ export function WorkforceWorkspace({
                     {t("Delete")}
                   </Button>
                 )}
-                <Button variant="text" onClick={() => setSelected(undefined)}>
-                  {t("Close")}
-                </Button>
               </Actions>
               {history.map((r) => (
-                <div key={r.record.revision}>
+                <div className="iop-detail-history" key={r.record.revision}>
                   <p>
                     #{r.record.revision} · {r.actorName} ·{" "}
                     {new Date(r.at).toLocaleString(locale())} · {t(r.action)}

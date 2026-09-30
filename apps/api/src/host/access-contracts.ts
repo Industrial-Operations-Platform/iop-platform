@@ -39,3 +39,8 @@ export class SuccessDto {
 export class RemoveUserDto {
   @ApiProperty() id!: string;
 }
+
+export class RenameUserDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ minLength: 1, maxLength: 100 }) name!: string;
+}

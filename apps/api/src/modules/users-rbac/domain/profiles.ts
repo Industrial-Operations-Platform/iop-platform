@@ -29,6 +29,16 @@ export interface NewUser {
   username: string;
   profile: Profile;
 }
+export function displayName(value: unknown): string {
+  if (
+    typeof value !== "string" ||
+    !value.trim() ||
+    value.length > 100 ||
+    /[\u0000-\u001f\u007f]/.test(value)
+  )
+    throw new AccessError("invalid_user");
+  return value.trim();
+}
 export function validateUser(input: NewUser): NewUser {
   if (
     !input ||
@@ -42,7 +52,7 @@ export function validateUser(input: NewUser): NewUser {
   )
     throw new AccessError("invalid_user");
   return {
-    name: input.name.trim(),
+    name: displayName(input.name),
     username: input.username.toLowerCase(),
     profile: input.profile,
   };

@@ -25,7 +25,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(16);
+  expect(await migrate(configs.migrator)).toBe(17);
 });
 afterAll(async () => { if (container) await container.stop(); });
 

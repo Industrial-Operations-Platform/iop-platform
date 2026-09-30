@@ -122,7 +122,6 @@ export function StartOverview({
   return (
     <section className="analysis-start" aria-label={t("Start page")}>
       <PageHeading
-        eyebrow={t("Your workspace")}
         title={
           context.user
             ? t("Welcome, {0}", [context.user.name])

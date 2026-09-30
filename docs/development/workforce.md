@@ -134,3 +134,17 @@ concurrent conflicts and non-cascading user/entry removal. Web tests verify role
 views, import-preview invalidation, weekly preset/edit/save behavior and dictionary
 coverage. Weekly application/SQL tests also prove atomic rollback, current planner
 grants, unchanged-day idempotency and neighbor/batch overlap handling.
+
+## M6 presentation and account refinement
+
+Use the globe and DE/EN control at the upper right to switch language. Click your
+name in the account header to edit it; administrators can also click a user's name
+in Users & profiles. `POST /api/v1/users/name` accepts only `id` and `name` and
+requires self ownership or scoped administrator authority. Apply migration
+`20261005000000-profile-display-name` with the migrator before activating the API.
+
+Workforce details share the Shift Handover title/breadcrumb layout. Click the
+section or preceding view name to return; clicking the active sidebar section also
+returns without losing the selected date. Detail facts and history retain their
+saved labels. The shared design controls enforce title-first pages, icon-only
+reloads and the same department/Halle selector on Start and Shift Handover.

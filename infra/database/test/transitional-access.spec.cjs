@@ -48,7 +48,7 @@ beforeAll(async () => {
   };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(16);
+  expect(await migrate(configs.migrator)).toBe(17);
   await provision(configs);
   const hash = await new NodePasswords().hash(initial);
   for (const suffix of ["a", "b"]) {
@@ -366,6 +366,68 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     if (app) await app.close();
     await runtime.close();
   }
+});
+
+test("scoped name editing preserves identity, session, permissions and an audit trail", async () => {
+  const created = await access.users.create("admin-a", {
+    name: "Before",
+    username: "rename-tech",
+    profile: "technician",
+  });
+  const id = created.user.id;
+  const token = await login(access, "rename-tech", created.initialPassword);
+  await access.authentication.changePassword(
+    token,
+    created.initialPassword,
+    chosen,
+  );
+  const session = await login(access, "rename-tech");
+  await access.users.rename(id, id, "  After  ");
+  expect(await access.users.self(id)).toMatchObject({
+    id,
+    name: "After",
+    profile: "technician",
+    username: "rename-tech",
+  });
+  expect(await access.authentication.principal(session)).toMatchObject({
+    userId: id,
+  });
+  await expect(
+    access.users.rename(id, "admin-a", "Forbidden"),
+  ).rejects.toMatchObject({ code: "access_denied" });
+  await expect(
+    other.users.rename("admin-b", id, "Foreign"),
+  ).rejects.toMatchObject({ code: "access_denied" });
+  await expect(
+    other.users.rename(id, id, "Foreign self"),
+  ).rejects.toMatchObject({ code: "access_denied" });
+  await access.users.rename("admin-a", id, "Administrator edit");
+  await clientWork("migrator", async (c) => {
+    await c.query("BEGIN");
+    await c.query(
+      "SELECT set_config('iop.access_organization_id','org-a',true)",
+    );
+    const result = await c.query(
+      "SELECT actor_id,detail FROM users_rbac.access_audit WHERE subject_id=$1 AND action='user.name_changed' ORDER BY recorded_at",
+      [id],
+    );
+    expect(result.rows).toEqual([
+      { actor_id: id, detail: { before: "Before", after: "After" } },
+      {
+        actor_id: "admin-a",
+        detail: { before: "After", after: "Administrator edit" },
+      },
+    ]);
+    await c.query("COMMIT");
+  });
+  await access.users.change("admin-a", id, "technician", false);
+  await expect(
+    access.users.rename(id, id, "Disabled edit"),
+  ).rejects.toMatchObject({ code: "access_denied" });
+  await access.users.remove("admin-a", id);
+  await expect(
+    access.users.rename("admin-a", id, "Deleted edit"),
+  ).rejects.toMatchObject({ code: "access_denied" });
 });
 
 test("changing and restoring Technician never reinstates analytical grants", async () => {

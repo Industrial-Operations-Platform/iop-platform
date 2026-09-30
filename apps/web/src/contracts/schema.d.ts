@@ -424,6 +424,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/name": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_rename"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/remove": {
         parameters: {
             query?: never;
@@ -1078,6 +1094,10 @@ export interface components {
             /** @enum {string} */
             profile: "administrator" | "technician" | "task-force" | "team-leader";
             active: boolean;
+        };
+        RenameUserDto: {
+            id: string;
+            name: string;
         };
         RemoveUserDto: {
             id: string;
@@ -2639,6 +2659,29 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ChangeUserDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessDto"];
+                };
+            };
+        };
+    };
+    AccessController_rename: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RenameUserDto"];
             };
         };
         responses: {

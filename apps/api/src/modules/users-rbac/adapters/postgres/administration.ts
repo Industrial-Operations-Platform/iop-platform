@@ -60,6 +60,23 @@ export class PgAdministration implements AdministrationStore {
       };
     });
   }
+  renameSelf(actor: string, name: string): Promise<void> {
+    return accessTransaction(this.pool, this.scope, async (client) => {
+      const result = await client.query(userQuery + " AND p.user_id=$3", [
+        this.scope.organizationId,
+        this.scope.siteId,
+        actor,
+      ]);
+      if (!result.rows[0]?.active) throw new AccessError("access_denied");
+      await client.query("SELECT set_config('iop.access_write','1',true)");
+      await new PgAdministrationTransaction(
+        client,
+        this.scope,
+        actor,
+        this.credentials,
+      ).rename(actor, name);
+    });
+  }
   asAdministrator<T>(
     actor: string,
     work: (tx: AdministrationTransaction) => Promise<T>,
@@ -161,6 +178,24 @@ class PgAdministrationTransaction implements AdministrationTransaction {
     await this.audit(id, "user.access_changed", {
       before: { profile: before.profile, active: before.active },
       after: { profile, active },
+    });
+  }
+  async rename(id: string, name: string): Promise<void> {
+    const result = await this.client.query(userQuery + " AND p.user_id=$3", [
+      this.scope.organizationId,
+      this.scope.siteId,
+      id,
+    ]);
+    const before = result.rows[0];
+    if (!before) throw new AccessError("access_denied");
+    if (before.name === name) return;
+    await this.client.query(
+      "UPDATE users_rbac.profiles SET display_name=$4 WHERE organization_id=$1 AND site_id=$2 AND user_id=$3 AND deleted_at IS NULL",
+      [this.scope.organizationId, this.scope.siteId, id, name],
+    );
+    await this.audit(id, "user.name_changed", {
+      before: before.name,
+      after: name,
     });
   }
   async remove(id: string): Promise<void> {

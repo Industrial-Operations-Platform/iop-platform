@@ -802,4 +802,8 @@ export const german: Readonly<Record<string, string>> = {
     "Bestehende Bereichs- und Handyzuweisungen bleiben erhalten. Bei einem Konflikt wird kein Tag gespeichert.",
   "Save week": "Woche speichern",
   "Discard edits": "Änderungen verwerfen",
+  "Edit your name": "Eigenen Namen bearbeiten",
+  "Edit name": "Namen bearbeiten",
+  "Edit name for {0}": "Namen für {0} bearbeiten",
+  Time: "Uhrzeit",
 };

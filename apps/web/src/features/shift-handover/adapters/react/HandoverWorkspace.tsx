@@ -3,6 +3,7 @@ import { MeetingCanvas } from "./MeetingCanvas";
 import { EntrySummaryCards } from "./EntrySummaryCards";
 import { useEffect, useState } from "react";
 import {
+  DepartmentScope,
   Actions,
   Alert,
   Button,
@@ -11,7 +12,6 @@ import {
   Field,
   Input,
   Panel,
-  Select,
   ViewNavigation,
 } from "../../../../design/components";
 import {
@@ -271,33 +271,20 @@ export function HandoverWorkspace({
       {context && (
         <div className="handover-toolbar">
           {!(view === "meeting" && dailyOverview) && (
-            <Field>
-              {t("Department / Halle ")}
-              <Select
-                disabled={busy}
-                aria-label={t("Selected department")}
-                value={selection.departmentId}
-                onChange={(e) => {
-                  const id = e.target.value;
-                  onDepartmentChange?.(id);
-                  apply({
-                    ...selection,
-                    departmentId: id,
-                    areaId: "",
-                    equipmentReferenceId: "",
-                  });
-                }}
-              >
-                <option value="">{t("All departments")}</option>
-                {context.locations
-                  .filter((l) => l.role === "department")
-                  .map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.label}
-                    </option>
-                  ))}
-              </Select>
-            </Field>
+            <DepartmentScope
+              value={selection.departmentId}
+              disabled={busy}
+              choices={context.locations.filter((l) => l.role === "department")}
+              onChange={(id) => {
+                onDepartmentChange?.(id);
+                apply({
+                  ...selection,
+                  departmentId: id,
+                  areaId: "",
+                  equipmentReferenceId: "",
+                });
+              }}
+            />
           )}
           {view === "meeting" && (
             <Field>

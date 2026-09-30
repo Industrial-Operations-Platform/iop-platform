@@ -1,4 +1,4 @@
-import { t, locale } from "../../localization/i18n";
+import { t } from "../../localization/i18n";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { identityVariables } from "../identity";
 import "./components.css";
@@ -63,23 +63,16 @@ export function AppShell({
 }
 export function PageHeading({
   title,
-  eyebrow,
   description,
   actions,
 }: {
   title: ReactNode;
-  eyebrow?: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
 }) {
   return (
     <div className="iop-page-heading">
       <div>
-        {eyebrow && (
-          <p className="iop-eyebrow">
-            {typeof eyebrow === "string" ? t(eyebrow) : eyebrow}
-          </p>
-        )}
         <h1>{typeof title === "string" ? t(title) : title}</h1>
         {description && (
           <p>

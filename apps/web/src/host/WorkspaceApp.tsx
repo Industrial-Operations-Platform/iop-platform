@@ -1,6 +1,7 @@
 import { WorkforceToday } from "../features/workforce/adapters/react/WorkforceToday";
 import { WorkforceWorkspace } from "../features/workforce/adapters/react/WorkforceWorkspace";
 import type { WorkforceApplication } from "../features/workforce/application/workforce";
+import { EditNameDialog } from "../features/access/adapters/react/EditNameDialog";
 import { LanguageControl } from "../localization/LanguageControl";
 import { language, subscribeLanguage, t } from "../localization/i18n";
 import { PlatformMark } from "../design/components/PlatformMark";
@@ -50,6 +51,8 @@ export function WorkspaceApp({
   const [page, setPage] = useState<
     "start" | "analysis" | "administration" | "users" | "handover" | "workforce"
   >("start");
+  const [workforceVisit, setWorkforceVisit] = useState(0);
+  const [editingName, setEditingName] = useState(false);
   const [handoverVisit, setHandoverVisit] = useState(0);
   const [handoverEntry, setHandoverEntry] = useState("");
   const [handoverHighlights, setHandoverHighlights] = useState(false);
@@ -162,7 +165,9 @@ export function WorkspaceApp({
     return (
       <IdentityRoot>
         <main className="access-entry">
-          <LanguageControl />
+          <div className="access-language">
+            <LanguageControl />
+          </div>
           {!!error && (
             <Alert>
               {error instanceof Error
@@ -181,10 +186,24 @@ export function WorkspaceApp({
               {context.user && (
                 <Button
                   variant="secondary"
+                  className="iop-sign-out"
+                  aria-label={t("Sign out")}
+                  title={t("Sign out")}
                   onClick={signOut}
                   disabled={pending}
                 >
-                  {t("Sign out ")}
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    aria-hidden="true"
+                  >
+                    <path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h12" />
+                  </svg>
+                  <span>{t("Sign out")}</span>
                 </Button>
               )}
             </>
@@ -210,7 +229,6 @@ export function WorkspaceApp({
       skipLabel={t("Skip to workspace")}
       header={
         <>
-          <LanguageControl />
           {canViewProfiles && (
             <ProfileViewControl
               key={context?.user?.id}
@@ -219,23 +237,47 @@ export function WorkspaceApp({
             />
           )}
           {context?.authentication === "password" ? (
-            <>
+            <div className="iop-account">
               {context.user && (
-                <span>
-                  {context.user.name} ·{" "}
-                  {t(profileLabels[context.user.profile as Profile] ?? "User")}
-                </span>
+                <Button
+                  variant="text"
+                  className="iop-account-button"
+                  aria-label={t("Edit your name")}
+                  onClick={() => setEditingName(true)}
+                  disabled={!access}
+                >
+                  <strong>{context.user.name}</strong>
+                  <small>
+                    {t(
+                      profileLabels[context.user.profile as Profile] ?? "User",
+                    )}
+                  </small>
+                </Button>
               )}
               {context.user && access && (
                 <Button
                   variant="secondary"
+                  className="iop-sign-out"
+                  aria-label={t("Sign out")}
+                  title={t("Sign out")}
                   onClick={signOut}
                   disabled={pending}
                 >
-                  {t("Sign out ")}
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    aria-hidden="true"
+                  >
+                    <path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h12" />
+                  </svg>
+                  <span>{t("Sign out")}</span>
                 </Button>
               )}
-            </>
+            </div>
           ) : (
             <Field layout="inline">
               {t("User")}{" "}
@@ -256,6 +298,7 @@ export function WorkspaceApp({
               </Select>
             </Field>
           )}
+          <LanguageControl />
         </>
       }
       brandAction={{
@@ -272,9 +315,13 @@ export function WorkspaceApp({
       navigation={
         <SideNavigation
           selected={page}
-          onSelect={(next) =>
-            next === "handover" ? openHandoverHome() : setPage(next)
-          }
+          onSelect={(next) => {
+            if (next === "handover") openHandoverHome();
+            else {
+              if (next === "workforce") setWorkforceVisit((v) => v + 1);
+              setPage(next);
+            }
+          }}
           items={[
             {
               id: "start",
@@ -304,6 +351,16 @@ export function WorkspaceApp({
         />
       }
     >
+      {editingName && context?.user && access && (
+        <EditNameDialog
+          name={context.user.name}
+          save={async (name) => {
+            await access.rename(context.user!.id, name);
+            await refreshSession();
+          }}
+          close={() => setEditingName(false)}
+        />
+      )}
       {error ? (
         <Alert>
           {error instanceof Error ? error.message : t("The operation failed.")}
@@ -330,6 +387,7 @@ export function WorkspaceApp({
         <WorkforceWorkspace
           key={`${context.user?.id}:${effectiveProfile}`}
           application={workforce}
+          homeVisit={workforceVisit}
           profile={effectiveProfile}
           timeZone={context.scope?.siteTimeZone ?? "Europe/Zurich"}
         />

@@ -112,3 +112,14 @@ analytical assignments. Technician retains the operational handover contributor 
 This supersedes the earlier identical analytical capabilities for all worker profiles.
 Session capability checks must not require analytics access just to return identity or
 import availability. Current scoped grants remain authoritative on every API operation.
+
+## Owner-authorized display-name editing — M6 refinement
+
+An active authenticated user may edit their own display name. An organization
+access administrator may edit another non-deleted profile in the configured site.
+Users/RBAC validates the 1–100 character name, resolves the target in a scoped
+transaction and records before/after values with actor/subject IDs in access audit.
+The self-service persistence port exposes only name editing; it never receives the
+administrator transaction. Existing organization locking, forced RLS and explicit
+column grants apply. Names do not change stable identity, username, role grants or
+sessions, and existing business-entry/revision snapshots remain unchanged.

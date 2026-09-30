@@ -48,6 +48,9 @@ export class HttpAccessGateway implements AccessGateway {
   async logout() {
     await request("/auth/logout", {});
   }
+  async rename(id: string, name: string) {
+    await request("/users/name", { id, name });
+  }
   async users(): Promise<UserProfile[]> {
     return request<components["schemas"]["UserProfileDto"][]>("/users");
   }
@@ -56,7 +59,9 @@ export class HttpAccessGateway implements AccessGateway {
   ): Promise<{ user: UserProfile; initialPassword: string }> {
     return request<components["schemas"]["CreatedUserDto"]>("/users", user);
   }
-  async remove(id:string) { await request("/users/remove",{id}); }
+  async remove(id: string) {
+    await request("/users/remove", { id });
+  }
   async change(id: string, profile: Profile, active: boolean) {
     await request("/users/access", { id, profile, active });
   }

@@ -4,9 +4,8 @@ import {
   Actions,
   Alert,
   Button,
-  Field,
+  DepartmentScope,
   Panel,
-  Select,
   RefreshButton,
   CollectionAction,
   ViewNavigation,
@@ -96,23 +95,12 @@ export function HandoverHighlights({
         />
       </div>
       {context && (
-        <Field className="handover-department-filter">
-          <span>{t("Department / Halle")}</span>
-          <Select
-            aria-label={t("Start department")}
-            value={departmentId}
-            onChange={(e) => onDepartmentChange(e.target.value)}
-          >
-            <option value="">{t("All departments")}</option>
-            {context.locations
-              .filter((l) => l.role === "department")
-              .map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.label}
-                </option>
-              ))}
-          </Select>
-        </Field>
+        <DepartmentScope
+          value={departmentId}
+          onChange={onDepartmentChange}
+          label="Start department"
+          choices={context.locations.filter((l) => l.role === "department")}
+        />
       )}
       {loading ? (
         <p role="status">{t("Loading operational updates…")}</p>

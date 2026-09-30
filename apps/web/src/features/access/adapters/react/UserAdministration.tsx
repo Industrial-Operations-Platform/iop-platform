@@ -1,3 +1,4 @@
+import { EditNameDialog } from "./EditNameDialog";
 import { t } from "../../../../localization/i18n";
 import { useEffect, useState } from "react";
 import {
@@ -29,6 +30,7 @@ export function UserAdministration({
   application: AccessApplication;
   onChanged: () => Promise<void>;
 }) {
+  const [editingName, setEditingName] = useState<UserProfile | null>(null);
   const [users, setUsers] = useState<UserProfile[]>([]),
     [error, setError] = useState(""),
     [pending, setPending] = useState(false),
@@ -74,9 +76,19 @@ export function UserAdministration({
   }
   return (
     <>
+      {editingName && (
+        <EditNameDialog
+          name={editingName.name}
+          close={() => setEditingName(null)}
+          save={async (name) => {
+            await application.rename(editingName.id, name);
+            await onChanged();
+            setRefresh((v) => v + 1);
+          }}
+        />
+      )}
       <PageHeading
         title={t("Users & profiles")}
-        eyebrow={t("Administration")}
         description={t(
           "Create individual accounts and assign access to this local site.",
         )}
@@ -198,7 +210,14 @@ export function UserAdministration({
               {users.map((user) => (
                 <tr key={user.id}>
                   <th scope="row">
-                    {user.name}
+                    <Button
+                      variant="text"
+                      onClick={() => setEditingName(user)}
+                      disabled={pending}
+                      aria-label={t("Edit name for {0}", [user.username])}
+                    >
+                      {user.name}
+                    </Button>
                     <br />
                     <small>{user.username}</small>
                   </th>

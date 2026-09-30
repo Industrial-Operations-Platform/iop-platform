@@ -126,3 +126,81 @@ test("administrator import edits invalidate an old preview", async () => {
   expect(screen.queryByRole("button", { name: /Import plan/ })).toBeNull();
   expect(gateway.commit).not.toHaveBeenCalled();
 });
+
+test("detail returns through its section, subsection and a repeated sidebar visit", async () => {
+  const date = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "UTC",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  const { app } = application({
+    ...board,
+    records: [
+      {
+        id: "assignment",
+        kind: "assignment",
+        revision: 1,
+        deleted: false,
+        personName: "Test Person",
+        data: {
+          userId: "tech",
+          date,
+          shiftId: "early",
+          shiftLabel: "Early",
+          targetId: "zone",
+          targetLabel: "Test zone",
+          duty: "zone",
+          phone: "",
+          start: "05:00",
+          end: "14:15",
+          startsAt: date + "T05:00:00Z",
+          endsAt: date + "T14:15:00Z",
+        },
+      },
+    ],
+  });
+  const { rerender } = render(
+    <WorkforceWorkspace
+      application={app}
+      profile="technician"
+      timeZone="UTC"
+    />,
+  );
+  await screen.findByRole("heading", { name: "Your assignment" });
+  const open = () =>
+    fireEvent.click(screen.getAllByRole("button", { name: /Test Person/ })[0]);
+  open();
+  expect(
+    screen.getByRole("heading", {
+      name: "Workforce & shifts My day Details",
+    }),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("button", { name: "Close" }),
+  ).toBeNull();
+  expect(screen.getByText("05:00–14:15")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "My day" }));
+  expect(
+    screen.getByRole("heading", { name: "Your assignment" }),
+  ).toBeVisible();
+  open();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Workforce & shifts" }),
+  );
+  expect(
+    screen.getByRole("heading", { name: "Your assignment" }),
+  ).toBeVisible();
+  open();
+  rerender(
+    <WorkforceWorkspace
+      application={app}
+      profile="technician"
+      timeZone="UTC"
+      homeVisit={1}
+    />,
+  );
+  expect(
+    screen.getByRole("heading", { name: "Your assignment" }),
+  ).toBeVisible();
+});

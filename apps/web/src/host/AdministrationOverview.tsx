@@ -17,7 +17,6 @@ export function AdministrationOverview({
   return (
     <section aria-label={t("Administration overview")}>
       <PageHeading
-        eyebrow={t("Platform administration")}
         title={t("Administration")}
         description={t(
           "Manage platform access, source data and reporting settings.",

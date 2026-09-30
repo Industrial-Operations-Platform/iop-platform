@@ -1,5 +1,6 @@
 import {
   AccessError,
+  displayName,
   profiles,
   requireRemainingAdministrator,
   validateUser,
@@ -13,12 +14,14 @@ export interface IssuedCredential {
 }
 export interface AdministrationTransaction {
   list(): Promise<UserProfile[]>;
+  rename(id: string, name: string): Promise<void>;
   remove?(id: string): Promise<void>;
   create(user: NewUser, credentialHash: string): Promise<UserProfile>;
   change(id: string, profile: Profile, active: boolean): Promise<void>;
 }
 export interface AdministrationStore {
   self(actor: string): Promise<UserProfile>;
+  renameSelf(actor: string, name: string): Promise<void>;
   asAdministrator<T>(
     actor: string,
     work: (tx: AdministrationTransaction) => Promise<T>,
@@ -57,6 +60,13 @@ export class UserAdministration {
         initialPassword: credential.secret,
       };
     });
+  }
+  async rename(actor: string, id: string, input: unknown): Promise<void> {
+    if (typeof id !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(id))
+      throw new AccessError("invalid_user");
+    const name = displayName(input);
+    if (actor === id) return this.store.renameSelf(actor, name);
+    return this.store.asAdministrator(actor, (tx) => tx.rename(id, name));
   }
   async remove(actor: string, id: string): Promise<void> {
     if (typeof id !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(id))
