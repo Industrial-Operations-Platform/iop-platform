@@ -211,7 +211,8 @@ Action variants share spacing, radius, height and focus behavior; color expresse
 priority or destructive intent. `DeleteButton` supplies a labelled trash icon.
 Form footers use `iop-form-actions` to separate Cancel/Save from editing controls.
 Use the common bordered, keyboard-scrollable `TableViewport`, muted sticky headers
-and row hover/focus treatment across modules. Features may set column widths and
+and row hover/focus treatment across modules. Column/group headers and sortable labels
+center horizontally and vertically. Features may set column widths and body-cell
 alignment, but should not recreate the table theme. More than three tabs use a
 horizontal viewport on narrow screens to prevent label collisions.
 
@@ -221,3 +222,8 @@ own sections. Account details contain the editable fields; list rows keep compac
 access actions. Workforce uses date groups with shift subcolumns and daily shift
 headings above leader cards. Configuration Add actions sit beside section headings,
 with Save in a separated footer. These refinements preserve identity v1 tokens.
+
+IOP-186 corrects summary-card alignment: compact and expanded handover cards use
+one full-width content column, aligned to the left padding, with bounded wrapping.
+Daily leader shift headings center in both axes; personal schedule names use the
+shared blue, semibold body role, with muted state badges and caption-sized data.

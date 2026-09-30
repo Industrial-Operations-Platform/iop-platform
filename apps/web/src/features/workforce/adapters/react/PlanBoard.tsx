@@ -332,7 +332,10 @@ export function ScheduleList({
     <Panel>
       <h2>{t("Personal schedules")}</h2>
       <TableViewport>
-        <Table>
+        <Table
+          className="workforce-schedules"
+          aria-label={t("Personal schedules")}
+        >
           <thead>
             <tr>
               {["Person", "Status", "Start time", "End time", "Source"].map(
@@ -349,11 +352,17 @@ export function ScheduleList({
               .map((r) => (
                 <tr key={r.id}>
                   <td>
-                    <Button variant="text" onClick={() => select(r)}>
+                    <Button
+                      variant="text"
+                      className="workforce-schedule-person"
+                      onClick={() => select(r)}
+                    >
                       {r.personName}
                     </Button>
                   </td>
-                  <td>{t(statusLabels[r.data.status])}</td>
+                  <td>
+                    <Badge>{t(statusLabels[r.data.status])}</Badge>
+                  </td>
                   <td>{r.data.start}</td>
                   <td>{r.data.end}</td>
                   <td>{r.data.source}</td>

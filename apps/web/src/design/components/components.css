@@ -220,6 +220,10 @@
   vertical-align: middle;
   font-weight: var(--iop-labelWeight);
 }
+.iop-ui .iop-table thead th,
+.iop-ui .iop-table thead th .iop-button {
+  text-align: center;
+}
 .iop-ui .iop-table caption {
   text-align: left;
   font-weight: var(--iop-metricWeight);

@@ -319,3 +319,4 @@ canonical asset integration.
 | [IOP-183 — Compact Start category tabs](items/IOP-183-compact-start-tabs.md) | Completed |
 | [IOP-184 — M6 Workforce delivery](items/IOP-184-m6-workforce.md) | Completed |
 | [IOP-185 — Administration and Workforce interface consistency](items/IOP-185-administration-workforce-ui.md) | Completed |
+| [IOP-186 — Table headings and operational card alignment](items/IOP-186-table-card-alignment.md) | Completed |
