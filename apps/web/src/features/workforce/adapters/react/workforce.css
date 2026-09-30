@@ -35,25 +35,45 @@
   min-width: 100%;
 }
 .workforce-board td {
-  vertical-align: top;
-  min-width: 165px;
+  min-width: 140px;
+}
+.iop-ui .workforce-board td {
+  padding: 6px;
 }
 .workforce-slot {
   display: grid;
-  gap: 6px;
-  align-content: start;
+  justify-items: center;
+  gap: 4px;
+}
+.workforce-person {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: var(--iop-controlRadius);
+  background: transparent;
+  color: var(--iop-link);
+  font: inherit;
+  font-weight: var(--iop-labelWeight);
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.workforce-person:hover {
+  background: var(--iop-activeSurface);
+}
+.workforce-person svg {
+  flex-shrink: 0;
 }
 .workforce-shift-label,
 .workforce-empty {
   color: var(--iop-muted);
   font-size: var(--iop-compactSize);
 }
-.workforce-zone {
-  display: grid;
-  gap: 8px;
-  align-content: start;
-}
-
 .workforce-week-fields {
   display: grid;
   gap: var(--iop-sectionGap);
@@ -103,7 +123,7 @@
   border-left: 1px solid var(--iop-line);
 }
 .iop-ui .workforce-board tbody th,
-.iop-ui .workforce-board thead th[rowspan] {
+.iop-ui .workforce-board thead tr:first-child th:first-child {
   position: sticky;
   left: 0;
   background: var(--iop-canvas);

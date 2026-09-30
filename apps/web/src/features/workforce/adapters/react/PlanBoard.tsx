@@ -14,6 +14,48 @@ import {
 } from "../../domain/models";
 import { locale, t } from "../../../../localization/i18n";
 import { dutyLabels, statusLabels } from "./labels";
+
+function AssignmentSlot({
+  records,
+  select,
+}: {
+  records: RecordEntry<"assignment">[];
+  select: (record: RecordEntry) => void;
+}) {
+  return (
+    <div className="workforce-slot">
+      {records.map((record) => (
+        <button
+          type="button"
+          className="workforce-person"
+          key={record.id}
+          onClick={() => select(record)}
+        >
+          <span>{record.personName}</span>
+          {record.data.phone && (
+            <svg
+              role="img"
+              aria-label={t("Phone")}
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <title>{t("Phone")}</title>
+              <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z" />
+            </svg>
+          )}
+        </button>
+      ))}
+      {!records.length && <span className="workforce-empty">—</span>}
+    </div>
+  );
+}
+
 export function AssignmentCard({
   record,
   board,
@@ -165,20 +207,7 @@ export function PlanBoard({
                             key={date + shift.id}
                             className={index === 0 ? "workforce-day-start" : ""}
                           >
-                            <div className="workforce-slot">
-                              {found.map((record) => (
-                                <AssignmentCard
-                                  key={record.id}
-                                  record={record}
-                                  board={board}
-                                  select={select}
-                                  showShift={false}
-                                />
-                              ))}
-                              {!found.length && (
-                                <span className="workforce-empty">—</span>
-                              )}
-                            </div>
+                            <AssignmentSlot records={found} select={select} />
                           </td>
                         );
                       })
@@ -211,6 +240,9 @@ export function DailyPlan({
     schedules = entries(board, "schedule").filter((r) => r.data.date === date),
     own = assignments.filter((r) => r.data.userId === board.actorId),
     personal = schedules.find((r) => r.data.userId === board.actorId);
+  const shifts = visibleShifts(board).sort((a, b) =>
+    a.start.localeCompare(b.start),
+  );
   return (
     <>
       <Panel>
@@ -239,65 +271,78 @@ export function DailyPlan({
       <Panel>
         <h2>{t("Shift leaders")}</h2>
         <div className="workforce-card-grid">
-          {visibleShifts(board)
-            .sort((a, b) => a.start.localeCompare(b.start))
-            .map((shift) => {
-              const leaders = assignments.filter(
-                (record) =>
-                  record.data.duty === "leader" &&
-                  record.data.shiftId === shift.id,
-              );
-              return (
-                <section
-                  className="workforce-leader-shift"
-                  key={shift.id}
-                  aria-label={shift.label}
-                >
-                  <h3>{shift.label}</h3>
-                  {leaders.map((record) => (
-                    <AssignmentCard
-                      key={record.id}
-                      record={record}
-                      board={board}
-                      select={select}
-                      showShift={false}
-                    />
-                  ))}
-                  {!leaders.length && (
-                    <p className="workforce-empty">
-                      {t("No shift leader assigned")}
-                    </p>
-                  )}
-                </section>
-              );
-            })}
+          {shifts.map((shift) => {
+            const leaders = assignments.filter(
+              (record) =>
+                record.data.duty === "leader" &&
+                record.data.shiftId === shift.id,
+            );
+            return (
+              <section
+                className="workforce-leader-shift"
+                key={shift.id}
+                aria-label={shift.label}
+              >
+                <h3>{shift.label}</h3>
+                {leaders.map((record) => (
+                  <AssignmentCard
+                    key={record.id}
+                    record={record}
+                    board={board}
+                    select={select}
+                    showShift={false}
+                  />
+                ))}
+                {!leaders.length && (
+                  <p className="workforce-empty">
+                    {t("No shift leader assigned")}
+                  </p>
+                )}
+              </section>
+            );
+          })}
         </div>
       </Panel>
       <Panel>
         <h2>{t("Other zones")}</h2>
-        <div className="workforce-card-grid">
-          {visibleTargets(board).map((target) => (
-            <section className="workforce-zone" key={target.id}>
-              <h3>{target.label}</h3>
-              {assignments
-                .filter(
-                  (r) =>
-                    r.data.targetId === target.id && r.data.duty !== "leader",
-                )
-                .map((r) => (
-                  <AssignmentCard
-                    key={r.id}
-                    record={r}
-                    board={board}
-                    select={select}
-                  />
+        <TableViewport aria-label={t("Other zones")}>
+          <Table className="workforce-board" aria-label={t("Other zones")}>
+            <thead>
+              <tr>
+                <th scope="col">{t("Zone")}</th>
+                {shifts.map((shift) => (
+                  <th key={shift.id} scope="col">
+                    {shift.label}
+                  </th>
                 ))}
-              {!assignments.some((r) => r.data.targetId === target.id) && (
-                <p>{t("No assignment yet")}</p>
-              )}
-            </section>
-          ))}
-        </div>
+                {!shifts.length && (
+                  <th scope="col">{t("No shifts configured")}</th>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {visibleTargets(board).map((target) => (
+                <tr key={target.id}>
+                  <th scope="row">{target.label}</th>
+                  {shifts.map((shift) => (
+                    <td key={shift.id}>
+                      <AssignmentSlot
+                        records={assignments.filter(
+                          (record) =>
+                            record.data.targetId === target.id &&
+                            record.data.shiftId === shift.id &&
+                            record.data.duty !== "leader",
+                        )}
+                        select={select}
+                      />
+                    </td>
+                  ))}
+                  {!shifts.length && <td>—</td>}
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableViewport>
       </Panel>
       <Panel>
         <h2>

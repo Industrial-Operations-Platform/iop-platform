@@ -211,7 +211,7 @@
 }
 .iop-ui .iop-table th,
 .iop-ui .iop-table td {
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid var(--iop-line);
   padding: 12px;
   vertical-align: middle;
@@ -220,9 +220,20 @@
   vertical-align: middle;
   font-weight: var(--iop-labelWeight);
 }
-.iop-ui .iop-table thead th,
-.iop-ui .iop-table thead th .iop-button {
-  text-align: center;
+.iop-ui .iop-table thead tr:first-child > th:first-child,
+.iop-ui .iop-table tbody tr > :first-child,
+.iop-ui .iop-table tfoot tr > :first-child {
+  text-align: left;
+}
+.iop-ui .iop-table :is(th, td) .iop-button {
+  text-align: inherit;
+}
+.iop-ui .iop-table :is(th, td) > .iop-actions {
+  justify-content: center;
+}
+.iop-ui .iop-table tr > :first-child > .iop-actions,
+.iop-ui .iop-table thead tr:first-child > th:first-child .iop-button {
+  justify-content: flex-start;
 }
 .iop-ui .iop-table caption {
   text-align: left;
@@ -605,8 +616,7 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  min-width: 1.5rem;
-  padding: 0.15rem 0.5rem;
+  padding: 1px 3px;
   border-radius: var(--iop-controlRadius);
   background: var(--iop-canvas);
   color: var(--iop-muted);
@@ -754,7 +764,6 @@
   min-width: 0;
   padding: var(--iop-metricPadding);
   border: 1px solid var(--iop-line);
-  border-top: 3px solid var(--view-border);
   border-radius: var(--iop-cardRadius);
   background: var(--view-surface);
   color: var(--iop-ink);

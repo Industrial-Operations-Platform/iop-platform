@@ -37,6 +37,7 @@ function workforce(from: string): Board {
     canAdminister: true,
     people: [
       { id: "tech", name: "Morgan Technician", profile: "technician" },
+      { id: "late-tech", name: "Taylor Technician", profile: "technician" },
       ...shifts.map((shift, index) => ({
         id: shift.id,
         name: `Shift Leader ${index + 1}`,
@@ -45,7 +46,10 @@ function workforce(from: string): Board {
     ],
     settings: {
       shifts,
-      targets: [{ id: "zone", label: "Assembly", phone: "123" }],
+      targets: [
+        { id: "zone", label: "Assembly", phone: "123" },
+        { id: "empty-zone", label: "Packing", phone: "456" },
+      ],
       teams: [{ id: "team", label: "Operations", leaderId: "early" }],
     },
     records: dates.flatMap((date) => [
@@ -64,6 +68,30 @@ function workforce(from: string): Board {
             targetId: "",
             duty: "leader",
             phone: "",
+            start: shift.start,
+            end: shift.end,
+            startsAt: `${date}T${shift.start}:00Z`,
+            endsAt: `${date}T${shift.end}:00Z`,
+          },
+        }),
+      ),
+      ...[shifts[0], shifts[2]].map(
+        (shift, index): RecordEntry<"assignment"> => ({
+          id: `zone-${date}-${shift.id}`,
+          kind: "assignment",
+          revision: 1,
+          deleted: false,
+          personName: index === 0 ? "Morgan Technician" : "Taylor Technician",
+          data: {
+            userId: index === 0 ? "tech" : "late-tech",
+            date,
+            shiftId: shift.id,
+            shiftLabel: shift.label,
+            targetId: "zone",
+            targetLabel: "Assembly",
+            duty: "zone",
+            phone: index === 0 ? "zone" : "",
+            phoneLabel: index === 0 ? "123" : "",
             start: shift.start,
             end: shift.end,
             startsAt: `${date}T${shift.start}:00Z`,
@@ -179,7 +207,7 @@ for (const width of [1440, 375]) {
       ).toBe(true);
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({
-        path: `/tmp/iop-185-${name}-${width}.png`,
+        path: `/tmp/iop-187-${name}-${width}.png`,
         fullPage: true,
       });
     };
@@ -243,14 +271,69 @@ for (const width of [1440, 375]) {
     await expect(
       matrix.locator("tbody").getByText("Early shift", { exact: true }),
     ).toHaveCount(0);
+    const weeklyPerson = matrix
+      .getByRole("button", { name: "Morgan Technician Phone" }).first();
+    await expect(matrix.locator("tbody")).not.toContainText("05:00");
+    await expect(matrix.locator("tbody")).not.toContainText("123");
+    await expect(weeklyPerson.getByRole("img", { name: "Phone" })).toBeVisible();
+    await expect(
+      matrix.getByRole("button", { name: "Taylor Technician", exact: true })
+        .first().getByRole("img"),
+    ).toHaveCount(0);
     await screenshot("matrix");
+    await weeklyPerson.click();
+    await expect(
+      page.getByRole("heading", { name: "Morgan Technician" }),
+    ).toBeVisible();
+    await expect(
+      page.locator("dd").filter({ hasText: /^05:00–14:15$/ }),
+    ).toBeVisible();
+    await expect(page.locator("dd").filter({ hasText: /^123$/ })).toBeVisible();
+    await page.getByRole("button", { name: "Weekly plan", exact: true }).click();
+    await expect(matrix).toBeVisible();
     await page.getByRole("button", { name: "My day", exact: true }).click();
     await expect(
       page
         .getByRole("region", { name: "Early shift" })
         .getByRole("button", { name: /Shift Leader 1/ }),
     ).toBeVisible();
+    const zones = page.getByRole("table", { name: "Other zones" });
+    await expect(zones.getByRole("columnheader")).toHaveText([
+      "Zone",
+      "Early shift",
+      "Middle shift",
+      "Late shift",
+    ]);
+    const assembly = zones.getByRole("row").filter({
+      has: page.getByRole("rowheader", { name: "Assembly", exact: true }),
+    });
+    await expect(
+      assembly.getByRole("cell").nth(0)
+        .getByRole("button", { name: "Morgan Technician Phone" }),
+    ).toBeVisible();
+    await expect(assembly.getByRole("cell").nth(1)).toHaveText("—");
+    await expect(
+      assembly.getByRole("cell").nth(2)
+        .getByRole("button", { name: "Taylor Technician", exact: true }),
+    ).toBeVisible();
+    await expect(
+      zones.getByRole("row").filter({
+        has: page.getByRole("rowheader", { name: "Packing", exact: true }),
+      }).getByRole("cell"),
+    ).toHaveText(["—", "—", "—"]);
     await screenshot("day");
+    await assembly.getByRole("button", {
+      name: "Taylor Technician", exact: true,
+    }).focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByRole("heading", { name: "Taylor Technician" }),
+    ).toBeVisible();
+    await expect(
+      page.locator("dd").filter({ hasText: /^13:45–23:00$/ }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "My day", exact: true }).click();
+    await expect(zones).toBeVisible();
     await page
       .getByRole("button", { name: "Weekly schedules", exact: true })
       .click();

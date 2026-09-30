@@ -40,16 +40,10 @@
   vertical-align: middle;
   overflow-wrap: anywhere;
 }
-.iop-ui
-  .handover-matrix
-  :is(th, td):is(:first-child, :nth-child(5), :last-child) {
-  text-align: center;
-}
 .handover-matrix :is(th, td):is(:first-child, :nth-child(5)) {
   white-space: nowrap;
 }
 .handover-matrix button {
-  text-align: left;
   overflow-wrap: anywhere;
 }
 .handover-matrix small {
@@ -421,7 +415,6 @@
   gap: 0.65rem;
   align-content: start;
   border-radius: var(--iop-cardRadius);
-  border-top: 3px solid var(--iop-inputBorder);
 }
 @media (max-width: 900px) {
   .handover-personal-cards {

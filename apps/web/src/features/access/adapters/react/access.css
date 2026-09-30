@@ -58,6 +58,20 @@
 .access-row-actions > .iop-button:first-child {
   min-width: 86px;
 }
+.iop-ui .access-users {
+  table-layout: fixed;
+  min-width: 48rem;
+  overflow-wrap: anywhere;
+}
+.access-users-person {
+  width: 16rem;
+}
+.access-users-profile {
+  width: 12rem;
+}
+.access-users-status {
+  width: 8rem;
+}
 .administration-file-name {
   overflow-wrap: anywhere;
 }

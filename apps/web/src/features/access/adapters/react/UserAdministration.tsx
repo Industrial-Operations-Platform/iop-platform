@@ -199,8 +199,14 @@ export function UserAdministration({
         <h2>{t("Users")}</h2>
         {pending && <p role="status">{t("Updating users…")}</p>}
         <TableViewport>
-          <Table>
+          <Table className="access-users">
             <caption>{t("Accounts for this site")}</caption>
+            <colgroup>
+              <col className="access-users-person" />
+              <col className="access-users-profile" />
+              <col className="access-users-status" />
+              <col />
+            </colgroup>
             <thead>
               <tr>
                 <th scope="col">{t("User")}</th>

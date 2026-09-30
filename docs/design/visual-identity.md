@@ -211,9 +211,10 @@ Action variants share spacing, radius, height and focus behavior; color expresse
 priority or destructive intent. `DeleteButton` supplies a labelled trash icon.
 Form footers use `iop-form-actions` to separate Cancel/Save from editing controls.
 Use the common bordered, keyboard-scrollable `TableViewport`, muted sticky headers
-and row hover/focus treatment across modules. Column/group headers and sortable labels
-center horizontally and vertically. Features may set column widths and body-cell
-alignment, but should not recreate the table theme. More than three tabs use a
+and row hover/focus treatment across modules. Headers, body cells and action groups
+center horizontally and vertically except the first column, which stays left aligned.
+Grouped shift subheaders remain centered. Features may set column widths but should
+not recreate the table theme or alignment. More than three tabs use a
 horizontal viewport on narrow screens to prevent label collisions.
 
 Keep logout at the far right after identity and language. Administration summarizes
@@ -227,3 +228,11 @@ IOP-186 corrects summary-card alignment: compact and expanded handover cards use
 one full-width content column, aligned to the left padding, with bounded wrapping.
 Daily leader shift headings center in both axes; personal schedule names use the
 shared blue, semibold body role, with muted state badges and caption-sized data.
+
+IOP-187 makes Weekly plan and the Other zones zone-by-shift matrix compact: each
+assignment shows the person name and a small accessible phone icon only when a
+phone is assigned. Hours, zone labels and phone details remain available through
+the person action; matrix headings supply shared context. Users keeps bounded
+name/profile column widths instead of stretching the gap across the screen.
+Shared badges use 1px vertical and 3px horizontal padding, and operational summary
+cards use a uniform light border without a darker top stripe.

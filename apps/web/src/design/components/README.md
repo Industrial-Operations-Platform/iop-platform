@@ -28,7 +28,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `Table`, `TableViewport` | Common bordered viewport, muted sticky headers, row hover/focus and keyboard-accessible bounded scrolling |
 | `Alert` | Error announcement and consistent error surface |
 | `SideNavigation` | Controlled page navigation with current-page semantics |
-| `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort; table headings center plain labels and buttons horizontally and vertically |
+| `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort; inherits the shared column alignment |
 | `ViewNavigation` | Typed controlled view selector with labelled navigation, pressed buttons, optional counts and bottom/inline/summary/tabs placement; tabs share the full width with compact counts, while summary cards accept descriptions and neutral/info/attention tones |
 
 ```tsx
@@ -68,10 +68,13 @@ Buttons default to `type="button"`; submit controls must explicitly use
 `type="submit"`. Native props, events and refs are preserved by controls. Give each
 control a visible `Field` label, or an explicit accessible name for compact controls.
 Keep table captions and column/row headers in the caller's semantic markup.
-Column and grouped header cells center horizontally and vertically; body cells,
-including row labels, retain their content-specific alignment. Clickable summary
+Headers and body cells center horizontally and vertically except the first column,
+which stays left aligned. Subsequent grouped header rows keep their shift labels
+centered, including their first cell. Table action groups follow the same alignment.
+Badges use compact 1px vertical and 3px horizontal padding. Clickable summary
 cards own their grid alignment and must keep content against the left padding
-rather than inheriting button centering.
+rather than inheriting button centering. Summary cards use a uniform border without
+a heavier top stripe.
 `Disclosure` uses native `details/summary` keyboard behavior. View navigation uses
 ordinary buttons; it does not claim the keyboard model of ARIA tabs.
 
