@@ -35,3 +35,7 @@ export class CreatedUserDto {
 export class SuccessDto {
   @ApiProperty() ok!: boolean;
 }
+
+export class RemoveUserDto {
+  @ApiProperty() id!: string;
+}

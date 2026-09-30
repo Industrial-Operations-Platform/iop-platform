@@ -36,7 +36,7 @@ export interface CredentialPersistence {
 const userQuery = `SELECT p.user_id AS id,p.display_name AS name,p.profile,
  (m.is_active AND u.is_active) AS active FROM users_rbac.profiles p
  JOIN users_rbac.organization_memberships m ON m.organization_id=p.organization_id AND m.user_id=p.user_id
- JOIN users_rbac.users u ON u.user_id=p.user_id WHERE p.organization_id=$1 AND p.site_id=$2`;
+ JOIN users_rbac.users u ON u.user_id=p.user_id WHERE p.organization_id=$1 AND p.site_id=$2 AND p.deleted_at IS NULL`;
 export class PgAdministration implements AdministrationStore {
   constructor(
     private readonly pool: Pool,
@@ -163,6 +163,19 @@ class PgAdministrationTransaction implements AdministrationTransaction {
       after: { profile, active },
     });
   }
+  async remove(id: string): Promise<void> {
+    const target = (await this.list()).find((u) => u.id === id);
+    if (!target) throw new AccessError("access_denied");
+    await this.change(id, target.profile, false);
+    await this.client.query(
+      "UPDATE users_rbac.profiles SET deleted_at=CURRENT_TIMESTAMP WHERE organization_id=$1 AND site_id=$2 AND user_id=$3",
+      [this.scope.organizationId, this.scope.siteId, id],
+    );
+    await this.audit(id, "user.deleted", {
+      name: target.name,
+      retainedHistory: true,
+    });
+  }
   private async assign(
     id: string,
     profile: Profile,
@@ -177,6 +190,9 @@ class PgAdministrationTransaction implements AdministrationTransaction {
     );
     // Restoration receives an explicit profile; old grants never silently reactivate.
     for (const role of [
+      "workforce-reader",
+      "workforce-planner",
+      "workforce-administrator",
       "analytics-reader",
       "site-operator",
       "handover-contributor",

@@ -151,6 +151,27 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
     }
     updates.push(...['responsible_id','equipment_id','occurrence_date','revision','snapshot'].map(n=>`shift_handover.entries.${n}`));
   }
+  const workforceInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261003000000-workforce'",
+  )).rowCount;
+  if (workforceInstalled) {
+    schemas.push('workforce');
+    for (const [table,columns] of Object.entries({
+      records:['organization_id','site_id','kind','id','business_date','revision','snapshot'],
+      revisions:['organization_id','site_id','kind','id','revision','snapshot'],
+    })) {
+      allowedColumns.push(...columns.map(n=>`workforce.${table}.${n}`));
+      inserts.push(...columns.map(n=>`workforce.${table}.${n}`));
+    }
+    updates.push(...['business_date','revision','snapshot'].map(n=>`workforce.records.${n}`));
+  }
+  const deletionInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261004000000-logical-profile-deletion'",
+  )).rowCount;
+  if (deletionInstalled) {
+    allowedColumns.push('users_rbac.profiles.deleted_at');
+    updates.push('users_rbac.profiles.deleted_at');
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

@@ -64,6 +64,167 @@
         ]
       }
     },
+    "/api/v1/workforce/board": {
+      "post": {
+        "operationId": "WorkforceController_board",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkforceRangeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkforceBoardDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
+    "/api/v1/workforce/save": {
+      "post": {
+        "operationId": "WorkforceController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkforceSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkforceRecordDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
+    "/api/v1/workforce/preview": {
+      "post": {
+        "operationId": "WorkforceController_preview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkforceImportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkforcePreviewDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
+    "/api/v1/workforce/import": {
+      "post": {
+        "operationId": "WorkforceController_commit",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkforceCommitDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkforceResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
+    "/api/v1/workforce/history": {
+      "post": {
+        "operationId": "WorkforceController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkforceHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkforceRevisionDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
     "/api/v1/session/context": {
       "get": {
         "operationId": "PlatformController_context[0]",
@@ -1241,6 +1402,37 @@
         ]
       }
     },
+    "/api/v1/users/remove": {
+      "post": {
+        "operationId": "AccessController_remove",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Local access"
+        ]
+      }
+    },
     "/api/v1/handover/context": {
       "get": {
         "operationId": "HandoverController_context",
@@ -1416,6 +1608,37 @@
           "Shift Handover"
         ]
       }
+    },
+    "/api/v1/handover/remove": {
+      "post": {
+        "operationId": "HandoverController_remove",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverRemoveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverEntryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
     }
   },
   "info": {
@@ -1509,6 +1732,303 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "WorkforceRangeDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ]
+      },
+      "WorkforcePersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "profile"
+        ]
+      },
+      "WorkforceRecordDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "settings",
+              "worker",
+              "schedule",
+              "assignment"
+            ]
+          },
+          "revision": {
+            "type": "number"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "personName": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "description": "Kind-specific Workforce payload; see docs/development/workforce.md."
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "revision",
+          "deleted",
+          "personName",
+          "data"
+        ]
+      },
+      "WorkforceBoardDto": {
+        "type": "object",
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "canPlan": {
+            "type": "boolean"
+          },
+          "canAdminister": {
+            "type": "boolean"
+          },
+          "people": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforcePersonDto"
+            }
+          },
+          "settings": {
+            "type": "object"
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceRecordDto"
+            }
+          }
+        },
+        "required": [
+          "actorId",
+          "timeZone",
+          "canPlan",
+          "canAdminister",
+          "people",
+          "settings",
+          "records"
+        ]
+      },
+      "WorkforceSaveDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "settings",
+              "worker",
+              "schedule",
+              "assignment"
+            ]
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "expectedRevision",
+          "deleted",
+          "data"
+        ]
+      },
+      "WorkforceImportDto": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "enum": [
+              "csv",
+              "email"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 80000
+          },
+          "userId": {
+            "type": "string",
+            "description": "Explicit target user for an email; CSV has userId per row."
+          }
+        },
+        "required": [
+          "format",
+          "text",
+          "userId"
+        ]
+      },
+      "WorkforcePreviewDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "data": {
+            "type": "object"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "create",
+              "replace",
+              "unchanged"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision",
+          "data",
+          "outcome"
+        ]
+      },
+      "WorkforceImportRevisionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision"
+        ]
+      },
+      "WorkforceCommitDto": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "$ref": "#/components/schemas/WorkforceImportDto"
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceImportRevisionDto"
+            }
+          }
+        },
+        "required": [
+          "input",
+          "revisions"
+        ]
+      },
+      "WorkforceResultDto": {
+        "type": "object",
+        "properties": {
+          "changed": {
+            "type": "number"
+          },
+          "unchanged": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "changed",
+          "unchanged"
+        ]
+      },
+      "WorkforceHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "settings",
+              "worker",
+              "schedule",
+              "assignment"
+            ]
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "id"
+        ]
+      },
+      "WorkforceRevisionDto": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "#/components/schemas/WorkforceRecordDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "record",
+          "actorId",
+          "actorName",
+          "at",
+          "action"
         ]
       },
       "LocalUserDto": {
@@ -3153,6 +3673,17 @@
           "active"
         ]
       },
+      "RemoveUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
       "HandoverLocationDto": {
         "type": "object",
         "properties": {
@@ -3218,6 +3749,9 @@
       "HandoverContextDto": {
         "type": "object",
         "properties": {
+          "canDelete": {
+            "type": "boolean"
+          },
           "locations": {
             "type": "array",
             "items": {
@@ -3250,6 +3784,7 @@
           }
         },
         "required": [
+          "canDelete",
           "locations",
           "categories",
           "people",
@@ -3462,6 +3997,9 @@
       "HandoverEntryDto": {
         "type": "object",
         "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
           "latestUpdate": {
             "$ref": "#/components/schemas/HandoverLatestUpdateDto"
           },
@@ -3698,6 +4236,21 @@
           "entry",
           "revisions",
           "nextBefore"
+        ]
+      },
+      "HandoverRemoveDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision"
         ]
       }
     }

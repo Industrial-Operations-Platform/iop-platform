@@ -1,3 +1,4 @@
+import { RemoveUserDto } from "./access-contracts";
 import {
   Body,
   Controller,
@@ -164,6 +165,17 @@ export class AccessController {
         body.profile,
         body.active,
       ),
+    );
+    return { ok: true };
+  }
+  @Post("users/remove")
+  @ApiBody({ type: RemoveUserDto })
+  @ApiCreatedResponse({ type: SuccessDto })
+  async remove(@Req() req: IncomingMessage, @Body() body: RemoveUserDto) {
+    bodyFields(body, ["id"]);
+    const r = this.active(req);
+    await accessOperation(async () =>
+      r.access!.users.remove(await r.actor(req), body.id),
     );
     return { ok: true };
   }

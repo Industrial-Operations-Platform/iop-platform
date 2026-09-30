@@ -64,14 +64,23 @@ export function requireRemainingAdministrator(
 export function siteRoles(profile: Profile): readonly string[] {
   return profile === "administrator"
     ? [
+        "workforce-reader",
+        "workforce-planner",
+        "workforce-administrator",
         "analytics-reader",
         "site-operator",
         "handover-contributor",
         "handover-coordinator",
       ]
     : profile === "team-leader"
-      ? ["analytics-reader", "handover-contributor", "handover-coordinator"]
+      ? [
+          "workforce-reader",
+          "workforce-planner",
+          "analytics-reader",
+          "handover-contributor",
+          "handover-coordinator",
+        ]
       : profile === "technician"
-        ? ["handover-contributor"]
-        : ["analytics-reader", "handover-contributor"];
+        ? ["workforce-reader", "handover-contributor"]
+        : ["workforce-reader", "analytics-reader", "handover-contributor"];
 }

@@ -103,4 +103,13 @@ export class HandoverController {
       return r.handover.history(a, body.id, body.before);
     });
   }
+  @Post("remove")
+  @ApiBody({ type: C.HandoverRemoveDto })
+  @ApiCreatedResponse({ type: C.HandoverEntryDto })
+  remove(@Req() req: IncomingMessage, @Body() body: C.HandoverRemoveDto) {
+    return this.operation(req, (r, a) => {
+      exact(body, ["id", "expectedRevision"]);
+      return r.handover.remove(a, body.id, body.expectedRevision);
+    });
+  }
 }

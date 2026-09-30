@@ -70,6 +70,7 @@ export class PgHandover implements Store {
             coordinator,
             () => this.lookup.people(tx),
             (...args) => this.lookup.equipment(tx, ...args),
+            await this.lookup.allowed(tx, actor, "site-configuration.manage"),
           ),
         );
       },
@@ -84,6 +85,7 @@ class PgTransaction implements Transaction {
     readonly coordinator: boolean,
     readonly people: () => Promise<Person[]>,
     readonly equipment: EquipmentLookup["search"],
+    readonly canDelete = false,
   ) {}
   private get selectors() {
     return [this.scope.organizationId, this.scope.siteId];
@@ -195,7 +197,7 @@ class PgTransaction implements Transaction {
     const r = await this.tx.query(
       `WITH matching AS (
       SELECT id,snapshot,CASE WHEN $11 THEN snapshot->>'highlightedAt' ELSE occurrence_date::text || '/' || (snapshot->>'createdAt') END AS sort_key
-      FROM shift_handover.entries WHERE organization_id=$1 AND site_id=$2
+      FROM shift_handover.entries WHERE organization_id=$1 AND site_id=$2 AND coalesce(snapshot->>'deleted','false')<>'true'
       AND ($3='' OR occurrence_date >= NULLIF($3,'')::date) AND ($4='' OR occurrence_date <= NULLIF($4,'')::date)
       AND ($5='' OR snapshot->'content'->>'departmentId'=$5) AND ($6='' OR snapshot->'content'->>'areaId'=$6)
       AND ($7='' OR equipment_id=$7) AND ($8='' OR snapshot->'content'->>'categoryId'=$8)

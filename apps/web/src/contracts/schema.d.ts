@@ -24,6 +24,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workforce/board": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_board"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workforce/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workforce/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workforce/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_commit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workforce/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/session/context": {
         parameters: {
             query?: never;
@@ -328,6 +408,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_remove"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/handover/context": {
         parameters: {
             query?: never;
@@ -424,6 +520,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/handover/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_remove"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -460,6 +572,82 @@ export interface components {
              * @enum {string}
              */
             status: "ok";
+        };
+        WorkforceRangeDto: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string;
+        };
+        WorkforcePersonDto: {
+            id: string;
+            name: string;
+            profile: string;
+        };
+        WorkforceRecordDto: {
+            id: string;
+            /** @enum {string} */
+            kind: "settings" | "worker" | "schedule" | "assignment";
+            revision: number;
+            deleted: boolean;
+            personName: string;
+            /** @description Kind-specific Workforce payload; see docs/development/workforce.md. */
+            data: Record<string, never>;
+        };
+        WorkforceBoardDto: {
+            actorId: string;
+            timeZone: string;
+            canPlan: boolean;
+            canAdminister: boolean;
+            people: components["schemas"]["WorkforcePersonDto"][];
+            settings: Record<string, never>;
+            records: components["schemas"]["WorkforceRecordDto"][];
+        };
+        WorkforceSaveDto: {
+            id: string;
+            /** @enum {string} */
+            kind: "settings" | "worker" | "schedule" | "assignment";
+            expectedRevision: number;
+            deleted: boolean;
+            data: Record<string, never>;
+        };
+        WorkforceImportDto: {
+            /** @enum {string} */
+            format: "csv" | "email";
+            text: string;
+            /** @description Explicit target user for an email; CSV has userId per row. */
+            userId: string;
+        };
+        WorkforcePreviewDto: {
+            id: string;
+            expectedRevision: number;
+            data: Record<string, never>;
+            /** @enum {string} */
+            outcome: "create" | "replace" | "unchanged";
+        };
+        WorkforceImportRevisionDto: {
+            id: string;
+            expectedRevision: number;
+        };
+        WorkforceCommitDto: {
+            input: components["schemas"]["WorkforceImportDto"];
+            revisions: components["schemas"]["WorkforceImportRevisionDto"][];
+        };
+        WorkforceResultDto: {
+            changed: number;
+            unchanged: number;
+        };
+        WorkforceHistoryRequestDto: {
+            /** @enum {string} */
+            kind: "settings" | "worker" | "schedule" | "assignment";
+            id: string;
+        };
+        WorkforceRevisionDto: {
+            record: components["schemas"]["WorkforceRecordDto"];
+            actorId: string;
+            actorName: string;
+            at: string;
+            action: string;
         };
         LocalUserDto: {
             profile?: string;
@@ -857,6 +1045,9 @@ export interface components {
             profile: "administrator" | "technician" | "task-force" | "team-leader";
             active: boolean;
         };
+        RemoveUserDto: {
+            id: string;
+        };
         HandoverLocationDto: {
             id: string;
             label: string;
@@ -874,6 +1065,7 @@ export interface components {
             name: string;
         };
         HandoverContextDto: {
+            canDelete: boolean;
             locations: components["schemas"]["HandoverLocationDto"][];
             categories: components["schemas"]["HandoverChoiceDto"][];
             people: components["schemas"]["HandoverPersonDto"][];
@@ -932,6 +1124,7 @@ export interface components {
             discuss: boolean;
         };
         HandoverEntryDto: {
+            deleted?: boolean;
             latestUpdate?: components["schemas"]["HandoverLatestUpdateDto"];
             id: string;
             authorId: string;
@@ -990,6 +1183,10 @@ export interface components {
             entry: components["schemas"]["HandoverEntryDto"];
             revisions: components["schemas"]["HandoverRevisionDto"][];
             nextBefore: number;
+        };
+        HandoverRemoveDto: {
+            id: string;
+            expectedRevision: number;
         };
     };
     responses: never;
@@ -1052,6 +1249,121 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    WorkforceController_board: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkforceRangeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforceBoardDto"];
+                };
+            };
+        };
+    };
+    WorkforceController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkforceSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforceRecordDto"];
+                };
+            };
+        };
+    };
+    WorkforceController_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkforceImportDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforcePreviewDto"][];
+                };
+            };
+        };
+    };
+    WorkforceController_commit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkforceCommitDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforceResultDto"];
+                };
+            };
+        };
+    };
+    WorkforceController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkforceHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforceRevisionDto"][];
                 };
             };
         };
@@ -2283,6 +2595,29 @@ export interface operations {
             };
         };
     };
+    AccessController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemoveUserDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessDto"];
+                };
+            };
+        };
+    };
     HandoverController_context: {
         parameters: {
             query?: never;
@@ -2413,6 +2748,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HandoverHistoryDto"];
+                };
+            };
+        };
+    };
+    HandoverController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverRemoveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverEntryDto"];
                 };
             };
         };

@@ -21,6 +21,7 @@ import {
 } from "../domain/handover";
 export interface Transaction {
   coordinator: boolean;
+  canDelete?: boolean;
   equipment: EquipmentLookup["search"];
   people(): Promise<Person[]>;
   get(id: string): Promise<Entry | null>;
@@ -79,6 +80,7 @@ export class Handover {
       ...this.catalog,
       people: await tx.people(),
       canCoordinate: tx.coordinator,
+      canDelete: !!tx.canDelete,
       actorId: actor,
     }));
   }
@@ -212,6 +214,28 @@ export class Handover {
       return entry;
     });
   }
+  remove(actor: string, id: string, expectedRevision: number) {
+    text(id, 64, true);
+    return this.store.run(actor, "handover.contribute", async (tx) => {
+      if (!tx.canDelete) throw new HandoverError("handover_denied");
+      const entry = await this.existing(tx, id);
+      requireRevision(entry, expectedRevision);
+      if (entry.deleted) throw new HandoverError("handover_missing");
+      entry.deleted = true;
+      entry.revision++;
+      entry.updatedAt = this.now();
+      const author = this.person(await tx.people(), actor);
+      await tx.save(entry, {
+        entry,
+        actorId: actor,
+        actorName: author.name,
+        action: "deleted",
+        note: "Removed from active views; history retained.",
+        at: entry.updatedAt,
+      });
+      return entry;
+    });
+  }
   async change(actor: string, input: ChangeEntry): Promise<Entry> {
     const fields: Record<string, string[]> = {
       correct: ["content"],
@@ -233,6 +257,7 @@ export class Handover {
     const note = text(input.note, 4000, true);
     return this.store.run(actor, "handover.contribute", async (tx) => {
       const entry = await this.existing(tx, input.id);
+      if (entry.deleted) throw new HandoverError("handover_missing");
       requireRevision(entry, input.expectedRevision);
       const people = await tx.people(),
         author = this.person(people, actor);

@@ -48,7 +48,7 @@ beforeAll(async () => {
   };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(14);
+  expect(await migrate(configs.migrator)).toBe(16);
   await provision(configs);
   const hash = await new NodePasswords().hash(initial);
   for (const suffix of ["a", "b"]) {

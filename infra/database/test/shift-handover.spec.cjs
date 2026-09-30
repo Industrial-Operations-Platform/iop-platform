@@ -225,7 +225,7 @@ beforeAll(async () => {
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','tech-a','site-a2','analytics-reader',true)",
     ),
   );
-  expect(await migrate(configs.migrator)).toBe(2);
+  expect(await migrate(configs.migrator)).toBe(4);
   await provision(configs);
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
@@ -836,9 +836,13 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       fullPage: true,
     });
     await button("Equipment reference history").click();
-    await pw(button("Browser repair corrected")).toBeVisible();
+    await pw(
+      page.getByRole("button", { name: /^Browser repair corrected/ }),
+    ).toBeVisible();
     await button("My entries").click();
-    await pw(button("Browser repair corrected")).toBeVisible();
+    await pw(
+      page.getByRole("button", { name: /^Browser repair corrected/ }),
+    ).toBeVisible();
     await button("Department matrix").click();
     await pw(
       page.getByRole("table", { name: "Department handover matrix" }),
@@ -850,7 +854,9 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       .getByLabel("Search", { exact: true })
       .fill("Browser repair corrected");
     await button("Search entries").click();
-    await pw(button("Browser repair corrected")).toBeVisible();
+    await pw(
+      page.getByRole("button", { name: /^Browser repair corrected/ }),
+    ).toBeVisible();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.screenshot({
       path: join(artifacts, "journal-mobile.png"),
@@ -935,12 +941,21 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await button("Save update").click();
     await pw(page.getByText(/Revision 4 · highlight/)).toBeVisible();
     await button("Start").click();
-    await pw(button("Browser repair corrected").first()).toBeVisible();
+    await page
+      .getByRole("navigation", { name: "Operational updates" })
+      .getByRole("button", { name: /^Shift Handover/ })
+      .click();
+    await pw(
+      page.getByRole("button", { name: /^Browser repair corrected/ }).first(),
+    ).toBeVisible();
     await page.screenshot({
       path: "/tmp/iop-169-browser/start-mobile.png",
       fullPage: true,
     });
-    await button("Browser repair corrected").first().click();
+    await page
+      .getByRole("button", { name: /^Browser repair corrected/ })
+      .first()
+      .click();
     await pw(
       page.getByRole("heading", {
         name: "Browser repair corrected",
@@ -966,13 +981,19 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await button("Save update").click();
     await pw(page.getByText(/Revision 6 · highlight/)).toBeVisible();
     await button("Start").click();
-    await pw(button("Browser repair corrected")).toHaveCount(0);
+    await page
+      .getByRole("navigation", { name: "Operational updates" })
+      .getByRole("button", { name: /^Shift Handover/ })
+      .click();
+    await pw(
+      page.getByRole("button", { name: /^Browser repair corrected/ }),
+    ).toHaveCount(0);
     for (const id of ["task-a", "admin-a"]) {
       await button("Sign out").click();
       await login(id);
       await button("Shift Handover").click();
       await pw(
-        page.getByRole("heading", { name: "Shift Handover", exact: true }),
+        page.getByRole("heading", { name: /^Shift Handover/ }).first(),
       ).toBeVisible();
     }
     await button("Meeting preparation").click();
@@ -1060,4 +1081,164 @@ test("own history filters server-side across pages and attention excludes resolv
   const history = await app.history("tech-a", issue.id);
   expect(history.revisions).toHaveLength(2);
   expect(history.revisions[1].entry.issueState).toBe("open");
+});
+
+// M6 uses the same independently provisioned two-organization fixture.
+function workforceService(target = scope) {
+  const {
+    Workforce,
+  } = require("../../../apps/api/dist/modules/workforce/application/workforce");
+  const {
+    PgWorkforce,
+  } = require("../../../apps/api/dist/modules/workforce/adapters/postgres/store");
+  const {
+    IntlSiteClock,
+  } = require("../../../apps/api/dist/modules/workforce/adapters/time/site-clock");
+  const {
+    ManualScheduleDecoder,
+  } = require("../../../apps/api/dist/modules/integrations/adapters/schedule/decoder");
+  const {
+    workforcePeople,
+  } = require("../../../apps/api/dist/modules/users-rbac/adapters/postgres/site-people");
+  return new Workforce(
+    new PgWorkforce(pool, target, {
+      allowed: async (tx, actor, permission) =>
+        (
+          await evaluateSiteAccess(tx, {
+            ...target,
+            userId: actor,
+            permissions: [permission],
+          })
+        ).allowed,
+      people: (tx) => workforcePeople(tx, target.organizationId, target.siteId),
+    }),
+    new ManualScheduleDecoder(),
+    new IntlSiteClock(),
+    {
+      shifts: [
+        {
+          id: "early",
+          label: "Early",
+          start: "05:00",
+          end: "14:15",
+          days: [1, 2, 3, 4, 5, 6, 0],
+        },
+      ],
+      targets: [{ id: "zone", label: "Zone", phone: "phone" }],
+      teams: [],
+    },
+    "UTC",
+    () => new Date().toISOString(),
+  );
+}
+test("M6 grants, import transaction, RLS, phone conflict and retained revisions", async () => {
+  const workforce = workforceService();
+  await expect(
+    workforceService({ organizationId: "org-b", siteId: "site-b" }).board(
+      "tech-a",
+      "2026-09-30",
+      "2026-09-30",
+    ),
+  ).rejects.toThrow();
+  expect(
+    (await workforce.board("tech-a", "2026-09-30", "2026-09-30")).canPlan,
+  ).toBe(false);
+  expect(
+    (await workforce.board("lead-a", "2026-09-30", "2026-09-30")).canPlan,
+  ).toBe(true);
+  const input = {
+    format: "csv",
+    userId: "",
+    text: "userId,date,status,start,end\ntech-a,2026-09-30,work,05:00,14:15\ntask-a,2026-09-30,work,05:00,14:15",
+  };
+  await expect(workforce.preview("lead-a", input)).rejects.toThrow();
+  const preview = await workforce.preview("admin-a", input);
+  expect(
+    (await workforce.board("tech-a", "2026-09-30", "2026-09-30")).records,
+  ).toHaveLength(0);
+  expect(await workforce.import("admin-a", input, preview)).toEqual({
+    changed: 2,
+    unchanged: 0,
+  });
+  // PostgreSQL JSONB reorders object keys; semantic replay must remain a no-op.
+  expect(await workforce.import("admin-a", input, preview)).toEqual({
+    changed: 0,
+    unchanged: 2,
+  });
+  expect(await workforce.history("admin-a", "schedule", "tech-a_2026-09-30")).toHaveLength(1);
+  const assignment = {
+    kind: "assignment",
+    id: "m6-assignment",
+    expectedRevision: 0,
+    deleted: false,
+    data: {
+      userId: "tech-a",
+      date: "2026-09-30",
+      shiftId: "early",
+      targetId: "zone",
+      duty: "zone",
+      phone: "zone",
+      start: "05:00",
+      end: "14:15",
+      startsAt: "",
+      endsAt: "",
+    },
+  };
+  const other = {
+    ...assignment,
+    id: "m6-other",
+    data: { ...assignment.data, userId: "task-a" },
+  };
+  const concurrent = await Promise.allSettled([
+    workforce.save("lead-a", assignment),
+    workforce.save("lead-a", other),
+  ]);
+  expect(concurrent.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+  const saved = concurrent.find((r) => r.status === "fulfilled").value;
+  await expect(
+    workforce.save("tech-a", { ...assignment, id: "denied" }),
+  ).rejects.toThrow();
+  await workforce.save("admin-a", {
+    ...assignment,
+    id: saved.id,
+    expectedRevision: 1,
+    deleted: true,
+  });
+  expect(
+    await workforce.history("tech-a", "assignment", saved.id),
+  ).toHaveLength(2);
+  await db("runtime", async (c) => {
+    expect(
+      (await c.query("SELECT * FROM workforce.records")).rows,
+    ).toHaveLength(0);
+    await expect(c.query("DELETE FROM workforce.records")).rejects.toThrow();
+  });
+});
+test("administrator logical deletion retains author name, journal history and audit; final administrator is protected", async () => {
+  const entry = await publish("Retained author after profile removal");
+  await expect(access.users.remove("tech-a", "task-a")).rejects.toThrow();
+  await expect(access.users.remove("admin-a", "admin-a")).rejects.toMatchObject(
+    { code: "last_administrator" },
+  );
+  await access.users.remove("admin-a", "tech-a");
+  expect(
+    (await access.users.list("admin-a")).some((u) => u.id === "tech-a"),
+  ).toBe(false);
+  const history = await app.history("admin-a", entry.id);
+  expect(history.entry.authorName).toBe("tech-a");
+  expect(history.revisions).toHaveLength(1);
+  await expect(app.context("tech-a")).rejects.toThrow();
+  await expect(
+    app.remove("lead-a", entry.id, entry.revision),
+  ).rejects.toMatchObject({ code: "handover_denied" });
+  await app.remove("admin-a", entry.id, entry.revision);
+  expect(
+    (
+      await app.list("admin-a", {
+        ...emptySelection,
+        search: "Retained author after profile removal",
+      })
+    ).entries,
+  ).toHaveLength(0);
+  expect((await app.history("admin-a", entry.id)).revisions).toHaveLength(2);
 });

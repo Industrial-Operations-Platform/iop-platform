@@ -13,6 +13,7 @@ export interface IssuedCredential {
 }
 export interface AdministrationTransaction {
   list(): Promise<UserProfile[]>;
+  remove?(id: string): Promise<void>;
   create(user: NewUser, credentialHash: string): Promise<UserProfile>;
   change(id: string, profile: Profile, active: boolean): Promise<void>;
 }
@@ -55,6 +56,22 @@ export class UserAdministration {
         user: await tx.create(user, credential.hash),
         initialPassword: credential.secret,
       };
+    });
+  }
+  async remove(actor: string, id: string): Promise<void> {
+    if (typeof id !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(id))
+      throw new AccessError("invalid_user");
+    await this.store.asAdministrator(actor, async (tx) => {
+      const users = await tx.list(),
+        target = users.find((u) => u.id === id);
+      if (!target || !tx.remove) throw new AccessError("access_denied");
+      requireRemainingAdministrator(
+        target,
+        target.profile,
+        false,
+        users.filter((u) => u.active && u.profile === "administrator").length,
+      );
+      await tx.remove(id);
     });
   }
   async change(

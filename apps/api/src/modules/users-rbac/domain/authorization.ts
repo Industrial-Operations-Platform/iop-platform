@@ -14,6 +14,9 @@ export type AuthorizationDecision =
     };
 
 const roles: Readonly<Record<string, readonly string[]>> = Object.freeze({
+  "workforce-reader": Object.freeze(["workforce.read"]),
+  "workforce-planner": Object.freeze(["workforce.plan"]),
+  "workforce-administrator": Object.freeze(["workforce.administer"]),
   "handover-contributor": Object.freeze([
     "handover.read",
     "handover.contribute",

@@ -52,6 +52,7 @@ export class HandoverPersonDto {
   @ApiProperty() name!: string;
 }
 export class HandoverContextDto {
+  @ApiProperty() canDelete!: boolean;
   @ApiProperty({ type: [HandoverLocationDto] })
   locations!: HandoverLocationDto[];
   @ApiProperty({ type: [HandoverChoiceDto] }) categories!: HandoverChoiceDto[];
@@ -67,6 +68,7 @@ export class HandoverLatestUpdateDto {
   @ApiProperty() at!: string;
 }
 export class HandoverEntryDto {
+  @ApiPropertyOptional() deleted?: boolean;
   @ApiPropertyOptional({ type: HandoverLatestUpdateDto })
   latestUpdate?: HandoverLatestUpdateDto;
   @ApiProperty() id!: string;
@@ -158,4 +160,9 @@ export class HandoverEquipmentRequestDto {
 export class HandoverEquipmentPageDto {
   @ApiProperty({ type: [String] }) codes!: string[];
   @ApiProperty() nextCursor!: string;
+}
+
+export class HandoverRemoveDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() expectedRevision!: number;
 }

@@ -1,3 +1,9 @@
+import { Workforce } from "../modules/workforce/application/workforce";
+import { PgWorkforce } from "../modules/workforce/adapters/postgres/store";
+import { IntlSiteClock } from "../modules/workforce/adapters/time/site-clock";
+import { ManualScheduleDecoder } from "../modules/integrations/adapters/schedule/decoder";
+import { workforcePeople } from "../modules/users-rbac/adapters/postgres/site-people";
+import { workforceDefaults } from "./adapters/workforce-defaults";
 import { importedEquipmentCodes } from "../modules/oip/adapters/postgres/equipment-codes";
 import { Handover } from "../modules/shift-handover/application/handover";
 import { PgHandover } from "../modules/shift-handover/adapters/postgres/store";
@@ -201,6 +207,7 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly workforce: Workforce;
   readonly handover: Handover;
   readonly access: ReturnType<typeof composeAccess> | null;
   readonly source: ImportSource;
@@ -235,6 +242,25 @@ export class PlatformRuntime {
       config.handover,
       this.source,
       this.source.siteTimeZone,
+    );
+    this.workforce = new Workforce(
+      new PgWorkforce(pool, this.source, {
+        allowed: async (tx, actor, permission) =>
+          (
+            await evaluateSiteAccess(tx, {
+              ...this.source,
+              userId: actor,
+              permissions: [permission],
+            })
+          ).allowed,
+        people: (tx) =>
+          workforcePeople(tx, this.source.organizationId, this.source.siteId),
+      }),
+      new ManualScheduleDecoder(),
+      new IntlSiteClock(),
+      workforceDefaults(catalog.locations),
+      this.source.siteTimeZone,
+      () => new Date().toISOString(),
     );
     this.handover = new Handover(
       new PgHandover(pool, this.source, {

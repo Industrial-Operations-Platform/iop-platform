@@ -697,6 +697,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await pw(button('Import & prepare')).toHaveCount(0);
     await button('Data analysis').click();
     await button('Administration').click();
+    await button('Import files').click();
     for (const [date, count] of [['20260701', '6'], ['20260703', '3']]) {
       await input.setInputFiles(join(__dirname, `../../../fixtures/analytical-poc/valid/Hitliste-${date}.csv`));
       await pw(button('Import CSV')).toBeDisabled();
@@ -721,7 +722,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await page.getByLabel('Meldetext 1', { exact: true }).selectOption('Jam');
     await button('Save KPI settings').click();
     await pw(page.getByText('KPI settings saved.', { exact: true })).toBeVisible();
-    await button('Taskforce view').click();
+    await button('Data analysis').click();
     await pw(kpi).toHaveText('4.5');
     await pw(page.locator('.analysis-kpis section').first()).toHaveAttribute('data-state', 'equal');
     // Profile saves persist across the administration/taskforce boundary.
@@ -731,7 +732,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
       await page.getByLabel('Goal 1', { exact: true }).fill(goal);
       await button('Save KPI settings').click();
       await pw(page.getByText('KPI settings saved.', { exact: true })).toBeVisible();
-      await button('Taskforce view').click();
+      await button('Data analysis').click();
       await pw(page.locator('.analysis-kpis section').first()).toHaveAttribute('data-state', state);
       if (goal) await pw(page.locator('.analysis-kpis section').first()).toContainText('+50%');
     }
@@ -757,7 +758,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await button('Data preparation').click();
     await button('Save historical preparation').click();
     await pw(page.getByText('Preparation saved.', { exact: false })).toBeVisible();
-    await button('Taskforce view').click();
+    await button('Data analysis').click();
     await pw(kpi).toHaveText('4.5');
     const artifactDir = join(__dirname, '../../../test-results/analytical-workspace');
     mkdirSync(artifactDir, { recursive: true });
@@ -772,6 +773,8 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await pw(page.locator('.analysis-plot svg').first()).toBeVisible();
     await button('Executive Overview').click();
     await page.getByLabel('Demo user', { exact: true }).selectOption('demo-b');
+    await pw(page.getByRole('region', { name: 'Start page' })).toBeVisible();
+    await button('Data analysis').click();
     await pw(kpi).toHaveText('4.5');
     await page.reload();
     await button('Data analysis').click();

@@ -17,6 +17,9 @@ const names = [
   "20260929000000-hitliste-analytics",
   "20260930000000-transitional-access",
   "20261001000000-shift-handover",
+  "20261002000000-technician-analytics-access",
+  "20261003000000-workforce",
+  "20261004000000-logical-profile-deletion",
 ];
 function target(env: NodeJS.ProcessEnv) {
   if (env.IOP_EXECUTION_MODE !== "local-demo" || env.NODE_ENV === "production")

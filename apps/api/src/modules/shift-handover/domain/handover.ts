@@ -58,6 +58,7 @@ export interface Content {
 }
 export type IssueState = "none" | "open" | "in-progress" | "resolved";
 export interface Entry {
+  deleted?: boolean;
   latestUpdate?: { note: string; actorName: string; at: string };
   id: string;
   authorId: string;

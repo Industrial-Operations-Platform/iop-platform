@@ -1,3 +1,4 @@
+import { WorkforceController } from "./workforce-controller";
 import { HandoverController } from "./handover-controller";
 import { AccessController } from "./access-controller";
 import { AuthenticationError } from "../modules/authentication/domain/identity";
@@ -437,7 +438,12 @@ export class PlatformModule {
   static register(runtime: PlatformRuntime | null): DynamicModule {
     return {
       module: PlatformModule,
-      controllers: [PlatformController, AccessController, HandoverController],
+      controllers: [
+        WorkforceController,
+        PlatformController,
+        AccessController,
+        HandoverController,
+      ],
       providers: [{ provide: PLATFORM_RUNTIME, useValue: runtime }],
     };
   }
