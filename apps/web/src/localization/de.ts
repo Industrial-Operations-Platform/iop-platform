@@ -1,4 +1,22 @@
 export const german: Readonly<Record<string, string>> = {
+  "Enter the person's name, choose a username and assign a profile for this site.":
+    "Geben Sie den Namen ein, wählen Sie einen Benutzernamen und weisen Sie ein Profil für diesen Standort zu.",
+  "Use 3–64 letters, numbers, dots, hyphens or underscores. Start with a letter or number.":
+    "Verwenden Sie 3–64 Buchstaben, Zahlen, Punkte, Binde- oder Unterstriche. Beginnen Sie mit einem Buchstaben oder einer Zahl.",
+  "An initial password is generated after creation. The user changes it at first sign-in.":
+    "Nach der Erstellung wird ein Startpasswort erzeugt. Es wird bei der ersten Anmeldung geändert.",
+  "Creating…": "Wird erstellt…",
+  "Could not create the user.": "Der Benutzer konnte nicht erstellt werden.",
+  "Manage users, imports, workforce configuration, planning and analysis.":
+    "Benutzer, Importe, Personalkonfiguration, Planung und Analyse verwalten.",
+  "Read your daily plan and share operational updates.":
+    "Den eigenen Tagesplan lesen und betriebliche Updates teilen.",
+  "Plan team assignments and review daily operations.":
+    "Teameinsätze planen und den Tagesbetrieb überblicken.",
+  "Review operational information and analytical reports.":
+    "Betriebliche Informationen und Analyseberichte einsehen.",
+  "Scheduled availability": "Geplante Verfügbarkeit",
+  "View assignment for {0}": "Einsatz von {0} ansehen",
   "Journal date": "Journaldatum",
   "Department status · {0} open issues": "Abteilungsstatus · {0} offene Punkte",
   "Unresolved topics through {0}": "Offene Themen bis {0}",

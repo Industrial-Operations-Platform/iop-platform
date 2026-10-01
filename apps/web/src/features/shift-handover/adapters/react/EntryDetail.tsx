@@ -2,6 +2,7 @@ import { locale, t } from "../../../../localization/i18n";
 import { FollowUpForm } from "./FollowUpForm";
 import { useEffect, useState } from "react";
 import {
+  type BreadcrumbItem,
   Actions,
   Alert,
   Button,
@@ -27,6 +28,7 @@ export function EntryDetail({
   close,
   onHome,
   viewLabel,
+  trail,
   onChanged,
   onEquipment,
 }: {
@@ -36,6 +38,7 @@ export function EntryDetail({
   close: () => void;
   onHome: () => void;
   viewLabel: string;
+  trail?: BreadcrumbItem[];
   onChanged: () => void;
   onEquipment: (entry: Entry) => void;
 }) {
@@ -88,7 +91,12 @@ export function EntryDetail({
       !!e && !e.deleted && (canEdit || e.responsibleId === context.actorId);
   return (
     <section aria-label={t("Handover entry")} className="handover-workspace">
-      <HandoverHeading onHome={onHome} viewLabel={viewLabel} onBack={close} />
+      <HandoverHeading
+        onHome={onHome}
+        viewLabel={viewLabel}
+        onBack={close}
+        trail={trail}
+      />
       {error && !editing && !following && <Alert>{error}</Alert>}
       {!history && !error && <p role="status">{t("Loading entry…")}</p>}
       {e && (

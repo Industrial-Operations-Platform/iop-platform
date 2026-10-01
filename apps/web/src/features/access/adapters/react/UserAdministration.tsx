@@ -1,3 +1,5 @@
+import { CreateUserDialog } from "./CreateUserDialog";
+import { AvailableProfiles } from "./AvailableProfiles";
 import { UserDetailsDialog } from "./UserDetailsDialog";
 import { locale, t } from "../../../../localization/i18n";
 import {
@@ -9,16 +11,14 @@ import {
 import { useEffect, useState } from "react";
 import {
   Actions,
+  AddButton,
   Badge,
   DeleteButton,
   EditButton,
   Alert,
   Button,
-  Field,
-  Input,
   PageHeading,
   Panel,
-  Select,
   Table,
   TableViewport,
   SortableHeader,
@@ -37,6 +37,7 @@ export function UserAdministration({
   application: AccessApplication;
   onChanged: () => Promise<void>;
 }) {
+  const [creating, setCreating] = useState(false);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<UserSort[]>([]);
@@ -44,9 +45,6 @@ export function UserAdministration({
     [error, setError] = useState(""),
     [pending, setPending] = useState(false),
     [refresh, setRefresh] = useState(0);
-  const [name, setName] = useState(""),
-    [username, setUsername] = useState(""),
-    [profile, setProfile] = useState<Profile>("technician");
   const [issued, setIssued] = useState<{
     username: string;
     secret: string;
@@ -83,11 +81,6 @@ export function UserAdministration({
       setPending(false);
     }
   }
-  const options = Object.entries(profileLabels).map(([value, label]) => (
-    <option key={value} value={value}>
-      {t(label)}
-    </option>
-  ));
   const visibleUsers = selectUsers(
     users,
     search,
@@ -119,21 +112,7 @@ export function UserAdministration({
           "Create individual accounts and assign access to this local site.",
         )}
       />
-      <Panel>
-        <h2>{t("Available profiles")}</h2>
-        <p>
-          <strong>{t("Administrator:")}</strong>
-          {t(
-            " user administration, imports, workforce configuration, planning and analysis. ",
-          )}
-        </p>
-        <p>
-          <strong>{t("Technician · Task Force · Team Leader:")}</strong>
-          {t(
-            " technicians read their daily plan; Team Leaders plan assignments; Task Force reads operational and analytical data. ",
-          )}
-        </p>
-      </Panel>
+      <AvailableProfiles />
       {error && <Alert>{error}</Alert>}
       {issued && (
         <Panel aria-label={t("Initial credentials")}>
@@ -155,69 +134,20 @@ export function UserAdministration({
           </Button>
         </Panel>
       )}
-      <Panel>
-        <h2>{t("Create a user")}</h2>
-        <form
-          className="access-user-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            setPending(true);
-            setError("");
-            setIssued(null);
-            void application
-              .create({ name, username, profile })
-              .then((result) => {
-                setIssued({
-                  username: result.user.username,
-                  secret: result.initialPassword,
-                });
-                setName("");
-                setUsername("");
-                setRefresh((n) => n + 1);
-              })
-              .catch((e) => setError(e.message))
-              .finally(() => setPending(false));
+      {creating && (
+        <CreateUserDialog
+          application={application}
+          close={() => setCreating(false)}
+          created={(result) => {
+            setIssued({
+              username: result.user.username,
+              secret: result.initialPassword,
+            });
+            setCreating(false);
+            setRefresh((n) => n + 1);
           }}
-        >
-          <Field>
-            {t("Name ")}
-            <Input
-              required
-              maxLength={100}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={pending}
-            />
-          </Field>
-          <Field>
-            {t("Username ")}
-            <Input
-              required
-              minLength={3}
-              maxLength={64}
-              pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,63}"
-              autoComplete="off"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={pending}
-            />
-          </Field>
-          <Field>
-            {t("Profile ")}
-            <Select
-              aria-label={t("Profile")}
-              value={profile}
-              onChange={(e) => setProfile(e.target.value as Profile)}
-              disabled={pending}
-            >
-              {options}
-            </Select>
-          </Field>
-          <Button type="submit" disabled={pending}>
-            {t("Create user ")}
-          </Button>
-        </form>
-      </Panel>
+        />
+      )}
       <Panel>
         <div className="access-users-heading">
           <h2>{t("Users")}</h2>
@@ -226,6 +156,11 @@ export function UserAdministration({
             value={search}
             placeholder={t("Name or username")}
             onChange={setSearch}
+          />
+          <AddButton
+            label={t("Create a user")}
+            disabled={pending}
+            onClick={() => setCreating(true)}
           />
         </div>
         {pending && <p role="status">{t("Updating users…")}</p>}

@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run check:design && tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --runInBand",
     "test:e2e": "playwright test",
     "contract": "openapi-typescript ../api/contracts/openapi.json -o src/contracts/schema.d.ts",
-    "contract:check": "node scripts/check-contract.mjs"
+    "contract:check": "node scripts/check-contract.mjs",
+    "check:design": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --runInBand --testPathPatterns=design-boundaries"
   },
   "dependencies": {
     "echarts": "6.0.0",
@@ -22,6 +23,7 @@
     "@playwright/test": "1.63.0",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
+    "@types/jest": "30.0.0",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.1",

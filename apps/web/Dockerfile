@@ -6,6 +6,9 @@ COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 RUN npm ci --workspace @iop/web --include-workspace-root=false
 COPY apps/web/tsconfig.json apps/web/vite.config.ts apps/web/index.html apps/web/
+# Enforce the shared visual contract before producing browser assets.
+COPY apps/web/jest.config.cjs apps/web/jest.config.cjs
+COPY apps/web/test/design-boundaries.spec.ts apps/web/test/design-boundaries.spec.ts
 COPY apps/web/src apps/web/src
 COPY apps/web/public apps/web/public
 WORKDIR /app/apps/web

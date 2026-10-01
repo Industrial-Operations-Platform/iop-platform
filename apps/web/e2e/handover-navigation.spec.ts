@@ -208,7 +208,10 @@ for (const width of [1440, 820, 375]) {
     for (const card of await startViews.getByRole("button").all()) {
       await expect(card).toHaveCSS("background-color", "rgb(255, 255, 255)");
     }
-    await expect(attentionTab).toHaveCSS("border-bottom-color", "rgb(8, 123, 213)");
+    await expect(attentionTab).toHaveCSS(
+      "border-bottom-color",
+      "rgb(8, 123, 213)",
+    );
     const attentionBounds = await attentionTab.boundingBox();
     const reportsBounds = await startViews
       .getByRole("button", { name: /Open reports/ })
@@ -228,7 +231,7 @@ for (const width of [1440, 820, 375]) {
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `/tmp/iop183-start-${width}.png`,
+      path: `/tmp/iop-191-compact-start-${width}.png`,
       fullPage: true,
     });
     await startViews.getByRole("button", { name: /Open reports/ }).focus();
@@ -237,7 +240,10 @@ for (const width of [1440, 820, 375]) {
       startViews.getByRole("button", { name: /Open reports/ }),
     ).toHaveCSS("border-bottom-color", "rgb(8, 123, 213)");
     await expect(attentionTab).toHaveAttribute("aria-pressed", "false");
-    await expect(attentionTab).toHaveCSS("border-bottom-color", "rgba(0, 0, 0, 0)");
+    await expect(attentionTab).toHaveCSS(
+      "border-bottom-color",
+      "rgba(0, 0, 0, 0)",
+    );
     await expect(
       operational
         .getByRole("region", { name: "Open reports", exact: true })
@@ -245,6 +251,10 @@ for (const width of [1440, 820, 375]) {
     ).toBeVisible();
     await startViews.getByRole("button", { name: /Shift Handover/ }).click();
     await expect(operational.getByText(/Site-wide highlights/)).toBeVisible();
+    const standaloneDepartment = operational.locator(".iop-department-scope");
+    expect(
+      (await standaloneDepartment.boundingBox())!.width,
+    ).toBeLessThanOrEqual(480);
     await operational.getByRole("button", { name: "Refresh updates" }).click();
     await expect(
       startViews.getByRole("button", { name: /Shift Handover/ }),
@@ -384,7 +394,9 @@ for (const width of [1440, 820, 375]) {
       }),
     ).toEqual(panelStyle);
     const content = detail.locator(".handover-detail-panel");
-    await expect(content.getByText("In progress", { exact: true })).toBeVisible();
+    await expect(
+      content.getByText("In progress", { exact: true }),
+    ).toBeVisible();
     await expect(
       content.getByText("Unverified reference", { exact: true }),
     ).toBeVisible();
@@ -405,7 +417,8 @@ for (const width of [1440, 820, 375]) {
     const factsBounds = await content
       .locator(".handover-detail-facts")
       .boundingBox();
-    if (width > 1000) expect(factsBounds!.x).toBeGreaterThan(descriptionBounds!.x);
+    if (width > 1000)
+      expect(factsBounds!.x).toBeGreaterThan(descriptionBounds!.x);
     else
       expect(factsBounds!.y).toBeGreaterThanOrEqual(
         descriptionBounds!.y + descriptionBounds!.height,
@@ -583,7 +596,7 @@ for (const width of [1440, 820, 375]) {
       "My entries",
     );
     await page.screenshot({
-      path: `/tmp/iop182-mine-${width}.png`,
+      path: `/tmp/iop-191-compact-mine-${width}.png`,
       fullPage: true,
     });
     expect(
@@ -640,7 +653,7 @@ for (const width of [1440, 820, 375]) {
     };
     await assertAligned();
     await page.screenshot({
-      path: `/tmp/iop182-form-${width}.png`,
+      path: `/tmp/iop-191-compact-form-${width}.png`,
       fullPage: true,
     });
     await dialog.getByRole("button", { name: "More components" }).click();

@@ -15,6 +15,8 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
 | `RefreshButton`, `CollectionAction` | Labelled reload with busy/reduced-motion behavior; collection link with count and direction |
 | `Badge` | Neutral/info/attention/success/warning semantic metadata; caller supplies meaningful text |
+| `AddButton`, `EditButton` | Compact add/edit icon actions with required accessible label and title |
+| `DateField` | Compact native calendar-day control with inline label, emphasized value and browser picker; forwards input props and refs |
 | `DeleteButton` | Shared trash icon with required accessible label/title and danger styling |
 | `Button` | `primary`, `secondary`, `text`, `danger`; common sizing, radius, spacing and native disabled/focus behavior |
 | `Field`, `Input`, `Textarea`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
@@ -36,7 +38,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 ```tsx
 import { useState } from "react";
 import {
-  Button, Disclosure, Field, FieldRow, FilterForm, IdentityRoot, Input,
+  Button, DateField, Disclosure, FieldRow, FilterForm, IdentityRoot,
   MetricCard, MetricGrid,
 } from "../../design/components";
 
@@ -47,11 +49,8 @@ export function ExampleSummary() {
       <FilterForm onSubmit={(event) => event.preventDefault()}>
         <Disclosure summary="Date range">
           <FieldRow>
-            <Field>
-              From
-              <Input type="date" value={date}
-                onChange={(event) => setDate(event.target.value)} />
-            </Field>
+            <DateField label="From" value={date}
+              onChange={(event) => setDate(event.target.value)} />
             <Button type="submit">Apply</Button>
           </FieldRow>
         </Disclosure>
@@ -127,3 +126,22 @@ footer. Text actions keep the same control dimensions; semantic title links and
 clickable cards retain their context-specific presentation. Tab navigation with
 more than three choices scrolls horizontally on narrow screens; shorter category
 groups continue to share one row. Sign out is last in header DOM and visual order.
+
+`DateField` is mandatory for calendar-day inputs, including filters and editing
+forms. It preserves native `YYYY-MM-DD` values, labels, refs and input constraints;
+callers own date/time-zone policy. Labels remain to the left of values. Compose it
+beside `DepartmentScope` in `iop-scope-toolbar`: compact content-sized fields, bounded
+values, equal gaps and no full-width enclosing panel. Wrap whole controls on narrow
+screens; standalone department fields remain bounded too.
+
+`AddButton` and `RefreshButton` use the same shared `IconButton` treatment as search:
+neutral navy line icons, white bordered surfaces and equally sized keyboard targets.
+Use the Assign label/title on the Workforce plus. Presentation dimensions come from
+`toolbarControlSize`, `toolbarIconSize` and `toolbarGap` tokens. Features must not
+redefine these controls in local styles or introduce raw `type="date"` inputs.
+`check:design` enforces this during every web build, including Docker. See the
+[mandatory contract](../../../../../docs/design/visual-identity.md#mandatory-compact-controls--iop-191).
+
+`SectionHeading` accepts an optional `trail` of already-labelled breadcrumb items
+with caller-owned return callbacks. The final item names the current page. Preserve
+category/date/department context when moving between a collection and its details.

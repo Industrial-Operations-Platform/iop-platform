@@ -1,5 +1,6 @@
 export {
   Actions,
+  AddButton,
   Button,
   DeleteButton,
   FilterButton,
@@ -36,3 +37,5 @@ export { DepartmentScope } from "./DepartmentScope";
 export { Dialog } from "./Dialog";
 export { TableText } from "./TableText";
 export { SearchControl } from "./SearchControl";
+export { DateField } from "./DateField";
+export type { BreadcrumbItem } from "./SectionHeading";

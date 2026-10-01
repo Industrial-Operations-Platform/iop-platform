@@ -2,6 +2,45 @@ import { t } from "../../localization/i18n";
 import type { ComponentProps, ReactNode } from "react";
 import { Badge } from "./Surfaces";
 
+/** Neutral, equally sized actions for compact toolbars. */
+export function IconButton({
+  label,
+  className = "",
+  ...props
+}: ComponentProps<"button"> & { label: string }) {
+  return (
+    <Button
+      {...props}
+      variant="secondary"
+      className={`iop-icon-button iop-toolbar-icon ${className}`}
+      aria-label={label}
+      title={label}
+    />
+  );
+}
+
+export function AddButton({
+  label,
+  ...props
+}: Omit<ComponentProps<"button">, "children"> & { label: string }) {
+  return (
+    <IconButton {...props} label={label}>
+      <svg
+        className="iop-toolbar-glyph"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+    </IconButton>
+  );
+}
+
 export function FilterButton({
   label,
   active = false,
@@ -105,29 +144,27 @@ export function RefreshButton({
   label?: string;
 }) {
   return (
-    <Button
+    <IconButton
       {...props}
-      variant="secondary"
+      label={t(label)}
       className={`iop-refresh ${className}`}
       disabled={busy || props.disabled}
-      aria-label={t(label)}
-      title={t(label)}
       aria-busy={busy}
     >
       <svg
-        className={busy ? "iop-refresh-spinning" : ""}
-        width="16"
-        height="16"
+        className={`iop-toolbar-glyph ${busy ? "iop-refresh-spinning" : ""}`}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         aria-hidden="true"
       >
-        <path d="M20 7v5h-5M4 17v-5h5" />
-        <path d="M6.1 7a7 7 0 0 1 11.5-1L20 9M4 15l2.4 3A7 7 0 0 0 17.9 17" />
+        <path d="M20 4v6h-6" />
+        <path d="M20 10a8 8 0 1 0-1.8 7.2" />
       </svg>
-    </Button>
+    </IconButton>
   );
 }
 

@@ -3,6 +3,7 @@ import {
   Actions,
   Button,
   Dialog,
+  DateField,
   Field,
   FieldRow,
   Input,
@@ -42,38 +43,31 @@ export function MatrixColumnFilter({
       >
         {(column === "date" || column === "due") && (
           <FieldRow>
-            <Field>
-              {t("From")}
-              <Input
-                autoFocus
-                type="date"
-                value={(column === "date" ? draft.from : draft.dueFrom) ?? ""}
-                max={(column === "date" ? draft.to : draft.dueTo) || undefined}
-                onChange={(event) =>
-                  setDraft({
-                    ...draft,
-                    [column === "date" ? "from" : "dueFrom"]:
-                      event.target.value,
-                  })
-                }
-              />
-            </Field>
-            <Field>
-              {t("Through")}
-              <Input
-                type="date"
-                value={(column === "date" ? draft.to : draft.dueTo) ?? ""}
-                min={
-                  (column === "date" ? draft.from : draft.dueFrom) || undefined
-                }
-                onChange={(event) =>
-                  setDraft({
-                    ...draft,
-                    [column === "date" ? "to" : "dueTo"]: event.target.value,
-                  })
-                }
-              />
-            </Field>
+            <DateField
+              label={t("From")}
+              autoFocus
+              value={(column === "date" ? draft.from : draft.dueFrom) ?? ""}
+              max={(column === "date" ? draft.to : draft.dueTo) || undefined}
+              onChange={(event) =>
+                setDraft({
+                  ...draft,
+                  [column === "date" ? "from" : "dueFrom"]: event.target.value,
+                })
+              }
+            />
+            <DateField
+              label={t("Through")}
+              value={(column === "date" ? draft.to : draft.dueTo) ?? ""}
+              min={
+                (column === "date" ? draft.from : draft.dueFrom) || undefined
+              }
+              onChange={(event) =>
+                setDraft({
+                  ...draft,
+                  [column === "date" ? "to" : "dueTo"]: event.target.value,
+                })
+              }
+            />
           </FieldRow>
         )}
         {column === "reference" && (

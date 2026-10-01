@@ -97,7 +97,8 @@ export function AssignmentCard({
               ☎{" "}
               {a.phone === "maintenance"
                 ? t("Maintenance")
-                : (board.settings.targets.find((t) => t.id === a.phone)?.phone ??
+                : (board.settings.targets.find((t) => t.id === a.phone)
+                    ?.phone ??
                   a.phoneLabel ??
                   a.phone)}
             </span>
@@ -251,26 +252,89 @@ export function DailyPlan({
   );
   return (
     <>
-      <Panel>
-        <h2>{t("Your assignment")}</h2>
-        {personal ? (
-          <p>
-            <Badge>{t(statusLabels[personal.data.status])}</Badge>{" "}
-            {personal.data.start}{" "}
-            {personal.data.end && "– " + personal.data.end}
-          </p>
-        ) : (
-          <p>{t("No schedule yet")}</p>
-        )}
+      <Panel aria-label={t("Your assignment")}>
+        <div className="workforce-personal-heading">
+          <h2>{t("Your assignment")}</h2>
+          {personal && <Badge>{t(statusLabels[personal.data.status])}</Badge>}
+        </div>
+        {!personal && <p className="workforce-empty">{t("No schedule yet")}</p>}
+        {personal &&
+          (personal.data.start || personal.data.end) &&
+          !own.some(
+            (record) =>
+              record.data.start === personal.data.start &&
+              record.data.end === personal.data.end,
+          ) && (
+            <p className="workforce-availability">
+              {t("Scheduled availability")}: {personal.data.start || "—"}–
+              {personal.data.end || "—"}
+            </p>
+          )}
         <div className="workforce-card-grid">
-          {own.map((r) => (
-            <AssignmentCard
-              key={r.id}
-              record={r}
-              board={board}
-              select={select}
-            />
-          ))}
+          {own.map((record) => {
+            const assignment = record.data;
+            const shift =
+              board.settings.shifts.find(
+                (item) => item.id === assignment.shiftId,
+              )?.label ??
+              assignment.shiftLabel ??
+              assignment.shiftId;
+            const zone =
+              board.settings.targets.find(
+                (item) => item.id === assignment.targetId,
+              )?.label ??
+              assignment.targetLabel ??
+              assignment.targetId;
+            const phone =
+              assignment.phone === "maintenance"
+                ? t("Maintenance")
+                : (board.settings.targets.find(
+                    (item) => item.id === assignment.phone,
+                  )?.phone ??
+                  assignment.phoneLabel ??
+                  assignment.phone);
+            return (
+              <article
+                className="workforce-personal-assignment"
+                key={record.id}
+              >
+                <div className="workforce-personal-main">
+                  <div className="workforce-personal-heading">
+                    <h3>{shift}</h3>
+                    <Badge tone="info">{t(dutyLabels[assignment.duty])}</Badge>
+                  </div>
+                  <p className="workforce-personal-hours">
+                    {assignment.start}–{assignment.end}
+                  </p>
+                </div>
+                <dl className="iop-detail-fields workforce-personal-facts">
+                  <div>
+                    <dt>{t("Person")}</dt>
+                    <dd>{record.personName}</dd>
+                  </div>
+                  {zone && (
+                    <div>
+                      <dt>{t("Zone")}</dt>
+                      <dd>{zone}</dd>
+                    </div>
+                  )}
+                  {phone && (
+                    <div>
+                      <dt>{t("Phone")}</dt>
+                      <dd>{phone}</dd>
+                    </div>
+                  )}
+                </dl>
+                <Button
+                  variant="text"
+                  onClick={() => select(record)}
+                  aria-label={t("View assignment for {0}", [record.personName])}
+                >
+                  {t("Assignment details")} <span aria-hidden="true">→</span>
+                </Button>
+              </article>
+            );
+          })}
         </div>
         {!own.length && <p>{t("No assignment yet")}</p>}
       </Panel>

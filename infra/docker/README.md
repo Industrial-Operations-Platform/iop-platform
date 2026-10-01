@@ -21,6 +21,11 @@ Git/image contexts. Setup and runtime credentials are separate. Preserve both th
 private directory and volume when stopping; do not delete volumes to fix startup.
 API process health does not prove analytical readiness or replace migration/seed checks.
 
+The web build runs the mandatory shared design guard before TypeScript/Vite.
+The build stage copies the guard and its Jest configuration; a conflicting date
+control or feature-owned compact-control style fails image generation. These test
+sources are not copied to the Nginx runtime image.
+
 Images use the root lockfile, Node 24.21.0/npm 10.9.2, PostgreSQL 17.6 and Nginx 1.28.0.
 API/web run as non-root users. Build inputs exclude local data, Git, secrets and host
 modules; packaging retains dependency notices. Patch tags are local packaging choices,

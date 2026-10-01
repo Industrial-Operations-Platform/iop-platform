@@ -54,6 +54,13 @@ hierarchy when entering details. Check actual desktop/mobile rendering, run the
 identity and architecture guards, and inspect the running build when activation is
 requested. Passing static checks does not replace visual or clean-code review.
 
+The owner-required compact-control contract in the visual identity is mandatory:
+reuse `DateField` for calendar dates, bounded `DepartmentScope` for department context
+and shared plus/refresh icons. Keep labels inline and avoid feature-owned restyling.
+The web build and Docker image build must run `check:design`; do not bypass that guard
+to deliver a conflicting style. Changes require an explicit owner request and updated
+contract plus desktop/mobile evidence.
+
 ## Sources of truth
 
 | Document | Responsibility |

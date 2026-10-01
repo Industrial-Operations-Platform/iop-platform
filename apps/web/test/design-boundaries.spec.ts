@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
+import ts from "typescript";
 import { identityVariables } from "../src/design/identity";
 
 test("the shared presentation library has no feature, transport or business dependencies", () => {
@@ -47,4 +48,44 @@ test("platform styles use canonical typography and palette tokens", () => {
       }).toEqual({ file, token, defined: true });
     }
   }
+});
+
+test("calendar-day fields and compact control styles use the mandatory shared components", () => {
+  const root = resolve(__dirname, "../src");
+  const violations: string[] = [];
+  for (const file of readdirSync(root, { recursive: true }).map(String)) {
+    if (file.startsWith("design/")) continue;
+    if (file.endsWith(".css")) {
+      if (
+        /\.iop-(?:context-field|date-field|department-scope|toolbar-icon|toolbar-glyph)\b/.test(
+          readFileSync(resolve(root, file), "utf8"),
+        )
+      )
+        violations.push(
+          `${file}: shared compact controls must not be restyled by a feature`,
+        );
+    }
+    if (!file.endsWith(".tsx")) continue;
+    const ast = ts.createSourceFile(
+      file,
+      readFileSync(resolve(root, file), "utf8"),
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    const visit = (node: ts.Node) => {
+      if (ts.isJsxAttribute(node) && node.name.getText(ast) === "type") {
+        const initializer = node.initializer;
+        const value =
+          initializer && ts.isJsxExpression(initializer)
+            ? initializer.expression
+            : initializer;
+        if (value && ts.isStringLiteral(value) && value.text === "date")
+          violations.push(`${file}: use DateField for calendar-day selection`);
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(ast);
+  }
+  expect(violations).toEqual([]);
 });
