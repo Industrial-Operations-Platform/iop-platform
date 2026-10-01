@@ -38,5 +38,7 @@ uses one collection title, centered dates and compact metadata columns; standalo
 table captions use section typography. Workforce and current Handover names resolve
 by scoped account ID, including retained inactive/deleted references, while revision
 snapshots remain unchanged. API, frontend, PostgreSQL and browser validation are
-recorded in the execution plan. Implementation is committed locally for review;
-publication and Docker activation of IOP-188 are pending owner approval.
+recorded in the execution plan. On 2026-10-02 the owner-approved IOP-190 publication
+integrated this story into develop and published its commits to origin. The separate
+IOP-188 review branch is retained; Docker activation remains pending.
+See [publication evidence](../completed/IOP-190-publication-plan.md).

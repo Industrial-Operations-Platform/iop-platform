@@ -25,8 +25,8 @@ closure is authorized. Test selected dates, outstanding category limits, paginat
 combined filters, empty results, navigation and keyboard/mobile search behavior.
 
 The user-search refinement depends on IOP-188. On 2026-10-01 the owner explicitly
-approved continuing IOP-190 on that branch; develop promotion, remote publication
-and activation remain separate review steps.
+approved continuing IOP-190 on that branch. On 2026-10-02 the owner approved its
+develop integration and origin publication; operator activation remains separate.
 
 ## Outcome
 
@@ -35,9 +35,11 @@ are implemented and validated locally. API, real PostgreSQL and desktop/mobile
 browser evidence is recorded in the execution plan. User search is a compact icon
 beside Users that reveals/focuses its input; closing or Escape clears the query,
 restores focus and preserves sorting. The authorized IOP-188 dependency and combined
-behavior are validated locally. Publication and operator activation remain pending.
+behavior are validated. Both stories are integrated into develop and published to
+origin through IOP-190; operator activation remains pending.
 
 References: [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md),
 [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md),
 [visual identity](../../design/visual-identity.md).
 [Execution plan](../completed/IOP-190-daily-handover-plan.md).
+[Publication evidence](../completed/IOP-190-publication-plan.md).
