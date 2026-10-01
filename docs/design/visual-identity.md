@@ -202,8 +202,9 @@ two readable lines; the name opens profile editing. Logout is a quiet labelled
 icon action, with its visible text retained when space allows.
 
 `DepartmentScope` is the common department/Halle selector for Start and Shift
-Handover. Use its white bordered surface and dark, semibold label/control text;
-feature adapters supply choices and filtering behavior. Use shared labelled facts
+Handover. Use its compact white bordered surface, muted inline label and semibold
+value as specified in the IOP-191 control contract below; feature adapters supply
+choices and filtering behavior. Use shared labelled facts
 for Workforce details instead of concatenating all fields into a prose line.
 
 ## Administration and Workforce consistency — IOP-185
@@ -276,21 +277,49 @@ clears the search and returns focus to the icon. It wraps below the heading when
 needed on narrow screens. Sorting remains independent of search visibility.
 
 
-## Operational controls — IOP-191
+## Mandatory compact controls — IOP-191
 
-`DateField` uses a muted caption above an emphasized native calendar-day value in a
-compact bordered surface. Handover composes it beside `DepartmentScope` in the
-shared `iop-scope-toolbar`; desktop controls share one row and mobile controls stack.
-Workforce reuses the date field in its heading and assignment editor. Keep native
-picker/keyboard behavior and the shared separated form footer.
+The owner refined the compact control style on 2026-10-02 using the supplied compact
+interface image as inspiration. These rules supersede IOP-191's initial stacked date
+caption and full-width department surface. The existing Inter/system font, navy ink,
+white surfaces and blue navigation accents remain canonical; the reference does not
+change the platform name, module structure or permissions.
+
+- All calendar-day selection uses `DateField`, including filters and editing forms.
+  The visible label sits to the left of the native date input, vertically centered.
+  Keep calendar-day strings, native picker/keyboard editing, labels and constraints.
+- `DateField` and `DepartmentScope` share `iop-context-field`: a content-sized white
+  surface, light border, 8px corners, 44px minimum height, muted semibold caption and
+  navy semibold value separated by a subtle divider. Department values are bounded
+  to 16rem; date values to 10rem. Both may shrink within their container.
+- Department selection must not stretch across the page, including when used alone
+  on Start, My entries or Department matrix. Group department then date in
+  `iop-scope-toolbar` with a 10px gap, without a second enclosing card. On narrow
+  screens wrap whole fields to the next row while keeping each label beside its value.
+- Add and refresh use the same neutral `IconButton` treatment: 44px square target,
+  20px line icon, 1.7-unit rounded stroke, navy ink, white surface, light border and
+  8px corners. `AddButton` shows a plus; `RefreshButton` shows a single circular
+  arrow. Shared search uses the same treatment. Preserve accessible names, titles,
+  disabled/busy state, keyboard focus and reduced-motion behavior. Blue filled
+  buttons remain for explicit form submission and other primary text actions.
+- Workforce's heading groups Date, refresh and the Assign plus with equal gaps and
+  aligned centers. Do not add a stacked caption or a separate colored Assign button.
+- Feature styles must not override compact-control selectors or recreate native date
+  inputs. Reuse shared tokens and components. Change this contract only through an
+  explicit owner-requested update with desktop/mobile evidence.
+
+`npm run check:design --workspace @iop/web` enforces token use, shared dependency
+boundaries, calendar-field reuse and ownership of compact-control styles. It is a
+required part of `npm run build --workspace @iop/web`, including the Docker build.
+Browser checks enforce bounded width, inline labels, adjacent department/date
+controls, matching toolbar actions, overflow and keyboard behavior. Static checks
+alone do not replace visual review.
 
 Available profiles use four compact cards with navy role titles and muted capability
-summaries. The labelled `AddButton` beside user search opens the shared modal with
-creation guidance, inline failure feedback and native field validation. Keep initial
-credentials visible after success until dismissed.
-
-My day prioritizes the assigned shift, duty and hours; person, zone and phone use
-supporting labelled facts. Show schedule status once, retaining separately labelled
-availability hours when they differ or no assignment exists. Journal category
-collections preserve a clickable section/view/category trail through entry details,
-returning with the selected day and department intact.
+summaries. The labelled plus beside user search opens the shared modal with creation
+guidance and inline failure feedback. Keep initial credentials visible after success
+until dismissed. My day prioritizes assigned shift, duty and hours, with person,
+zone and phone as supporting labelled facts. Retain separately labelled availability
+when its hours differ or no assignment exists. Journal category collections keep
+clickable section/view/category breadcrumbs through entry details, preserving day
+and department on return. Forms use the common separated action footer.

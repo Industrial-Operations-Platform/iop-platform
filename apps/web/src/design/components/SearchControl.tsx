@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { t } from "../../localization/i18n";
-import { Button, Input } from "./Controls";
+import { IconButton, Input } from "./Controls";
 
 /** A disclosed search field; matching remains the caller's responsibility. */
 export function SearchControl({
@@ -28,19 +28,15 @@ export function SearchControl({
   };
   return (
     <div className="iop-search-control" data-expanded={expanded}>
-      <Button
+      <IconButton
         ref={toggle}
-        variant="text"
-        className="iop-icon-button"
-        aria-label={expanded ? t("Close search") : label}
-        title={expanded ? t("Close search") : label}
+        label={expanded ? t("Close search") : label}
         aria-expanded={expanded}
         aria-controls={inputId}
         onClick={() => (expanded ? close() : setExpanded(true))}
       >
         <svg
-          width="18"
-          height="18"
+          className="iop-toolbar-glyph"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -57,7 +53,7 @@ export function SearchControl({
             </>
           )}
         </svg>
-      </Button>
+      </IconButton>
       <Input
         ref={input}
         id={inputId}

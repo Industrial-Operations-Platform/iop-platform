@@ -651,7 +651,6 @@
   background: var(--iop-warningSurface);
   color: var(--iop-warningInk);
 }
-.iop-ui .iop-refresh,
 .iop-ui .iop-collection-action {
   display: inline-flex;
   align-items: center;
@@ -660,14 +659,11 @@
   font-size: var(--iop-captionSize);
   font-weight: var(--iop-labelWeight);
 }
-.iop-ui .iop-refresh {
-  flex-shrink: 0;
-}
 .iop-ui .iop-collection-action {
   margin-top: 0.85rem;
   color: var(--iop-activeInk);
 }
-.iop-ui :is(.iop-refresh, .iop-collection-action):hover:not(:disabled) {
+.iop-ui .iop-collection-action:hover:not(:disabled) {
   background: var(--iop-activeSurface);
   border-color: var(--iop-inputBorder);
 }
@@ -873,33 +869,6 @@
 .iop-breadcrumb-separator {
   color: var(--iop-muted);
 }
-.iop-ui .iop-department-scope {
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
-  padding: 0.85rem 1rem;
-  margin-bottom: 1.25rem;
-  border: 1px solid var(--iop-line);
-  border-radius: var(--iop-cardRadius);
-  background: var(--iop-surface);
-  font-size: var(--iop-captionSize);
-  font-weight: var(--iop-labelWeight);
-  color: var(--iop-ink);
-}
-.iop-department-scope .iop-select {
-  width: min(100%, 22rem);
-  min-height: 44px;
-}
-
-.iop-ui .iop-refresh {
-  width: 40px;
-  min-height: 40px;
-  padding: 0;
-  border-color: transparent;
-  background: transparent;
-}
 .iop-ui .iop-language {
   display: inline-flex;
   align-items: center;
@@ -977,9 +946,6 @@
 .iop-ui .iop-page-heading > div:first-child {
   min-width: 0;
 }
-.iop-ui .iop-department-scope {
-  margin-bottom: 0;
-}
 @media (max-width: 620px) {
   .iop-ui .iop-top {
     padding: 0.5rem 0.75rem;
@@ -1002,9 +968,6 @@
   }
   .iop-ui .iop-page-heading {
     align-items: stretch;
-  }
-  .iop-department-scope .iop-select {
-    width: 100%;
   }
 }
 
@@ -1089,99 +1052,94 @@
   max-width: 100%;
   overflow-wrap: anywhere;
 }
-.iop-ui .iop-date-field {
-  gap: 4px;
-  width: 13rem;
+
+/* Compact context controls: one shared contract for departments and calendar days. */
+.iop-ui .iop-field.iop-context-field {
+  display: inline-flex;
+  flex: 0 1 auto;
+  flex-direction: row;
+  align-items: center;
+  justify-self: start;
+  gap: var(--iop-toolbarGap);
+  width: max-content;
   max-width: 100%;
   min-width: 0;
-  padding: 10px 12px;
+  min-height: var(--iop-toolbarControlSize);
+  margin: 0;
+  padding: 6px 12px;
   border: 1px solid var(--iop-line);
   border-radius: var(--iop-cardRadius);
   background: var(--iop-surface);
-}
-.iop-ui .iop-date-field > span,
-.iop-ui .iop-scope-toolbar .iop-department-scope > span {
-  color: var(--iop-muted);
-  font-size: var(--iop-captionSize);
-  font-weight: var(--iop-labelWeight);
-}
-.iop-ui .iop-date-field .iop-input {
-  width: 100%;
-  min-height: 32px;
-  padding: 2px 0;
-  border: 0;
-  border-radius: 0;
   font-size: var(--iop-bodySize);
   font-weight: var(--iop-labelWeight);
+}
+.iop-context-field > span {
+  flex: 0 1 auto;
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+  line-height: var(--iop-captionLineHeight);
+}
+.iop-ui .iop-context-field :is(.iop-input, .iop-select) {
+  flex: 0 1 auto;
+  width: 10rem;
+  min-width: 0;
+  min-height: 30px;
+  padding: 0 0 0 10px;
+  border: 0;
+  border-left: 1px solid var(--iop-line);
+  border-radius: 0;
+  background: transparent;
+  font-size: var(--iop-bodySize);
+  font-weight: var(--iop-labelWeight);
+  color: var(--iop-ink);
   color-scheme: light;
 }
-.iop-ui .iop-date-field:focus-within {
+.iop-ui .iop-department-scope .iop-select {
+  width: 16rem;
+}
+.iop-ui .iop-context-field:focus-within {
   border-color: var(--iop-primary);
 }
+.iop-ui .iop-context-field:has(:disabled) {
+  opacity: 0.6;
+}
 .iop-ui .iop-scope-toolbar {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  padding: 12px;
+  gap: var(--iop-toolbarGap);
+}
+.iop-scope-toolbar > p {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+  margin: 0;
+}
+.iop-ui .iop-dialog .iop-field-row:has(.iop-context-field) {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+.iop-ui .iop-dialog .iop-field-row .iop-context-field {
+  gap: var(--iop-toolbarGap);
+  font-size: var(--iop-bodySize);
+}
+.iop-ui .iop-toolbar-icon {
+  flex: 0 0 var(--iop-toolbarControlSize);
+  width: var(--iop-toolbarControlSize);
+  height: var(--iop-toolbarControlSize);
+  min-height: var(--iop-toolbarControlSize);
+  padding: 0;
   border: 1px solid var(--iop-line);
   border-radius: var(--iop-cardRadius);
   background: var(--iop-surface);
+  color: var(--iop-ink);
 }
-.iop-ui .iop-scope-toolbar .iop-department-scope {
-  flex: 1 1 18rem;
-  width: auto;
-  min-width: 0;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: 4px;
-  padding: 0 12px;
-  border: 0;
+.iop-ui .iop-toolbar-icon:hover:not(:disabled) {
+  background: var(--iop-activeSurface);
+  border-color: var(--iop-inputBorder);
 }
-.iop-ui .iop-scope-toolbar .iop-select {
-  width: 100%;
-  min-height: 32px;
-  padding: 2px 0;
-  border: 0;
-  border-radius: 0;
-  font-size: var(--iop-bodySize);
-}
-.iop-ui .iop-scope-toolbar .iop-date-field {
-  flex: 0 1 15rem;
-  background: var(--iop-canvas);
-}
-.iop-ui .iop-scope-toolbar .iop-date-field .iop-input {
-  background: transparent;
-}
-.iop-scope-toolbar > p {
-  align-self: center;
-  color: var(--iop-muted);
-  font-size: var(--iop-captionSize);
-  margin: 0 12px;
-}
-@media (max-width: 620px) {
-  .iop-ui .iop-scope-toolbar .iop-date-field {
-    flex: 1 1 100%;
-  }
-  .iop-ui .iop-scope-toolbar .iop-department-scope {
-    padding: 10px 12px;
-  }
-}
-
-.iop-ui .iop-date-field--form {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-.iop-ui .iop-date-field--form > span {
-  font-size: inherit;
-  color: inherit;
-}
-.iop-ui .iop-date-field--form .iop-input {
-  padding: 8px;
-  border: 1px solid var(--iop-inputBorder);
-  border-radius: var(--iop-inputRadius);
-  font-size: inherit;
+.iop-toolbar-glyph {
+  width: var(--iop-toolbarIconSize);
+  height: var(--iop-toolbarIconSize);
+  flex-shrink: 0;
 }

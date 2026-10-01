@@ -68,7 +68,7 @@ export function AssignmentForm({
           });
         }}
       >
-        <FieldRow>
+        <FieldRow className="workforce-assignment-fields">
           <Field>
             {t("Person")}
             <Select
@@ -91,7 +91,6 @@ export function AssignmentForm({
             </Select>
           </Field>
           <DateField
-            variant="form"
             label={t("Date")}
             required
             value={data.date}

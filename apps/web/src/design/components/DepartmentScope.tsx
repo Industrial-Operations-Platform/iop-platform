@@ -15,7 +15,7 @@ export function DepartmentScope({
   disabled?: boolean;
 }) {
   return (
-    <Field className="iop-department-scope">
+    <Field layout="inline" className="iop-context-field iop-department-scope">
       <span>{t("Department / Halle")}</span>
       <Select
         aria-label={t(label)}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   Button,
+  DateField,
   Field,
   FieldRow,
   Input,
@@ -70,15 +71,12 @@ export function ManualSchedule({
               ))}
             </Select>
           </Field>
-          <Field>
-            {t("Date")}
-            <Input
-              required
-              type="date"
-              value={day}
-              onChange={(e) => setDay(e.target.value)}
-            />
-          </Field>
+          <DateField
+            label={t("Date")}
+            required
+            value={day}
+            onChange={(e) => setDay(e.target.value)}
+          />
           <Field>
             {t("Status")}
             <Select value={status} onChange={(e) => setStatus(e.target.value)}>

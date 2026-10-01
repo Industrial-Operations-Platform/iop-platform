@@ -261,7 +261,7 @@ for (const width of [1440, 375]) {
       ).toBe(true);
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({
-        path: `/tmp/iop-191-${name}-${width}.png`,
+        path: `/tmp/iop-191-compact-${name}-${width}.png`,
         fullPage: true,
       });
     };
@@ -411,7 +411,44 @@ for (const width of [1440, 375]) {
         .first()
         .getByRole("img"),
     ).toHaveCount(0);
-    await page.getByRole("button", { name: "Assign", exact: true }).click();
+    const toolbar = page.locator(".workforce-date-toolbar");
+    const dateLabel = await toolbar
+      .locator(".iop-date-field > span")
+      .boundingBox();
+    const dateInput = await toolbar
+      .getByLabel("Date", { exact: true })
+      .boundingBox();
+    expect(dateInput!.x).toBeGreaterThan(dateLabel!.x + dateLabel!.width);
+    expect(
+      Math.abs(
+        dateLabel!.y +
+          dateLabel!.height / 2 -
+          dateInput!.y -
+          dateInput!.height / 2,
+      ),
+    ).toBeLessThan(2);
+    const refresh = toolbar.getByRole("button", {
+      name: "Refresh",
+      exact: true,
+    });
+    const assign = toolbar.getByRole("button", { name: "Assign", exact: true });
+    await expect(assign).toHaveText("");
+    const iconStyle = async (button: typeof assign) =>
+      button.evaluate((element) => {
+        const style = getComputedStyle(element);
+        const box = element.getBoundingClientRect();
+        return {
+          color: style.color,
+          background: style.backgroundColor,
+          border: style.border,
+          radius: style.borderRadius,
+          width: box.width,
+          height: box.height,
+          y: box.y,
+        };
+      });
+    expect(await iconStyle(assign)).toEqual(await iconStyle(refresh));
+    await assign.click();
     const save = page.getByRole("button", { name: "Save", exact: true });
     const lastField = page.getByLabel("End time", { exact: true });
     const fieldBox = await lastField.boundingBox();

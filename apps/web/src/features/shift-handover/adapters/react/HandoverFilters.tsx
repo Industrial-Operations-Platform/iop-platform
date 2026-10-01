@@ -3,6 +3,7 @@ import { withinLocation } from "../../domain/models";
 import {
   Actions,
   Button,
+  DateField,
   Field,
   FieldRow,
   FilterForm,
@@ -44,22 +45,16 @@ export function HandoverFilters({
         />
       </Field>
       <FieldRow>
-        <Field>
-          {t("From ")}
-          <Input
-            type="date"
-            value={draft.from}
-            onChange={(e) => setDraft({ ...draft, from: e.target.value })}
-          />
-        </Field>
-        <Field>
-          {t("Through ")}
-          <Input
-            type="date"
-            value={draft.to}
-            onChange={(e) => setDraft({ ...draft, to: e.target.value })}
-          />
-        </Field>
+        <DateField
+          label={t("From ")}
+          value={draft.from}
+          onChange={(e) => setDraft({ ...draft, from: e.target.value })}
+        />
+        <DateField
+          label={t("Through ")}
+          value={draft.to}
+          onChange={(e) => setDraft({ ...draft, to: e.target.value })}
+        />
         <Field>
           {t("Department filter ")}
           <Select

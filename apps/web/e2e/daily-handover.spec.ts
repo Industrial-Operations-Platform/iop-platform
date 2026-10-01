@@ -238,6 +238,21 @@ for (const width of [1440, 375]) {
         .boundingBox();
       const date = await scope.locator(".iop-date-field").boundingBox();
       expect(Math.abs(department!.y - date!.y)).toBeLessThan(2);
+      expect(department!.width).toBeLessThan(480);
+      expect(date!.x - department!.x - department!.width).toBeLessThanOrEqual(
+        12,
+      );
+      expect(date!.height).toBeCloseTo(department!.height, 0);
+    }
+    for (const field of await scope.locator(".iop-context-field").all()) {
+      const label = await field.locator(":scope > span").boundingBox();
+      const control = await field.locator("input, select").boundingBox();
+      expect(control!.x).toBeGreaterThan(label!.x + label!.width);
+      expect(
+        Math.abs(
+          label!.y + label!.height / 2 - control!.y - control!.height / 2,
+        ),
+      ).toBeLessThan(2);
     }
     await journal
       .getByLabel("Safety", { exact: true })
@@ -255,7 +270,7 @@ for (const width of [1440, 375]) {
     await expect(page.getByLabel("Journal date")).toHaveValue("2026-09-30");
     await expect(page.getByLabel("Selected department")).toHaveValue("hall-a");
     await page.screenshot({
-      path: `/tmp/iop-191-journal-category-${width}.png`,
+      path: `/tmp/iop-191-compact-journal-category-${width}.png`,
       fullPage: true,
     });
     await breadcrumb
@@ -276,7 +291,7 @@ for (const width of [1440, 375]) {
       .click();
     await expect(journal).toBeVisible();
     await page.screenshot({
-      path: `/tmp/iop-191-journal-${width}.png`,
+      path: `/tmp/iop-191-compact-journal-${width}.png`,
       fullPage: true,
     });
     await tabs
@@ -284,7 +299,7 @@ for (const width of [1440, 375]) {
       .click();
     await expect(page.getByLabel("Meeting date")).toHaveValue("2026-09-30");
     await page.screenshot({
-      path: `/tmp/iop-191-daily-${width}.png`,
+      path: `/tmp/iop-191-compact-daily-${width}.png`,
       fullPage: true,
     });
     await tabs

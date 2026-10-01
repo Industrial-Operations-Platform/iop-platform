@@ -7,6 +7,7 @@ import {
   Actions,
   Button,
   Disclosure,
+  DateField,
   Field,
   FieldRow,
   Input,
@@ -89,16 +90,13 @@ export function EntryForm({
         </p>
         <fieldset disabled={pending} className="handover-fields">
           <FieldRow>
-            <Field>
-              {t("Date ")}
-              <Input
-                type="date"
-                required
-                disabled={!context.canCoordinate}
-                value={value.date}
-                onChange={(e) => field("date", e.target.value)}
-              />
-            </Field>
+            <DateField
+              label={t("Date ")}
+              required
+              disabled={!context.canCoordinate}
+              value={value.date}
+              onChange={(e) => field("date", e.target.value)}
+            />
             <Field>
               {t("Category ")}
               <Select
@@ -280,22 +278,16 @@ export function EntryForm({
               </Field>
             ))}
             <FieldRow>
-              <Field>
-                {t("Due date ")}
-                <Input
-                  type="date"
-                  value={value.dueDate}
-                  onChange={(e) => field("dueDate", e.target.value)}
-                />
-              </Field>
-              <Field>
-                {t("Feedback due ")}
-                <Input
-                  type="date"
-                  value={value.feedbackDueDate}
-                  onChange={(e) => field("feedbackDueDate", e.target.value)}
-                />
-              </Field>
+              <DateField
+                label={t("Due date ")}
+                value={value.dueDate}
+                onChange={(e) => field("dueDate", e.target.value)}
+              />
+              <DateField
+                label={t("Feedback due ")}
+                value={value.feedbackDueDate}
+                onChange={(e) => field("feedbackDueDate", e.target.value)}
+              />
             </FieldRow>
           </Disclosure>
           {!entry && (

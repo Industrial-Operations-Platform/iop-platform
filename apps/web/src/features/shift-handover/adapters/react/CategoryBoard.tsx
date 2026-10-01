@@ -1,5 +1,9 @@
 import { t } from "../../../../localization/i18n";
-import { Button, CollectionAction, Panel } from "../../../../design/components";
+import {
+  AddButton,
+  CollectionAction,
+  Panel,
+} from "../../../../design/components";
 import type { Choice, Page } from "../../domain/models";
 import { EntrySummaryCards } from "./EntrySummaryCards";
 export function CategoryBoard({
@@ -19,14 +23,10 @@ export function CategoryBoard({
         <Panel key={category.id} aria-label={t(category.label)}>
           <div className="handover-section-heading">
             <h2>{t(category.label)}</h2>
-            <Button
-              variant="secondary"
-              className="handover-add"
-              aria-label={t("Add {0} entry", [t(category.label)])}
+            <AddButton
+              label={t("Add {0} entry", [t(category.label)])}
               onClick={() => add(category.id)}
-            >
-              +
-            </Button>
+            />
           </div>
           <EntrySummaryCards entries={page.entries.slice(0, 3)} open={open} />
           {!page.total && (

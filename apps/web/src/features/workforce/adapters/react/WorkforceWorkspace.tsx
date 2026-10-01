@@ -3,6 +3,7 @@ import {
   Actions,
   Alert,
   Badge,
+  AddButton,
   Button,
   DateField,
   SectionHeading,
@@ -177,15 +178,14 @@ export function WorkforceWorkspace({
 
               <RefreshButton busy={pending} onClick={refresh} />
               {canPlan && (
-                <Button
+                <AddButton
+                  label={t("Assign")}
                   disabled={pending}
                   onClick={() => {
                     setSelected(undefined);
                     setForm(true);
                   }}
-                >
-                  {t("Assign")}
-                </Button>
+                />
               )}
             </Actions>
           )
