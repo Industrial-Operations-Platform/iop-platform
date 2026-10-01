@@ -25,9 +25,7 @@ References: [IOP-186](IOP-186-table-card-alignment.md),
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md).
 
 [Execution evidence](../completed/IOP-187-compact-workforce-tables-plan.md).
-The initial increment is implemented and validated locally.
-Publication and activation of the running Docker application remain pending owner
-approval.
+The initial increment is implemented and validated locally; see publication below.
 
 ## Owner refinement before publication — 2026-10-01
 
@@ -41,11 +39,12 @@ approval.
   Information), consistently across the corresponding summaries/matrix/details.
 
 [Refinement evidence](../completed/IOP-187-table-content-refinement-plan.md).
-The refinement is implemented and validated locally; publication and Docker
-activation still await the owner's explicit approval.
+The refinement is implemented and validated locally; see publication below.
 
 ## Approved publication — 2026-10-01
 
 The owner accepted the reviewed changes and approved merging into `develop`,
 pushing the story and `develop` to `origin` and updating local Docker.
-[Publication plan](../active/IOP-187-publication-activation-plan.md).
+[Publication evidence](../completed/IOP-187-publication-activation-plan.md).
+Both branches are published and Docker serves the approved build; API, database
+and persistent data were retained.
