@@ -43,3 +43,9 @@ approval.
 [Refinement evidence](../completed/IOP-187-table-content-refinement-plan.md).
 The refinement is implemented and validated locally; publication and Docker
 activation still await the owner's explicit approval.
+
+## Approved publication — 2026-10-01
+
+The owner accepted the reviewed changes and approved merging into `develop`,
+pushing the story and `develop` to `origin` and updating local Docker.
+[Publication plan](../active/IOP-187-publication-activation-plan.md).
