@@ -17,6 +17,7 @@ import {
   Panel,
   Select,
   Table,
+  TableText,
   TableViewport,
   ViewNavigation,
 } from "../../../../design/components";
@@ -376,9 +377,11 @@ function DataTables({
               <tr key={g.key}>
                 <th>
                   <Button variant="text" onClick={() => onSelect(g.key)}>
-                    {report.selection.dimension === "duration"
-                      ? number(Number(g.key) / 60)
-                      : g.key}
+                    <TableText>
+                      {report.selection.dimension === "duration"
+                        ? number(Number(g.key) / 60)
+                        : g.key}
+                    </TableText>
                   </Button>
                 </th>
                 <td>{number(g.frequency)}</td>

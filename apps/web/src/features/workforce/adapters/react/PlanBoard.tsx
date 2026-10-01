@@ -18,9 +18,11 @@ import { dutyLabels, statusLabels } from "./labels";
 function AssignmentSlot({
   records,
   select,
+  showPhone = true,
 }: {
   records: RecordEntry<"assignment">[];
   select: (record: RecordEntry) => void;
+  showPhone?: boolean;
 }) {
   return (
     <div className="workforce-slot">
@@ -32,7 +34,7 @@ function AssignmentSlot({
           onClick={() => select(record)}
         >
           <span>{record.personName}</span>
-          {record.data.phone && (
+          {showPhone && record.data.phone && (
             <svg
               role="img"
               aria-label={t("Phone")}
@@ -60,42 +62,47 @@ export function AssignmentCard({
   record,
   board,
   select,
-  showShift = true,
+  compact = false,
 }: {
   record: RecordEntry<"assignment">;
   board: Board;
   select: (r: RecordEntry) => void;
-  showShift?: boolean;
+  compact?: boolean;
 }) {
   const a = record.data;
   return (
-    <button className="workforce-assignment" onClick={() => select(record)}>
+    <button
+      type="button"
+      className="workforce-assignment"
+      onClick={() => select(record)}
+    >
       <strong>{record.personName}</strong>
-      {showShift && (
-        <Badge>
-          {board.settings.shifts.find((shift) => shift.id === a.shiftId)
-            ?.label ??
-            a.shiftLabel ??
-            a.shiftId}
-        </Badge>
-      )}
-      <span>
-        {a.start}–{a.end}
-      </span>
-      <span>
-        {board.settings.targets.find((t) => t.id === a.targetId)?.label ??
-          a.targetLabel ??
-          t(dutyLabels[a.duty])}
-      </span>
-      {a.phone && (
-        <span>
-          ☎{" "}
-          {a.phone === "maintenance"
-            ? t("Maintenance")
-            : (board.settings.targets.find((t) => t.id === a.phone)?.phone ??
-              a.phoneLabel ??
-              a.phone)}
-        </span>
+      <Badge>
+        {board.settings.shifts.find((shift) => shift.id === a.shiftId)?.label ??
+          a.shiftLabel ??
+          a.shiftId}
+      </Badge>
+      {!compact && (
+        <>
+          <span>
+            {a.start}–{a.end}
+          </span>
+          <span>
+            {board.settings.targets.find((t) => t.id === a.targetId)?.label ??
+              a.targetLabel ??
+              t(dutyLabels[a.duty])}
+          </span>
+          {a.phone && (
+            <span>
+              ☎{" "}
+              {a.phone === "maintenance"
+                ? t("Maintenance")
+                : (board.settings.targets.find((t) => t.id === a.phone)?.phone ??
+                  a.phoneLabel ??
+                  a.phone)}
+            </span>
+          )}
+        </>
       )}
     </button>
   );
@@ -284,16 +291,13 @@ export function DailyPlan({
                 aria-label={shift.label}
               >
                 <h3>{shift.label}</h3>
-                {leaders.map((record) => (
-                  <AssignmentCard
-                    key={record.id}
-                    record={record}
-                    board={board}
+                {leaders.length ? (
+                  <AssignmentSlot
+                    records={leaders}
                     select={select}
-                    showShift={false}
+                    showPhone={false}
                   />
-                ))}
-                {!leaders.length && (
+                ) : (
                   <p className="workforce-empty">
                     {t("No shift leader assigned")}
                   </p>
@@ -357,6 +361,7 @@ export function DailyPlan({
                 record={r}
                 board={board}
                 select={select}
+                compact
               />
             ))}
         </div>

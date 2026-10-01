@@ -12,6 +12,7 @@ import {
   Select,
   SortableHeader,
   Table,
+  TableText,
   TableViewport,
 } from "../../../../design/components";
 import {
@@ -191,7 +192,9 @@ export function SourceFiles({
                   <tr key={row.line}>
                     <td>{row.line}</td>
                     {columns.map((column) => (
-                      <td key={column.field}>{row[column.field]}</td>
+                      <td key={column.field}>
+                        <TableText>{row[column.field]}</TableText>
+                      </td>
                     ))}
                     <td>{number(row.frequency)}</td>
                     <td>{number(row.minutes)}</td>

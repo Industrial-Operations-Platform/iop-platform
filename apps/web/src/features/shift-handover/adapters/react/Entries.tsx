@@ -4,9 +4,11 @@ import {
   Button,
   Panel,
   Table,
+  TableText,
   TableViewport,
 } from "../../../../design/components";
 import { EntrySummaryCards } from "./EntrySummaryCards";
+import { CategoryBadge } from "./CategoryBadge";
 import type { Entry } from "../../domain/models";
 import { issueLabel, issueTone } from "./entry-labels";
 export function EntryBody({ entry }: { entry: Entry }) {
@@ -129,18 +131,18 @@ export function EntryMatrix({
               </td>
               <th scope="row">
                 <Button variant="text" onClick={() => open(e.id)}>
-                  {e.content.summary}
+                  <TableText>{e.content.summary}</TableText>
                 </Button>
                 <small>
                   {e.departmentLabel || t("Site-wide")}
                   {e.areaLabel && ` · ${e.areaLabel}`}
                 </small>
-                <Badge>{e.categoryLabel}</Badge>
+                <CategoryBadge entry={e} />
               </th>
               <td>
-                <p className="handover-matrix-excerpt">
+                <TableText className="handover-matrix-excerpt">
                   {e.content.details || t("No additional details.")}
-                </p>
+                </TableText>
               </td>
               <td>
                 <span className="handover-matrix-reference-value">
@@ -156,12 +158,14 @@ export function EntryMatrix({
               </td>
               <td>{e.responsibleName || t("Unassigned")}</td>
               <td>
-                <Badge tone={issueTone(e.issueState)}>
-                  {issueLabel(e.issueState)}
-                </Badge>
-                {e.content.condition === "blocked" && (
-                  <Badge tone="attention">{t("Reported blocked")}</Badge>
-                )}
+                <div className="handover-matrix-status-tags">
+                  <Badge tone={issueTone(e.issueState)}>
+                    {issueLabel(e.issueState)}
+                  </Badge>
+                  {e.content.condition === "blocked" && (
+                    <Badge tone="attention">{t("Reported blocked")}</Badge>
+                  )}
+                </div>
               </td>
             </tr>
           ))}

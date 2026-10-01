@@ -266,7 +266,7 @@
   line-height: var(--iop-captionLineHeight);
   overflow-wrap: anywhere;
 }
-.iop-ui .handover-summary-card strong {
+.iop-ui .handover-summary-card > strong {
   color: var(--iop-link);
   font-weight: var(--iop-labelWeight);
 }
@@ -323,7 +323,8 @@
   margin-top: 0.2rem;
   gap: 0.5rem 1.25rem;
 }
-.handover-card-dates time {
+.handover-card-dates time,
+.iop-ui .handover-card-personal-facts :is(time, strong) {
   color: var(--iop-ink);
   font-weight: var(--iop-labelWeight);
 }
@@ -379,6 +380,12 @@
   line-height: var(--iop-captionLineHeight);
   min-height: 44px;
 }
+.iop-ui .handover-matrix tbody th .iop-button--text {
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+  padding-inline: 0;
+}
 .iop-ui .handover-matrix small {
   font-size: var(--iop-compactSize);
   margin-bottom: 0.5rem;
@@ -401,8 +408,11 @@
 .handover-matrix td .iop-badge {
   overflow-wrap: normal;
 }
-.handover-matrix td .iop-badge + .iop-badge {
-  margin-top: 0.5rem;
+.handover-matrix-status-tags {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 .handover-personal-cards {
   grid-template-columns: repeat(2, minmax(0, 1fr));

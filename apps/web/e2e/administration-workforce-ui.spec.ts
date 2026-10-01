@@ -38,6 +38,7 @@ function workforce(from: string): Board {
     people: [
       { id: "tech", name: "Morgan Technician", profile: "technician" },
       { id: "late-tech", name: "Taylor Technician", profile: "technician" },
+      { id: "support", name: "Jordan Support", profile: "technician" },
       ...shifts.map((shift, index) => ({
         id: shift.id,
         name: `Shift Leader ${index + 1}`,
@@ -99,6 +100,26 @@ function workforce(from: string): Board {
           },
         }),
       ),
+      {
+        id: `support-${date}`,
+        kind: "assignment",
+        revision: 1,
+        deleted: false,
+        personName: "Jordan Support",
+        data: {
+          userId: "support",
+          date,
+          shiftId: "early",
+          shiftLabel: "Early shift",
+          targetId: "",
+          duty: "floating",
+          phone: "",
+          start: "05:00",
+          end: "14:15",
+          startsAt: `${date}T05:00:00Z`,
+          endsAt: `${date}T14:15:00Z`,
+        },
+      } as RecordEntry<"assignment">,
       {
         id: `tech_${date}`,
         kind: "schedule",

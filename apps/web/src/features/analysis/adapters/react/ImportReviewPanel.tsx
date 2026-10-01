@@ -4,6 +4,7 @@ import {
   MetricGrid,
   Panel,
   Table,
+  TableText,
   TableViewport,
 } from "../../../../design/components";
 import type { ImportReview, ImportSummary } from "../../domain/models";
@@ -121,7 +122,9 @@ export function ImportReviewPanel({
                 <tr key={i}>
                   <td>{d.line ?? "—"}</td>
                   <td>{d.field ?? t("File")}</td>
-                  <td>{d.reason ?? d.code}</td>
+                  <td>
+                    <TableText>{d.reason ?? d.code}</TableText>
+                  </td>
                 </tr>
               ))}
             </tbody>

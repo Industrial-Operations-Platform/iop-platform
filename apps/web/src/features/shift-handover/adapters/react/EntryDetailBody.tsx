@@ -2,6 +2,7 @@ import { t } from "../../../../localization/i18n";
 import { Badge } from "../../../../design/components";
 import type { Entry } from "../../domain/models";
 import { issueLabel, issueTone } from "./entry-labels";
+import { CategoryBadge } from "./CategoryBadge";
 
 export function EntryDetailBody({ entry }: { entry: Entry }) {
   const c = entry.content;
@@ -29,7 +30,7 @@ export function EntryDetailBody({ entry }: { entry: Entry }) {
               {c.condition.replaceAll("-", " ")}
             </Badge>
           )}
-          <span>{entry.categoryLabel}</span>
+          <CategoryBadge entry={entry} />
           {entry.highlighted && <Badge>{t("Highlighted")}</Badge>}
           {c.discuss && <Badge>{t("Discuss in meeting")}</Badge>}
         </div>

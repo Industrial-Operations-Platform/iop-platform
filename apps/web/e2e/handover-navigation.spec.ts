@@ -48,12 +48,12 @@ for (const width of [1440, 820, 375]) {
         categoryId: "problems",
         summary: "Drive vibration requires a bearing check",
         details:
-          "Inspection found intermittent vibration at the drive. The next shift should check the bearing during the planned stop and record the result before restarting the component.",
+          "Inspection found intermittent drive vibration. Check the bearing at the next planned stop before restarting.",
         departmentId: "hall-a",
         areaId: "area-a",
         equipmentCode: "=P20+20.02.04-M1",
         equipmentNamespace: "site-equipment",
-        condition: "inspection-needed",
+        condition: "blocked",
         externalReference: "DEMO-ULTIMO-001",
         challenge: "Recurring vibration during operation",
         cause: "Bearing wear requires confirmation",
@@ -502,12 +502,20 @@ for (const width of [1440, 820, 375]) {
     await expect(
       matrix.getByRole("cell", { name: "2026-09-29", exact: true }),
     ).toBeVisible();
+    if (width === 1440) {
+      const prose = matrix.getByText(entry.content.details, { exact: true });
+      await expect(prose).toHaveCSS("text-align", "justify");
+      await page.setViewportSize({ width: 3600, height: 1000 });
+      await expect(prose).toHaveCSS("text-align", "center");
+      await page.setViewportSize({ width, height: 1000 });
+      await expect(prose).toHaveCSS("text-align", "justify");
+    }
     await page.screenshot({
       path: `/tmp/iop182-matrix-${width}.png`,
       fullPage: true,
     });
     await matrix
-      .getByRole("cell", { name: "In progress", exact: true })
+      .getByRole("cell", { name: "In progress Reported blocked", exact: true })
       .scrollIntoViewIfNeeded();
     await page.screenshot({
       path: `/tmp/iop182-matrix-status-${width}.png`,

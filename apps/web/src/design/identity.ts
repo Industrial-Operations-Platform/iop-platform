@@ -15,6 +15,8 @@ export const identity = {
   successInk: "#18734a",
   successSurface: "#eef8f2",
   successBorder: "#b9dec8",
+  warningInk: "#805500",
+  warningSurface: "#fff5d6",
   errorSurface: "#fff1f0",
   errorBorder: "#efb8b3",
   errorInk: "#9c2424",

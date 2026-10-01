@@ -220,7 +220,6 @@
   vertical-align: middle;
   font-weight: var(--iop-labelWeight);
 }
-.iop-ui .iop-table thead tr:first-child > th:first-child,
 .iop-ui .iop-table tbody tr > :first-child,
 .iop-ui .iop-table tfoot tr > :first-child {
   text-align: left;
@@ -231,9 +230,19 @@
 .iop-ui .iop-table :is(th, td) > .iop-actions {
   justify-content: center;
 }
-.iop-ui .iop-table tr > :first-child > .iop-actions,
-.iop-ui .iop-table thead tr:first-child > th:first-child .iop-button {
+.iop-ui .iop-table tbody tr > :first-child > .iop-actions {
   justify-content: flex-start;
+}
+.iop-table-text {
+  display: block;
+  min-width: 0;
+  margin: 0;
+  line-height: var(--iop-captionLineHeight);
+  overflow-wrap: anywhere;
+}
+.iop-table-text[data-justify] {
+  text-align: justify;
+  text-align-last: left;
 }
 .iop-ui .iop-table caption {
   text-align: left;
@@ -636,6 +645,10 @@
 .iop-ui .iop-badge--success {
   background: var(--iop-successSurface);
   color: var(--iop-successInk);
+}
+.iop-ui .iop-badge--warning {
+  background: var(--iop-warningSurface);
+  color: var(--iop-warningInk);
 }
 .iop-ui .iop-refresh,
 .iop-ui .iop-collection-action {

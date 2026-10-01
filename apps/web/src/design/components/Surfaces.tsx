@@ -90,7 +90,7 @@ export function Badge({
   className = "",
   ...props
 }: ComponentProps<"span"> & {
-  tone?: "neutral" | "info" | "attention" | "success";
+  tone?: "neutral" | "info" | "attention" | "success" | "warning";
 }) {
   return (
     <span {...props} className={`iop-badge iop-badge--${tone} ${className}`} />

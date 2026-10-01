@@ -14,7 +14,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `IdentityRoot`, `AppShell` | Identity variables, typography, header, rail, main content and skip link |
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
 | `RefreshButton`, `CollectionAction` | Labelled reload with busy/reduced-motion behavior; collection link with count and direction |
-| `Badge` | Neutral/info/attention/success semantic metadata; caller supplies meaningful text |
+| `Badge` | Neutral/info/attention/success/warning semantic metadata; caller supplies meaningful text |
 | `DeleteButton` | Shared trash icon with required accessible label/title and danger styling |
 | `Button` | `primary`, `secondary`, `text`, `danger`; common sizing, radius, spacing and native disabled/focus behavior |
 | `Field`, `Input`, `Textarea`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
@@ -26,6 +26,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
 | `MetricGrid`, `MetricCard` | Responsive shared metric appearance; `layout="paired"` centers two cards; `tone` adds neutral/info/attention emphasis; use `iop-metric-description` for supporting text |
 | `Table`, `TableViewport` | Common bordered viewport, muted sticky headers, row hover/focus and keyboard-accessible bounded scrolling |
+| `TableText` | Prose that inherits cell alignment up to two rendered lines and justifies longer text, remeasuring on content/size changes |
 | `Alert` | Error announcement and consistent error surface |
 | `SideNavigation` | Controlled page navigation with current-page semantics |
 | `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort; inherits the shared column alignment |
@@ -68,9 +69,13 @@ Buttons default to `type="button"`; submit controls must explicitly use
 `type="submit"`. Native props, events and refs are preserved by controls. Give each
 control a visible `Field` label, or an explicit accessible name for compact controls.
 Keep table captions and column/row headers in the caller's semantic markup.
-Headers and body cells center horizontally and vertically except the first column,
-which stays left aligned. Subsequent grouped header rows keep their shift labels
-centered, including their first cell. Table action groups follow the same alignment.
+Every column/group header centers horizontally and vertically, including the first.
+Body cells center vertically; the first column aligns left and remaining columns
+and action groups center horizontally unless explicitly specified otherwise.
+Use `TableText` for potentially long table prose; it justifies more than two rendered
+lines, keeps the last line left aligned and inherits cell alignment for shorter text.
+Give narrative title buttons an explicit left alignment where requested, without
+changing their column heading or supporting metadata.
 Badges use compact 1px vertical and 3px horizontal padding. Clickable summary
 cards own their grid alignment and must keep content against the left padding
 rather than inheriting button centering. Summary cards use a uniform border without

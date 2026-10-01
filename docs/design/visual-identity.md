@@ -26,6 +26,7 @@ instead of adding disconnected literal colors to components or chart options.
 | Heatmap low / high | `#e8f4ff` / `#0875cc` |
 | Better comparison ink / surface / border | `#18734a` / `#eef8f2` / `#b9dec8` |
 | Worse comparison | Existing error ink / surface / border tokens |
+| Warning metadata ink / surface | `#805500` / `#fff5d6` |
 | Keyboard focus | `#edaa30` |
 | Divided disclosure headings (preserved baseline) | `#174e69` |
 
@@ -211,10 +212,14 @@ Action variants share spacing, radius, height and focus behavior; color expresse
 priority or destructive intent. `DeleteButton` supplies a labelled trash icon.
 Form footers use `iop-form-actions` to separate Cancel/Save from editing controls.
 Use the common bordered, keyboard-scrollable `TableViewport`, muted sticky headers
-and row hover/focus treatment across modules. Headers, body cells and action groups
-center horizontally and vertically except the first column, which stays left aligned.
-Grouped shift subheaders remain centered. Features may set column widths but should
-not recreate the table theme or alignment. More than three tabs use a
+and row hover/focus treatment across modules. Every column/group header, including
+the first, centers horizontally and vertically. Body cells center vertically;
+the first column aligns left, and the remaining cells/actions center horizontally
+unless the owner explicitly specifies another alignment. Table prose uses shared
+`TableText`: more than two rendered lines are justified, with the last line aligned
+left; shorter text inherits its column's alignment. This responds to content and
+width changes. Features may set column widths but should not recreate the table
+theme. More than three tabs use a
 horizontal viewport on narrow screens to prevent label collisions.
 
 Keep logout at the far right after identity and language. Administration summarizes
@@ -236,3 +241,13 @@ the person action; matrix headings supply shared context. Users keeps bounded
 name/profile column widths instead of stretching the gap across the screen.
 Shared badges use 1px vertical and 3px horizontal padding, and operational summary
 cards use a uniform light border without a darker top stripe.
+
+The owner's IOP-187 refinement centers all headers, including Date and Zone.
+Department matrix title buttons start at the left while their supporting metadata
+stays centered; long details follow the shared prose rule, and status badges stack
+vertically. Daily shift leaders show names only beneath their shift heading;
+floating support/maintenance cards show name and shift, with full information in
+Details. My entries emphasizes entry date and responsible name with semibold navy
+text. Handover category badges use green for Successes, red for Problems, amber
+for Safety and blue for Information/other configured categories. Stable IDs select
+presentation tone in the Handover adapter; configured labels remain unchanged.

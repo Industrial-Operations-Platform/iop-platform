@@ -2,6 +2,7 @@ import { t } from "../../../../localization/i18n";
 import { Badge, Button } from "../../../../design/components";
 import { issueLabel, issueTone } from "./entry-labels";
 import type { Entry } from "../../domain/models";
+import { CategoryBadge } from "./CategoryBadge";
 
 export function EntrySummaryCards({
   entries,
@@ -41,7 +42,7 @@ export function EntrySummaryCards({
                 {entry.content.condition === "blocked" && (
                   <Badge tone="attention">{t("Reported blocked")}</Badge>
                 )}
-                <span>{entry.categoryLabel}</span>
+                <CategoryBadge entry={entry} />
               </span>
               {entry.content.equipmentCode && (
                 <span className="handover-card-equipment">
@@ -54,7 +55,7 @@ export function EntrySummaryCards({
                 </span>
               )}
               {personal && (
-                <span className="handover-card-tags">
+                <span className="handover-card-tags handover-card-personal-facts">
                   <span>
                     {t("Entry date")}{" "}
                     <time dateTime={entry.content.date}>
@@ -64,7 +65,7 @@ export function EntrySummaryCards({
                   {entry.issueState !== "none" && (
                     <span>
                       {t("Responsible · ")}
-                      {entry.responsibleName || t("Unassigned")}
+                      <strong>{entry.responsibleName || t("Unassigned")}</strong>
                     </span>
                   )}
                 </span>
