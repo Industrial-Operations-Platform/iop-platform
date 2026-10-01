@@ -1,4 +1,25 @@
 import type { LookupQuery } from "./authorization";
+
+/** Names for existing references, including disabled/deleted profiles, within one site. */
+export async function sitePersonNames(
+  query: LookupQuery,
+  organizationId: string,
+  siteId: string,
+  userIds: string[],
+): Promise<Map<string, string>> {
+  if (!userIds.length) return new Map();
+  const result = await query.query(
+    `SELECT user_id,display_name FROM users_rbac.profiles
+     WHERE organization_id=$1 AND site_id=$2 AND user_id=ANY($3::text[])`,
+    [organizationId, siteId, [...new Set(userIds)]],
+  );
+  return new Map(
+    (result.rows as { user_id: string; display_name: string }[]).map((row) => [
+      row.user_id,
+      row.display_name,
+    ]),
+  );
+}
 /** Module-owned projection for operational responsibility; no credentials or role fields. */
 export async function sitePeople(
   query: LookupQuery,

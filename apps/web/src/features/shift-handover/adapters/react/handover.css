@@ -15,25 +15,28 @@
 }
 .iop-ui .handover-matrix {
   table-layout: fixed;
-  min-width: 64rem;
+  min-width: 68rem;
 }
 .handover-matrix-date {
-  width: 11%;
+  width: 7rem;
 }
 .handover-matrix-summary {
-  width: 23%;
+  width: 24%;
 }
 .handover-matrix-details {
-  width: 19%;
+  width: auto;
 }
 .handover-matrix-reference {
-  width: 12%;
+  width: 8rem;
 }
 .handover-matrix-person {
-  width: 12%;
+  width: 9rem;
 }
 .handover-matrix-status {
-  width: 12%;
+  width: 8rem;
+}
+.iop-ui .handover-matrix tbody tr > td:first-child {
+  text-align: center;
 }
 .iop-ui .handover-matrix th,
 .iop-ui .handover-matrix td {

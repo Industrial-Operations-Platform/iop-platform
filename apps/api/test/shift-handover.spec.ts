@@ -67,6 +67,11 @@ function fixture() {
   let entry: Entry | null = null,
     prior: { entry: Entry; fingerprint: string } | null = null;
   const revisions: Revision[] = [];
+  const names = new Map([
+    ["author", "Author"],
+    ["colleague", "Colleague"],
+    ["other", "Other"],
+  ]);
   const tx: Transaction = {
     coordinator: false,
     equipment: jest.fn(async () => ({ codes: ["0001"], nextCursor: "" })),
@@ -75,6 +80,15 @@ function fixture() {
       { id: "colleague", name: "Colleague" },
       { id: "other", name: "Other" },
     ],
+    names: async () => new Map(names),
+    latestUpdateActors: async () =>
+      new Map(
+        revisions
+          .filter((revision) =>
+            ["state", "follow-up"].includes(revision.action),
+          )
+          .map((revision) => [revision.entry.id, revision.actorId]),
+      ),
     get: async () => structuredClone(entry),
     prior: async () => prior,
     reference: async (c) => (c.equipmentCode ? "reference" : ""),
@@ -84,8 +98,16 @@ function fixture() {
       if (key)
         prior = { entry: structuredClone(e), fingerprint: key.fingerprint };
     }),
-    list: jest.fn(),
-    history: jest.fn(),
+    list: jest.fn(async () => ({
+      entries: entry ? [structuredClone(entry)] : [],
+      total: entry ? 1 : 0,
+      nextCursor: "",
+    })),
+    history: jest.fn(async (current) => ({
+      entry: current,
+      revisions: structuredClone(revisions),
+      nextBefore: 0,
+    })),
   };
   const app = new Handover(
     { run: async (_actor, _permission, work) => work(tx) },
@@ -93,7 +115,7 @@ function fixture() {
     () => "entry-id",
     () => "2026-09-29T12:00:00.000Z",
   );
-  return { app, tx, revisions, entry: () => entry! };
+  return { app, tx, names, revisions, entry: () => entry! };
 }
 test("publishes attributed history and recovers an identical request without duplicating it", async () => {
   const { app, tx, revisions } = fixture();
@@ -504,4 +526,43 @@ test("carry-forward is configured by category ID, preserves labels and accepts e
       "UTC",
     ),
   ).toThrow();
+});
+
+test("current entries resolve author, responsible and latest update actor by ID while revisions retain their original names", async () => {
+  const { app, tx, names, revisions, entry } = fixture();
+  await app.create("author", input);
+  await app.change("colleague", {
+    id: "entry-id",
+    action: "follow-up",
+    expectedRevision: 1,
+    note: "Checked on site",
+  });
+  tx.coordinator = true;
+  await app.change("other", {
+    id: "entry-id",
+    action: "highlight",
+    expectedRevision: 2,
+    highlighted: true,
+    note: "Discuss next shift",
+  });
+  const saved = structuredClone(entry());
+  const evidence = structuredClone(revisions);
+  names.set("author", "Current author");
+  names.set("colleague", "Current colleague");
+  const current = (await app.list("author", emptySelection)).entries[0];
+  expect(current).toMatchObject({
+    authorName: "Current author",
+    responsibleName: "Current colleague",
+    latestUpdate: { actorName: "Current colleague" },
+  });
+  const history = await app.history("author", "entry-id");
+  expect(history.entry).toEqual(current);
+  expect(history.revisions).toEqual(evidence);
+  expect(entry()).toEqual(saved);
+  expect((await app.create("author", input)).authorName).toBe("Current author");
+  names.delete("colleague");
+  expect((await app.history("author", "entry-id")).entry).toMatchObject({
+    responsibleName: "Colleague",
+    latestUpdate: { actorName: "Colleague" },
+  });
 });

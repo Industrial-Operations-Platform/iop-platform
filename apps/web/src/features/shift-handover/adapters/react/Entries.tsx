@@ -113,7 +113,7 @@ export function EntryMatrix({
         role="region"
         aria-label={t("Scrollable department matrix")}
       >
-        <Table className="handover-matrix">
+        <Table className="handover-matrix" aria-label={t("Department handover matrix")}>
           <colgroup>
             <col className="handover-matrix-date" />
             <col className="handover-matrix-summary" />
@@ -123,7 +123,6 @@ export function EntryMatrix({
             <col className="handover-matrix-person" />
             <col className="handover-matrix-status" />
           </colgroup>
-          <caption>{t("Department handover matrix")}</caption>
           <thead>
             <tr>
               {(

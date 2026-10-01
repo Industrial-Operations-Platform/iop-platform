@@ -59,7 +59,9 @@ are advisory and do not assert staffing adequacy for every minute or shift.
 
 Every change records an actor/name, time and revision. Administrator deletion is
 logical. Deleting a profile revokes local access and hides it from user management;
-existing operational records retain their original author names. Deleting an entry
+current operational views resolve the latest name by the stable user ID, including
+retained references to disabled/deleted profiles. A missing site profile falls back
+to its saved label. Stored records and revision history retain original names. Deleting an entry
 hides it from active views and keeps its revisions. The last administrator cannot
 be deleted. Workforce history currently returns the latest 100 retained revisions.
 No cascading deletion, corporate database access, payroll, automatic optimization

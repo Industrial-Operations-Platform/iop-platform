@@ -27,6 +27,7 @@ export interface Transaction {
   canPlan: boolean;
   canAdminister: boolean;
   people(): Promise<Person[]>;
+  names(userIds: string[]): Promise<Map<string, string>>;
   records(from: string, to: string): Promise<RecordEntry[]>;
   get(kind: Kind, id: string): Promise<RecordEntry | null>;
   save(entry: RecordEntry, revision: Revision): Promise<void>;
@@ -68,15 +69,27 @@ export class Workforce {
   ) {}
   board(actor: string, from: string, to: string) {
     range(from, to);
-    return this.store.run(actor, "workforce.read", async (tx) => ({
-      actorId: actor,
-      timeZone: this.timeZone,
-      canPlan: tx.canPlan,
-      canAdminister: tx.canAdminister,
-      people: await tx.people(),
-      settings: await this.configuration(tx),
-      records: (await tx.records(from, to)).filter((r) => !r.deleted),
-    }));
+    return this.store.run(actor, "workforce.read", async (tx) => {
+      const records = (await tx.records(from, to)).filter((r) => !r.deleted);
+      const names = await tx.names(
+        records.flatMap((r) => ("userId" in r.data ? [r.data.userId] : [])),
+      );
+      return {
+        actorId: actor,
+        timeZone: this.timeZone,
+        canPlan: tx.canPlan,
+        canAdminister: tx.canAdminister,
+        people: await tx.people(),
+        settings: await this.configuration(tx),
+        records: records.map((record) => ({
+          ...record,
+          personName:
+            "userId" in record.data
+              ? (names.get(record.data.userId) ?? record.personName)
+              : record.personName,
+        })),
+      };
+    });
   }
   private async configuration(tx: Transaction): Promise<Settings> {
     return (

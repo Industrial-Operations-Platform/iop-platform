@@ -2,7 +2,10 @@ import { Workforce } from "../modules/workforce/application/workforce";
 import { PgWorkforce } from "../modules/workforce/adapters/postgres/store";
 import { IntlSiteClock } from "../modules/workforce/adapters/time/site-clock";
 import { ManualScheduleDecoder } from "../modules/integrations/adapters/schedule/decoder";
-import { workforcePeople } from "../modules/users-rbac/adapters/postgres/site-people";
+import {
+  workforcePeople,
+  sitePersonNames,
+} from "../modules/users-rbac/adapters/postgres/site-people";
 import { workforceDefaults } from "./adapters/workforce-defaults";
 import { importedEquipmentCodes } from "../modules/oip/adapters/postgres/equipment-codes";
 import { Handover } from "../modules/shift-handover/application/handover";
@@ -255,6 +258,13 @@ export class PlatformRuntime {
           ).allowed,
         people: (tx) =>
           workforcePeople(tx, this.source.organizationId, this.source.siteId),
+        names: (tx, ids) =>
+          sitePersonNames(
+            tx,
+            this.source.organizationId,
+            this.source.siteId,
+            ids,
+          ),
       }),
       new ManualScheduleDecoder(),
       new IntlSiteClock(),
@@ -303,6 +313,13 @@ export class PlatformRuntime {
         },
         people: (tx) =>
           sitePeople(tx, this.source.organizationId, this.source.siteId),
+        names: (tx, ids) =>
+          sitePersonNames(
+            tx,
+            this.source.organizationId,
+            this.source.siteId,
+            ids,
+          ),
       }),
       catalog,
       randomUUID,

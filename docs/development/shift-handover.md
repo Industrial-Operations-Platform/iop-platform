@@ -187,7 +187,12 @@ destructive reset. Do not treat `[DEMO]` reports as actual equipment conditions.
 
 `shift_handover.entries` stores the current projection and original request identity;
 `equipment_references` retains exact scoped code/namespace/location identities;
-`revisions` retains immutable attributed snapshots. Dates and creation instants are
+`revisions` retains immutable attributed snapshots. Current entry reads resolve
+author/responsible names by account ID through the scoped Users/RBAC directory;
+latest follow-up names resolve through revision actor IDs. Disabled/deleted
+references remain readable without restoring access. Historical snapshots keep
+their original names, and missing directory entries use the saved label.
+Dates and creation instants are
 separate. Same-site composite references, forced RLS and narrow runtime privileges
 protect storage. Ordinary runtime cannot delete entries or update revision rows.
 Corrections and their revision append commit atomically, with expected-revision

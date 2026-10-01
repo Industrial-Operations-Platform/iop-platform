@@ -29,6 +29,12 @@ const config: Settings = {
 function setup() {
   const records = new Map<string, RecordEntry>(),
     revisions: Revision[] = [];
+  const names = new Map([
+    ["admin", "Admin"],
+    ["lead", "Leader"],
+    ["tech", "Technician"],
+    ["other", "Other"],
+  ]);
   const store: Store = {
     run: async (actor, permission, work) => {
       const allowed = decideSiteAccess(
@@ -64,6 +70,7 @@ function setup() {
           { id: "tech", name: "Technician", profile: "technician" },
           { id: "other", name: "Other", profile: "technician" },
         ],
+        names: async () => new Map(names),
         records: async (from, to) =>
           [...staged.values()].filter(
             (r) =>
@@ -95,6 +102,7 @@ function setup() {
     ),
     records,
     revisions,
+    names,
   };
 }
 const source = {
@@ -439,4 +447,27 @@ test("weekly overlap validation uses the whole proposed week plus unchanged neig
       days: [{ ...manualWeek.days[0], expectedRevision: 1 }],
     }),
   ).rejects.toMatchObject({ code: "workforce_overlap" });
+});
+
+test("board resolves names by account ID without rewriting records or revision evidence", async () => {
+  const { app, records, revisions, names } = setup();
+  await app.import("admin", source, await app.preview("admin", source));
+  await app.save("lead", assignment);
+  const before = structuredClone([...records.values()]);
+  const evidence = structuredClone(revisions);
+  names.set("tech", "Renamed colleague");
+  names.set("other", "Renamed colleague");
+  const board = await app.board("tech", "2026-09-30", "2026-09-30");
+  expect(board.records).toHaveLength(3);
+  expect(
+    board.records.every((record) => record.personName === "Renamed colleague"),
+  ).toBe(true);
+  names.delete("other");
+  expect(
+    (await app.board("tech", "2026-09-30", "2026-09-30")).records.find(
+      (record) => "userId" in record.data && record.data.userId === "other",
+    )?.personName,
+  ).toBe("Other");
+  expect([...records.values()]).toEqual(before);
+  expect(revisions).toEqual(evidence);
 });

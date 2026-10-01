@@ -123,3 +123,17 @@ The self-service persistence port exposes only name editing; it never receives t
 administrator transaction. Existing organization locking, forced RLS and explicit
 column grants apply. Names do not change stable identity, username, role grants or
 sessions, and existing business-entry/revision snapshots remain unchanged.
+
+
+## Owner-authorized current operational names — IOP-188
+
+Current Workforce and Handover views resolve display names from each account's
+stable ID through a site-scoped Users/RBAC lookup supplied by the host. This covers
+existing schedules/assignments, entry authors, responsibility and latest follow-up
+actors; older follow-up previews recover the actor ID from retained revisions.
+The reference lookup includes disabled/logically deleted profiles without making
+them selectable or granting access. If a profile is unavailable in the exact site,
+the saved label remains the fallback. Stored records and immutable revisions keep
+their original snapshots; no name-change cascade or history rewrite is performed.
+This clarifies the existing identity/port boundaries for the owner's explicit
+[IOP-188 request](../../planning/items/IOP-188-user-directory-refinements.md).

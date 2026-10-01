@@ -1,10 +1,17 @@
 import { UserDetailsDialog } from "./UserDetailsDialog";
-import { t } from "../../../../localization/i18n";
+import { locale, t } from "../../../../localization/i18n";
+import {
+  cycleUserSort,
+  selectUsers,
+  type UserSort,
+  type UserSortField,
+} from "../../application/user-directory";
 import { useEffect, useState } from "react";
 import {
   Actions,
   Badge,
   DeleteButton,
+  EditButton,
   Alert,
   Button,
   Field,
@@ -14,6 +21,7 @@ import {
   Select,
   Table,
   TableViewport,
+  SortableHeader,
 } from "../../../../design/components";
 import type { AccessApplication } from "../../application/access";
 import {
@@ -29,6 +37,8 @@ export function UserAdministration({
   onChanged: () => Promise<void>;
 }) {
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<UserSort[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]),
     [error, setError] = useState(""),
     [pending, setPending] = useState(false),
@@ -77,6 +87,18 @@ export function UserAdministration({
       {t(label)}
     </option>
   ));
+  const visibleUsers = selectUsers(
+    users,
+    search,
+    sort,
+    (user, field) =>
+      field === "user"
+        ? user.name
+        : field === "profile"
+          ? t(profileLabels[user.profile])
+          : t(user.active ? "Active" : "Disabled"),
+    new Intl.Collator(locale(), { numeric: true, sensitivity: "base" }).compare,
+  );
   return (
     <div className="access-administration">
       {editingUser && (
@@ -196,11 +218,24 @@ export function UserAdministration({
         </form>
       </Panel>
       <Panel>
-        <h2>{t("Users")}</h2>
+        <div className="access-users-heading">
+          <h2>{t("Users")}</h2>
+          <Field>
+            {t("Search users")}
+            <Input
+              type="search"
+              value={search}
+              placeholder={t("Name or username")}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </Field>
+        </div>
         {pending && <p role="status">{t("Updating users…")}</p>}
         <TableViewport>
-          <Table className="access-users">
-            <caption>{t("Accounts for this site")}</caption>
+          <Table
+            className="access-users"
+            aria-label={t("Accounts for this site")}
+          >
             <colgroup>
               <col className="access-users-person" />
               <col className="access-users-profile" />
@@ -209,27 +244,40 @@ export function UserAdministration({
             </colgroup>
             <thead>
               <tr>
-                <th scope="col">{t("User")}</th>
-                <th scope="col">{t("Profile")}</th>
-                <th scope="col">{t("Status")}</th>
+                {(
+                  [
+                    ["user", "User"],
+                    ["profile", "Profile"],
+                    ["status", "Status"],
+                  ] as const
+                ).map(([field, label]: readonly [UserSortField, string]) => {
+                  const index = sort.findIndex(
+                    (criterion) => criterion.field === field,
+                  );
+                  return (
+                    <SortableHeader
+                      key={field}
+                      direction={sort[index]?.direction}
+                      priority={sort.length > 1 ? index + 1 : undefined}
+                      onClick={() =>
+                        setSort((current) => cycleUserSort(current, field))
+                      }
+                    >
+                      {t(label)}
+                    </SortableHeader>
+                  );
+                })}
                 <th scope="col">{t("Access")}</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {visibleUsers.map((user) => (
                 <tr key={user.id}>
                   <th scope="row">
-                    <Button
-                      variant="text"
-                      className="access-user-link"
-                      onClick={() => setEditingUser(user)}
-                      disabled={pending}
-                      aria-label={t("User details for {0}", [user.username])}
-                    >
-                      {user.name}
-                    </Button>
-                    <br />
-                    <small>{user.username}</small>
+                    <span className="access-user-identity">
+                      <span className="access-user-name">{user.name}</span>
+                      <small>{user.username}</small>
+                    </span>
                   </th>
                   <td>{t(profileLabels[user.profile])}</td>
                   <td>
@@ -252,6 +300,11 @@ export function UserAdministration({
                       >
                         {user.active ? t("Disable") : t("Enable")}
                       </Button>
+                      <EditButton
+                        label={t("Edit user {0}", [user.username])}
+                        disabled={pending}
+                        onClick={() => setEditingUser(user)}
+                      />
                       <DeleteButton
                         label={t("Delete profile for {0}", [user.username])}
                         disabled={pending}
@@ -275,6 +328,9 @@ export function UserAdministration({
             </tbody>
           </Table>
         </TableViewport>
+        {!pending && !visibleUsers.length && (
+          <p role="status">{t("No users match your search.")}</p>
+        )}
       </Panel>
     </div>
   );

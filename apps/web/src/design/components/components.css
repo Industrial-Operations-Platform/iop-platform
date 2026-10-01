@@ -246,9 +246,10 @@
 }
 .iop-ui .iop-table caption {
   text-align: left;
-  font-weight: var(--iop-metricWeight);
-  padding: 14px 12px;
-  color: var(--iop-muted);
+  font-size: var(--iop-sectionTitleSize);
+  font-weight: var(--iop-headingWeight);
+  padding: var(--iop-sectionGap);
+  color: var(--iop-ink);
 }
 .iop-ui .iop-alert {
   background: var(--iop-errorSurface);

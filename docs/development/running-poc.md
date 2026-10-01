@@ -82,9 +82,14 @@ alarm data.
 ## Local accounts and profiles
 
 Open **Users & profiles** as Administrator to create users, assign one of the four
-profiles, or disable/reactivate a local account. Click a name to open account details:
-username and user ID are read-only; name, profile and access save atomically. The
-list offers only enable/disable and an accessible trash action for logical deletion.
+profiles, or disable/reactivate a local account. Search by name or username. Click
+User, Profile or Status to cycle ascending, descending and unsorted; multiple
+criteria retain their displayed priority. Use the pencil beside Delete to edit an
+account; the static name no longer opens editing. Username and user ID are read-only;
+name, profile and access save atomically. The list also offers enable/disable and
+an accessible trash action for logical deletion. Name changes appear on the next
+load of Workforce and Handover views through the account ID; saved revision
+history retains the names recorded at the time.
 Only Administrator has user
 administration and import/preparation tools. Administrator, Task Force and Team Leader
 can open Data Analysis. Technician has an operational Start page and Shift Handover,
