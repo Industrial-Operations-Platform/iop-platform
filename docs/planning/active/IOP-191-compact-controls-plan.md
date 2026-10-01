@@ -24,6 +24,8 @@ instructions. No remote push, branch deletion or stage/master promotion is infer
    the guard/configuration so image generation enforces the same contract. The owner
    has authorized this refinement of the existing shared presentation pattern;
    no domain/application or API boundary changes are needed.
+   Declare the web test types in its own package/lockfile so the guard and TypeScript
+   also work with Docker's isolated workspace dependency installation.
 4. Validate web tests/build, architecture guard, desktop/mobile rendering, labels,
    native input behavior and overflow. Inspect actual screenshots against the
    requested compact reference; commit the validated code on the story branch.
@@ -62,6 +64,12 @@ Frontend evidence, 2026-10-02:
   breadcrumb context retention. Existing native input handlers remain intact.
 
 Local integration and Docker verification remain pending at the story commit.
+The first container build caught a dependency on root-only Jest types; the web
+workspace now declares the existing pinned type package explicitly. The uncommitted
+merge was cancelled to keep this correction on the story branch before the one
+final integration commit. Running containers were not changed by the failed build.
+The corrected api/web images built successfully, including all three design checks,
+TypeScript and Vite inside the isolated web build stage.
 
 ## Closure
 
