@@ -41,5 +41,5 @@ tests are unnecessary for this data-only operation; validate the actual operatio
 - Documentation link/status checks and `git diff --check` pass. No application
   code changed, so no application suite was rerun. Commit this documentation
   locally. Publication was subsequently approved; see the
-  [publication plan](../active/IOP-189-publication-plan.md). Restore the prior IOP-188 working
+  [publication plan](IOP-189-publication-plan.md). Restore the prior IOP-188 working
   branch afterward, preserving its pending review state.
