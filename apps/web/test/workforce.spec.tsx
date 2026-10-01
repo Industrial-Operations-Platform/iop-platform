@@ -1,6 +1,7 @@
+import { DailyPlan } from "../src/features/workforce/adapters/react/PlanBoard";
 /** @jest-environment jsdom */
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { WorkforceWorkspace } from "../src/features/workforce/adapters/react/WorkforceWorkspace";
 import {
@@ -229,4 +230,86 @@ test("weekly entry cancellation and module heading return to the planning home w
   expect(screen.getByLabelText("Person")).toHaveValue("");
   fireEvent.click(screen.getByRole("button", { name: "Workforce & shifts" }));
   expect(screen.getByRole("table", { name: "Weekly plan" })).toBeVisible();
+});
+
+test("personal assignments show shift and hours once while keeping different availability explicit", () => {
+  const assignment: import("../src/features/workforce/domain/models").RecordEntry<"assignment"> =
+    {
+      id: "assigned",
+      kind: "assignment",
+      revision: 1,
+      deleted: false,
+      personName: "Test Leader",
+      data: {
+        userId: "tech",
+        date: "2026-10-02",
+        shiftId: "early",
+        targetId: "",
+        duty: "leader",
+        phone: "",
+        start: "05:00",
+        end: "14:15",
+        startsAt: "2026-10-02T05:00:00Z",
+        endsAt: "2026-10-02T14:15:00Z",
+      },
+    };
+  const schedule: import("../src/features/workforce/domain/models").RecordEntry<"schedule"> =
+    {
+      id: "schedule",
+      kind: "schedule",
+      revision: 1,
+      deleted: false,
+      personName: "Test Leader",
+      data: {
+        userId: "tech",
+        date: "2026-10-02",
+        status: "work",
+        start: "05:00",
+        end: "14:15",
+        startsAt: "2026-10-02T05:00:00Z",
+        endsAt: "2026-10-02T14:15:00Z",
+        source: "manual",
+      },
+    };
+  const select = jest.fn();
+  const data = { ...board, records: [assignment, schedule] };
+  const { rerender } = render(
+    <DailyPlan board={data} date="2026-10-02" select={select} />,
+  );
+  const personal = within(screen.getByLabelText("Your assignment"));
+  expect(personal.getAllByText("05:00–14:15")).toHaveLength(1);
+  expect(personal.getByRole("heading", { name: "Early" })).toBeVisible();
+  expect(personal.getByText("Work")).toBeVisible();
+  expect(personal.queryByText(/Scheduled availability/)).toBeNull();
+  fireEvent.click(
+    personal.getByRole("button", { name: "View assignment for Test Leader" }),
+  );
+  expect(select).toHaveBeenCalledWith(assignment);
+  rerender(
+    <DailyPlan
+      board={{
+        ...data,
+        records: [
+          assignment,
+          { ...schedule, data: { ...schedule.data, end: "16:00" } },
+        ],
+      }}
+      date="2026-10-02"
+      select={select}
+    />,
+  );
+  expect(
+    personal.getByText("Scheduled availability: 05:00–16:00"),
+  ).toBeVisible();
+  rerender(
+    <DailyPlan
+      board={{ ...data, records: [schedule] }}
+      date="2026-10-02"
+      select={select}
+    />,
+  );
+  expect(personal.getByText("No assignment yet")).toBeVisible();
+  expect(
+    personal.getByText("Scheduled availability: 05:00–14:15"),
+  ).toBeVisible();
 });

@@ -3,6 +3,11 @@ import { t } from "../../localization/i18n";
 import { Button } from "./Controls";
 import { PageHeading } from "./Layout";
 
+export interface BreadcrumbItem {
+  label: string;
+  onSelect?: () => void;
+}
+
 /** Title-first navigation shared by operational sections and their detail pages. */
 export function SectionHeading({
   section,
@@ -11,6 +16,7 @@ export function SectionHeading({
   onBack,
   description,
   actions,
+  trail,
 }: {
   section: string;
   view: string;
@@ -18,7 +24,13 @@ export function SectionHeading({
   onBack?: () => void;
   description?: ReactNode;
   actions?: ReactNode;
+  trail?: BreadcrumbItem[];
 }) {
+  const crumbs =
+    trail ??
+    (onBack
+      ? [{ label: t(view), onSelect: onBack }, { label: t("Details") }]
+      : [{ label: t(view) }]);
   return (
     <nav aria-label={t("Breadcrumb")}>
       <PageHeading
@@ -34,23 +46,32 @@ export function SectionHeading({
             <span aria-hidden="true" className="iop-breadcrumb-separator">
               /
             </span>
-            {onBack ? (
-              <>
-                <Button
-                  variant="text"
-                  className="iop-breadcrumb-link"
-                  onClick={onBack}
-                >
-                  {t(view)}
-                </Button>
-                <span aria-hidden="true" className="iop-breadcrumb-separator">
-                  /
-                </span>
-                <span aria-current="page">{t("Details")}</span>
-              </>
-            ) : (
-              <span aria-current="page">{t(view)}</span>
-            )}
+            {crumbs.map((crumb, index) => (
+              <span className="iop-breadcrumb-part" key={index}>
+                {index > 0 && (
+                  <span aria-hidden="true" className="iop-breadcrumb-separator">
+                    /
+                  </span>
+                )}
+                {crumb.onSelect ? (
+                  <Button
+                    variant="text"
+                    className="iop-breadcrumb-link"
+                    onClick={crumb.onSelect}
+                  >
+                    {crumb.label}
+                  </Button>
+                ) : (
+                  <span
+                    aria-current={
+                      index === crumbs.length - 1 ? "page" : undefined
+                    }
+                  >
+                    {crumb.label}
+                  </span>
+                )}
+              </span>
+            ))}
           </span>
         }
         description={description}

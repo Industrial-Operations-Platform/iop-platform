@@ -324,3 +324,4 @@ canonical asset integration.
 | [IOP-188 — User directory controls and current operational names](items/IOP-188-user-directory-refinements.md) | Completed |
 | [IOP-189 — Local test-account password reset](items/IOP-189-local-test-passwords.md) | Completed |
 | [IOP-190 — Daily Handover views and focused table filters](items/IOP-190-daily-handover.md) | Completed |
+| [IOP-191 — Operational controls and contextual navigation](items/IOP-191-operational-controls.md) | Completed |

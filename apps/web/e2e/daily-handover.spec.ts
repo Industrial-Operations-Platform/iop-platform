@@ -231,12 +231,60 @@ for (const width of [1440, 375]) {
     await expect(journal.getByRole("button", { name: /^Today/ })).toHaveCount(
       0,
     );
+    const scope = page.locator(".iop-scope-toolbar");
+    if (width > 620) {
+      const department = await scope
+        .locator(".iop-department-scope")
+        .boundingBox();
+      const date = await scope.locator(".iop-date-field").boundingBox();
+      expect(Math.abs(department!.y - date!.y)).toBeLessThan(2);
+    }
+    await journal
+      .getByLabel("Safety", { exact: true })
+      .getByRole("button", { name: /^View entries/ })
+      .click();
+    const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
+    await expect(breadcrumb).toHaveText(/Shift Handover.*Journal.*Safety/);
+    await page.getByRole("button", { name: /^Prior safety/ }).click();
+    await expect(breadcrumb).toHaveText(
+      /Shift Handover.*Journal.*Safety.*Details/,
+    );
+    await breadcrumb
+      .getByRole("button", { name: "Safety", exact: true })
+      .click();
+    await expect(page.getByLabel("Journal date")).toHaveValue("2026-09-30");
+    await expect(page.getByLabel("Selected department")).toHaveValue("hall-a");
+    await page.screenshot({
+      path: `/tmp/iop-191-journal-category-${width}.png`,
+      fullPage: true,
+    });
+    await breadcrumb
+      .getByRole("button", { name: "Journal", exact: true })
+      .click();
+    await expect(
+      journal.getByRole("button", { name: /^Prior safety/ }),
+    ).toBeVisible();
+    await expect(page.getByLabel("Journal date")).toHaveValue("2026-09-30");
+    await expect(page.getByLabel("Selected department")).toHaveValue("hall-a");
+    await journal
+      .getByLabel("Information", { exact: true })
+      .getByRole("button", { name: /^View entries/ })
+      .click();
+    await expect(page.getByText("No updates for this selection")).toBeVisible();
+    await breadcrumb
+      .getByRole("button", { name: "Journal", exact: true })
+      .click();
+    await expect(journal).toBeVisible();
+    await page.screenshot({
+      path: `/tmp/iop-191-journal-${width}.png`,
+      fullPage: true,
+    });
     await tabs
       .getByRole("button", { name: "Meeting preparation", exact: true })
       .click();
     await expect(page.getByLabel("Meeting date")).toHaveValue("2026-09-30");
     await page.screenshot({
-      path: `/tmp/iop-190-daily-${width}.png`,
+      path: `/tmp/iop-191-daily-${width}.png`,
       fullPage: true,
     });
     await tabs

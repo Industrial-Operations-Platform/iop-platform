@@ -94,8 +94,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
-.handover-section-heading,
-.handover-toolbar {
+.handover-section-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -216,12 +215,8 @@
   margin: 0.3rem 0;
   font-size: var(--iop-bodySize);
 }
-.handover-muted,
-.handover-toolbar p {
+.handover-muted {
   color: var(--iop-muted);
-}
-.handover-toolbar .iop-field {
-  min-width: min(18rem, 100%);
 }
 .iop-dialog .handover-form {
   gap: 1rem;

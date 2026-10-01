@@ -221,3 +221,60 @@ test("users can search names and usernames and cycle every sortable header witho
   expect(gateway.update).not.toHaveBeenCalled();
   expect(gateway.change).not.toHaveBeenCalled();
 });
+
+test("creation opens from its icon, discards cancellation and retains a failed draft before success", async () => {
+  const { gateway, user } = setup();
+  const add = await screen.findByRole("button", { name: "Create a user" });
+  await waitFor(() => expect(add).toBeEnabled());
+  expect(screen.queryByLabelText("Username")).toBeNull();
+  add.focus();
+  fireEvent.click(add);
+  let dialog = within(screen.getByRole("dialog", { name: "Create a user" }));
+  expect(dialog.getByLabelText("Name")).toHaveFocus();
+  fireEvent.change(dialog.getByLabelText("Name"), {
+    target: { value: "Discard me" },
+  });
+  fireEvent.click(dialog.getByRole("button", { name: "Cancel" }));
+  expect(add).toHaveFocus();
+  expect(gateway.create).not.toHaveBeenCalled();
+  fireEvent.click(add);
+  dialog = within(screen.getByRole("dialog"));
+  expect(dialog.getByLabelText("Name")).toHaveValue("");
+  fireEvent.change(dialog.getByLabelText("Name"), {
+    target: { value: "New Leader" },
+  });
+  fireEvent.change(dialog.getByLabelText("Username"), {
+    target: { value: "new.leader" },
+  });
+  fireEvent.change(dialog.getByLabelText("Profile"), {
+    target: { value: "team-leader" },
+  });
+  jest
+    .mocked(gateway.create)
+    .mockRejectedValueOnce(new Error("Username already exists."));
+  fireEvent.click(dialog.getByRole("button", { name: "Create user" }));
+  expect(await dialog.findByRole("alert")).toHaveTextContent(
+    "Username already exists.",
+  );
+  expect(dialog.getByLabelText("Name")).toHaveValue("New Leader");
+  jest
+    .mocked(gateway.create)
+    .mockResolvedValueOnce({
+      user: { ...user, username: "new.leader" },
+      initialPassword: "synthetic-one-time-password",
+    });
+  fireEvent.click(dialog.getByRole("button", { name: "Create user" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  expect(gateway.create).toHaveBeenLastCalledWith({
+    name: "New Leader",
+    username: "new.leader",
+    profile: "team-leader",
+  });
+  expect(screen.getByLabelText("Initial credentials")).toHaveTextContent(
+    "synthetic-one-time-password",
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Dismiss initial password" }),
+  );
+  expect(screen.queryByText("synthetic-one-time-password")).toBeNull();
+});

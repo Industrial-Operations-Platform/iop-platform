@@ -62,7 +62,7 @@ function workforce(from: string): Board {
           deleted: false,
           personName: `Shift Leader ${index + 1}`,
           data: {
-            userId: shift.id,
+            userId: index === 0 ? "admin" : shift.id,
             date,
             shiftId: shift.id,
             shiftLabel: shift.label,
@@ -120,6 +120,23 @@ function workforce(from: string): Board {
           endsAt: `${date}T14:15:00Z`,
         },
       } as RecordEntry<"assignment">,
+      {
+        id: `admin_${date}`,
+        kind: "schedule",
+        revision: 1,
+        deleted: false,
+        personName: "Administrator",
+        data: {
+          userId: "admin",
+          date,
+          status: "work",
+          start: "05:00",
+          end: "14:15",
+          startsAt: `${date}T05:00:00Z`,
+          endsAt: `${date}T14:15:00Z`,
+          source: "manual",
+        },
+      } as RecordEntry<"schedule">,
       {
         id: `tech_${date}`,
         kind: "schedule",
@@ -244,7 +261,7 @@ for (const width of [1440, 375]) {
       ).toBe(true);
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({
-        path: `/tmp/iop-188-${name}-${width}.png`,
+        path: `/tmp/iop-191-${name}-${width}.png`,
         fullPage: true,
       });
     };
@@ -265,6 +282,39 @@ for (const width of [1440, 375]) {
     await expect(
       table.getByRole("button", { name: "Delete profile for morgan" }),
     ).toHaveAttribute("title", "Delete profile for morgan");
+    const create = page.getByRole("button", {
+      name: "Create a user",
+      exact: true,
+    });
+    await expect(page.getByLabel("Username", { exact: true })).toHaveCount(0);
+    await create.focus();
+    await page.keyboard.press("Enter");
+    const createDialog = page.getByRole("dialog", { name: "Create a user" });
+    await expect(
+      createDialog.getByLabel("Name", { exact: true }),
+    ).toBeFocused();
+    await createDialog
+      .getByLabel("Name", { exact: true })
+      .fill("New colleague");
+    const username = createDialog.getByLabel("Username", { exact: true });
+    await username.fill("invalid username");
+    await createDialog
+      .getByRole("button", { name: "Create user", exact: true })
+      .click();
+    await expect(createDialog).toBeVisible();
+    expect(
+      await username.evaluate(
+        (input: HTMLInputElement) => input.validity.patternMismatch,
+      ),
+    ).toBe(true);
+    await createDialog
+      .getByLabel("Username", { exact: true })
+      .fill("new.colleague");
+    await screenshot("create-user");
+    await page.keyboard.press("Escape");
+    await expect(createDialog).toHaveCount(0);
+    await expect(create).toBeFocused();
+    await screenshot("profiles");
     const search = page.getByRole("searchbox", { name: "Search users" });
     await expect(search).toHaveCount(0);
     const searchToggle = page.getByRole("button", {
@@ -361,6 +411,16 @@ for (const width of [1440, 375]) {
         .first()
         .getByRole("img"),
     ).toHaveCount(0);
+    await page.getByRole("button", { name: "Assign", exact: true }).click();
+    const save = page.getByRole("button", { name: "Save", exact: true });
+    const lastField = page.getByLabel("End time", { exact: true });
+    const fieldBox = await lastField.boundingBox();
+    const saveBox = await save.boundingBox();
+    expect(saveBox!.y - fieldBox!.y - fieldBox!.height).toBeGreaterThanOrEqual(
+      16,
+    );
+    await screenshot("assignment-form");
+    await page.getByRole("button", { name: "Cancel", exact: true }).click();
     await screenshot("matrix");
     await weeklyPerson.click();
     await expect(
@@ -378,8 +438,22 @@ for (const width of [1440, 375]) {
     await expect(
       page
         .getByRole("region", { name: "Early shift" })
-        .getByRole("button", { name: /Shift Leader 1/ }),
+        .getByRole("button", { name: "Administrator", exact: true }),
     ).toBeVisible();
+    const personal = page.getByLabel("Your assignment", { exact: true });
+    await expect(
+      personal.getByText("05:00–14:15", { exact: true }),
+    ).toHaveCount(1);
+    await expect(
+      personal.getByRole("heading", { name: "Early shift" }),
+    ).toBeVisible();
+    await personal
+      .getByRole("button", { name: "View assignment for Administrator" })
+      .click();
+    await page
+      .getByRole("navigation", { name: "Breadcrumb" })
+      .getByRole("button", { name: "My day", exact: true })
+      .click();
     const zones = page.getByRole("table", { name: "Other zones" });
     await expect(zones.getByRole("columnheader")).toHaveText([
       "Zone",

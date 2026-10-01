@@ -15,6 +15,8 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
 | `RefreshButton`, `CollectionAction` | Labelled reload with busy/reduced-motion behavior; collection link with count and direction |
 | `Badge` | Neutral/info/attention/success/warning semantic metadata; caller supplies meaningful text |
+| `AddButton`, `EditButton` | Compact add/edit icon actions with required accessible label and title |
+| `DateField` | Labelled native calendar-day input with muted caption, emphasized value and browser picker; forwards input props and refs |
 | `DeleteButton` | Shared trash icon with required accessible label/title and danger styling |
 | `Button` | `primary`, `secondary`, `text`, `danger`; common sizing, radius, spacing and native disabled/focus behavior |
 | `Field`, `Input`, `Textarea`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
@@ -36,7 +38,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 ```tsx
 import { useState } from "react";
 import {
-  Button, Disclosure, Field, FieldRow, FilterForm, IdentityRoot, Input,
+  Button, DateField, Disclosure, FieldRow, FilterForm, IdentityRoot,
   MetricCard, MetricGrid,
 } from "../../design/components";
 
@@ -47,11 +49,8 @@ export function ExampleSummary() {
       <FilterForm onSubmit={(event) => event.preventDefault()}>
         <Disclosure summary="Date range">
           <FieldRow>
-            <Field>
-              From
-              <Input type="date" value={date}
-                onChange={(event) => setDate(event.target.value)} />
-            </Field>
+            <DateField label="From" value={date}
+              onChange={(event) => setDate(event.target.value)} />
             <Button type="submit">Apply</Button>
           </FieldRow>
         </Disclosure>
@@ -127,3 +126,13 @@ footer. Text actions keep the same control dimensions; semantic title links and
 clickable cards retain their context-specific presentation. Tab navigation with
 more than three choices scrolls horizontally on narrow screens; shorter category
 groups continue to share one row. Sign out is last in header DOM and visual order.
+
+`DateField` keeps calendar values as native `YYYY-MM-DD` strings; callers own the
+selected day and time-zone policy. Its `form` variant aligns with compact editing
+fields; the default `surface` variant groups caption and value. Compose it with `DepartmentScope` inside
+`iop-scope-toolbar` for a single responsive filter surface. The department stretches
+beside a bounded date field on desktop; both stack at narrow widths.
+
+`SectionHeading` accepts an optional `trail` of already-labelled breadcrumb items
+with caller-owned return callbacks. The final item names the current page. Preserve
+category/date/department context when moving between a collection and its details.

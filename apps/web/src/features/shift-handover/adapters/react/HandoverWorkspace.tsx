@@ -9,8 +9,7 @@ import {
   Button,
   Dialog,
   Disclosure,
-  Field,
-  Input,
+  DateField,
   Panel,
   ViewNavigation,
 } from "../../../../design/components";
@@ -239,6 +238,27 @@ export function HandoverWorkspace({
       setBusy(false);
     }
   };
+  const returnToJournal = () => {
+    setDetail("");
+    setFiltered(false);
+    apply({ ...emptySelection, departmentId: selection.departmentId });
+  };
+  const categoryLabel =
+    view === "journal" && filtered
+      ? context?.categories.find(
+          (category) => category.id === selection.categoryId,
+        )?.label
+      : undefined;
+  const journalTrail = categoryLabel
+    ? [
+        { label: t("Journal"), onSelect: returnToJournal },
+        {
+          label: categoryLabel,
+          ...(detail ? { onSelect: () => setDetail("") } : {}),
+        },
+        ...(detail ? [{ label: t("Details") }] : []),
+      ]
+    : undefined;
   if (detail && context)
     return (
       <EntryDetail
@@ -246,6 +266,7 @@ export function HandoverWorkspace({
         id={detail}
         context={context}
         application={application}
+        trail={journalTrail}
         viewLabel={viewLabels[view]}
         onHome={goHome}
         close={() => setDetail("")}
@@ -256,6 +277,7 @@ export function HandoverWorkspace({
   return (
     <section aria-label={t("Shift Handover")} className="handover-workspace">
       <HandoverHeading
+        trail={journalTrail}
         viewLabel={viewLabels[view]}
         onHome={goHome}
         actions={
@@ -285,7 +307,7 @@ export function HandoverWorkspace({
         }
       />
       {context && (
-        <div className="handover-toolbar">
+        <div className="iop-scope-toolbar">
           {!(view === "meeting" && dailyOverview) && (
             <DepartmentScope
               value={selection.departmentId}
@@ -303,47 +325,32 @@ export function HandoverWorkspace({
             />
           )}
           {(view === "meeting" || view === "journal") && (
-            <Field>
-              {view === "journal"
-                ? t("Journal date")
-                : dailyOverview
-                  ? t("Overview date")
-                  : t("Meeting date")}
-              <Input
-                type="date"
-                aria-label={
-                  view === "journal"
-                    ? t("Journal date")
-                    : dailyOverview
-                      ? t("Overview date")
-                      : t("Meeting date")
-                }
-                required
-                disabled={busy}
-                value={day || today(context.timeZone)}
-                onChange={(e) => {
-                  if (!e.target.value) return;
-                  setDay(e.target.value);
-                  setFiltered(false);
-                  apply({
-                    ...emptySelection,
-                    departmentId: selection.departmentId,
-                  });
-                }}
-              />
-            </Field>
+            <DateField
+              label={
+                view === "journal"
+                  ? t("Journal date")
+                  : dailyOverview
+                    ? t("Overview date")
+                    : t("Meeting date")
+              }
+              required
+              disabled={busy}
+              value={day || today(context.timeZone)}
+              onChange={(e) => {
+                if (!e.target.value) return;
+                setDay(e.target.value);
+                setFiltered(false);
+                apply({
+                  ...emptySelection,
+                  departmentId: selection.departmentId,
+                });
+              }}
+            />
           )}
-          <p>
-            {view === "meeting" || view === "journal"
-              ? day || today(context.timeZone)
-              : today(context.timeZone)}{" "}
-            ·{" "}
-            {view === "meeting" && dailyOverview
-              ? t("All users · All departments")
-              : view === "mine"
-                ? t("Entries you published")
-                : t("Select a department to catch up with your team")}
-          </p>
+          {view === "meeting" && dailyOverview && (
+            <p>{t("All users · All departments")}</p>
+          )}
+          {view === "mine" && <p>{t("Entries you published")}</p>}
         </div>
       )}
       <ViewNavigation
@@ -368,7 +375,7 @@ export function HandoverWorkspace({
         }}
       />
       {error && !creating && <Alert>{error}</Alert>}
-      {filtered && (
+      {filtered && !categoryLabel && (
         <Actions>
           <p>
             {t("Filtered history ")}
@@ -426,7 +433,7 @@ export function HandoverWorkspace({
             ) : (
               <>
                 <div className="handover-results-heading">
-                  <h2>{viewLabels[view]}</h2>
+                  <h2>{categoryLabel ?? t(viewLabels[view])}</h2>
                   <p>
                     {page.total}
                     {t(" entries · Showing ")}

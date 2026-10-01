@@ -274,3 +274,23 @@ User search uses the shared `SearchControl` beside the Users heading. The icon
 reveals an aligned input with immediate keyboard focus; closing it or pressing Escape
 clears the search and returns focus to the icon. It wraps below the heading when
 needed on narrow screens. Sorting remains independent of search visibility.
+
+
+## Operational controls — IOP-191
+
+`DateField` uses a muted caption above an emphasized native calendar-day value in a
+compact bordered surface. Handover composes it beside `DepartmentScope` in the
+shared `iop-scope-toolbar`; desktop controls share one row and mobile controls stack.
+Workforce reuses the date field in its heading and assignment editor. Keep native
+picker/keyboard behavior and the shared separated form footer.
+
+Available profiles use four compact cards with navy role titles and muted capability
+summaries. The labelled `AddButton` beside user search opens the shared modal with
+creation guidance, inline failure feedback and native field validation. Keep initial
+credentials visible after success until dismissed.
+
+My day prioritizes the assigned shift, duty and hours; person, zone and phone use
+supporting labelled facts. Show schedule status once, retaining separately labelled
+availability hours when they differ or no assignment exists. Journal category
+collections preserve a clickable section/view/category trail through entry details,
+returning with the selected day and department intact.

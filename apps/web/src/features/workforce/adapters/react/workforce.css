@@ -4,7 +4,7 @@
 }
 .workforce-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--iop-sectionGap);
 }
 .workforce-assignment {
@@ -107,15 +107,6 @@
   flex-wrap: wrap;
   gap: 0.65rem;
 }
-.iop-ui .workforce-date-toolbar .iop-field {
-  margin: 0;
-  gap: 0.65rem;
-}
-.iop-ui .workforce-date-toolbar .iop-input {
-  width: auto;
-  min-height: 40px;
-}
-
 .iop-ui .workforce-board .workforce-day-heading {
   border-left: 1px solid var(--iop-line);
 }
@@ -197,4 +188,53 @@
 }
 .iop-ui .workforce-week-editor .iop-form-actions {
   margin-top: 0;
+}
+
+.workforce-personal-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: var(--iop-sectionGap);
+}
+.iop-ui .workforce-personal-heading :is(h2, h3) {
+  margin: 0;
+}
+.workforce-personal-assignment {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--iop-sectionGap);
+  padding: var(--iop-panelPadding);
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  background: var(--iop-canvas);
+  min-width: 0;
+}
+.iop-ui .workforce-personal-hours {
+  margin: 0;
+  font-size: var(--iop-sectionTitleSize);
+  font-weight: var(--iop-labelWeight);
+  font-variant-numeric: tabular-nums;
+}
+.workforce-personal-main {
+  flex: 1 1 230px;
+}
+.workforce-personal-main .workforce-personal-heading {
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+.iop-ui .workforce-personal-facts {
+  flex: 2 1 260px;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}
+.iop-ui .workforce-personal-assignment > .iop-button {
+  padding-left: 0;
+}
+.workforce-availability {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
 }

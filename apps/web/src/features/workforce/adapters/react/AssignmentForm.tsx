@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Actions,
   Button,
+  DateField,
   Field,
   FieldRow,
   Input,
@@ -89,15 +90,13 @@ export function AssignmentForm({
                 ))}
             </Select>
           </Field>
-          <Field>
-            {t("Date")}
-            <Input
-              required
-              type="date"
-              value={data.date}
-              onChange={(e) => field("date", e.target.value)}
-            />
-          </Field>
+          <DateField
+            variant="form"
+            label={t("Date")}
+            required
+            value={data.date}
+            onChange={(e) => field("date", e.target.value)}
+          />
           <Field>
             {t("Shift")}
             <Select
@@ -186,7 +185,7 @@ export function AssignmentForm({
             />
           </Field>
         </FieldRow>
-        <Actions>
+        <Actions className="iop-form-actions">
           <Button type="submit" disabled={pending}>
             {t(pending ? "Saving…" : "Save")}
           </Button>

@@ -2,6 +2,34 @@ import { t } from "../../localization/i18n";
 import type { ComponentProps, ReactNode } from "react";
 import { Badge } from "./Surfaces";
 
+export function AddButton({
+  label,
+  className = "",
+  ...props
+}: Omit<ComponentProps<"button">, "children"> & { label: string }) {
+  return (
+    <Button
+      {...props}
+      className={`iop-icon-button ${className}`}
+      aria-label={label}
+      title={label}
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        aria-hidden="true"
+      >
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+    </Button>
+  );
+}
+
 export function FilterButton({
   label,
   active = false,

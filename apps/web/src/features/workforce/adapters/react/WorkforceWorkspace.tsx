@@ -4,8 +4,7 @@ import {
   Alert,
   Badge,
   Button,
-  Field,
-  Input,
+  DateField,
   SectionHeading,
   RefreshButton,
   Panel,
@@ -164,21 +163,18 @@ export function WorkforceWorkspace({
         actions={
           !selected && (
             <Actions className="workforce-date-toolbar">
-              <Field layout="inline">
-                {t("Date")}
-                <Input
-                  aria-label={t("Date")}
-                  type="date"
-                  value={date}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setDate(e.target.value);
-                      setSelected(undefined);
-                      setForm(false);
-                    }
-                  }}
-                />
-              </Field>
+              <DateField
+                label={t("Date")}
+                value={date}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setDate(e.target.value);
+                    setSelected(undefined);
+                    setForm(false);
+                  }
+                }}
+              />
+
               <RefreshButton busy={pending} onClick={refresh} />
               {canPlan && (
                 <Button
