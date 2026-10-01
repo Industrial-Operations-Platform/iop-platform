@@ -214,10 +214,26 @@ for (const width of [1440, 375]) {
         );
         return route.fulfill({ json: { ok: true } });
       }
-      if (path.endsWith("/workforce/board"))
+      if (path.endsWith("/workforce/board")) {
+        const board = workforce(route.request().postDataJSON().from);
+        const names = new Map(users.map((user) => [user.id, user.name]));
         return route.fulfill({
-          json: workforce(route.request().postDataJSON().from),
+          json: {
+            ...board,
+            people: board.people.map((person) => ({
+              ...person,
+              name: names.get(person.id) ?? person.name,
+            })),
+            records: board.records.map((record) => ({
+              ...record,
+              personName:
+                "userId" in record.data
+                  ? (names.get(record.data.userId) ?? record.personName)
+                  : record.personName,
+            })),
+          },
         });
+      }
       throw new Error(`Unexpected request: ${path}`);
     });
     const screenshot = async (name: string) => {
@@ -228,7 +244,7 @@ for (const width of [1440, 375]) {
       ).toBe(true);
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({
-        path: `/tmp/iop-187-${name}-${width}.png`,
+        path: `/tmp/iop-188-${name}-${width}.png`,
         fullPage: true,
       });
     };
@@ -243,16 +259,32 @@ for (const width of [1440, 375]) {
       .click();
     const table = page.getByRole("table", { name: "Accounts for this site" });
     await expect(
-      table.getByRole("button", { name: "User details for morgan" }),
+      table.getByRole("button", { name: "Edit user morgan" }),
     ).toBeVisible();
     await expect(table.getByRole("combobox")).toHaveCount(0);
     await expect(
       table.getByRole("button", { name: "Delete profile for morgan" }),
     ).toHaveAttribute("title", "Delete profile for morgan");
+    const search = page.getByRole("searchbox", { name: "Search users" });
+    await search.fill("MORGAN");
+    await expect(table.getByRole("rowheader")).toHaveCount(1);
+    await search.fill("missing");
+    await expect(page.getByText("No users match your search.")).toBeVisible();
+    await search.fill("");
+    for (const label of ["User", "Profile", "Status"]) {
+      const header = table.getByRole("columnheader", {
+        name: label,
+        exact: true,
+      });
+      for (const direction of ["ascending", "descending", "none"]) {
+        await header.getByRole("button").click();
+        await expect(header).toHaveAttribute("aria-sort", direction);
+      }
+    }
+    await table.getByText("Morgan Technician", { exact: true }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
     await screenshot("users");
-    await table
-      .getByRole("button", { name: "User details for morgan" })
-      .click();
+    await table.getByRole("button", { name: "Edit user morgan" }).click();
     const dialog = page.getByRole("dialog", { name: "User details" });
     await expect(dialog.getByText("morgan", { exact: true })).toBeVisible();
     await dialog.getByLabel("Name", { exact: true }).fill("Morgan Updated");
@@ -263,8 +295,8 @@ for (const width of [1440, 375]) {
     await dialog.getByRole("button", { name: "Save changes" }).click();
     await expect(dialog).toHaveCount(0);
     await expect(
-      table.getByRole("button", { name: "User details for morgan" }),
-    ).toHaveText("Morgan Updated");
+      table.getByRole("rowheader").filter({ hasText: "Morgan Updated" }),
+    ).toHaveText("Morgan Updatedmorgan");
     expect(writes).toEqual([
       {
         path: "/api/v1/users/details",
@@ -293,24 +325,31 @@ for (const width of [1440, 375]) {
       matrix.locator("tbody").getByText("Early shift", { exact: true }),
     ).toHaveCount(0);
     const weeklyPerson = matrix
-      .getByRole("button", { name: "Morgan Technician Phone" }).first();
+      .getByRole("button", { name: "Morgan Updated Phone" })
+      .first();
     await expect(matrix.locator("tbody")).not.toContainText("05:00");
     await expect(matrix.locator("tbody")).not.toContainText("123");
-    await expect(weeklyPerson.getByRole("img", { name: "Phone" })).toBeVisible();
     await expect(
-      matrix.getByRole("button", { name: "Taylor Technician", exact: true })
-        .first().getByRole("img"),
+      weeklyPerson.getByRole("img", { name: "Phone" }),
+    ).toBeVisible();
+    await expect(
+      matrix
+        .getByRole("button", { name: "Taylor Technician", exact: true })
+        .first()
+        .getByRole("img"),
     ).toHaveCount(0);
     await screenshot("matrix");
     await weeklyPerson.click();
     await expect(
-      page.getByRole("heading", { name: "Morgan Technician" }),
+      page.getByRole("heading", { name: "Morgan Updated" }),
     ).toBeVisible();
     await expect(
       page.locator("dd").filter({ hasText: /^05:00–14:15$/ }),
     ).toBeVisible();
     await expect(page.locator("dd").filter({ hasText: /^123$/ })).toBeVisible();
-    await page.getByRole("button", { name: "Weekly plan", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Weekly plan", exact: true })
+      .click();
     await expect(matrix).toBeVisible();
     await page.getByRole("button", { name: "My day", exact: true }).click();
     await expect(
@@ -329,23 +368,33 @@ for (const width of [1440, 375]) {
       has: page.getByRole("rowheader", { name: "Assembly", exact: true }),
     });
     await expect(
-      assembly.getByRole("cell").nth(0)
-        .getByRole("button", { name: "Morgan Technician Phone" }),
+      assembly
+        .getByRole("cell")
+        .nth(0)
+        .getByRole("button", { name: "Morgan Updated Phone" }),
     ).toBeVisible();
     await expect(assembly.getByRole("cell").nth(1)).toHaveText("—");
     await expect(
-      assembly.getByRole("cell").nth(2)
+      assembly
+        .getByRole("cell")
+        .nth(2)
         .getByRole("button", { name: "Taylor Technician", exact: true }),
     ).toBeVisible();
     await expect(
-      zones.getByRole("row").filter({
-        has: page.getByRole("rowheader", { name: "Packing", exact: true }),
-      }).getByRole("cell"),
+      zones
+        .getByRole("row")
+        .filter({
+          has: page.getByRole("rowheader", { name: "Packing", exact: true }),
+        })
+        .getByRole("cell"),
     ).toHaveText(["—", "—", "—"]);
     await screenshot("day");
-    await assembly.getByRole("button", {
-      name: "Taylor Technician", exact: true,
-    }).focus();
+    await assembly
+      .getByRole("button", {
+        name: "Taylor Technician",
+        exact: true,
+      })
+      .focus();
     await page.keyboard.press("Enter");
     await expect(
       page.getByRole("heading", { name: "Taylor Technician" }),
@@ -369,7 +418,7 @@ for (const width of [1440, 375]) {
       .filter({
         has: page.getByRole("columnheader", { name: "Source", exact: true }),
       })
-      .getByRole("button", { name: "Morgan Technician" })
+      .getByRole("button", { name: "Morgan Updated" })
       .click();
     await page.getByRole("button", { name: "Edit week", exact: true }).click();
     await expect(page.getByLabel("Person", { exact: true })).toHaveValue(

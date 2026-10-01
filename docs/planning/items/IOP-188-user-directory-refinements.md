@@ -1,6 +1,6 @@
 # IOP-188 — User directory controls and current operational names
 
-Status: In progress
+Status: Completed
 
 ## Authorized request and acceptance
 
@@ -27,4 +27,16 @@ References: [IOP-187](IOP-187-compact-workforce-tables.md),
 [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md),
 [visual identity](../../design/visual-identity.md).
 
-[Execution plan](../active/IOP-188-user-directory-refinements-plan.md).
+[Execution plan](../completed/IOP-188-user-directory-refinements-plan.md).
+
+
+## Outcome
+
+Users can search by name/username, cycle prioritized heading sorts, and edit via
+an explicit pencil action. Account labels sit on adjacent lines. Department matrix
+uses one collection title, centered dates and compact metadata columns; standalone
+table captions use section typography. Workforce and current Handover names resolve
+by scoped account ID, including retained inactive/deleted references, while revision
+snapshots remain unchanged. API, frontend, PostgreSQL and browser validation are
+recorded in the execution plan. Implementation is committed locally for review;
+publication and Docker activation of IOP-188 are pending owner approval.

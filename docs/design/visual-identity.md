@@ -251,3 +251,13 @@ Details. My entries emphasizes entry date and responsible name with semibold nav
 text. Handover category badges use green for Successes, red for Problems, amber
 for Safety and blue for Information/other configured categories. Stable IDs select
 presentation tone in the Handover adapter; configured labels remain unchanged.
+
+
+IOP-188 removes duplicate visible table captions where a section title already
+identifies Department matrix, Users or Weekly plan; each table keeps an accessible
+name. Standalone captions use section-title size, navy ink and section spacing.
+Department matrix centers date values as an explicit first-column exception and
+reserves compact widths for short metadata, giving narrative columns more room.
+Users places name and username on adjacent lines, provides name/username search
+and shared three-state sortable headings, and edits only through a labelled pencil
+button next to Delete. Account-name self-editing in the shell remains separate.

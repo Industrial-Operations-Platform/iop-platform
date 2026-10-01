@@ -150,8 +150,7 @@ export function PlanBoard({
   return (
     <Panel>
       <TableViewport aria-label={t("Weekly plan")}>
-        <Table className="workforce-board">
-          <caption>{t("Weekly plan")}</caption>
+        <Table className="workforce-board" aria-label={t("Weekly plan")}>
           <thead>
             <tr>
               <th rowSpan={2} scope="col">

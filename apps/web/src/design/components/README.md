@@ -68,7 +68,10 @@ export function ExampleSummary() {
 Buttons default to `type="button"`; submit controls must explicitly use
 `type="submit"`. Native props, events and refs are preserved by controls. Give each
 control a visible `Field` label, or an explicit accessible name for compact controls.
-Keep table captions and column/row headers in the caller's semantic markup.
+Keep column/row headers in the caller's semantic markup. Tables without an
+adjacent section title use a readable section-sized caption; avoid duplicate
+visible titles and retain an accessible name with `aria-label` or `aria-labelledby`.
+Use labelled `EditButton` and `DeleteButton` for explicit compact row actions.
 Every column/group header centers horizontally and vertically, including the first.
 Body cells center vertically; the first column aligns left and remaining columns
 and action groups center horizontally unless explicitly specified otherwise.

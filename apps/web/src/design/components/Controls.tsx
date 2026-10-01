@@ -2,6 +2,36 @@ import { t } from "../../localization/i18n";
 import type { ComponentProps, ReactNode } from "react";
 import { Badge } from "./Surfaces";
 
+export function EditButton({
+  label,
+  className = "",
+  ...props
+}: Omit<ComponentProps<"button">, "children"> & { label: string }) {
+  return (
+    <Button
+      {...props}
+      variant="secondary"
+      className={`iop-icon-button ${className}`}
+      aria-label={label}
+      title={label}
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m16 3 5 5M4 15l-1 6 6-1L21 8a2 2 0 0 0-5-5Z" />
+      </svg>
+    </Button>
+  );
+}
+
 export function DeleteButton({
   label,
   className = "",

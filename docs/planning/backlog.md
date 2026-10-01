@@ -321,4 +321,4 @@ canonical asset integration.
 | [IOP-185 — Administration and Workforce interface consistency](items/IOP-185-administration-workforce-ui.md) | Completed |
 | [IOP-186 — Table headings and operational card alignment](items/IOP-186-table-card-alignment.md) | Completed |
 | [IOP-187 — Compact Workforce matrices and shared table alignment](items/IOP-187-compact-workforce-tables.md) | Completed |
-| [IOP-188 — User directory controls and current operational names](items/IOP-188-user-directory-refinements.md) | In progress |
+| [IOP-188 — User directory controls and current operational names](items/IOP-188-user-directory-refinements.md) | Completed |

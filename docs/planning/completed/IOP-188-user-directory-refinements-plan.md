@@ -1,6 +1,6 @@
 # IOP-188 — User directory controls and current operational names
 
-Status: In progress
+Status: Completed
 
 Authorization: [owner request](../items/IOP-188-user-directory-refinements.md).
 Branch: `feature/IOP-188-user-directory-refinements`, created from integrated
@@ -62,9 +62,10 @@ Read contexts are English; no translation edits are required.
   `/tmp/iop182-matrix-1440.png`; compact adjacent account labels, clear edit/delete
   controls, centered dates and one collection title. Mobile tables remain scrollable.
   Preview uses isolated port 4176; the existing service on 3000 was left running.
-- Build retains the existing bundle-size advisory. No API/schema/permission change.
+- Build retains the existing bundle-size advisory. No transport/database schema or permission change.
 
 Local logs: `/tmp/iop-188-{tests,web-tests,database,db-unit,typecheck,browser,browser-users}.log`.
-Documentation/link consistency and final commits remain to be recorded.
+Documentation links/statuses and `git diff --check` pass. API increment:
+`c25aad7`; the frontend completion commit includes this archived plan.
 New IOP-188 publication/merge and activation require review approval;
 the preceding approval has already been fulfilled for IOP-187.

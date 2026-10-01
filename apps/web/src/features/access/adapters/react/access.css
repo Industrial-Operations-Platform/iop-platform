@@ -46,10 +46,23 @@
 .iop-ui .access-account-facts {
   margin: 0;
 }
-.iop-ui .access-user-link {
-  padding: 0;
-  justify-content: flex-start;
+.access-user-identity {
+  display: grid;
+  gap: 3px;
+}
+.access-user-name {
   font-weight: var(--iop-labelWeight);
+}
+.access-users-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--iop-sectionGap);
+  margin-bottom: var(--iop-sectionGap);
+}
+.iop-ui .access-users-heading h2 {
+  margin: 0;
 }
 .iop-ui .access-row-actions {
   flex-wrap: nowrap;
@@ -60,7 +73,7 @@
 }
 .iop-ui .access-users {
   table-layout: fixed;
-  min-width: 48rem;
+  min-width: 49rem;
   overflow-wrap: anywhere;
 }
 .access-users-person {
