@@ -185,3 +185,19 @@ checks `handover.read` for this bounded, location-filtered code lookup on the al
 scoped transaction. It exposes identifiers for reporting only; analytical report,
 source-row and availability endpoints continue to require their own permissions.
 No new grant or unscoped catalog is introduced.
+
+## Owner-requested daily views — 2026-10-01
+
+[IOP-190](../../planning/items/IOP-190-daily-handover.md) makes Meeting preparation
+the first/default tab, followed by Journal, Department matrix and My entries.
+Journal and meeting query one selected calendar day. A separate Department status
+disclosure queries unresolved entries through that day for categories whose scoped
+catalog configuration enables `carryForward`. The host adapter defaults Problems
+and Performance to this behavior; the generic domain contains no category-specific
+rule. No entry is closed or deleted when it stops appearing in a daily view.
+
+The existing scoped query port gains optional due-date, responsible-user, external
+reference and condition predicates for matrix column filters. They apply before
+counts and cursor pagination. What? and Details remain free of column controls.
+This refines presentation and the existing query contract without a new architectural
+boundary, storage model, permission or formal shift lifecycle.

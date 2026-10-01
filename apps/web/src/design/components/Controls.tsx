@@ -2,6 +2,41 @@ import { t } from "../../localization/i18n";
 import type { ComponentProps, ReactNode } from "react";
 import { Badge } from "./Surfaces";
 
+export function FilterButton({
+  label,
+  active = false,
+  className = "",
+  ...props
+}: Omit<ComponentProps<"button">, "children"> & {
+  label: string;
+  active?: boolean;
+}) {
+  return (
+    <Button
+      {...props}
+      variant="text"
+      className={`iop-icon-button iop-filter-button ${className}`}
+      aria-label={label}
+      title={label}
+      aria-pressed={active}
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M3 5h18l-7 8v6l-4 2v-8Z" />
+      </svg>
+    </Button>
+  );
+}
+
 export function DeleteButton({
   label,
   className = "",

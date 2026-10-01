@@ -322,3 +322,4 @@ canonical asset integration.
 | [IOP-186 — Table headings and operational card alignment](items/IOP-186-table-card-alignment.md) | Completed |
 | [IOP-187 — Compact Workforce matrices and shared table alignment](items/IOP-187-compact-workforce-tables.md) | Completed |
 | [IOP-189 — Local test-account password reset](items/IOP-189-local-test-passwords.md) | Completed |
+| [IOP-190 — Daily Handover views and focused table filters](items/IOP-190-daily-handover.md) | In progress |

@@ -1157,6 +1157,7 @@ export interface components {
             role: "department" | "area" | "location";
         };
         HandoverChoiceDto: {
+            carryForward?: boolean;
             id: string;
             label: string;
         };
@@ -1185,6 +1186,13 @@ export interface components {
             nextCursor: string;
         };
         HandoverSelectionDto: {
+            dueFrom?: string;
+            dueTo?: string;
+            /** @description Omit for all assignees; empty string selects unassigned entries. */
+            responsibleId?: string;
+            externalReference?: string;
+            /** @enum {string} */
+            condition?: "" | "damaged" | "inspection-needed" | "blocked" | "repaired" | "restored";
             mine?: boolean;
             attention?: boolean;
             from: string;

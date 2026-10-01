@@ -1054,3 +1054,14 @@
     overflow-x: auto;
   }
 }
+
+.iop-ui .iop-filter-button {
+  width: 28px;
+  flex: 0 0 28px;
+  min-height: 28px;
+  min-width: 28px;
+  padding: 4px;
+}
+.iop-ui .iop-filter-button[aria-pressed="true"] {
+  background: var(--iop-activeSurface);
+}

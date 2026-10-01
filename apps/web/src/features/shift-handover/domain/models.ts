@@ -8,6 +8,7 @@ export interface Location {
 export interface Choice {
   id: string;
   label: string;
+  carryForward?: boolean;
 }
 export interface Catalog {
   locations: Location[];
@@ -83,6 +84,11 @@ export interface History {
   nextBefore: number;
 }
 export interface Selection {
+  dueFrom?: string;
+  dueTo?: string;
+  responsibleId?: string;
+  externalReference?: string;
+  condition?: Content["condition"];
   from: string;
   to: string;
   departmentId: string;

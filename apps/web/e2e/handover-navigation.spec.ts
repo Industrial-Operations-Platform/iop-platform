@@ -284,6 +284,16 @@ for (const width of [1440, 820, 375]) {
       .selectOption("hall-a");
     const path = page.getByRole("navigation", { name: "Breadcrumb" });
     const tabs = page.getByRole("navigation", { name: "Handover views" });
+    await expect(path.locator('[aria-current="page"]')).toHaveText(
+      "Meeting preparation",
+    );
+    await expect(tabs.getByRole("button")).toHaveText([
+      "Meeting preparation",
+      "Journal",
+      "Department matrix",
+      "My entries",
+    ]);
+    await tabs.getByRole("button", { name: "Journal", exact: true }).click();
     await expect(path.locator('[aria-current="page"]')).toHaveText("Journal");
     const journalCard = page
       .getByRole("region", { name: "Problems", exact: true })

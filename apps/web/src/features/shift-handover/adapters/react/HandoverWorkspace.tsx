@@ -63,7 +63,12 @@ export function HandoverWorkspace({
   const [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [refresh, setRefresh] = useState(0);
-  const [view, setView] = useState<View>("journal");
+  const [view, setView] = useState<View>(
+    initialHighlights || initialPending || initialAttention
+      ? "matrix"
+      : "meeting",
+  );
+  const [day, setDay] = useState("");
   const [selection, setSelection] = useState<Selection>({
     ...emptySelection,
     departmentId: initialHighlights ? "" : departmentId,
@@ -76,8 +81,10 @@ export function HandoverWorkspace({
   const [filtered, setFiltered] = useState(
     initialHighlights || initialPending || initialAttention,
   );
-  const [page, setPage] = useState(blankPage),
-    [pending, setPending] = useState(blankPage);
+  const [page, setPage] = useState(blankPage);
+  const [outstanding, setOutstanding] = useState<
+    { category: Choice; page: Page }[]
+  >([]);
   const [sections, setSections] = useState<{ category: Choice; page: Page }[]>(
     [],
   );
@@ -86,9 +93,9 @@ export function HandoverWorkspace({
   const board = view === "journal" && !filtered;
   const meetingLabel = dailyOverview ? "Daily overview" : "Meeting preparation";
   const viewLabels: Record<View, string> = {
+    meeting: meetingLabel,
     journal: "Journal",
     matrix: "Department matrix",
-    meeting: meetingLabel,
     mine: "My entries",
   };
   useEffect(() => {
@@ -100,33 +107,34 @@ export function HandoverWorkspace({
     setError("");
     const load = async () => {
       if (board || view === "meeting") {
-        const selected =
-          view === "meeting"
-            ? meetingSelection(
-                selection.from,
-                selection.departmentId,
-                dailyOverview,
-              )
-            : selection;
-        const result = await application.board(selected);
-        const issues =
-          view === "meeting" && !dailyOverview
-            ? await application.list({
-                departmentId: selected.departmentId,
-                state: "pending",
-              })
-            : blankPage;
+        const settings = context ?? (await application.context());
+        const selected = meetingSelection(
+          day || today(settings.timeZone),
+          selection.departmentId,
+          view === "meeting" && dailyOverview,
+        );
+        const [result, unresolved] = await Promise.all([
+          application.board(selected),
+          application.board(
+            {
+              ...selected,
+              from: "",
+              departmentId: selection.departmentId,
+              state: "pending",
+            },
+            true,
+          ),
+        ]);
         if (active) {
           setContext(result.context);
           setSections(result.sections);
-          setPending(issues);
+          setOutstanding(unresolved.sections);
         }
       } else {
-        const result = await application.open(selection, false);
+        const result = await application.open(selection);
         if (active) {
           setContext(result.context);
           setPage(result.current);
-          setPending(result.pending);
         }
       }
     };
@@ -140,7 +148,7 @@ export function HandoverWorkspace({
     return () => {
       active = false;
     };
-  }, [application, selection, view, refresh, board, dailyOverview]);
+  }, [application, selection, view, refresh, board, dailyOverview, day]);
   const apply = (next: Selection) => {
     setSelection({ ...next, cursor: "" });
     setDraft({ ...next, cursor: "" });
@@ -151,7 +159,8 @@ export function HandoverWorkspace({
       return;
     }
     setDetail("");
-    setView("journal");
+    setView("meeting");
+    setDay("");
     setFiltered(false);
     setSearching(false);
     setCreating(null);
@@ -167,44 +176,51 @@ export function HandoverWorkspace({
       equipmentReferenceId: entry.equipmentReferenceId,
     });
     setFiltered(true);
-    setView("journal");
+    setView("matrix");
     setDetail("");
   };
-  const more = async (issues = false) => {
+  const more = async () => {
     setBusy(true);
     setError("");
     try {
-      const base = issues ? pending : page;
+      const base = page;
       const next = await application.list({
         ...selection,
-        ...(issues ? { from: "", to: "", state: "pending" as const } : {}),
         cursor: base.nextCursor,
       });
       const merged = { ...next, entries: [...base.entries, ...next.entries] };
-      if (issues) setPending(merged);
-      else setPage(merged);
+      setPage(merged);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load entries.");
     } finally {
       setBusy(false);
     }
   };
-  const moreCategory = async (categoryId: string) => {
-    const section = sections.find((s) => s.category.id === categoryId);
+  const moreCategory = async (categoryId: string, unresolved = false) => {
+    const section = (unresolved ? outstanding : sections).find(
+      (s) => s.category.id === categoryId,
+    );
     if (!section?.page.nextCursor) return;
     setBusy(true);
     setError("");
     try {
       const next = await application.list({
         ...meetingSelection(
-          selection.from,
+          day || today(context!.timeZone),
           selection.departmentId,
-          dailyOverview,
+          view === "meeting" && dailyOverview,
         ),
+        ...(unresolved
+          ? {
+              from: "",
+              departmentId: selection.departmentId,
+              state: "pending" as const,
+            }
+          : {}),
         categoryId,
         cursor: section.page.nextCursor,
       });
-      setSections((current) =>
+      (unresolved ? setOutstanding : setSections)((current) =>
         current.map((s) =>
           s.category.id === categoryId
             ? {
@@ -253,7 +269,7 @@ export function HandoverWorkspace({
             >
               {t("New entry ")}
             </Button>
-            {view !== "meeting" && (
+            {(view === "matrix" || view === "mine") && (
               <Button
                 variant="secondary"
                 disabled={!context}
@@ -286,30 +302,42 @@ export function HandoverWorkspace({
               }}
             />
           )}
-          {view === "meeting" && (
+          {(view === "meeting" || view === "journal") && (
             <Field>
-              {dailyOverview ? t("Overview date") : t("Meeting date")}
+              {view === "journal"
+                ? t("Journal date")
+                : dailyOverview
+                  ? t("Overview date")
+                  : t("Meeting date")}
               <Input
                 type="date"
                 aria-label={
-                  dailyOverview ? t("Overview date") : t("Meeting date")
+                  view === "journal"
+                    ? t("Journal date")
+                    : dailyOverview
+                      ? t("Overview date")
+                      : t("Meeting date")
                 }
                 required
                 disabled={busy}
-                value={selection.from}
-                onChange={(e) =>
-                  e.target.value &&
+                value={day || today(context.timeZone)}
+                onChange={(e) => {
+                  if (!e.target.value) return;
+                  setDay(e.target.value);
+                  setFiltered(false);
                   apply({
-                    ...selection,
-                    from: e.target.value,
-                    to: e.target.value,
-                  })
-                }
+                    ...emptySelection,
+                    departmentId: selection.departmentId,
+                  });
+                }}
               />
             </Field>
           )}
           <p>
-            {view === "meeting" ? selection.from : today(context.timeZone)} ·{" "}
+            {view === "meeting" || view === "journal"
+              ? day || today(context.timeZone)
+              : today(context.timeZone)}{" "}
+            ·{" "}
             {view === "meeting" && dailyOverview
               ? t("All users · All departments")
               : view === "mine"
@@ -332,14 +360,10 @@ export function HandoverWorkspace({
           if (busy || !context) return;
           setView(next);
           setFiltered(false);
-          const date = context ? today(context.timeZone) : "";
           apply({
             ...emptySelection,
             departmentId: selection.departmentId,
             mine: next === "mine",
-            ...(next === "meeting"
-              ? meetingSelection(date, selection.departmentId, dailyOverview)
-              : {}),
           });
         }}
       />
@@ -378,39 +402,26 @@ export function HandoverWorkspace({
                 add={setCreating}
                 open={open}
                 history={(categoryId) => {
-                  apply({ ...selection, categoryId });
+                  apply({
+                    ...meetingSelection(
+                      day || today(context!.timeZone),
+                      selection.departmentId,
+                      false,
+                    ),
+                    categoryId,
+                  });
                   setFiltered(true);
                 }}
               />
             ) : view === "meeting" ? (
               <>
-                <h2>{meetingLabel}</h2>
+                <h2>{t(meetingLabel)}</h2>
                 <MeetingCanvas
                   sections={sections}
                   open={open}
-                  more={moreCategory}
+                  more={(id) => moreCategory(id)}
                   busy={busy}
                 />
-                {!dailyOverview && (
-                  <Disclosure
-                    summary={t("Earlier and current open issues · {0}", [
-                      pending.total,
-                    ])}
-                    variant="panel"
-                  >
-                    <EntrySummaryCards entries={pending.entries} open={open} />
-                    {!pending.total && <p>{t("No unresolved issues.")}</p>}
-                    {pending.nextCursor && (
-                      <Button
-                        variant="secondary"
-                        disabled={busy}
-                        onClick={() => void more(true)}
-                      >
-                        {t("More open issues ")}
-                      </Button>
-                    )}
-                  </Disclosure>
-                )}
               </>
             ) : (
               <>
@@ -428,10 +439,16 @@ export function HandoverWorkspace({
                     <p>{t("Share an update or search earlier history.")}</p>
                   </Panel>
                 )}
-                {page.entries.length > 0 &&
+                {(page.entries.length > 0 || view === "matrix") &&
                   (view === "matrix" ? (
                     <EntryMatrix
                       entries={page.entries}
+                      selection={selection}
+                      people={context?.people ?? []}
+                      onFilter={(value) => {
+                        apply(value);
+                        setFiltered(true);
+                      }}
                       externalLabel={
                         context?.externalSystemLabel ?? t("Work reference")
                       }
@@ -457,6 +474,39 @@ export function HandoverWorkspace({
                   </Button>
                 )}
               </>
+            )}
+            {(board || view === "meeting") && (
+              <Disclosure
+                summary={t("Department status · {0} open issues", [
+                  outstanding.reduce(
+                    (total, section) => total + section.page.total,
+                    0,
+                  ),
+                ])}
+                variant="panel"
+              >
+                {dailyOverview && view === "meeting" && (
+                  <DepartmentScope
+                    value={selection.departmentId}
+                    choices={context!.locations.filter(
+                      (location) => location.role === "department",
+                    )}
+                    onChange={(id) => apply({ ...selection, departmentId: id })}
+                  />
+                )}
+                <p>
+                  {t("Unresolved topics through {0}", [
+                    day || today(context!.timeZone),
+                  ])}
+                </p>
+                <MeetingCanvas
+                  sections={outstanding}
+                  open={open}
+                  more={(id) => moreCategory(id, true)}
+                  busy={busy}
+                  outstanding
+                />
+              </Disclosure>
             )}
           </>
         )

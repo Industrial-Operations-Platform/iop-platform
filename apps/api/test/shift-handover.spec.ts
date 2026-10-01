@@ -437,3 +437,71 @@ test("current-day rules use the site calendar across UTC midnight and DST", () =
     "2026-10-26",
   );
 });
+
+test("matrix filters validate bounded references, responsibility, conditions and due date ranges", () => {
+  expect(
+    validSelection({
+      ...emptySelection,
+      from: "2026-09-01",
+      to: "2026-09-30",
+      dueFrom: "2026-10-01",
+      dueTo: "2026-10-31",
+      responsibleId: "",
+      externalReference: "  00123  ",
+      condition: "blocked",
+    }),
+  ).toMatchObject({
+    responsibleId: "",
+    externalReference: "00123",
+    condition: "blocked",
+  });
+  for (const values of [
+    { dueFrom: "2026-10-02", dueTo: "2026-10-01" },
+    { dueFrom: "2026-02-30" },
+    { dueTo: "not-a-date" },
+    { dueFrom: "2000-01-01", dueTo: "2050-01-01" },
+    { responsibleId: "a".repeat(65) },
+    { externalReference: "x".repeat(161) },
+    { condition: "unknown" },
+    { condition: null },
+    { responsibleId: null },
+    { unknownColumn: "value" },
+  ])
+    expect(() =>
+      validSelection({ ...emptySelection, ...values } as never),
+    ).toThrow();
+});
+
+test("carry-forward is configured by category ID, preserves labels and accepts explicit overrides", () => {
+  expect(
+    handoverCatalog(undefined, { organizationId: "org", siteId: "site" }, "UTC")
+      .categories.filter((category) => category.carryForward)
+      .map((category) => category.id),
+  ).toEqual(["performance", "problems"]);
+  const config = {
+    organizationId: "org",
+    siteId: "site",
+    externalSystemLabel: "Work order",
+    locations: [],
+    categories: [
+      { id: "problems", label: "Renamed problems", carryForward: false },
+      { id: "custom", label: "Local topics", carryForward: true },
+      { id: "information", label: "Information" },
+    ],
+  };
+  expect(handoverCatalog(config, config, "UTC").categories).toEqual([
+    { id: "problems", label: "Renamed problems", carryForward: false },
+    { id: "custom", label: "Local topics", carryForward: true },
+    { id: "information", label: "Information", carryForward: false },
+  ]);
+  expect(() =>
+    handoverCatalog(
+      {
+        ...config,
+        categories: [{ id: "custom", label: "Topics", carryForward: "yes" }],
+      },
+      config,
+      "UTC",
+    ),
+  ).toThrow();
+});

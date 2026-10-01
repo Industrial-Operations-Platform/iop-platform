@@ -5,6 +5,7 @@ import {
 import {
   emptySelection,
   type CreateEntry,
+  type Selection,
 } from "../src/features/shift-handover/domain/models";
 test("a publication retry retains the request key after an uncertain response", async () => {
   const create = jest
@@ -24,26 +25,46 @@ test("a publication retry retains the request key after an uncertain response", 
   expect(create.mock.calls[0][0].key).toBe(create.mock.calls[1][0].key);
   expect(ids).toHaveBeenCalledTimes(1);
 });
-test("meeting selection retains earlier open issues and preserves department filters", async () => {
-  const list = jest
-    .fn()
-    .mockResolvedValue({ entries: [], total: 0, nextCursor: "" });
+test("outstanding board loads only configured carry-forward categories within the selected department and cutoff", async () => {
+  const list = jest.fn(async (_selection: Selection) => ({
+    entries: [],
+    total: 0,
+    nextCursor: "",
+  }));
   const app = new HandoverApplication(
-    { list } as unknown as Gateway,
+    {
+      context: async () => ({
+        categories: [
+          { id: "safety", label: "Safety" },
+          { id: "problems", label: "Renamed problems", carryForward: true },
+          { id: "performance", label: "Performance", carryForward: true },
+        ],
+      }),
+      list,
+    } as unknown as Gateway,
     () => "key",
   );
-  await app.meeting({
-    ...emptySelection,
-    from: "2026-09-29",
-    to: "2026-09-29",
-    departmentId: "dept",
-  });
-  expect(list.mock.calls[1][0]).toMatchObject({
-    from: "",
-    to: "",
-    state: "pending",
-    departmentId: "dept",
-  });
+  const result = await app.board(
+    {
+      ...emptySelection,
+      to: "2026-09-29",
+      departmentId: "dept",
+      state: "pending",
+    },
+    true,
+  );
+  expect(result.sections.map((section) => section.category.id)).toEqual([
+    "problems",
+    "performance",
+  ]);
+  expect(list.mock.calls).toHaveLength(2);
+  for (const [selection] of list.mock.calls)
+    expect(selection).toMatchObject({
+      from: "",
+      to: "2026-09-29",
+      state: "pending",
+      departmentId: "dept",
+    });
 });
 
 test("the board loads each category independently so busy categories cannot hide other sections", async () => {

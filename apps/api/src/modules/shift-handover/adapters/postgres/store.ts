@@ -193,6 +193,11 @@ class PgTransaction implements Transaction {
       cursorId ?? "",
       s.mine ? this.actor : "",
       s.attention ?? false,
+      s.dueFrom ?? "",
+      s.dueTo ?? "",
+      s.responsibleId ?? null,
+      s.externalReference ?? "",
+      s.condition ?? "",
     ];
     const r = await this.tx.query(
       `WITH matching AS (
@@ -205,6 +210,11 @@ class PgTransaction implements Transaction {
       AND ($10='' OR strpos(lower(concat_ws(' ',snapshot->'content'->>'summary',snapshot->'content'->>'details',snapshot->'content'->>'equipmentCode',snapshot->'content'->>'externalReference',snapshot->'content'->>'challenge',snapshot->'content'->>'cause',snapshot->'content'->>'measure',snapshot->>'departmentLabel',snapshot->>'areaLabel',snapshot->'latestUpdate'->>'note',snapshot->>'authorName')),lower($10))>0)
       AND (NOT $11 OR snapshot->>'highlighted'='true')
       AND ($14='' OR author_id=$14)
+      AND ($16='' OR NULLIF(snapshot->'content'->>'dueDate','')::date >= NULLIF($16,'')::date)
+      AND ($17='' OR NULLIF(snapshot->'content'->>'dueDate','')::date <= NULLIF($17,'')::date)
+      AND ($18::text IS NULL OR coalesce(snapshot->>'responsibleId','')=$18)
+      AND ($19='' OR strpos(lower(snapshot->'content'->>'externalReference'),lower($19))>0)
+      AND ($20='' OR snapshot->'content'->>'condition'=$20)
       AND (NOT $15 OR (snapshot->>'issueState' IN ('open','in-progress') AND
         (snapshot->'content'->>'condition'='blocked'
         OR NULLIF(snapshot->'content'->>'dueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date

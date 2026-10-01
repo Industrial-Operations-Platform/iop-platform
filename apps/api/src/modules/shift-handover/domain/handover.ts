@@ -21,6 +21,7 @@ export interface Location {
 export interface Choice {
   id: string;
   label: string;
+  carryForward?: boolean;
 }
 export interface Catalog {
   locations: Location[];
@@ -96,6 +97,11 @@ export interface History {
   nextBefore: number;
 }
 export interface Selection {
+  dueFrom?: string;
+  dueTo?: string;
+  responsibleId?: string;
+  externalReference?: string;
+  condition?: Content["condition"];
   from: string;
   to: string;
   departmentId: string;
@@ -234,6 +240,13 @@ export function validSelection(input: Selection): Selection {
     ...Object.keys(emptySelection),
     ...(Object.hasOwn(input ?? {}, "mine") ? ["mine"] : []),
     ...(Object.hasOwn(input ?? {}, "attention") ? ["attention"] : []),
+    ...[
+      "dueFrom",
+      "dueTo",
+      "responsibleId",
+      "externalReference",
+      "condition",
+    ].filter((key) => Object.hasOwn(input ?? {}, key)),
   ]);
   if (
     (input.mine !== undefined && typeof input.mine !== "boolean") ||
@@ -248,6 +261,31 @@ export function validSelection(input: Selection): Selection {
     "categoryId",
   ] as const)
     result[key] = text(input[key], 64);
+  if (input.dueFrom !== undefined) result.dueFrom = date(input.dueFrom);
+  if (input.dueTo !== undefined) result.dueTo = date(input.dueTo);
+  if (
+    result.dueFrom &&
+    result.dueTo &&
+    (result.dueFrom > result.dueTo ||
+      Date.parse(result.dueTo) - Date.parse(result.dueFrom) > 3660 * 86400000)
+  )
+    invalid();
+  if (input.responsibleId !== undefined)
+    result.responsibleId = text(input.responsibleId, 64);
+  if (input.externalReference !== undefined)
+    result.externalReference = text(input.externalReference, 160).trim();
+  if (
+    input.condition !== undefined &&
+    ![
+      "",
+      "damaged",
+      "inspection-needed",
+      "blocked",
+      "repaired",
+      "restored",
+    ].includes(input.condition)
+  )
+    invalid();
   result.search = text(input.search, 240);
   result.cursor = text(input.cursor, 100);
   if (

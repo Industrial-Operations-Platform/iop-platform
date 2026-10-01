@@ -44,6 +44,12 @@ There are at most 500 nodes and 30 categories. Department/area are form-selectio
 roles, not mandatory physical hierarchy depths. All fields in the example are
 required; empty strings explicitly represent absent optional mapping/parent values.
 
+Each category may additionally set `carryForward: true` or `false` to control its
+unresolved entries in Department status. When omitted, the host adapter defaults
+`problems` and `performance` to true and other IDs to false. Renaming a label does
+not change this behavior; custom IDs should set the flag explicitly. It affects
+presentation queries only and does not close, remove or migrate entries.
+
 Use `sectorKey` on a department only when there is an explicit mapping to the key
 returned by the analytical sector selector (currently the displayed sector label). It scopes imported equipment choices together with the exact configured area label;
 it is not a physical identity or asset-validation claim. Start and handover share
@@ -61,9 +67,12 @@ No automatic publication or local stack restart is implied by code validation.
 
 ## Worker workflow
 
-Open **Shift Handover** from the left navigation and select a department. The Journal
-board shows the three latest entries in each configured category, with full matching
-counts and a **View history** action. Journal and Meeting preparation reuse the
+Open **Shift Handover** from the left navigation to **Meeting preparation** and select
+a department and date. Tabs continue with **Journal**, **Department matrix** and
+**My entries**. The Journal board shows up to three entries for that selected day
+in each configured category, with full matching counts and a **View entries** action
+for the same day/category. The date carries between Journal and Meeting preparation.
+Journal and Meeting preparation reuse the
 same bordered summary cards: semibold blue entry titles and semibold muted department labels,
 distinct from the bold navy category headings. Select
 a card for its full report, date, author and status. Each category's **+** opens a modal form with
@@ -87,19 +96,28 @@ and feedback dates. Codes remain text, preserving leading zeros. An issue can be
 published before cause, responsibility or deadlines are known. Its assignee is a
 current site user. Meeting discussion and Start highlighting are separate choices.
 
-Use **Search history** intentionally to open text, date, location, category and
-status filters. Search stays closed during entry creation. **My entries** filters by
+Use **Search history** in Department matrix or My entries to open text, date,
+location, category and status filters. Matrix column filter icons additionally
+support occurrence/due-date ranges, external reference substring, responsible person
+(including unassigned) and issue state/reported condition. What? and Details have no
+column filters. Apply combines filters; Clear filter removes only that column's
+criteria. Headers remain available when nothing matches. Search stays closed during
+entry creation. **My entries** filters by
 the authenticated author on the server, including later pages; Department matrix
 keeps the tabular view. **Meeting preparation** is a six-section category canvas for
 the selected day and department, including empty sections. Each compact card shows
 only its title and department; open it for the full problem fields and history.
 Each section has independent full counts and pagination (20 entries per page).
-Earlier/current unresolved issues are available in a separate collapsed disclosure.
+The separate **Department status** disclosure shows only unresolved carry-forward
+topics (Problems/Performance by default), including earlier days through the selected
+date. Resolve an issue to remove it from this section while preserving its history.
+Other categories remain on their own day and in searchable history.
 
 For **Team Leader**, the tab is **Daily overview**. It defaults to today and includes
 all authors and departments at the authorized site for the selected day. It does not
 inherit department, personal-history or search filters and does not mix earlier open
-issues into the daily canvas. The date labels the entry's occurrence date, not the
+issues into the daily canvas. Its Department status disclosure has its own department
+selector; that selector does not narrow the daily canvas. The date labels the entry's occurrence date, not the
 instant of a later follow-up. This presentation does not grant additional access.
 The selected department is shared with Start during the current session; M6 default
 assignments are not yet connected.
@@ -109,7 +127,7 @@ The heading always names the current tab, for example **Shift Handover / Departm
 matrix**. Opening a report adds **Details** to that path. Select the preceding tab
 name to return to the same view with its department, meeting date, search filters
 and already-loaded pages retained. Select **Shift Handover** in the breadcrumb or
-the sidebar for an explicit return to Journal home with the selected department. Entries load when opened and
+the sidebar for an explicit return to Meeting preparation with today's date and the selected department. Entries load when opened and
 update automatically after saving changes; there is no manual refresh control.
 **Add follow-up** opens a modal with an optional issue-state transition. **Close issue**
 prefills Resolved and requires a resolution outcome; **Reopen issue** retains prior

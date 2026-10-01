@@ -28,13 +28,15 @@ export class HandoverApplication {
   equipment(selection: EquipmentSelection) {
     return this.gateway.equipment(selection);
   }
-  async board(selection: Selection) {
+  async board(selection: Selection, carryForwardOnly = false) {
     const context = await this.context();
     const sections = await Promise.all(
-      context.categories.map(async (category) => ({
-        category,
-        page: await this.list({ ...selection, categoryId: category.id }),
-      })),
+      context.categories
+        .filter((category) => !carryForwardOnly || category.carryForward)
+        .map(async (category) => ({
+          category,
+          page: await this.list({ ...selection, categoryId: category.id }),
+        })),
     );
     return { context, sections };
   }
@@ -62,30 +64,12 @@ export class HandoverApplication {
     this.attempts.delete(fingerprint);
     return entry;
   }
-  async open(selection: Selection, meeting: boolean) {
-    const [context, pages] = await Promise.all([
+  async open(selection: Selection) {
+    const [context, current] = await Promise.all([
       this.context(),
-      meeting
-        ? this.meeting(selection)
-        : this.list(selection).then((current) => ({
-            current,
-            pending: { entries: [], total: 0, nextCursor: "" } as Page,
-          })),
+      this.list(selection),
     ]);
-    return { context, ...pages };
-  }
-  async meeting(selection: Selection) {
-    const [current, pending] = await Promise.all([
-      this.gateway.list({ ...selection, cursor: "" }),
-      this.gateway.list({
-        ...selection,
-        from: "",
-        to: "",
-        state: "pending",
-        cursor: "",
-      }),
-    ]);
-    return { current, pending };
+    return { context, current };
   }
 }
 

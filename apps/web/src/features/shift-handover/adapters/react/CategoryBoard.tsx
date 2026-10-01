@@ -30,15 +30,13 @@ export function CategoryBoard({
           </div>
           <EntrySummaryCards entries={page.entries.slice(0, 3)} open={open} />
           {!page.total && (
-            <p className="handover-muted">
-              {t("No updates yet. Share what the next team should know. ")}
-            </p>
+            <p className="handover-muted">{t("No entries for this day.")}</p>
           )}
           <CollectionAction
             count={page.total}
             onClick={() => history(category.id)}
           >
-            {t("View history ")}
+            {t("View entries")}
           </CollectionAction>
         </Panel>
       ))}

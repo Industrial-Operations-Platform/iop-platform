@@ -18,8 +18,8 @@ repaired and what remains unresolved, including the relevant equipment reference
    when relevant. Expand detail/follow-up fields only when needed, then publish.
 3. The entry appears in the department feed and the linked equipment-reference
    history. Refreshing, logging out or restarting the app does not lose it.
-4. Prepare the meeting by date/department/category, with open issues from earlier
-   dates still visible. Mark a topic for discussion separately from highlighting it
+4. Prepare the meeting by date/department/category, with unresolved Problems and
+   Performance topics available separately under Department status. Mark a topic for discussion separately from highlighting it
    on Start. A routine repair can remain in history without appearing on Start.
 5. Add follow-up or a correction with authorship and timestamp. Resolve an issue
    with an outcome; retain the original entry and previous revisions.
@@ -66,21 +66,38 @@ this increment does not introduce private personnel records.
 
 ## Views and presentation
 
-**Journal and history:** newest occurrence date first, with stable creation/ID
-tie-breakers; paginated server-side filtering by date range, department, area,
-equipment reference, category and issue state, plus text search. An entry detail
+Tabs appear in this order: Meeting preparation, Journal, Department matrix, My entries.
+Opening Handover defaults to Meeting preparation (Daily overview for Team Leader).
+
+**Journal:** show only entries for the selected site-calendar day and department,
+defaulting to today. Category previews link to that day's full category results.
+The selected day carries between Journal and Meeting preparation.
+
+**History:** Department matrix and My entries retain paginated server-side filtering
+by date range, department, area, equipment reference, category and issue state, plus
+text search. Order by occurrence date with stable creation/ID tie-breakers. An entry detail
 shows author, recorded date/time, original content, revisions and follow-up. A
 resolved issue remains searchable. Unverified references are explicitly labelled.
 
 **Department matrix:** Date, What?, Details, Ultimo reference, Due date, Responsible
-person. Include category, follow-up state and an entry link. The problem detail
-exposes challenge, cause, measure and feedback deadline without widening every row.
+person and Status. Include category, follow-up state and an entry link. Each column
+except What? and Details has a filter action: occurrence-date range, literal external
+reference substring, due-date range, responsible person (including unassigned), and
+issue state/reported condition. Filters combine before counting and pagination and
+remain accessible for empty results. Clearing one preserves the others. The problem
+detail exposes challenge, cause, measure and feedback deadline without widening every row.
 
 **Meeting preparation:** show a canvas with the six configured category sections,
 including empty sections, and compact title/department cards. Each section has its
-own pagination and full matching count. The selected day defaults to today; earlier
-unresolved work stays separate in a collapsed disclosure. Full problem analysis,
+own pagination and full matching count. The selected day defaults to today. Full problem analysis,
 responsibility and deadlines are available by opening a card.
+
+**Department status:** a separate disclosure below Journal and Meeting preparation
+shows open/in-progress entries through the selected day for configured carry-forward
+categories (Problems and Performance by default). Each category has independent counts
+and pagination. Resolved entries disappear here but remain in daily/history views;
+other categories never carry forward here and are not automatically closed. This
+summarizes recorded issues, not live equipment health.
 
 **Team Leader daily overview:** the same canvas covers all authors and departments
 at the authorized site on the selected day. Reset personal/search/department filters
@@ -136,8 +153,8 @@ Ultimo remains an external reference until an integration is separately requeste
 
 The IOP-168 implementation uses 20-entry cursor pages and 25-revision history pages.
 Journal ordering is occurrence date, creation instant and ID descending; highlights
-use highlight time and ID. Meeting preparation retains a separately paginated list
-of unresolved issues across dates, with the other selected filters preserved.
+use highlight time and ID. Department status queries only carry-forward categories,
+with no lower occurrence-date bound and the selected day as an inclusive upper bound.
 History queries use the current department/equipment link; earlier links and their
 original content remain visible in the entry's immutable revisions.
 

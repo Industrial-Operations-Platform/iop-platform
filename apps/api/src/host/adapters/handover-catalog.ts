@@ -1,5 +1,6 @@
 import { configuredLocations } from "../../modules/platform-core/adapters/configuration/locations";
 import type { Catalog } from "../../modules/shift-handover/domain/handover";
+const carryForwardDefaults = new Set(["problems", "performance"]);
 export const handoverDefaults = {
   locations: [],
   externalSystemLabel: "External work reference",
@@ -10,7 +11,11 @@ export const handoverDefaults = {
     "People",
     "Performance",
     "Problems",
-  ].map((label) => ({ id: label.toLowerCase(), label })),
+  ].map((label) => ({
+    id: label.toLowerCase(),
+    label,
+    carryForward: carryForwardDefaults.has(label.toLowerCase()),
+  })),
 };
 export function handoverCatalog(
   value: unknown,
@@ -36,7 +41,11 @@ export function handoverCatalog(
   const categories = v.categories.map((c) => {
     if (
       !c ||
-      Object.keys(c).sort().join() !== "id,label" ||
+      Object.keys(c)
+        .filter((key) => key !== "carryForward")
+        .sort()
+        .join() !== "id,label" ||
+      (c.carryForward !== undefined && typeof c.carryForward !== "boolean") ||
       typeof c.id !== "string" ||
       !/^[a-z][a-z0-9-]{0,63}$/.test(c.id) ||
       typeof c.label !== "string" ||
@@ -44,7 +53,11 @@ export function handoverCatalog(
       c.label.length > 100
     )
       throw new Error("Invalid category configuration.");
-    return { id: c.id, label: c.label };
+    return {
+      id: c.id,
+      label: c.label,
+      carryForward: c.carryForward ?? carryForwardDefaults.has(c.id),
+    };
   });
   if (new Set(categories.map((c) => c.id)).size !== categories.length)
     throw new Error("Duplicate category configuration.");

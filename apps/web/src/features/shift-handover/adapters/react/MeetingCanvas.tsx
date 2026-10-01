@@ -8,21 +8,27 @@ export function MeetingCanvas({
   open,
   more,
   busy,
+  outstanding = false,
 }: {
   sections: { category: Choice; page: Page }[];
   open: (id: string) => void;
   more: (categoryId: string) => Promise<void>;
   busy: boolean;
+  outstanding?: boolean;
 }) {
   return (
     <div
       className="handover-meeting-canvas"
-      aria-label={t("Daily category canvas")}
+      aria-label={t(
+        outstanding ? "Outstanding department topics" : "Daily category canvas",
+      )}
     >
       {sections.map(({ category, page }) => (
         <Panel
           key={category.id}
-          aria-label={t("{0} section", [t(category.label)])}
+          aria-label={t(outstanding ? "Outstanding {0}" : "{0} section", [
+            t(category.label),
+          ])}
           className="handover-meeting-section"
         >
           <div className="handover-section-heading">
@@ -31,7 +37,13 @@ export function MeetingCanvas({
           </div>
           <EntrySummaryCards entries={page.entries} open={open} />
           {!page.total && (
-            <p className="handover-muted">{t("No entries for this day.")}</p>
+            <p className="handover-muted">
+              {t(
+                outstanding
+                  ? "No unresolved issues."
+                  : "No entries for this day.",
+              )}
+            </p>
           )}
           {page.nextCursor && (
             <Button

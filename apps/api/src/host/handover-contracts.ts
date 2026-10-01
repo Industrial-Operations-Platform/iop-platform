@@ -44,6 +44,7 @@ export class HandoverLocationDto {
     | "location";
 }
 export class HandoverChoiceDto {
+  @ApiPropertyOptional() carryForward?: boolean;
   @ApiProperty() id!: string;
   @ApiProperty() label!: string;
 }
@@ -111,6 +112,25 @@ export class HandoverChangeDto {
   @ApiPropertyOptional() highlighted?: boolean;
 }
 export class HandoverSelectionDto {
+  @ApiPropertyOptional() dueFrom?: string;
+  @ApiPropertyOptional() dueTo?: string;
+  @ApiPropertyOptional({
+    description:
+      "Omit for all assignees; empty string selects unassigned entries.",
+  })
+  responsibleId?: string;
+  @ApiPropertyOptional() externalReference?: string;
+  @ApiPropertyOptional({
+    enum: [
+      "",
+      "damaged",
+      "inspection-needed",
+      "blocked",
+      "repaired",
+      "restored",
+    ],
+  })
+  condition?: HandoverContentDto["condition"];
   @ApiPropertyOptional() mine?: boolean;
   @ApiPropertyOptional() attention?: boolean;
   @ApiProperty() from!: string;

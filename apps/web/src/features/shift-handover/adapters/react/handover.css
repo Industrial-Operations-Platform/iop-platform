@@ -374,7 +374,7 @@
 .iop-ui .handover-matrix-surface {
   margin-bottom: 0;
 }
-.iop-ui .handover-matrix button {
+.iop-ui .handover-matrix tbody button {
   font-size: var(--iop-bodySize);
   font-weight: var(--iop-labelWeight);
   line-height: var(--iop-captionLineHeight);
@@ -435,4 +435,16 @@
   .iop-department-scope .iop-select {
     width: 100%;
   }
+}
+
+.handover-column-heading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: normal;
+}
+.handover-column-filter {
+  display: grid;
+  gap: var(--iop-sectionGap);
 }

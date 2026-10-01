@@ -1,4 +1,16 @@
 export const german: Readonly<Record<string, string>> = {
+  "Journal date": "Journaldatum",
+  "Department status · {0} open issues": "Abteilungsstatus · {0} offene Punkte",
+  "Unresolved topics through {0}": "Offene Themen bis {0}",
+  "Outstanding department topics": "Offene Abteilungsthemen",
+  "Outstanding {0}": "Offene Themen: {0}",
+  "View entries": "Einträge ansehen",
+  "Filter {0}": "{0} filtern",
+  "All people": "Alle Personen",
+  "All conditions": "Alle Zustände",
+  "Clear filter": "Filter löschen",
+  "Apply filter": "Filter anwenden",
+
   "Workforce & shifts": "Personal & Schichten",
   "My day": "Mein Tag",
   "Weekly plan": "Wochenplan",

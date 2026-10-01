@@ -251,3 +251,11 @@ Details. My entries emphasizes entry date and responsible name with semibold nav
 text. Handover category badges use green for Successes, red for Problems, amber
 for Safety and blue for Information/other configured categories. Stable IDs select
 presentation tone in the Handover adapter; configured labels remain unchanged.
+
+IOP-190 places Meeting preparation first, followed by Journal, Department matrix
+and My entries. Journal and meeting share the selected calendar day; carry-forward
+Problems/Performance live in a separate Department status disclosure. Matrix headings
+pair their centered label with a compact shared `FilterButton`, except What? and
+Details. Active criteria remain visually marked and their controls stay available
+when a selection returns no rows. Filter dialogs reuse the shared modal and form
+controls, with each Clear filter action limited to that column.

@@ -114,6 +114,10 @@ even when that same section is already active. Use `RefreshButton` for icon-only
 reload actions and `DepartmentScope` for the shared white department/Halle context.
 Preserve accessible names and keyboard focus when using compact icon controls.
 
+`FilterButton` is a compact labelled funnel action. Its pressed state marks active
+criteria; callers own the filter dialog and matching policy. Center it with the
+column heading, and preserve it when a table has no matching rows.
+
 Use `Actions className="iop-form-actions"` for a separated, right-aligned form
 footer. Text actions keep the same control dimensions; semantic title links and
 clickable cards retain their context-specific presentation. Tab navigation with

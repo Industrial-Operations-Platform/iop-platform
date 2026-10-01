@@ -225,7 +225,7 @@ beforeAll(async () => {
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','tech-a','site-a2','analytics-reader',true)",
     ),
   );
-  expect(await migrate(configs.migrator)).toBe(4);
+  expect(await migrate(configs.migrator)).toBe(5);
   await provision(configs);
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
@@ -656,6 +656,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     });
     await pw(button("Administration")).toHaveCount(0);
     await button("Shift Handover").click();
+    await button("Journal").click();
     await pw(page.getByLabel("Search", { exact: true })).toHaveCount(0);
     await page.getByLabel("Selected department").selectOption("department");
     await pw(button("Add Safety entry")).toBeVisible();
@@ -849,6 +850,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     ).toBeVisible();
     await page.reload();
     await button("Shift Handover").click();
+    await button("Department matrix").click();
     await button("Search history").click();
     await page
       .getByLabel("Search", { exact: true })
@@ -870,8 +872,8 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await button("Sign out").click();
     await login("lead-a");
     await button("Shift Handover").click();
-    await page.getByLabel("Selected department").selectOption("department");
     await button("My entries").click();
+    await page.getByLabel("Selected department").selectOption("department");
     const dayNote = {
       ...content("Daily overview note"),
       date: new Date().toISOString().slice(0, 10),
@@ -895,7 +897,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await pw(
       page.getByRole("heading", { name: "Daily overview", exact: true }),
     ).toBeVisible();
-    await pw(page.getByLabel("Selected department")).toHaveCount(0);
+    await pw(page.getByLabel("Selected department")).not.toBeVisible();
     await pw(button("Meeting preparation")).toHaveCount(0);
     await pw(button("Browser repair corrected Workshop")).toBeVisible();
     await pw(button("Daily overview note Site-wide information")).toBeVisible();
@@ -924,7 +926,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     );
     await page.getByRole("button", { name: /More Problems entries/ }).click();
     await pw(button("Paging 0 Workshop")).toBeVisible();
-    await button("Journal").click();
+    await button("Department matrix").click();
     await button("Search history").click();
     await page
       .getByLabel("Search", { exact: true })
@@ -1003,8 +1005,14 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await page.getByLabel("Meeting date", { exact: true }).fill("2026-09-27");
     await pw(page.getByText("No entries for this day.")).toHaveCount(6);
     await pw(button("Paging 22 Workshop")).not.toBeVisible();
-    await page.getByText(/Earlier and current open issues/).click();
-    await pw(button("Paging 22 Workshop")).toBeVisible();
+    await page.getByText(/Department status ·/).click();
+    await pw(button("Paging 22 Workshop")).not.toBeVisible();
+    await page.getByLabel("Meeting date", { exact: true }).fill("2026-09-28");
+    await pw(
+      page
+        .getByLabel("Daily category canvas")
+        .getByRole("button", { name: "Paging 22 Workshop", exact: true }),
+    ).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.screenshot({
       path: join(artifacts, "meeting-desktop.png"),
@@ -1273,6 +1281,87 @@ test("weekly schedules allow planners, reject readers and retain atomic revision
     record: { data: { start: "05:00", source: "manual" } },
   });
 });
+test("matrix column filters combine before counts and cursor pagination, with literal references and exact assignees", async () => {
+  const ids = [];
+  for (let index = 0; index < 23; index++) {
+    const entry = await app.create("admin-a", {
+      key: randomUUID(),
+      issue: true,
+      responsibleId: "lead-a",
+      content: {
+        ...content(`Column filter ${index}`),
+        externalReference: "REF_%_Exact",
+        dueDate: "2026-10-15",
+        condition: "blocked",
+      },
+    });
+    ids.push(entry.id);
+  }
+  await app.create("admin-a", {
+    key: randomUUID(),
+    issue: true,
+    responsibleId: "",
+    content: {
+      ...content("Unassigned column filter"),
+      externalReference: "REF other",
+      dueDate: "",
+      condition: "repaired",
+    },
+  });
+  const selection = {
+    ...emptySelection,
+    from: "2026-09-28",
+    to: "2026-09-28",
+    departmentId: "department",
+    dueFrom: "2026-10-10",
+    dueTo: "2026-10-20",
+    responsibleId: "lead-a",
+    externalReference: "_%_eXaCt",
+    condition: "blocked",
+    state: "pending",
+  };
+  const first = await app.list("tech-a", selection);
+  expect(first.total).toBe(23);
+  expect(first.entries).toHaveLength(20);
+  const second = await app.list("tech-a", {
+    ...selection,
+    cursor: first.nextCursor,
+  });
+  expect(second.total).toBe(23);
+  expect(second.entries).toHaveLength(3);
+  expect(
+    new Set([...first.entries, ...second.entries].map((entry) => entry.id)),
+  ).toEqual(new Set(ids));
+  for (const change of [
+    { responsibleId: "task-a" },
+    { dueFrom: "2026-10-16" },
+    { dueTo: "2026-10-14" },
+    { condition: "repaired" },
+    { externalReference: "' OR true --" },
+    { state: "resolved" },
+  ])
+    expect((await app.list("tech-a", { ...selection, ...change })).total).toBe(
+      0,
+    );
+  const unassigned = await app.list("tech-a", {
+    ...emptySelection,
+    responsibleId: "",
+    externalReference: "REF other",
+  });
+  expect(unassigned.total).toBe(1);
+  expect(unassigned.entries[0].responsibleId).toBe("");
+  expect(
+    (
+      await app.list("tech-a", {
+        ...emptySelection,
+        responsibleId: "",
+        externalReference: "REF other",
+        dueFrom: "2026-01-01",
+      })
+    ).total,
+  ).toBe(0);
+});
+
 test("administrator logical deletion retains author name, journal history and audit; final administrator is protected", async () => {
   const entry = await publish("Retained author after profile removal");
   await expect(access.users.remove("tech-a", "task-a")).rejects.toThrow();

@@ -3976,6 +3976,9 @@
       "HandoverChoiceDto": {
         "type": "object",
         "properties": {
+          "carryForward": {
+            "type": "boolean"
+          },
           "id": {
             "type": "string"
           },
@@ -4095,6 +4098,30 @@
       "HandoverSelectionDto": {
         "type": "object",
         "properties": {
+          "dueFrom": {
+            "type": "string"
+          },
+          "dueTo": {
+            "type": "string"
+          },
+          "responsibleId": {
+            "type": "string",
+            "description": "Omit for all assignees; empty string selects unassigned entries."
+          },
+          "externalReference": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "",
+              "damaged",
+              "inspection-needed",
+              "blocked",
+              "repaired",
+              "restored"
+            ]
+          },
           "mine": {
             "type": "boolean"
           },
