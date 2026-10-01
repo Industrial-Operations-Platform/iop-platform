@@ -82,7 +82,9 @@ alarm data.
 ## Local accounts and profiles
 
 Open **Users & profiles** as Administrator to create users, assign one of the four
-profiles, or disable/reactivate a local account. Search by name or username. Click
+profiles, or disable/reactivate a local account. Select the search icon beside
+**Users** to reveal and focus the name/username field. Closing search or pressing
+Escape clears the query and restores focus to the icon without changing sorting. Click
 User, Profile or Status to cycle ascending, descending and unsorted; multiple
 criteria retain their displayed priority. Use the pencil beside Delete to edit an
 account; the static name no longer opens editing. Username and user ID are read-only;

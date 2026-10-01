@@ -1,6 +1,6 @@
 # IOP-190 — Daily Handover views and focused table filters
 
-Status: In progress
+Status: Completed
 
 Branch: `feature/IOP-190-daily-handover`, created from develop at `e68d290`.
 Scope: [owner request](../items/IOP-190-daily-handover.md).
@@ -38,27 +38,35 @@ apply. Read story/context files are English; no translation work is required.
 
 ## Evidence
 
-Handover increment complete in `bb3325c` on 2026-10-01. Continue the now-authorized
-user-search increment and verify the combined dependency before closing this plan.
+Handover increment complete in `bb3325c`. The authorized IOP-188 dependency was
+integrated locally in `c42a94c`, preserving current-name resolution, compact table
+hierarchy, matrix filters and both stories' tests. User search now uses a shared
+disclosed input beside Users, with focus restoration and search clearing on close
+or Escape. Sorting and explicit edit actions remain independent.
 
 - `npm run typecheck`: passed across API, web and database tooling.
 - `npm test`: passed, including build/contract consistency, 18 script checks,
-  342 API tests, 91 web tests and 77 database-tooling unit tests. Web checks cover
-  dependency boundaries, identity tokens and localization; rerun after final UI
-  changes also passed.
-- Isolated PostgreSQL Handover suite: 12 passed. Combined date, due-date, assignee,
+  344 API tests, 92 web tests and 77 database-tooling unit tests. Web checks cover
+  dependency boundaries, identity tokens and localization. API localhost tests
+  passed after rerunning with socket access outside the sandbox.
+- Isolated PostgreSQL Handover suite: 13 passed. Combined date, due-date, assignee,
   reference and condition filtering runs before counts/cursors (23 matching records,
   pages of 20 and 3); unassigned, absent deadlines, literal wildcard characters,
   empty results and nonmatching states were checked. The real browser journey
   passed for all four profiles. Existing navigation assertions were updated for
   the new default tab; the baseline migration count was corrected to five.
-- Browser navigation suite: 5 passed at desktop/tablet/mobile widths. New daily
+- Combined browser navigation suite: 7 passed at desktop/tablet/mobile widths. Daily
   cases verify tab order/default, shared selected date, department scope, restricted
   carry-forward categories, future/resolved exclusions, resolution follow-up,
   combined filters and retained headers for empty results. Final desktop/mobile
   cases also verify Escape discards unsaved criteria and restores filter-button focus.
+  User administration checks initial collapsed search, opening/focus, name/username
+  matches, empty results, Escape/icon closure, restored rows and three-state sorting.
+  Unit coverage confirms closing search retains the selected sort and makes no writes.
 - Inspected desktop/mobile screenshots under `/tmp/iop-190-{daily,matrix,filter}-*.png`.
   Filter dialogs render outside the table so they inherit normal form typography.
+  Inspected search screenshots under `/tmp/iop-188-users-search-*.png`: inline beside
+  the heading on desktop, wrapping within the panel on narrow screens, without page overflow.
 - Documentation links and `git diff --check`: passed. Read story files were English.
 
 No remote publication or operator-stack activation is included in this continuation.

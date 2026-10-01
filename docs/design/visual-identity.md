@@ -269,3 +269,8 @@ pair their centered label with a compact shared `FilterButton`, except What? and
 Details. Active criteria remain visually marked and their controls stay available
 when a selection returns no rows. Filter dialogs reuse the shared modal and form
 controls, with each Clear filter action limited to that column.
+
+User search uses the shared `SearchControl` beside the Users heading. The icon
+reveals an aligned input with immediate keyboard focus; closing it or pressing Escape
+clears the search and returns focus to the icon. It wraps below the heading when
+needed on narrow screens. Sorting remains independent of search visibility.

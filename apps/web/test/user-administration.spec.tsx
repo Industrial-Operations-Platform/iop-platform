@@ -131,7 +131,7 @@ test("failed detail save keeps the draft visible for correction", async () => {
 });
 
 test("users can search names and usernames and cycle every sortable header without editing a name", async () => {
-  setup([
+  const { gateway } = setup([
     {
       id: "a",
       name: "Alex",
@@ -156,14 +156,20 @@ test("users can search names and usernames and cycle every sortable header witho
   const original = order();
   fireEvent.click(table.getByText("Test User", { exact: true }));
   expect(screen.queryByRole("dialog")).toBeNull();
+  expect(screen.queryByRole("searchbox", { name: "Search users" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Search users" }));
   const search = screen.getByRole("searchbox", { name: "Search users" });
+  expect(search).toHaveFocus();
   fireEvent.change(search, { target: { value: "  ALEX  " } });
   expect(order()).toEqual(["Alexalex.lead"]);
   fireEvent.change(search, { target: { value: "zoe.admin" } });
   expect(order()).toEqual(["Zoezoe.admin"]);
   fireEvent.change(search, { target: { value: "nobody" } });
   expect(screen.getByText("No users match your search.")).toBeVisible();
-  fireEvent.change(search, { target: { value: "" } });
+  fireEvent.keyDown(search, { key: "Escape" });
+  expect(screen.queryByRole("searchbox", { name: "Search users" })).toBeNull();
+  expect(screen.getByRole("button", { name: "Search users" })).toHaveFocus();
+  expect(order()).toEqual(original);
   for (const [label, ascending, descending] of [
     [
       "User",
@@ -200,4 +206,18 @@ test("users can search names and usernames and cycle every sortable header witho
     "Test Usertest.user",
     "Alexalex.lead",
   ]);
+  fireEvent.click(screen.getByRole("button", { name: "Search users" }));
+  fireEvent.change(screen.getByRole("searchbox", { name: "Search users" }), {
+    target: { value: "Alex" },
+  });
+  expect(order()).toEqual(["Alexalex.lead"]);
+  fireEvent.click(screen.getByRole("button", { name: "Close search" }));
+  expect(screen.queryByRole("searchbox", { name: "Search users" })).toBeNull();
+  expect(order()).toEqual([
+    "Zoezoe.admin",
+    "Test Usertest.user",
+    "Alexalex.lead",
+  ]);
+  expect(gateway.update).not.toHaveBeenCalled();
+  expect(gateway.change).not.toHaveBeenCalled();
 });

@@ -266,11 +266,34 @@ for (const width of [1440, 375]) {
       table.getByRole("button", { name: "Delete profile for morgan" }),
     ).toHaveAttribute("title", "Delete profile for morgan");
     const search = page.getByRole("searchbox", { name: "Search users" });
+    await expect(search).toHaveCount(0);
+    const searchToggle = page.getByRole("button", {
+      name: "Search users",
+      exact: true,
+    });
+    await expect(searchToggle).toHaveAttribute("aria-expanded", "false");
+    await screenshot("users-search-collapsed");
+    await searchToggle.click();
+    await expect(search).toBeFocused();
+    await expect(
+      page.getByRole("button", { name: "Close search", exact: true }),
+    ).toHaveAttribute("aria-expanded", "true");
     await search.fill("MORGAN");
     await expect(table.getByRole("rowheader")).toHaveCount(1);
+    await screenshot("users-search-expanded");
+    await search.press("Escape");
+    await expect(search).toHaveCount(0);
+    await expect(searchToggle).toBeFocused();
+    await expect(table.getByRole("rowheader")).toHaveCount(2);
+    await searchToggle.click();
+    await expect(search).toHaveValue("");
     await search.fill("missing");
     await expect(page.getByText("No users match your search.")).toBeVisible();
-    await search.fill("");
+    await page
+      .getByRole("button", { name: "Close search", exact: true })
+      .click();
+    await expect(search).toHaveCount(0);
+    await expect(table.getByRole("rowheader")).toHaveCount(2);
     for (const label of ["User", "Profile", "Status"]) {
       const header = table.getByRole("columnheader", {
         name: label,

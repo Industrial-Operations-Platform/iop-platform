@@ -22,6 +22,7 @@ import {
   Table,
   TableViewport,
   SortableHeader,
+  SearchControl,
 } from "../../../../design/components";
 import type { AccessApplication } from "../../application/access";
 import {
@@ -220,15 +221,12 @@ export function UserAdministration({
       <Panel>
         <div className="access-users-heading">
           <h2>{t("Users")}</h2>
-          <Field>
-            {t("Search users")}
-            <Input
-              type="search"
-              value={search}
-              placeholder={t("Name or username")}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </Field>
+          <SearchControl
+            label={t("Search users")}
+            value={search}
+            placeholder={t("Name or username")}
+            onChange={setSearch}
+          />
         </div>
         {pending && <p role="status">{t("Updating users…")}</p>}
         <TableViewport>

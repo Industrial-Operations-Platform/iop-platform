@@ -1,6 +1,6 @@
 # IOP-190 — Daily Handover views and focused table filters
 
-Status: In progress
+Status: Completed
 
 ## Owner request
 
@@ -28,14 +28,16 @@ The user-search refinement depends on IOP-188. On 2026-10-01 the owner explicitl
 approved continuing IOP-190 on that branch; develop promotion, remote publication
 and activation remain separate review steps.
 
-## Progress
+## Outcome
 
 The Handover navigation, daily views, department-status disclosure and matrix filters
 are implemented and validated locally. API, real PostgreSQL and desktop/mobile
-browser evidence is recorded in the execution plan. User-search placement and
-combined dependency verification are In progress.
+browser evidence is recorded in the execution plan. User search is a compact icon
+beside Users that reveals/focuses its input; closing or Escape clears the query,
+restores focus and preserves sorting. The authorized IOP-188 dependency and combined
+behavior are validated locally. Publication and operator activation remain pending.
 
 References: [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md),
 [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md),
 [visual identity](../../design/visual-identity.md).
-[Execution plan](../active/IOP-190-daily-handover-plan.md).
+[Execution plan](../completed/IOP-190-daily-handover-plan.md).

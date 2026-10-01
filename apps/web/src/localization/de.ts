@@ -822,6 +822,7 @@ export const german: Readonly<Record<string, string>> = {
   "User details for {0}": "Benutzerdetails für {0}",
   "Edit user {0}": "Benutzer {0} bearbeiten",
   "Search users": "Benutzer suchen",
+  "Close search": "Suche schließen",
   "Name or username": "Name oder Benutzername",
   "No users match your search.": "Keine Benutzer entsprechen Ihrer Suche.",
   "User ID": "Benutzer-ID",

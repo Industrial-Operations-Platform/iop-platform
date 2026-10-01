@@ -35,3 +35,4 @@ export { SectionHeading } from "./SectionHeading";
 export { DepartmentScope } from "./DepartmentScope";
 export { Dialog } from "./Dialog";
 export { TableText } from "./TableText";
+export { SearchControl } from "./SearchControl";

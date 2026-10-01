@@ -19,6 +19,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `Button` | `primary`, `secondary`, `text`, `danger`; common sizing, radius, spacing and native disabled/focus behavior |
 | `Field`, `Input`, `Textarea`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
 | `ValueFilter` | Editable column value with native suggestions, unique accessible hint IDs and caller-owned matching semantics |
+| `SearchControl` | Labelled search icon that reveals/focuses a controlled input; closing or Escape clears it and restores focus; caller owns matching |
 | `FilterForm`, `Disclosure` | Form surface and native collapsible content; plain/panel/divided variants |
 | `Panel` | Content, chart, empty and metric surface treatments |
 | `MonthMultiPicker` | Checkbox selection of nonconsecutive calendar months |

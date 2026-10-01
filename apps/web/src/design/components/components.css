@@ -1066,3 +1066,18 @@
 .iop-ui .iop-filter-button[aria-pressed="true"] {
   background: var(--iop-activeSurface);
 }
+
+.iop-search-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+}
+.iop-search-control[data-expanded="true"] {
+  width: 20rem;
+}
+.iop-search-control .iop-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+}

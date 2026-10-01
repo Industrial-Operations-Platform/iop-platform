@@ -55,7 +55,7 @@
 }
 .access-users-heading {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--iop-sectionGap);
