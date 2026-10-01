@@ -24,16 +24,16 @@ and Performance are the current pilot defaults. No entry/state migration or auto
 closure is authorized. Test selected dates, outstanding category limits, pagination,
 combined filters, empty results, navigation and keyboard/mobile search behavior.
 
-The user-search refinement depends on the unmerged IOP-188 branch. Its integration
-or use as a dependency requires the pending explicit branch decision; independent
-Handover work may proceed from develop.
+The user-search refinement depends on IOP-188. On 2026-10-01 the owner explicitly
+approved continuing IOP-190 on that branch; develop promotion, remote publication
+and activation remain separate review steps.
 
 ## Progress
 
 The Handover navigation, daily views, department-status disclosure and matrix filters
 are implemented and validated locally. API, real PostgreSQL and desktop/mobile
-browser evidence is recorded in the execution plan. User-search placement remains
-pending the IOP-188 dependency decision; this parent item stays In progress.
+browser evidence is recorded in the execution plan. User-search placement and
+combined dependency verification are In progress.
 
 References: [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md),
 [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md),

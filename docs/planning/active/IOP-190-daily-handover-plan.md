@@ -4,8 +4,10 @@ Status: In progress
 
 Branch: `feature/IOP-190-daily-handover`, created from develop at `e68d290`.
 Scope: [owner request](../items/IOP-190-daily-handover.md).
-Dependency decision pending for IOP-188. Do independent Handover work first;
-preserve that review branch and do not publish or integrate it without approval.
+The owner approved continuing on IOP-188 on 2026-10-01. Bring
+`feature/IOP-188-user-directory-refinements` into this story branch, preserving both
+stories' completed work when resolving overlaps. This authorizes the local
+dependency integration, not promotion to develop, remote publication or activation.
 
 1. Handover domain/query ports and PostgreSQL: optional due-date range, responsible
    ID (including unassigned), external reference and condition filters; retain date
@@ -20,7 +22,7 @@ preserve that review branch and do not publish or integrate it without approval.
    the selected day, retained state/detail navigation. Matrix header filter actions
    open compact shared dialogs; What?/Details have none. Keep filters available on
    empty results and clear pagination when applying a filter.
-4. After resolving the branch dependency, Access React/shared controls: search icon
+4. With the authorized branch dependency, Access React/shared controls: search icon
    beside Users, disclosed input, focus/Escape handling and visible active-search
    state. Retain search/sort/edit behavior from IOP-188.
 5. Unit/API/real PostgreSQL and browser tests for dates, carry-forward categories,
@@ -36,8 +38,8 @@ apply. Read story/context files are English; no translation work is required.
 
 ## Evidence
 
-Handover increment complete on 2026-10-01. The user-search increment remains
-pending the IOP-188 dependency decision; keep this plan and parent item open.
+Handover increment complete in `bb3325c` on 2026-10-01. Continue the now-authorized
+user-search increment and verify the combined dependency before closing this plan.
 
 - `npm run typecheck`: passed across API, web and database tooling.
 - `npm test`: passed, including build/contract consistency, 18 script checks,
@@ -59,4 +61,4 @@ pending the IOP-188 dependency decision; keep this plan and parent item open.
   Filter dialogs render outside the table so they inherit normal form typography.
 - Documentation links and `git diff --check`: passed. Read story files were English.
 
-No IOP-188 integration, remote publication or operator-stack activation occurred.
+No remote publication or operator-stack activation is included in this continuation.
