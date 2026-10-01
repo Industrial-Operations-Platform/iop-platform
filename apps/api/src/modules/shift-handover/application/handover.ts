@@ -24,6 +24,8 @@ export interface Transaction {
   canDelete?: boolean;
   equipment: EquipmentLookup["search"];
   people(): Promise<Person[]>;
+  names(userIds: string[]): Promise<Map<string, string>>;
+  latestUpdateActors(entryIds: string[]): Promise<Map<string, string>>;
   get(id: string): Promise<Entry | null>;
   prior(key: string): Promise<{ fingerprint: string; entry: Entry } | null>;
   reference(content: Content): Promise<string>;
@@ -143,15 +145,54 @@ export class Handover {
   }
   async list(actor: string, input: Selection) {
     const selection = validSelection(input);
-    return this.store.run(actor, "handover.read", (tx) => tx.list(selection));
+    return this.store.run(actor, "handover.read", async (tx) => {
+      const page = await tx.list(selection);
+      return { ...page, entries: await this.currentNames(tx, page.entries) };
+    });
   }
   async history(actor: string, id: string, before = 0) {
     text(id, 64, true);
     if (!Number.isSafeInteger(before) || before < 0)
       throw new HandoverError("invalid_handover");
-    return this.store.run(actor, "handover.read", async (tx) =>
-      tx.history(await this.existing(tx, id), before),
+    return this.store.run(actor, "handover.read", async (tx) => {
+      const history = await tx.history(await this.existing(tx, id), before);
+      return {
+        ...history,
+        entry: (await this.currentNames(tx, [history.entry]))[0],
+      };
+    });
+  }
+  private async currentNames(
+    tx: Transaction,
+    entries: Entry[],
+  ): Promise<Entry[]> {
+    const actors = await tx.latestUpdateActors(
+      entries.filter((entry) => entry.latestUpdate).map((entry) => entry.id),
     );
+    const names = await tx.names(
+      entries
+        .flatMap((entry) => [
+          entry.authorId,
+          entry.responsibleId,
+          actors.get(entry.id) ?? "",
+        ])
+        .filter(Boolean),
+    );
+    return entries.map((entry) => ({
+      ...entry,
+      authorName: names.get(entry.authorId) ?? entry.authorName,
+      responsibleName: names.get(entry.responsibleId) ?? entry.responsibleName,
+      ...(entry.latestUpdate
+        ? {
+            latestUpdate: {
+              ...entry.latestUpdate,
+              actorName:
+                names.get(actors.get(entry.id) ?? "") ??
+                entry.latestUpdate.actorName,
+            },
+          }
+        : {}),
+    }));
   }
   async create(actor: string, input: CreateEntry): Promise<Entry> {
     exact(input, ["key", "content", "issue", "responsibleId"]);
@@ -170,7 +211,7 @@ export class Handover {
       if (prior) {
         if (prior.fingerprint !== fingerprint)
           throw new HandoverError("handover_conflict");
-        return prior.entry;
+        return (await this.currentNames(tx, [prior.entry]))[0];
       }
       const people = await tx.people(),
         author = this.person(people, actor),
@@ -211,7 +252,7 @@ export class Handover {
         },
         { key, fingerprint },
       );
-      return entry;
+      return (await this.currentNames(tx, [entry]))[0];
     });
   }
   remove(actor: string, id: string, expectedRevision: number) {
@@ -233,7 +274,7 @@ export class Handover {
         note: "Removed from active views; history retained.",
         at: entry.updatedAt,
       });
-      return entry;
+      return (await this.currentNames(tx, [entry]))[0];
     });
   }
   async change(actor: string, input: ChangeEntry): Promise<Entry> {
@@ -306,7 +347,7 @@ export class Handover {
         note,
         at: entry.updatedAt,
       });
-      return entry;
+      return (await this.currentNames(tx, [entry]))[0];
     });
   }
   private labels(content: Content) {

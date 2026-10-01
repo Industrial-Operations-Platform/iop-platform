@@ -92,7 +92,10 @@ are retained. This source adapter is distinct from analytical RAW import storage
   boundary; no connection or background synchronization is configured now.
 - PostgreSQL adapters serialize site changes, check current grants and persist
   typed Workforce records plus append-only revisions. Users/RBAC supplies a scoped
-  directory through the host composition root. Configuration records have stable
+  directory through the host composition root. Board reads project current names by
+  account ID for workers, schedules and assignments; changes need no reimport.
+  Referenced disabled/deleted profiles remain named but are not active choices.
+  Saved records and revisions retain original labels. Configuration records have stable
   IDs; retired targets remain visible on historical assignment cards.
 - React and HTTP adapters depend on browser application/domain ports. The shell
   composes the feature and Start summary. Customer labels stay configured data.

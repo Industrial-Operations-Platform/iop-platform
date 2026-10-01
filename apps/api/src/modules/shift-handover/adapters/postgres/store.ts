@@ -30,6 +30,7 @@ export interface AccessLookup {
     permission: string,
   ): Promise<boolean>;
   people(tx: SiteTransaction): Promise<Person[]>;
+  names(tx: SiteTransaction, userIds: string[]): Promise<Map<string, string>>;
   equipment(
     tx: SiteTransaction,
     ...args: Parameters<EquipmentLookup["search"]>
@@ -71,6 +72,7 @@ export class PgHandover implements Store {
             () => this.lookup.people(tx),
             (...args) => this.lookup.equipment(tx, ...args),
             await this.lookup.allowed(tx, actor, "site-configuration.manage"),
+            (ids) => this.lookup.names(tx, ids),
           ),
         );
       },
@@ -86,9 +88,27 @@ class PgTransaction implements Transaction {
     readonly people: () => Promise<Person[]>,
     readonly equipment: EquipmentLookup["search"],
     readonly canDelete = false,
+    readonly names: (userIds: string[]) => Promise<Map<string, string>>,
   ) {}
   private get selectors() {
     return [this.scope.organizationId, this.scope.siteId];
+  }
+  async latestUpdateActors(entryIds: string[]): Promise<Map<string, string>> {
+    if (!entryIds.length) return new Map();
+    const result = await this.tx.query(
+      `SELECT DISTINCT ON (entry_id) entry_id,actor_id
+       FROM shift_handover.revisions
+       WHERE organization_id=$1 AND site_id=$2 AND entry_id=ANY($3::text[])
+       AND snapshot->>'action' IN ('follow-up','state')
+       ORDER BY entry_id,revision DESC`,
+      [...this.selectors, entryIds],
+    );
+    return new Map(
+      (result.rows as { entry_id: string; actor_id: string }[]).map((row) => [
+        row.entry_id,
+        row.actor_id,
+      ]),
+    );
   }
   async get(id: string): Promise<Entry | null> {
     const r = await this.tx.query(

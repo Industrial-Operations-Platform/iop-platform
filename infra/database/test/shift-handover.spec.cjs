@@ -29,6 +29,7 @@ const {
 } = require("../../../apps/api/dist/modules/shift-handover/adapters/postgres/store");
 const {
   sitePeople,
+  sitePersonNames,
 } = require("../../../apps/api/dist/modules/users-rbac/adapters/postgres/site-people");
 const {
   evaluateSiteAccess,
@@ -97,6 +98,8 @@ function service(target = scope, connection = pool) {
         })
       ).allowed,
     people: (tx) => sitePeople(tx, target.organizationId, target.siteId),
+    names: (tx, ids) =>
+      sitePersonNames(tx, target.organizationId, target.siteId, ids),
     equipment: async () => ({ codes: ["0001"], nextCursor: "" }),
   });
   return new Handover(
@@ -225,7 +228,7 @@ beforeAll(async () => {
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','tech-a','site-a2','analytics-reader',true)",
     ),
   );
-  expect(await migrate(configs.migrator)).toBe(4);
+  expect(await migrate(configs.migrator)).toBe(5);
   await provision(configs);
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
@@ -1111,6 +1114,8 @@ function workforceService(target = scope) {
           })
         ).allowed,
       people: (tx) => workforcePeople(tx, target.organizationId, target.siteId),
+      names: (tx, ids) =>
+        sitePersonNames(tx, target.organizationId, target.siteId, ids),
     }),
     new ManualScheduleDecoder(),
     new IntlSiteClock(),
@@ -1300,4 +1305,117 @@ test("administrator logical deletion retains author name, journal history and au
     ).entries,
   ).toHaveLength(0);
   expect((await app.history("admin-a", entry.id)).revisions).toHaveLength(2);
+});
+
+test("renames resolve through scoped account IDs in operational reads, including disabled and deleted profiles, while history stays unchanged", async () => {
+  const { user } = await access.users.create("admin-a", {
+    name: "Original operator",
+    username: "rename.operator",
+    profile: "technician",
+  });
+  const entry = await app.create(user.id, {
+    key: randomUUID(),
+    content: content("Current account identity"),
+    issue: true,
+    responsibleId: user.id,
+  });
+  await app.change(user.id, {
+    id: entry.id,
+    action: "follow-up",
+    expectedRevision: 1,
+    note: "Original follow-up",
+  });
+  await app.change("admin-a", {
+    id: entry.id,
+    action: "highlight",
+    expectedRevision: 2,
+    highlighted: true,
+    note: "Discuss next shift",
+  });
+  const workforce = workforceService();
+  const input = {
+    format: "csv",
+    userId: "",
+    text: `userId,date,status,start,end\n${user.id},2026-12-01,work,05:00,14:15`,
+  };
+  await workforce.import(
+    "admin-a",
+    input,
+    await workforce.preview("admin-a", input),
+  );
+  await workforce.save("admin-a", {
+    kind: "assignment",
+    id: "rename-assignment",
+    expectedRevision: 0,
+    deleted: false,
+    data: {
+      userId: user.id,
+      date: "2026-12-01",
+      shiftId: "early",
+      targetId: "zone",
+      duty: "zone",
+      phone: "zone",
+      start: "05:00",
+      end: "14:15",
+      startsAt: "",
+      endsAt: "",
+    },
+  });
+  const originalHistory = (await app.history("admin-a", entry.id)).revisions;
+  await access.users.rename("admin-a", user.id, "Current operator");
+  const checkCurrent = async () => {
+    const current = (
+      await app.list("admin-a", {
+        ...emptySelection,
+        search: "Current account identity",
+      })
+    ).entries[0];
+    expect(current).toMatchObject({
+      authorId: user.id,
+      authorName: "Current operator",
+      responsibleName: "Current operator",
+      latestUpdate: { actorName: "Current operator" },
+    });
+    const history = await app.history("admin-a", entry.id);
+    expect(history.entry).toEqual(current);
+    expect(history.revisions).toEqual(originalHistory);
+    const board = await workforce.board("admin-a", "2026-12-01", "2026-12-01");
+    const records = board.records.filter(
+      (record) => record.data.userId === user.id,
+    );
+    expect(records).toHaveLength(2);
+    expect(
+      records.every((record) => record.personName === "Current operator"),
+    ).toBe(true);
+    expect(
+      (await workforce.history("admin-a", "assignment", "rename-assignment"))[0]
+        .record.personName,
+    ).toBe("Original operator");
+    return board;
+  };
+  await checkCurrent();
+  await access.users.change("admin-a", user.id, "technician", false);
+  expect(
+    (await checkCurrent()).people.some((person) => person.id === user.id),
+  ).toBe(false);
+  await access.users.remove("admin-a", user.id);
+  expect(
+    (await checkCurrent()).people.some((person) => person.id === user.id),
+  ).toBe(false);
+  await runSiteOperation(
+    pool,
+    { ...scope, userId: "admin-a", permissions: ["handover.read"] },
+    async (tx) => {
+      const names = await sitePersonNames(
+        tx,
+        scope.organizationId,
+        scope.siteId,
+        [user.id, "other-site", "admin-b"],
+      );
+      expect([...names]).toEqual([[user.id, "Current operator"]]);
+      expect(await sitePersonNames(tx, "org-b", "site-b", ["admin-b"])).toEqual(
+        new Map(),
+      );
+    },
+  );
 });

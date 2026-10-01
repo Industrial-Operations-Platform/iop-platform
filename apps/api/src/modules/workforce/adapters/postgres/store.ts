@@ -22,6 +22,7 @@ export interface Directory {
     permission: string,
   ): Promise<boolean>;
   people(tx: SiteTransaction): Promise<Person[]>;
+  names(tx: SiteTransaction, userIds: string[]): Promise<Map<string, string>>;
 }
 export class PgWorkforce implements Store {
   constructor(
@@ -56,6 +57,7 @@ export class PgWorkforce implements Store {
             await this.directory.allowed(tx, actor, "workforce.plan"),
             await this.directory.allowed(tx, actor, "workforce.administer"),
             () => this.directory.people(tx),
+            (ids) => this.directory.names(tx, ids),
           ),
         );
       },
@@ -69,6 +71,7 @@ class PgWorkforceTransaction implements Transaction {
     readonly canPlan: boolean,
     readonly canAdminister: boolean,
     readonly people: () => Promise<Person[]>,
+    readonly names: (userIds: string[]) => Promise<Map<string, string>>,
   ) {}
   private get selectors() {
     return [this.scope.organizationId, this.scope.siteId];
