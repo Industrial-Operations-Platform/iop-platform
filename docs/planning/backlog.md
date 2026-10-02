@@ -326,3 +326,4 @@ canonical asset integration.
 | [IOP-190 — Daily Handover views and focused table filters](items/IOP-190-daily-handover.md) | Completed |
 | [IOP-191 — Operational controls and contextual navigation](items/IOP-191-operational-controls.md) | Completed |
 | [IOP-192 — Operational cards, account controls and entry notifications](items/IOP-192-operational-cards-account.md) | Completed |
+| [IOP-193 — Compact account menu and pending department matrix](items/IOP-193-compact-account-pending-matrix.md) | Completed |

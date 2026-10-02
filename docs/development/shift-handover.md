@@ -235,3 +235,21 @@ Read state is local to this browser, with session-only fallback when storage is
 unavailable. Existing-entry follow-ups, other modules, cross-device synchronization
 and external notifications are outside this increment. Failed reads never advance
 the checkpoint, and unavailable notifications have an explicit retry state.
+
+
+## Operational department matrix
+
+The optional `departmentMatrix` query flag selects the operational default. The API
+application derives category IDs from the scoped catalog's `carryForward` setting,
+and the date/time zone from its trusted clock/catalog. Its transaction read port
+receives that scope; PostgreSQL applies it before totals and cursor pagination.
+Carry-forward categories require open/in-progress issue state. Daily categories
+require a publication instant on today's site-local date and a non-resolved state.
+No entries are deleted or transitioned by this visibility rule.
+
+The browser preserves operational scope through department/column filters and Load
+more. Explicit history search, equipment history and Start collection deep links keep
+full-history semantics; Clear search returns to operational scope. A publication at
+22:00 UTC during Zurich summer time belongs to the next site day, regardless of its
+selected occurrence date. Notifications continue reporting new publications in all
+categories under their existing scope and read checkpoints.

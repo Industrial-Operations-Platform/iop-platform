@@ -52,6 +52,7 @@ for (const width of [1440, 1024, 375]) {
         discuss: true,
       },
     });
+    const queries: Record<string, unknown>[] = [];
     const entries = [entry(1), entry(2), entry(3)];
     const newEntry = entry(4, "colleague");
     await page.route("**/api/v1/**", async (route) => {
@@ -98,6 +99,7 @@ for (const width of [1440, 1024, 375]) {
         });
       if (path.endsWith("/handover/query")) {
         const selection = route.request().postDataJSON();
+        if (selection.notificationsAfter === undefined) queries.push(selection);
         const selected =
           selection.notificationsAfter !== undefined
             ? published && newEntry.createdAt > selection.notificationsAfter
@@ -121,7 +123,7 @@ for (const width of [1440, 1024, 375]) {
         ),
       ).toBe(true);
       await page.screenshot({
-        path: `/tmp/iop-192-${name}-${width}.png`,
+        path: `/tmp/iop-193-${name}-${width}.png`,
         fullPage: true,
       });
     };
@@ -156,12 +158,18 @@ for (const width of [1440, 1024, 375]) {
     }
     await screenshot("start");
     const account = page.getByRole("button", { name: "User menu" });
+    await expect(account).toHaveText("AM");
     await account.focus();
     await page.keyboard.press("Enter");
     const menu = page.getByRole("dialog", { name: "User menu" });
     await expect(
       menu.getByRole("button", { name: "My profile" }),
     ).toBeFocused();
+    await expect(menu.getByText("Alex Morgan", { exact: true })).toBeVisible();
+    await expect(menu.getByText("Team Leader", { exact: true })).toBeVisible();
+    await expect(
+      menu.getByLabel("Language", { exact: true }).locator("option"),
+    ).toHaveText(["DE", "EN"]);
     await screenshot("account");
     await page.keyboard.press("Escape");
     await expect(account).toBeFocused();
@@ -234,6 +242,7 @@ for (const width of [1440, 1024, 375]) {
       name: "Department handover matrix",
     });
     await expect(table.locator("tbody tr")).toHaveCount(3);
+    await expect.poll(() => queries.at(-1)?.departmentMatrix).toBe(true);
     expect(
       await table
         .getByRole("columnheader")
@@ -259,7 +268,22 @@ for (const width of [1440, 1024, 375]) {
     await expect(
       page.getByRole("dialog", { name: "Search handover history" }),
     ).toBeVisible();
-    await page.keyboard.press("Escape");
+    const history = page.getByRole("dialog", {
+      name: "Search handover history",
+    });
+    await history
+      .getByLabel("Category filter", { exact: true })
+      .selectOption("safety");
+    await history
+      .getByRole("button", { name: "Search entries", exact: true })
+      .click();
+    await expect.poll(() => queries.at(-1)?.departmentMatrix).toBe(false);
+    expect(queries.at(-1)?.categoryId).toBe("safety");
+    await page
+      .getByRole("button", { name: "Clear search", exact: true })
+      .click();
+    await expect.poll(() => queries.at(-1)?.departmentMatrix).toBe(true);
+    expect(queries.at(-1)?.categoryId).toBe("");
     expect(errors).toEqual([]);
   });
 }

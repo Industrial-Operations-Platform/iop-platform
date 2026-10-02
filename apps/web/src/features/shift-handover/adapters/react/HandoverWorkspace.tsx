@@ -18,6 +18,7 @@ import {
 } from "../../../../design/components";
 import {
   meetingSelection,
+  matrixSelection,
   type HandoverApplication,
 } from "../../application/handover";
 import {
@@ -83,6 +84,11 @@ export function HandoverWorkspace({
   const [filtered, setFiltered] = useState(
     initialHighlights || initialPending || initialAttention,
   );
+  const [matrixHistory, setMatrixHistory] = useState(
+    initialHighlights || initialPending || initialAttention,
+  );
+  const query =
+    view === "matrix" ? matrixSelection(selection, matrixHistory) : selection;
   const [page, setPage] = useState(blankPage);
   const [outstanding, setOutstanding] = useState<
     { category: Choice; page: Page }[]
@@ -133,7 +139,7 @@ export function HandoverWorkspace({
           setOutstanding(unresolved.sections);
         }
       } else {
-        const result = await application.open(selection);
+        const result = await application.open(query);
         if (active) {
           setContext(result.context);
           setPage(result.current);
@@ -150,7 +156,16 @@ export function HandoverWorkspace({
     return () => {
       active = false;
     };
-  }, [application, selection, view, refresh, board, dailyOverview, day]);
+  }, [
+    application,
+    selection,
+    view,
+    refresh,
+    board,
+    dailyOverview,
+    day,
+    matrixHistory,
+  ]);
   const apply = (next: Selection) => {
     setSelection({ ...next, cursor: "" });
     setDraft({ ...next, cursor: "" });
@@ -178,6 +193,7 @@ export function HandoverWorkspace({
       equipmentReferenceId: entry.equipmentReferenceId,
     });
     setFiltered(true);
+    setMatrixHistory(true);
     setView("matrix");
     setDetail("");
   };
@@ -187,7 +203,7 @@ export function HandoverWorkspace({
     try {
       const base = page;
       const next = await application.list({
-        ...selection,
+        ...query,
         cursor: base.nextCursor,
       });
       const merged = { ...next, entries: [...base.entries, ...next.entries] };
@@ -352,6 +368,9 @@ export function HandoverWorkspace({
           {view === "meeting" && dailyOverview && (
             <p>{t("All users · All departments")}</p>
           )}
+          {view === "matrix" && !matrixHistory && (
+            <p>{t("Pending work and today’s updates")}</p>
+          )}
           {view === "mine" && <p>{t("Entries you published")}</p>}
         </div>
       )}
@@ -368,6 +387,7 @@ export function HandoverWorkspace({
         onSelect={(next) => {
           if (busy || !context) return;
           setView(next);
+          setMatrixHistory(false);
           setFiltered(false);
           apply({
             ...emptySelection,
@@ -380,7 +400,11 @@ export function HandoverWorkspace({
       {filtered && !categoryLabel && (
         <Actions>
           <p>
-            {t("Filtered history ")}
+            {t(
+              view === "matrix" && !matrixHistory
+                ? "Filtered matrix"
+                : "Filtered history ",
+            )}
             {selection.categoryId
               ? ` · ${context?.categories.find((c) => c.id === selection.categoryId)?.label ?? ""}`
               : ""}
@@ -389,6 +413,7 @@ export function HandoverWorkspace({
             variant="text"
             onClick={() => {
               setFiltered(false);
+              setMatrixHistory(false);
               apply({
                 ...emptySelection,
                 departmentId: selection.departmentId,
@@ -532,6 +557,7 @@ export function HandoverWorkspace({
             disabled={busy}
             onApply={() => {
               apply(draft);
+              setMatrixHistory(true);
               setFiltered(true);
               setSearching(false);
             }}

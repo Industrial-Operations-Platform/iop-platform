@@ -9,6 +9,7 @@ import type {
   Store,
   Transaction,
   EquipmentLookup,
+  MatrixScope,
 } from "../../application/handover";
 import type {
   Entry,
@@ -196,7 +197,7 @@ class PgTransaction implements Transaction {
       ],
     );
   }
-  async list(s: Selection): Promise<Page> {
+  async list(s: Selection, matrix?: MatrixScope): Promise<Page> {
     const [cursorDate, cursorId] = s.cursor.split("|");
     const values: unknown[] = [
       ...this.selectors,
@@ -220,6 +221,10 @@ class PgTransaction implements Transaction {
       s.condition ?? "",
       s.notificationsAfter ?? "",
       this.actor,
+      matrix?.date ?? "",
+      matrix?.ongoingCategoryIds ?? [],
+      matrix?.dailyCategoryIds ?? [],
+      matrix?.timeZone ?? "UTC",
     ];
     const r = await this.tx.query(
       `WITH matching AS (
@@ -238,6 +243,10 @@ class PgTransaction implements Transaction {
       AND ($19='' OR strpos(lower(snapshot->'content'->>'externalReference'),lower($19))>0)
       AND ($20='' OR snapshot->'content'->>'condition'=$20)
       AND ($21='' OR (created_at > NULLIF($21,'')::timestamptz AND author_id<>$22))
+      AND ($23='' OR (
+        (snapshot->'content'->>'categoryId'=ANY($24::text[]) AND snapshot->>'issueState' IN ('open','in-progress'))
+        OR (snapshot->'content'->>'categoryId'=ANY($25::text[]) AND snapshot->>'issueState'<>'resolved'
+          AND (created_at AT TIME ZONE $26)::date=NULLIF($23,'')::date)))
       AND (NOT $15 OR (snapshot->>'issueState' IN ('open','in-progress') AND
         (snapshot->'content'->>'condition'='blocked'
         OR NULLIF(snapshot->'content'->>'dueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date

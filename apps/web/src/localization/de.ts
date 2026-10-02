@@ -1,6 +1,8 @@
 export const german: Readonly<Record<string, string>> = {
   "User menu": "Benutzermenü",
   "My profile": "Mein Profil",
+  "Pending work and today’s updates": "Offene Aufgaben und heutige Meldungen",
+  "Filtered matrix": "Gefilterte Übersicht",
   Notifications: "Benachrichtigungen",
   "Refresh notifications": "Benachrichtigungen aktualisieren",
   "New entries from your colleagues":

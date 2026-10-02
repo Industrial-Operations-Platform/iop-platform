@@ -6,7 +6,6 @@ import { ProfileViewControl } from "./ProfileViewControl";
 
 export function AccountControl({
   name,
-  username,
   profile,
   pending,
   edit,
@@ -14,7 +13,6 @@ export function AccountControl({
   preview,
 }: {
   name: string;
-  username?: string;
   profile: string;
   pending: boolean;
   edit?: () => void;
@@ -39,11 +37,6 @@ export function AccountControl({
           <span className="iop-avatar" aria-hidden="true">
             {initials}
           </span>
-          <span className="iop-account-identity">
-            <strong>{name}</strong>
-            <small>{role}</small>
-          </span>
-          <ActionIcon name="chevron" />
         </>
       }
     >
@@ -51,7 +44,7 @@ export function AccountControl({
         <>
           <div className="iop-account-summary">
             <strong>{name}</strong>
-            <span>{username || role}</span>
+            <span>{role}</span>
           </div>
           <div className="iop-account-options">
             {edit && (
@@ -71,6 +64,7 @@ export function AccountControl({
             {preview && (
               <div className="iop-account-preview">
                 <ProfileViewControl
+                  compact
                   profile={preview.profile}
                   onChange={(profile) => {
                     close();

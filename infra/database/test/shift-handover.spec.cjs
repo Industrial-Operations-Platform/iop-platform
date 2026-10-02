@@ -87,7 +87,7 @@ async function db(role, work) {
     await c.end();
   }
 }
-function service(target = scope, connection = pool) {
+function service(target = scope, connection = pool, options = {}) {
   const store = new PgHandover(connection, target, {
     allowed: async (tx, actor, permission) =>
       (
@@ -104,12 +104,17 @@ function service(target = scope, connection = pool) {
   });
   return new Handover(
     store,
-    handoverCatalog({ ...config, ...target }, target, "UTC"),
+    handoverCatalog(
+      { ...config, ...target },
+      target,
+      options.timeZone ?? "UTC",
+    ),
     randomUUID,
-    () =>
-      new Date(
-        Date.parse("2026-09-28T12:00:00.000Z") + clockTick++,
-      ).toISOString(),
+    options.now ??
+      (() =>
+        new Date(
+          Date.parse("2026-09-28T12:00:00.000Z") + clockTick++,
+        ).toISOString()),
   );
 }
 const content = (summary = "Replaced guard") => ({
@@ -1623,6 +1628,119 @@ test("notification queries exclude self and deleted entries, preserve scope and 
   ).toBe(0);
   expect((await other.list("admin-b", selection)).total).toBe(0);
   await expect(app.list("other-site", selection)).rejects.toThrow(
+    "Site operation is not permitted.",
+  );
+});
+
+test("operational matrix applies configured carry-forward, publication day and resolution before pagination", async () => {
+  let instant = "2026-09-27T21:59:59.000Z";
+  const matrix = service(scope, pool, {
+    timeZone: "Europe/Zurich",
+    now: () => instant,
+  });
+  const create = async (categoryId, label, issue = false) =>
+    matrix.create("admin-a", {
+      key: randomUUID(),
+      content: {
+        ...content(`Matrix policy fixture: ${label}`),
+        categoryId,
+        date: "2026-09-01",
+      },
+      issue,
+      responsibleId: "",
+    });
+  const expected = [];
+  for (let i = 0; i < 22; i++) {
+    const entry = await create(
+      i % 2 ? "problems" : "performance",
+      `ongoing ${i}`,
+      true,
+    );
+    if (i === 0)
+      await matrix.change("admin-a", {
+        id: entry.id,
+        expectedRevision: 1,
+        action: "state",
+        state: "in-progress",
+        note: "Work started",
+      });
+    expected.push(entry.id);
+  }
+  const closed = await create("problems", "closed", true);
+  await matrix.change("admin-a", {
+    id: closed.id,
+    expectedRevision: 1,
+    action: "state",
+    state: "resolved",
+    note: "Work completed",
+  });
+  await create("performance", "not an issue");
+  for (const category of ["safety", "information", "successes", "people"])
+    await create(category, `old ${category}`, true);
+  // UTC still says the previous day, but publication is on today's site-local date.
+  instant = "2026-09-27T22:00:00.000Z";
+  for (const category of ["safety", "information", "successes", "people"])
+    expected.push((await create(category, `today ${category}`)).id);
+  const closedToday = await create("safety", "closed today", true);
+  await matrix.change("admin-a", {
+    id: closedToday.id,
+    expectedRevision: 1,
+    action: "state",
+    state: "resolved",
+    note: "Completed today",
+  });
+  instant = "2026-09-28T10:00:00.000Z";
+  const selection = {
+    ...emptySelection,
+    departmentMatrix: true,
+    search: "Matrix policy fixture:",
+    departmentId: "department",
+  };
+  const first = await matrix.list("admin-a", selection);
+  expect(first.total).toBe(26);
+  expect(first.entries).toHaveLength(20);
+  const second = await matrix.list("admin-a", {
+    ...selection,
+    cursor: first.nextCursor,
+  });
+  expect(second.total).toBe(26);
+  expect(second.entries).toHaveLength(6);
+  expect(second.nextCursor).toBe("");
+  expect([...first.entries, ...second.entries].map((e) => e.id).sort()).toEqual(
+    expected.sort(),
+  );
+  expect(
+    (await matrix.list("admin-a", { ...selection, categoryId: "information" }))
+      .total,
+  ).toBe(1);
+  expect(
+    (
+      await matrix.list("admin-a", {
+        ...selection,
+        departmentMatrix: false,
+        categoryId: "information",
+      })
+    ).total,
+  ).toBe(2);
+  expect(
+    (await matrix.list("admin-a", { ...selection, state: "resolved" })).total,
+  ).toBe(0);
+  expect(
+    (
+      await matrix.list("admin-a", {
+        ...selection,
+        departmentMatrix: false,
+        state: "resolved",
+      })
+    ).total,
+  ).toBe(2);
+  expect(
+    (await matrix.list("admin-a", { ...selection, departmentId: "unknown" }))
+      .total,
+  ).toBe(0);
+  instant = "2026-09-28T22:00:00.000Z";
+  expect((await matrix.list("admin-a", selection)).total).toBe(22);
+  await expect(matrix.list("other-site", selection)).rejects.toThrow(
     "Site operation is not permitted.",
   );
 });

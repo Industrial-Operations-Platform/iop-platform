@@ -97,6 +97,7 @@ export interface History {
   nextBefore: number;
 }
 export interface Selection {
+  departmentMatrix?: boolean;
   notificationsAfter?: string;
   dueFrom?: string;
   dueTo?: string;
@@ -242,6 +243,7 @@ export function validSelection(input: Selection): Selection {
     ...(Object.hasOwn(input ?? {}, "mine") ? ["mine"] : []),
     ...(Object.hasOwn(input ?? {}, "attention") ? ["attention"] : []),
     ...[
+      "departmentMatrix",
       "notificationsAfter",
       "dueFrom",
       "dueTo",
@@ -251,6 +253,8 @@ export function validSelection(input: Selection): Selection {
     ].filter((key) => Object.hasOwn(input ?? {}, key)),
   ]);
   if (
+    (input.departmentMatrix !== undefined &&
+      typeof input.departmentMatrix !== "boolean") ||
     (input.mine !== undefined && typeof input.mine !== "boolean") ||
     (input.attention !== undefined && typeof input.attention !== "boolean")
   )

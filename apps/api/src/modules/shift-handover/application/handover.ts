@@ -19,6 +19,12 @@ import {
   type Selection,
   type IssueState,
 } from "../domain/handover";
+export interface MatrixScope {
+  date: string;
+  timeZone: string;
+  ongoingCategoryIds: string[];
+  dailyCategoryIds: string[];
+}
 export interface Transaction {
   coordinator: boolean;
   canDelete?: boolean;
@@ -34,7 +40,7 @@ export interface Transaction {
     revision: Revision,
     request?: { key: string; fingerprint: string },
   ): Promise<void>;
-  list(selection: Selection): Promise<Page>;
+  list(selection: Selection, matrix?: MatrixScope): Promise<Page>;
   history(entry: Entry, before: number): Promise<History>;
 }
 export interface Store {
@@ -146,7 +152,19 @@ export class Handover {
   async list(actor: string, input: Selection) {
     const selection = validSelection(input);
     return this.store.run(actor, "handover.read", async (tx) => {
-      const page = await tx.list(selection);
+      const matrix = selection.departmentMatrix
+        ? {
+            date: siteDate(this.now(), this.catalog.timeZone),
+            timeZone: this.catalog.timeZone,
+            ongoingCategoryIds: this.catalog.categories
+              .filter((c) => c.carryForward)
+              .map((c) => c.id),
+            dailyCategoryIds: this.catalog.categories
+              .filter((c) => !c.carryForward)
+              .map((c) => c.id),
+          }
+        : undefined;
+      const page = await tx.list(selection, matrix);
       return { ...page, entries: await this.currentNames(tx, page.entries) };
     });
   }

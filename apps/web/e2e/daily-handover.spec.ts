@@ -355,6 +355,7 @@ for (const width of [1440, 375]) {
     });
     await expect(matrix.locator("tbody tr")).toHaveCount(0);
     expect(queries.at(-1)).toMatchObject({
+      departmentMatrix: true,
       from: "2026-10-01",
       to: "2026-10-01",
       dueFrom: "2026-10-10",
