@@ -588,3 +588,43 @@ test("notification reads validate exact UTC instants without accepting malformed
     ).toThrow();
   }
 });
+
+test("matrix scope comes from trusted category configuration and the site-local clock", async () => {
+  const { tx } = fixture();
+  const app = new Handover(
+    { run: async (_actor, _permission, work) => work(tx) },
+    {
+      ...catalog,
+      timeZone: "Europe/Zurich",
+      categories: [
+        { id: "ongoing-custom", label: "Work", carryForward: true },
+        { id: "daily-custom", label: "News" },
+      ],
+    },
+    () => "id",
+    () => "2026-09-28T22:30:00.000Z",
+  );
+  await app.list("author", { ...emptySelection, departmentMatrix: true });
+  expect(tx.list).toHaveBeenLastCalledWith(
+    expect.objectContaining({ departmentMatrix: true }),
+    {
+      date: "2026-09-29",
+      timeZone: "Europe/Zurich",
+      ongoingCategoryIds: ["ongoing-custom"],
+      dailyCategoryIds: ["daily-custom"],
+    },
+  );
+  await app.list("author", { ...emptySelection, categoryId: "daily-custom" });
+  expect(tx.list).toHaveBeenLastCalledWith(
+    expect.objectContaining({ categoryId: "daily-custom" }),
+    undefined,
+  );
+});
+test.each(["true", 1, null, [], {}])(
+  "matrix mode rejects non-boolean input %p",
+  (value) => {
+    expect(() =>
+      validSelection({ ...emptySelection, departmentMatrix: value } as never),
+    ).toThrow("invalid_handover");
+  },
+);

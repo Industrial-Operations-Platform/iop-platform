@@ -1186,6 +1186,8 @@ export interface components {
             nextCursor: string;
         };
         HandoverSelectionDto: {
+            /** @description Operational matrix: pending carry-forward categories and unresolved daily categories published today in the site time zone. */
+            departmentMatrix?: boolean;
             /**
              * Format: date-time
              * @description New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.

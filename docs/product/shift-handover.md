@@ -79,7 +79,16 @@ text search. Order by occurrence date with stable creation/ID tie-breakers. An e
 shows author, recorded date/time, original content, revisions and follow-up. A
 resolved issue remains searchable. Unverified references are explicitly labelled.
 
-**Department matrix:** Date, What?, Details, Ultimo reference, Due date, Responsible
+**Department matrix:** By default, show pending carry-forward categories (configured
+Problems and Performance) across days, plus non-resolved daily categories (Safety,
+Information, Successes and People) only on their server publication day in the site
+time zone. This uses creation time rather than a coordinator's backdated entry date.
+Resolved entries and untracked carry-forward notes stay in history. Ordinary column
+filters narrow this operational scope; explicit Search history and equipment-history
+navigation recover other days/categories/states. Clear search restores the default.
+Notifications and existing daily Journal/meeting selections remain unchanged.
+
+Columns: Date, What?, Details, Ultimo reference, Due date, Responsible
 person and Status. Include category, follow-up state and an entry link. Each column
 except What? and Details has a filter action: occurrence-date range, literal external
 reference substring, due-date range, responsible person (including unassigned), and

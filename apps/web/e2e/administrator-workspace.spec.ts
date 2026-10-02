@@ -82,8 +82,6 @@ for (const width of [1440, 375]) {
       fullPage: true,
     });
     await page.getByRole("button", { name: "User menu" }).click();
-    await page.getByRole("button", { name: "View as", exact: true }).focus();
-    await page.keyboard.press("Enter");
     const selector = page.getByRole("combobox", { name: "Profile view" });
     await expect(selector.locator("option")).toHaveText([
       "Administrator",
@@ -91,12 +89,23 @@ for (const width of [1440, 375]) {
       "Task Force",
       "Team Leader",
     ]);
+    await expect(
+      page.getByRole("button", { name: "View as", exact: true }),
+    ).toHaveCount(0);
+    const menu = page.getByRole("dialog", { name: "User menu" });
+    await expect(
+      menu.getByText("Administrator", { exact: true }).first(),
+    ).toBeVisible();
+    expect(
+      await menu.evaluate((node) => node.scrollWidth <= node.clientWidth),
+    ).toBe(true);
+    await page.screenshot({
+      path: `/tmp/iop-193-admin-menu-${width}.png`,
+      fullPage: true,
+    });
     for (const profile of ["technician", "task-force", "team-leader"]) {
       if (!(await selector.isVisible())) {
         await page.getByRole("button", { name: "User menu" }).click();
-        await page
-          .getByRole("button", { name: "View as", exact: true })
-          .click();
       }
       await selector.selectOption(profile);
       await expect(
@@ -111,9 +120,9 @@ for (const width of [1440, 375]) {
       await expect(
         page.getByRole("button", { name: "Data administration" }),
       ).toHaveCount(0);
-      await expect(
-        page.getByRole("button", { name: "User menu" }),
-      ).toContainText("Alex");
+      await expect(page.getByRole("button", { name: "User menu" })).toHaveText(
+        "A",
+      );
       if (profile === "technician") {
         await expect(
           page.getByRole("button", { name: "Data analysis", exact: true }),

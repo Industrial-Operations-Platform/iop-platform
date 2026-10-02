@@ -114,6 +114,11 @@ export class HandoverChangeDto {
 export class HandoverSelectionDto {
   @ApiPropertyOptional({
     description:
+      "Operational matrix: pending carry-forward categories and unresolved daily categories published today in the site time zone.",
+  })
+  departmentMatrix?: boolean;
+  @ApiPropertyOptional({
+    description:
       "New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.",
     format: "date-time",
   })

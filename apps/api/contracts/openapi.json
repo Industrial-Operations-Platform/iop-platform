@@ -4098,6 +4098,10 @@
       "HandoverSelectionDto": {
         "type": "object",
         "properties": {
+          "departmentMatrix": {
+            "type": "boolean",
+            "description": "Operational matrix: pending carry-forward categories and unresolved daily categories published today in the site time zone."
+          },
           "notificationsAfter": {
             "type": "string",
             "description": "New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.",

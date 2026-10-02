@@ -154,3 +154,10 @@ Tab navigation, Escape restoration and outside dismissal. Never add backdrop blu
 New entry and `IconButton` plus the search glyph for Search history launchers.
 `Table variant="records"` refines operational record surfaces without changing
 semantic table structure or alignment policy.
+
+
+IOP-193 account composition uses an initials-only 44px trigger and a compact identity
+header inside the popover. Language (DE/EN) and authorized View as use inline labels
+with right-aligned native selectors. Preserve keyboard selection and actual-role
+identity when previewing another role; the native demonstration header retains its
+existing separate preview disclosure.

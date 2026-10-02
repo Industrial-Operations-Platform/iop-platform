@@ -1,5 +1,6 @@
 import {
   HandoverApplication,
+  matrixSelection,
   type Gateway,
 } from "../src/features/shift-handover/application/handover";
 import {
@@ -116,4 +117,22 @@ test("daily overview covers the exact selected day and all departments and autho
     to: "2026-09-28",
     departmentId: "selected-department",
   });
+});
+
+test("operational matrix preserves column filters and pagination while explicit history opts out", () => {
+  const selection = {
+    ...emptySelection,
+    departmentId: "dept",
+    responsibleId: "person",
+    cursor: "page",
+  };
+  expect(matrixSelection(selection, false)).toEqual({
+    ...selection,
+    departmentMatrix: true,
+  });
+  expect(matrixSelection(selection, true)).toEqual({
+    ...selection,
+    departmentMatrix: false,
+  });
+  expect(selection).not.toHaveProperty("departmentMatrix");
 });

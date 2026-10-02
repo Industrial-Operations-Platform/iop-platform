@@ -196,9 +196,9 @@ button as the only navigation out of an operational detail page.
 
 Use the shared icon-only `RefreshButton` for reload actions, with an accessible
 name, hover title, disabled busy state and reduced-motion support. Keep date and
-reload controls aligned. Account name and role occupy two readable lines. IOP-192 groups profile editing,
-full-name language selection and logout inside the anchored account menu described
-below; standalone login/demo language controls retain the compact DE/EN display.
+reload controls aligned. Account name and role occupy two readable lines inside the
+opened menu. IOP-193 uses an initials-only trigger and compact DE/EN language/profile
+selectors, with logout last in the anchored panel described below.
 
 `DepartmentScope` is the common department/Halle selector for Start and Shift
 Handover. Use its compact white bordered surface, muted inline label and semibold
@@ -339,8 +339,9 @@ shared search glyph. Keep accessible labels/titles even though visible text is
 removed. Form submission actions remain labelled. Do not recreate these actions
 with filled text buttons in another view.
 
-The account trigger retains the readable name/role alongside a circular initials
-avatar and chevron. `Popover` provides a compact anchored white panel, light border,
+IOP-193 refines the account trigger to a circular initials-only avatar with a labelled
+44px target. The name and actual role appear only inside the opened panel. `Popover`
+provides a compact anchored white panel, light border,
 8px corners and the shared `popoverShadow`; it never blurs or blocks the workspace.
 Profile, language and authorized View as controls stay together, with logout last
 and semantically red. Do not add a Settings item without an implemented destination.
@@ -355,3 +356,18 @@ a stronger sticky header, comfortable cell padding and hover/focus highlighting.
 Preserve centered headings and date values, left-aligned title buttons, centered
 supporting metadata and vertical state badges. Longer prose retains `TableText`
 justification rules. Keep native semantic tables and keyboard-scrollable viewports.
+
+
+## Compact account rows and operational matrix — IOP-193
+
+The account panel is bounded to 19rem with 4px outer padding, a compact identity
+header and 44px minimum interactive rows. Profile, language, authorized View as and
+logout retain their order. Language shows only DE/EN; View as pairs a left label with
+its current profile in a right-aligned native select. Opening the select offers all
+existing authorized preview choices directly. Avoid a second disclosure button,
+duplicate identity beside the avatar or full language names. Keep keyboard focus,
+Escape/outside dismissal and visible sign-out semantics.
+
+The matrix caption distinguishes pending work/today's updates from explicitly
+searched history. Ordinary column filters keep the operational scope; Clear search
+restores it after historical search. Table alignment and shared controls are unchanged.

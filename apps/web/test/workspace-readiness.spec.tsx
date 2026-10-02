@@ -151,7 +151,6 @@ test.each([true, false])(
       screen.getByRole("button", { name: "Data administration" }),
     ).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "User menu" }));
-    fireEvent.click(screen.getByRole("button", { name: "View as" }));
     expect(
       within(screen.getByRole("combobox", { name: "Profile view" }))
         .getAllByRole("option")
@@ -164,7 +163,6 @@ test.each([true, false])(
     ]) {
       if (!screen.queryByRole("combobox", { name: "Profile view" })) {
         fireEvent.click(screen.getByRole("button", { name: "User menu" }));
-        fireEvent.click(screen.getByRole("button", { name: "View as" }));
       }
       fireEvent.change(screen.getByRole("combobox", { name: "Profile view" }), {
         target: { value },
@@ -204,7 +202,7 @@ test.each([true, false])(
     expect(change).not.toHaveBeenCalled();
     expect(context).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("button", { name: "User menu" })).toHaveTextContent(
-      "Administrator",
+      "A",
     );
     fireEvent.click(
       screen.getByRole("button", { name: "Return to administration" }),
@@ -419,7 +417,6 @@ test("signing out of a preview restores the next administrator session to admini
     }),
   );
   fireEvent.click(await screen.findByRole("button", { name: "User menu" }));
-  fireEvent.click(screen.getByRole("button", { name: "View as" }));
   fireEvent.change(screen.getByRole("combobox", { name: "Profile view" }), {
     target: { value: "technician" },
   });

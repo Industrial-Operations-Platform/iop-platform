@@ -73,6 +73,14 @@ export class HandoverApplication {
   }
 }
 
+/** Explicit history searches bypass the operational matrix without changing saved entries. */
+export function matrixSelection(
+  selection: Selection,
+  history: boolean,
+): Selection {
+  return { ...selection, departmentMatrix: !history };
+}
+
 /** Daily leadership review deliberately starts with all authors and departments. */
 export function meetingSelection(
   date: string,

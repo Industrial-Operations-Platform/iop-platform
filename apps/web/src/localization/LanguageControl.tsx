@@ -34,10 +34,10 @@ export function LanguageControl({ expanded = false }: { expanded?: boolean }) {
         onChange={(e) => setLanguage(e.target.value as Language)}
       >
         <option value="de" lang="de">
-          {expanded ? "Deutsch" : "DE"}
+          DE
         </option>
         <option value="en" lang="en">
-          {expanded ? "English" : "EN"}
+          EN
         </option>
       </Select>
     </label>
