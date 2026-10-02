@@ -74,6 +74,14 @@ test("calendar-day fields and compact control styles use the mandatory shared co
       ts.ScriptKind.TSX,
     );
     const visit = (node: ts.Node) => {
+      if (
+        ts.isJsxElement(node) &&
+        node.openingElement.tagName.getText(ast) === "Button" &&
+        /t\(["'](?:New entry|Search history)\s*["']\)/.test(node.getText(ast))
+      )
+        violations.push(
+          `${file}: use shared icon launchers for New entry and Search history`,
+        );
       if (ts.isJsxAttribute(node) && node.name.getText(ast) === "type") {
         const initializer = node.initializer;
         const value =

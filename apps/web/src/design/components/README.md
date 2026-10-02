@@ -125,7 +125,7 @@ Use `Actions className="iop-form-actions"` for a separated, right-aligned form
 footer. Text actions keep the same control dimensions; semantic title links and
 clickable cards retain their context-specific presentation. Tab navigation with
 more than three choices scrolls horizontally on narrow screens; shorter category
-groups continue to share one row. Sign out is last in header DOM and visual order.
+groups continue to share one row. Sign out is last inside the account menu.
 
 `DateField` is mandatory for calendar-day inputs, including filters and editing
 forms. It preserves native `YYYY-MM-DD` values, labels, refs and input constraints;
@@ -145,3 +145,12 @@ redefine these controls in local styles or introduce raw `type="date"` inputs.
 `SectionHeading` accepts an optional `trail` of already-labelled breadcrumb items
 with caller-owned return callbacks. The final item names the current page. Preserve
 category/date/department context when moving between a collection and its details.
+
+
+`Popover` is a non-modal anchored disclosure for compact account/activity panels.
+Callers supply the trigger content and panel actions; it owns initial focus, native
+Tab navigation, Escape restoration and outside dismissal. Never add backdrop blur.
+`ActionIcon` supplies the shared account/search/bell glyphs. Reuse `AddButton` for
+New entry and `IconButton` plus the search glyph for Search history launchers.
+`Table variant="records"` refines operational record surfaces without changing
+semantic table structure or alignment policy.

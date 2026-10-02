@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import {
   DepartmentScope,
   Actions,
+  AddButton,
+  IconButton,
+  ActionIcon,
   Alert,
   Button,
   Dialog,
@@ -282,26 +285,25 @@ export function HandoverWorkspace({
         onHome={goHome}
         actions={
           <Actions>
-            <Button
+            <AddButton
+              label={t("New entry")}
               disabled={!context}
               onClick={() => {
                 setSearching(false);
                 setCreating("");
               }}
-            >
-              {t("New entry ")}
-            </Button>
+            />
             {(view === "matrix" || view === "mine") && (
-              <Button
-                variant="secondary"
+              <IconButton
+                label={t("Search history")}
                 disabled={!context}
                 onClick={() => {
                   setDraft(selection);
                   setSearching(true);
                 }}
               >
-                {t("Search history ")}
-              </Button>
+                <ActionIcon name="search" />
+              </IconButton>
             )}
           </Actions>
         }

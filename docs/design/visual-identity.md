@@ -31,8 +31,8 @@ instead of adding disconnected literal colors to components or chart options.
 | Divided disclosure headings (preserved baseline) | `#174e69` |
 
 Use Inter with system-ui/sans-serif fallback. Keep white, lightly bordered cards,
-navy figures, muted labels, restrained blue actions, flat backgrounds and no added
-shadows/gradients. Report cards use 8px corners; metric cards use 7px corners, 19px
+navy figures, muted labels, restrained blue actions, flat backgrounds and no gradients. Anchored account/activity popovers alone use
+the subtle shared shadow introduced in IOP-192. Report cards use 8px corners; metric cards use 7px corners, 19px
 padding, 29px figures at weight 650 and 14px gaps. Existing narrow-screen reductions
 remain in the shared [component stylesheet](../../apps/web/src/design/components/components.css).
 
@@ -196,10 +196,9 @@ button as the only navigation out of an operational detail page.
 
 Use the shared icon-only `RefreshButton` for reload actions, with an accessible
 name, hover title, disabled busy state and reduced-motion support. Keep date and
-reload controls aligned. The top-right language control combines a globe with DE
-or EN; language names are not repeated in the header. Account name and role occupy
-two readable lines; the name opens profile editing. Logout is a quiet labelled
-icon action, with its visible text retained when space allows.
+reload controls aligned. Account name and role occupy two readable lines. IOP-192 groups profile editing,
+full-name language selection and logout inside the anchored account menu described
+below; standalone login/demo language controls retain the compact DE/EN display.
 
 `DepartmentScope` is the common department/Halle selector for Start and Shift
 Handover. Use its compact white bordered surface, muted inline label and semibold
@@ -223,7 +222,7 @@ width changes. Features may set column widths but should not recreate the table
 theme. More than three tabs use a
 horizontal viewport on narrow screens to prevent label collisions.
 
-Keep logout at the far right after identity and language. Administration summarizes
+Keep logout last inside the account menu, after identity and language. Administration summarizes
 persisted account activity and the latest source file; management belongs in its
 own sections. Account details contain the editable fields; list rows keep compact
 access actions. Workforce uses date groups with shift subcolumns and daily shift
@@ -323,3 +322,36 @@ zone and phone as supporting labelled facts. Retain separately labelled availabi
 when its hours differ or no assignment exists. Journal category collections keep
 clickable section/view/category breadcrumbs through entry details, preserving day
 and department on return. Forms use the common separated action footer.
+
+
+## Operational cards and account menu — IOP-192
+
+The owner's 2026-10-02 refinement uses one expanded entry-card design for Start and
+My entries: three columns on wide desktops, two on medium screens and one on narrow
+screens. Preserve bounded previews, full entry access and explicit totals. Category
+and a directional cue lead the card, followed by the blue title, location, state,
+equipment, excerpt, labelled date/responsibility and due/feedback footer. Use compact
+spacing and semantic tokens; do not infer urgency from dates. Meeting category cards
+retain the title/location variant within their own category columns.
+
+All New entry launchers use `AddButton`; Search history uses `IconButton` with the
+shared search glyph. Keep accessible labels/titles even though visible text is
+removed. Form submission actions remain labelled. Do not recreate these actions
+with filled text buttons in another view.
+
+The account trigger retains the readable name/role alongside a circular initials
+avatar and chevron. `Popover` provides a compact anchored white panel, light border,
+8px corners and the shared `popoverShadow`; it never blurs or blocks the workspace.
+Profile, language and authorized View as controls stay together, with logout last
+and semantically red. Do not add a Settings item without an implemented destination.
+Use ordinary button/select Tab navigation, initial focus, Escape restoration and
+outside-click dismissal. The notification bell sits immediately before the account
+trigger; its count has a textual accessible equivalent. Notification and account
+panels use the same surface and typography. The source SVG mark/favicon uses a
+simplified operational I glyph inside a blue hexagonal outline; IOP remains the name.
+
+Department matrix uses shared `Table variant="records"`: quiet alternating surfaces,
+a stronger sticky header, comfortable cell padding and hover/focus highlighting.
+Preserve centered headings and date values, left-aligned title buttons, centered
+supporting metadata and vertical state badges. Longer prose retains `TableText`
+justification rules. Keep native semantic tables and keyboard-scrollable viewports.

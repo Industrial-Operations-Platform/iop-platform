@@ -6,6 +6,7 @@ export const identity = {
   primary: "#087bd5",
   canvas: "#f3f6f9",
   surface: "#ffffff",
+  popoverShadow: "0 12px 32px #172b431a",
   inputBorder: "#cbd7e2",
   focus: "#edaa30",
   link: "#076bb5",

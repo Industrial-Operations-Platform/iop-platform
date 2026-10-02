@@ -97,6 +97,7 @@ export interface History {
   nextBefore: number;
 }
 export interface Selection {
+  notificationsAfter?: string;
   dueFrom?: string;
   dueTo?: string;
   responsibleId?: string;
@@ -241,6 +242,7 @@ export function validSelection(input: Selection): Selection {
     ...(Object.hasOwn(input ?? {}, "mine") ? ["mine"] : []),
     ...(Object.hasOwn(input ?? {}, "attention") ? ["attention"] : []),
     ...[
+      "notificationsAfter",
       "dueFrom",
       "dueTo",
       "responsibleId",
@@ -261,6 +263,17 @@ export function validSelection(input: Selection): Selection {
     "categoryId",
   ] as const)
     result[key] = text(input[key], 64);
+  if (input.notificationsAfter !== undefined) {
+    const since = input.notificationsAfter;
+    if (
+      typeof since !== "string" ||
+      since < "1970-01-01T00:00:00.000Z" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(since) ||
+      !Number.isFinite(Date.parse(since)) ||
+      new Date(since).toISOString() !== since
+    )
+      invalid();
+  }
   if (input.dueFrom !== undefined) result.dueFrom = date(input.dueFrom);
   if (input.dueTo !== undefined) result.dueTo = date(input.dueTo);
   if (

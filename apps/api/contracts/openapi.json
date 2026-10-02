@@ -4098,6 +4098,11 @@
       "HandoverSelectionDto": {
         "type": "object",
         "properties": {
+          "notificationsAfter": {
+            "type": "string",
+            "description": "New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.",
+            "format": "date-time"
+          },
           "dueFrom": {
             "type": "string"
           },

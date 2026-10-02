@@ -150,6 +150,7 @@ test.each([true, false])(
     expect(
       screen.getByRole("button", { name: "Data administration" }),
     ).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "User menu" }));
     fireEvent.click(screen.getByRole("button", { name: "View as" }));
     expect(
       within(screen.getByRole("combobox", { name: "Profile view" }))
@@ -161,6 +162,10 @@ test.each([true, false])(
       ["task-force", "Task Force"],
       ["team-leader", "Team Leader"],
     ]) {
+      if (!screen.queryByRole("combobox", { name: "Profile view" })) {
+        fireEvent.click(screen.getByRole("button", { name: "User menu" }));
+        fireEvent.click(screen.getByRole("button", { name: "View as" }));
+      }
       fireEvent.change(screen.getByRole("combobox", { name: "Profile view" }), {
         target: { value },
       });
@@ -198,9 +203,9 @@ test.each([true, false])(
     expect(login).not.toHaveBeenCalled();
     expect(change).not.toHaveBeenCalled();
     expect(context).toHaveBeenCalledTimes(1);
-    expect(
-      screen.getByRole("button", { name: "Edit your name" }),
-    ).toHaveTextContent("Administrator");
+    expect(screen.getByRole("button", { name: "User menu" })).toHaveTextContent(
+      "Administrator",
+    );
     fireEvent.click(
       screen.getByRole("button", { name: "Return to administration" }),
     );
@@ -413,11 +418,13 @@ test("signing out of a preview restores the next administrator session to admini
       change: jest.fn(),
     }),
   );
-  fireEvent.click(await screen.findByRole("button", { name: "View as" }));
+  fireEvent.click(await screen.findByRole("button", { name: "User menu" }));
+  fireEvent.click(screen.getByRole("button", { name: "View as" }));
   fireEvent.change(screen.getByRole("combobox", { name: "Profile view" }), {
     target: { value: "technician" },
   });
   await screen.findByRole("region", { name: "Profile preview" });
+  fireEvent.click(screen.getByRole("button", { name: "User menu" }));
   fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
   await screen.findByRole("heading", { name: "Sign in to IOP" });
   fireEvent.change(screen.getByLabelText("Username"), {

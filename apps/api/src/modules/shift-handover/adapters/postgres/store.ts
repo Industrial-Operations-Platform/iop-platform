@@ -218,10 +218,12 @@ class PgTransaction implements Transaction {
       s.responsibleId ?? null,
       s.externalReference ?? "",
       s.condition ?? "",
+      s.notificationsAfter ?? "",
+      this.actor,
     ];
     const r = await this.tx.query(
       `WITH matching AS (
-      SELECT id,snapshot,CASE WHEN $11 THEN snapshot->>'highlightedAt' ELSE occurrence_date::text || '/' || (snapshot->>'createdAt') END AS sort_key
+      SELECT id,snapshot,CASE WHEN $21<>'' THEN snapshot->>'createdAt' WHEN $11 THEN snapshot->>'highlightedAt' ELSE occurrence_date::text || '/' || (snapshot->>'createdAt') END AS sort_key
       FROM shift_handover.entries WHERE organization_id=$1 AND site_id=$2 AND coalesce(snapshot->>'deleted','false')<>'true'
       AND ($3='' OR occurrence_date >= NULLIF($3,'')::date) AND ($4='' OR occurrence_date <= NULLIF($4,'')::date)
       AND ($5='' OR snapshot->'content'->>'departmentId'=$5) AND ($6='' OR snapshot->'content'->>'areaId'=$6)
@@ -235,6 +237,7 @@ class PgTransaction implements Transaction {
       AND ($18::text IS NULL OR coalesce(snapshot->>'responsibleId','')=$18)
       AND ($19='' OR strpos(lower(snapshot->'content'->>'externalReference'),lower($19))>0)
       AND ($20='' OR snapshot->'content'->>'condition'=$20)
+      AND ($21='' OR (created_at > NULLIF($21,'')::timestamptz AND author_id<>$22))
       AND (NOT $15 OR (snapshot->>'issueState' IN ('open','in-progress') AND
         (snapshot->'content'->>'condition'='blocked'
         OR NULLIF(snapshot->'content'->>'dueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date

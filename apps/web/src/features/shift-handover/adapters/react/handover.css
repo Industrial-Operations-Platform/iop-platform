@@ -407,20 +407,63 @@
   align-items: center;
   gap: 0.5rem;
 }
-.handover-personal-cards {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+/* Expanded collections share the same three/two/one-column card layout. */
+.handover-expanded-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
-  gap: 1rem;
+  gap: var(--iop-sectionGap);
+}
+.handover-personal-cards {
   margin-top: 0;
 }
-.iop-ui .handover-personal-cards .handover-summary-card {
+.iop-ui .handover-summary-card--expanded {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   padding: var(--iop-panelPadding);
-  gap: 0.65rem;
-  align-content: start;
+  gap: 10px;
   border-radius: var(--iop-cardRadius);
 }
-@media (max-width: 900px) {
-  .handover-personal-cards {
+.handover-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.handover-card-heading > svg {
+  color: var(--iop-muted);
+  width: 16px;
+  height: 16px;
+}
+.iop-ui .handover-summary-card--expanded > strong {
+  min-height: 2.8em;
+}
+.iop-ui .handover-summary-card--expanded .handover-card-equipment {
+  padding: 5px 8px;
+  background: var(--iop-canvas);
+  border-radius: var(--iop-inputRadius);
+}
+.iop-ui .handover-card-personal-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 6px;
+}
+.handover-card-personal-facts > span {
+  display: grid;
+  gap: 3px;
+}
+.handover-card-personal-facts > span > span {
+  font-size: var(--iop-compactSize);
+}
+@media (max-width: 1250px) {
+  .handover-expanded-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .handover-expanded-cards {
     grid-template-columns: 1fr;
   }
 }

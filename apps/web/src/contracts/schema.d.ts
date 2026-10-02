@@ -1186,6 +1186,11 @@ export interface components {
             nextCursor: string;
         };
         HandoverSelectionDto: {
+            /**
+             * Format: date-time
+             * @description New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.
+             */
+            notificationsAfter?: string;
             dueFrom?: string;
             dueTo?: string;
             /** @description Omit for all assignees; empty string selects unassigned entries. */

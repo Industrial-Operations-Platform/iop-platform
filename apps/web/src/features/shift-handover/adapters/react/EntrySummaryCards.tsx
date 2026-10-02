@@ -1,5 +1,5 @@
 import { t } from "../../../../localization/i18n";
-import { Badge, Button } from "../../../../design/components";
+import { ActionIcon, Badge, Button } from "../../../../design/components";
 import { issueLabel, issueTone } from "./entry-labels";
 import type { Entry } from "../../domain/models";
 import { CategoryBadge } from "./CategoryBadge";
@@ -17,15 +17,21 @@ export function EntrySummaryCards({
 }) {
   return (
     <div
-      className={`handover-summary-cards${personal ? " handover-personal-cards" : ""}`}
+      className={`handover-summary-cards${expanded ? " handover-expanded-cards" : ""}${personal ? " handover-personal-cards" : ""}`}
     >
       {entries.map((entry) => (
         <Button
           key={entry.id}
           variant="secondary"
-          className="handover-summary-card"
+          className={`handover-summary-card${expanded ? " handover-summary-card--expanded" : ""}`}
           onClick={() => open(entry.id)}
         >
+          {expanded && (
+            <span className="handover-card-heading">
+              <CategoryBadge entry={entry} />
+              <ActionIcon name="arrow" />
+            </span>
+          )}
           <strong>{entry.content.summary}</strong>
           <span className="handover-card-location">
             {entry.departmentLabel || t("Site-wide information")}
@@ -42,7 +48,6 @@ export function EntrySummaryCards({
                 {entry.content.condition === "blocked" && (
                   <Badge tone="attention">{t("Reported blocked")}</Badge>
                 )}
-                <CategoryBadge entry={entry} />
               </span>
               {entry.content.equipmentCode && (
                 <span className="handover-card-equipment">
@@ -54,18 +59,20 @@ export function EntrySummaryCards({
                   {entry.latestUpdate?.note || entry.content.details}
                 </span>
               )}
-              {personal && (
+              {expanded && (
                 <span className="handover-card-tags handover-card-personal-facts">
                   <span>
-                    {t("Entry date")}{" "}
+                    <span>{t("Entry date")}</span>
                     <time dateTime={entry.content.date}>
                       {entry.content.date}
                     </time>
                   </span>
                   {entry.issueState !== "none" && (
                     <span>
-                      {t("Responsible · ")}
-                      <strong>{entry.responsibleName || t("Unassigned")}</strong>
+                      <span>{t("Responsible")}</span>
+                      <strong>
+                        {entry.responsibleName || t("Unassigned")}
+                      </strong>
                     </span>
                   )}
                 </span>
