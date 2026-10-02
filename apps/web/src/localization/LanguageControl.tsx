@@ -7,10 +7,13 @@ import {
   t,
   type Language,
 } from "./i18n";
-export function LanguageControl() {
+export function LanguageControl({ expanded = false }: { expanded?: boolean }) {
   const current = useSyncExternalStore(subscribeLanguage, language);
   return (
-    <label className="iop-language" title={t("Language")}>
+    <label
+      className={`iop-language${expanded ? " iop-language-expanded" : ""}`}
+      title={t("Language")}
+    >
       <svg
         width="18"
         height="18"
@@ -24,16 +27,17 @@ export function LanguageControl() {
         <ellipse cx="12" cy="12" rx="4" ry="9" />
         <path d="M3 12h18M5 6.5h14M5 17.5h14" />
       </svg>
+      {expanded && <span>{t("Language")}</span>}
       <Select
         aria-label={t("Language")}
         value={current}
         onChange={(e) => setLanguage(e.target.value as Language)}
       >
         <option value="de" lang="de">
-          DE
+          {expanded ? "Deutsch" : "DE"}
         </option>
         <option value="en" lang="en">
-          EN
+          {expanded ? "English" : "EN"}
         </option>
       </Select>
     </label>

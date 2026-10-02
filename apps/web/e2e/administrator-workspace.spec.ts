@@ -81,6 +81,7 @@ for (const width of [1440, 375]) {
       path: `/tmp/iop-170-administration-${width}.png`,
       fullPage: true,
     });
+    await page.getByRole("button", { name: "User menu" }).click();
     await page.getByRole("button", { name: "View as", exact: true }).focus();
     await page.keyboard.press("Enter");
     const selector = page.getByRole("combobox", { name: "Profile view" });
@@ -91,6 +92,12 @@ for (const width of [1440, 375]) {
       "Team Leader",
     ]);
     for (const profile of ["technician", "task-force", "team-leader"]) {
+      if (!(await selector.isVisible())) {
+        await page.getByRole("button", { name: "User menu" }).click();
+        await page
+          .getByRole("button", { name: "View as", exact: true })
+          .click();
+      }
       await selector.selectOption(profile);
       await expect(
         page.getByRole("region", { name: "Start page" }),
@@ -105,7 +112,7 @@ for (const width of [1440, 375]) {
         page.getByRole("button", { name: "Data administration" }),
       ).toHaveCount(0);
       await expect(
-        page.getByRole("button", { name: "Edit your name" }),
+        page.getByRole("button", { name: "User menu" }),
       ).toContainText("Alex");
       if (profile === "technician") {
         await expect(

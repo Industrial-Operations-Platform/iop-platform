@@ -267,9 +267,7 @@ for (const width of [1440, 375]) {
     };
     await page.goto("/");
     await expect(page.getByText("Daily-report-20260930.csv")).toBeVisible();
-    await expect(page.locator("header > :last-child")).toHaveAccessibleName(
-      "Sign out",
-    );
+    await expect(page.getByRole("button", { name: "User menu" })).toBeVisible();
     await screenshot("overview");
     await page
       .getByRole("button", { name: "Users & profiles", exact: true })
@@ -570,7 +568,9 @@ for (const width of [1440, 375]) {
       page.getByRole("heading", { name: "Teams", exact: true }),
     ).toBeVisible();
     await screenshot("configuration");
+    await page.getByRole("button", { name: "User menu" }).click();
     await page.getByLabel("Language", { exact: true }).selectOption("de");
+    await page.keyboard.press("Escape");
     await expect(
       page.getByRole("button", {
         name: "Konfiguration speichern",

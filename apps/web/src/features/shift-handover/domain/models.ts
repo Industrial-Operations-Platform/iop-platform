@@ -84,6 +84,7 @@ export interface History {
   nextBefore: number;
 }
 export interface Selection {
+  notificationsAfter?: string;
   dueFrom?: string;
   dueTo?: string;
   responsibleId?: string;

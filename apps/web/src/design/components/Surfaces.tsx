@@ -97,8 +97,17 @@ export function Badge({
   );
 }
 /** Keep semantic table content with the caller, including captions and headers. */
-export function Table({ className = "", ...props }: ComponentProps<"table">) {
-  return <table {...props} className={`iop-table ${className}`} />;
+export function Table({
+  variant = "default",
+  className = "",
+  ...props
+}: ComponentProps<"table"> & { variant?: "default" | "records" }) {
+  return (
+    <table
+      {...props}
+      className={`iop-table iop-table--${variant} ${className}`}
+    />
+  );
 }
 export function TableViewport({
   className = "",

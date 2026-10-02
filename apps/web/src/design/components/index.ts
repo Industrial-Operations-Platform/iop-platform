@@ -1,6 +1,7 @@
 export {
   Actions,
   AddButton,
+  IconButton,
   Button,
   DeleteButton,
   FilterButton,
@@ -39,3 +40,5 @@ export { TableText } from "./TableText";
 export { SearchControl } from "./SearchControl";
 export { DateField } from "./DateField";
 export type { BreadcrumbItem } from "./SectionHeading";
+export { Popover } from "./Popover";
+export { ActionIcon } from "./ActionIcon";

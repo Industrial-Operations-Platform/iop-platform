@@ -1,3 +1,6 @@
+import { EntryNotifications } from "../features/shift-handover/application/notifications";
+import { BrowserNotificationCheckpoint } from "../features/shift-handover/adapters/browser/notification-checkpoint";
+import { NotificationControl } from "../features/shift-handover/adapters/react/NotificationControl";
 import { WorkforceToday } from "../features/workforce/adapters/react/WorkforceToday";
 import { WorkforceWorkspace } from "../features/workforce/adapters/react/WorkforceWorkspace";
 import type { WorkforceApplication } from "../features/workforce/application/workforce";
@@ -8,7 +11,7 @@ import { PlatformMark } from "../design/components/PlatformMark";
 import type { HandoverApplication } from "../features/shift-handover/application/handover";
 import { HandoverWorkspace } from "../features/shift-handover/adapters/react/HandoverWorkspace";
 import { HandoverHighlights } from "../features/shift-handover/adapters/react/HandoverHighlights";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   Alert,
   AppShell,
@@ -33,6 +36,7 @@ import {
   type AdministrationTool,
 } from "./AdministrationOverview";
 import { ProfileViewControl } from "./ProfileViewControl";
+import { AccountControl } from "./AccountControl";
 export function WorkspaceApp({
   application,
   access,
@@ -113,6 +117,30 @@ export function WorkspaceApp({
     if (access) updateSession(await access.context());
   };
   const signedIn = context?.user && !context.mustChangePassword;
+  const notifications = useMemo(() => {
+    if (
+      !handover ||
+      !context?.user ||
+      !context.scope ||
+      context.mustChangePassword
+    )
+      return null;
+    return new EntryNotifications(
+      handover,
+      new BrowserNotificationCheckpoint(
+        context.scope.organizationId,
+        context.scope.siteId,
+        context.user.id,
+      ),
+    );
+  }, [
+    handover,
+    context?.user?.id,
+    context?.scope?.organizationId,
+    context?.scope?.siteId,
+    context?.mustChangePassword,
+  ]);
+
   const canViewProfiles =
     !!signedIn && !!(context.canImport || context.canAdminister);
   const previewProfile =
@@ -229,32 +257,38 @@ export function WorkspaceApp({
       skipLabel={t("Skip to workspace")}
       header={
         <>
-          {canViewProfiles && (
-            <ProfileViewControl
-              key={context?.user?.id}
-              profile={previewProfile ?? "administrator"}
-              onChange={selectProfile}
+          {notifications && (
+            <NotificationControl
+              key={`${context?.scope?.organizationId}:${context?.scope?.siteId}:${context?.user?.id}`}
+              application={notifications}
+              timeZone={context?.scope?.siteTimeZone ?? "UTC"}
+              openEntry={(id) => {
+                setHandoverEntry(id);
+                setHandoverVisit((visit) => visit + 1);
+                setHandoverHighlights(false);
+                setHandoverPending(false);
+                setHandoverAttention(false);
+                setPage("handover");
+              }}
             />
           )}
-          {context?.authentication === "password" ? (
-            <div className="iop-account">
-              {context.user && (
-                <Button
-                  variant="text"
-                  className="iop-account-button"
-                  aria-label={t("Edit your name")}
-                  onClick={() => setEditingName(true)}
-                  disabled={!access}
-                >
-                  <strong>{context.user.name}</strong>
-                  <small>
-                    {t(
-                      profileLabels[context.user.profile as Profile] ?? "User",
-                    )}
-                  </small>
-                </Button>
-              )}
-            </div>
+          {context?.authentication === "password" && context.user ? (
+            <AccountControl
+              key={context.user.id}
+              name={context.user.name}
+              profile={context.user.profile ?? "technician"}
+              pending={pending}
+              edit={access ? () => setEditingName(true) : undefined}
+              signOut={access ? signOut : undefined}
+              preview={
+                canViewProfiles
+                  ? {
+                      profile: previewProfile ?? "administrator",
+                      onChange: selectProfile,
+                    }
+                  : undefined
+              }
+            />
           ) : (
             <Field layout="inline">
               {t("User")}{" "}
@@ -275,29 +309,16 @@ export function WorkspaceApp({
               </Select>
             </Field>
           )}
-          <LanguageControl />
-          {context?.authentication === "password" && context.user && access && (
-            <Button
-              variant="secondary"
-              className="iop-sign-out"
-              aria-label={t("Sign out")}
-              title={t("Sign out")}
-              onClick={signOut}
-              disabled={pending}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                aria-hidden="true"
-              >
-                <path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h12" />
-              </svg>
-              <span>{t("Sign out")}</span>
-            </Button>
+          {context?.authentication !== "password" && (
+            <>
+              {canViewProfiles && (
+                <ProfileViewControl
+                  profile={previewProfile ?? "administrator"}
+                  onChange={selectProfile}
+                />
+              )}
+              <LanguageControl />
+            </>
           )}
         </>
       }

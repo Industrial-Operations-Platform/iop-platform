@@ -112,6 +112,12 @@ export class HandoverChangeDto {
   @ApiPropertyOptional() highlighted?: boolean;
 }
 export class HandoverSelectionDto {
+  @ApiPropertyOptional({
+    description:
+      "New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.",
+    format: "date-time",
+  })
+  notificationsAfter?: string;
   @ApiPropertyOptional() dueFrom?: string;
   @ApiPropertyOptional() dueTo?: string;
   @ApiPropertyOptional({

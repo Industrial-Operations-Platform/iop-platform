@@ -1,4 +1,18 @@
 export const german: Readonly<Record<string, string>> = {
+  "User menu": "Benutzermenü",
+  "My profile": "Mein Profil",
+  Notifications: "Benachrichtigungen",
+  "Refresh notifications": "Benachrichtigungen aktualisieren",
+  "New entries from your colleagues":
+    "Neue Einträge von deinen Kolleginnen und Kollegen",
+  "Mark all as read": "Alle als gelesen markieren",
+  "Notifications are unavailable. Try again.":
+    "Benachrichtigungen sind nicht verfügbar. Versuche es erneut.",
+  "{0} unread notifications": "{0} ungelesene Benachrichtigungen",
+  "Checking for new entries…": "Neue Einträge werden geprüft…",
+  "You're all caught up.": "Du bist auf dem neuesten Stand.",
+  "Showing the latest {0} of {1}": "Die neuesten {0} von {1} werden angezeigt",
+
   "Enter the person's name, choose a username and assign a profile for this site.":
     "Geben Sie den Namen ein, wählen Sie einen Benutzernamen und weisen Sie ein Profil für diesen Standort zu.",
   "Use 3–64 letters, numbers, dots, hyphens or underscores. Start with a letter or number.":

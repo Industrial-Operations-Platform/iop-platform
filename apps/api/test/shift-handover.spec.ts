@@ -566,3 +566,25 @@ test("current entries resolve author, responsible and latest update actor by ID 
     latestUpdate: { actorName: "Colleague" },
   });
 });
+
+test("notification reads validate exact UTC instants without accepting malformed dates or unknown fields", () => {
+  expect(
+    validSelection({
+      ...emptySelection,
+      notificationsAfter: "2026-10-02T08:30:00.000Z",
+    }).notificationsAfter,
+  ).toBe("2026-10-02T08:30:00.000Z");
+  for (const value of [
+    "",
+    "2026-02-30T08:30:00.000Z",
+    "2026-10-02",
+    "0000-01-01T00:00:00.000Z",
+    "2026-10-02T08:30:00+02:00",
+    null,
+    3,
+  ]) {
+    expect(() =>
+      validSelection({ ...emptySelection, notificationsAfter: value } as never),
+    ).toThrow();
+  }
+});

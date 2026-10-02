@@ -218,3 +218,20 @@ The database suite includes an isolated real PostgreSQL/Playwright handover jour
 and writes screenshots to `/tmp/iop-169-browser`. It does not modify the operator's
 running stack. The [implementation plan](../planning/completed/IOP-168-shift-handover-implementation-plan.md)
 records actual executed evidence and remaining limitations.
+
+
+## In-app new-entry notifications
+
+The header bell polls the existing scoped query every 30 seconds while the page is
+visible, plus on focus and manual refresh. `notificationsAfter` is an optional exact
+UTC timestamp: query results exclude the current author and deleted entries, sort
+by creation time independently of the entry's calendar date, and retain full totals
+and bounded pagination. Every read retains existing authorization and site isolation.
+
+First use establishes a baseline. A browser-local timestamp per organization/site/
+account remembers explicit Mark all as read; entry text and permissions are not
+cached. The panel shows the latest 20 unread publications and opens their details.
+Read state is local to this browser, with session-only fallback when storage is
+unavailable. Existing-entry follow-ups, other modules, cross-device synchronization
+and external notifications are outside this increment. Failed reads never advance
+the checkpoint, and unavailable notifications have an explicit retry state.

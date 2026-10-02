@@ -841,11 +841,11 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     });
     await button("Equipment reference history").click();
     await pw(
-      page.getByRole("button", { name: /^Browser repair corrected/ }),
+      page.getByRole("button", { name: /Browser repair corrected/ }),
     ).toBeVisible();
     await button("My entries").click();
     await pw(
-      page.getByRole("button", { name: /^Browser repair corrected/ }),
+      page.getByRole("button", { name: /Browser repair corrected/ }),
     ).toBeVisible();
     await button("Department matrix").click();
     await pw(
@@ -860,7 +860,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       .fill("Browser repair corrected");
     await button("Search entries").click();
     await pw(
-      page.getByRole("button", { name: /^Browser repair corrected/ }),
+      page.getByRole("button", { name: /Browser repair corrected/ }),
     ).toBeVisible();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.screenshot({
@@ -872,9 +872,65 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
         () => document.documentElement.scrollWidth <= window.innerWidth,
       ),
     ).toBe(true);
+    await button("User menu").click();
     await button("Sign out").click();
     await login("lead-a");
-    await button("Shift Handover").click();
+    await button("Notifications").click();
+    const notificationPanel = page.getByRole("dialog", {
+      name: "Notifications",
+      exact: true,
+    });
+    await pw(
+      notificationPanel.getByText("You're all caught up."),
+    ).toBeVisible();
+    const notificationContent = {
+      ...content("Notification integration entry"),
+      date: new Date().toISOString().slice(0, 10),
+      categoryId: "people",
+      departmentId: "",
+      areaId: "",
+      equipmentCode: "",
+      condition: "",
+    };
+    await runtime.handover.create("admin-a", {
+      key: randomUUID(),
+      content: notificationContent,
+      issue: false,
+      responsibleId: "",
+    });
+    await runtime.handover.create("lead-a", {
+      key: randomUUID(),
+      content: {
+        ...notificationContent,
+        summary: "Own notification publication",
+      },
+      issue: false,
+      responsibleId: "",
+    });
+    await button("Refresh notifications").click();
+    await pw(
+      notificationPanel.getByText("Notification integration entry"),
+    ).toBeVisible();
+    await pw(
+      notificationPanel.getByText("Own notification publication"),
+    ).toHaveCount(0);
+    await pw(page.locator(".iop-notification-count")).toHaveText("1");
+    await notificationPanel
+      .getByRole("button", { name: /Notification integration entry/ })
+      .click();
+    await pw(
+      page.getByRole("heading", { name: "Notification integration entry" }),
+    ).toBeVisible();
+    await button("Notifications").click();
+    await button("Mark all as read").click();
+    await pw(
+      notificationPanel.getByText("You're all caught up."),
+    ).toBeVisible();
+    await page.keyboard.press("Escape");
+    await page
+      .getByRole("navigation", { name: "Breadcrumb" })
+      .getByRole("button", { name: "Shift Handover", exact: true })
+      .click();
     await button("My entries").click();
     await page.getByLabel("Selected department").selectOption("department");
     const dayNote = {
@@ -951,14 +1007,14 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       .getByRole("button", { name: /^Shift Handover/ })
       .click();
     await pw(
-      page.getByRole("button", { name: /^Browser repair corrected/ }).first(),
+      page.getByRole("button", { name: /Browser repair corrected/ }).first(),
     ).toBeVisible();
     await page.screenshot({
       path: "/tmp/iop-169-browser/start-mobile.png",
       fullPage: true,
     });
     await page
-      .getByRole("button", { name: /^Browser repair corrected/ })
+      .getByRole("button", { name: /Browser repair corrected/ })
       .first()
       .click();
     await pw(
@@ -991,9 +1047,10 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       .getByRole("button", { name: /^Shift Handover/ })
       .click();
     await pw(
-      page.getByRole("button", { name: /^Browser repair corrected/ }),
+      page.getByRole("button", { name: /Browser repair corrected/ }),
     ).toHaveCount(0);
     for (const id of ["task-a", "admin-a"]) {
+      await button("User menu").click();
       await button("Sign out").click();
       await login(id);
       await button("Shift Handover").click();
@@ -1506,5 +1563,66 @@ test("renames resolve through scoped account IDs in operational reads, including
         new Map(),
       );
     },
+  );
+});
+
+test("notification queries exclude self and deleted entries, preserve scope and page backdated publications by creation time", async () => {
+  const create = (actor, summary, date = "2026-09-28", target = app) =>
+    target.create(actor, {
+      key: randomUUID(),
+      content: { ...content(`Notification query fixture: ${summary}`), date },
+      issue: false,
+      responsibleId: "",
+    });
+  const baseline = await create("lead-a", "Notification baseline");
+  const published = [];
+  for (let i = 0; i < 22; i++)
+    published.push(
+      await create(
+        "lead-a",
+        `Notification ${i}`,
+        i % 2 ? "2026-09-01" : "2026-09-27",
+      ),
+    );
+  await create("admin-a", "Notification own publication");
+  const removed = await create("lead-a", "Notification removed");
+  await app.remove("admin-a", removed.id, removed.revision);
+  const other = service({ organizationId: "org-b", siteId: "site-b" });
+  await create(
+    "admin-b",
+    "Notification another organization",
+    "2026-09-28",
+    other,
+  );
+  const selection = {
+    ...emptySelection,
+    notificationsAfter: baseline.createdAt,
+    search: "Notification query fixture:",
+  };
+  const first = await app.list("admin-a", selection);
+  expect(first.total).toBe(22);
+  expect(first.entries).toHaveLength(20);
+  expect(first.entries[0].id).toBe(published[21].id);
+  expect(first.entries[0].content.date).toBe("2026-09-01");
+  const second = await app.list("admin-a", {
+    ...selection,
+    cursor: first.nextCursor,
+  });
+  expect(second.total).toBe(22);
+  expect(
+    [...first.entries, ...second.entries].map((entry) => entry.id),
+  ).toEqual(published.reverse().map((entry) => entry.id));
+  expect(second.nextCursor).toBe("");
+  expect(
+    (
+      await app.list("admin-a", {
+        ...selection,
+        notificationsAfter: first.entries[0].createdAt,
+      })
+    ).total,
+  ).toBe(0);
+  expect((await other.list("admin-b", selection)).total).toBe(0);
+  await expect(app.list("other-site", selection)).rejects.toThrow(
+    "Site operation is not permitted.",
   );
 });
