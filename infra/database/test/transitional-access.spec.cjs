@@ -48,7 +48,7 @@ beforeAll(async () => {
   };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(17);
+  expect(await migrate(configs.migrator)).toBe(20);
   await provision(configs);
   const hash = await new NodePasswords().hash(initial);
   for (const suffix of ["a", "b"]) {
@@ -255,8 +255,10 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     await pw(
       page.getByRole("heading", { name: "Users & profiles" }),
     ).toBeVisible();
+    await button("Create a user").click();
+    await pw(page.getByRole("combobox", { name: "Profile", exact: true })).toBeVisible();
     const choices = await page
-      .getByLabel("Profile", { exact: true })
+      .getByRole("combobox", { name: "Profile", exact: true })
       .locator("option")
       .allTextContents();
     expect(choices).toEqual([
@@ -270,7 +272,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
       .getByLabel("Username", { exact: true })
       .fill("browser-colleague");
     await page
-      .getByLabel("Profile", { exact: true })
+      .getByRole("combobox", { name: "Profile", exact: true })
       .selectOption("team-leader");
     await button("Create user").click();
     const credential = page
@@ -279,12 +281,12 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     await pw(credential).toBeVisible();
     const secret = await credential.textContent();
     await button("Dismiss initial password").click();
-    await button("User details for browser-colleague").click();
+    await button("Edit user browser-colleague").click();
     const details = page.getByRole("dialog", { name: "User details" });
     await details.getByLabel("Name", { exact: true }).fill("Updated browser colleague");
     await details.getByRole("button", { name: "Save changes" }).click();
     await pw(details).toHaveCount(0);
-    await pw(button("User details for browser-colleague")).toHaveText("Updated browser colleague");
+    await pw(page.getByRole("table", { name: "Accounts for this site" }).getByText("Updated browser colleague", { exact: true })).toBeVisible();
     const recentChanges = await page.request.get(origin + "/api/v1/users/activity");
     expect(recentChanges.status()).toBe(200);
     expect(await recentChanges.json()).toEqual(expect.arrayContaining([expect.objectContaining({ action: "user.name_changed", subjectName: "Updated browser colleague" })]));
@@ -308,6 +310,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
       path: join(artifacts, "profiles-mobile.png"),
       fullPage: true,
     });
+    await button("User menu").click();
     await button("Sign out").click();
     await pw(
       page.getByRole("heading", { name: "Sign in to IOP" }),
@@ -368,7 +371,9 @@ test("browser login, first password change, profiles, logout and direct HTTP den
         })
       ).status(),
     ).toBe(403);
+    await button("User menu").click();
     await button("Sign out").click();
+    await pw(page.getByRole("heading", { name: "Sign in to IOP" })).toBeVisible();
     expect((await page.request.get(origin + "/api/v1/users")).status()).toBe(
       401,
     );

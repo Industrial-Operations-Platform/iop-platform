@@ -58,7 +58,7 @@ test.each([1, 2])('fictional scope is reproducible on empty database %i without 
       finally { await client.end(); }
     };
     success('provision', 'provisioned');
-    success('migrate', '16 applied');
+    success('migrate', '20 applied');
     // A site cannot implicitly create its owner.
     expect(cli('seed-site').status).toBe(1);
     success('seed-organization', 'created');

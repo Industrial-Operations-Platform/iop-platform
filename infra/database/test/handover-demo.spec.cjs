@@ -34,6 +34,25 @@ function harness() {
       work({
         coordinator: ["administrator", "team-leader"].includes(actor),
         people: async () => people,
+        names: async (userIds) =>
+          new Map(
+            people
+              .filter((person) => userIds.includes(person.id))
+              .map((person) => [person.id, person.name]),
+          ),
+        latestUpdateActors: async (entryIds) => {
+          const actors = new Map();
+          for (const entryId of entryIds) {
+            const latestAt = entries.get(entryId)?.latestUpdate?.at;
+            const revision = (revisions.get(entryId) ?? []).findLast(
+              (revision) =>
+                revision.at === latestAt &&
+                ["follow-up", "state"].includes(revision.action),
+            );
+            if (revision) actors.set(entryId, revision.actorId);
+          }
+          return actors;
+        },
         equipment: async (actor, departmentId) => ({
           codes: [`000-${departmentId}`],
           nextCursor: "",

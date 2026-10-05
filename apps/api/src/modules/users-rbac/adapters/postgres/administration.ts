@@ -12,6 +12,7 @@ import type {
 import {
   AccessError,
   siteRoles,
+  profileSiteRoles,
   type NewUser,
   type Profile,
   type UserProfile,
@@ -242,15 +243,7 @@ class PgAdministrationTransaction implements AdministrationTransaction {
       [org, id, active && profile === "administrator"],
     );
     // Restoration receives an explicit profile; old grants never silently reactivate.
-    for (const role of [
-      "workforce-reader",
-      "workforce-planner",
-      "workforce-administrator",
-      "analytics-reader",
-      "site-operator",
-      "handover-contributor",
-      "handover-coordinator",
-    ]) {
+    for (const role of profileSiteRoles) {
       await this.client.query(
         `INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id)
         VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`,

@@ -74,6 +74,11 @@ export function requireRemainingAdministrator(
 export function siteRoles(profile: Profile): readonly string[] {
   return profile === "administrator"
     ? [
+        "maintenance-contributor",
+        "maintenance-coordinator",
+        "maintenance-administrator",
+        "assets-reader",
+        "assets-administrator",
         "workforce-reader",
         "workforce-planner",
         "workforce-administrator",
@@ -84,6 +89,9 @@ export function siteRoles(profile: Profile): readonly string[] {
       ]
     : profile === "team-leader"
       ? [
+          "maintenance-contributor",
+          "maintenance-coordinator",
+          "assets-reader",
           "workforce-reader",
           "workforce-planner",
           "analytics-reader",
@@ -91,6 +99,22 @@ export function siteRoles(profile: Profile): readonly string[] {
           "handover-coordinator",
         ]
       : profile === "technician"
-        ? ["workforce-reader", "handover-contributor"]
-        : ["workforce-reader", "analytics-reader", "handover-contributor"];
+        ? [
+            "workforce-reader",
+            "handover-contributor",
+            "maintenance-contributor",
+            "assets-reader",
+          ]
+        : [
+            "workforce-reader",
+            "analytics-reader",
+            "handover-contributor",
+            "maintenance-contributor",
+            "assets-reader",
+          ];
 }
+
+/** Complete managed catalog, including roles to revoke after a profile change. */
+export const profileSiteRoles: readonly string[] = Object.freeze([
+  ...new Set(profiles.flatMap((profile) => siteRoles(profile))),
+]);

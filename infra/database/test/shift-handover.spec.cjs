@@ -233,7 +233,7 @@ beforeAll(async () => {
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','tech-a','site-a2','analytics-reader',true)",
     ),
   );
-  expect(await migrate(configs.migrator)).toBe(5);
+  expect(await migrate(configs.migrator)).toBe(8);
   await provision(configs);
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
@@ -879,6 +879,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     ).toBe(true);
     await button("User menu").click();
     await button("Sign out").click();
+    await pw(page.getByRole("heading", { name: "Sign in to IOP" })).toBeVisible();
     await login("lead-a");
     await button("Notifications").click();
     const notificationPanel = page.getByRole("dialog", {
@@ -1057,6 +1058,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     for (const id of ["task-a", "admin-a"]) {
       await button("User menu").click();
       await button("Sign out").click();
+      await pw(page.getByRole("heading", { name: "Sign in to IOP" })).toBeVisible();
       await login(id);
       await button("Shift Handover").click();
       await pw(

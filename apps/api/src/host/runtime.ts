@@ -1,4 +1,17 @@
 import { Workforce } from "../modules/workforce/application/workforce";
+import { workforceTeams } from "../modules/workforce/adapters/postgres/teams";
+import { Maintenance } from "../modules/maintenance/application/maintenance";
+import { PgMaintenance } from "../modules/maintenance/adapters/postgres/store";
+import { maintenanceTimeline } from "../modules/maintenance/adapters/postgres/asset-history";
+import { maintenanceDefaults } from "./adapters/maintenance-defaults";
+import { Assets } from "../modules/assets/application/assets";
+import {
+  PgAssets,
+  assetReference,
+  assetReferences,
+} from "../modules/assets/adapters/postgres/store";
+import { handoverAssetTimeline } from "../modules/shift-handover/adapters/postgres/asset-history";
+import { analyticAssetTimeline } from "../modules/oip/adapters/postgres/asset-history";
 import { PgWorkforce } from "../modules/workforce/adapters/postgres/store";
 import { IntlSiteClock } from "../modules/workforce/adapters/time/site-clock";
 import { ManualScheduleDecoder } from "../modules/integrations/adapters/schedule/decoder";
@@ -210,6 +223,8 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly maintenance: Maintenance;
+  readonly assets: Assets;
   readonly workforce: Workforce;
   readonly handover: Handover;
   readonly access: ReturnType<typeof composeAccess> | null;
@@ -245,6 +260,79 @@ export class PlatformRuntime {
       config.handover,
       this.source,
       this.source.siteTimeZone,
+    );
+    const operationalDirectory = {
+      allowed: async (
+        tx: import("../persistence/site-operation").SiteTransaction,
+        actor: string,
+        permission: string,
+      ) =>
+        (
+          await evaluateSiteAccess(tx, {
+            ...this.source,
+            userId: actor,
+            permissions: [permission],
+          })
+        ).allowed,
+      names: (
+        tx: import("../persistence/site-operation").SiteTransaction,
+        ids: string[],
+      ) =>
+        sitePersonNames(
+          tx,
+          this.source.organizationId,
+          this.source.siteId,
+          ids,
+        ),
+    };
+    this.assets = new Assets(
+      new PgAssets(pool, this.source, {
+        ...operationalDirectory,
+        sources: [
+          {
+            kind: "maintenance",
+            permission: "maintenance.read",
+            read: (tx, asset, query) =>
+              maintenanceTimeline(tx, this.source, asset.id, query),
+          },
+          {
+            kind: "handover",
+            permission: "handover.read",
+            read: (tx, asset, query) =>
+              handoverAssetTimeline(tx, this.source, asset, query),
+          },
+          {
+            kind: "analytics",
+            permission: "analytics.read",
+            read: (tx, asset, query) =>
+              analyticAssetTimeline(
+                tx,
+                this.source,
+                asset,
+                query,
+                this.profileRepository.initialVersion,
+              ),
+          },
+        ],
+      }),
+      catalog.locations,
+      this.source.siteTimeZone,
+      randomUUID,
+      () => new Date().toISOString(),
+    );
+    this.maintenance = new Maintenance(
+      new PgMaintenance(pool, this.source, {
+        ...operationalDirectory,
+        people: (tx) =>
+          sitePeople(tx, this.source.organizationId, this.source.siteId),
+        teams: (tx) =>
+          workforceTeams(tx, this.source, workforceDefaults(catalog.locations)),
+        assets: (tx) => assetReferences(tx, this.source),
+        asset: (tx, id) => assetReference(tx, this.source, id),
+      }),
+      catalog.locations,
+      maintenanceDefaults,
+      () => new Date().toISOString(),
     );
     this.workforce = new Workforce(
       new PgWorkforce(pool, this.source, {
