@@ -1,4 +1,9 @@
 import { EntryNotifications } from "../features/shift-handover/application/notifications";
+import { MaintenanceWorkspace } from "../features/maintenance/adapters/react/MaintenanceWorkspace";
+import { AssetsWorkspace } from "../features/assets/adapters/react/AssetsWorkspace";
+import type { MaintenanceApplication } from "../features/maintenance/application/maintenance";
+import type { AssetsApplication } from "../features/assets/application/assets";
+import { AnalyticalEvidence } from "../features/analysis/adapters/react/AnalyticalEvidence";
 import { BrowserNotificationCheckpoint } from "../features/shift-handover/adapters/browser/notification-checkpoint";
 import { NotificationControl } from "../features/shift-handover/adapters/react/NotificationControl";
 import { WorkforceToday } from "../features/workforce/adapters/react/WorkforceToday";
@@ -42,19 +47,35 @@ export function WorkspaceApp({
   access,
   handover,
   workforce,
+  maintenance,
+  assets,
 }: {
   application: AnalysisWorkspace;
   access?: AccessApplication;
   handover?: HandoverApplication;
   workforce?: WorkforceApplication;
+  maintenance?: MaintenanceApplication;
+  assets?: AssetsApplication;
 }) {
   const currentLanguage = useSyncExternalStore(subscribeLanguage, language);
   useEffect(() => {
     document.documentElement.lang = currentLanguage;
   }, [currentLanguage]);
   const [page, setPage] = useState<
-    "start" | "analysis" | "administration" | "users" | "handover" | "workforce"
+    | "start"
+    | "analysis"
+    | "administration"
+    | "users"
+    | "handover"
+    | "workforce"
+    | "maintenance"
+    | "assets"
   >("start");
+  const [maintenanceVisit, setMaintenanceVisit] = useState(0);
+  const [assetVisit, setAssetVisit] = useState(0);
+  const [maintenanceRecord, setMaintenanceRecord] = useState("");
+  const [assetRecord, setAssetRecord] = useState("");
+  const [analyticalSource, setAnalyticalSource] = useState("");
   const [workforceVisit, setWorkforceVisit] = useState(0);
   const [editingName, setEditingName] = useState(false);
   const [handoverVisit, setHandoverVisit] = useState(0);
@@ -340,6 +361,15 @@ export function WorkspaceApp({
             if (next === "handover") openHandoverHome();
             else {
               if (next === "workforce") setWorkforceVisit((v) => v + 1);
+              if (next === "maintenance") {
+                setMaintenanceRecord("");
+                setMaintenanceVisit((v) => v + 1);
+              }
+              if (next === "assets") {
+                setAssetRecord("");
+                setAssetVisit((v) => v + 1);
+              }
+              if (next === "analysis") setAnalyticalSource("");
               setPage(next);
             }
           }}
@@ -364,6 +394,12 @@ export function WorkspaceApp({
               : []),
             ...(handover && signedIn
               ? [{ id: "handover" as const, label: t("Shift Handover") }]
+              : []),
+            ...(maintenance && signedIn
+              ? [{ id: "maintenance" as const, label: t("Maintenance") }]
+              : []),
+            ...(assets && signedIn
+              ? [{ id: "assets" as const, label: t("Assets") }]
               : []),
             ...(showUserAdministration
               ? [{ id: "users" as const, label: t("Users & profiles") }]
@@ -404,7 +440,60 @@ export function WorkspaceApp({
           </Button>
         </Panel>
       )}
-      {page === "workforce" && workforce && signedIn ? (
+      {page === "maintenance" && maintenance && signedIn ? (
+        <MaintenanceWorkspace
+          key={`${context.user?.id}:${effectiveProfile}`}
+          application={maintenance}
+          profile={effectiveProfile}
+          timeZone={context.scope?.siteTimeZone ?? "UTC"}
+          homeVisit={maintenanceVisit}
+          initialRecordId={maintenanceRecord}
+          onOpenAsset={(id) => {
+            window.scrollTo(0, 0);
+            setAssetRecord(id);
+            setAssetVisit((v) => v + 1);
+            setPage("assets");
+          }}
+        />
+      ) : page === "assets" && assets && signedIn ? (
+        <AssetsWorkspace
+          key={`${context.user?.id}:${effectiveProfile}`}
+          application={assets}
+          profile={effectiveProfile}
+          timeZone={context.scope?.siteTimeZone ?? "UTC"}
+          homeVisit={assetVisit}
+          initialAssetId={assetRecord}
+          onOpenSource={(kind, id) => {
+            window.scrollTo(0, 0);
+            if (kind === "maintenance") {
+              setMaintenanceRecord(id);
+              setMaintenanceVisit((v) => v + 1);
+              setPage("maintenance");
+            } else if (kind === "handover") {
+              setHandoverEntry(id);
+              setHandoverVisit((v) => v + 1);
+              setHandoverHighlights(false);
+              setHandoverPending(false);
+              setHandoverAttention(false);
+              setPage("handover");
+            } else if (canReadAnalytics) {
+              setAnalyticalSource(id);
+              setPage("analysis");
+            }
+          }}
+        />
+      ) : page === "analysis" && analyticalSource && canReadAnalytics ? (
+        <AnalyticalEvidence
+          key={`${context?.user?.id}:${analyticalSource}`}
+          application={application}
+          sourceId={analyticalSource}
+          onHome={() => setAnalyticalSource("")}
+          onBack={() => {
+            window.scrollTo(0, 0);
+            setPage("assets");
+          }}
+        />
+      ) : page === "workforce" && workforce && signedIn ? (
         <WorkforceWorkspace
           key={`${context.user?.id}:${effectiveProfile}`}
           application={workforce}

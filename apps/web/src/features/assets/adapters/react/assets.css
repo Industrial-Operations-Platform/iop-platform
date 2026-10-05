@@ -1,0 +1,67 @@
+.assets-workspace,
+.assets-fields,
+.assets-alias-fields,
+.assets-timeline {
+  display: grid;
+  gap: var(--iop-sectionGap);
+  min-width: 0;
+}
+.assets-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.assets-collection-heading,
+.assets-timeline-metadata {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--iop-toolbarGap);
+}
+.assets-collection-heading {
+  justify-content: space-between;
+}
+.assets-collection-heading :is(h2, h3) {
+  margin: 0;
+}
+.assets-coverage {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--iop-sectionGap);
+}
+.assets-coverage .iop-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.assets-coverage .iop-panel > span:last-child {
+  flex-basis: 100%;
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.assets-title {
+  text-align: left;
+  font-weight: var(--iop-labelWeight);
+}
+.assets-prose {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.assets-muted,
+.assets-timeline-metadata > span:not(.iop-badge) {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.assets-timeline-record {
+  display: grid;
+  gap: 10px;
+}
+.assets-timeline-record > .iop-button {
+  justify-self: start;
+}
+@media (max-width: 650px) {
+  .assets-coverage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

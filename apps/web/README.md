@@ -2,8 +2,8 @@
 
 Run the complete local stack with `npm run local:up` from the repository root.
 The [operator guide](../../docs/development/running-poc.md) owns startup, CSV import,
-historical preparation and report navigation. The current interface exposes one
-Administrator, an import/preparation workflow and six analytical report templates.
+historical preparation and report navigation. The interface provides scoped profiles,
+operational workspaces, an import/preparation workflow and six analytical report templates.
 
 ## Development boundaries
 
@@ -54,8 +54,8 @@ The retired fictional preview is removed. Every page load uses the connected
 workspace, including URLs retaining `?preview=1`. Only `src/main.tsx` remains at
 the source root; it mounts the host composition and shared `design/base.css`
 resets. Generated transport bindings live in `src/contracts`; HTTP parsing stays at the
-adapter boundary. `src/host/WorkspaceApp.tsx` composes the independent analysis and
-access, Shift Handover and Workforce features.
+adapter boundary. `src/host/WorkspaceApp.tsx` composes the independent Analysis,
+Access, Shift Handover, Workforce, Maintenance and Assets features.
 Vite empties `dist/` before building, so only the current HTML and bundled assets
 remain. Tests and fixtures are not production build inputs.
 
@@ -66,3 +66,15 @@ administrator schedule import/configuration. The shared English/German dictionar
 selects the browser language automatically and persists explicit overrides.
 The SVG mark in `public/iop-mark.svg` is reused by the shell and favicon and copied
 into the web image. See the [Workforce guide](../../docs/development/workforce.md).
+
+## Maintenance and Digital Asset Record — IOP-194
+
+The host composes separate Maintenance and Assets browser applications with HTTP
+and React adapters. Maintenance provides the filtered work board/list, personal
+work, forms, revision history and administrator priorities. Assets provides the
+registry, validation/retirement, explicit source aliases and bounded digital
+record. Source actions open Maintenance, Handover or the exact contributing
+analytical import line through its existing gateway. New HTTP adapters consume
+generated transport bindings; pure ports/models remain independent. Shared
+components/tokens and English/German localization preserve platform identity.
+See [operation and validation](../../docs/development/maintenance-assets.md).
