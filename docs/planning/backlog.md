@@ -142,14 +142,14 @@ canonical asset integration.
 
 | Task context | Status |
 | --- | --- |
-| [IOP-068 — Maintenance record model](items/IOP-068-maintenance-record.md) | Proposed |
-| [IOP-069 — Maintenance status workflow](items/IOP-069-maintenance-status.md) | Proposed |
-| [IOP-070 — Priority model](items/IOP-070-maintenance-priority.md) | Proposed |
-| [IOP-071 — Ownership](items/IOP-071-maintenance-ownership.md) | Proposed |
-| [IOP-072 — Asset link](items/IOP-072-maintenance-asset-link.md) | Proposed |
-| [IOP-073 — Maintenance Board](items/IOP-073-maintenance-board.md) | Proposed |
-| [IOP-074 — Filter/search](items/IOP-074-maintenance-filtering.md) | Proposed |
-| [IOP-075 — Maintenance history](items/IOP-075-maintenance-history.md) | Proposed |
+| [IOP-068 — Maintenance record model](items/IOP-068-maintenance-record.md) | Completed |
+| [IOP-069 — Maintenance status workflow](items/IOP-069-maintenance-status.md) | Completed |
+| [IOP-070 — Priority model](items/IOP-070-maintenance-priority.md) | Completed |
+| [IOP-071 — Ownership](items/IOP-071-maintenance-ownership.md) | Completed |
+| [IOP-072 — Asset link](items/IOP-072-maintenance-asset-link.md) | Completed |
+| [IOP-073 — Maintenance Board](items/IOP-073-maintenance-board.md) | Completed |
+| [IOP-074 — Filter/search](items/IOP-074-maintenance-filtering.md) | Completed |
+| [IOP-075 — Maintenance history](items/IOP-075-maintenance-history.md) | Completed |
 
 ## M9 — Asset Locator
 
@@ -168,11 +168,11 @@ canonical asset integration.
 
 | Task context | Status |
 | --- | --- |
-| [IOP-084 — Asset timeline model](items/IOP-084-asset-timeline.md) | Proposed |
-| [IOP-085 — Event history](items/IOP-085-asset-event-history.md) | Proposed |
-| [IOP-086 — Maintenance history](items/IOP-086-asset-maintenance-history.md) | Proposed |
-| [IOP-087 — Handover history](items/IOP-087-asset-handover-history.md) | Proposed |
-| [IOP-088 — Asset detail page](items/IOP-088-asset-detail-page.md) | Proposed |
+| [IOP-084 — Asset timeline model](items/IOP-084-asset-timeline.md) | Completed |
+| [IOP-085 — Event history](items/IOP-085-asset-event-history.md) | Completed |
+| [IOP-086 — Maintenance history](items/IOP-086-asset-maintenance-history.md) | Completed |
+| [IOP-087 — Handover history](items/IOP-087-asset-handover-history.md) | Completed |
+| [IOP-088 — Asset detail page](items/IOP-088-asset-detail-page.md) | Completed |
 
 ## M11 — OIP / Operational Intelligence
 
@@ -327,3 +327,9 @@ canonical asset integration.
 | [IOP-191 — Operational controls and contextual navigation](items/IOP-191-operational-controls.md) | Completed |
 | [IOP-192 — Operational cards, account controls and entry notifications](items/IOP-192-operational-cards-account.md) | Completed |
 | [IOP-193 — Compact account menu and pending department matrix](items/IOP-193-compact-account-pending-matrix.md) | Completed |
+
+## Maintenance and Digital Asset Record delivery
+
+| Task context | Status |
+| --- | --- |
+| [IOP-194 — Maintenance Management and Digital Asset Record](items/IOP-194-maintenance-asset-history.md) | Completed |

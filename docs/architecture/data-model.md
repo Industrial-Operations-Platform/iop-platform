@@ -343,3 +343,26 @@ Phone references use stable zone IDs; names and assignment labels are snapshots.
 `users_rbac.profiles.deleted_at` hides a logically removed profile while keeping
 identity references and journal authors intact. Handover entry tombstones preserve
 all revisions. See the [Workforce guide](../development/workforce.md).
+
+## Maintenance and supporting Asset storage — IOP-194
+
+`maintenance.records` retains the current scoped work snapshot and indexed
+status/priority/location/asset/ownership/due-date fields. `maintenance.revisions`
+contains immutable attributed full snapshots; settings and settings revisions
+retain priority configuration changes. Projection and revision appends commit
+atomically with expected-revision checks. Optional asset/user references remain
+within the exact organization/site; names and labels remain in retained evidence.
+
+`assets.records` retains stable registered identity, code, validation/retirement
+state, location and current content; `assets.aliases` constrains active exact source
+alias claims; `assets.revisions` retains earlier identity/alias/evidence content.
+Retirement is logical. These tables use scoped constraints, forced RLS and narrow
+column privileges. Original source evidence remains in its owning module.
+
+The digital-record timeline combines source-owned read results with stable
+date/recorded-instant/source/identity pagination and explicit source coverage.
+Analytical reporting labels remain date-only daily aggregates with frequency,
+accumulated seconds and original import/line references. Alias changes never
+rewrite RAW facts. Full physical composition, controller relationships, map
+placement and automatic ingestion resolution remain deferred. See
+[Maintenance/Assets](../product/maintenance-assets.md).

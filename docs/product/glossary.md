@@ -29,6 +29,8 @@
 | Phone responsibility | Exclusive holder during an interval, referenced by a stable zone or maintenance identity. |
 | Logical deletion | Removal from active views and access while retaining original records, names and revision history. |
 | Handover | Structured transfer of operational context and open issues between shifts. |
+| Digital Asset Record | Source-authorized read view combining explicit stable asset identity with Maintenance, Handover and analytical evidence; not a new event owner. |
+| Registered asset | Deliberately created stable site identity whose validation state distinguishes unverified evidence from validated physical identity. |
 | Maintenance record | Work concerning an asset, with status, responsibility and outcome. |
 | Authentication | Verification of identity; distinct from permission decisions. |
 | Scope | Explicit operation target: Organization or Organization/Site; target identity does not grant permission. |
