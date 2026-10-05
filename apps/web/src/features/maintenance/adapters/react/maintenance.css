@@ -5,6 +5,32 @@
   gap: var(--iop-sectionGap);
   min-width: 0;
 }
+.maintenance-board.maintenance-board--focused {
+  grid-template-columns: minmax(0, 1fr);
+}
+.maintenance-cards {
+  display: grid;
+  gap: var(--iop-sectionGap);
+  align-content: start;
+}
+.maintenance-board--focused .maintenance-cards,
+.maintenance-related-reports {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--iop-sectionGap);
+}
+.maintenance-related-report {
+  display: grid;
+  gap: var(--iop-sectionGap);
+  min-width: 0;
+  align-content: start;
+}
+.maintenance-related-report .handover-summary-cards {
+  grid-template-columns: minmax(0, 1fr);
+}
+.maintenance-context-hidden {
+  display: none;
+}
 .maintenance-fields {
   border: 0;
   padding: 0;
@@ -81,10 +107,21 @@
   .maintenance-board {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .maintenance-board--focused .maintenance-cards,
+  .maintenance-related-reports {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .maintenance-board--focused {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 @media (max-width: 650px) {
   .maintenance-board,
   .maintenance-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .maintenance-board--focused .maintenance-cards,
+  .maintenance-related-reports {
     grid-template-columns: minmax(0, 1fr);
   }
 }

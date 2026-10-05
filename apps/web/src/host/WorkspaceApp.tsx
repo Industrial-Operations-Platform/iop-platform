@@ -2,10 +2,18 @@ import { EntryNotifications } from "../features/shift-handover/application/notif
 import { MaintenanceWorkspace } from "../features/maintenance/adapters/react/MaintenanceWorkspace";
 import { AssetsWorkspace } from "../features/assets/adapters/react/AssetsWorkspace";
 import type { MaintenanceApplication } from "../features/maintenance/application/maintenance";
+import { maintenanceDraftFromReport } from "../features/maintenance/application/maintenance";
 import type { AssetsApplication } from "../features/assets/application/assets";
 import { AnalyticalEvidence } from "../features/analysis/adapters/react/AnalyticalEvidence";
 import { BrowserNotificationCheckpoint } from "../features/shift-handover/adapters/browser/notification-checkpoint";
-import { NotificationControl } from "../features/shift-handover/adapters/react/NotificationControl";
+import { ActivityNotifications } from "./ActivityNotifications";
+import { MaintenanceNotifications } from "../features/maintenance/application/notifications";
+import { BrowserAssignmentCheckpoint } from "../features/maintenance/adapters/browser/assignment-checkpoint";
+import { MaintenanceAssignments } from "../features/maintenance/adapters/react/MaintenanceAssignments";
+import { MaintenanceEntryDetail } from "./MaintenanceEntryDetail";
+import { EntrySummaryCards } from "../features/shift-handover/adapters/react/EntrySummaryCards";
+import type { RecordData } from "../features/maintenance/domain/models";
+import { EquipmentScope } from "../features/maintenance/adapters/react/EquipmentScope";
 import { WorkforceToday } from "../features/workforce/adapters/react/WorkforceToday";
 import { WorkforceWorkspace } from "../features/workforce/adapters/react/WorkforceWorkspace";
 import type { WorkforceApplication } from "../features/workforce/application/workforce";
@@ -74,6 +82,9 @@ export function WorkspaceApp({
   const [maintenanceVisit, setMaintenanceVisit] = useState(0);
   const [assetVisit, setAssetVisit] = useState(0);
   const [maintenanceRecord, setMaintenanceRecord] = useState("");
+  const [maintenanceMine, setMaintenanceMine] = useState(false);
+  const [maintenanceDraft, setMaintenanceDraft] =
+    useState<Partial<RecordData>>();
   const [assetRecord, setAssetRecord] = useState("");
   const [analyticalSource, setAnalyticalSource] = useState("");
   const [workforceVisit, setWorkforceVisit] = useState(0);
@@ -138,6 +149,37 @@ export function WorkspaceApp({
     if (access) updateSession(await access.context());
   };
   const signedIn = context?.user && !context.mustChangePassword;
+  const equipmentLookup = useMemo(
+    () =>
+      handover
+        ? (selection: Parameters<HandoverApplication["equipment"]>[0]) =>
+            handover.equipment(selection)
+        : undefined,
+    [handover],
+  );
+  const maintenanceNotifications = useMemo(() => {
+    if (
+      !maintenance ||
+      !context?.user ||
+      !context.scope ||
+      context.mustChangePassword
+    )
+      return null;
+    return new MaintenanceNotifications(
+      maintenance,
+      new BrowserAssignmentCheckpoint(
+        context.scope.organizationId,
+        context.scope.siteId,
+        context.user.id,
+      ),
+    );
+  }, [
+    maintenance,
+    context?.user?.id,
+    context?.scope?.organizationId,
+    context?.scope?.siteId,
+    context?.mustChangePassword,
+  ]);
   const notifications = useMemo(() => {
     if (
       !handover ||
@@ -170,6 +212,16 @@ export function WorkspaceApp({
       : undefined;
   const administration = canViewProfiles && !previewProfile;
   const effectiveProfile = previewProfile ?? context?.user?.profile;
+  const canReadAssets =
+    !!signedIn &&
+    ["team-leader", "task-force"].includes(effectiveProfile ?? "");
+  const openMaintenance = (id: string) => {
+    setMaintenanceDraft(undefined);
+    setMaintenanceRecord(id);
+    setMaintenanceMine(!id);
+    setMaintenanceVisit((value) => value + 1);
+    setPage("maintenance");
+  };
   const canReadAnalytics =
     context?.canReadAnalytics !== false && effectiveProfile !== "technician";
   const showUserAdministration =
@@ -278,10 +330,12 @@ export function WorkspaceApp({
       skipLabel={t("Skip to workspace")}
       header={
         <>
-          {notifications && (
-            <NotificationControl
+          {(notifications || maintenanceNotifications) && (
+            <ActivityNotifications
               key={`${context?.scope?.organizationId}:${context?.scope?.siteId}:${context?.user?.id}`}
-              application={notifications}
+              handover={notifications}
+              maintenance={maintenanceNotifications}
+              openMaintenance={openMaintenance}
               timeZone={context?.scope?.siteTimeZone ?? "UTC"}
               openEntry={(id) => {
                 setHandoverEntry(id);
@@ -362,6 +416,8 @@ export function WorkspaceApp({
             else {
               if (next === "workforce") setWorkforceVisit((v) => v + 1);
               if (next === "maintenance") {
+                setMaintenanceDraft(undefined);
+                setMaintenanceMine(false);
                 setMaintenanceRecord("");
                 setMaintenanceVisit((v) => v + 1);
               }
@@ -398,7 +454,7 @@ export function WorkspaceApp({
             ...(maintenance && signedIn
               ? [{ id: "maintenance" as const, label: t("Maintenance") }]
               : []),
-            ...(assets && signedIn
+            ...(assets && canReadAssets
               ? [{ id: "assets" as const, label: t("Assets") }]
               : []),
             ...(showUserAdministration
@@ -448,14 +504,41 @@ export function WorkspaceApp({
           timeZone={context.scope?.siteTimeZone ?? "UTC"}
           homeVisit={maintenanceVisit}
           initialRecordId={maintenanceRecord}
-          onOpenAsset={(id) => {
-            window.scrollTo(0, 0);
-            setAssetRecord(id);
-            setAssetVisit((v) => v + 1);
-            setPage("assets");
-          }}
+          initialMyWork={maintenanceMine}
+          initialDraft={maintenanceDraft}
+          onDraftConsumed={() => setMaintenanceDraft(undefined)}
+          lookupEquipment={equipmentLookup}
+          renderReportCards={(entries, open) => (
+            <EntrySummaryCards
+              entries={entries}
+              expanded
+              personal
+              open={open}
+            />
+          )}
+          renderReport={
+            handover
+              ? (id, back) => (
+                  <MaintenanceEntryDetail
+                    application={handover}
+                    id={id}
+                    back={back}
+                  />
+                )
+              : undefined
+          }
+          onOpenAsset={
+            canReadAssets
+              ? (id) => {
+                  window.scrollTo(0, 0);
+                  setAssetRecord(id);
+                  setAssetVisit((v) => v + 1);
+                  setPage("assets");
+                }
+              : undefined
+          }
         />
-      ) : page === "assets" && assets && signedIn ? (
+      ) : page === "assets" && assets && canReadAssets ? (
         <AssetsWorkspace
           key={`${context.user?.id}:${effectiveProfile}`}
           application={assets}
@@ -463,12 +546,25 @@ export function WorkspaceApp({
           timeZone={context.scope?.siteTimeZone ?? "UTC"}
           homeVisit={assetVisit}
           initialAssetId={assetRecord}
+          renderEquipmentPicker={
+            equipmentLookup
+              ? (scope, select) => (
+                  <EquipmentScope
+                    catalog={{ locations: scope.locations }}
+                    locationId={scope.locationId}
+                    equipment={[]}
+                    change={(equipment) => {
+                      if (equipment[0]) select(equipment[0]);
+                    }}
+                    lookup={equipmentLookup}
+                  />
+                )
+              : undefined
+          }
           onOpenSource={(kind, id) => {
             window.scrollTo(0, 0);
             if (kind === "maintenance") {
-              setMaintenanceRecord(id);
-              setMaintenanceVisit((v) => v + 1);
-              setPage("maintenance");
+              openMaintenance(id);
             } else if (kind === "handover") {
               setHandoverEntry(id);
               setHandoverVisit((v) => v + 1);
@@ -533,6 +629,17 @@ export function WorkspaceApp({
             setHandoverPending(false);
             setHandoverAttention(false);
           }}
+          onMaintenance={
+            maintenance
+              ? (entry) => {
+                  setMaintenanceDraft(maintenanceDraftFromReport(entry));
+                  setMaintenanceMine(false);
+                  setMaintenanceRecord("");
+                  setMaintenanceVisit((value) => value + 1);
+                  setPage("maintenance");
+                }
+              : undefined
+          }
         />
       ) : (page === "start" || (page === "analysis" && !canReadAnalytics)) &&
         context?.enabled &&
@@ -556,6 +663,14 @@ export function WorkspaceApp({
                 application={workforce}
                 timeZone={context.scope?.siteTimeZone ?? "Europe/Zurich"}
                 open={() => setPage("workforce")}
+              />
+            ) : undefined
+          }
+          maintenance={
+            maintenance && signedIn ? (
+              <MaintenanceAssignments
+                application={maintenance}
+                open={openMaintenance}
               />
             ) : undefined
           }

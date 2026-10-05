@@ -10,7 +10,27 @@ export function EntrySummaryCards({
   expanded = false,
   personal = false,
 }: {
-  entries: Entry[];
+  entries: (Pick<
+    Entry,
+    | "id"
+    | "departmentLabel"
+    | "areaLabel"
+    | "categoryLabel"
+    | "issueState"
+    | "responsibleName"
+    | "latestUpdate"
+  > & {
+    content: Pick<
+      Entry["content"],
+      | "categoryId"
+      | "summary"
+      | "details"
+      | "date"
+      | "equipmentCode"
+      | "dueDate"
+      | "feedbackDueDate"
+    > & { condition: string };
+  })[];
   open: (id: string) => void;
   expanded?: boolean;
   personal?: boolean;

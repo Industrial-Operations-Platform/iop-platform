@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Actions,
   AddButton,
@@ -28,6 +28,8 @@ import { MaintenanceFilters } from "./MaintenanceFilters";
 import { MaintenanceForm } from "./MaintenanceForm";
 import { PriorityConfiguration } from "./PriorityConfiguration";
 import "./maintenance.css";
+import { RepairScope, type ReportPresentation } from "./RepairScope";
+import type { EquipmentLookup } from "./EquipmentScope";
 
 export function MaintenanceWorkspace({
   application,
@@ -35,15 +37,48 @@ export function MaintenanceWorkspace({
   timeZone,
   homeVisit = 0,
   initialRecordId = "",
+  initialMyWork = false,
   onOpenAsset,
+  lookupEquipment,
+  renderReportCards,
+  renderReport,
+  initialDraft,
+  onDraftConsumed,
 }: {
   application: MaintenanceApplication;
   profile?: string;
   timeZone: string;
   homeVisit?: number;
   initialRecordId?: string;
+  initialMyWork?: boolean;
   onOpenAsset?: (id: string) => void;
-}) {
+  lookupEquipment?: EquipmentLookup;
+  renderReport?: (id: string, back: () => void) => ReactNode;
+  initialDraft?: Partial<SaveInput["data"]>;
+  onDraftConsumed?: () => void;
+} & Pick<ReportPresentation, "renderReportCards">) {
+  const [reportId, setReportId] = useState("");
+  const [reportRefresh, setReportRefresh] = useState(0);
+  const [draft, setDraft] = useState(initialDraft);
+  const reportScroll = useRef(0);
+  const reportFocus = useRef<HTMLElement | null>(null);
+  const openReport = (id: string) => {
+    reportScroll.current = window.scrollY;
+    reportFocus.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setReportId(id);
+    window.scrollTo(0, 0);
+  };
+  const closeReport = () => {
+    setReportId("");
+    setReportRefresh((value) => value + 1);
+    window.requestAnimationFrame(() => {
+      reportFocus.current?.focus({ preventScroll: true });
+      window.scrollTo(0, reportScroll.current);
+    });
+  };
   const [catalog, setCatalog] = useState<Catalog>();
   const [page, setPage] = useState<Page>();
   const [selection, setSelection] = useState<Selection>({});
@@ -76,13 +111,20 @@ export function MaintenanceWorkspace({
   };
   const goHome = () => {
     leaveDetails();
+    setDraft(undefined);
     setTab("board");
     setSelection({});
   };
   useEffect(() => {
     goHome();
+    setDraft(initialDraft);
+    if (initialDraft) {
+      setForm(true);
+      onDraftConsumed?.();
+    }
+    if (initialMyWork) setTab("mine");
     if (initialRecordId) setSelectedId(initialRecordId);
-  }, [homeVisit, initialRecordId]);
+  }, [homeVisit, initialRecordId, initialMyWork]);
   useEffect(() => {
     let active = true;
     setCatalogLoading(true);
@@ -161,8 +203,7 @@ export function MaintenanceWorkspace({
     catalog?.canAdminister && (!profile || profile === "administrator");
   const canContribute = catalog?.canContribute && profile !== "executive";
   const canCoordinate =
-    catalog?.canCoordinate &&
-    (!profile || ["administrator", "team-leader"].includes(profile));
+    catalog?.canCoordinate && (!profile || profile === "team-leader");
   const canEdit =
     selected?.canEdit &&
     canContribute &&
@@ -261,187 +302,213 @@ export function MaintenanceWorkspace({
     }
   };
   return (
-    <div className="maintenance-workspace">
-      <SectionHeading
-        section="Maintenance"
-        view={view}
-        onHome={goHome}
-        onBack={selectedId || form ? leaveDetails : undefined}
-        description={t(
-          "Track technical work, responsibility and recorded outcomes.",
+    <>
+      <div
+        className={`maintenance-workspace${reportId ? " maintenance-context-hidden" : ""}`}
+        aria-hidden={reportId ? true : undefined}
+      >
+        <SectionHeading
+          section="Maintenance"
+          view={view}
+          onHome={goHome}
+          onBack={selectedId || form ? leaveDetails : undefined}
+          description={t(
+            "Track technical work, responsibility and recorded outcomes.",
+          )}
+          actions={
+            <Actions>
+              <RefreshButton busy={pending} disabled={form} onClick={refresh} />
+              {!selectedId && !form && canContribute && (
+                <AddButton
+                  label={t("New maintenance")}
+                  onClick={() => {
+                    setDraft(undefined);
+                    setForm(true);
+                  }}
+                />
+              )}
+              {!selectedId && !form && tab !== "config" && (
+                <SearchControl
+                  label={t("Search maintenance")}
+                placeholder={t("Title, repair target, equipment code or reference")}
+                  value={selection.search ?? ""}
+                  onChange={(search) =>
+                    setSelection({ ...selection, search, cursor: "" })
+                  }
+                />
+              )}
+            </Actions>
+          }
+        />
+        {[error, catalogError, queryError, detailError]
+          .filter(Boolean)
+          .map((value, index) => (
+            <Alert key={index}>{t(value)}</Alert>
+          ))}
+        {message && <p role="status">{t(message)}</p>}
+        {!catalog && (
+          <Panel>
+            {t(catalogLoading ? "Loading…" : "Reload to try again.")}
+          </Panel>
         )}
-        actions={
-          <Actions>
-            <RefreshButton busy={pending} disabled={form} onClick={refresh} />
-            {!selectedId && !form && canContribute && (
-              <AddButton
-                label={t("New maintenance")}
-                onClick={() => setForm(true)}
+        {catalog && (
+          <>
+            {!selectedId && !form && (
+              <ViewNavigation
+                label={t("Maintenance")}
+                placement="tabs"
+                selected={tab}
+                onSelect={(value) => {
+                  leaveDetails();
+                  setTab(value);
+                }}
+                items={[
+                  { id: "board", label: t("Board") },
+                  { id: "records", label: t("Records") },
+                  { id: "mine", label: t("My work") },
+                  ...(canAdminister
+                    ? [{ id: "config", label: t("Configuration") }]
+                    : []),
+                ]}
               />
             )}
-            {!selectedId && !form && tab !== "config" && (
-              <SearchControl
-                label={t("Search maintenance")}
-                placeholder={t("Title, details or reference")}
-                value={selection.search ?? ""}
-                onChange={(search) =>
-                  setSelection({ ...selection, search, cursor: "" })
+            {form && (canEdit || (!selected && canContribute)) ? (
+              <MaintenanceForm
+                key={selected?.id ?? "new"}
+                application={application}
+                catalog={{ ...catalog, canCoordinate: !!canCoordinate }}
+                record={
+                  selected
+                    ? {
+                        ...selected,
+                        canReassign: selected.canReassign && !!canCoordinate,
+                      }
+                    : undefined
                 }
+                pending={saving}
+                lookupEquipment={lookupEquipment}
+                renderReportCards={renderReportCards}
+                openReport={openReport}
+                reportRefresh={reportRefresh}
+                initialData={draft}
+                save={(input) => void save(input)}
+                cancel={() => setForm(false)}
               />
-            )}
-          </Actions>
-        }
-      />
-      {[error, catalogError, queryError, detailError]
-        .filter(Boolean)
-        .map((value, index) => (
-          <Alert key={index}>{t(value)}</Alert>
-        ))}
-      {message && <p role="status">{t(message)}</p>}
-      {!catalog && (
-        <Panel>{t(catalogLoading ? "Loading…" : "Reload to try again.")}</Panel>
-      )}
-      {catalog && (
-        <>
-          {!selectedId && !form && (
-            <ViewNavigation
-              label={t("Maintenance")}
-              placement="tabs"
-              selected={tab}
-              onSelect={(value) => {
-                leaveDetails();
-                setTab(value);
-              }}
-              items={[
-                { id: "board", label: t("Board") },
-                { id: "records", label: t("Records") },
-                { id: "mine", label: t("My work") },
-                ...(canAdminister
-                  ? [{ id: "config", label: t("Configuration") }]
-                  : []),
-              ]}
-            />
-          )}
-          {form && (canEdit || (!selected && canContribute)) ? (
-            <MaintenanceForm
-              key={selected?.id ?? "new"}
-              application={application}
-              catalog={{ ...catalog, canCoordinate: !!canCoordinate }}
-              record={
-                selected
-                  ? {
-                      ...selected,
-                      canReassign: selected.canReassign && !!canCoordinate,
-                    }
-                  : undefined
-              }
-              pending={saving}
-              save={(input) => void save(input)}
-              cancel={() => setForm(false)}
-            />
-          ) : selected ? (
-            <Panel>
-              <MaintenanceDetails record={selected} timeZone={timeZone} />
-              <Actions className="iop-form-actions">
-                {canEdit && (
-                  <Button
-                    disabled={detailLoading}
-                    onClick={() => setForm(true)}
-                  >
-                    {t("Edit")}
-                  </Button>
+            ) : selected ? (
+              <Panel>
+                <MaintenanceDetails record={selected} timeZone={timeZone} />
+                <RepairScope
+                  application={application}
+                  locationId={selected.data.locationId}
+                  equipment={selected.data.equipment ?? []}
+                  links={selected.data.linkedEntries ?? []}
+                  renderReportCards={renderReportCards}
+                  openReport={openReport}
+                  refreshToken={reportRefresh}
+                />
+                <Actions className="iop-form-actions">
+                  {canEdit && (
+                    <Button
+                      disabled={detailLoading}
+                      onClick={() => setForm(true)}
+                    >
+                      {t("Edit")}
+                    </Button>
+                  )}
+                  {selected.data.assetId && onOpenAsset && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => onOpenAsset(selected.data.assetId)}
+                    >
+                      {t("Open asset record")}
+                    </Button>
+                  )}
+                </Actions>
+                <Disclosure variant="divided" summary={t("Revision history")}>
+                  {history?.revisions.map((revision) => (
+                    <Disclosure
+                      variant="panel"
+                      key={revision.record.revision}
+                      summary={`#${revision.record.revision} · ${revision.actorName} · ${new Date(revision.at).toLocaleString(locale(), { timeZone })}`}
+                    >
+                      <p>{revision.reason || t(revision.action)}</p>
+                      <MaintenanceDetails
+                        record={revision.record}
+                        timeZone={timeZone}
+                      />
+                    </Disclosure>
+                  ))}
+                  {history?.nextBefore ? (
+                    <Button
+                      variant="secondary"
+                      disabled={detailLoading}
+                      onClick={() => void earlierRevisions()}
+                    >
+                      {t("Earlier revisions")}
+                    </Button>
+                  ) : null}
+                </Disclosure>
+              </Panel>
+            ) : selectedId ? (
+              <Panel>
+                {t(
+                  detailLoading
+                    ? "Loading maintenance record…"
+                    : "Reload to try again.",
                 )}
-                {selected.data.assetId && onOpenAsset && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => onOpenAsset(selected.data.assetId)}
-                  >
-                    {t("Open asset record")}
-                  </Button>
-                )}
-              </Actions>
-              <Disclosure variant="divided" summary={t("Revision history")}>
-                {history?.revisions.map((revision) => (
-                  <Disclosure
-                    variant="panel"
-                    key={revision.record.revision}
-                    summary={`#${revision.record.revision} · ${revision.actorName} · ${new Date(revision.at).toLocaleString(locale(), { timeZone })}`}
-                  >
-                    <p>{revision.reason || t(revision.action)}</p>
-                    <MaintenanceDetails
-                      record={revision.record}
-                      timeZone={timeZone}
+              </Panel>
+            ) : tab === "config" && canAdminister ? (
+              <PriorityConfiguration
+                key={catalog.settings.revision}
+                settings={catalog.settings}
+                pending={saving}
+                save={(priorities) => void saveSettings(priorities)}
+              />
+            ) : (
+              <>
+                <MaintenanceFilters
+                  catalog={catalog}
+                  selection={selection}
+                  mine={tab === "mine"}
+                  change={setSelection}
+                />
+                {page ? (
+                  <>
+                    <MaintenanceCollection
+                      page={page}
+                      board={tab === "board"}
+                      select={select}
+                      selectedStatus={selection.status}
                     />
-                  </Disclosure>
-                ))}
-                {history?.nextBefore ? (
-                  <Button
-                    variant="secondary"
-                    disabled={detailLoading}
-                    onClick={() => void earlierRevisions()}
-                  >
-                    {t("Earlier revisions")}
-                  </Button>
-                ) : null}
-              </Disclosure>
-            </Panel>
-          ) : selectedId ? (
-            <Panel>
-              {t(
-                detailLoading
-                  ? "Loading maintenance record…"
-                  : "Reload to try again.",
-              )}
-            </Panel>
-          ) : tab === "config" && canAdminister ? (
-            <PriorityConfiguration
-              key={catalog.settings.revision}
-              settings={catalog.settings}
-              pending={saving}
-              save={(priorities) => void saveSettings(priorities)}
-            />
-          ) : (
-            <>
-              <MaintenanceFilters
-                catalog={catalog}
-                selection={selection}
-                mine={tab === "mine"}
-                change={setSelection}
-              />
-              {page ? (
-                <>
-                  <MaintenanceCollection
-                    page={page}
-                    board={tab === "board"}
-                    select={select}
-                  />
-                  <Actions>
-                    <p role="status">
-                      {t("Showing {0} of {1} records.", [
-                        page.records.length,
-                        page.total,
-                      ])}
-                    </p>
-                    {page.nextCursor && (
-                      <Button
-                        variant="secondary"
-                        disabled={queryLoading}
-                        onClick={() => void loadMore()}
-                      >
-                        {t("Load more")}
-                      </Button>
-                    )}
-                  </Actions>
-                </>
-              ) : (
-                <Panel>
-                  {t(queryLoading ? "Loading…" : "Reload to try again.")}
-                </Panel>
-              )}
-            </>
-          )}
-        </>
-      )}
-    </div>
+                    <Actions>
+                      <p role="status">
+                        {t("Showing {0} of {1} records.", [
+                          page.records.length,
+                          page.total,
+                        ])}
+                      </p>
+                      {page.nextCursor && (
+                        <Button
+                          variant="secondary"
+                          disabled={queryLoading}
+                          onClick={() => void loadMore()}
+                        >
+                          {t("Load more")}
+                        </Button>
+                      )}
+                    </Actions>
+                  </>
+                ) : (
+                  <Panel>
+                    {t(queryLoading ? "Loading…" : "Reload to try again.")}
+                  </Panel>
+                )}
+              </>
+            )}
+          </>
+        )}
+      </div>
+      {reportId && renderReport?.(reportId, closeReport)}
+    </>
   );
 }

@@ -18,6 +18,15 @@ export function MaintenanceDetails({
       <div className="maintenance-metadata">
         <Badge tone={statusTone(data.status)}>{statusLabel(data.status)}</Badge>
         <Badge>{record.priorityLabel || data.priorityId}</Badge>
+        <Badge>
+          {t(
+            {
+              corrective: "Corrective",
+              preventive: "Preventive",
+              inspection: "Inspection",
+            }[data.category ?? "corrective"],
+          )}
+        </Badge>
       </div>
       <div className="maintenance-detail-layout">
         <div className="maintenance-narrative">
@@ -41,6 +50,12 @@ export function MaintenanceDetails({
         <dl className="iop-detail-fields">
           {[
             ["Location", record.locationLabel || "—"],
+            ["Repair target / manual zone", data.repairTarget || "—"],
+            [
+              "Equipment identifiers (Betriebsmittelkennzeichen)",
+              data.equipment?.map((reference) => reference.code).join(", ") ||
+                "—",
+            ],
             ["Asset", record.assetName || "—"],
             ["Responsible person", record.assigneeName || t("Unassigned")],
             ["Team", record.teamLabel || "—"],

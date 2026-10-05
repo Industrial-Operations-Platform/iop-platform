@@ -124,25 +124,6 @@ for (const viewport of [
     await navigation
       .getByRole("button", { name: "Maintenance", exact: true })
       .click();
-    await page
-      .getByRole("button", { name: "Configuration", exact: true })
-      .click();
-    await expect(
-      page.getByRole("heading", { name: "Maintenance priorities" }),
-    ).toBeVisible();
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          window.scrollTo(0, 0);
-          requestAnimationFrame(() => resolve());
-        }),
-    );
-    await page.screenshot({
-      path: `test-results/IOP-194-priority-configuration-${viewport.width}.png`,
-      fullPage: true,
-    });
-    await page.getByRole("button", { name: "Save configuration" }).click();
-    await expect(page.getByText("Configuration saved.")).toBeVisible();
     await navigation
       .getByRole("button", { name: "Assets", exact: true })
       .click();
@@ -198,18 +179,24 @@ for (const profile of [
     await expect(
       page.getByRole("button", { name: "New maintenance", exact: true }),
     ).toHaveCount(profile === "executive" ? 0 : 1);
+    if (!["team-leader", "task-force"].includes(profile)) {
+      await expect(
+        navigation.getByRole("button", { name: "Assets", exact: true }),
+      ).toHaveCount(0);
+      return;
+    }
     await navigation
       .getByRole("button", { name: "Assets", exact: true })
       .click();
     await expect(
       page.getByRole("button", { name: "Register asset", exact: true }),
-    ).toHaveCount(0);
+    ).toHaveCount(1);
     await page
       .getByRole("button", { name: "Assembly conveyor", exact: true })
       .click();
     await expect(
       page.getByRole("button", { name: "Edit asset", exact: true }),
-    ).toHaveCount(0);
+    ).toHaveCount(1);
     if (profile === "technician")
       await expect(
         page.getByText("Not authorized", { exact: true }),
@@ -224,3 +211,25 @@ for (const profile of [
     ).toBeVisible();
   });
 }
+
+test("administrator retains priority configuration without operational Asset access", async ({
+  page,
+}) => {
+  await installMaintenanceAssetsFixture(page, "administrator");
+  await page.goto("/");
+  const navigation = page.getByRole("navigation", { name: "Main navigation" });
+  await expect(
+    navigation.getByRole("button", { name: "Assets", exact: true }),
+  ).toHaveCount(0);
+  await navigation
+    .getByRole("button", { name: "Maintenance", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Configuration", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Maintenance priorities" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Save configuration" }).click();
+  await expect(page.getByText("Configuration saved.")).toBeVisible();
+});

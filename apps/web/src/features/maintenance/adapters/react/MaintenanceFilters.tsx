@@ -106,6 +106,40 @@ export function MaintenanceFilters({
             }
           />
           <DateField
+            label={t("Completed from")}
+            value={selection.doneFrom ?? ""}
+            max={selection.doneTo || undefined}
+            onChange={(event) =>
+              change({ ...selection, doneFrom: event.target.value, cursor: "" })
+            }
+          />
+          <DateField
+            label={t("Completed to")}
+            value={selection.doneTo ?? ""}
+            min={selection.doneFrom || undefined}
+            onChange={(event) =>
+              change({ ...selection, doneTo: event.target.value, cursor: "" })
+            }
+          />
+          <Field>
+            {t("Completed work period")}
+            <Select
+              value={selection.history ? "history" : "operational"}
+              onChange={(event) =>
+                change({
+                  ...selection,
+                  history: event.target.value === "history",
+                  cursor: "",
+                })
+              }
+            >
+              <option value="operational">
+                {t("Previous and current week")}
+              </option>
+              <option value="history">{t("All completed history")}</option>
+            </Select>
+          </Field>
+          <DateField
             label={t("Due to")}
             value={selection.dueTo ?? ""}
             min={selection.dueFrom || undefined}
@@ -121,6 +155,11 @@ export function MaintenanceFilters({
           </Button>
         </FieldRow>
       </Disclosure>
+      <p className="maintenance-muted">
+        {t(
+          "Open, in-progress and blocked work stays visible until completed. Completed work defaults to the previous and current site weeks.",
+        )}
+      </p>
     </>
   );
 }

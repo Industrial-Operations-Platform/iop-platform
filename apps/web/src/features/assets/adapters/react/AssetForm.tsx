@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   Actions,
+  Alert,
   AddButton,
   Button,
   DeleteButton,
@@ -25,6 +26,17 @@ import {
   type SaveInput,
 } from "../../domain/models";
 import { assetStatusLabel } from "./labels";
+
+export interface EquipmentPickerPresentation {
+  renderEquipmentPicker?: (
+    scope: { locations: Context["locations"]; locationId: string },
+    select: (reference: {
+      code: string;
+      departmentId: string;
+      areaId: string;
+    }) => void,
+  ) => ReactNode;
+}
 
 function AliasFields({
   alias,
@@ -159,6 +171,7 @@ export function AssetForm({
   pending,
   save,
   cancel,
+  renderEquipmentPicker,
 }: {
   application: AssetsApplication;
   context: Context;
@@ -166,7 +179,7 @@ export function AssetForm({
   pending: boolean;
   save: (input: SaveInput) => void;
   cancel: () => void;
-}) {
+} & EquipmentPickerPresentation) {
   const [key] = useState(() => application.newKey());
   const [content, setContent] = useState<AssetContent>(() =>
     asset
@@ -177,6 +190,7 @@ export function AssetForm({
       : emptyAsset(),
   );
   const [note, setNote] = useState("");
+  const [equipmentError, setEquipmentError] = useState("");
   const change = <K extends keyof AssetContent>(
     field: K,
     value: AssetContent[K],
@@ -184,6 +198,12 @@ export function AssetForm({
   return (
     <Panel>
       <h2>{t(asset ? "Edit asset" : "Register asset")}</h2>
+      {equipmentError && <Alert>{t(equipmentError)}</Alert>}
+      <p className="assets-muted">
+        {t(
+          "For now, assets represent exact Betriebsmittelkennzeichen and their reported system components. Keep the identity unverified until the physical survey confirms it. Select the component location explicitly.",
+        )}
+      </p>
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -199,7 +219,7 @@ export function AssetForm({
         <fieldset disabled={pending} className="assets-fields">
           <FieldRow>
             <Field>
-              {t("Asset code")}
+              {t("Equipment identifier (Betriebsmittelkennzeichen)")}
               <Input
                 required
                 maxLength={160}
@@ -225,6 +245,64 @@ export function AssetForm({
               />
             </Field>
           </FieldRow>
+          {renderEquipmentPicker && (
+            <Disclosure
+              variant="panel"
+              summary={t("Use a reported equipment identifier")}
+            >
+              <p className="assets-muted">
+                {t(
+                  "Choose a location and exact reported code to prepare an unverified component record with an explicit Handover source alias. This selection does not verify physical identity.",
+                )}
+              </p>
+              {renderEquipmentPicker(
+                {
+                  locations: context.locations,
+                  locationId: content.locationId,
+                },
+                (reference) => {
+                  const alias: Alias = {
+                    namespace: "site-equipment",
+                    code: reference.code,
+                    departmentId: reference.departmentId,
+                    areaId: reference.areaId,
+                    sourceId: "",
+                    sector: "",
+                    area: "",
+                  };
+                  const matches = (value: Alias) =>
+                    value.namespace === alias.namespace &&
+                    value.code === alias.code &&
+                    value.departmentId === alias.departmentId &&
+                    value.areaId === alias.areaId;
+                  if (
+                    content.aliases.length >= 30 &&
+                    !content.aliases.some(matches)
+                  ) {
+                    setEquipmentError(
+                      "The source alias limit is reached. Remove an alias before selecting another code.",
+                    );
+                    return;
+                  }
+                  setEquipmentError("");
+                  setContent((current) => ({
+                    ...current,
+                    code: reference.code,
+                    name:
+                      !current.name || current.name === current.code
+                        ? reference.code
+                        : current.name,
+                    locationId: reference.areaId || reference.departmentId,
+                    status: "unverified",
+                    validationNote: "",
+                    aliases: current.aliases.some(matches)
+                      ? current.aliases
+                      : [...current.aliases, alias],
+                  }));
+                },
+              )}
+            </Disclosure>
+          )}
           <FieldRow>
             <Field>
               {t("Location")}

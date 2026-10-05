@@ -12,6 +12,7 @@ for (const width of [1440, 375]) {
     }[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
+      if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
       const dates = ["2026-05-01", "2026-06-01", "2026-07-01"];
       let body: unknown;
       if (path.endsWith("/workforce/board")) {

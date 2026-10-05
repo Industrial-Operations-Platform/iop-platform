@@ -1,6 +1,11 @@
 import type { components } from "../../../../contracts/schema";
 import type { Gateway } from "../../application/maintenance";
-import type { Priority, SaveInput, Selection } from "../../domain/models";
+import type {
+  Priority,
+  SaveInput,
+  Selection,
+  RelatedSelection,
+} from "../../domain/models";
 type Schemas = components["schemas"];
 const messages: Record<string, string> = {
   invalid_maintenance:
@@ -45,6 +50,14 @@ export class HttpMaintenanceGateway implements Gateway {
     return request<Schemas["MaintenanceSettingsDto"]>("settings", {
       expectedRevision,
       priorities,
+    });
+  }
+  related(selection: RelatedSelection) {
+    return request<Schemas["MaintenanceRelatedPageDto"]>("related", selection);
+  }
+  assignments(after?: string) {
+    return request<Schemas["MaintenanceAssignmentsDto"]>("assignments", {
+      after,
     });
   }
 }

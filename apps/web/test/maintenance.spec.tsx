@@ -5,10 +5,12 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MaintenanceWorkspace } from "../src/features/maintenance/adapters/react/MaintenanceWorkspace";
 import {
   MaintenanceApplication,
+  maintenanceDraftFromReport,
   type Gateway,
 } from "../src/features/maintenance/application/maintenance";
 import {
@@ -16,6 +18,7 @@ import {
   type Catalog,
   type MaintenanceRecord,
   type Page,
+  type RelatedEntry,
 } from "../src/features/maintenance/domain/models";
 
 const catalog: Catalog = {
@@ -71,6 +74,8 @@ function fixture(overrides: Partial<Gateway> = {}, context = catalog) {
       revision: 2,
     })),
     settings: jest.fn(),
+    related: jest.fn(async () => ({ entries: [], total: 0, nextCursor: "" })),
+    assignments: jest.fn(async () => ({ records: [], events: [] })),
     ...overrides,
   };
   return {
@@ -159,6 +164,10 @@ test("workflow form requires a block reason or completed outcome and preserves d
   expect(screen.getByLabelText("Work outcome")).toBeRequired();
   expect(screen.getByLabelText("Change reason")).toBeRequired();
   expect(screen.getByLabelText("Responsible person")).toBeDisabled();
+  expect(screen.getByLabelText("Location")).toBeDisabled();
+  expect(screen.getByLabelText("Asset")).toBeDisabled();
+  expect(screen.getByLabelText("Exact equipment code")).toBeDisabled();
+  expect(screen.getByLabelText("Repair target / manual zone")).toBeEnabled();
   fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
   fireEvent.click(screen.getByRole("button", { name: "Board" }));
   expect(
@@ -214,4 +223,442 @@ test("late pagination cannot overwrite a changed location selection", async () =
     }),
   );
   expect(screen.queryByText("Late old record")).toBeNull();
+});
+
+const report: RelatedEntry = {
+  id: "report",
+  revision: 2,
+  content: {
+    categoryId: "problems",
+    summary: "Cassette direction error",
+    details: "Sensor reports an error while the cassette needs repair.",
+    date: "2026-10-05",
+    equipmentCode: "=11+11.11.02-B102.1",
+    condition: "blocked",
+    dueDate: "",
+    feedbackDueDate: "",
+  },
+  departmentLabel: "Assembly",
+  areaLabel: "",
+  categoryLabel: "Problems",
+  responsibleName: "Morgan Technician",
+  issueState: "open",
+};
+test("report-started drafts preserve exact scoped identifiers without automatic assignment or source conversion", () => {
+  const source = {
+    id: "report",
+    revision: 2,
+    issueState: "open",
+    content: {
+      summary: "Cassette failure",
+      details: "Inspect motor roller",
+      departmentId: "hall",
+      areaId: "line",
+      equipmentCode: "=11+11.11.02-B102.1",
+      equipmentNamespace: "site-equipment",
+    },
+  };
+  expect(maintenanceDraftFromReport(source)).toEqual(
+    expect.objectContaining({
+      category: "corrective",
+      locationId: "line",
+      assigneeId: "",
+      equipment: [
+        {
+          namespace: "site-equipment",
+          code: source.content.equipmentCode,
+          departmentId: "hall",
+          areaId: "line",
+        },
+      ],
+      linkedEntries: [
+        {
+          id: "report",
+          expectedRevision: 2,
+          disposition: "include",
+          reason: "",
+        },
+      ],
+    }),
+  );
+  expect(
+    maintenanceDraftFromReport({
+      ...source,
+      issueState: "resolved",
+      content: { ...source.content, equipmentNamespace: "other-source" },
+    }),
+  ).toEqual(expect.objectContaining({ equipment: [], linkedEntries: [] }));
+});
+test("corrective work accepts multiple exact manual identifiers and an independent repair target", async () => {
+  const { application, gateway } = fixture();
+  render(<MaintenanceWorkspace application={application} timeZone="UTC" />);
+  fireEvent.click(
+    await screen.findByRole("button", { name: "New maintenance" }),
+  );
+  expect(screen.getByLabelText("Maintenance category")).toHaveValue(
+    "corrective",
+  );
+  fireEvent.change(screen.getByLabelText("Title"), {
+    target: { value: "Replace cassette drive" },
+  });
+  fireEvent.change(screen.getByLabelText("Location"), {
+    target: { value: "hall" },
+  });
+  fireEvent.change(screen.getByLabelText("Repair target / manual zone"), {
+    target: { value: "Cassette 2, motor roller" },
+  });
+  for (const code of ["=11+11.11.02-B102.1", "=11+11.11.02-B102.2"]) {
+    fireEvent.change(screen.getByLabelText("Exact equipment code"), {
+      target: { value: code },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Add equipment code" }));
+  }
+  fireEvent.click(screen.getByRole("button", { name: "Save maintenance" }));
+  await screen.findByText("Maintenance saved.");
+  expect(gateway.save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      data: expect.objectContaining({
+        category: "corrective",
+        repairTarget: "Cassette 2, motor roller",
+        equipment: [
+          {
+            namespace: "site-equipment",
+            code: "=11+11.11.02-B102.1",
+            departmentId: "hall",
+            areaId: "",
+          },
+          {
+            namespace: "site-equipment",
+            code: "=11+11.11.02-B102.2",
+            departmentId: "hall",
+            areaId: "",
+          },
+        ],
+      }),
+    }),
+  );
+});
+test("a report-started repair consumes its initial draft without losing the source linkage or assigning a worker", async () => {
+  const { application, gateway } = fixture({
+    related: jest.fn(async () => ({
+      entries: [report],
+      total: 1,
+      nextCursor: "",
+    })),
+  });
+  function DraftHost() {
+    const [draft, setDraft] = React.useState<
+      Partial<MaintenanceRecord["data"]> | undefined
+    >({
+      title: report.content.summary,
+      details: report.content.details,
+      locationId: "hall",
+      repairTarget: "Cassette 2",
+      equipment: [
+        {
+          namespace: "site-equipment",
+          code: report.content.equipmentCode,
+          departmentId: "hall",
+          areaId: "",
+        },
+      ],
+      linkedEntries: [
+        {
+          id: report.id,
+          expectedRevision: report.revision,
+          disposition: "include",
+          reason: "",
+        },
+      ],
+    });
+    return (
+      <MaintenanceWorkspace
+        application={application}
+        timeZone="UTC"
+        initialDraft={draft}
+        onDraftConsumed={() => setDraft(undefined)}
+      />
+    );
+  }
+  render(<DraftHost />);
+  expect(await screen.findByLabelText("Title")).toHaveValue(
+    "Cassette direction error",
+  );
+  expect(
+    await screen.findByLabelText("Scope for Cassette direction error"),
+  ).toHaveValue("include");
+  expect(screen.getByLabelText("Responsible person")).toBeDisabled();
+  expect(screen.getByLabelText("Maintenance category")).toHaveValue(
+    "corrective",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Save maintenance" }));
+  await screen.findByText("Maintenance saved.");
+  expect(gateway.save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      data: expect.objectContaining({
+        title: "Cassette direction error",
+        priorityId: "normal",
+        assigneeId: "",
+        linkedEntries: [
+          {
+            id: "report",
+            expectedRevision: 2,
+            disposition: "include",
+            reason: "",
+          },
+        ],
+      }),
+    }),
+  );
+});
+test("equipment lookup retains the actual department and independently chosen areas under a site root", async () => {
+  const context: Catalog = {
+    ...catalog,
+    locations: [
+      { id: "site-root", parentId: "", label: "Site", role: "location" },
+      {
+        id: "hall",
+        parentId: "site-root",
+        label: "Assembly",
+        role: "department",
+      },
+      { id: "line-a", parentId: "hall", label: "Line A", role: "area" },
+      { id: "line-b", parentId: "hall", label: "Line B", role: "area" },
+    ],
+  };
+  const lookup = jest.fn(async () => ({
+    codes: ["=11+11.11.02-B102.1"],
+    nextCursor: "",
+  }));
+  const { application, gateway } = fixture({}, context);
+  render(
+    <MaintenanceWorkspace
+      application={application}
+      timeZone="UTC"
+      lookupEquipment={lookup}
+    />,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "New maintenance" }),
+  );
+  fireEvent.change(screen.getByLabelText("Title"), {
+    target: { value: "Zone repair" },
+  });
+  fireEvent.change(screen.getByLabelText("Location"), {
+    target: { value: "hall" },
+  });
+  expect(lookup).not.toHaveBeenCalled();
+  fireEvent.change(screen.getByLabelText("Equipment area"), {
+    target: { value: "line-a" },
+  });
+  await waitFor(() =>
+    expect(lookup).toHaveBeenLastCalledWith({
+      departmentId: "hall",
+      areaId: "line-a",
+      search: "",
+      after: "",
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Reported equipment codes"), {
+    target: { value: "=11+11.11.02-B102.1" },
+  });
+  fireEvent.change(screen.getByLabelText("Equipment area"), {
+    target: { value: "line-b" },
+  });
+  await waitFor(() =>
+    expect(lookup).toHaveBeenLastCalledWith({
+      departmentId: "hall",
+      areaId: "line-b",
+      search: "",
+      after: "",
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Reported equipment codes"), {
+    target: { value: "=11+11.11.02-B102.1" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Save maintenance" }));
+  await screen.findByText("Maintenance saved.");
+  expect(gateway.save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      data: expect.objectContaining({
+        equipment: [
+          {
+            namespace: "site-equipment",
+            code: "=11+11.11.02-B102.1",
+            departmentId: "hall",
+            areaId: "line-a",
+          },
+          {
+            namespace: "site-equipment",
+            code: "=11+11.11.02-B102.1",
+            departmentId: "hall",
+            areaId: "line-b",
+          },
+        ],
+      }),
+    }),
+  );
+});
+test("completion requires explicit report review and an exclusion reason", async () => {
+  const related = jest.fn(async () => ({
+    entries: [report],
+    total: 1,
+    nextCursor: "",
+  }));
+  const { application, gateway } = fixture({ related });
+  render(
+    <MaintenanceWorkspace
+      application={application}
+      timeZone="UTC"
+      initialRecordId="record"
+    />,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Edit" }));
+  await screen.findByLabelText("Scope for Cassette direction error");
+  fireEvent.change(screen.getByLabelText("Status"), {
+    target: { value: "done" },
+  });
+  const save = screen.getByRole("button", { name: "Save maintenance" });
+  expect(save).toBeDisabled();
+  fireEvent.change(
+    screen.getByLabelText("Scope for Cassette direction error"),
+    { target: { value: "exclude" } },
+  );
+  expect(save).toBeDisabled();
+  fireEvent.change(screen.getByLabelText("Exclusion reason"), {
+    target: { value: "Independent electrical failure remains open." },
+  });
+  await waitFor(() => expect(save).toBeEnabled());
+  fireEvent.change(screen.getByLabelText("Work outcome"), {
+    target: { value: "Motor roller replaced." },
+  });
+  fireEvent.change(screen.getByLabelText("Change reason"), {
+    target: { value: "Repair completed after scope review." },
+  });
+  fireEvent.click(save);
+  await screen.findByText("Maintenance saved.");
+  expect(gateway.save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      data: expect.objectContaining({
+        linkedEntries: [
+          {
+            id: "report",
+            expectedRevision: 2,
+            disposition: "exclude",
+            reason: "Independent electrical failure remains open.",
+          },
+        ],
+      }),
+    }),
+  );
+});
+test("pending reports on later pages must be reviewed before completion", async () => {
+  const related = jest.fn(async (input) =>
+    input.cursor
+      ? {
+          entries: [
+            {
+              ...report,
+              id: "other",
+              content: { ...report.content, summary: "Another failure" },
+            },
+          ],
+          total: 2,
+          nextCursor: "",
+        }
+      : { entries: [report], total: 2, nextCursor: "next" },
+  );
+  const { application } = fixture({ related });
+  render(
+    <MaintenanceWorkspace
+      application={application}
+      timeZone="UTC"
+      initialRecordId="record"
+    />,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Edit" }));
+  fireEvent.change(screen.getByLabelText("Status"), {
+    target: { value: "done" },
+  });
+  fireEvent.change(
+    await screen.findByLabelText("Scope for Cassette direction error"),
+    { target: { value: "include" } },
+  );
+  const save = screen.getByRole("button", { name: "Save maintenance" });
+  expect(save).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "Load more reports" }));
+  fireEvent.change(await screen.findByLabelText("Scope for Another failure"), {
+    target: { value: "include" },
+  });
+  await waitFor(() => expect(save).toBeEnabled());
+});
+test("returning to a repair refreshes every previously displayed report page", async () => {
+  const second = { ...report, id: "other", content: { ...report.content, summary: "Another failure" } };
+  const related = jest.fn(async input => input.cursor ? { entries: [second], total: 2, nextCursor: "" } : { entries: [report], total: 2, nextCursor: "next" });
+  const { application } = fixture({ related });
+  expect(await application.related({ locationId: "hall", equipment: [] }, 2)).toEqual({ entries: [report, second], total: 2, nextCursor: "" });
+  expect(related).toHaveBeenNthCalledWith(2, { locationId: "hall", equipment: [], cursor: "next" });
+});
+test("related report navigation preserves unsaved repair details and scope decisions", async () => {
+  jest.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+  const { application } = fixture({
+    related: jest.fn(async () => ({
+      entries: [report],
+      total: 1,
+      nextCursor: "",
+    })),
+  });
+  render(
+    <MaintenanceWorkspace
+      application={application}
+      timeZone="UTC"
+      initialRecordId="record"
+      renderReport={(id, back) => (
+        <section>
+          <p>Full history for {id}</p>
+          <button onClick={back}>Return to repair</button>
+        </section>
+      )}
+    />,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Edit" }));
+  fireEvent.change(screen.getByLabelText("Work details"), {
+    target: { value: "Unsaved motor roller instructions" },
+  });
+  fireEvent.change(
+    await screen.findByLabelText("Scope for Cassette direction error"),
+    { target: { value: "include" } },
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Cassette direction error" }),
+  );
+  expect(screen.getByText("Full history for report")).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Save maintenance" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Return to repair" }));
+  expect(screen.getByLabelText("Work details")).toHaveValue(
+    "Unsaved motor roller instructions",
+  );
+  expect(
+    await screen.findByLabelText("Scope for Cassette direction error"),
+  ).toHaveValue("include");
+});
+test("status search hides other board columns and historical search is explicit", async () => {
+  const { application, gateway } = fixture();
+  render(<MaintenanceWorkspace application={application} timeZone="UTC" />);
+  await screen.findByText("Showing 1 of 4 records.");
+  fireEvent.change(screen.getByLabelText("Status"), {
+    target: { value: "open" },
+  });
+  const board = await screen.findByLabelText("Maintenance board");
+  expect(board).toHaveClass("maintenance-board--focused");
+  expect(within(board).queryByRole("heading", { name: /^Done/ })).toBeNull();
+  expect(within(board).queryByRole("heading", { name: /^Blocked/ })).toBeNull();
+  fireEvent.change(screen.getByLabelText("Completed work period"), {
+    target: { value: "history" },
+  });
+  await waitFor(() =>
+    expect(gateway.query).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: "open", history: true }),
+    ),
+  );
 });

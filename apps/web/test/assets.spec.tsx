@@ -74,7 +74,7 @@ function fixture(overrides: Partial<Gateway> = {}) {
     application: new AssetsApplication(gateway, () => "stable-key"),
   };
 }
-test.each(["technician", "team-leader", "task-force", "executive"])(
+test.each(["technician", "administrator", "executive"])(
   "%s preview cannot manage assets even with administrator capabilities",
   async (profile) => {
     const { application } = fixture();
@@ -103,16 +103,19 @@ test("registration retains its key after rejection and alias fields reflect thei
   render(
     <AssetsWorkspace
       application={application}
-      profile="administrator"
+      profile="team-leader"
       timeZone="UTC"
     />,
   );
   fireEvent.click(
     await screen.findByRole("button", { name: "Register asset" }),
   );
-  fireEvent.change(screen.getByLabelText("Asset code"), {
-    target: { value: "AS-001" },
-  });
+  fireEvent.change(
+    screen.getByLabelText("Equipment identifier (Betriebsmittelkennzeichen)"),
+    {
+      target: { value: "AS-001" },
+    },
+  );
   fireEvent.change(screen.getByLabelText("Asset name"), {
     target: { value: "Assembly conveyor" },
   });
@@ -322,3 +325,128 @@ test.each(["not-authorized", "unavailable", "unmapped"] as const)(
     expect(screen.queryByText("Showing 0 of 0 records.")).toBeNull();
   },
 );
+test.each(["team-leader", "task-force"])(
+  "%s can manage provisionally identified components when authorized",
+  async (profile) => {
+    const { application } = fixture();
+    render(
+      <AssetsWorkspace
+        application={application}
+        profile={profile}
+        timeZone="UTC"
+      />,
+    );
+    expect(
+      await screen.findByRole("button", { name: "Register asset" }),
+    ).toBeVisible();
+  },
+);
+test("deliberately choosing a reported code prepares an unverified component and exact source alias", () => {
+  const { application } = fixture();
+  const save = jest.fn();
+  const equipmentContext: Context = {
+    ...context,
+    locations: [
+      { id: "hall", parentId: "", label: "Assembly", role: "department" },
+      { id: "line", parentId: "hall", label: "Line", role: "area" },
+    ],
+  };
+  render(
+    <AssetForm
+      application={application}
+      context={equipmentContext}
+      pending={false}
+      save={save}
+      cancel={jest.fn()}
+      renderEquipmentPicker={(_, select) => (
+        <button
+          type="button"
+          onClick={() =>
+            select({
+              code: "=11+11.11.02-B102.1",
+              departmentId: "hall",
+              areaId: "line",
+            })
+          }
+        >
+          Use reported code
+        </button>
+      )}
+    />,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Use reported code" }));
+  expect(
+    screen.getByLabelText("Equipment identifier (Betriebsmittelkennzeichen)"),
+  ).toHaveValue("=11+11.11.02-B102.1");
+  expect(screen.getByLabelText("Asset name")).toHaveValue(
+    "=11+11.11.02-B102.1",
+  );
+  expect(screen.getByLabelText("Validation status")).toHaveValue("unverified");
+  fireEvent.click(screen.getByRole("button", { name: "Save asset" }));
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      content: expect.objectContaining({
+        code: "=11+11.11.02-B102.1",
+        status: "unverified",
+        locationId: "line",
+        aliases: [
+          {
+            namespace: "site-equipment",
+            code: "=11+11.11.02-B102.1",
+            departmentId: "hall",
+            areaId: "line",
+            sourceId: "",
+            sector: "",
+            area: "",
+          },
+        ],
+      }),
+    }),
+  );
+});
+test("choosing a reported code never discards an existing alias when capacity is full", () => {
+  const { application } = fixture();
+  render(
+    <AssetForm
+      application={application}
+      context={context}
+      asset={{
+        ...asset,
+        content: {
+          ...asset.content,
+          aliases: Array.from({ length: 30 }, (_, index) => ({
+            namespace: "site-equipment",
+            code: `KEPT-${index}`,
+            departmentId: "hall",
+            areaId: "",
+            sourceId: "",
+            sector: "",
+            area: "",
+          })),
+        },
+      }}
+      pending={false}
+      save={jest.fn()}
+      cancel={jest.fn()}
+      renderEquipmentPicker={(_, select) => (
+        <button
+          type="button"
+          onClick={() =>
+            select({ code: "NEW-CODE", departmentId: "hall", areaId: "" })
+          }
+        >
+          Use reported code
+        </button>
+      )}
+    />,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Use reported code" }));
+  expect(screen.getByRole("alert")).toHaveTextContent("source alias limit");
+  expect(
+    screen.getByLabelText("Equipment identifier (Betriebsmittelkennzeichen)"),
+  ).toHaveValue("AS-001");
+  expect(screen.getAllByLabelText("Source equipment code")).toHaveLength(30);
+  expect(screen.getAllByLabelText("Source equipment code")[29]).toHaveValue(
+    "KEPT-29",
+  );
+});

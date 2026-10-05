@@ -91,6 +91,7 @@ for (const width of [1440, 375]) {
     const queries: Record<string, any>[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
+      if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
       if (path.endsWith("/session/context"))
         return route.fulfill({
           json: {

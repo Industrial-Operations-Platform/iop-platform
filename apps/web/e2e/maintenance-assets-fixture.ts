@@ -16,12 +16,31 @@ const assetId = "11111111-1111-4111-8111-111111111111";
 const handoverId = "22222222-2222-4222-8222-222222222222";
 const importId = "33333333-3333-4333-8333-333333333333";
 const locations = [
-  { id: "assembly", label: "Assembly", parentId: "" },
-  { id: "packing", label: "Packing", parentId: "" },
+  {
+    id: "assembly",
+    label: "Assembly",
+    parentId: "",
+    role: "department",
+    sectorKey: "Assembly",
+  },
+  {
+    id: "packing",
+    label: "Packing",
+    parentId: "",
+    role: "department",
+    sectorKey: "Packing",
+  },
+  {
+    id: "assembly-line1",
+    label: "Line 1",
+    parentId: "assembly",
+    role: "area",
+    sectorKey: "",
+  },
 ];
 export async function installMaintenanceAssetsFixture(
   page: BrowserPage,
-  profile = "administrator",
+  profile = "team-leader",
 ) {
   const requests: { path: string; data: any }[] = [];
   const statuses: Status[] = ["open", "in-progress", "blocked", "done"];
@@ -59,7 +78,7 @@ export async function installMaintenanceAssetsFixture(
     assigneeName: "Morgan Administrator",
     teamLabel: "Maintenance team",
     canEdit: profile !== "executive",
-    canReassign: ["administrator", "team-leader"].includes(profile),
+    canReassign: profile === "team-leader",
   }));
   let assets: Asset[] = [
     {
@@ -199,16 +218,69 @@ export async function installMaintenanceAssetsFixture(
         people: [{ id: "admin", name: "Morgan Administrator" }],
         locations: locations.map((location) => ({
           ...location,
-          role: "department",
-          sectorKey: location.label,
+          role: location.role,
+          sectorKey: location.sectorKey,
         })),
         categories: [{ id: "problems", label: "Problems", carryForward: true }],
         externalSystemLabel: "Work reference",
       });
     if (path.endsWith("/handover/query"))
       return json({ entries: [], total: 0, nextCursor: "" });
+    if (path.endsWith("/handover/equipment"))
+      return json({
+        codes: ["DRIVE-01", "=11+11.11.02-B102.1"],
+        nextCursor: "",
+      });
     if (path.endsWith("/handover/history"))
-      return json({ entry: handover, revisions: [], nextBefore: 0 });
+      return json({
+        entry:
+          data.id === handoverId
+            ? handover
+            : {
+                ...handover,
+                id: "secondary-issue",
+                content: {
+                  ...handover.content,
+                  summary: "Cassette direction error",
+                  equipmentCode: "=11+11.11.02-B102.1",
+                },
+              },
+        revisions: [],
+        nextBefore: 0,
+      });
+    if (path.endsWith("/maintenance/related"))
+      return json({
+        entries: [
+          handover,
+          {
+            ...handover,
+            id: "secondary-issue",
+            content: {
+              ...handover.content,
+              summary: "Cassette direction error",
+              equipmentCode: "=11+11.11.02-B102.1",
+            },
+          },
+        ],
+        total: 2,
+        nextCursor: "",
+      });
+    if (path.endsWith("/maintenance/assignments"))
+      return json({
+        records: records.filter(
+          (record) =>
+            record.data.status !== "done" && record.data.assigneeId === "admin",
+        ),
+        events: [
+          {
+            id: "assignment-1",
+            recordId: records[0].id,
+            revision: 1,
+            title: records[0].data.title,
+            at: "2026-10-05T10:00:00Z",
+          },
+        ],
+      });
     if (path.endsWith("/analytics/availability")) return json({ dates: [] });
     if (path.endsWith("/analytics/source-rows"))
       return json({
@@ -236,7 +308,7 @@ export async function installMaintenanceAssetsFixture(
       const catalog: Catalog = {
         actorId: "admin",
         canContribute: profile !== "executive",
-        canCoordinate: ["administrator", "team-leader"].includes(profile),
+        canCoordinate: profile === "team-leader",
         canAdminister: profile === "administrator",
         settings,
         people: [{ id: "admin", name: "Morgan Administrator" }],
@@ -321,7 +393,7 @@ export async function installMaintenanceAssetsFixture(
       return json({
         actorId: "admin",
         timeZone: "UTC",
-        canManage: profile === "administrator",
+        canManage: ["team-leader", "task-force"].includes(profile),
         locations,
       });
     if (path.endsWith("/assets/query")) {

@@ -20,6 +20,8 @@ import {
   type SaveInput,
 } from "../../domain/models";
 import { statusLabel } from "./labels";
+import { EquipmentScope, type EquipmentLookup } from "./EquipmentScope";
+import { RepairScope, type ReportPresentation } from "./RepairScope";
 
 export function MaintenanceForm({
   application,
@@ -28,6 +30,11 @@ export function MaintenanceForm({
   pending,
   save,
   cancel,
+  lookupEquipment,
+  renderReportCards,
+  openReport,
+  reportRefresh,
+  initialData,
 }: {
   application: MaintenanceApplication;
   catalog: Catalog;
@@ -35,23 +42,38 @@ export function MaintenanceForm({
   pending: boolean;
   save: (input: SaveInput) => void;
   cancel: () => void;
-}) {
+  lookupEquipment?: EquipmentLookup;
+  reportRefresh?: number;
+  initialData?: Partial<SaveInput["data"]>;
+} & ReportPresentation) {
   const [id] = useState(() => record?.id ?? application.newId());
   const [data, setData] = useState(
-    () => record?.data ?? emptyRecord(catalog.settings.priorities[0]?.id),
+    () =>
+      record?.data ?? {
+        ...emptyRecord(catalog.settings.priorities[0]?.id),
+        ...initialData,
+        priorityId:
+          initialData?.priorityId || catalog.settings.priorities[0]?.id || "",
+      },
   );
   const [reason, setReason] = useState("");
+  const [reviewReady, setReviewReady] = useState(false);
   const change = <K extends keyof typeof data>(
     key: K,
     value: (typeof data)[K],
   ) => setData((current) => ({ ...current, [key]: value }));
   const canReassign = record ? record.canReassign : catalog.canCoordinate;
+  const scopeLocked =
+    !!record &&
+    !!(record.data.assigneeId || record.data.teamId) &&
+    !catalog.canCoordinate;
   return (
     <Panel>
       <h2>{t(record ? "Edit maintenance" : "New maintenance")}</h2>
       <form
         onSubmit={(event) => {
           event.preventDefault();
+          if (data.status === "done" && !reviewReady) return;
           save({ id, expectedRevision: record?.revision ?? 0, data, reason });
         }}
       >
@@ -76,11 +98,42 @@ export function MaintenanceForm({
           </Field>
           <FieldRow>
             <Field>
+              {t("Maintenance category")}
+              <Select
+                value={data.category ?? "corrective"}
+                onChange={(event) =>
+                  change("category", event.target.value as typeof data.category)
+                }
+              >
+                <option value="corrective">{t("Corrective")}</option>
+                <option value="preventive">{t("Preventive")}</option>
+                <option value="inspection">{t("Inspection")}</option>
+              </Select>
+            </Field>
+            <Field>
+              {t("Repair target / manual zone")}
+              <Input
+                maxLength={200}
+                value={data.repairTarget ?? ""}
+                onChange={(event) => change("repairTarget", event.target.value)}
+              />
+            </Field>
+          </FieldRow>
+          <FieldRow>
+            <Field>
               {t("Location")}
               <Select
                 required
+                disabled={scopeLocked}
                 value={data.locationId}
-                onChange={(event) => change("locationId", event.target.value)}
+                onChange={(event) =>
+                  setData((current) => ({
+                    ...current,
+                    locationId: event.target.value,
+                    equipment: [],
+                    linkedEntries: [],
+                  }))
+                }
               >
                 <option value="">—</option>
                 {catalog.locations.map((location) => (
@@ -94,6 +147,7 @@ export function MaintenanceForm({
               {t("Asset")}
               <Select
                 value={data.assetId}
+                disabled={scopeLocked}
                 onChange={(event) => change("assetId", event.target.value)}
               >
                 <option value="">{t("No asset linked")}</option>
@@ -127,6 +181,36 @@ export function MaintenanceForm({
               </Select>
             </Field>
           </FieldRow>
+          <EquipmentScope
+            catalog={catalog}
+            locationId={data.locationId}
+            equipment={data.equipment ?? []}
+            change={(equipment) =>
+              setData((current) => ({
+                ...current,
+                equipment,
+                linkedEntries: [],
+              }))
+            }
+            lookup={lookupEquipment}
+            disabled={scopeLocked}
+          />
+          {scopeLocked && (
+            <p className="maintenance-muted">
+              {t("The assigned repair scope is set by the Team Leader.")}
+            </p>
+          )}
+          <RepairScope
+            application={application}
+            locationId={data.locationId}
+            equipment={data.equipment ?? []}
+            links={data.linkedEntries ?? []}
+            change={(links) => change("linkedEntries", links)}
+            reviewReady={setReviewReady}
+            renderReportCards={renderReportCards}
+            openReport={openReport}
+            refreshToken={reportRefresh}
+          />
           <FieldRow>
             <Field>
               {t("Responsible person")}
@@ -226,11 +310,25 @@ export function MaintenanceForm({
               />
             </Field>
           )}
+          {data.status === "done" && (
+            <p role="status">
+              {t(
+                reviewReady
+                  ? "Included open issues will close with this maintenance outcome. Excluded issues remain open."
+                  : "Review every open report and load all reports before completing maintenance.",
+              )}
+            </p>
+          )}
           <Actions className="iop-form-actions">
             <Button variant="secondary" onClick={cancel}>
               {t("Cancel")}
             </Button>
-            <Button type="submit">{t("Save maintenance")}</Button>
+            <Button
+              type="submit"
+              disabled={data.status === "done" && !reviewReady}
+            >
+              {t("Save maintenance")}
+            </Button>
           </Actions>
         </fieldset>
       </form>

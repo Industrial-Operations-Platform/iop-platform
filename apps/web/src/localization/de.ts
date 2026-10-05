@@ -1,4 +1,90 @@
 export const german: Readonly<Record<string, string>> = {
+  "Title, repair target, equipment code or reference": "Titel, Reparaturziel, Betriebsmittelkennzeichen oder Referenz",
+  "Related reports are unavailable. Reload reports and retry.":
+    "Zugehörige Meldungen sind nicht verfügbar. Lade die Meldungen neu und versuche es erneut.",
+  "The source alias limit is reached. Remove an alias before selecting another code.":
+    "Die maximale Anzahl von Quellenbezügen ist erreicht. Entferne einen Bezug, bevor du ein weiteres Kennzeichen auswählst.",
+  "Use a reported equipment identifier":
+    "Gemeldetes Betriebsmittelkennzeichen verwenden",
+  "Choose a location and exact reported code to prepare an unverified component record with an explicit Handover source alias. This selection does not verify physical identity.":
+    "Wähle Standort und genaues gemeldetes Kennzeichen, um einen ungeprüften Komponentendatensatz mit ausdrücklichem Schichtübergabe-Bezug vorzubereiten. Die Auswahl bestätigt keine physische Identität.",
+  "Plan maintenance": "Instandhaltung planen",
+  "Confirm latest report": "Aktuelle Meldung bestätigen",
+  "The assigned repair scope is set by the Team Leader.":
+    "Der Teamleiter legt den Umfang des zugewiesenen Reparaturauftrags fest.",
+  "Equipment area": "Komponentenbereich",
+  "Manual component without an area": "Manuelle Komponente ohne Bereich",
+  "Equipment identifier (Betriebsmittelkennzeichen)":
+    "Betriebsmittelkennzeichen",
+  "For now, assets represent exact Betriebsmittelkennzeichen and their reported system components. Keep the identity unverified until the physical survey confirms it. Select the component location explicitly.":
+    "Anlagen entsprechen vorläufig den Betriebsmittelkennzeichen und den gemeldeten Systemkomponenten. Die Identität bleibt ungeprüft, bis die Bestandsaufnahme sie bestätigt. Wähle den Standort der Komponente ausdrücklich aus.",
+  "Maintenance category": "Instandhaltungsart",
+  Corrective: "Korrektiv",
+  Preventive: "Präventiv",
+  Inspection: "Inspektion",
+  "Repair target / manual zone": "Reparaturziel / manueller Bereich",
+  "Equipment identifiers (Betriebsmittelkennzeichen)":
+    "Betriebsmittelkennzeichen",
+  "Select one or more exact codes in this location. Codes identify reported components provisionally; the repair target can be a cassette, motor roller or another part without a sensor.":
+    "Wähle ein oder mehrere genaue Kennzeichen am Standort. Sie bezeichnen gemeldete Komponenten vorläufig; das Reparaturziel kann eine Kassette, Motorrolle oder ein Bauteil ohne Sensor sein.",
+  "Exact equipment code": "Genaues Betriebsmittelkennzeichen",
+  "Add equipment code": "Betriebsmittelkennzeichen hinzufügen",
+  "Reported equipment codes": "Gemeldete Betriebsmittelkennzeichen",
+  "Choose an exact code": "Genaues Kennzeichen auswählen",
+  "More equipment codes": "Weitere Betriebsmittelkennzeichen",
+  "Remove equipment code {0}": "Betriebsmittelkennzeichen {0} entfernen",
+  "Unverified component reference": "Ungeprüfter Komponentenbezug",
+  "Equipment choices are unavailable. Enter the exact code manually.":
+    "Die Kennzeichenauswahl ist nicht verfügbar. Gib das genaue Kennzeichen manuell ein.",
+  "Related operational reports": "Zugehörige Betriebsmeldungen",
+  "Reload reports": "Meldungen neu laden",
+  "Reports match the selected place and exact equipment identifiers. Review each open issue before completing maintenance.":
+    "Meldungen entsprechen dem gewählten Ort und den genauen Betriebsmittelkennzeichen. Prüfe jeden offenen Vorgang vor dem Abschluss.",
+  "Loading related reports…": "Zugehörige Meldungen werden geladen…",
+  "Select a location to find related reports.":
+    "Wähle einen Standort, um zugehörige Meldungen zu finden.",
+  "Showing {0} of {1} related reports.":
+    "{0} von {1} zugehörigen Meldungen angezeigt.",
+  "Maintenance scope": "Reparaturumfang",
+  "Scope for {0}": "Reparaturumfang für {0}",
+  "Not reviewed": "Nicht geprüft",
+  "Include in this repair": "In diese Reparatur einbeziehen",
+  "Exclude from this repair": "Von dieser Reparatur ausschließen",
+  "Exclusion reason": "Ausschlussgrund",
+  "This report changed. Select its scope again before completing maintenance.":
+    "Diese Meldung wurde geändert. Bestätige ihren Reparaturumfang vor dem Abschluss erneut.",
+  "Excluded from this repair": "Von dieser Reparatur ausgeschlossen",
+  "Included in this repair": "In diese Reparatur einbezogen",
+  "Outside this repair": "Außerhalb dieser Reparatur",
+  "Load more reports": "Weitere Meldungen laden",
+  "No reports match this repair scope.":
+    "Keine Meldungen entsprechen diesem Reparaturumfang.",
+  "Included open issues will close with this maintenance outcome. Excluded issues remain open.":
+    "Einbezogene offene Vorgänge werden mit diesem Ergebnis abgeschlossen. Ausgeschlossene Vorgänge bleiben offen.",
+  "Review every open report and load all reports before completing maintenance.":
+    "Prüfe jede offene Meldung und lade alle Meldungen vor dem Abschluss.",
+  "Completed from": "Abgeschlossen ab",
+  "Completed to": "Abgeschlossen bis",
+  "Completed work period": "Zeitraum abgeschlossener Arbeiten",
+  "Previous and current week": "Vorherige und aktuelle Woche",
+  "All completed history": "Gesamte Abschlusshistorie",
+  "Open, in-progress and blocked work stays visible until completed. Completed work defaults to the previous and current site weeks.":
+    "Offene, laufende und blockierte Arbeiten bleiben bis zum Abschluss sichtbar. Abgeschlossene Arbeiten zeigen standardmäßig die vorherige und aktuelle Standortwoche.",
+  "Your maintenance assignments": "Deine Instandhaltungsaufträge",
+  "Refresh maintenance assignments": "Instandhaltungsaufträge aktualisieren",
+  "Your maintenance assignments are unavailable. Try again.":
+    "Deine Instandhaltungsaufträge sind nicht verfügbar. Versuche es erneut.",
+  "Loading maintenance assignments…": "Instandhaltungsaufträge werden geladen…",
+  "No unfinished maintenance is assigned to you.":
+    "Dir sind keine offenen Instandhaltungsaufträge zugewiesen.",
+  "Open My work": "Meine Aufträge öffnen",
+  "Return to maintenance": "Zur Instandhaltung zurück",
+  "Maintenance assignments": "Instandhaltungsaufträge",
+  "Assigned to you": "Dir zugewiesen",
+  "Colleague reports and maintenance assigned to you":
+    "Meldungen des Teams und deine Instandhaltungsaufträge",
+  "Some notifications are unavailable. Try again.":
+    "Einige Benachrichtigungen sind nicht verfügbar. Versuche es erneut.",
   "User menu": "Benutzermenü",
   "My profile": "Mein Profil",
   "Pending work and today’s updates": "Offene Aufgaben und heutige Meldungen",
