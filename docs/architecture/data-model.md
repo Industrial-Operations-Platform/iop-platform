@@ -366,3 +366,15 @@ accumulated seconds and original import/line references. Alias changes never
 rewrite RAW facts. Full physical composition, controller relationships, map
 placement and automatic ingestion resolution remain deferred. See
 [Maintenance/Assets](../product/maintenance-assets.md).
+
+
+### Linked repair scopes
+
+Maintenance snapshots retain category (legacy records default to Corrective), a
+manual repair target, bounded exact equipment identities and reviewed linked-entry
+revision/disposition/exclusion-reason references. Multiple evidence identifiers may
+refer to one repair zone or a component absent from analytical catalogs. Source
+entries remain Handover-owned; no report copy or inferred spatial relationship is
+stored. Completion appends both module histories on the existing scoped transaction
+through the owning receiver contract. Assignment revisions supply in-app recipient
+activity; current unfinished work supplies Start independently of unread state.

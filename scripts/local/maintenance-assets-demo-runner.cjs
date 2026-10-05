@@ -28,7 +28,8 @@ async function run(options, fixture) {
     { ...scope, sourceId: local.source.id },
     local.site.timeZone,
   );
-  const actor = json(env.IOP_LOCAL_IDENTITY_FILE).users[0].id;
+  const configuredOperator = json(env.IOP_LOCAL_IDENTITY_FILE).users[0].id;
+  let actor = configuredOperator;
   const pool = new Pool({
     host: env.IOP_DATABASE_HOST,
     port: Number(env.IOP_DATABASE_PORT),
@@ -95,6 +96,11 @@ async function run(options, fixture) {
     randomUUID,
     () => new Date().toISOString(),
   );
+  const {
+    handoverMaintenanceIssues,
+    pendingHandoverMaintenanceIssues,
+    resolveHandoverMaintenanceIssues,
+  } = compiled("modules/shift-handover/adapters/postgres/maintenance-issues");
   const maintenance = new Maintenance(
     new PgMaintenance(pool, scope, {
       allowed,
@@ -104,10 +110,20 @@ async function run(options, fixture) {
         workforceTeams(tx, scope, workforceDefaults(catalog.locations)),
       assets: (tx) => assetReferences(tx, scope),
       asset: (tx, id) => assetReference(tx, scope, id),
+      related: (tx, issueScope, selection) =>
+        handoverMaintenanceIssues(tx, scope, {
+          scope: issueScope,
+          ...selection,
+        }),
+      pending: (tx, issueScope) =>
+        pendingHandoverMaintenanceIssues(tx, scope, issueScope),
+      resolve: (tx, resolutions, evidence) =>
+        resolveHandoverMaintenanceIssues(tx, scope, resolutions, evidence),
     }),
     catalog.locations,
     maintenanceDefaults,
     () => new Date().toISOString(),
+    catalog.timeZone,
   );
   const digest = (value) =>
     createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -190,17 +206,39 @@ async function run(options, fixture) {
       },
     );
   try {
-    const [assetContext, context] = await Promise.all([
-      assets.context(actor),
-      maintenance.catalog(actor),
-    ]);
-    if (
-      !assetContext.canManage ||
-      !context.canCoordinate ||
-      !context.canContribute
-    )
+    // Use an existing eligible leader, without creating accounts or changing grants.
+    const directory = await maintenance.catalog(configuredOperator);
+    const candidates = [...directory.people].sort(
+      (first, second) =>
+        Number(second.id === options.manifest?.actor) -
+        Number(first.id === options.manifest?.actor),
+    );
+    let context;
+    for (const person of candidates) {
+      try {
+        const [assetContext, workContext] = await Promise.all([
+          assets.context(person.id),
+          maintenance.catalog(person.id),
+        ]);
+        if (
+          assetContext.canManage &&
+          workContext.canCoordinate &&
+          workContext.canContribute
+        ) {
+          actor = person.id;
+          context = workContext;
+          break;
+        }
+      } catch (error) {
+        const { SiteAccessDeniedError } = compiled(
+          "persistence/site-operation",
+        );
+        if (!(error instanceof SiteAccessDeniedError)) throw error;
+      }
+    }
+    if (!context)
       throw new Error(
-        "The local operator must manage assets and coordinate maintenance.",
+        "Demo data requires an existing active Team Leader with current Asset and Maintenance grants.",
       );
     if (options.action === "prepare") {
       const baseline = await inspect();
@@ -209,29 +247,64 @@ async function run(options, fixture) {
           "Demo records already exist. Restore the private manifest before rerunning.",
         );
       const today = siteDate(new Date().toISOString(), catalog.timeZone);
-      return {
-        version: 1,
-        scope,
-        actor,
+      const sample = fixture.build({
         today,
-        baseline,
-        ...fixture.build({
-          today,
-          actor,
-          people: context.people,
-          teams: context.teams,
-          priorities: context.settings.priorities,
-          departments: catalog.locations.filter(
-            (location) => location.role === "department",
-          ),
-        }),
-      };
+        actor,
+        people: context.people,
+        teams: context.teams,
+        priorities: context.settings.priorities,
+        departments: catalog.locations.filter(
+          (location) => location.role === "department",
+        ),
+      });
+      const byLocation = new Map();
+      for (const record of sample.records) {
+        const entries = byLocation.get(record.data.locationId) ?? [];
+        let cursor = "";
+        if (!byLocation.has(record.data.locationId))
+          do {
+            const page = await maintenance.related(actor, {
+              locationId: record.data.locationId,
+              equipment: [],
+              cursor,
+            });
+            entries.push(...page.entries);
+            cursor = page.nextCursor;
+          } while (cursor && entries.length <= 100);
+        byLocation.set(record.data.locationId, entries);
+        if (entries.length > 100 || cursor)
+          throw new Error(
+            "The configured demo zone has too many reports; narrow its scope before preparing fixtures.",
+          );
+        record.data = {
+          ...record.data,
+          category: record.id.endsWith("-5")
+            ? "preventive"
+            : record.id.endsWith("-0")
+              ? "inspection"
+              : "corrective",
+          repairTarget:
+            "[DEMO] Simulated component inspection or repair; no physical work.",
+          equipment: [],
+          linkedEntries: entries
+            .filter((entry) =>
+              ["open", "in-progress"].includes(entry.issueState),
+            )
+            .map((entry) => ({
+              id: entry.id,
+              expectedRevision: entry.revision,
+              disposition: "exclude",
+              reason:
+                "[DEMO] Existing operational report is outside this fictional exercise; leave it unchanged.",
+            })),
+        };
+      }
+      return { version: 1, scope, actor, today, baseline, ...sample };
     }
     const manifest = options.manifest;
     if (
       manifest?.version !== 1 ||
       JSON.stringify(manifest.scope) !== JSON.stringify(scope) ||
-      manifest.actor !== actor ||
       !Array.isArray(manifest.assets) ||
       !Array.isArray(manifest.records) ||
       manifest.assets.length > 100 ||
@@ -250,7 +323,7 @@ async function run(options, fixture) {
       if (
         !record.id.startsWith(fixture.prefix) ||
         !record.data.title.startsWith("[DEMO] ") ||
-        record.actor !== actor ||
+        record.actor !== manifest.actor ||
         record.changes.length > 5
       )
         throw new Error("Demo maintenance marker or bounds invalid.");
@@ -273,9 +346,13 @@ async function run(options, fixture) {
       }
     }
     const before = await inspect();
-    if (options.action === "apply")
+    if (options.action === "apply") {
+      if (manifest.actor !== actor)
+        throw new Error(
+          "The original demo author no longer has creation permissions. Use --inspect to explore the retained dataset; do not recreate or overwrite it.",
+        );
       await fixture.apply({ assets, maintenance }, manifest);
-    else if (options.action !== "inspect")
+    } else if (options.action !== "inspect")
       throw new Error("Unknown demo operation.");
     const after = await inspect();
     if (

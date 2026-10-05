@@ -45,6 +45,7 @@
     "local:status": "node scripts/local/platform.cjs status",
     "local:admin": "node scripts/local/platform.cjs admin",
     "local:maintenance-demo": "node scripts/local/maintenance-assets-demo.cjs",
+    "local:linked-maintenance-demo": "node scripts/local/linked-maintenance-demo.cjs",
     "local:handover-demo": "node scripts/local/handover-demo.cjs",
     "local:workforce-demo": "node scripts/local/workforce-demo-host.cjs"
   },

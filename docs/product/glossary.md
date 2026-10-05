@@ -31,7 +31,9 @@
 | Handover | Structured transfer of operational context and open issues between shifts. |
 | Digital Asset Record | Source-authorized read view combining explicit stable asset identity with Maintenance, Handover and analytical evidence; not a new event owner. |
 | Registered asset | Deliberately created stable site identity whose validation state distinguishes unverified evidence from validated physical identity. |
-| Maintenance record | Work concerning an asset, with status, responsibility and outcome. |
+| Maintenance record | Corrective, preventive or inspection work concerning a location/component, with reviewed equipment/report scope, status, responsibility and outcome. |
+| Repair scope | Explicit configured location, exact equipment identifiers and included/excluded source problems for one maintenance record; not inferred from proximity or code prefixes. |
+| Equipment identifier | Exact source equipment code with namespace/location context; provisionally represents a system part, pending physical verification. |
 | Authentication | Verification of identity; distinct from permission decisions. |
 | Scope | Explicit operation target: Organization or Organization/Site; target identity does not grant permission. |
 | Membership | Relationship between a platform user and an organization; active membership is required but grants no permission by itself under ADR-0014. |

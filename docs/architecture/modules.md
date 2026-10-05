@@ -25,7 +25,7 @@ See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary
 | Authentication | Identity-provider boundary, local credentials, throttling and revocable sessions | Provider adapters; user identity mapping contract |
 | Workforce and Shift Management | Teams, shift definitions, assignments | Core sites; user references |
 | Shift Handover | Handover notes, open issues, acknowledgements | Shifts, users, asset and maintenance references |
-| Maintenance Management | Maintenance records, status, work outcomes | Assets, users; external references via Integrations |
+| Maintenance Management | Categorized work, manual repair scopes, include/exclude decisions, assignments, status and outcomes | Assets/users/team directories; Handover-owned related-entry and scoped resolution contracts |
 | Asset Management | Canonical assets, types, hierarchy, controller relationships, validation and alias mappings | Core site context; source identifiers from Integrations |
 | Asset Locator | Versioned maps, placements and location search views | Asset and site contracts; no duplicate asset registry |
 | Data Analysis (OIP) | Canonical event occurrences/aggregates, message definitions, asset/message associations and analytical projections | Normalized input contracts, assets, shifts and maintenance context |

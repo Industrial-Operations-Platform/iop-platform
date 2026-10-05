@@ -7,7 +7,8 @@ M9 maps and placements remain deferred. See the [operator guide](../development/
 ## Maintenance
 
 Technical work records contain title/details, configured location, optional
-registered asset, priority, responsible site person/team, due date, external
+registered asset, maintenance category, manual repair target, multiple exact scoped
+equipment identifiers, priority, responsible site person/team, due date, external
 reference, status and work outcome. Locations are the existing configured tree;
 customer labels and department/area roles are configuration, not universal levels.
 Teams come from Workforce and users from the scoped Users/RBAC directory.
@@ -27,9 +28,52 @@ apply the other filters while excluding the selected status. Labels in retained
 revisions are snapshots; an edited catalog does not rewrite historical evidence.
 Administrators configure priority labels/ranks through versioned settings.
 
+## Repair scope and Shift Handover
+
+Corrective is the default category; Preventive covers planned work and Inspection
+covers checks without an assumed repair. A repair target describes the component
+or work to perform, independently of the signals used to identify the affected
+zone. For example, a cassette or motorized roller may need repair while nearby
+sensor identifiers provide the evidence. A configured location and manually chosen
+exact equipment identifiers define the current scope; no code-prefix, text,
+spatial-radius or physical-identity inference is performed.
+
+Maintenance reads related Shift Handover entries, including entries displayed in
+Department matrix, through the Handover owner's contract. These are the same
+records, not copies. The internal report list retains details, identifiers and
+follow-up; opening a report and returning preserves the maintenance selection.
+Entries without an equipment identifier can provide zone-wide context.
+
+Every scoped pending issue must be explicitly included or excluded before work is
+completed. Exclusions require a retained explanation. Included pending issues are
+resolved with the maintenance outcome and work reference, in the same scoped
+transaction as completion; their attributed Handover histories remain intact.
+A stale included revision, unreviewed newly arriving issue, revoked permission or
+write failure prevents partial completion. Already resolved issues are not reopened;
+excluded or unrelated issues are not modified. Reopening Maintenance does not
+silently reopen previously resolved Handover issues. Up to 30 equipment identifiers
+and 100 report decisions can be retained per work record. More than 100 pending
+scoped issues produces an explicit capacity error instead of partial closure.
+
+Team Leader assigns people/teams. Contributors may propose unassigned work and
+update authored/assigned work; assignment does not grant global Handover coordination.
+Only an assigned worker or Team Leader can resolve included reports through the
+maintenance scope. Once a person or team is assigned, only Team Leader can change
+the location, equipment identifiers or asset defining that scope. Workers see their current unfinished assignments on Start and
+assignment activity in the bell; edits without a changed assignment are not new
+assignment events. This is in-app activity, not email or push delivery.
+
+The board defaults to all unfinished work, regardless of age, and Done work from
+the previous and current site-local Monday-based weeks. Explicit historical search
+can change the completed-work window. Status selection hides other board columns
+and presents matching cards in three columns on wide screens, wrapping on smaller
+screens. Other filters continue to apply on the server before pagination.
+
 ## Asset identity and history
 
-Assets are registered deliberately with stable site-scoped identity, code/name,
+For this increment, source equipment codes (Betriebsmittelkennzeichen) provisionally
+represent system parts. Assets are registered deliberately with stable site-scoped
+identity and the exact code/name,
 location and descriptive metadata. Unverified registration is distinct from
 validated physical identity. Validation requires evidence. Retirement retains
 history and identity and prevents new work from selecting a retired asset.
@@ -64,10 +108,10 @@ These responsibilities extend the existing explicit site-bundle mechanism:
 
 | Profile | Maintenance | Assets | Analytical timeline evidence |
 | --- | --- | --- | --- |
-| Technician | Read, create, update authored/assigned work | Read | Requires a separate analytical grant; absent in the fixed profile |
-| Task Force | Read, create, update authored/assigned work | Read | Current `analytics.read` required |
-| Team Leader | Contributor plus site coordination/reassignment | Read | Current `analytics.read` required |
-| Administrator | Coordination and priority configuration | Register/edit/validate/retire and alias management | Current `analytics.read` required |
+| Technician | Read, propose unassigned work, update authored/assigned work | No access | Requires a separate analytical grant; absent in the fixed profile |
+| Task Force | Read, propose unassigned work, update authored/assigned work | Register/read/edit equipment references | Current `analytics.read` required |
+| Team Leader | Contributor plus site assignment/coordination | Register/read/edit equipment references | Current `analytics.read` required |
+| Administrator | Contributor plus priority configuration; no assignment authority | No operational Asset access | Current `analytics.read` required |
 
 The server checks current membership/grants and exact site on every operation,
 including source reads. Browser profile previews change presentation only.

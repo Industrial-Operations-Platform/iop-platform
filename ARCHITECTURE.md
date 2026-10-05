@@ -147,3 +147,11 @@ analytics. [Product scope](docs/product/maintenance-assets.md) and
 [operation](docs/development/maintenance-assets.md) describe the boundaries. M9
 Asset Locator, full M4 hierarchy/controller/survey work and general Audit remain
 deferred. This delivery does not constitute owner product acceptance.
+
+
+The owner-requested IOP-194 follow-up links reviewed Maintenance repair scopes to
+Handover issues through narrow owner-defined reads and resolution writes. It reuses
+ADR-0027's coordinated pinned transaction; each module retains its own history.
+Exact equipment codes provisionally represent parts while physical verification
+and 3D/radius selection remain deferred. See the [contract](docs/product/maintenance-assets.md)
+and [ADR-0036 refinement](docs/architecture/adr/ADR-0036-shift-handover.md).

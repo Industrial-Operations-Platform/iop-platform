@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-Completed local implementation. On 2026-10-05 the owner requested full M8 Maintenance Management
+Completed: implementation and linked-maintenance follow-up; owner review pending. On 2026-10-05 the owner requested full M8 Maintenance Management
 and M10 Asset History delivery on a separate branch, delegated implementation
 and design choices, and explicitly waived intermediate approvals. Existing
 development remains under owner review. M9 Asset Locator is excluded.
@@ -24,6 +24,25 @@ development remains under owner review. M9 Asset Locator is excluded.
   usable desktop/narrow layouts, keyboard controls and empty/error states.
 - [x] Executable domain, transport, persistence and browser evidence;
   synchronized contracts, module/data documentation and operator guides.
+
+## Linked-maintenance follow-up
+
+Owner-requested on 2026-10-05; [execution plan](../completed/IOP-194-linked-maintenance-plan.md).
+
+- [x] Corrective (default), preventive and inspection categories; explicit manual
+  repair target and location spanning several exact Betriebsmittelkennzeichen.
+- [x] Related Shift Handover problem/matrix entries inside Maintenance, with
+  contextual detail navigation and preserved return selections.
+- [x] Completion resolves explicitly included open issues; exclusions retain their
+  open state and require a reason. Unreviewed scope prevents accidental closure.
+- [x] Team Leader assignment authority, worker Start summaries and activity notices.
+- [x] Assets restricted to Team Leader and Task Force, with provisional source-code
+  identities preserved as unverified until the owner checks them.
+- [x] Default board retains unfinished work and previous/current-week completions;
+  searchable historical scope and focused status layouts show three cards per row
+  on wide screens.
+- [x] Durable revisions, current permissions, atomic failure behavior, tests and
+  synchronized documentation; no 3D/radius selection or M9 delivery.
 
 ## Dependencies and boundaries
 
@@ -50,4 +69,8 @@ are loaded locally; repeated application preserves existing data and adds no
 duplicates. M9 remains excluded.
 
 Execution: [plan](../completed/IOP-194-maintenance-asset-history-plan.md).
+Linked-maintenance delivery: [execution evidence](../completed/IOP-194-linked-maintenance-plan.md).
+The additional local dataset contains two unverified equipment assets, four Handover
+problems and four assigned repairs. Repeated application preserves earlier data and
+creates no duplicate records or revisions. Search `[DEMO LINKED]` to explore it.
 Owner product acceptance remains a review after local delivery.
