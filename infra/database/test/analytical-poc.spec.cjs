@@ -89,7 +89,19 @@ async function retainOperationalResetEvidence() {
       [scope.organizationId, scope.siteId, role],
     );
   }
-  const asset = await runtime.assets.save("demo-a", {
+  // Operational Assets and work assignment use an eligible Team Leader;
+  // the administrator retains priority and workforce administration.
+  await admin(
+    "INSERT INTO users_rbac.profiles(organization_id,user_id,site_id,display_name,profile) VALUES($1,'demo-b',$2,'Demo colleague','team-leader')",
+    [scope.organizationId, scope.siteId],
+  );
+  for (const role of siteRoles("team-leader")) {
+    await admin(
+      "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,'demo-b',$2,$3,true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",
+      [scope.organizationId, scope.siteId, role],
+    );
+  }
+  const asset = await runtime.assets.save("demo-b", {
     key: "reset-evidence-asset",
     id: "",
     expectedRevision: 0,
@@ -143,7 +155,7 @@ async function retainOperationalResetEvidence() {
     priorities,
     () => "2026-10-05T12:00:00.000Z",
   );
-  await maintenance.save("demo-a", {
+  await maintenance.save("demo-b", {
     id: "reset-evidence-work",
     expectedRevision: 0,
     reason: "",
@@ -153,7 +165,7 @@ async function retainOperationalResetEvidence() {
       locationId: "reset-fixture-location",
       assetId: asset.id,
       priorityId: "normal",
-      assigneeId: "demo-a",
+      assigneeId: "demo-b",
       teamId: "",
       status: "open",
       dueDate: "2026-10-07",

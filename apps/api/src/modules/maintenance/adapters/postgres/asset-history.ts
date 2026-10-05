@@ -18,6 +18,12 @@ export async function maintenanceTimeline(
   scope: Scope,
   assetId: string,
   query: TimelineQuery,
+  aliases: {
+    namespace: string;
+    code: string;
+    departmentId: string;
+    areaId: string;
+  }[] = [],
 ) {
   if (
     tx.context.organizationId !== scope.organizationId ||
@@ -39,11 +45,19 @@ export async function maintenanceTimeline(
     query.timeZone,
     query.from,
     query.to,
+    JSON.stringify(
+      aliases.filter((alias) => alias.namespace === "site-equipment"),
+    ),
   ];
   const clauses = [
     "organization_id=$1",
     "site_id=$2",
-    "asset_id=$3",
+    `(asset_id=$3 OR EXISTS (
+      SELECT 1 FROM jsonb_array_elements($7::jsonb) alias
+      JOIN jsonb_array_elements(coalesce(snapshot->'record'->'data'->'equipment','[]'::jsonb)) target
+      ON target->>'namespace'=alias->>'namespace' AND target->>'code'=alias->>'code'
+        AND target->>'departmentId'=alias->>'departmentId' AND target->>'areaId'=alias->>'areaId'
+    ))`,
     "(at AT TIME ZONE $4)::date BETWEEN $5::date AND $6::date",
   ];
   let boundary = "true";
@@ -51,7 +65,7 @@ export async function maintenanceTimeline(
     const c = query.cursor;
     values.push(c.date, c.recordedAt, c.kind, c.id);
     boundary =
-      '(day COLLATE "C",snapshot->>\'at\' COLLATE "C",\'maintenance\'::text COLLATE "C",event_id COLLATE "C")<($7::text COLLATE "C",$8::text COLLATE "C",$9::text COLLATE "C",$10::text COLLATE "C")';
+      '(day COLLATE "C",snapshot->>\'at\' COLLATE "C",\'maintenance\'::text COLLATE "C",event_id COLLATE "C")<($8::text COLLATE "C",$9::text COLLATE "C",$10::text COLLATE "C",$11::text COLLATE "C")';
   }
   values.push(query.limit);
   const result = await tx.query(

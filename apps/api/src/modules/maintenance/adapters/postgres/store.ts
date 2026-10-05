@@ -15,6 +15,11 @@ import {
   type Selection,
   type Settings,
   type Team,
+  type IssueScope,
+  type RelatedPage,
+  type RelatedEntry,
+  type AssignmentEvent,
+  normalized,
 } from "../../domain/maintenance";
 export interface Scope {
   organizationId: string;
@@ -31,6 +36,22 @@ export interface Directory {
   teams(tx: SiteTransaction): Promise<Team[]>;
   assets(tx: SiteTransaction): Promise<AssetReference[]>;
   asset(tx: SiteTransaction, id: string): Promise<AssetReference | null>;
+  related?(
+    tx: SiteTransaction,
+    scope: IssueScope,
+    selection: {
+      search?: string;
+      cursor?: string;
+      ids?: string[];
+      limit?: number;
+    },
+  ): Promise<RelatedPage>;
+  pending?(tx: SiteTransaction, scope: IssueScope): Promise<RelatedEntry[]>;
+  resolve?(
+    tx: SiteTransaction,
+    resolutions: { id: string; expectedRevision: number }[],
+    evidence: { maintenanceId: string; outcome: string; at: string },
+  ): Promise<unknown>;
 }
 export class PgMaintenance implements Store {
   constructor(
@@ -121,6 +142,29 @@ class PgMaintenanceTransaction implements Transaction {
   asset(id: string) {
     return this.directory.asset(this.tx, id);
   }
+  related(
+    scope: IssueScope,
+    selection: {
+      search?: string;
+      cursor?: string;
+      ids?: string[];
+      limit?: number;
+    },
+  ) {
+    assert(this.directory.related, "maintenance_capacity");
+    return this.directory.related(this.tx, scope, selection);
+  }
+  pending(scope: IssueScope) {
+    assert(this.directory.pending, "maintenance_capacity");
+    return this.directory.pending(this.tx, scope);
+  }
+  async resolve(
+    resolutions: { id: string; expectedRevision: number }[],
+    evidence: { maintenanceId: string; outcome: string; at: string },
+  ) {
+    assert(this.directory.resolve, "maintenance_capacity");
+    await this.directory.resolve(this.tx, resolutions, evidence);
+  }
   async settings(): Promise<Settings | null> {
     const result = await this.tx.query(
       "SELECT snapshot FROM maintenance.settings WHERE organization_id=$1 AND site_id=$2",
@@ -154,10 +198,19 @@ class PgMaintenanceTransaction implements Transaction {
   }
   async get(id: string): Promise<MaintenanceRecord | null> {
     const result = await this.tx.query(
-      "SELECT snapshot FROM maintenance.records WHERE organization_id=$1 AND site_id=$2 AND id=$3",
+      "SELECT snapshot,completed_at FROM maintenance.records WHERE organization_id=$1 AND site_id=$2 AND id=$3",
       [...this.selectors, id],
     );
-    return (result.rows[0]?.snapshot as MaintenanceRecord | undefined) ?? null;
+    const record = result.rows[0]?.snapshot as MaintenanceRecord | undefined;
+    return record
+      ? {
+          ...record,
+          data: normalized(record.data),
+          completedAt: result.rows[0].completed_at
+            ? new Date(result.rows[0].completed_at as string).toISOString()
+            : "",
+        }
+      : null;
   }
   async creation(id: string): Promise<Revision | null> {
     const result = await this.tx.query(
@@ -169,9 +222,9 @@ class PgMaintenanceTransaction implements Transaction {
   async save(record: MaintenanceRecord, revision: Revision) {
     const d = record.data;
     await this.tx.query(
-      `INSERT INTO maintenance.records(organization_id,site_id,id,revision,status,priority_id,location_id,asset_id,assignee_id,team_id,due_date,updated_at,snapshot,author_id)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
-      ON CONFLICT(organization_id,site_id,id) DO UPDATE SET revision=EXCLUDED.revision,status=EXCLUDED.status,priority_id=EXCLUDED.priority_id,location_id=EXCLUDED.location_id,asset_id=EXCLUDED.asset_id,assignee_id=EXCLUDED.assignee_id,team_id=EXCLUDED.team_id,due_date=EXCLUDED.due_date,updated_at=EXCLUDED.updated_at,snapshot=EXCLUDED.snapshot`,
+      `INSERT INTO maintenance.records(organization_id,site_id,id,revision,status,priority_id,location_id,asset_id,assignee_id,team_id,due_date,updated_at,snapshot,author_id,completed_at)
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+      ON CONFLICT(organization_id,site_id,id) DO UPDATE SET revision=EXCLUDED.revision,status=EXCLUDED.status,priority_id=EXCLUDED.priority_id,location_id=EXCLUDED.location_id,asset_id=EXCLUDED.asset_id,assignee_id=EXCLUDED.assignee_id,team_id=EXCLUDED.team_id,due_date=EXCLUDED.due_date,updated_at=EXCLUDED.updated_at,snapshot=EXCLUDED.snapshot,completed_at=EXCLUDED.completed_at`,
       [
         ...this.selectors,
         record.id,
@@ -186,6 +239,7 @@ class PgMaintenanceTransaction implements Transaction {
         record.updatedAt,
         JSON.stringify(record),
         record.authorId,
+        record.completedAt || null,
       ],
     );
     await this.tx.query(
@@ -208,6 +262,22 @@ class PgMaintenanceTransaction implements Transaction {
       values.push(value);
       return "$" + values.length;
     };
+    if (input.category)
+      clauses.push(
+        `coalesce(snapshot->'data'->>'category','corrective')=${bind(input.category)}`,
+      );
+    if (input.doneFrom || input.doneTo) {
+      const zone = `(SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2)`;
+      const completed = `(completed_at AT TIME ZONE ${zone})::date`;
+      if (input.doneFrom)
+        clauses.push(
+          `(status<>'done' OR ${completed}>=${bind(input.doneFrom)}::date)`,
+        );
+      if (input.doneTo)
+        clauses.push(
+          `(status<>'done' OR ${completed}<=${bind(input.doneTo)}::date)`,
+        );
+    }
     for (const [key, column] of [
       ["priorityId", "priority_id"],
       ["assetId", "asset_id"],
@@ -221,7 +291,7 @@ class PgMaintenanceTransaction implements Transaction {
     if (input.dueTo) clauses.push(`due_date<=${bind(input.dueTo)}::date`);
     if (input.search)
       clauses.push(
-        `strpos(lower(concat_ws(' ',snapshot->'data'->>'title',snapshot->'data'->>'details',snapshot->'data'->>'externalReference',snapshot->>'assetName')),lower(${bind(input.search)}))>0`,
+        `strpos(lower(concat_ws(' ',snapshot->'data'->>'title',snapshot->'data'->>'details',snapshot->'data'->>'repairTarget',snapshot->'data'->>'externalReference',snapshot->'data'->'equipment',snapshot->>'locationLabel',snapshot->>'assetName')),lower(${bind(input.search)}))>0`,
       );
     const count = await this.tx.query(
       `SELECT status,count(*)::integer AS count FROM maintenance.records WHERE ${clauses.join(" AND ")} GROUP BY status`,
@@ -255,12 +325,17 @@ class PgMaintenanceTransaction implements Transaction {
     }
     const limit = input.limit ?? 20;
     const result = await this.tx.query(
-      `SELECT snapshot FROM maintenance.records WHERE ${clauses.join(" AND ")} ORDER BY updated_at DESC,id DESC LIMIT ${bind(limit + 1)}`,
+      `SELECT snapshot,completed_at FROM maintenance.records WHERE ${clauses.join(" AND ")} ORDER BY updated_at DESC,id DESC LIMIT ${bind(limit + 1)}`,
       values,
     );
     const records = result.rows
       .slice(0, limit)
-      .map((r) => r.snapshot as MaintenanceRecord);
+      .map((r) => ({
+        ...(r.snapshot as MaintenanceRecord),
+        completedAt: r.completed_at
+          ? new Date(r.completed_at as string).toISOString()
+          : "",
+      }));
     const last = records.at(-1);
     return {
       records,
@@ -284,6 +359,45 @@ class PgMaintenanceTransaction implements Transaction {
       revisions,
       nextBefore:
         result.rows.length > limit ? revisions.at(-1)!.record.revision : 0,
+    };
+  }
+  async assignments(
+    actor: string,
+    after: string,
+  ): Promise<{ records: MaintenanceRecord[]; events: AssignmentEvent[] }> {
+    assert(actor === this.tx.context.userId, "maintenance_denied");
+    const current = await this.tx.query(
+      `SELECT snapshot FROM maintenance.records WHERE organization_id=$1 AND site_id=$2
+      AND assignee_id=$3 AND status<>'done' ORDER BY updated_at DESC,id DESC LIMIT 501`,
+      [...this.selectors, actor],
+    );
+    assert(current.rows.length <= 500, "maintenance_capacity");
+    const records = current.rows.map(
+      (row) => row.snapshot as MaintenanceRecord,
+    );
+    if (!records.length) return { records, events: [] };
+    const result = await this.tx.query(
+      `WITH history AS (
+        SELECT id,revision,at,snapshot,
+        lag(snapshot->'record'->'data'->>'assigneeId') OVER(PARTITION BY id ORDER BY revision) AS previous_assignee
+        FROM maintenance.revisions WHERE organization_id=$1 AND site_id=$2 AND id=ANY($3::text[])
+      ), assignments AS (
+        SELECT *,row_number() OVER(PARTITION BY id ORDER BY revision DESC) AS position
+        FROM history WHERE snapshot->'record'->'data'->>'assigneeId'=$4 AND coalesce(previous_assignee,'')<>$4
+      ) SELECT id,revision,at,snapshot->'record'->'data'->>'title' AS title FROM assignments
+      WHERE position=1 AND at>= $5::timestamptz ORDER BY at DESC,id DESC LIMIT 501`,
+      [...this.selectors, records.map((record) => record.id), actor, after],
+    );
+    assert(result.rows.length <= 500, "maintenance_capacity");
+    return {
+      records,
+      events: result.rows.map((row) => ({
+        id: `assignment_${row.id}_${row.revision}`,
+        recordId: String(row.id),
+        revision: Number(row.revision),
+        at: new Date(row.at as string).toISOString(),
+        title: String(row.title),
+      })),
     };
   }
 }

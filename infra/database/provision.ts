@@ -196,6 +196,14 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
   const assetsInstalled = installed && (await client.query(
     "SELECT 1 FROM iop_migrations.history WHERE name='20261005020000-assets'",
   )).rowCount;
+  const maintenanceScopeInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261005040000-maintenance-scope-access'",
+  )).rowCount;
+  if (maintenanceScopeInstalled) {
+    allowedColumns.push('maintenance.records.completed_at');
+    inserts.push('maintenance.records.completed_at');
+    updates.push('maintenance.records.completed_at');
+  }
   if (assetsInstalled) {
     schemas.push('assets');
     for (const [table, names] of Object.entries({

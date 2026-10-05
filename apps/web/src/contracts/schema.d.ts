@@ -104,6 +104,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/maintenance/related": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_related"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_assignments"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assets/context": {
         parameters: {
             query?: never;
@@ -834,6 +866,9 @@ export interface components {
             id: string;
             label: string;
             parentId: string;
+            /** @enum {string} */
+            role?: "department" | "area" | "location";
+            sectorKey?: string;
         };
         MaintenanceAssetDto: {
             id: string;
@@ -855,6 +890,14 @@ export interface components {
         };
         MaintenanceSelectionDto: {
             /** @enum {string} */
+            category?: "" | "corrective" | "preventive" | "inspection";
+            /** @description Explicit historical search; disables the default closed-work week window. */
+            history?: boolean;
+            /** @description Completion calendar date lower bound; unfinished work remains visible. */
+            doneFrom?: string;
+            /** @description Completion calendar date upper bound; unfinished work remains visible. */
+            doneTo?: string;
+            /** @enum {string} */
             status?: "" | "open" | "in-progress" | "blocked" | "done";
             priorityId?: string;
             /** @description Configured location and its descendants. */
@@ -869,7 +912,30 @@ export interface components {
             /** @default 20 */
             limit: number;
         };
+        MaintenanceEquipmentDto: {
+            /** @enum {string} */
+            namespace: "site-equipment";
+            code: string;
+            departmentId: string;
+            areaId: string;
+        };
+        MaintenanceLinkedEntryDto: {
+            id: string;
+            expectedRevision: number;
+            /** @enum {string} */
+            disposition: "include" | "exclude";
+            /** @description Required reason for exclusion from the repair scope. */
+            reason: string;
+        };
         MaintenanceDataDto: {
+            /**
+             * @default corrective
+             * @enum {string}
+             */
+            category: "corrective" | "preventive" | "inspection";
+            repairTarget?: string;
+            equipment?: components["schemas"]["MaintenanceEquipmentDto"][];
+            linkedEntries?: components["schemas"]["MaintenanceLinkedEntryDto"][];
             title: string;
             details: string;
             locationId: string;
@@ -900,6 +966,10 @@ export interface components {
             priorityLabel: string;
             assigneeName: string;
             teamLabel: string;
+            /** @description Last true person-assignment instant; unrelated edits do not change it. */
+            assignedAt?: string;
+            /** @description Last completion instant; empty while unfinished. */
+            completedAt?: string;
             canEdit: boolean;
             canReassign: boolean;
         };
@@ -949,6 +1019,10 @@ export interface components {
             priorityLabel: string;
             assigneeName: string;
             teamLabel: string;
+            /** @description Last true person-assignment instant; unrelated edits do not change it. */
+            assignedAt?: string;
+            /** @description Last completion instant; empty while unfinished. */
+            completedAt?: string;
         };
         MaintenanceRevisionDto: {
             record: components["schemas"]["MaintenanceRecordDto"];
@@ -964,6 +1038,81 @@ export interface components {
             record: components["schemas"]["MaintenanceViewDto"];
             revisions: components["schemas"]["MaintenanceRevisionDto"][];
             nextBefore: number;
+        };
+        MaintenanceRelatedRequestDto: {
+            locationId: string;
+            equipment: components["schemas"]["MaintenanceEquipmentDto"][];
+            search?: string;
+            cursor?: string;
+        };
+        HandoverLatestUpdateDto: {
+            note: string;
+            actorName: string;
+            at: string;
+        };
+        HandoverContentDto: {
+            date: string;
+            categoryId: string;
+            summary: string;
+            details: string;
+            departmentId: string;
+            areaId: string;
+            equipmentCode: string;
+            equipmentNamespace: string;
+            /** @enum {string} */
+            condition: "" | "damaged" | "inspection-needed" | "blocked" | "repaired" | "restored";
+            externalReference: string;
+            challenge: string;
+            cause: string;
+            measure: string;
+            dueDate: string;
+            feedbackDueDate: string;
+            discuss: boolean;
+        };
+        HandoverEntryDto: {
+            deleted?: boolean;
+            latestUpdate?: components["schemas"]["HandoverLatestUpdateDto"];
+            id: string;
+            authorId: string;
+            authorName: string;
+            createdAt: string;
+            updatedAt: string;
+            departmentLabel: string;
+            areaLabel: string;
+            categoryLabel: string;
+            equipmentReferenceId: string;
+            responsibleId: string;
+            responsibleName: string;
+            highlightedAt: string;
+            revision: number;
+            content: components["schemas"]["HandoverContentDto"];
+            /** @enum {string} */
+            issueState: "none" | "open" | "in-progress" | "resolved";
+            highlighted: boolean;
+        };
+        MaintenanceRelatedPageDto: {
+            entries: components["schemas"]["HandoverEntryDto"][];
+            total: number;
+            nextCursor: string;
+        };
+        MaintenanceAssignmentsRequestDto: {
+            /**
+             * Format: date-time
+             * @description Assignment-event checkpoint only; current work is always returned.
+             */
+            after?: string;
+        };
+        MaintenanceAssignmentEventDto: {
+            id: string;
+            recordId: string;
+            title: string;
+            /** Format: date-time */
+            at: string;
+            revision: number;
+        };
+        MaintenanceAssignmentsDto: {
+            records: components["schemas"]["MaintenanceViewDto"][];
+            events: components["schemas"]["MaintenanceAssignmentEventDto"][];
         };
         AssetsContextRequestDto: Record<string, never>;
         HandoverLocationDto: {
@@ -1670,51 +1819,6 @@ export interface components {
             state: "" | "none" | "open" | "in-progress" | "resolved" | "pending";
             highlights: boolean;
         };
-        HandoverLatestUpdateDto: {
-            note: string;
-            actorName: string;
-            at: string;
-        };
-        HandoverContentDto: {
-            date: string;
-            categoryId: string;
-            summary: string;
-            details: string;
-            departmentId: string;
-            areaId: string;
-            equipmentCode: string;
-            equipmentNamespace: string;
-            /** @enum {string} */
-            condition: "" | "damaged" | "inspection-needed" | "blocked" | "repaired" | "restored";
-            externalReference: string;
-            challenge: string;
-            cause: string;
-            measure: string;
-            dueDate: string;
-            feedbackDueDate: string;
-            discuss: boolean;
-        };
-        HandoverEntryDto: {
-            deleted?: boolean;
-            latestUpdate?: components["schemas"]["HandoverLatestUpdateDto"];
-            id: string;
-            authorId: string;
-            authorName: string;
-            createdAt: string;
-            updatedAt: string;
-            departmentLabel: string;
-            areaLabel: string;
-            categoryLabel: string;
-            equipmentReferenceId: string;
-            responsibleId: string;
-            responsibleName: string;
-            highlightedAt: string;
-            revision: number;
-            content: components["schemas"]["HandoverContentDto"];
-            /** @enum {string} */
-            issueState: "none" | "open" | "in-progress" | "resolved";
-            highlighted: boolean;
-        };
         HandoverPageDto: {
             entries: components["schemas"]["HandoverEntryDto"][];
             nextCursor: string;
@@ -1931,6 +2035,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MaintenanceHistoryDto"];
+                };
+            };
+        };
+    };
+    MaintenanceController_related: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceRelatedRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceRelatedPageDto"];
+                };
+            };
+        };
+    };
+    MaintenanceController_assignments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceAssignmentsRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceAssignmentsDto"];
                 };
             };
         };

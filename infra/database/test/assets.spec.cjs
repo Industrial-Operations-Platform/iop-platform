@@ -212,10 +212,11 @@ beforeAll(async () => {
         ["admin-a", "administrator"],
         ["tech-a", "technician"],
         ["lead-a", "team-leader"],
+        ["task-a", "task-force"],
       ],
     ],
-    ["org-a", "site-a2", [["admin-a2", "administrator"]]],
-    ["org-b", "site-b", [["admin-b", "administrator"]]],
+    ["org-a", "site-a2", [["admin-a2", "team-leader"]]],
+    ["org-b", "site-b", [["admin-b", "team-leader"]]],
   ]) {
     const seed = {
       ...env,
@@ -293,10 +294,10 @@ afterAll(async () => {
 
 test("durable revision-safe assets recover idempotent creates, serialize stale edits and retain history after restart", async () => {
   const input = create("0001"),
-    first = await app.save("admin-a", input);
-  expect(await app.save("admin-a", input)).toEqual(first);
+    first = await app.save("lead-a", input);
+  expect(await app.save("lead-a", input)).toEqual(first);
   await expect(
-    app.save("admin-a", {
+    app.save("lead-a", {
       ...input,
       content: { ...input.content, name: "Different" },
     }),
@@ -313,8 +314,8 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
     },
   };
   const concurrent = await Promise.allSettled([
-    app.save("admin-a", edit),
-    app.save("admin-a", edit),
+    app.save("lead-a", edit),
+    app.save("lead-a", edit),
   ]);
   expect(
     concurrent.filter((result) => result.status === "fulfilled"),
@@ -324,11 +325,11 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
   ).toBe("asset_conflict");
   const restarted = new Pool({ ...configs.runtime, max: 1 });
   try {
-    const saved = await service(scope, restarted).detail("tech-a", first.id);
+    const saved = await service(scope, restarted).detail("lead-a", first.id);
     expect(saved.revision).toBe(2);
     expect(saved.content.code).toBe("0001");
     const history = await service(scope, restarted).history(
-      "tech-a",
+      "lead-a",
       first.id,
       0,
     );
@@ -340,12 +341,15 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
     await restarted.end();
   }
 });
-test("only Administrators manage assets; exact aliases conflict atomically and cannot map two assets to one source tuple", async () => {
+test("only Team Leaders and Task Force manage assets; exact aliases conflict atomically and cannot map two assets to one source tuple", async () => {
   await expect(app.save("tech-a", create())).rejects.toBeInstanceOf(
     SiteAccessDeniedError,
   );
-  await expect(app.save("lead-a", create())).rejects.toBeInstanceOf(
+  await expect(app.save("admin-a", create())).rejects.toBeInstanceOf(
     SiteAccessDeniedError,
+  );
+  expect((await app.save("task-a", create("task-managed"))).content.code).toBe(
+    "task-managed",
   );
   const aliasInput = {
     ...create("alias-asset"),
@@ -355,16 +359,16 @@ test("only Administrators manage assets; exact aliases conflict atomically and c
       aliases: aliases.map((alias) => ({ ...alias, code: "alias-test-code" })),
     },
   };
-  const mapped = await app.save("admin-a", aliasInput);
+  const mapped = await app.save("lead-a", aliasInput);
   await expect(
-    app.save("admin-a", {
+    app.save("lead-a", {
       ...create("duplicate-mapped"),
       content: { ...aliasInput.content, code: "duplicate-mapped" },
     }),
   ).rejects.toMatchObject({ code: "asset_alias_conflict" });
   expect(
     (
-      await app.query("admin-a", {
+      await app.query("lead-a", {
         search: "duplicate-mapped",
         status: "",
         locationId: "",
@@ -372,10 +376,8 @@ test("only Administrators manage assets; exact aliases conflict atomically and c
       })
     ).total,
   ).toBe(0);
-  expect((await app.history("admin-a", mapped.id, 0)).revisions).toHaveLength(
-    1,
-  );
-  const separate = await app.save("admin-a", {
+  expect((await app.history("lead-a", mapped.id, 0)).revisions).toHaveLength(1);
+  const separate = await app.save("lead-a", {
     ...create("different-area"),
     content: {
       ...content,
@@ -386,7 +388,7 @@ test("only Administrators manage assets; exact aliases conflict atomically and c
   expect(separate.id).not.toBe(mapped.id);
 });
 test("RLS, scoped foreign keys and current grants protect records and immutable revisions with no ordinary deletes", async () => {
-  const first = await app.save("admin-a", create("protected"));
+  const first = await app.save("lead-a", create("protected"));
   await expect(
     service({ organizationId: "org-b", siteId: "site-b" }).detail(
       "admin-b",
@@ -431,19 +433,19 @@ test("RLS, scoped foreign keys and current grants protect records and immutable 
   ).rejects.toMatchObject({ code: "23503" });
   await db("bootstrap", (client) =>
     client.query(
-      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='tech-a' AND role_id='assets-reader'",
+      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='lead-a' AND role_id='assets-reader'",
     ),
   );
-  await expect(app.detail("tech-a", first.id)).rejects.toBeInstanceOf(
+  await expect(app.detail("lead-a", first.id)).rejects.toBeInstanceOf(
     SiteAccessDeniedError,
   );
   await db("bootstrap", (client) =>
     client.query(
-      "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='tech-a' AND role_id='assets-reader'",
+      "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='lead-a' AND role_id='assets-reader'",
     ),
   );
 });
-test("digital record reads owner evidence with exact mapping and keeps technician analytics unavailable", async () => {
+test("digital record reads owner evidence with exact mapping and denies Technician access", async () => {
   const imported = await runtime.imports.submit(
     "admin-a",
     "Hitliste-20260701.csv",
@@ -455,7 +457,7 @@ test("digital record reads owner evidence with exact mapping and keeps technicia
     ),
   );
   expect(imported.outcome).toBe("succeeded");
-  const mapped = await app.save("admin-a", create("history-asset", true));
+  const mapped = await app.save("lead-a", create("history-asset", true));
   const lookup = {
     ...directory(),
     people: (tx) => sitePeople(tx, scope.organizationId, scope.siteId),
@@ -533,7 +535,7 @@ test("digital record reads owner evidence with exact mapping and keeps technicia
     to: "2026-07-01",
     cursor: "",
   };
-  const all = await app.timeline("admin-a", input);
+  const all = await app.timeline("lead-a", input);
   expect(all.sources.map((source) => source.status)).toEqual([
     "available",
     "available",
@@ -560,15 +562,13 @@ test("digital record reads owner evidence with exact mapping and keeps technicia
       record.sourceRecordId.startsWith(imported.importId + ":"),
     ),
   ).toBe(true);
-  const tech = await app.timeline("tech-a", input);
-  expect(
-    tech.sources.find((source) => source.kind === "analytics"),
-  ).toMatchObject({ status: "not-authorized", total: 0 });
-  expect(tech.records.map((record) => record.kind).sort()).toEqual([
-    "handover",
-    "maintenance",
-  ]);
-  const onlyAnalytical = await app.timeline("admin-a", {
+  await expect(app.timeline("tech-a", input)).rejects.toBeInstanceOf(
+    SiteAccessDeniedError,
+  );
+  await expect(app.timeline("admin-a", input)).rejects.toBeInstanceOf(
+    SiteAccessDeniedError,
+  );
+  const onlyAnalytical = await app.timeline("lead-a", {
     ...input,
     kind: "analytics",
   });
@@ -576,14 +576,14 @@ test("digital record reads owner evidence with exact mapping and keeps technicia
   expect(onlyAnalytical.records).toHaveLength(2);
 });
 test("history pages never imply complete evidence when aliases are absent or a source read is unavailable", async () => {
-  const unmapped = await app.save("admin-a", create("no-mappings"));
+  const unmapped = await app.save("lead-a", create("no-mappings"));
   const input = {
     id: unmapped.id,
     from: "2026-07-01",
     to: "2026-07-01",
     cursor: "",
   };
-  const empty = await app.timeline("admin-a", input);
+  const empty = await app.timeline("lead-a", input);
   expect(empty.sources.map((source) => source.status)).toEqual([
     "available",
     "unmapped",
@@ -598,15 +598,28 @@ test("history pages never imply complete evidence when aliases are absent or a s
       },
     },
   ]);
-  expect((await fail.timeline("admin-a", input)).sources).toEqual([
+  expect((await fail.timeline("lead-a", input)).sources).toEqual([
     { kind: "handover", status: "unavailable", total: 0 },
   ]);
   const denied = jest.fn(async () => {
     throw new Error("Should never query");
   });
-  await service(scope, pool, [
-    { kind: "analytics", permission: "analytics.read", read: denied },
-  ]).timeline("tech-a", input);
+  await db("bootstrap", (client) =>
+    client.query(
+      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='task-a' AND role_id='analytics-reader'",
+    ),
+  );
+  try {
+    await service(scope, pool, [
+      { kind: "analytics", permission: "analytics.read", read: denied },
+    ]).timeline("task-a", input);
+  } finally {
+    await db("bootstrap", (client) =>
+      client.query(
+        "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='task-a' AND role_id='analytics-reader'",
+      ),
+    );
+  }
   expect(denied).not.toHaveBeenCalled();
 });
 test("owner read ports enforce their own current source grants and exact pinned scope", async () => {
@@ -640,7 +653,7 @@ test("owner read ports enforce their own current source grants and exact pinned 
   await expect(
     runSiteOperation(
       pool,
-      { ...scope, userId: "tech-a", permissions: ["assets.read"] },
+      { ...scope, userId: "tech-a", permissions: ["maintenance.read"] },
       (tx) =>
         analyticAssetTimeline(
           tx,
@@ -654,7 +667,7 @@ test("owner read ports enforce their own current source grants and exact pinned 
   await expect(
     runSiteOperation(
       pool,
-      { ...scope, userId: "admin-a", permissions: ["assets.read"] },
+      { ...scope, userId: "lead-a", permissions: ["assets.read"] },
       (tx) =>
         handoverAssetTimeline(
           tx,
@@ -667,7 +680,7 @@ test("owner read ports enforce their own current source grants and exact pinned 
   await expect(
     runSiteOperation(
       pool,
-      { ...scope, userId: "admin-a", permissions: ["assets.read"] },
+      { ...scope, userId: "lead-a", permissions: ["assets.read"] },
       (tx) =>
         analyticAssetTimeline(
           tx,
@@ -687,7 +700,7 @@ test("owner read ports enforce their own current source grants and exact pinned 
     await expect(
       runSiteOperation(
         pool,
-        { ...scope, userId: "tech-a", permissions: ["assets.read"] },
+        { ...scope, userId: "tech-a", permissions: ["maintenance.read"] },
         (tx) => handoverAssetTimeline(tx, scope, target, query),
       ),
     ).rejects.toBeInstanceOf(SiteAccessDeniedError);
@@ -700,7 +713,7 @@ test("owner read ports enforce their own current source grants and exact pinned 
   }
 });
 test("SQL source faults abort safely and the same pooled connection recovers in a fresh authorized operation", async () => {
-  const subject = await app.save("admin-a", create("sql-recovery"));
+  const subject = await app.save("lead-a", create("sql-recovery"));
   const selection = {
     id: subject.id,
     from: "2026-07-01",
@@ -721,7 +734,7 @@ test("SQL source faults abort safely and the same pooled connection recovers in 
       },
       { kind: "maintenance", permission: "maintenance.read", read: later },
     ]);
-    await expect(failing.timeline("admin-a", selection)).rejects.toBeInstanceOf(
+    await expect(failing.timeline("lead-a", selection)).rejects.toBeInstanceOf(
       AuthorizationUnavailableError,
     );
     expect(later).not.toHaveBeenCalled();
@@ -739,28 +752,25 @@ test("SQL source faults abort safely and the same pooled connection recovers in 
         },
       },
     ]);
-    expect((await recovered.timeline("admin-a", selection)).sources).toEqual([
+    expect((await recovered.timeline("lead-a", selection)).sources).toEqual([
       { kind: "maintenance", status: "available", total: 0 },
     ]);
-    expect((await recovered.detail("admin-a", subject.id)).id).toBe(subject.id);
+    expect((await recovered.detail("lead-a", subject.id)).id).toBe(subject.id);
   } finally {
     await connection.end();
   }
 });
 test("directory and real mixed-source timeline keyset pages retain full counts without dropping equal-day revisions", async () => {
   for (let index = 0; index < 28; index++)
-    await app.save(
-      "admin-a",
-      create("paged-" + String(index).padStart(3, "0")),
-    );
+    await app.save("lead-a", create("paged-" + String(index).padStart(3, "0")));
   const selection = {
     search: "paged-",
     status: "",
     locationId: "",
     cursor: "",
   };
-  const firstDirectory = await app.query("tech-a", selection);
-  const secondDirectory = await app.query("tech-a", {
+  const firstDirectory = await app.query("lead-a", selection);
+  const secondDirectory = await app.query("lead-a", {
     ...selection,
     cursor: firstDirectory.nextCursor,
   });
@@ -776,13 +786,13 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
     ).size,
   ).toBe(28);
   await expect(
-    app.query("tech-a", {
+    app.query("lead-a", {
       ...selection,
       status: "validated",
       cursor: firstDirectory.nextCursor,
     }),
   ).rejects.toMatchObject({ code: "invalid_asset" });
-  const mapped = await app.save("admin-a", {
+  const mapped = await app.save("lead-a", {
     ...create("timeline-pages"),
     content: {
       ...content,
@@ -842,8 +852,8 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
     cursor: "",
     kind: "handover",
   };
-  const first = await app.timeline("tech-a", window);
-  const second = await app.timeline("tech-a", {
+  const first = await app.timeline("lead-a", window);
+  const second = await app.timeline("lead-a", {
     ...window,
     cursor: first.nextCursor,
   });
@@ -861,13 +871,13 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
       .reverse(),
   );
   await expect(
-    app.timeline("tech-a", {
+    app.timeline("lead-a", {
       ...window,
       kind: "maintenance",
       cursor: first.nextCursor,
     }),
   ).rejects.toMatchObject({ code: "invalid_asset" });
-  await app.save("admin-a", {
+  await app.save("lead-a", {
     id: mapped.id,
     key: "",
     expectedRevision: mapped.revision,
@@ -875,6 +885,6 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
     content: { ...mapped.content, name: "Corrected name" },
   });
   await expect(
-    app.timeline("tech-a", { ...window, cursor: first.nextCursor }),
+    app.timeline("lead-a", { ...window, cursor: first.nextCursor }),
   ).rejects.toMatchObject({ code: "asset_conflict" });
 });

@@ -1,5 +1,27 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import type { Status } from "../modules/maintenance/domain/maintenance";
+import type {
+  Status,
+  Category,
+} from "../modules/maintenance/domain/maintenance";
+import { HandoverEntryDto } from "./handover-contracts";
+export class MaintenanceEquipmentDto {
+  @ApiProperty({ enum: ["site-equipment"] }) namespace!: "site-equipment";
+  @ApiProperty({ maxLength: 160 }) code!: string;
+  @ApiProperty() departmentId!: string;
+  @ApiProperty() areaId!: string;
+}
+export class MaintenanceLinkedEntryDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ minimum: 1 }) expectedRevision!: number;
+  @ApiProperty({ enum: ["include", "exclude"] }) disposition!:
+    | "include"
+    | "exclude";
+  @ApiProperty({
+    maxLength: 2000,
+    description: "Required reason for exclusion from the repair scope.",
+  })
+  reason!: string;
+}
 export class MaintenancePriorityDto {
   @ApiProperty() id!: string;
   @ApiProperty({ maxLength: 80 }) label!: string;
@@ -16,6 +38,16 @@ export class MaintenanceConfigureDto {
   priorities!: MaintenancePriorityDto[];
 }
 export class MaintenanceDataDto {
+  @ApiPropertyOptional({
+    enum: ["corrective", "preventive", "inspection"],
+    default: "corrective",
+  })
+  category?: Category;
+  @ApiPropertyOptional({ maxLength: 2000 }) repairTarget?: string;
+  @ApiPropertyOptional({ type: [MaintenanceEquipmentDto], maxItems: 30 })
+  equipment?: MaintenanceEquipmentDto[];
+  @ApiPropertyOptional({ type: [MaintenanceLinkedEntryDto], maxItems: 100 })
+  linkedEntries?: MaintenanceLinkedEntryDto[];
   @ApiProperty({ maxLength: 160 }) title!: string;
   @ApiProperty({ maxLength: 8000 }) details!: string;
   @ApiProperty() locationId!: string;
@@ -44,6 +76,15 @@ export class MaintenanceRecordDto {
   @ApiProperty() priorityLabel!: string;
   @ApiProperty() assigneeName!: string;
   @ApiProperty() teamLabel!: string;
+  @ApiPropertyOptional({
+    description:
+      "Last true person-assignment instant; unrelated edits do not change it.",
+  })
+  assignedAt?: string;
+  @ApiPropertyOptional({
+    description: "Last completion instant; empty while unfinished.",
+  })
+  completedAt?: string;
 }
 export class MaintenanceViewDto extends MaintenanceRecordDto {
   @ApiProperty() canEdit!: boolean;
@@ -60,6 +101,23 @@ export class MaintenanceSaveDto {
   reason!: string;
 }
 export class MaintenanceSelectionDto {
+  @ApiPropertyOptional({ enum: ["", "corrective", "preventive", "inspection"] })
+  category?: Category | "";
+  @ApiPropertyOptional({
+    description:
+      "Explicit historical search; disables the default closed-work week window.",
+  })
+  history?: boolean;
+  @ApiPropertyOptional({
+    description:
+      "Completion calendar date lower bound; unfinished work remains visible.",
+  })
+  doneFrom?: string;
+  @ApiPropertyOptional({
+    description:
+      "Completion calendar date upper bound; unfinished work remains visible.",
+  })
+  doneTo?: string;
   @ApiPropertyOptional({ enum: ["", "open", "in-progress", "blocked", "done"] })
   status?: Status | "";
   @ApiPropertyOptional() priorityId?: string;
@@ -103,6 +161,11 @@ export class MaintenanceTeamDto {
 }
 export class MaintenanceLocationDto extends MaintenanceTeamDto {
   @ApiProperty() parentId!: string;
+  @ApiPropertyOptional({ enum: ["department", "area", "location"] }) role?:
+    | "department"
+    | "area"
+    | "location";
+  @ApiPropertyOptional() sectorKey?: string;
 }
 export class MaintenanceAssetDto extends MaintenancePersonDto {
   @ApiProperty() locationId!: string;
@@ -149,4 +212,36 @@ export class MaintenanceHistoryDto {
   @ApiProperty({ type: [MaintenanceRevisionDto] })
   revisions!: MaintenanceRevisionDto[];
   @ApiProperty() nextBefore!: number;
+}
+export class MaintenanceRelatedRequestDto {
+  @ApiProperty() locationId!: string;
+  @ApiProperty({ type: [MaintenanceEquipmentDto], maxItems: 30 })
+  equipment!: MaintenanceEquipmentDto[];
+  @ApiPropertyOptional({ maxLength: 200 }) search?: string;
+  @ApiPropertyOptional({ maxLength: 300 }) cursor?: string;
+}
+export class MaintenanceRelatedPageDto {
+  @ApiProperty({ type: [HandoverEntryDto] }) entries!: HandoverEntryDto[];
+  @ApiProperty() total!: number;
+  @ApiProperty() nextCursor!: string;
+}
+export class MaintenanceAssignmentsRequestDto {
+  @ApiPropertyOptional({
+    format: "date-time",
+    description:
+      "Assignment-event checkpoint only; current work is always returned.",
+  })
+  after?: string;
+}
+export class MaintenanceAssignmentEventDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() recordId!: string;
+  @ApiProperty() title!: string;
+  @ApiProperty({ format: "date-time" }) at!: string;
+  @ApiProperty() revision!: number;
+}
+export class MaintenanceAssignmentsDto {
+  @ApiProperty({ type: [MaintenanceViewDto] }) records!: MaintenanceViewDto[];
+  @ApiProperty({ type: [MaintenanceAssignmentEventDto] })
+  events!: MaintenanceAssignmentEventDto[];
 }

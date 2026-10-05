@@ -21,12 +21,14 @@ test.each(profiles)(
       ).allowed;
     expect(allowed("maintenance.read")).toBe(true);
     expect(allowed("maintenance.contribute")).toBe(true);
-    expect(allowed("assets.read")).toBe(true);
-    expect(allowed("maintenance.coordinate")).toBe(
-      ["administrator", "team-leader"].includes(profile),
+    expect(allowed("assets.read")).toBe(
+      ["team-leader", "task-force"].includes(profile),
     );
+    expect(allowed("maintenance.coordinate")).toBe(profile === "team-leader");
     expect(allowed("maintenance.administer")).toBe(profile === "administrator");
-    expect(allowed("assets.manage")).toBe(profile === "administrator");
+    expect(allowed("assets.manage")).toBe(
+      ["team-leader", "task-force"].includes(profile),
+    );
     expect(allowed("analytics.read")).toBe(profile !== "technician");
   },
 );

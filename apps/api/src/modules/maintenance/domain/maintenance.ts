@@ -1,5 +1,78 @@
 export const statuses = ["open", "in-progress", "blocked", "done"] as const;
 export type Status = (typeof statuses)[number];
+export const categories = ["corrective", "preventive", "inspection"] as const;
+export type Category = (typeof categories)[number];
+export interface EquipmentTarget {
+  namespace: "site-equipment";
+  code: string;
+  departmentId: string;
+  areaId: string;
+}
+export interface LinkedEntry {
+  id: string;
+  expectedRevision: number;
+  disposition: "include" | "exclude";
+  reason: string;
+}
+export interface IssueScope {
+  locationIds: string[];
+  equipment: EquipmentTarget[];
+}
+/** Receiving-owned projection of journal evidence; Handover retains its records. */
+export interface RelatedEntry {
+  id: string;
+  revision: number;
+  authorId: string;
+  authorName: string;
+  createdAt: string;
+  updatedAt: string;
+  content: {
+    date: string;
+    categoryId: string;
+    summary: string;
+    details: string;
+    departmentId: string;
+    areaId: string;
+    equipmentCode: string;
+    equipmentNamespace: string;
+    condition:
+      | ""
+      | "damaged"
+      | "inspection-needed"
+      | "blocked"
+      | "repaired"
+      | "restored";
+    externalReference: string;
+    challenge: string;
+    cause: string;
+    measure: string;
+    dueDate: string;
+    feedbackDueDate: string;
+    discuss: boolean;
+  };
+  departmentLabel: string;
+  areaLabel: string;
+  categoryLabel: string;
+  equipmentReferenceId: string;
+  responsibleId: string;
+  responsibleName: string;
+  issueState: "none" | "open" | "in-progress" | "resolved";
+  highlighted: boolean;
+  highlightedAt: string;
+  latestUpdate?: { note: string; actorName: string; at: string };
+}
+export interface RelatedPage {
+  entries: RelatedEntry[];
+  total: number;
+  nextCursor: string;
+}
+export interface AssignmentEvent {
+  id: string;
+  recordId: string;
+  title: string;
+  at: string;
+  revision: number;
+}
 export interface Priority {
   id: string;
   label: string;
@@ -9,6 +82,8 @@ export interface Location {
   id: string;
   parentId: string;
   label: string;
+  role?: "department" | "area" | "location";
+  sectorKey?: string;
 }
 export interface Person {
   id: string;
@@ -25,6 +100,10 @@ export interface AssetReference {
   status: "unverified" | "validated" | "retired";
 }
 export interface RecordData {
+  category?: Category;
+  repairTarget?: string;
+  equipment?: EquipmentTarget[];
+  linkedEntries?: LinkedEntry[];
   title: string;
   details: string;
   locationId: string;
@@ -51,6 +130,8 @@ export interface MaintenanceRecord {
   priorityLabel: string;
   assigneeName: string;
   teamLabel: string;
+  assignedAt?: string;
+  completedAt?: string;
 }
 export interface RecordView extends MaintenanceRecord {
   canEdit: boolean;
@@ -69,6 +150,10 @@ export interface Settings {
   priorities: Priority[];
 }
 export interface Selection {
+  category?: Category | "";
+  history?: boolean;
+  doneFrom?: string;
+  doneTo?: string;
   status?: Status | "";
   priorityId?: string;
   locationId?: string;
@@ -175,7 +260,20 @@ export function data(value: unknown): asserts value is RecordData {
     "blockedReason",
     "externalReference",
   ].sort();
-  assert(Object.keys(input).sort().join(",") === expected.join(","));
+  assert(
+    expected.every((key) => Object.hasOwn(input, key)) &&
+      Object.keys(input).every(
+        (key) =>
+          expected.includes(key) ||
+          ["category", "repairTarget", "equipment", "linkedEntries"].includes(
+            key,
+          ),
+      ),
+  );
+  assert(input.category === undefined || categories.includes(input.category));
+  if (input.repairTarget !== undefined) text(input.repairTarget, 2000);
+  if (input.equipment !== undefined) equipment(input.equipment);
+  if (input.linkedEntries !== undefined) linkedEntries(input.linkedEntries);
   text(input.title, 160, true);
   text(input.details, 8000);
   identifier(input.locationId);
@@ -190,6 +288,7 @@ export function data(value: unknown): asserts value is RecordData {
   text(input.externalReference, 200);
   assert(input.status !== "done" || !!input.outcome.trim());
   assert(input.status !== "blocked" || !!input.blockedReason.trim());
+  assert(new TextEncoder().encode(JSON.stringify(input)).length <= 48000);
 }
 export function selection(value: unknown): asserts value is Selection {
   assert(value && typeof value === "object" && !Array.isArray(value));
@@ -197,6 +296,10 @@ export function selection(value: unknown): asserts value is Selection {
   assert(
     Object.keys(input).every((key) =>
       [
+        "category",
+        "history",
+        "doneFrom",
+        "doneTo",
         "status",
         "priorityId",
         "locationId",
@@ -211,6 +314,15 @@ export function selection(value: unknown): asserts value is Selection {
       ].includes(key),
     ),
   );
+  assert(
+    input.category === undefined ||
+      input.category === "" ||
+      categories.includes(input.category),
+  );
+  assert(input.history === undefined || typeof input.history === "boolean");
+  if (input.doneFrom !== undefined) date(input.doneFrom, true);
+  if (input.doneTo !== undefined) date(input.doneTo, true);
+  assert(!input.doneFrom || !input.doneTo || input.doneFrom <= input.doneTo);
   assert(
     input.status === undefined ||
       input.status === "" ||
@@ -240,9 +352,127 @@ export function transition(before: Status, after: Status, reason: string) {
   if (before === "done" && after !== "done") assert(!!reason.trim());
 }
 export function sameData(first: RecordData, second: RecordData) {
-  return (Object.keys(first) as (keyof RecordData)[]).every(
-    (key) => first[key] === second[key],
+  const a = normalized(first),
+    b = normalized(second);
+  return (Object.keys(a) as (keyof RecordData)[]).every(
+    (key) => stableValue(a[key]) === stableValue(b[key]),
   );
+}
+function stableValue(value: unknown): string {
+  if (Array.isArray(value)) return "[" + value.map(stableValue).join(",") + "]";
+  if (value && typeof value === "object")
+    return (
+      "{" +
+      Object.entries(value)
+        .sort(([a], [b]) => a.localeCompare(b, "en"))
+        .map(([key, item]) => JSON.stringify(key) + ":" + stableValue(item))
+        .join(",") +
+      "}"
+    );
+  return JSON.stringify(value);
+}
+export function sameEquipment(
+  first: EquipmentTarget[],
+  second: EquipmentTarget[],
+) {
+  return (
+    first.length === second.length &&
+    first.every((target) =>
+      second.some(
+        (other) =>
+          target.namespace === other.namespace &&
+          target.code === other.code &&
+          target.departmentId === other.departmentId &&
+          target.areaId === other.areaId,
+      ),
+    )
+  );
+}
+export function normalized(input: RecordData): RecordData & {
+  category: Category;
+  repairTarget: string;
+  equipment: EquipmentTarget[];
+  linkedEntries: LinkedEntry[];
+} {
+  return {
+    ...input,
+    category: input.category ?? "corrective",
+    repairTarget: input.repairTarget ?? "",
+    equipment: input.equipment ?? [],
+    linkedEntries: input.linkedEntries ?? [],
+  };
+}
+export function equipment(value: unknown): asserts value is EquipmentTarget[] {
+  assert(Array.isArray(value) && value.length <= 30);
+  const tuples = new Set<string>();
+  for (const target of value) {
+    assert(
+      target &&
+        typeof target === "object" &&
+        !Array.isArray(target) &&
+        Object.keys(target).sort().join(",") ===
+          "areaId,code,departmentId,namespace",
+    );
+    assert(target.namespace === "site-equipment");
+    text(target.code, 160, true);
+    identifier(target.departmentId);
+    identifier(target.areaId, true);
+    const tuple = JSON.stringify([
+      target.namespace,
+      target.code,
+      target.departmentId,
+      target.areaId,
+    ]);
+    assert(!tuples.has(tuple));
+    tuples.add(tuple);
+  }
+}
+export function linkedEntries(value: unknown): asserts value is LinkedEntry[] {
+  assert(Array.isArray(value) && value.length <= 100);
+  const ids = new Set<string>();
+  for (const entry of value) {
+    assert(
+      entry &&
+        typeof entry === "object" &&
+        !Array.isArray(entry) &&
+        Object.keys(entry).sort().join(",") ===
+          "disposition,expectedRevision,id,reason",
+    );
+    identifier(entry.id);
+    assert(
+      Number.isSafeInteger(entry.expectedRevision) &&
+        entry.expectedRevision >= 1 &&
+        entry.expectedRevision <= 2147483647 &&
+        !ids.has(entry.id),
+    );
+    assert(entry.disposition === "include" || entry.disposition === "exclude");
+    text(entry.reason, 2000, entry.disposition === "exclude");
+    ids.add(entry.id);
+  }
+}
+export function instant(value: unknown): asserts value is string {
+  assert(
+    typeof value === "string" &&
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) &&
+      Number.isFinite(Date.parse(value)) &&
+      new Date(value).toISOString() === value &&
+      value >= "1970-01-01T00:00:00.000Z",
+  );
+}
+export function currentWeeks(at: string, timeZone: string) {
+  const day = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(at));
+  const calendar = new Date(day + "T00:00:00.000Z");
+  const offset = (calendar.getUTCDay() + 6) % 7;
+  const monday = calendar.getTime() - offset * 86400000;
+  return {
+    doneFrom: new Date(monday - 7 * 86400000).toISOString().slice(0, 10),
+    doneTo: new Date(monday + 6 * 86400000).toISOString().slice(0, 10),
+  };
 }
 export function descendants(locations: Location[], root: string): string[] {
   const ids = new Set([root]);

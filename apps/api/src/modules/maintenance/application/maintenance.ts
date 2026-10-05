@@ -8,6 +8,11 @@ import {
   text,
   transition,
   sameData,
+  sameEquipment,
+  normalized,
+  equipment,
+  instant,
+  currentWeeks,
   type AssetReference,
   type Location,
   type MaintenanceRecord,
@@ -20,6 +25,11 @@ import {
   type Selection,
   type Settings,
   type Team,
+  type IssueScope,
+  type EquipmentTarget,
+  type RelatedPage,
+  type RelatedEntry,
+  type AssignmentEvent,
 } from "../domain/maintenance";
 export interface Transaction {
   canContribute: boolean;
@@ -42,6 +52,24 @@ export interface Transaction {
     before: number,
     limit: number,
   ): Promise<{ revisions: Revision[]; nextBefore: number }>;
+  related(
+    scope: IssueScope,
+    selection: {
+      search?: string;
+      cursor?: string;
+      ids?: string[];
+      limit?: number;
+    },
+  ): Promise<RelatedPage>;
+  pending(scope: IssueScope): Promise<RelatedEntry[]>;
+  resolve(
+    resolutions: { id: string; expectedRevision: number }[],
+    evidence: { maintenanceId: string; outcome: string; at: string },
+  ): Promise<void>;
+  assignments(
+    actor: string,
+    after: string,
+  ): Promise<{ records: MaintenanceRecord[]; events: AssignmentEvent[] }>;
 }
 export interface Store {
   run<T>(
@@ -65,6 +93,7 @@ export class Maintenance {
     private readonly locations: Location[],
     private readonly defaults: Priority[],
     private readonly now: () => string,
+    private readonly timeZone = "UTC",
   ) {
     priorities(defaults);
   }
@@ -131,6 +160,7 @@ export class Maintenance {
   ): RecordView {
     return {
       ...record,
+      data: normalized(record.data),
       canEdit:
         tx.canContribute &&
         (tx.canCoordinate ||
@@ -152,6 +182,8 @@ export class Maintenance {
   query(actor: string, input: Selection) {
     selection(input);
     const request = structuredClone(input);
+    if (!request.history && !request.doneFrom && !request.doneTo)
+      Object.assign(request, currentWeeks(this.now(), this.timeZone));
     return this.store.run(actor, "maintenance.read", async (tx) => {
       const locationIds = request.locationId
         ? descendants(this.locations, request.locationId)
@@ -181,6 +213,7 @@ export class Maintenance {
         input.expectedRevision < 2147483647,
     );
     const request = structuredClone(input);
+    request.data = normalized(request.data);
     return this.store.run(actor, "maintenance.contribute", async (tx) => {
       const before = await tx.get(request.id);
       if (before && request.expectedRevision === 0) {
@@ -213,10 +246,88 @@ export class Maintenance {
               before.data.teamId === request.data.teamId),
           "maintenance_denied",
         );
+        if ((before.data.assigneeId || before.data.teamId) && !tx.canCoordinate)
+          assert(
+            before.data.locationId === request.data.locationId &&
+              before.data.assetId === request.data.assetId &&
+              sameEquipment(
+                before.data.equipment ?? [],
+                request.data.equipment ?? [],
+              ),
+            "maintenance_denied",
+          );
         transition(before.data.status, request.data.status, request.reason);
-      } else assert(request.data.status === "open");
+      } else {
+        assert(request.data.status === "open");
+        assert(
+          tx.canCoordinate ||
+            (!request.data.assigneeId && !request.data.teamId),
+          "maintenance_denied",
+        );
+      }
       const references = await this.references(tx, actor, request.data, before);
       const at = this.now();
+      const scope = this.issueScope(
+        request.data.locationId,
+        request.data.equipment ?? [],
+      );
+      const completing =
+        before &&
+        before.data.status !== "done" &&
+        request.data.status === "done";
+      const closing = request.data.status === "done";
+      const pending = closing ? await tx.pending(scope) : [];
+      const decisions = request.data.linkedEntries ?? [];
+      if (decisions.length) {
+        const selected = await tx.related(scope, {
+          ids: decisions.map((entry) => entry.id),
+          limit: 100,
+        });
+        assert(selected.total === decisions.length, "maintenance_conflict");
+        for (const decision of decisions) {
+          const entry = selected.entries.find(
+            (entry) => entry.id === decision.id,
+          );
+          assert(entry, "maintenance_conflict");
+          if (
+            closing &&
+            decision.disposition === "include" &&
+            (entry.issueState === "open" || entry.issueState === "in-progress")
+          )
+            assert(
+              entry.revision === decision.expectedRevision,
+              "maintenance_conflict",
+            );
+        }
+      }
+      if (closing) {
+        assert(pending.length <= 100, "maintenance_capacity");
+        for (const entry of pending)
+          assert(
+            decisions.some((decision) => decision.id === entry.id),
+            "maintenance_conflict",
+          );
+        const included = pending.filter(
+          (entry) =>
+            decisions.find((decision) => decision.id === entry.id)
+              ?.disposition === "include",
+        );
+        assert(
+          !included.length ||
+            tx.canCoordinate ||
+            before?.data.assigneeId === actor,
+          "maintenance_denied",
+        );
+        await tx.resolve(
+          included.map((entry) => ({
+            id: entry.id,
+            expectedRevision: decisions.find(
+              (decision) => decision.id === entry.id,
+            )!.expectedRevision,
+          })),
+          { maintenanceId: request.id, outcome: request.data.outcome, at },
+        );
+      }
       const record: MaintenanceRecord = {
         id: request.id,
         revision: request.expectedRevision + 1,
@@ -230,6 +341,16 @@ export class Maintenance {
         priorityLabel: references.priorityLabel,
         assigneeName: references.assigneeName,
         teamLabel: references.teamLabel,
+        assignedAt:
+          request.data.assigneeId &&
+          request.data.assigneeId !== before?.data.assigneeId
+            ? at
+            : (before?.assignedAt ?? ""),
+        completedAt: completing
+          ? at
+          : request.data.status === "done"
+            ? (before?.completedAt ?? before?.updatedAt ?? at)
+            : "",
       };
       await tx.save(record, {
         record,
@@ -244,6 +365,85 @@ export class Maintenance {
         reason: request.reason,
       });
       return this.view((await this.currentNames(tx, [record]))[0], actor, tx);
+    });
+  }
+  private issueScope(
+    locationId: string,
+    targets: EquipmentTarget[],
+  ): IssueScope {
+    const location = this.locations.find((entry) => entry.id === locationId);
+    assert(location);
+    const locationIds = descendants(this.locations, locationId);
+    for (const target of targets) {
+      const department = this.locations.find(
+        (entry) => entry.id === target.departmentId,
+      );
+      assert(
+        department && (!department.role || department.role === "department"),
+      );
+      const departmentIds = descendants(this.locations, target.departmentId);
+      if (target.areaId) {
+        const area = this.locations.find((entry) => entry.id === target.areaId);
+        assert(
+          area &&
+            (!area.role || area.role === "area") &&
+            departmentIds.includes(target.areaId),
+        );
+      }
+      assert(
+        locationIds.includes(target.areaId || target.departmentId) ||
+          descendants(
+            this.locations,
+            target.areaId || target.departmentId,
+          ).includes(locationId),
+      );
+    }
+    return { locationIds, equipment: targets };
+  }
+  related(
+    actor: string,
+    input: {
+      locationId: string;
+      equipment: EquipmentTarget[];
+      search?: string;
+      cursor?: string;
+    },
+  ) {
+    assert(
+      input &&
+        typeof input === "object" &&
+        !Array.isArray(input) &&
+        Object.keys(input).every((key) =>
+          ["locationId", "equipment", "search", "cursor"].includes(key),
+        ),
+    );
+    identifier(input.locationId);
+    equipment(input.equipment);
+    if (input.search !== undefined) text(input.search, 200);
+    if (input.cursor !== undefined) text(input.cursor, 300);
+    const request = structuredClone(input);
+    const scope = this.issueScope(request.locationId, request.equipment);
+    return this.store.run(actor, "maintenance.read", (tx) =>
+      tx.related(scope, { search: request.search, cursor: request.cursor }),
+    );
+  }
+  assignments(actor: string, input: { after?: string }) {
+    assert(
+      input &&
+        typeof input === "object" &&
+        !Array.isArray(input) &&
+        Object.keys(input).every((key) => key === "after"),
+    );
+    if (input.after !== undefined) instant(input.after);
+    const after = input.after ?? "1970-01-01T00:00:00.000Z";
+    return this.store.run(actor, "maintenance.read", async (tx) => {
+      const result = await tx.assignments(actor, after);
+      return {
+        ...result,
+        records: (await this.currentNames(tx, result.records)).map((record) =>
+          this.view(record, actor, tx),
+        ),
+      };
     });
   }
   private async references(

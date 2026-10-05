@@ -50,11 +50,11 @@ test('fresh provisioning, simultaneous first migrations and unchanged rerun', as
   await provision(configs);
   const first = await Promise.allSettled([migrate(configs.migrator), migrate(configs.migrator)]);
   expect(first.some((result) => result.status === 'fulfilled')).toBe(true);
-  expect(first.filter((result) => result.status === 'fulfilled').reduce((sum, result) => sum + result.value, 0)).toBe(20);
+  expect(first.filter((result) => result.status === 'fulfilled').reduce((sum, result) => sum + result.value, 0)).toBe(21);
   for (const result of first) {
     if (result.status === 'rejected') expect(result.reason.message).toContain('lock');
   }
-  expect(await history()).toEqual([{ name: '20260923000000-privilege-baseline' }, { name: '20260924000000-organizations' }, { name: '20260925000000-sites' }, { name: '20260926000000-users' }, { name: '20260926010000-memberships' }, { name: '20260926020000-authorization-lookup' }, { name: '20260926030000-import-batches' }, { name: '20260927000000-oip-aggregates' }, { name: '20260927010000-demo-maintenance' }, { name: '20260928000000-reporting-profiles' }, { name: '20260929000000-hitliste-analytics' }, { name: '20260930000000-transitional-access' }, { name: '20261001000000-shift-handover' }, { name: '20261002000000-technician-analytics-access' }, { name: '20261003000000-workforce' }, { name: '20261004000000-logical-profile-deletion' }, { name: '20261005000000-profile-display-name' }, { name: '20261005010000-maintenance' }, { name: '20261005020000-assets' }, { name: '20261005030000-operational-record-permissions' }]);
+  expect(await history()).toEqual([{ name: '20260923000000-privilege-baseline' }, { name: '20260924000000-organizations' }, { name: '20260925000000-sites' }, { name: '20260926000000-users' }, { name: '20260926010000-memberships' }, { name: '20260926020000-authorization-lookup' }, { name: '20260926030000-import-batches' }, { name: '20260927000000-oip-aggregates' }, { name: '20260927010000-demo-maintenance' }, { name: '20260928000000-reporting-profiles' }, { name: '20260929000000-hitliste-analytics' }, { name: '20260930000000-transitional-access' }, { name: '20261001000000-shift-handover' }, { name: '20261002000000-technician-analytics-access' }, { name: '20261003000000-workforce' }, { name: '20261004000000-logical-profile-deletion' }, { name: '20261005000000-profile-display-name' }, { name: '20261005010000-maintenance' }, { name: '20261005020000-assets' }, { name: '20261005030000-operational-record-permissions' }, { name: '20261005040000-maintenance-scope-access' }]);
   await provision(configs);
   expect(await migrate(configs.migrator)).toBe(0);
   const tables = await query('bootstrap', "SELECT schemaname, tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema')");
@@ -101,16 +101,17 @@ test('failed DDL leaves no partial history or objects; corrected fixture applies
     '20261005010000-maintenance.sql': 'SELECT 1;',
     '20261005020000-assets.sql': 'SELECT 1;',
     '20261005030000-operational-record-permissions.sql': 'SELECT 1;',
-    '20261005040000-failure.sql': 'CREATE TABLE iop_migrations.rollback_probe(id int); SELECT 1 / 0;',
+    '20261005040000-maintenance-scope-access.sql': 'SELECT 1;',
+    '20261005050000-failure.sql': 'CREATE TABLE iop_migrations.rollback_probe(id int); SELECT 1 / 0;',
   });
   await expect(migrate(configs.migrator, directory)).rejects.toThrow();
   expect((await query('migrator', "SELECT to_regclass('iop_migrations.rollback_probe') AS object")).rows[0].object).toBeNull();
-  expect(await history()).toHaveLength(20);
-  writeFileSync(join(directory, '20261005040000-failure.sql'), '-- Up Migration\nCREATE TABLE iop_migrations.rollback_probe(id int);');
+  expect(await history()).toHaveLength(21);
+  writeFileSync(join(directory, '20261005050000-failure.sql'), '-- Up Migration\nCREATE TABLE iop_migrations.rollback_probe(id int);');
   expect(await migrate(configs.migrator, directory)).toBe(1);
   expect(await migrate(configs.migrator, directory)).toBe(0);
   // Remove disposable fixture metadata only; committed migrations are never edited.
-  await query('migrator', "DROP TABLE iop_migrations.rollback_probe; DELETE FROM iop_migrations.history WHERE name = '20261005040000-failure'");
+  await query('migrator', "DROP TABLE iop_migrations.rollback_probe; DELETE FROM iop_migrations.history WHERE name = '20261005050000-failure'");
 });
 
 test('an advisory lock rejects a competing runner and permits an explicit retry', async () => {
@@ -155,6 +156,6 @@ test('a second empty database reproduces the same metadata using existing cluste
     await admin.query('CREATE DATABASE iop_local OWNER iop_bootstrap');
   } finally { await admin.end(); }
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(20);
-  expect(await history()).toEqual([{ name: '20260923000000-privilege-baseline' }, { name: '20260924000000-organizations' }, { name: '20260925000000-sites' }, { name: '20260926000000-users' }, { name: '20260926010000-memberships' }, { name: '20260926020000-authorization-lookup' }, { name: '20260926030000-import-batches' }, { name: '20260927000000-oip-aggregates' }, { name: '20260927010000-demo-maintenance' }, { name: '20260928000000-reporting-profiles' }, { name: '20260929000000-hitliste-analytics' }, { name: '20260930000000-transitional-access' }, { name: '20261001000000-shift-handover' }, { name: '20261002000000-technician-analytics-access' }, { name: '20261003000000-workforce' }, { name: '20261004000000-logical-profile-deletion' }, { name: '20261005000000-profile-display-name' }, { name: '20261005010000-maintenance' }, { name: '20261005020000-assets' }, { name: '20261005030000-operational-record-permissions' }]);
+  expect(await migrate(configs.migrator)).toBe(21);
+  expect(await history()).toEqual([{ name: '20260923000000-privilege-baseline' }, { name: '20260924000000-organizations' }, { name: '20260925000000-sites' }, { name: '20260926000000-users' }, { name: '20260926010000-memberships' }, { name: '20260926020000-authorization-lookup' }, { name: '20260926030000-import-batches' }, { name: '20260927000000-oip-aggregates' }, { name: '20260927010000-demo-maintenance' }, { name: '20260928000000-reporting-profiles' }, { name: '20260929000000-hitliste-analytics' }, { name: '20260930000000-transitional-access' }, { name: '20261001000000-shift-handover' }, { name: '20261002000000-technician-analytics-access' }, { name: '20261003000000-workforce' }, { name: '20261004000000-logical-profile-deletion' }, { name: '20261005000000-profile-display-name' }, { name: '20261005010000-maintenance' }, { name: '20261005020000-assets' }, { name: '20261005030000-operational-record-permissions' }, { name: '20261005040000-maintenance-scope-access' }]);
 });

@@ -75,10 +75,7 @@ export function siteRoles(profile: Profile): readonly string[] {
   return profile === "administrator"
     ? [
         "maintenance-contributor",
-        "maintenance-coordinator",
         "maintenance-administrator",
-        "assets-reader",
-        "assets-administrator",
         "workforce-reader",
         "workforce-planner",
         "workforce-administrator",
@@ -92,6 +89,7 @@ export function siteRoles(profile: Profile): readonly string[] {
           "maintenance-contributor",
           "maintenance-coordinator",
           "assets-reader",
+          "assets-administrator",
           "workforce-reader",
           "workforce-planner",
           "analytics-reader",
@@ -103,7 +101,6 @@ export function siteRoles(profile: Profile): readonly string[] {
             "workforce-reader",
             "handover-contributor",
             "maintenance-contributor",
-            "assets-reader",
           ]
         : [
             "workforce-reader",
@@ -111,6 +108,7 @@ export function siteRoles(profile: Profile): readonly string[] {
             "handover-contributor",
             "maintenance-contributor",
             "assets-reader",
+            "assets-administrator",
           ];
 }
 

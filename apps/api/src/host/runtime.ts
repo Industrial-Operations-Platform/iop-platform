@@ -3,6 +3,11 @@ import { workforceTeams } from "../modules/workforce/adapters/postgres/teams";
 import { Maintenance } from "../modules/maintenance/application/maintenance";
 import { PgMaintenance } from "../modules/maintenance/adapters/postgres/store";
 import { maintenanceTimeline } from "../modules/maintenance/adapters/postgres/asset-history";
+import {
+  handoverMaintenanceIssues,
+  pendingHandoverMaintenanceIssues,
+  resolveHandoverMaintenanceIssues,
+} from "../modules/shift-handover/adapters/postgres/maintenance-issues";
 import { maintenanceDefaults } from "./adapters/maintenance-defaults";
 import { Assets } from "../modules/assets/application/assets";
 import {
@@ -293,7 +298,13 @@ export class PlatformRuntime {
             kind: "maintenance",
             permission: "maintenance.read",
             read: (tx, asset, query) =>
-              maintenanceTimeline(tx, this.source, asset.id, query),
+              maintenanceTimeline(
+                tx,
+                this.source,
+                asset.id,
+                query,
+                asset.aliases,
+              ),
           },
           {
             kind: "handover",
@@ -329,10 +340,22 @@ export class PlatformRuntime {
           workforceTeams(tx, this.source, workforceDefaults(catalog.locations)),
         assets: (tx) => assetReferences(tx, this.source),
         asset: (tx, id) => assetReference(tx, this.source, id),
+        related: (tx, scope, selection) =>
+          handoverMaintenanceIssues(tx, this.source, { scope, ...selection }),
+        pending: (tx, scope) =>
+          pendingHandoverMaintenanceIssues(tx, this.source, scope),
+        resolve: (tx, resolutions, evidence) =>
+          resolveHandoverMaintenanceIssues(
+            tx,
+            this.source,
+            resolutions,
+            evidence,
+          ),
       }),
       catalog.locations,
       maintenanceDefaults,
       () => new Date().toISOString(),
+      this.source.siteTimeZone,
     );
     this.workforce = new Workforce(
       new PgWorkforce(pool, this.source, {

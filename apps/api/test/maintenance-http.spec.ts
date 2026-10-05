@@ -36,7 +36,7 @@ describe("Maintenance HTTP transport", () => {
       locationId: "location",
       assetId: "",
       priorityId: "normal",
-      assigneeId: "worker",
+      assigneeId: "",
       teamId: "",
       status: "open" as const,
       dueDate: "",
@@ -58,8 +58,12 @@ describe("Maintenance HTTP transport", () => {
             throw new SiteAccessDeniedError();
           const tx: Transaction = {
             canContribute: true,
-            canCoordinate: currentActor === "admin",
+            canCoordinate: currentActor === "leader",
             canAdminister: currentActor === "admin",
+            related: async () => ({ entries: [], total: 0, nextCursor: "" }),
+            pending: async () => [],
+            resolve: async () => {},
+            assignments: async () => ({ records: [], events: [] }),
             people: async () => [
               { id: "worker", name: "Worker" },
               { id: "admin", name: "Administrator" },

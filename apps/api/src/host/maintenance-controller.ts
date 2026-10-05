@@ -19,6 +19,7 @@ import {
   assert,
 } from "../modules/maintenance/domain/maintenance";
 import * as C from "./maintenance-contracts";
+import { MaintenanceIssuesError } from "../modules/shift-handover/application/maintenance-issues";
 const statuses: Record<MaintenanceError["code"], number> = {
   invalid_maintenance: 400,
   maintenance_denied: 403,
@@ -41,6 +42,18 @@ export class MaintenanceController {
       assert(!req.url?.includes("?"));
       return await work(this.runtime, await this.runtime.actor(req));
     } catch (error) {
+      if (error instanceof MaintenanceIssuesError) {
+        const code = {
+          invalid: "invalid_maintenance",
+          denied: "maintenance_denied",
+          conflict: "maintenance_conflict",
+          capacity: "maintenance_capacity",
+        } as const;
+        throw new BusinessException(
+          statuses[code[error.code]],
+          code[error.code],
+        );
+      }
       if (error instanceof MaintenanceError)
         throw new BusinessException(statuses[error.code], error.code);
       if (error instanceof SiteAccessDeniedError)
@@ -113,5 +126,27 @@ export class MaintenanceController {
         body.limit ?? 50,
       );
     });
+  }
+  @Post("related")
+  @ApiBody({ type: C.MaintenanceRelatedRequestDto })
+  @ApiCreatedResponse({ type: C.MaintenanceRelatedPageDto })
+  related(
+    @Req() req: IncomingMessage,
+    @Body() body: C.MaintenanceRelatedRequestDto,
+  ) {
+    return this.operation(req, (runtime, actor) =>
+      runtime.maintenance.related(actor, body),
+    );
+  }
+  @Post("assignments")
+  @ApiBody({ type: C.MaintenanceAssignmentsRequestDto })
+  @ApiCreatedResponse({ type: C.MaintenanceAssignmentsDto })
+  assignments(
+    @Req() req: IncomingMessage,
+    @Body() body: C.MaintenanceAssignmentsRequestDto,
+  ) {
+    return this.operation(req, (runtime, actor) =>
+      runtime.maintenance.assignments(actor, body),
+    );
   }
 }
