@@ -38,9 +38,16 @@ handover closure, automatic event-to-asset ingestion or M9 completion.
 Analytical daily aggregates retain date-only/reporting-period semantics and RAW
 provenance. Timeline coverage is explicit; access to Assets does not grant access
 to another module's source data. No plant-control operations or external CMMS
-integration. No merge, push, deployment or alteration of existing review branches.
+integration. Branch-only publication to origin is authorized by the owner; no merge into develop,
+deployment or alteration of other review branches.
 
 ## Evidence
+
+On 2026-10-05 the owner additionally requested local placeholder data to explore
+the delivered functions. Execution: [demo data plan](../completed/IOP-194-demo-data-plan.md).
+This follow-up is completed: 10 fictional assets and 30 maintenance exercises
+are loaded locally; repeated application preserves existing data and adds no
+duplicates. M9 remains excluded.
 
 Execution: [plan](../completed/IOP-194-maintenance-asset-history-plan.md).
 Owner product acceptance remains a review after local delivery.

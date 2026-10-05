@@ -44,6 +44,43 @@ authorization failure returns a sanitized service-unavailable response for the
 whole request; retry starts a freshly authorized transaction. It never presents
 an aborted database transaction as a complete timeline.
 
+## Local placeholder data
+
+With this branch running in the local Docker installation:
+
+```sh
+npm run local:maintenance-demo -- --preview
+npm run local:maintenance-demo -- --apply
+npm run local:maintenance-demo -- --inspect
+```
+
+Preview performs no writes. Apply freezes an ignored private manifest at
+`.local-platform/maintenance-assets-demo.json` before creating records through
+the normal module applications and current permissions. Keep this manifest:
+retries resume unfinished histories, preserve later owner edits and add no
+duplicates. A divergent unfinished history stops for inspection rather than
+overwriting an edit. The command refuses other execution environments and does
+not change credentials, priorities, team configuration or analytical facts.
+
+The five-department fixture contains 10 fictional assets and 30 maintenance
+exercises marked `[DEMO]` / `DEMO-194-`. Use the existing local accounts at
+`http://127.0.0.1:8080`; search `[DEMO]` in Maintenance or `DEMO-194-` in Assets.
+
+- Compare board/list views and filter Open, In progress, Blocked and Done.
+  Test overdue/today/future dates, priorities, person/team assignments and the
+  second page. The area checklist is deliberately unassigned and asset-free.
+- Inspect the blocked bearing replacement, completed sensor test and reopened
+  recurring inspection. Their revision histories explain blockers, outcomes,
+  reopening and coordinator reassignment.
+- Open an inspection conveyor's digital record and its Maintenance events;
+  source links return to the work record. Compare unverified and simulated
+  validated assets, then show retired spare drives and their preserved history.
+
+These are training records, including simulated validation notes. They have no
+source aliases: Handover/analytical history is empty for these fictional assets
+until an explicit verified mapping exists. This expected result does not imply
+an adapter failure. Existing Handover and analytical data remains untouched.
+
 ## Implementation boundaries
 
 API modules: `apps/api/src/modules/maintenance` and `modules/assets` own pure
