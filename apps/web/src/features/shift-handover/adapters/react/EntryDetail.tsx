@@ -31,6 +31,7 @@ export function EntryDetail({
   trail,
   onChanged,
   onEquipment,
+  onMaintenance,
 }: {
   id: string;
   context: Context;
@@ -40,7 +41,8 @@ export function EntryDetail({
   viewLabel: string;
   trail?: BreadcrumbItem[];
   onChanged: () => void;
-  onEquipment: (entry: Entry) => void;
+  onEquipment?: (entry: Entry) => void;
+  onMaintenance?: (entry: Entry) => void;
 }) {
   const [history, setHistory] = useState<History | null>(null),
     [error, setError] = useState(""),
@@ -124,6 +126,11 @@ export function EntryDetail({
               </div>
             )}
             <Actions className="handover-entry-actions">
+              {onMaintenance && !e.deleted && (
+                <Button variant="secondary" onClick={() => onMaintenance(e)}>
+                  {t("Plan maintenance")}
+                </Button>
+              )}
               {context.canDelete && !e.deleted && (
                 <Button
                   variant="secondary"
@@ -187,7 +194,7 @@ export function EntryDetail({
                   {t("Correct entry ")}
                 </Button>
               )}
-              {e.equipmentReferenceId && (
+              {e.equipmentReferenceId && onEquipment && (
                 <Button variant="secondary" onClick={() => onEquipment(e)}>
                   {t("Equipment reference history ")}
                 </Button>

@@ -15,6 +15,12 @@ const {
 } = require("../../../apps/api/dist/modules/integrations");
 const { PlatformRuntime } = require("../../../apps/api/dist/host/runtime");
 const { createApplication } = require("../../../apps/api/dist/host/application");
+const { Maintenance } = require("../../../apps/api/dist/modules/maintenance/application/maintenance");
+const { PgMaintenance } = require("../../../apps/api/dist/modules/maintenance/adapters/postgres/store");
+const { assetReference, assetReferences } = require("../../../apps/api/dist/modules/assets/adapters/postgres/store");
+const { evaluateSiteAccess } = require("../../../apps/api/dist/modules/users-rbac");
+const { siteRoles } = require("../../../apps/api/dist/modules/users-rbac/domain/profiles");
+const { sitePeople, sitePersonNames } = require("../../../apps/api/dist/modules/users-rbac/adapters/postgres/site-people");
 const scope = require("../../../fixtures/analytical-poc/scope.json");
 let container,
   configs,
@@ -46,6 +52,152 @@ async function admin(sql, values) {
   } finally {
     await c.end();
   }
+}
+async function operationalSnapshot() {
+  const result = {};
+  for (const table of [
+    "assets.records",
+    "assets.aliases",
+    "assets.revisions",
+    "maintenance.records",
+    "maintenance.revisions",
+    "maintenance.settings",
+    "maintenance.settings_revisions",
+    "workforce.records",
+    "workforce.revisions",
+    "shift_handover.entries",
+    "shift_handover.equipment_references",
+    "shift_handover.revisions",
+    "users_rbac.profiles",
+  ]) {
+    const rows = await admin(
+      `SELECT to_jsonb(record) AS data FROM ${table} record WHERE organization_id=$1 AND site_id=$2 ORDER BY to_jsonb(record)::text`,
+      [scope.organizationId, scope.siteId],
+    );
+    result[table] = rows.rows;
+  }
+  return result;
+}
+async function retainOperationalResetEvidence() {
+  await admin(
+    "INSERT INTO users_rbac.profiles(organization_id,user_id,site_id,display_name,profile) VALUES($1,'demo-a',$2,'Demo operator','administrator')",
+    [scope.organizationId, scope.siteId],
+  );
+  for (const role of siteRoles("administrator")) {
+    await admin(
+      "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,'demo-a',$2,$3,true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",
+      [scope.organizationId, scope.siteId, role],
+    );
+  }
+  // Operational Assets and work assignment use an eligible Team Leader;
+  // the administrator retains priority and workforce administration.
+  await admin(
+    "INSERT INTO users_rbac.profiles(organization_id,user_id,site_id,display_name,profile) VALUES($1,'demo-b',$2,'Demo colleague','team-leader')",
+    [scope.organizationId, scope.siteId],
+  );
+  for (const role of siteRoles("team-leader")) {
+    await admin(
+      "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,'demo-b',$2,$3,true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",
+      [scope.organizationId, scope.siteId, role],
+    );
+  }
+  const knownEquipment = (await runtime.assets.equipmentCatalog("demo-b", {
+    locationId: "",
+  })).candidates.find(candidate => candidate.namespace === "analytics");
+  expect(knownEquipment).toBeDefined();
+  const asset = await runtime.assets.save("demo-b", {
+    key: "reset-evidence-asset",
+    id: "",
+    expectedRevision: 0,
+    note: "",
+    content: {
+      code: knownEquipment.code,
+      name: knownEquipment.code,
+      type: "",
+      locationId: "",
+      status: "unverified",
+      validationNote: "",
+      description: "",
+      aliases: [
+        {
+          namespace: "analytics",
+          sourceId: scope.sourceId,
+          code: knownEquipment.code,
+          departmentId: "",
+          areaId: "",
+          sector: knownEquipment.sector,
+          area: knownEquipment.area,
+        },
+      ],
+    },
+  });
+  const priorities = [{ id: "normal", label: "Normal", rank: 1 }];
+  const maintenance = new Maintenance(
+    new PgMaintenance(runtime.pool, scope, {
+      allowed: async (tx, actor, permission) =>
+        (
+          await evaluateSiteAccess(tx, {
+            ...scope,
+            userId: actor,
+            permissions: [permission],
+          })
+        ).allowed,
+      people: (tx) => sitePeople(tx, scope.organizationId, scope.siteId),
+      names: (tx, ids) =>
+        sitePersonNames(tx, scope.organizationId, scope.siteId, ids),
+      teams: async () => [],
+      assets: (tx) => assetReferences(tx, scope),
+      asset: (tx, id) => assetReference(tx, scope, id),
+    }),
+    [
+      {
+        id: "reset-fixture-location",
+        parentId: "",
+        label: "Reset fixture location",
+      },
+    ],
+    priorities,
+    () => "2026-10-05T12:00:00.000Z",
+  );
+  await maintenance.save("demo-b", {
+    id: "reset-evidence-work",
+    expectedRevision: 0,
+    reason: "",
+    data: {
+      title: "Retained work after analytical reset",
+      details: "",
+      locationId: "reset-fixture-location",
+      assetId: asset.id,
+      priorityId: "normal",
+      assigneeId: "demo-b",
+      teamId: "",
+      status: "open",
+      dueDate: "2026-10-07",
+      outcome: "",
+      blockedReason: "",
+      externalReference: "",
+    },
+  });
+  await maintenance.configure("demo-a", { expectedRevision: 0, priorities });
+  await runtime.workforce.saveWeek("demo-a", {
+    userId: "demo-a",
+    weekStart: "2026-10-05",
+    days: [
+      {
+        date: "2026-10-05",
+        status: "off",
+        start: "",
+        end: "",
+        expectedRevision: 0,
+      },
+    ],
+  });
+  const retained = await operationalSnapshot();
+  expect(retained["assets.aliases"]).toHaveLength(1);
+  expect(retained["maintenance.records"]).toHaveLength(1);
+  expect(retained["maintenance.revisions"]).toHaveLength(1);
+  expect(retained["workforce.records"]).toHaveLength(1);
+  return retained;
 }
 async function selectUser(id = "demo-a") {
   const r = await api("post", "/demo/user").send({ userId: id }).expect(201);
@@ -461,11 +613,12 @@ test("coverage, zero measures, exclusions, exact limits and bounded HTTP input r
   expect(overflow.body.code).toBe("analytics_total_out_of_range");
 });
 
-test("offline reset refuses active hosts, mismatched targets and drift; rollback preserves facts and foreign data", async () => {
+test("offline reset refuses active hosts, mismatched targets and drift; rollback preserves facts, foreign data and operational evidence", async () => {
   const env = { ...maintenanceEnv, IOP_DEMO_DATASET_ID: dataset.datasetId };
   await expect(demoMaintenance(env, "reset")).rejects.toThrow(
     "Stop the demo host",
   );
+  const operationalBefore = await retainOperationalResetEvidence();
   // A different configured source shares the local installation but is not the reset target.
   const foreignSource = { ...runtimeConfig.local.source, id: "other-source" };
   const foreignConfig = {
@@ -569,6 +722,7 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
   }
   await admin("DROP FUNCTION public.test_reset_failure()");
   const result = await demoMaintenance(env, "reset");
+  expect(await operationalSnapshot()).toEqual(operationalBefore);
   expect(result.attempts).toBe(7);
   expect(
     (
@@ -697,6 +851,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await pw(button('Import & prepare')).toHaveCount(0);
     await button('Data analysis').click();
     await button('Administration').click();
+    await button('Data administration').click();
     await button('Import files').click();
     for (const [date, count] of [['20260701', '6'], ['20260703', '3']]) {
       await input.setInputFiles(join(__dirname, `../../../fixtures/analytical-poc/valid/Hitliste-${date}.csv`));
@@ -728,6 +883,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     // Profile saves persist across the administration/taskforce boundary.
     for (const [goal, state] of [['3', 'worse'], ['', 'equal']]) {
       await button('Administration').click();
+      await button('Data administration').click();
       await button('KPI settings & goals').click();
       await page.getByLabel('Goal 1', { exact: true }).fill(goal);
       await button('Save KPI settings').click();
@@ -747,6 +903,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await pw(page.getByLabel('Month', { exact: true })).toHaveValue('2026-07');
     await pw(button('Import & prepare')).toHaveCount(0);
     await button('Administration').click();
+    await button('Data administration').click();
     await button('Files & source rows').click();
     await page.getByLabel('Imported file', { exact: true }).selectOption({ label: 'Hitliste-20260701.csv · 2026-07-01' });
     await pw(page.getByRole('table')).toBeVisible();

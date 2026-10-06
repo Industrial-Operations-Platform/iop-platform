@@ -259,3 +259,26 @@ and Administrators to enter/update personal schedules by week using `workforce.p
 file imports and standalone schedule deletion remain administrator-only. No new role
 or inheritance is introduced. This does not accept any previously Proposed ADR. See
 [IOP-184](../../planning/items/IOP-184-m6-workforce.md).
+
+## M8/M10 permission catalog extension — IOP-194
+
+The owner's explicit 2026-10-05 full-development request delegates design choices
+for Maintenance Management and Digital Asset Record on an isolated review branch.
+[IOP-194](../../planning/items/IOP-194-maintenance-asset-history.md) reuses the
+existing site-bundle mechanism with these module-owned permissions:
+
+| Bundle | Permissions and responsibility | Fixed profiles |
+| --- | --- | --- |
+| `maintenance-contributor` | `maintenance.read`, `maintenance.contribute`: read site work/history, create work, update authored/assigned work | All four |
+| `maintenance-coordinator` | `maintenance.coordinate`: coordinate work and responsibility across the exact site | Administrator, Team Leader |
+| `maintenance-administrator` | `maintenance.administer`: versioned priority configuration | Administrator |
+| `assets-reader` | `assets.read`: registered identities and source-authorized digital records | All four |
+| `assets-administrator` | `assets.manage`: registration, identity/alias corrections, validation and retirement | Administrator |
+
+Every digital-record source independently requires its own current read permission.
+Asset access grants no analytical/Handover/Maintenance access. Profile creation and
+changes provision these explicit bundles; a migration adds them only to active
+profiles/memberships with existing active site grants. Inactive/revoked assignments
+are not restored. Existing grants retain their original semantics. Module-owned
+revisions reuse accepted atomic evidence patterns; broader Audit delivery and
+unrelated Proposed decisions remain outside this request.

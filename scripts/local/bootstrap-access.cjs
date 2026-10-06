@@ -8,6 +8,7 @@ const {
 const {
   NodePasswords,
 } = require("../../apps/api/dist/modules/authentication/adapters/node-crypto");
+const { siteRoles } = require("../../apps/api/dist/modules/users-rbac/domain/profiles");
 async function main() {
   const reset = process.argv.slice(2).join(" ") === "--reset";
   if (process.argv.length > 2 && !reset)
@@ -93,7 +94,7 @@ async function main() {
       "UPDATE users_rbac.organization_memberships SET is_active=true WHERE organization_id=$1 AND user_id=$2",
       [org, user],
     );
-    for (const role of ["handover-contributor", "handover-coordinator"]) {
+    for (const role of siteRoles("administrator")) {
       await client.query(
         `INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id)
         VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`,

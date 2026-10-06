@@ -419,3 +419,12 @@ from current sources; it is not database state.
 
 Workforce planning, manual schedule imports, German/English language selection and
 synthetic workforce provisioning are documented in the [Workforce guide](workforce.md).
+
+## Maintenance and Asset History review branch
+
+The isolated IOP-194 branch adds Maintenance and Assets sections. Its additive
+migrations extend storage and permissions without removing retained data. Follow
+normal setup/migration before running that branch; startup alone never migrates
+and branch creation does not publish or activate a deployment. See
+[Maintenance/Asset operation](maintenance-assets.md) for registration, priorities,
+work transitions, exact aliases and source coverage. M9 maps are deferred.

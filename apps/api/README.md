@@ -196,3 +196,12 @@ Users/RBAC directory and Integrations CSV/email decoder. `/api/v1/workforce` exp
 board, save, preview, import and history operations with current scoped grants.
 Administrator profile/entry removal is logical and retains original author names.
 See [formats, permissions and validation](../../docs/development/workforce.md).
+
+## Maintenance and Assets — IOP-194
+
+`/api/v1/maintenance` exposes catalog, query, save, settings and history.
+`/api/v1/assets` exposes context, query, save, detail, history and timeline.
+Both reuse current exact-site grants, sanitized Problem Details and scoped atomic
+revisions. Asset source readers independently check Maintenance/Handover/Analysis
+permissions. OpenAPI owns bounded field/response contracts. See the
+[product and operator guide](../../docs/development/maintenance-assets.md).

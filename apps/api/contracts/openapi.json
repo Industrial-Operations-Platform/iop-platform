@@ -64,6 +64,430 @@
         ]
       }
     },
+    "/api/v1/maintenance/catalog": {
+      "post": {
+        "operationId": "MaintenanceController_catalog",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceCatalogDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Maintenance"
+        ]
+      }
+    },
+    "/api/v1/maintenance/query": {
+      "post": {
+        "operationId": "MaintenanceController_query",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenancePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Maintenance"
+        ]
+      }
+    },
+    "/api/v1/maintenance/save": {
+      "post": {
+        "operationId": "MaintenanceController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceViewDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Maintenance"
+        ]
+      }
+    },
+    "/api/v1/maintenance/settings": {
+      "post": {
+        "operationId": "MaintenanceController_settings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceConfigureDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceSettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Maintenance"
+        ]
+      }
+    },
+    "/api/v1/maintenance/history": {
+      "post": {
+        "operationId": "MaintenanceController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Maintenance"
+        ]
+      }
+    },
+    "/api/v1/maintenance/related": {
+      "post": {
+        "operationId": "MaintenanceController_related",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceRelatedRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceRelatedPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Maintenance"
+        ]
+      }
+    },
+    "/api/v1/maintenance/assignments": {
+      "post": {
+        "operationId": "MaintenanceController_assignments",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceAssignmentsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaintenanceAssignmentsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Maintenance"
+        ]
+      }
+    },
+    "/api/v1/assets/context": {
+      "post": {
+        "operationId": "AssetsController_context",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetsContextRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetsContextDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Management"
+        ]
+      }
+    },
+    "/api/v1/assets/query": {
+      "post": {
+        "operationId": "AssetsController_query",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Management"
+        ]
+      }
+    },
+    "/api/v1/assets/save": {
+      "post": {
+        "operationId": "AssetsController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Management"
+        ]
+      }
+    },
+    "/api/v1/assets/equipment-catalog": {
+      "post": {
+        "operationId": "AssetsController_equipmentCatalog",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetEquipmentSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetEquipmentPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Management"
+        ]
+      }
+    },
+    "/api/v1/assets/detail": {
+      "post": {
+        "operationId": "AssetsController_detail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetDetailRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Management"
+        ]
+      }
+    },
+    "/api/v1/assets/history": {
+      "post": {
+        "operationId": "AssetsController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Management"
+        ]
+      }
+    },
+    "/api/v1/assets/timeline": {
+      "post": {
+        "operationId": "AssetsController_timeline",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetTimelineRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetTimelinePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Management"
+        ]
+      }
+    },
     "/api/v1/workforce/board": {
       "post": {
         "operationId": "WorkforceController_board",
@@ -1849,6 +2273,1641 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "MaintenancePriorityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "rank": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "rank"
+        ]
+      },
+      "MaintenanceSettingsDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "priorities": {
+            "minItems": 1,
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenancePriorityDto"
+            }
+          }
+        },
+        "required": [
+          "revision",
+          "priorities"
+        ]
+      },
+      "MaintenancePersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "MaintenanceTeamDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label"
+        ]
+      },
+      "MaintenanceLocationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "department",
+              "area",
+              "location"
+            ]
+          },
+          "sectorKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "parentId"
+        ]
+      },
+      "MaintenanceAssetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unverified",
+              "validated",
+              "retired"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "locationId",
+          "status"
+        ]
+      },
+      "MaintenanceCatalogDto": {
+        "type": "object",
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "canContribute": {
+            "type": "boolean"
+          },
+          "canCoordinate": {
+            "type": "boolean"
+          },
+          "canAdminister": {
+            "type": "boolean"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/MaintenanceSettingsDto"
+          },
+          "people": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenancePersonDto"
+            }
+          },
+          "teams": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceTeamDto"
+            }
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceLocationDto"
+            }
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceAssetDto"
+            }
+          }
+        },
+        "required": [
+          "actorId",
+          "canContribute",
+          "canCoordinate",
+          "canAdminister",
+          "settings",
+          "people",
+          "teams",
+          "locations",
+          "assets"
+        ]
+      },
+      "MaintenanceSelectionDto": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "",
+              "corrective",
+              "preventive",
+              "inspection"
+            ]
+          },
+          "history": {
+            "type": "boolean",
+            "description": "Explicit historical search; disables the default closed-work week window."
+          },
+          "doneFrom": {
+            "type": "string",
+            "description": "Completion calendar date lower bound; unfinished work remains visible."
+          },
+          "doneTo": {
+            "type": "string",
+            "description": "Completion calendar date upper bound; unfinished work remains visible."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "",
+              "open",
+              "in-progress",
+              "blocked",
+              "done"
+            ]
+          },
+          "priorityId": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string",
+            "description": "Configured location and its descendants."
+          },
+          "assetId": {
+            "type": "string"
+          },
+          "assigneeId": {
+            "type": "string"
+          },
+          "teamId": {
+            "type": "string"
+          },
+          "search": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "dueFrom": {
+            "type": "string"
+          },
+          "dueTo": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
+      },
+      "MaintenanceEquipmentDto": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "enum": [
+              "site-equipment"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "namespace",
+          "code",
+          "departmentId",
+          "areaId"
+        ]
+      },
+      "MaintenanceLinkedEntryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 1
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "include",
+              "exclude"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Required reason for exclusion from the repair scope."
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision",
+          "disposition",
+          "reason"
+        ]
+      },
+      "MaintenanceDataDto": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "corrective",
+              "preventive",
+              "inspection"
+            ],
+            "default": "corrective"
+          },
+          "repairTarget": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "equipment": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceEquipmentDto"
+            }
+          },
+          "linkedEntries": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceLinkedEntryDto"
+            }
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "details": {
+            "type": "string",
+            "maxLength": 8000
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "assetId": {
+            "type": "string"
+          },
+          "priorityId": {
+            "type": "string"
+          },
+          "assigneeId": {
+            "type": "string"
+          },
+          "teamId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "in-progress",
+              "blocked",
+              "done"
+            ]
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Optional calendar due date, or empty string."
+          },
+          "outcome": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "blockedReason": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "externalReference": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "title",
+          "details",
+          "locationId",
+          "assetId",
+          "priorityId",
+          "assigneeId",
+          "teamId",
+          "status",
+          "dueDate",
+          "outcome",
+          "blockedReason",
+          "externalReference"
+        ]
+      },
+      "MaintenanceViewDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MaintenanceDataDto"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationLabel": {
+            "type": "string"
+          },
+          "assetName": {
+            "type": "string"
+          },
+          "priorityLabel": {
+            "type": "string"
+          },
+          "assigneeName": {
+            "type": "string"
+          },
+          "teamLabel": {
+            "type": "string"
+          },
+          "assignedAt": {
+            "type": "string",
+            "description": "Last true person-assignment instant; unrelated edits do not change it."
+          },
+          "completedAt": {
+            "type": "string",
+            "description": "Last completion instant; empty while unfinished."
+          },
+          "canEdit": {
+            "type": "boolean"
+          },
+          "canReassign": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "data",
+          "authorId",
+          "authorName",
+          "createdAt",
+          "updatedAt",
+          "locationLabel",
+          "assetName",
+          "priorityLabel",
+          "assigneeName",
+          "teamLabel",
+          "canEdit",
+          "canReassign"
+        ]
+      },
+      "MaintenanceCountsDto": {
+        "type": "object",
+        "properties": {
+          "open": {
+            "type": "number"
+          },
+          "in-progress": {
+            "type": "number"
+          },
+          "blocked": {
+            "type": "number"
+          },
+          "done": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "open",
+          "in-progress",
+          "blocked",
+          "done"
+        ]
+      },
+      "MaintenancePageDto": {
+        "type": "object",
+        "properties": {
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceViewDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          },
+          "statusCounts": {
+            "description": "Counts under all filters except the selected status.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MaintenanceCountsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "records",
+          "total",
+          "nextCursor",
+          "statusCounts"
+        ]
+      },
+      "MaintenanceSaveDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "data": {
+            "$ref": "#/components/schemas/MaintenanceDataDto"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Required explanation for edits and reopening."
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision",
+          "data",
+          "reason"
+        ]
+      },
+      "MaintenanceConfigureDto": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "priorities": {
+            "minItems": 1,
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenancePriorityDto"
+            }
+          }
+        },
+        "required": [
+          "expectedRevision",
+          "priorities"
+        ]
+      },
+      "MaintenanceHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "before": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Exclusive revision boundary; zero starts at latest."
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 50
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "MaintenanceRecordDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MaintenanceDataDto"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "locationLabel": {
+            "type": "string"
+          },
+          "assetName": {
+            "type": "string"
+          },
+          "priorityLabel": {
+            "type": "string"
+          },
+          "assigneeName": {
+            "type": "string"
+          },
+          "teamLabel": {
+            "type": "string"
+          },
+          "assignedAt": {
+            "type": "string",
+            "description": "Last true person-assignment instant; unrelated edits do not change it."
+          },
+          "completedAt": {
+            "type": "string",
+            "description": "Last completion instant; empty while unfinished."
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "data",
+          "authorId",
+          "authorName",
+          "createdAt",
+          "updatedAt",
+          "locationLabel",
+          "assetName",
+          "priorityLabel",
+          "assigneeName",
+          "teamLabel"
+        ]
+      },
+      "MaintenanceRevisionDto": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "#/components/schemas/MaintenanceRecordDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updated",
+              "status-changed"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "record",
+          "actorId",
+          "actorName",
+          "at",
+          "action",
+          "reason"
+        ]
+      },
+      "MaintenanceHistoryDto": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "#/components/schemas/MaintenanceViewDto"
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceRevisionDto"
+            }
+          },
+          "nextBefore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "record",
+          "revisions",
+          "nextBefore"
+        ]
+      },
+      "MaintenanceRelatedRequestDto": {
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "type": "string"
+          },
+          "equipment": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceEquipmentDto"
+            }
+          },
+          "search": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "locationId",
+          "equipment"
+        ]
+      },
+      "HandoverLatestUpdateDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "note",
+          "actorName",
+          "at"
+        ]
+      },
+      "HandoverContentDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "equipmentCode": {
+            "type": "string"
+          },
+          "equipmentNamespace": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "",
+              "damaged",
+              "inspection-needed",
+              "blocked",
+              "repaired",
+              "restored"
+            ]
+          },
+          "externalReference": {
+            "type": "string"
+          },
+          "challenge": {
+            "type": "string"
+          },
+          "cause": {
+            "type": "string"
+          },
+          "measure": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string"
+          },
+          "feedbackDueDate": {
+            "type": "string"
+          },
+          "discuss": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "date",
+          "categoryId",
+          "summary",
+          "details",
+          "departmentId",
+          "areaId",
+          "equipmentCode",
+          "equipmentNamespace",
+          "condition",
+          "externalReference",
+          "challenge",
+          "cause",
+          "measure",
+          "dueDate",
+          "feedbackDueDate",
+          "discuss"
+        ]
+      },
+      "HandoverEntryDto": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          },
+          "latestUpdate": {
+            "$ref": "#/components/schemas/HandoverLatestUpdateDto"
+          },
+          "id": {
+            "type": "string"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "departmentLabel": {
+            "type": "string"
+          },
+          "areaLabel": {
+            "type": "string"
+          },
+          "categoryLabel": {
+            "type": "string"
+          },
+          "equipmentReferenceId": {
+            "type": "string"
+          },
+          "responsibleId": {
+            "type": "string"
+          },
+          "responsibleName": {
+            "type": "string"
+          },
+          "highlightedAt": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "content": {
+            "$ref": "#/components/schemas/HandoverContentDto"
+          },
+          "issueState": {
+            "type": "string",
+            "enum": [
+              "none",
+              "open",
+              "in-progress",
+              "resolved"
+            ]
+          },
+          "highlighted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "authorId",
+          "authorName",
+          "createdAt",
+          "updatedAt",
+          "departmentLabel",
+          "areaLabel",
+          "categoryLabel",
+          "equipmentReferenceId",
+          "responsibleId",
+          "responsibleName",
+          "highlightedAt",
+          "revision",
+          "content",
+          "issueState",
+          "highlighted"
+        ]
+      },
+      "MaintenanceRelatedPageDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverEntryDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "entries",
+          "total",
+          "nextCursor"
+        ]
+      },
+      "MaintenanceAssignmentsRequestDto": {
+        "type": "object",
+        "properties": {
+          "after": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Assignment-event checkpoint only; current work is always returned."
+          }
+        }
+      },
+      "MaintenanceAssignmentEventDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "recordId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "revision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "recordId",
+          "title",
+          "at",
+          "revision"
+        ]
+      },
+      "MaintenanceAssignmentsDto": {
+        "type": "object",
+        "properties": {
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceViewDto"
+            }
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MaintenanceAssignmentEventDto"
+            }
+          }
+        },
+        "required": [
+          "records",
+          "events"
+        ]
+      },
+      "AssetsContextRequestDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "HandoverLocationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "sectorKey": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "department",
+              "area",
+              "location"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "parentId",
+          "sectorKey",
+          "role"
+        ]
+      },
+      "AssetsContextDto": {
+        "type": "object",
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "canManage": {
+            "type": "boolean"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverLocationDto"
+            }
+          }
+        },
+        "required": [
+          "actorId",
+          "canManage",
+          "timeZone",
+          "locations"
+        ]
+      },
+      "AssetSelectionDto": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "",
+              "current",
+              "unverified",
+              "validated",
+              "retired"
+            ]
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "search",
+          "status",
+          "locationId",
+          "cursor"
+        ]
+      },
+      "AssetAliasDto": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "description": "Exact source namespace; site-equipment for handover, analytics for analytical rows."
+          },
+          "sourceId": {
+            "type": "string",
+            "description": "Required for analytics; empty for site-equipment."
+          },
+          "code": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "namespace",
+          "sourceId",
+          "code",
+          "departmentId",
+          "areaId",
+          "sector",
+          "area"
+        ]
+      },
+      "AssetContentDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unverified",
+              "validated",
+              "retired"
+            ]
+          },
+          "validationNote": {
+            "type": "string",
+            "description": "Required evidence when validating a manually registered asset."
+          },
+          "description": {
+            "type": "string"
+          },
+          "locationDetails": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Manual location/group details within the configured area; not physical validation."
+          },
+          "aliases": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetAliasDto"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "type",
+          "locationId",
+          "status",
+          "validationNote",
+          "description",
+          "aliases"
+        ]
+      },
+      "AssetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/AssetContentDto"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "authorId",
+          "authorName",
+          "createdAt",
+          "updatedAt",
+          "content"
+        ]
+      },
+      "AssetPageDto": {
+        "type": "object",
+        "properties": {
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assets",
+          "total",
+          "nextCursor"
+        ]
+      },
+      "AssetSaveDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Idempotency key for a new asset; empty for edits."
+          },
+          "id": {
+            "type": "string",
+            "description": "Empty for a new registration."
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/AssetContentDto"
+          }
+        },
+        "required": [
+          "key",
+          "id",
+          "expectedRevision",
+          "note",
+          "content"
+        ]
+      },
+      "AssetEquipmentSelectionDto": {
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "description": "Configured location and descendants; empty includes the exact site catalog."
+          },
+          "search": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "Exact, case-sensitive equipment code."
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "locationId"
+        ]
+      },
+      "AssetEquipmentCandidateDto": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "enum": [
+              "analytics",
+              "site-equipment"
+            ]
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "namespace",
+          "sourceId",
+          "code",
+          "sector",
+          "area",
+          "departmentId",
+          "areaId"
+        ]
+      },
+      "AssetEquipmentPageDto": {
+        "type": "object",
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetEquipmentCandidateDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sectors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "areas": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "candidates",
+          "total",
+          "nextCursor",
+          "sources",
+          "sectors",
+          "areas"
+        ]
+      },
+      "AssetDetailRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "AssetHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "before": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "before"
+        ]
+      },
+      "AssetRevisionDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/AssetDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "asset",
+          "actorId",
+          "actorName",
+          "action",
+          "note",
+          "at"
+        ]
+      },
+      "AssetHistoryDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/AssetDto"
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetRevisionDto"
+            }
+          },
+          "nextBefore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "asset",
+          "revisions",
+          "nextBefore"
+        ]
+      },
+      "AssetTimelineRequestDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "maintenance",
+              "handover",
+              "analytics"
+            ],
+            "description": "Filter the source before totals and pagination; omit to include all authorized sources."
+          },
+          "id": {
+            "type": "string"
+          },
+          "from": {
+            "type": "string",
+            "format": "date",
+            "description": "Inclusive site-local recording date; at most 366 days."
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "from",
+          "to",
+          "cursor"
+        ]
+      },
+      "AssetTimelineRecordDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "maintenance",
+              "handover",
+              "analytics"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "recordedAt": {
+            "type": "string",
+            "description": "Exact server recording instant for operational revisions. Empty for date-only analytical aggregates."
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "sourceRecordId": {
+            "type": "string"
+          },
+          "periodKind": {
+            "type": "string",
+            "enum": [
+              "calendar-date",
+              "daily-aggregate"
+            ]
+          },
+          "frequency": {
+            "type": "number"
+          },
+          "seconds": {
+            "type": "number",
+            "description": "Accumulated alarm seconds, never plant downtime."
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "date",
+          "recordedAt",
+          "title",
+          "summary",
+          "sourceRecordId",
+          "periodKind"
+        ]
+      },
+      "AssetTimelineCoverageDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "maintenance",
+              "handover",
+              "analytics"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "not-authorized",
+              "unmapped",
+              "unavailable"
+            ]
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "kind",
+          "status",
+          "total"
+        ]
+      },
+      "AssetTimelinePageDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/AssetDto"
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetTimelineRecordDto"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetTimelineCoverageDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Full matching count across currently authorized and available sources."
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "asset",
+          "records",
+          "sources",
+          "total",
+          "nextCursor"
         ]
       },
       "WorkforceRangeDto": {
@@ -3941,38 +6000,6 @@
           "id"
         ]
       },
-      "HandoverLocationDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "label": {
-            "type": "string"
-          },
-          "parentId": {
-            "type": "string"
-          },
-          "sectorKey": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "department",
-              "area",
-              "location"
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "label",
-          "parentId",
-          "sectorKey",
-          "role"
-        ]
-      },
       "HandoverChoiceDto": {
         "type": "object",
         "properties": {
@@ -4187,187 +6214,6 @@
           "cursor",
           "state",
           "highlights"
-        ]
-      },
-      "HandoverLatestUpdateDto": {
-        "type": "object",
-        "properties": {
-          "note": {
-            "type": "string"
-          },
-          "actorName": {
-            "type": "string"
-          },
-          "at": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "note",
-          "actorName",
-          "at"
-        ]
-      },
-      "HandoverContentDto": {
-        "type": "object",
-        "properties": {
-          "date": {
-            "type": "string"
-          },
-          "categoryId": {
-            "type": "string"
-          },
-          "summary": {
-            "type": "string"
-          },
-          "details": {
-            "type": "string"
-          },
-          "departmentId": {
-            "type": "string"
-          },
-          "areaId": {
-            "type": "string"
-          },
-          "equipmentCode": {
-            "type": "string"
-          },
-          "equipmentNamespace": {
-            "type": "string"
-          },
-          "condition": {
-            "type": "string",
-            "enum": [
-              "",
-              "damaged",
-              "inspection-needed",
-              "blocked",
-              "repaired",
-              "restored"
-            ]
-          },
-          "externalReference": {
-            "type": "string"
-          },
-          "challenge": {
-            "type": "string"
-          },
-          "cause": {
-            "type": "string"
-          },
-          "measure": {
-            "type": "string"
-          },
-          "dueDate": {
-            "type": "string"
-          },
-          "feedbackDueDate": {
-            "type": "string"
-          },
-          "discuss": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "date",
-          "categoryId",
-          "summary",
-          "details",
-          "departmentId",
-          "areaId",
-          "equipmentCode",
-          "equipmentNamespace",
-          "condition",
-          "externalReference",
-          "challenge",
-          "cause",
-          "measure",
-          "dueDate",
-          "feedbackDueDate",
-          "discuss"
-        ]
-      },
-      "HandoverEntryDto": {
-        "type": "object",
-        "properties": {
-          "deleted": {
-            "type": "boolean"
-          },
-          "latestUpdate": {
-            "$ref": "#/components/schemas/HandoverLatestUpdateDto"
-          },
-          "id": {
-            "type": "string"
-          },
-          "authorId": {
-            "type": "string"
-          },
-          "authorName": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string"
-          },
-          "updatedAt": {
-            "type": "string"
-          },
-          "departmentLabel": {
-            "type": "string"
-          },
-          "areaLabel": {
-            "type": "string"
-          },
-          "categoryLabel": {
-            "type": "string"
-          },
-          "equipmentReferenceId": {
-            "type": "string"
-          },
-          "responsibleId": {
-            "type": "string"
-          },
-          "responsibleName": {
-            "type": "string"
-          },
-          "highlightedAt": {
-            "type": "string"
-          },
-          "revision": {
-            "type": "number"
-          },
-          "content": {
-            "$ref": "#/components/schemas/HandoverContentDto"
-          },
-          "issueState": {
-            "type": "string",
-            "enum": [
-              "none",
-              "open",
-              "in-progress",
-              "resolved"
-            ]
-          },
-          "highlighted": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "authorId",
-          "authorName",
-          "createdAt",
-          "updatedAt",
-          "departmentLabel",
-          "areaLabel",
-          "categoryLabel",
-          "equipmentReferenceId",
-          "responsibleId",
-          "responsibleName",
-          "highlightedAt",
-          "revision",
-          "content",
-          "issueState",
-          "highlighted"
         ]
       },
       "HandoverPageDto": {

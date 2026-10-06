@@ -63,6 +63,27 @@ export function filterGroup(
   });
 }
 export class AnalysisWorkspace {
+  sourceEvidence(sourceId: string): Promise<SourceRowsResult> {
+    const match =
+      /^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}):(\d{1,16})$/i.exec(
+        sourceId,
+      );
+    if (
+      !match ||
+      !Number.isSafeInteger(Number(match[2])) ||
+      Number(match[2]) < 1
+    )
+      return Promise.reject(
+        new Error("The analytical source reference is invalid."),
+      );
+    return this.gateway.sourceRows({
+      importId: match[1],
+      page: 1,
+      sort: [],
+      filters: { line: match[2] },
+    });
+  }
+
   previewSourceFilters(
     importId: string,
     filters: SourceFilters,

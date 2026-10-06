@@ -92,3 +92,14 @@ logical deletion and retained names. See the [Workforce guide](workforce.md).
 concurrency/RLS and retained operational records. Browser units cover role views,
 preview invalidation and the shared German catalog. Start browser fixtures include
 Workforce responses separately from their analytical/Handover test data.
+
+## Maintenance and Digital Asset Record evidence
+
+IOP-194 adds replaceable-port rules/use-case tests, real Nest transport tests,
+independent PostgreSQL suites for both owning schemas and browser fixtures for
+registration/work/history/source navigation. Coverage includes current source
+permissions, exact aliases, logical retirement, atomic attributed revisions,
+concurrent conflicts, scoped foreign keys/RLS, stable filtered pages and date-only
+analytical provenance. The [execution record](../planning/completed/IOP-194-maintenance-asset-history-plan.md)
+records actual outcomes, screenshots and any material limits. All database tests
+use disposable synthetic installations, never the operator's persistent stack.

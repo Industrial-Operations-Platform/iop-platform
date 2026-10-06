@@ -176,6 +176,46 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
     "SELECT 1 FROM iop_migrations.history WHERE name='20261005000000-profile-display-name'",
   )).rowCount;
   if (displayNameInstalled) updates.push('users_rbac.profiles.display_name');
+  const maintenanceInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261005010000-maintenance'",
+  )).rowCount;
+  if (maintenanceInstalled) {
+    schemas.push('maintenance');
+    for (const [table, names] of Object.entries({
+      records: ['organization_id','site_id','id','author_id','revision','status','priority_id','location_id','asset_id','assignee_id','team_id','due_date','updated_at','snapshot'],
+      revisions: ['organization_id','site_id','id','revision','asset_id','actor_id','at','snapshot'],
+      settings: ['organization_id','site_id','revision','snapshot'],
+      settings_revisions: ['organization_id','site_id','revision','actor_id','at','snapshot'],
+    })) {
+      const qualified = names.map(name => `maintenance.${table}.${name}`);
+      allowedColumns.push(...qualified); inserts.push(...qualified);
+    }
+    updates.push(...['revision','status','priority_id','location_id','asset_id','assignee_id','team_id','due_date','updated_at','snapshot'].map(name => `maintenance.records.${name}`),
+      'maintenance.settings.revision', 'maintenance.settings.snapshot');
+  }
+  const assetsInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261005020000-assets'",
+  )).rowCount;
+  const maintenanceScopeInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261005040000-maintenance-scope-access'",
+  )).rowCount;
+  if (maintenanceScopeInstalled) {
+    allowedColumns.push('maintenance.records.completed_at');
+    inserts.push('maintenance.records.completed_at');
+    updates.push('maintenance.records.completed_at');
+  }
+  if (assetsInstalled) {
+    schemas.push('assets');
+    for (const [table, names] of Object.entries({
+      records: ['organization_id','site_id','id','code','status','location_id','revision','snapshot','author_id','created_at','request_key','fingerprint'],
+      aliases: ['organization_id','site_id','asset_id','alias_key','active'],
+      revisions: ['organization_id','site_id','asset_id','revision','recorded_at','snapshot'],
+    })) {
+      const qualified = names.map(name => `assets.${table}.${name}`);
+      allowedColumns.push(...qualified); inserts.push(...qualified);
+    }
+    updates.push(...['code','status','location_id','revision','snapshot'].map(name => `assets.records.${name}`), 'assets.aliases.active');
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

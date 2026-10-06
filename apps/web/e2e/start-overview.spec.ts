@@ -9,6 +9,7 @@ for (const width of [1440, 375]) {
     const requests: string[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
+      if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
       requests.push(path);
       if (path.endsWith("/workforce/board")) {
         await route.fulfill({ json: emptyWorkforce });

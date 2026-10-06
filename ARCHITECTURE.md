@@ -22,6 +22,10 @@ SQL drivers, transport schemas or presentation adapters.
 | `apps/api/src/modules/authentication/` | Provider-independent authentication use cases with local Argon2id and PostgreSQL session adapters |
 | `apps/api/src/modules/users-rbac/` | User administration, profile rules and scoped authorization with PostgreSQL adapters |
 | `apps/api/src/modules/integrations/` | Import lifecycle, CSV adapter, RAW retention, source-date admission and mapping snapshots |
+| `apps/api/src/modules/maintenance/` | Technical work, status rules, scoped responsibility, priority configuration and immutable revisions |
+| `apps/api/src/modules/assets/` | Stable registered identities, exact scoped aliases and source-authorized digital-record use cases |
+| `apps/web/src/features/maintenance/` | Framework-free work use cases with HTTP/React board, forms and history |
+| `apps/web/src/features/assets/` | Framework-free registry/digital-record use cases with HTTP/React adapters |
 | `apps/api/src/modules/workforce/` | Personal schedules, scoped planning, teams, assignments and retained revisions |
 | `apps/web/src/features/workforce/` | Framework-free planning use cases with HTTP/React role views |
 | `apps/web/src/localization/` | Shared English/German presentation resources and locale selection |
@@ -115,7 +119,7 @@ sanitized Problem Details. Internal ports are independent of transport/provider.
 Public `/health` proves process response only. Use the [API guide](apps/api/README.md)
 and [testing guide](docs/development/testing-poc.md) for executable checks.
 
-Shared authentication, administration, external connections, workers, physical assets,
+Shared authentication, administration, external connections, workers, full asset hierarchy/locator capabilities,
 remaining operational modules and production operating controls remain separately scoped.
 Industrial integrations are read-only; no plant control commands are included.
 See the [module map](docs/architecture/modules.md),
@@ -132,3 +136,22 @@ It reuses accepted scoped authorization and revision patterns. Personal availabi
 and operational assignments remain separate; Integrations decodes manual sources.
 [Module contract](docs/product/workforce.md) and [implementation guide](docs/development/workforce.md)
 cover time resolution, role boundaries, import preview, logical deletion and retained names.
+
+Maintenance Management and the Digital Asset Record are implemented on the
+isolated [IOP-194](docs/planning/items/IOP-194-maintenance-asset-history.md) review
+branch. They reuse existing scoped authorization, pinned transactions and atomic
+revision patterns. Assets orchestrates explicit source read ports; Maintenance,
+Handover and OIP retain their records/joins and enforce source permissions. Stable
+asset registration is deliberate; aliases never infer physical identity from
+analytics. [Product scope](docs/product/maintenance-assets.md) and
+[operation](docs/development/maintenance-assets.md) describe the boundaries. M9
+Asset Locator, full M4 hierarchy/controller/survey work and general Audit remain
+deferred. This delivery does not constitute owner product acceptance.
+
+
+The owner-requested IOP-194 follow-up links reviewed Maintenance repair scopes to
+Handover issues through narrow owner-defined reads and resolution writes. It reuses
+ADR-0027's coordinated pinned transaction; each module retains its own history.
+Exact equipment codes provisionally represent parts while physical verification
+and 3D/radius selection remain deferred. See the [contract](docs/product/maintenance-assets.md)
+and [ADR-0036 refinement](docs/architecture/adr/ADR-0036-shift-handover.md).

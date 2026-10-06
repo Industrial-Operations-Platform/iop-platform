@@ -9,7 +9,7 @@ scope and data invariants in delivered paths. The local selector is implemented
 under ADR-0018/0030/0034. [IOP-165](../planning/items/IOP-165-operational-home.md)
 implements temporary authenticated access and user administration under accepted
 [ADR-0035](adr/ADR-0035-transitional-authentication.md). Shift Handover supplies operational entries and selected Start highlights under
-ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); canonical Assets and Maintenance remain deferred. Existing identity, authorization and RLS requirements still apply.
+ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); Maintenance and supporting stable Assets/Digital Asset Record are delivered on the isolated IOP-194 review branch. M9 Asset Locator and full M4 capabilities remain deferred. Existing identity, authorization and RLS requirements still apply.
 
 [IOP-168](../planning/items/IOP-168-shift-handover.md) captures the requested first
 Shift Handover increment. [ADR-0036](adr/ADR-0036-shift-handover.md) defines its accepted
@@ -25,7 +25,7 @@ See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary
 | Authentication | Identity-provider boundary, local credentials, throttling and revocable sessions | Provider adapters; user identity mapping contract |
 | Workforce and Shift Management | Teams, shift definitions, assignments | Core sites; user references |
 | Shift Handover | Handover notes, open issues, acknowledgements | Shifts, users, asset and maintenance references |
-| Maintenance Management | Maintenance records, status, work outcomes | Assets, users; external references via Integrations |
+| Maintenance Management | Categorized work, manual repair scopes, include/exclude decisions, assignments, status and outcomes | Assets/users/team directories; Handover-owned related-entry and scoped resolution contracts |
 | Asset Management | Canonical assets, types, hierarchy, controller relationships, validation and alias mappings | Core site context; source identifiers from Integrations |
 | Asset Locator | Versioned maps, placements and location search views | Asset and site contracts; no duplicate asset registry |
 | Data Analysis (OIP) | Canonical event occurrences/aggregates, message definitions, asset/message associations and analytical projections | Normalized input contracts, assets, shifts and maintenance context |
@@ -168,3 +168,14 @@ activation is introduced. See the [batch model](import-batches-poc.md) and
 Workforce owns personal availability, teams, shift definitions, assignments and
 revision history. Its source decoder belongs to Integrations; scoped people come
 from Users/RBAC through host composition. See [Workforce](../product/workforce.md).
+
+## Maintenance and Digital Asset Record — IOP-194
+
+Maintenance owns work/status/priority/ownership and immutable revision evidence.
+Its responsibility directory uses Workforce-owned teams, Users/RBAC-owned scoped
+people and Asset-owned stable references through host composition. Assets owns
+identity, exact aliases and the digital-record read orchestration. Dedicated
+source adapters remain within Maintenance, Handover and OIP; no consumer joins
+another module's private tables or writes its evidence. Access is current and
+source-specific. See the [product contract](../product/maintenance-assets.md) and
+[implementation guide](../development/maintenance-assets.md).

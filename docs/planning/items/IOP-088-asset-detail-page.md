@@ -1,97 +1,29 @@
 # IOP-088 — Asset detail page
 
-## Status
+## Status and authorization
 
-Proposed
+Completed — local implementation under [IOP-194](IOP-194-maintenance-asset-history.md).
+M10 — Asset History / Digital Asset Record. The owner's explicit 2026-10-05 request authorizes full implementation
+and delegates design choices on an isolated review branch. This replaces the
+initial proposed slice; M9 remains excluded.
 
-## Milestone
+## Goal and behavior
 
-M10 — Asset History / Digital Asset Record. Proposed delivery slice.
+Expected outcome: Single asset view.
 
-## Goal
+A searchable registry and asset detail combine identity, location, validation/evidence, aliases and filtered historical sources; missing/unmapped/unauthorized coverage remains explicit.
 
-Asset detail page. Resultado esperado: Vista única del activo
+## Acceptance
 
-## User / business value
+- [x] Single asset view.
+- [x] Planned scenarios, actual validation evidence and synchronized documentation
+  are recorded in the [execution plan](../completed/IOP-194-maintenance-asset-history-plan.md).
 
-Técnicos necesitan una hoja de vida del activo que una contexto operacional sin reconciliación manual.
-
-## Context
-
-Ámbito: Asset Management read views across owning modules. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
-
-## Current state
-
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
-
-## Desired state
-
-Vista única del activo
-
-## Requirements
-
-- Entregar únicamente el resultado descrito para IOP-088.
-- La timeline es una proyección de lectura, no un nuevo módulo propietario de eventos, mantenimiento o handover.
-
-## Acceptance criteria
-
-- [ ] Vista única del activo
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
-
-## Domain considerations
-
-La timeline es una proyección de lectura, no un nuevo módulo propietario de eventos, mantenimiento o handover.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
-
-## Security considerations
-
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
-
-## Data considerations
-
-Retener origen y semántica temporal de cada entrada; no inventar timestamps para agregados diarios.
-
-## API considerations
-
-Consumir contratos de lectura de módulos propietarios; no hacer escrituras ni joins privados entre módulos.
-
-## UI considerations
-
-Permitir navegar al registro de origen y mostrar periodo, tipo y ausencia de historial con claridad.
-
-## Dependencies
+## Boundaries and dependencies
 
 [IOP-085](IOP-085-asset-event-history.md), [IOP-086](IOP-086-asset-maintenance-history.md), [IOP-087](IOP-087-asset-handover-history.md), [IOP-040](IOP-040-asset-search.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
-
-## Non-goals
-
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
-
-## Validation
-
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
-
-## Documentation impact
-
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
-
-## Open questions
-
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Dependency refinements and exclusions are recorded in the
+[delivery scope](IOP-194-maintenance-asset-history.md). The
+[product contract](../../product/maintenance-assets.md) owns behavior and permissions;
+the [development guide](../../development/maintenance-assets.md) owns operation.

@@ -1,4 +1,6 @@
 import { WorkforceController } from "./workforce-controller";
+import { MaintenanceController } from "./maintenance-controller";
+import { AssetsController } from "./assets-controller";
 import { HandoverController } from "./handover-controller";
 import { AccessController } from "./access-controller";
 import { AuthenticationError } from "../modules/authentication/domain/identity";
@@ -439,6 +441,8 @@ export class PlatformModule {
     return {
       module: PlatformModule,
       controllers: [
+        MaintenanceController,
+        AssetsController,
         WorkforceController,
         PlatformController,
         AccessController,

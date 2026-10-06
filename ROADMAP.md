@@ -22,8 +22,8 @@ Any resulting change needs its own scope and execution plan.
 
 - Third-party authentication and operating controls before shared use.
 - Pareto as a function within Executive Overview, not a separate POC tab.
-- External connections, full audit, workers, assets/maps,
-  maintenance and improvement tracking when explicitly selected.
+- External connections, full audit, workers, full asset hierarchy/maps,
+  and improvement tracking when explicitly selected.
 
 The [backlog](docs/planning/backlog.md) owns task statuses and capability groups;
 the [v1 proposal](docs/product/scope-v1.md) describes the broader product direction.
@@ -32,3 +32,8 @@ Follow the [workflow](docs/planning/workflow.md) when selecting work.
 
 M6 Workforce is delivered by [IOP-184](docs/planning/items/IOP-184-m6-workforce.md);
 corporate schedule connectivity remains deferred behind the manual import port.
+
+M8 Maintenance Management and M10 Digital Asset Record are delivered on the
+separate [IOP-194](docs/planning/items/IOP-194-maintenance-asset-history.md) review
+branch. Owner review remains pending; this does not promote changes into develop,
+stage or master. M9 Asset Locator remains deferred by explicit owner instruction.

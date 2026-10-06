@@ -343,3 +343,47 @@ Phone references use stable zone IDs; names and assignment labels are snapshots.
 `users_rbac.profiles.deleted_at` hides a logically removed profile while keeping
 identity references and journal authors intact. Handover entry tombstones preserve
 all revisions. See the [Workforce guide](../development/workforce.md).
+
+## Maintenance and supporting Asset storage — IOP-194
+
+`maintenance.records` retains the current scoped work snapshot and indexed
+status/priority/location/asset/ownership/due-date fields. `maintenance.revisions`
+contains immutable attributed full snapshots; settings and settings revisions
+retain priority configuration changes. Projection and revision appends commit
+atomically with expected-revision checks. Optional asset/user references remain
+within the exact organization/site; names and labels remain in retained evidence.
+
+`assets.records` retains stable registered identity, code, validation/retirement
+state, location and current content; `assets.aliases` constrains active exact source
+alias claims; `assets.revisions` retains earlier identity/alias/evidence content.
+Retirement is logical. These tables use scoped constraints, forced RLS and narrow
+column privileges. Original source evidence remains in its owning module.
+
+The digital-record timeline combines source-owned read results with stable
+date/recorded-instant/source/identity pagination and explicit source coverage.
+Analytical reporting labels remain date-only daily aggregates with frequency,
+accumulated seconds and original import/line references. Alias changes never
+rewrite RAW facts. Full physical composition, controller relationships, map
+placement and automatic ingestion resolution remain deferred. See
+[Maintenance/Assets](../product/maintenance-assets.md).
+
+
+### Linked repair scopes
+
+Maintenance snapshots retain category (legacy records default to Corrective), a
+manual repair target, bounded exact equipment identities and reviewed linked-entry
+revision/disposition/exclusion-reason references. Multiple evidence identifiers may
+refer to one repair zone or a component absent from analytical catalogs. Source
+entries remain Handover-owned; no report copy or inferred spatial relationship is
+stored. Completion appends both module histories on the existing scoped transaction
+through the owning receiver contract. Assignment revisions supply in-app recipient
+activity; current unfinished work supplies Start independently of unread state.
+
+
+IOP-194 review refinement keeps a unique current exact equipment-code asset, with
+name equal to code and optional manually recorded within-area group/location details.
+Asset verification/retirement states describe identity lifecycle, never location
+health. Scoped source catalogs supply exact source/sector/area/code options; new
+Handover/analytical aliases use the same asset code. Immutable earlier snapshots
+retain historical names and mappings. Known-source initial inventory preparation is
+explicitly invoked; no import-time entity inference or spatial placement is implied.

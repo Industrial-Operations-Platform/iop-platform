@@ -10,88 +10,88 @@ M5 — Industrial Data Foundation. Proposed delivery slice.
 
 ## Goal
 
-Event-to-asset mapping. Resultado esperado: Eventos pueden vincularse a assets
+Event-to-asset mapping. Expected outcome: Events can be linked to assets
 
 ## User / business value
 
-Operación necesita datos importados trazables y métricas reconciliables.
+Operations needs traceable imported data and reconcilable metrics.
 
 ## Context
 
-Ámbito: Integrations and Operational Intelligence. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Integrations and Operational Intelligence. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+outline requested by the owner; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
 
 ## Desired state
 
-Eventos pueden vincularse a assets
+Events can be linked to assets
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-044.
-- RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
+- Deliver only the outcome described for IOP-044.
+- RAW → validation → normalization; the receiving module validates invariants. Do not infer a physical asset from text alone.
 
 ## Acceptance criteria
 
-- [ ] Eventos pueden vincularse a assets
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Events can be linked to assets
+- [ ] The plan documents scenarios and required decisions without expanding scope.
+- [ ] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
-RAW → validación → normalización; el módulo receptor valida invariantes. No deducir un activo físico solo de un texto.
+RAW → validation → normalization; the receiving module validates invariants. Do not infer a physical asset from text alone.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to make the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permissions and customer/site scope for relevant operations and references.
+Do not include secrets, drawings or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Preservar procedencia y grano; distinguir ocurrencias de agregados. Rechazos y correcciones deben ser visibles.
+Preserve provenance and grain; distinguish occurrences from aggregates. Rejections and corrections must remain visible.
 
 ## API considerations
 
-Usar contratos de ingesta; credenciales y nombres de columnas externos quedan en adaptadores/configuración.
+Use ingestion contracts; external credentials and column names remain in adapters/configuration.
 
 ## UI considerations
 
-Exponer estados, errores y resultados de importación solo si lo pide esta tarea; no crear un dashboard completo.
+Expose import states, errors and results only when requested by this task; do not create a full dashboard.
 
 ## Dependencies
 
 [IOP-043](IOP-043-canonical-event-model.md), [IOP-037](IOP-037-asset-aliases.md), [IOP-039](IOP-039-asset-survey.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies indicate required contracts/capabilities, not numerical implementation
+order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names in the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must define executable commands and scenarios for the criteria below using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, models, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.

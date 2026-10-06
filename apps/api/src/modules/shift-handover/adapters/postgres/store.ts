@@ -59,6 +59,11 @@ export class PgHandover implements Store {
         );
         if (!(await this.lookup.allowed(tx, actor, permission)))
           throw new SiteAccessDeniedError();
+        if (permission === "handover.contribute")
+          await tx.query(
+            "SELECT pg_advisory_xact_lock_shared(hashtext('iop-handover-maintenance'),hashtext($1))",
+            [this.scope.organizationId + ":" + this.scope.siteId],
+          );
         const coordinator = await this.lookup.allowed(
           tx,
           actor,

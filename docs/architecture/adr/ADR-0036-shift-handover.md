@@ -201,3 +201,50 @@ reference and condition predicates for matrix column filters. They apply before
 counts and cursor pagination. What? and Details remain free of column controls.
 This refines presentation and the existing query contract without a new architectural
 boundary, storage model, permission or formal shift lifecycle.
+
+## Owner-requested Maintenance integration — 2026-10-05
+
+The owner's explicit [IOP-194 follow-up](../../planning/items/IOP-194-maintenance-asset-history.md)
+connects corrective/preventive/inspection work to existing problem entries through
+manual configured locations and multiple exact equipment identifiers. Department
+matrix remains a view of these same entries. Equipment identifiers provisionally
+represent system parts; neither this association nor nearby sensor reports validate
+physical identity. Spatial/radius selection remains deferred with M9.
+
+Maintenance owns the reviewed include/exclude repair scope. Completing authorized
+work resolves only explicitly included pending issues with its outcome; exclusions
+require a reason and leave the source unchanged. New/unreviewed scoped issues and
+stale included pending revisions prevent accidental completion. Workers assigned to the
+work receive this narrow completion authority, without a global Handover coordinator
+grant. Team Leader controls assignments; Assets access is limited to Team Leader
+and Task Force in this operational increment.
+
+Reuse Accepted ADR-0027's narrow owning receiver contract on the existing pinned
+scoped transaction. Handover retains its validation, writes and attributed revisions;
+Maintenance never writes Handover tables itself. No independent nested commit,
+broker, worker, general transaction framework or new architectural pattern is added.
+Completion and included resolutions commit together. A site-scoped coordination
+lease serializes Handover mutations against final scope review so concurrent new
+reports cannot escape review. This refines the explicit unrelated-issue safeguard,
+not formal shift closure, global Audit or analytical event ownership.
+
+
+## Owner review corrections — 2026-10-06
+
+The owner restores Administrator access to all delivered operational capabilities,
+including Assets/M10 and Maintenance coordination. This supersedes the Administrator
+exclusion in the 2026-10-05 increment. Site/profile activity and current authorization
+still apply; other profiles retain their existing responsibilities.
+
+The owner requests one current asset per exact equipment code, with name equal to
+code, scoped Halle/Bereich source choices and manual within-area component/group
+metadata. A deliberately invoked initial catalog preparation registers known source
+identifiers as unverified. This is not automatic ingestion or physical validation.
+Superseded training identities leave the current directory through retained retirement
+revisions; analytical facts, reports and work histories stay owned by their modules.
+
+Reuse the existing narrow source read ports and scoped transaction patterns for
+contextual source dropdowns. Included reports are repair membership; related/excluded
+reports provide context without closure authority. Repair drafts retain source links
+instead of copying full report narratives. No new hierarchy or transaction framework
+is introduced. M09 remains explicitly deferred while catalog/manual grouping proceed.

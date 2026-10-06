@@ -1,5 +1,5 @@
 import { emptyWorkforce } from "./workforce-fixture";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 
 function summaryStyle(element: Element) {
   const card = getComputedStyle(element);
@@ -15,6 +15,17 @@ function summaryStyle(element: Element) {
     subtitleFont: subtitle.font,
     muted: subtitle.color,
   };
+}
+
+async function renderedSummaryStyle(card: Locator) {
+  let style: ReturnType<typeof summaryStyle> | undefined;
+  await expect
+    .poll(async () => {
+      style = await card.evaluate(summaryStyle);
+      return style.font;
+    })
+    .not.toBe("");
+  return style!;
 }
 
 for (const width of [1440, 820, 375]) {
@@ -66,6 +77,7 @@ for (const width of [1440, 820, 375]) {
     const selections: Record<string, unknown>[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
+      if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
       if (path.endsWith("/workforce/board")) {
         await route.fulfill({ json: emptyWorkforce });
         return;
@@ -309,7 +321,7 @@ for (const width of [1440, 820, 375]) {
       .getByRole("region", { name: "Problems", exact: true })
       .getByRole("button", { name: entry.content.summary, exact: false });
     await expect(journalCard).toBeVisible();
-    const journalStyle = await journalCard.evaluate(summaryStyle);
+    const journalStyle = await renderedSummaryStyle(journalCard);
     await page.screenshot({
       path: `/tmp/iop182-journal-${width}.png`,
       fullPage: true,
@@ -331,11 +343,13 @@ for (const width of [1440, 820, 375]) {
         exact: false,
       }),
     ).toBeVisible();
-    expect(
-      await meeting
-        .getByRole("button", { name: entry.content.summary, exact: false })
-        .evaluate(summaryStyle),
-    ).toEqual(journalStyle);
+    await expect
+      .poll(async () =>
+        meeting
+          .getByRole("button", { name: entry.content.summary, exact: false })
+          .evaluate(summaryStyle),
+      )
+      .toEqual(journalStyle);
     const sectionStyle = await meeting
       .getByRole("heading", { name: "Problems", exact: true })
       .evaluate((element) => {

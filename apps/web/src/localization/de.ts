@@ -1,4 +1,148 @@
 export const german: Readonly<Record<string, string>> = {
+  "Original recorded name": "Ursprünglich erfasster Name",
+  "Choose reported equipment": "Gemeldetes Betriebsmittel auswählen",
+  "Choose Halle, Bereich and one exact code. The selection prepares source links; physical identity remains unverified.":
+    "Wähle Halle, Bereich und ein genaues Kennzeichen. Die Auswahl bereitet Quellenbezüge vor; die physische Identität bleibt ungeprüft.",
+  "Asset Halle": "Halle der Anlage",
+  "Asset Bereich": "Bereich der Anlage",
+  "Choose Bereich": "Bereich auswählen",
+  "Search reported equipment": "Gemeldetes Betriebsmittel suchen",
+  "Reported equipment identifier": "Gemeldetes Betriebsmittelkennzeichen",
+  "Loading equipment catalog…": "Betriebsmittelkatalog wird geladen…",
+  "Reload equipment catalog": "Betriebsmittelkatalog neu laden",
+  "Showing {0} of {1} source references.":
+    "{0} von {1} Quellenbezügen angezeigt.",
+  "No reported code matches. Register an exact manual identifier below if it is absent from the source.":
+    "Kein gemeldetes Kennzeichen passt. Erfasse unten ein genaues manuelles Kennzeichen, wenn es in der Quelle fehlt.",
+  "One exact asset code identifies each current component. Use a manual code when it is absent from the source; physical verification remains a separate step.":
+    "Ein genaues Anlagenkennzeichen identifiziert jede aktuelle Komponente. Verwende ein manuelles Kennzeichen, wenn es in der Quelle fehlt; die physische Prüfung erfolgt gesondert.",
+  "Changing the identifier replaces source links with different codes. Earlier revisions preserve the previous identity and links.":
+    "Eine Änderung des Kennzeichens ersetzt Quellenbezüge mit abweichenden Kennzeichen. Frühere Versionen erhalten die vorherige Identität und ihre Bezüge.",
+  "Component type": "Komponententyp",
+  Cassette: "Kassette",
+  "Motor roller": "Motorrolle",
+  "Photoelectric sensor": "Lichtschranke",
+  "Other component": "Andere Komponente",
+  "Other component type": "Anderer Komponententyp",
+  "Not recorded": "Nicht erfasst",
+  "Manual group / location within Bereich":
+    "Manuelle Gruppe / Standort im Bereich",
+  "For example: buffer 1 or buffer 2": "Zum Beispiel: Puffer 1 oder Puffer 2",
+  "Asset identity status": "Identitätsstatus der Anlage",
+  "Unverified: physical identity awaits review. Validated: identity was confirmed with a note. Retired: retained for history and hidden from the current directory. These states do not describe location or machine operation.":
+    "Ungeprüft: Die physische Identität muss geprüft werden. Bestätigt: Die Identität wurde mit einer Notiz bestätigt. Außer Betrieb: Für die Historie erhalten und im aktuellen Verzeichnis ausgeblendet. Diese Zustände beschreiben weder den Standort noch den Maschinenbetrieb.",
+  "Analysis supplies measured evidence, Handover keeps reported problems, and Maintenance records the intervention. Open each source from the digital record; source links do not confirm that equipment is working.":
+    "Die Analyse liefert Messdaten, die Schichtübergabe bewahrt gemeldete Probleme und die Instandhaltung dokumentiert den Eingriff. Öffne die Quellen im digitalen Datensatz; Quellenbezüge bestätigen nicht die Betriebsfähigkeit.",
+  "Source choices retain the exact reported source, sector, area and code. They link measured evidence and do not establish physical identity.":
+    "Die Quellenauswahl erhält Quelle, Sektor, Bereich und Kennzeichen genau. Sie verknüpft Messdaten und bestätigt keine physische Identität.",
+  Choose: "Auswählen",
+  "Retained reference": "Erhaltener Bezug",
+  "Current components": "Aktuelle Komponenten",
+  "All states including retired": "Alle Zustände einschließlich außer Betrieb",
+  "Asset code, component type or manual group":
+    "Anlagenkennzeichen, Komponententyp oder manuelle Gruppe",
+  "Identity status records verification or retirement. It does not describe the location or establish whether equipment is operating.":
+    "Der Identitätsstatus dokumentiert Prüfung oder Stilllegung. Er beschreibt weder den Standort noch die Betriebsfähigkeit.",
+  "Original observation on {0}:": "Ursprüngliche Beobachtung am {0}:",
+  "Source equipment code": "Quellen-Betriebsmittelkennzeichen",
+  "Source ID": "Quellen-ID",
+  "Source sector": "Quellensektor",
+  "Source area": "Quellenbereich",
+  "This code is already registered or this asset changed. Search the directory or reload before saving.":
+    "Dieses Kennzeichen ist bereits erfasst oder die Anlage wurde geändert. Suche im Verzeichnis oder lade den Datensatz vor dem Speichern neu.",
+  "Reports to review": "Zu prüfende Meldungen",
+  "Related context": "Zugehöriger Kontext",
+  "Included reports belong to this intervention. Exclusions and related context remain outside its repair scope. Open a source card to read its full history.":
+    "Einbezogene Meldungen gehören zu diesem Eingriff. Ausschlüsse und zugehöriger Kontext liegen außerhalb seines Reparaturumfangs. Öffne eine Quellenkarte für die vollständige Historie.",
+  "Completion closes included open reports only. Excluded reports and related context retain their own status.":
+    "Der Abschluss schließt ausschließlich einbezogene offene Meldungen. Ausgeschlossene Meldungen und zugehöriger Kontext behalten ihren eigenen Status.",
+  "Title, repair target, equipment code or reference":
+    "Titel, Reparaturziel, Betriebsmittelkennzeichen oder Referenz",
+  "Related reports are unavailable. Reload reports and retry.":
+    "Zugehörige Meldungen sind nicht verfügbar. Lade die Meldungen neu und versuche es erneut.",
+  "The source alias limit is reached. Remove an alias before selecting another code.":
+    "Die maximale Anzahl von Quellenbezügen ist erreicht. Entferne einen Bezug, bevor du ein weiteres Kennzeichen auswählst.",
+  "Use a reported equipment identifier":
+    "Gemeldetes Betriebsmittelkennzeichen verwenden",
+  "Choose a location and exact reported code to prepare an unverified component record with an explicit Handover source alias. This selection does not verify physical identity.":
+    "Wähle Standort und genaues gemeldetes Kennzeichen, um einen ungeprüften Komponentendatensatz mit ausdrücklichem Schichtübergabe-Bezug vorzubereiten. Die Auswahl bestätigt keine physische Identität.",
+  "Plan maintenance": "Instandhaltung planen",
+  "Confirm latest report": "Aktuelle Meldung bestätigen",
+  "The assigned repair scope is set by the Team Leader.":
+    "Der Teamleiter legt den Umfang des zugewiesenen Reparaturauftrags fest.",
+  "Equipment area": "Komponentenbereich",
+  "Manual component without an area": "Manuelle Komponente ohne Bereich",
+  "Equipment identifier (Betriebsmittelkennzeichen)":
+    "Betriebsmittelkennzeichen",
+  "For now, assets represent exact Betriebsmittelkennzeichen and their reported system components. Keep the identity unverified until the physical survey confirms it. Select the component location explicitly.":
+    "Anlagen entsprechen vorläufig den Betriebsmittelkennzeichen und den gemeldeten Systemkomponenten. Die Identität bleibt ungeprüft, bis die Bestandsaufnahme sie bestätigt. Wähle den Standort der Komponente ausdrücklich aus.",
+  "Maintenance category": "Instandhaltungsart",
+  Corrective: "Korrektiv",
+  Preventive: "Präventiv",
+  Inspection: "Inspektion",
+  "Repair target / manual zone": "Reparaturziel / manueller Bereich",
+  "Equipment identifiers (Betriebsmittelkennzeichen)":
+    "Betriebsmittelkennzeichen",
+  "Select one or more exact codes in this location. Codes identify reported components provisionally; the repair target can be a cassette, motor roller or another part without a sensor.":
+    "Wähle ein oder mehrere genaue Kennzeichen am Standort. Sie bezeichnen gemeldete Komponenten vorläufig; das Reparaturziel kann eine Kassette, Motorrolle oder ein Bauteil ohne Sensor sein.",
+  "Exact equipment code": "Genaues Betriebsmittelkennzeichen",
+  "Add equipment code": "Betriebsmittelkennzeichen hinzufügen",
+  "Reported equipment codes": "Gemeldete Betriebsmittelkennzeichen",
+  "Choose an exact code": "Genaues Kennzeichen auswählen",
+  "More equipment codes": "Weitere Betriebsmittelkennzeichen",
+  "Remove equipment code {0}": "Betriebsmittelkennzeichen {0} entfernen",
+  "Unverified component reference": "Ungeprüfter Komponentenbezug",
+  "Equipment choices are unavailable. Enter the exact code manually.":
+    "Die Kennzeichenauswahl ist nicht verfügbar. Gib das genaue Kennzeichen manuell ein.",
+  "Related operational reports": "Zugehörige Betriebsmeldungen",
+  "Reload reports": "Meldungen neu laden",
+  "Reports match the selected place and exact equipment identifiers. Review each open issue before completing maintenance.":
+    "Meldungen entsprechen dem gewählten Ort und den genauen Betriebsmittelkennzeichen. Prüfe jeden offenen Vorgang vor dem Abschluss.",
+  "Loading related reports…": "Zugehörige Meldungen werden geladen…",
+  "Select a location to find related reports.":
+    "Wähle einen Standort, um zugehörige Meldungen zu finden.",
+  "Showing {0} of {1} related reports.":
+    "{0} von {1} zugehörigen Meldungen angezeigt.",
+  "Maintenance scope": "Reparaturumfang",
+  "Scope for {0}": "Reparaturumfang für {0}",
+  "Not reviewed": "Nicht geprüft",
+  "Include in this repair": "In diese Reparatur einbeziehen",
+  "Exclude from this repair": "Von dieser Reparatur ausschließen",
+  "Exclusion reason": "Ausschlussgrund",
+  "This report changed. Select its scope again before completing maintenance.":
+    "Diese Meldung wurde geändert. Bestätige ihren Reparaturumfang vor dem Abschluss erneut.",
+  "Excluded from this repair": "Von dieser Reparatur ausgeschlossen",
+  "Included in this repair": "In diese Reparatur einbezogen",
+  "Outside this repair": "Außerhalb dieser Reparatur",
+  "Load more reports": "Weitere Meldungen laden",
+  "No reports match this repair scope.":
+    "Keine Meldungen entsprechen diesem Reparaturumfang.",
+  "Included open issues will close with this maintenance outcome. Excluded issues remain open.":
+    "Einbezogene offene Vorgänge werden mit diesem Ergebnis abgeschlossen. Ausgeschlossene Vorgänge bleiben offen.",
+  "Review every open report and load all reports before completing maintenance.":
+    "Prüfe jede offene Meldung und lade alle Meldungen vor dem Abschluss.",
+  "Completed from": "Abgeschlossen ab",
+  "Completed to": "Abgeschlossen bis",
+  "Completed work period": "Zeitraum abgeschlossener Arbeiten",
+  "Previous and current week": "Vorherige und aktuelle Woche",
+  "All completed history": "Gesamte Abschlusshistorie",
+  "Open, in-progress and blocked work stays visible until completed. Completed work defaults to the previous and current site weeks.":
+    "Offene, laufende und blockierte Arbeiten bleiben bis zum Abschluss sichtbar. Abgeschlossene Arbeiten zeigen standardmäßig die vorherige und aktuelle Standortwoche.",
+  "Your maintenance assignments": "Deine Instandhaltungsaufträge",
+  "Refresh maintenance assignments": "Instandhaltungsaufträge aktualisieren",
+  "Your maintenance assignments are unavailable. Try again.":
+    "Deine Instandhaltungsaufträge sind nicht verfügbar. Versuche es erneut.",
+  "Loading maintenance assignments…": "Instandhaltungsaufträge werden geladen…",
+  "No unfinished maintenance is assigned to you.":
+    "Dir sind keine offenen Instandhaltungsaufträge zugewiesen.",
+  "Open My work": "Meine Aufträge öffnen",
+  "Return to maintenance": "Zur Instandhaltung zurück",
+  "Maintenance assignments": "Instandhaltungsaufträge",
+  "Assigned to you": "Dir zugewiesen",
+  "Colleague reports and maintenance assigned to you":
+    "Meldungen des Teams und deine Instandhaltungsaufträge",
+  "Some notifications are unavailable. Try again.":
+    "Einige Benachrichtigungen sind nicht verfügbar. Versuche es erneut.",
   "User menu": "Benutzermenü",
   "My profile": "Mein Profil",
   "Pending work and today’s updates": "Offene Aufgaben und heutige Meldungen",
@@ -897,4 +1041,153 @@ export const german: Readonly<Record<string, string>> = {
   "Remove {0}": "{0} entfernen",
   "Save configuration": "Konfiguration speichern",
   "Save worker profile": "Mitarbeiterprofil speichern",
+  "A digital record combining explicit asset identity and source evidence.":
+    "Ein digitaler Datensatz mit eindeutiger Anlagenidentität und nachvollziehbaren Quelldaten.",
+  "Add priority": "Priorität hinzufügen",
+  "Add source alias": "Quellalias hinzufügen",
+  "Alarm duration (seconds)": "Alarmdauer (Sekunden)",
+  All: "Alle",
+  "All locations": "Alle Standorte",
+  "All sources": "Alle Quellen",
+  "Analytical source equipment": "Betriebsmittel der Analysequelle",
+  Asset: "Anlage",
+  "Asset code": "Anlagencode",
+  "Asset code, name or description": "Anlagencode, Name oder Beschreibung",
+  "Asset description": "Anlagenbeschreibung",
+  "Asset directory": "Anlagenverzeichnis",
+  "Asset name": "Anlagenname",
+  "Asset revision history": "Änderungshistorie der Anlage",
+  "Asset timeline": "Anlagenhistorie",
+  "Asset type": "Anlagentyp",
+  Assets: "Anlagen",
+  "Blocked reason": "Grund der Blockierung",
+  Board: "Übersicht",
+  "Change reason": "Änderungsgrund",
+  "Daily aggregate evidence preserves its reporting label; it does not identify an individual incident.":
+    "Tagesaggregate behalten ihr Berichtsdatum und beschreiben keinen einzelnen Vorfall.",
+  "Due from": "Fällig ab",
+  "Due to": "Fällig bis",
+  "Edit asset": "Anlage bearbeiten",
+  "Exact source aliases": "Exakte Quellaliase",
+  "External reference": "Externe Referenz",
+  "Filter maintenance": "Instandhaltung filtern",
+  "Link source evidence only after verifying the complete source identity. Matching codes alone do not identify an asset.":
+    "Quelldaten erst nach Prüfung der vollständigen Quellenidentität verknüpfen. Übereinstimmende Codes allein identifizieren keine Anlage.",
+  "Load more": "Mehr laden",
+  "Loading asset record…": "Anlagendatensatz wird geladen…",
+  "Loading maintenance record…": "Instandhaltungsdatensatz wird geladen…",
+  "Loading timeline…": "Historie wird geladen…",
+  Location: "Standort",
+  "Maintenance board": "Instandhaltungsübersicht",
+  "Maintenance priorities": "Instandhaltungsprioritäten",
+  "Maintenance records": "Instandhaltungsdatensätze",
+  "My work": "Meine Arbeiten",
+  "New maintenance": "Neue Instandhaltung",
+  "No asset linked": "Keine Anlage verknüpft",
+  "No assets match these filters.": "Keine Anlagen entsprechen diesen Filtern.",
+  "No location": "Kein Standort",
+  "No maintenance matches these filters.":
+    "Keine Instandhaltungsarbeiten entsprechen diesen Filtern.",
+  "No records shown for this source and date window.":
+    "Keine Datensätze für diese Quelle und diesen Zeitraum.",
+  "No records shown.": "Keine Datensätze vorhanden.",
+  "No source aliases configured. Maintenance can still link directly to this asset.":
+    "Keine Quellaliase konfiguriert. Instandhaltungsarbeiten können direkt mit dieser Anlage verknüpft werden.",
+  "No work details recorded.": "Keine Arbeitsdetails erfasst.",
+  "Open asset record": "Anlagendatensatz öffnen",
+  "Open source record": "Quelldatensatz öffnen",
+  Order: "Reihenfolge",
+  Priority: "Priorität",
+  "Priority labels and order are configured for this site. Existing revisions retain their recorded labels.":
+    "Prioritätsbezeichnungen und Reihenfolge gelten für diesen Standort. Frühere Versionen behalten die erfassten Bezeichnungen.",
+  Records: "Datensätze",
+  "Register asset": "Anlage registrieren",
+  "Reload source evidence": "Quelldaten neu laden",
+  "Remove source alias {0}": "Quellalias {0} entfernen",
+  "Revision history": "Änderungshistorie",
+  "Save asset": "Anlage speichern",
+  "Save maintenance": "Instandhaltung speichern",
+  "Search assets": "Anlagen suchen",
+  "Search maintenance": "Instandhaltung suchen",
+  "Select an inclusive date window of up to 366 days. Daily event aggregates retain their reporting date and do not represent individual incident times.":
+    "Einen Zeitraum von höchstens 366 Tagen einschliesslich der Grenzen wählen. Tagesaggregate behalten ihr Berichtsdatum und stellen keine einzelnen Vorfallszeitpunkte dar.",
+  "Selected location": "Ausgewählter Standort",
+  "Shift Handover equipment": "Betriebsmittel der Schichtübergabe",
+  "Showing work assigned to you.":
+    "Angezeigt werden Ihnen zugewiesene Arbeiten.",
+  "Showing {0} of {1} assets.": "{0} von {1} Anlagen angezeigt.",
+  "Showing {0} of {1} records.": "{0} von {1} Datensätzen angezeigt.",
+  "Source alias": "Quellalias",
+  "Source coverage": "Quellenabdeckung",
+  "Source evidence": "Quelldaten",
+  "Source evidence could not be loaded. Your access or reporting preparation may have changed.":
+    "Quelldaten konnten nicht geladen werden. Ihre Berechtigung oder die Berichtsvorbereitung könnte sich geändert haben.",
+  "Source namespace": "Quellnamensraum",
+  "Source reference": "Quellreferenz",
+  "The contributing source row is unavailable.":
+    "Die zugehörige Quellzeile ist nicht verfügbar.",
+  "Timeline sources": "Historienquellen",
+  Title: "Titel",
+  "Title, details or reference": "Titel, Details oder Referenz",
+  To: "Bis",
+  "Track technical work, responsibility and recorded outcomes.":
+    "Technische Arbeiten, Zuständigkeiten und erfasste Ergebnisse verfolgen.",
+  Unverified: "Ungeprüft",
+  "Validation note": "Validierungsnachweis",
+  "Validation status": "Validierungsstatus",
+  Value: "Wert",
+  "Work details": "Arbeitsdetails",
+  "Work outcome": "Arbeitsergebnis",
+  "{0} records in this window": "{0} Datensätze in diesem Zeitraum",
+  Validated: "Validiert",
+  Retired: "Stillgelegt",
+  "Event evidence": "Störungsnachweise",
+  Available: "Verfügbar",
+  "Not authorized": "Nicht berechtigt",
+  "No source alias": "Kein Quellalias",
+  Unavailable: "Nicht verfügbar",
+  Done: "Erledigt",
+  "Source line": "Quellzeile",
+  Area: "Bereich",
+  "Equipment code": "Betriebsmittelcode",
+  Message: "Meldung",
+  Type: "Typ",
+  "Message group": "Meldegruppe",
+  "Accumulated alarm minutes": "Summierte Alarmminuten",
+  "Check the asset fields, validation note and exact source aliases.":
+    "Anlagenfelder, Validierungsnachweis und exakte Quellaliase prüfen.",
+  "You do not have permission to manage this asset.":
+    "Sie dürfen diese Anlage nicht verwalten.",
+  "The asset is unavailable.": "Die Anlage ist nicht verfügbar.",
+  "This asset or source alias changed. Reload before saving.":
+    "Diese Anlage oder ihr Quellalias wurde geändert. Vor dem Speichern neu laden.",
+  "This exact source alias is already linked to another asset. Review the source identity.":
+    "Dieser exakte Quellalias ist bereits mit einer anderen Anlage verknüpft. Quellenidentität prüfen.",
+  "The asset directory capacity has been reached. Review the registered assets.":
+    "Die Kapazität des Anlagenverzeichnisses ist erreicht. Registrierte Anlagen prüfen.",
+  "Assets are unavailable. Sign in again or retry.":
+    "Anlagen sind nicht verfügbar. Erneut anmelden oder nochmals versuchen.",
+  "Check the maintenance fields and workflow requirements.":
+    "Instandhaltungsfelder und Anforderungen an den Arbeitsablauf prüfen.",
+  "You do not have permission to change this maintenance record.":
+    "Sie dürfen diesen Instandhaltungsdatensatz nicht ändern.",
+  "This maintenance record changed. Reload before saving.":
+    "Dieser Instandhaltungsdatensatz wurde geändert. Vor dem Speichern neu laden.",
+  "The maintenance record is unavailable.":
+    "Der Instandhaltungsdatensatz ist nicht verfügbar.",
+  "Too many matching maintenance records. Refine the filters and retry.":
+    "Zu viele passende Instandhaltungsdatensätze. Filter eingrenzen und erneut versuchen.",
+  "Maintenance is unavailable. Sign in again or retry.":
+    "Instandhaltung ist nicht verfügbar. Erneut anmelden oder nochmals versuchen.",
+  "Maintenance saved.": "Instandhaltung gespeichert.",
+  "Asset saved.": "Anlage gespeichert.",
+  "Configuration saved.": "Konfiguration gespeichert.",
+  "The analytical source reference is invalid.":
+    "Die analytische Quellreferenz ist ungültig.",
+  created: "Erstellt",
+  updated: "Aktualisiert",
+  "status-changed": "Status geändert",
+  None: "Keine",
+  Department: "Abteilung",
+  "No count available": "Keine Anzahl verfügbar",
 };

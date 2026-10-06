@@ -38,6 +38,14 @@ const {
   runSiteOperation,
 } = require("../../../apps/api/dist/persistence/site-operation");
 const {
+  handoverMaintenanceIssues,
+  pendingHandoverMaintenanceIssues,
+  resolveHandoverMaintenanceIssues,
+} = require("../../../apps/api/dist/modules/shift-handover/adapters/postgres/maintenance-issues");
+const {
+  handoverEquipmentCatalog,
+} = require("../../../apps/api/dist/modules/shift-handover/adapters/postgres/equipment-catalog");
+const {
   NodePasswords,
 } = require("../../../apps/api/dist/modules/authentication/adapters/node-crypto");
 const {
@@ -100,12 +108,19 @@ function service(target = scope, connection = pool, options = {}) {
     people: (tx) => sitePeople(tx, target.organizationId, target.siteId),
     names: (tx, ids) =>
       sitePersonNames(tx, target.organizationId, target.siteId, ids),
-    equipment: async () => ({ codes: ["0001"], nextCursor: "" }),
+    equipment: async () => ({
+      codes: options.codes ?? ["0001"],
+      nextCursor: "",
+    }),
   });
   return new Handover(
     store,
     handoverCatalog(
-      { ...config, ...target },
+      {
+        ...config,
+        ...target,
+        ...(options.locations ? { locations: options.locations } : {}),
+      },
       target,
       options.timeZone ?? "UTC",
     ),
@@ -233,7 +248,7 @@ beforeAll(async () => {
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','tech-a','site-a2','analytics-reader',true)",
     ),
   );
-  expect(await migrate(configs.migrator)).toBe(5);
+  expect(await migrate(configs.migrator)).toBe(10);
   await provision(configs);
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
@@ -242,6 +257,429 @@ beforeAll(async () => {
 afterAll(async () => {
   if (pool) await pool.end();
   if (container) await container.stop();
+});
+
+function maintenanceFixture() {
+  const departmentId = "linked-" + randomUUID();
+  const areaId = "linked-" + randomUUID();
+  const otherAreaId = "linked-" + randomUUID();
+  const codes = [
+    "=11+11.11.02-B102.1",
+    "=11+11.11.02-B102.2",
+    "=11+11.11.02-b102.1",
+  ];
+  const locations = [
+    ...config.locations,
+    {
+      id: departmentId,
+      label: "Linked department",
+      parentId: "",
+      role: "department",
+      sectorKey: "",
+    },
+    {
+      id: areaId,
+      label: "Cassette zone",
+      parentId: departmentId,
+      role: "area",
+      sectorKey: "",
+    },
+    {
+      id: otherAreaId,
+      label: "Other zone",
+      parentId: departmentId,
+      role: "area",
+      sectorKey: "",
+    },
+  ];
+  const handover = service(scope, pool, { codes, locations });
+  return {
+    handover,
+    codes,
+    issueScope: {
+      locationIds: [areaId],
+      equipment: codes.slice(0, 2).map((code) => ({
+        namespace: "site-equipment",
+        code,
+        departmentId,
+        areaId,
+      })),
+    },
+    publish: (summary, code = codes[0], selectedArea = areaId, issue = true) =>
+      handover.create("tech-a", {
+        key: randomUUID(),
+        issue,
+        responsibleId: issue ? "lead-a" : "",
+        content: {
+          ...content(summary),
+          departmentId,
+          areaId: selectedArea,
+          equipmentCode: code,
+          condition: code ? "blocked" : "",
+        },
+      }),
+    otherAreaId,
+  };
+}
+const maintenanceOperation = (work, actor = "task-a") =>
+  runSiteOperation(
+    pool,
+    { ...scope, userId: actor, permissions: ["maintenance.contribute"] },
+    work,
+  );
+
+test("Handover publishes exact scoped equipment identities without journal content", async () => {
+  const f = maintenanceFixture();
+  const original = await f.publish("Private repair narrative");
+  await f.publish("Different source case", f.codes[2]);
+  await f.publish(
+    "Same code in another reporting zone",
+    f.codes[0],
+    f.otherAreaId,
+  );
+  const selection = {
+    locationIds: f.issueScope.locationIds,
+    search: "",
+    code: f.codes[0],
+  };
+  const result = await maintenanceOperation((tx) =>
+    handoverEquipmentCatalog(tx, scope, selection),
+  );
+  expect(result).toEqual([
+    {
+      namespace: "site-equipment",
+      sourceId: "",
+      code: f.codes[0],
+      sector: "",
+      area: "",
+      departmentId: original.content.departmentId,
+      areaId: original.content.areaId,
+    },
+  ]);
+  const retained = await f.handover.remove("admin-a", original.id, 1);
+  expect(retained.deleted).toBe(true);
+  expect(
+    await maintenanceOperation((tx) =>
+      handoverEquipmentCatalog(tx, scope, selection),
+    ),
+  ).toEqual(result);
+  const searched = await maintenanceOperation((tx) =>
+    handoverEquipmentCatalog(tx, scope, {
+      ...selection,
+      search: "b102.1",
+      code: "",
+    }),
+  );
+  expect(searched.map((row) => row.code).sort()).toEqual(
+    [f.codes[0], f.codes[2]].sort(),
+  );
+  expect(
+    await maintenanceOperation((tx) =>
+      handoverEquipmentCatalog(tx, scope, { ...selection, code: f.codes[1] }),
+    ),
+  ).toEqual([]);
+  await expect(
+    maintenanceOperation((tx) =>
+      handoverEquipmentCatalog(tx, { ...scope, siteId: "site-a2" }, selection),
+    ),
+  ).rejects.toThrow("Site operation is not permitted.");
+  await expect(
+    maintenanceOperation((tx) =>
+      handoverEquipmentCatalog(tx, scope, {
+        ...selection,
+        locationIds: [...selection.locationIds, ...selection.locationIds],
+      }),
+    ),
+  ).rejects.toMatchObject({ code: "invalid" });
+});
+
+test("maintenance issue projection matches multiple exact identifiers and zone reports before pagination", async () => {
+  const f = maintenanceFixture();
+  const first = await f.publish("First sensor report");
+  const second = await f.publish("Second sensor report", f.codes[1]);
+  const zone = await f.publish("Cassette component without a sensor code", "");
+  const information = await f.publish(
+    "Information on selected sensor",
+    f.codes[0],
+    undefined,
+    false,
+  );
+  let resolved = await f.publish("Previous repair on selected sensor");
+  resolved = await f.handover.change("admin-a", {
+    id: resolved.id,
+    expectedRevision: 1,
+    action: "state",
+    state: "resolved",
+    note: "Earlier outcome retained",
+  });
+  const differingCase = await f.publish(
+    "Different exact source identifier",
+    f.codes[2],
+  );
+  await f.publish("Same code in another zone", f.codes[0], f.otherAreaId);
+  const removed = await f.publish("Removed report");
+  await f.handover.remove("admin-a", removed.id, 1);
+  const page = await maintenanceOperation((tx) =>
+    handoverMaintenanceIssues(tx, scope, { scope: f.issueScope, limit: 2 }),
+  );
+  expect(page.total).toBe(5);
+  expect(page.entries).toHaveLength(2);
+  const next = await maintenanceOperation((tx) =>
+    handoverMaintenanceIssues(tx, scope, {
+      scope: f.issueScope,
+      limit: 100,
+      cursor: page.nextCursor,
+    }),
+  );
+  expect(next.total).toBe(5);
+  expect(next.nextCursor).toBe("");
+  expect(
+    [...page.entries, ...next.entries].map((entry) => entry.id).sort(),
+  ).toEqual([first.id, second.id, zone.id, information.id, resolved.id].sort());
+  const pending = await maintenanceOperation((tx) =>
+    pendingHandoverMaintenanceIssues(tx, scope, f.issueScope),
+  );
+  expect(pending.map((entry) => entry.id).sort()).toEqual(
+    [first.id, second.id, zone.id].sort(),
+  );
+  const selected = await maintenanceOperation((tx) =>
+    handoverMaintenanceIssues(tx, scope, {
+      scope: f.issueScope,
+      ids: [first.id, differingCase.id],
+      search: "sensor",
+      limit: 100,
+    }),
+  );
+  expect(selected.total).toBe(1);
+  expect(selected.entries[0]).toMatchObject({
+    id: first.id,
+    authorName: "tech-a",
+    responsibleName: "lead-a",
+  });
+  const zoneOnly = await maintenanceOperation((tx) =>
+    handoverMaintenanceIssues(tx, scope, {
+      scope: { ...f.issueScope, equipment: [] },
+      limit: 100,
+    }),
+  );
+  expect(zoneOnly.total).toBe(6);
+});
+
+test("maintenance completion keeps resolution and owner evidence atomic and respects explicit exclusions", async () => {
+  const f = maintenanceFixture();
+  const included = await f.publish("Included cassette repair");
+  const excluded = await f.publish(
+    "Excluded electrical inspection",
+    f.codes[1],
+  );
+  const resolution = {
+    maintenanceId: "linked-work-194",
+    outcome: "Cassette drive replaced and verified",
+    at: "2026-10-05T12:00:00.000Z",
+  };
+  await expect(
+    maintenanceOperation(async (tx) => {
+      await pendingHandoverMaintenanceIssues(tx, scope, f.issueScope);
+      await resolveHandoverMaintenanceIssues(
+        tx,
+        scope,
+        [{ id: included.id, expectedRevision: 1 }],
+        resolution,
+      );
+      throw new Error("Receiving Maintenance save failed");
+    }),
+  ).rejects.toThrow("Receiving Maintenance save failed");
+  expect(
+    (await f.handover.history("task-a", included.id)).revisions,
+  ).toHaveLength(1);
+  await expect(
+    maintenanceOperation((tx) =>
+      resolveHandoverMaintenanceIssues(
+        tx,
+        scope,
+        [
+          { id: included.id, expectedRevision: 1 },
+          { id: excluded.id, expectedRevision: 2 },
+        ],
+        resolution,
+      ),
+    ),
+  ).rejects.toMatchObject({ code: "conflict" });
+  expect(
+    (await f.handover.history("task-a", included.id)).entry.issueState,
+  ).toBe("open");
+  await maintenanceOperation(async (tx) => {
+    await pendingHandoverMaintenanceIssues(tx, scope, f.issueScope);
+    await resolveHandoverMaintenanceIssues(
+      tx,
+      scope,
+      [{ id: included.id, expectedRevision: 1 }],
+      resolution,
+    );
+  });
+  const history = await f.handover.history("task-a", included.id);
+  expect(history.entry).toMatchObject({
+    issueState: "resolved",
+    revision: 2,
+    authorId: "tech-a",
+    responsibleId: "lead-a",
+    content: included.content,
+  });
+  expect(history.revisions[0]).toMatchObject({
+    action: "state",
+    actorId: "task-a",
+    note: "Maintenance linked-work-194: " + resolution.outcome,
+  });
+  expect(
+    (await f.handover.history("task-a", excluded.id)).entry.issueState,
+  ).toBe("open");
+  await expect(
+    maintenanceOperation((tx) =>
+      resolveHandoverMaintenanceIssues(
+        tx,
+        scope,
+        [{ id: included.id, expectedRevision: 2 }],
+        resolution,
+      ),
+    ),
+  ).rejects.toMatchObject({ code: "conflict" });
+  await expect(
+    maintenanceOperation((tx) =>
+      handoverMaintenanceIssues(
+        tx,
+        { organizationId: "org-a", siteId: "site-a2" },
+        { scope: f.issueScope },
+      ),
+    ),
+  ).rejects.toThrow("Site operation is not permitted.");
+});
+
+test("completion scope lease prevents phantom mutation until commit", async () => {
+  const f = maintenanceFixture();
+  const initial = await f.publish("Initial report");
+  let releaseCompletion, acquired;
+  const entered = new Promise((resolve) => {
+    acquired = resolve;
+  });
+  const release = new Promise((resolve) => {
+    releaseCompletion = resolve;
+  });
+  const completion = maintenanceOperation(async (tx) => {
+    const pending = await pendingHandoverMaintenanceIssues(
+      tx,
+      scope,
+      f.issueScope,
+    );
+    expect(pending.map((entry) => entry.id)).toEqual([initial.id]);
+    acquired();
+    await release;
+    return resolveHandoverMaintenanceIssues(
+      tx,
+      scope,
+      [{ id: initial.id, expectedRevision: 1 }],
+      {
+        maintenanceId: "lease-work",
+        outcome: "Repair verified",
+        at: "2026-10-05T12:00:00.000Z",
+      },
+    );
+  });
+  await entered;
+  let published = false;
+  const lateReport = f.publish("New report during completion").then((entry) => {
+    published = true;
+    return entry;
+  });
+  try {
+    const deadline = Date.now() + 5000;
+    let blocked = false;
+    while (Date.now() < deadline) {
+      blocked = await db("bootstrap", async (client) => {
+        const result = await client.query(
+          "SELECT count(*)::integer AS count FROM pg_stat_activity WHERE usename='iop_runtime' AND wait_event='advisory' AND query LIKE '%iop-handover-maintenance%'",
+        );
+        return result.rows[0].count > 0;
+      });
+      if (blocked) break;
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    expect(blocked).toBe(true);
+    expect(published).toBe(false);
+  } finally {
+    releaseCompletion();
+    await completion;
+  }
+  const late = await lateReport;
+  expect(late.issueState).toBe("open");
+  const remaining = await maintenanceOperation((tx) =>
+    pendingHandoverMaintenanceIssues(tx, scope, f.issueScope),
+  );
+  expect(remaining.map((entry) => entry.id)).toEqual([late.id]);
+});
+
+test("owner maintenance collaboration rechecks current Handover authority", async () => {
+  const f = maintenanceFixture();
+  const report = await f.publish("Authority recheck report");
+  await db("bootstrap", (client) =>
+    client.query(
+      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id=$1 AND site_id=$2 AND user_id='task-a' AND role_id='handover-contributor'",
+      [scope.organizationId, scope.siteId],
+    ),
+  );
+  try {
+    await expect(
+      maintenanceOperation((tx) =>
+        handoverMaintenanceIssues(tx, scope, { scope: f.issueScope }),
+      ),
+    ).rejects.toMatchObject({ code: "denied" });
+    await expect(
+      maintenanceOperation((tx) =>
+        resolveHandoverMaintenanceIssues(
+          tx,
+          scope,
+          [{ id: report.id, expectedRevision: 1 }],
+          {
+            maintenanceId: "denied-work",
+            outcome: "Cannot resolve after revocation",
+            at: "2026-10-05T12:00:00.000Z",
+          },
+        ),
+      ),
+    ).rejects.toMatchObject({ code: "denied" });
+  } finally {
+    await db("bootstrap", (client) =>
+      client.query(
+        "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE organization_id=$1 AND site_id=$2 AND user_id='task-a' AND role_id='handover-contributor'",
+        [scope.organizationId, scope.siteId],
+      ),
+    );
+  }
+  expect((await f.handover.history("task-a", report.id)).entry.issueState).toBe(
+    "open",
+  );
+});
+
+test("exhaustive completion review reports capacity instead of silently closing a partial issue page", async () => {
+  const f = maintenanceFixture();
+  const reports = await Promise.all(
+    Array.from({ length: 201 }, (_, index) =>
+      f.publish("Capacity report " + index),
+    ),
+  );
+  await expect(
+    maintenanceOperation((tx) =>
+      pendingHandoverMaintenanceIssues(tx, scope, f.issueScope),
+    ),
+  ).rejects.toMatchObject({ code: "capacity" });
+  const page = await maintenanceOperation((tx) =>
+    handoverMaintenanceIssues(tx, scope, { scope: f.issueScope, limit: 100 }),
+  );
+  expect(page.total).toBe(201);
+  expect(page.entries).toHaveLength(100);
+  expect(page.nextCursor).not.toBe("");
+  expect(
+    (await f.handover.history("task-a", reports[0].id)).revisions,
+  ).toHaveLength(1);
 });
 test("migration assigns all four profiles, preserves disabled membership and prevents foreign directory reads", async () => {
   for (const id of ["admin-a", "tech-a", "task-a", "lead-a"]) {
@@ -879,6 +1317,9 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     ).toBe(true);
     await button("User menu").click();
     await button("Sign out").click();
+    await pw(
+      page.getByRole("heading", { name: "Sign in to IOP" }),
+    ).toBeVisible();
     await login("lead-a");
     await button("Notifications").click();
     const notificationPanel = page.getByRole("dialog", {
@@ -1057,6 +1498,9 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     for (const id of ["task-a", "admin-a"]) {
       await button("User menu").click();
       await button("Sign out").click();
+      await pw(
+        page.getByRole("heading", { name: "Sign in to IOP" }),
+      ).toBeVisible();
       await login(id);
       await button("Shift Handover").click();
       await pw(

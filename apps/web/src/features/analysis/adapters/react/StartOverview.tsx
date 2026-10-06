@@ -33,6 +33,7 @@ export function StartOverview({
   authenticated,
   operational,
   workforce,
+  maintenance,
   onSectorChange,
   canReadAnalytics = true,
 }: {
@@ -43,6 +44,7 @@ export function StartOverview({
   authenticated?: boolean;
   operational?: ReactNode;
   workforce?: ReactNode;
+  maintenance?: ReactNode;
   canReadAnalytics?: boolean;
   onSectorChange?: (sector: string) => void;
 }) {
@@ -176,6 +178,7 @@ export function StartOverview({
             )}
           </div>
           {operational}
+          {maintenance}
           {canReadAnalytics && (
             <Panel
               className="analysis-home-summary"

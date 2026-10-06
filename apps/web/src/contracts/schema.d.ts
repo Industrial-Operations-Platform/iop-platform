@@ -24,6 +24,230 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/maintenance/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_catalog"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_settings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/related": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_related"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MaintenanceController_assignments"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetsController_context"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetsController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetsController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/equipment-catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetsController_equipmentCatalog"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetsController_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetsController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetsController_timeline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workforce/board": {
         parameters: {
             query?: never;
@@ -637,6 +861,442 @@ export interface components {
              */
             status: "ok";
         };
+        MaintenancePriorityDto: {
+            id: string;
+            label: string;
+            rank: number;
+        };
+        MaintenanceSettingsDto: {
+            revision: number;
+            priorities: components["schemas"]["MaintenancePriorityDto"][];
+        };
+        MaintenancePersonDto: {
+            id: string;
+            name: string;
+        };
+        MaintenanceTeamDto: {
+            id: string;
+            label: string;
+        };
+        MaintenanceLocationDto: {
+            id: string;
+            label: string;
+            parentId: string;
+            /** @enum {string} */
+            role?: "department" | "area" | "location";
+            sectorKey?: string;
+        };
+        MaintenanceAssetDto: {
+            id: string;
+            name: string;
+            locationId: string;
+            /** @enum {string} */
+            status: "unverified" | "validated" | "retired";
+        };
+        MaintenanceCatalogDto: {
+            actorId: string;
+            canContribute: boolean;
+            canCoordinate: boolean;
+            canAdminister: boolean;
+            settings: components["schemas"]["MaintenanceSettingsDto"];
+            people: components["schemas"]["MaintenancePersonDto"][];
+            teams: components["schemas"]["MaintenanceTeamDto"][];
+            locations: components["schemas"]["MaintenanceLocationDto"][];
+            assets: components["schemas"]["MaintenanceAssetDto"][];
+        };
+        MaintenanceSelectionDto: {
+            /** @enum {string} */
+            category?: "" | "corrective" | "preventive" | "inspection";
+            /** @description Explicit historical search; disables the default closed-work week window. */
+            history?: boolean;
+            /** @description Completion calendar date lower bound; unfinished work remains visible. */
+            doneFrom?: string;
+            /** @description Completion calendar date upper bound; unfinished work remains visible. */
+            doneTo?: string;
+            /** @enum {string} */
+            status?: "" | "open" | "in-progress" | "blocked" | "done";
+            priorityId?: string;
+            /** @description Configured location and its descendants. */
+            locationId?: string;
+            assetId?: string;
+            assigneeId?: string;
+            teamId?: string;
+            search?: string;
+            dueFrom?: string;
+            dueTo?: string;
+            cursor?: string;
+            /** @default 20 */
+            limit: number;
+        };
+        MaintenanceEquipmentDto: {
+            /** @enum {string} */
+            namespace: "site-equipment";
+            code: string;
+            departmentId: string;
+            areaId: string;
+        };
+        MaintenanceLinkedEntryDto: {
+            id: string;
+            expectedRevision: number;
+            /** @enum {string} */
+            disposition: "include" | "exclude";
+            /** @description Required reason for exclusion from the repair scope. */
+            reason: string;
+        };
+        MaintenanceDataDto: {
+            /**
+             * @default corrective
+             * @enum {string}
+             */
+            category: "corrective" | "preventive" | "inspection";
+            repairTarget?: string;
+            equipment?: components["schemas"]["MaintenanceEquipmentDto"][];
+            linkedEntries?: components["schemas"]["MaintenanceLinkedEntryDto"][];
+            title: string;
+            details: string;
+            locationId: string;
+            assetId: string;
+            priorityId: string;
+            assigneeId: string;
+            teamId: string;
+            /** @enum {string} */
+            status: "open" | "in-progress" | "blocked" | "done";
+            /** @description Optional calendar due date, or empty string. */
+            dueDate: string;
+            outcome: string;
+            blockedReason: string;
+            externalReference: string;
+        };
+        MaintenanceViewDto: {
+            id: string;
+            revision: number;
+            data: components["schemas"]["MaintenanceDataDto"];
+            authorId: string;
+            authorName: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            locationLabel: string;
+            assetName: string;
+            priorityLabel: string;
+            assigneeName: string;
+            teamLabel: string;
+            /** @description Last true person-assignment instant; unrelated edits do not change it. */
+            assignedAt?: string;
+            /** @description Last completion instant; empty while unfinished. */
+            completedAt?: string;
+            canEdit: boolean;
+            canReassign: boolean;
+        };
+        MaintenanceCountsDto: {
+            open: number;
+            "in-progress": number;
+            blocked: number;
+            done: number;
+        };
+        MaintenancePageDto: {
+            records: components["schemas"]["MaintenanceViewDto"][];
+            total: number;
+            nextCursor: string;
+            /** @description Counts under all filters except the selected status. */
+            statusCounts: components["schemas"]["MaintenanceCountsDto"];
+        };
+        MaintenanceSaveDto: {
+            id: string;
+            expectedRevision: number;
+            data: components["schemas"]["MaintenanceDataDto"];
+            /** @description Required explanation for edits and reopening. */
+            reason: string;
+        };
+        MaintenanceConfigureDto: {
+            expectedRevision: number;
+            priorities: components["schemas"]["MaintenancePriorityDto"][];
+        };
+        MaintenanceHistoryRequestDto: {
+            id: string;
+            /** @description Exclusive revision boundary; zero starts at latest. */
+            before?: number;
+            /** @default 50 */
+            limit: number;
+        };
+        MaintenanceRecordDto: {
+            id: string;
+            revision: number;
+            data: components["schemas"]["MaintenanceDataDto"];
+            authorId: string;
+            authorName: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            locationLabel: string;
+            assetName: string;
+            priorityLabel: string;
+            assigneeName: string;
+            teamLabel: string;
+            /** @description Last true person-assignment instant; unrelated edits do not change it. */
+            assignedAt?: string;
+            /** @description Last completion instant; empty while unfinished. */
+            completedAt?: string;
+        };
+        MaintenanceRevisionDto: {
+            record: components["schemas"]["MaintenanceRecordDto"];
+            actorId: string;
+            actorName: string;
+            /** Format: date-time */
+            at: string;
+            /** @enum {string} */
+            action: "created" | "updated" | "status-changed";
+            reason: string;
+        };
+        MaintenanceHistoryDto: {
+            record: components["schemas"]["MaintenanceViewDto"];
+            revisions: components["schemas"]["MaintenanceRevisionDto"][];
+            nextBefore: number;
+        };
+        MaintenanceRelatedRequestDto: {
+            locationId: string;
+            equipment: components["schemas"]["MaintenanceEquipmentDto"][];
+            search?: string;
+            cursor?: string;
+        };
+        HandoverLatestUpdateDto: {
+            note: string;
+            actorName: string;
+            at: string;
+        };
+        HandoverContentDto: {
+            date: string;
+            categoryId: string;
+            summary: string;
+            details: string;
+            departmentId: string;
+            areaId: string;
+            equipmentCode: string;
+            equipmentNamespace: string;
+            /** @enum {string} */
+            condition: "" | "damaged" | "inspection-needed" | "blocked" | "repaired" | "restored";
+            externalReference: string;
+            challenge: string;
+            cause: string;
+            measure: string;
+            dueDate: string;
+            feedbackDueDate: string;
+            discuss: boolean;
+        };
+        HandoverEntryDto: {
+            deleted?: boolean;
+            latestUpdate?: components["schemas"]["HandoverLatestUpdateDto"];
+            id: string;
+            authorId: string;
+            authorName: string;
+            createdAt: string;
+            updatedAt: string;
+            departmentLabel: string;
+            areaLabel: string;
+            categoryLabel: string;
+            equipmentReferenceId: string;
+            responsibleId: string;
+            responsibleName: string;
+            highlightedAt: string;
+            revision: number;
+            content: components["schemas"]["HandoverContentDto"];
+            /** @enum {string} */
+            issueState: "none" | "open" | "in-progress" | "resolved";
+            highlighted: boolean;
+        };
+        MaintenanceRelatedPageDto: {
+            entries: components["schemas"]["HandoverEntryDto"][];
+            total: number;
+            nextCursor: string;
+        };
+        MaintenanceAssignmentsRequestDto: {
+            /**
+             * Format: date-time
+             * @description Assignment-event checkpoint only; current work is always returned.
+             */
+            after?: string;
+        };
+        MaintenanceAssignmentEventDto: {
+            id: string;
+            recordId: string;
+            title: string;
+            /** Format: date-time */
+            at: string;
+            revision: number;
+        };
+        MaintenanceAssignmentsDto: {
+            records: components["schemas"]["MaintenanceViewDto"][];
+            events: components["schemas"]["MaintenanceAssignmentEventDto"][];
+        };
+        AssetsContextRequestDto: Record<string, never>;
+        HandoverLocationDto: {
+            id: string;
+            label: string;
+            parentId: string;
+            sectorKey: string;
+            /** @enum {string} */
+            role: "department" | "area" | "location";
+        };
+        AssetsContextDto: {
+            actorId: string;
+            canManage: boolean;
+            timeZone: string;
+            locations: components["schemas"]["HandoverLocationDto"][];
+        };
+        AssetSelectionDto: {
+            search: string;
+            /** @enum {string} */
+            status: "" | "current" | "unverified" | "validated" | "retired";
+            locationId: string;
+            cursor: string;
+        };
+        AssetAliasDto: {
+            /** @description Exact source namespace; site-equipment for handover, analytics for analytical rows. */
+            namespace: string;
+            /** @description Required for analytics; empty for site-equipment. */
+            sourceId: string;
+            code: string;
+            departmentId: string;
+            areaId: string;
+            sector: string;
+            area: string;
+        };
+        AssetContentDto: {
+            code: string;
+            name: string;
+            type: string;
+            locationId: string;
+            /** @enum {string} */
+            status: "unverified" | "validated" | "retired";
+            /** @description Required evidence when validating a manually registered asset. */
+            validationNote: string;
+            description: string;
+            /** @description Manual location/group details within the configured area; not physical validation. */
+            locationDetails?: string;
+            aliases: components["schemas"]["AssetAliasDto"][];
+        };
+        AssetDto: {
+            id: string;
+            revision: number;
+            authorId: string;
+            authorName: string;
+            createdAt: string;
+            updatedAt: string;
+            content: components["schemas"]["AssetContentDto"];
+        };
+        AssetPageDto: {
+            assets: components["schemas"]["AssetDto"][];
+            total: number;
+            nextCursor: string;
+        };
+        AssetSaveDto: {
+            /** @description Idempotency key for a new asset; empty for edits. */
+            key: string;
+            /** @description Empty for a new registration. */
+            id: string;
+            expectedRevision: number;
+            note: string;
+            content: components["schemas"]["AssetContentDto"];
+        };
+        AssetEquipmentSelectionDto: {
+            /** @description Configured location and descendants; empty includes the exact site catalog. */
+            locationId: string;
+            search?: string;
+            /** @description Exact, case-sensitive equipment code. */
+            code?: string;
+            sourceId?: string;
+            sector?: string;
+            area?: string;
+            cursor?: string;
+        };
+        AssetEquipmentCandidateDto: {
+            /** @enum {string} */
+            namespace: "analytics" | "site-equipment";
+            sourceId: string;
+            code: string;
+            sector: string;
+            area: string;
+            departmentId: string;
+            areaId: string;
+        };
+        AssetEquipmentPageDto: {
+            candidates: components["schemas"]["AssetEquipmentCandidateDto"][];
+            total: number;
+            nextCursor: string;
+            sources: string[];
+            sectors: string[];
+            areas: string[];
+        };
+        AssetDetailRequestDto: {
+            id: string;
+        };
+        AssetHistoryRequestDto: {
+            id: string;
+            before: number;
+        };
+        AssetRevisionDto: {
+            asset: components["schemas"]["AssetDto"];
+            actorId: string;
+            actorName: string;
+            action: string;
+            note: string;
+            at: string;
+        };
+        AssetHistoryDto: {
+            asset: components["schemas"]["AssetDto"];
+            revisions: components["schemas"]["AssetRevisionDto"][];
+            nextBefore: number;
+        };
+        AssetTimelineRequestDto: {
+            /**
+             * @description Filter the source before totals and pagination; omit to include all authorized sources.
+             * @enum {string}
+             */
+            kind?: "maintenance" | "handover" | "analytics";
+            id: string;
+            /**
+             * Format: date
+             * @description Inclusive site-local recording date; at most 366 days.
+             */
+            from: string;
+            /** Format: date */
+            to: string;
+            cursor: string;
+        };
+        AssetTimelineRecordDto: {
+            id: string;
+            /** @enum {string} */
+            kind: "maintenance" | "handover" | "analytics";
+            /** Format: date */
+            date: string;
+            /** @description Exact server recording instant for operational revisions. Empty for date-only analytical aggregates. */
+            recordedAt: string;
+            title: string;
+            summary: string;
+            sourceRecordId: string;
+            /** @enum {string} */
+            periodKind: "calendar-date" | "daily-aggregate";
+            frequency?: number;
+            /** @description Accumulated alarm seconds, never plant downtime. */
+            seconds?: number;
+        };
+        AssetTimelineCoverageDto: {
+            /** @enum {string} */
+            kind: "maintenance" | "handover" | "analytics";
+            /** @enum {string} */
+            status: "available" | "not-authorized" | "unmapped" | "unavailable";
+            total: number;
+        };
+        AssetTimelinePageDto: {
+            asset: components["schemas"]["AssetDto"];
+            records: components["schemas"]["AssetTimelineRecordDto"][];
+            sources: components["schemas"]["AssetTimelineCoverageDto"][];
+            /** @description Full matching count across currently authorized and available sources. */
+            total: number;
+            nextCursor: string;
+        };
         WorkforceRangeDto: {
             /** Format: date */
             from: string;
@@ -1148,14 +1808,6 @@ export interface components {
         RemoveUserDto: {
             id: string;
         };
-        HandoverLocationDto: {
-            id: string;
-            label: string;
-            parentId: string;
-            sectorKey: string;
-            /** @enum {string} */
-            role: "department" | "area" | "location";
-        };
         HandoverChoiceDto: {
             carryForward?: boolean;
             id: string;
@@ -1213,51 +1865,6 @@ export interface components {
             /** @enum {string} */
             state: "" | "none" | "open" | "in-progress" | "resolved" | "pending";
             highlights: boolean;
-        };
-        HandoverLatestUpdateDto: {
-            note: string;
-            actorName: string;
-            at: string;
-        };
-        HandoverContentDto: {
-            date: string;
-            categoryId: string;
-            summary: string;
-            details: string;
-            departmentId: string;
-            areaId: string;
-            equipmentCode: string;
-            equipmentNamespace: string;
-            /** @enum {string} */
-            condition: "" | "damaged" | "inspection-needed" | "blocked" | "repaired" | "restored";
-            externalReference: string;
-            challenge: string;
-            cause: string;
-            measure: string;
-            dueDate: string;
-            feedbackDueDate: string;
-            discuss: boolean;
-        };
-        HandoverEntryDto: {
-            deleted?: boolean;
-            latestUpdate?: components["schemas"]["HandoverLatestUpdateDto"];
-            id: string;
-            authorId: string;
-            authorName: string;
-            createdAt: string;
-            updatedAt: string;
-            departmentLabel: string;
-            areaLabel: string;
-            categoryLabel: string;
-            equipmentReferenceId: string;
-            responsibleId: string;
-            responsibleName: string;
-            highlightedAt: string;
-            revision: number;
-            content: components["schemas"]["HandoverContentDto"];
-            /** @enum {string} */
-            issueState: "none" | "open" | "in-progress" | "resolved";
-            highlighted: boolean;
         };
         HandoverPageDto: {
             entries: components["schemas"]["HandoverEntryDto"][];
@@ -1364,6 +1971,324 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    MaintenanceController_catalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceCatalogDto"];
+                };
+            };
+        };
+    };
+    MaintenanceController_query: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenancePageDto"];
+                };
+            };
+        };
+    };
+    MaintenanceController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceViewDto"];
+                };
+            };
+        };
+    };
+    MaintenanceController_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceConfigureDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceSettingsDto"];
+                };
+            };
+        };
+    };
+    MaintenanceController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceHistoryDto"];
+                };
+            };
+        };
+    };
+    MaintenanceController_related: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceRelatedRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceRelatedPageDto"];
+                };
+            };
+        };
+    };
+    MaintenanceController_assignments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceAssignmentsRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceAssignmentsDto"];
+                };
+            };
+        };
+    };
+    AssetsController_context: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetsContextRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetsContextDto"];
+                };
+            };
+        };
+    };
+    AssetsController_query: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetPageDto"];
+                };
+            };
+        };
+    };
+    AssetsController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDto"];
+                };
+            };
+        };
+    };
+    AssetsController_equipmentCatalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetEquipmentSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetEquipmentPageDto"];
+                };
+            };
+        };
+    };
+    AssetsController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDetailRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDto"];
+                };
+            };
+        };
+    };
+    AssetsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetHistoryDto"];
+                };
+            };
+        };
+    };
+    AssetsController_timeline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetTimelineRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetTimelinePageDto"];
                 };
             };
         };

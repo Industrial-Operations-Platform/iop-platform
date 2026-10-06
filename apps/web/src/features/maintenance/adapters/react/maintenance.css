@@ -1,0 +1,128 @@
+.maintenance-workspace,
+.maintenance-fields,
+.maintenance-related-group,
+.maintenance-column {
+  display: grid;
+  gap: var(--iop-sectionGap);
+  min-width: 0;
+}
+.maintenance-board.maintenance-board--focused {
+  grid-template-columns: minmax(0, 1fr);
+}
+.maintenance-cards {
+  display: grid;
+  gap: var(--iop-sectionGap);
+  align-content: start;
+}
+.maintenance-board--focused .maintenance-cards,
+.maintenance-related-reports {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--iop-sectionGap);
+}
+.maintenance-related-report {
+  display: grid;
+  gap: var(--iop-sectionGap);
+  min-width: 0;
+  align-content: start;
+}
+.maintenance-related-report .handover-summary-cards {
+  grid-template-columns: minmax(0, 1fr);
+}
+.maintenance-context-hidden {
+  display: none;
+}
+.maintenance-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.maintenance-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--iop-sectionGap);
+}
+.maintenance-column {
+  align-content: start;
+}
+.maintenance-column h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.maintenance-card {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  padding: 12px;
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+  background: var(--iop-surface);
+  color: var(--iop-ink);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.maintenance-card:hover {
+  background: var(--iop-activeSurface);
+}
+.maintenance-card strong {
+  color: var(--iop-link);
+  font-weight: var(--iop-labelWeight);
+}
+.maintenance-card > span,
+.maintenance-muted {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.maintenance-title {
+  text-align: left;
+  font-weight: var(--iop-labelWeight);
+}
+.maintenance-metadata,
+.maintenance-collection-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--iop-toolbarGap);
+}
+.maintenance-collection-heading {
+  justify-content: space-between;
+}
+.maintenance-collection-heading h2 {
+  margin: 0;
+}
+.maintenance-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 35%);
+  gap: var(--iop-sectionGap);
+  margin-top: var(--iop-sectionGap);
+}
+.maintenance-narrative p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1050px) {
+  .maintenance-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .maintenance-board--focused .maintenance-cards,
+  .maintenance-related-reports {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .maintenance-board--focused {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 650px) {
+  .maintenance-board,
+  .maintenance-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .maintenance-board--focused .maintenance-cards,
+  .maintenance-related-reports {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

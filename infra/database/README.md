@@ -451,3 +451,24 @@ operational history. Both follow forced organization/site RLS and column-limited
 runtime grants, with no DELETE grant. The current schema contains 31 application/
 metadata tables across 16 migrations. Existing data survives this additive upgrade.
 See [Workforce operation and fixtures](../../docs/development/workforce.md).
+
+## Maintenance and Assets — IOP-194
+
+`20261005010000-maintenance` adds four scoped work/settings/current/revision tables.
+`20261005020000-assets` adds registered identities, exact active alias claims and
+immutable revisions, plus scoped Maintenance asset foreign keys.
+`20261005030000-operational-record-permissions` extends the explicit fixed site
+roles for active profiles with existing site access; it does not restore revoked
+access. Runtime grants remain column-limited, with forced RLS and no physical
+delete/revision-update authority. Provisioning validates the exact installed grant
+surface on reruns. Administrator bootstrap uses the canonical role catalog.
+The owner-authorized `20261006000000-admin-operational-access` migration restores
+exactly `maintenance-coordinator`, `assets-reader` and `assets-administrator` for
+active Administrators with existing active site access. It intentionally reactivates
+earlier inactive flags for those bundles; other role revocations, inactive memberships
+and fully revoked site bundles are preserved. Scoped analytical equipment/context
+indexes support exact identifier validation for the larger catalog. Local catalog
+reconciliation archives training assets while retaining their identities, revisions
+and Maintenance references; the current directory excludes them unless Retired or
+All states is selected.
+See [scope and operation](../../docs/development/maintenance-assets.md).
