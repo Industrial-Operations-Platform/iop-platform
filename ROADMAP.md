@@ -29,6 +29,8 @@ permanent story's status; the [delivery map](docs/planning/poc-delivery.md) link
   historical daily categories with current pending topics, images and person notices.
 
 IOP-194 was integrated into develop and published to origin on 2026-10-06.
+IOP-197 also integrated and published all retained story tips, including IOP-196,
+on that date; its completed plan records conflict resolution and validation.
 Owner functional testing, physical inventory verification and missing-component
 survey remain pending; Git integration is not final product acceptance.
 

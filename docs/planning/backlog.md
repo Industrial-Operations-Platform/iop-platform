@@ -36,6 +36,10 @@ local delivery, not whole-platform release. At that review, **56 unfinished stor
 retained specific remaining criteria. IOP-195 records that snapshot; IOP-197 later
 integrates IOP-009's completed design and the previously missing IOP-144 evidence.
 
+After IOP-197 integration/publication: **197 indexed stories — 142 Completed,
+39 Proposed, 15 Deferred and 1 In progress (IOP-130)**. The **55 unfinished product
+stories** retain their specific scope. IOP-196 is included in develop and origin.
+
 ## M1 — Product & Architecture Definition
 
 | Task context | Status |
@@ -283,7 +287,7 @@ work under IOP-194 does not implement maps or spatial placements.
 | [IOP-144 — Recommend four next POC stories](items/IOP-144-poc-next-stories.md) | Completed |
 | [IOP-146 — Review POC coverage and closure dependencies](items/IOP-146-poc-readiness-review.md) | Completed |
 | [IOP-195 — Reconcile delivered capabilities and remaining development](items/IOP-195-development-status.md) | Completed |
-| [IOP-197 — Integrate retained branches into develop and origin](items/IOP-197-branch-integration.md) | In progress |
+| [IOP-197 — Integrate retained branches into develop and origin](items/IOP-197-branch-integration.md) | Completed |
 
 ## Owner-supplied reference data
 

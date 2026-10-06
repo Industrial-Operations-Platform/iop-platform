@@ -51,5 +51,5 @@ assigned-department Start with distinct attention/open collections, focused Main
 status/completion actions, historical daily categories with current pending topics,
 coordinator Information/media controls and mention/update notices. See the execution
 record for tests and desktop/narrow evidence. The running operator Docker stack is
-unchanged. Publication is authorized and tracked under IOP-197; owner product review
-remains separate.
+unchanged. Integration into develop and publication to origin completed on
+2026-10-06 under IOP-197; owner product review remains separate.

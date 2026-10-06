@@ -1,6 +1,6 @@
 # IOP-197 — Branch integration execution plan
 
-Status: In progress. Authorized by the owner's explicit 2026-10-06 request to
+Status: Completed. Authorized by the owner's explicit 2026-10-06 request to
 unify all branches into develop and origin.
 Branch: `docs/IOP-197-branch-integration`, created from develop at `870b2b3`.
 Scope: [permanent item](../items/IOP-197-branch-integration.md).
@@ -89,3 +89,25 @@ All 257 retained local/origin refs are contained in the integration story. Revie
 the final documentation links/anchors, unique IDs and mirrored statuses before
 publication; two historical guide anchors were corrected to existing startup
 references. No consulted current story needs a new translation-only change.
+
+## Publication and closure — 2026-10-06
+
+The seven branch merges are `febc2be`, `7cd1748`, `94432db`, `0885a98`, `b9a9a3d`,
+`000d87d` and `8b658dd`. Validated integration tip `9ab3bcc` entered develop through
+`7e8586b`, with identical trees. Atomic publication to origin succeeded for develop
+and all retained story refs, including nine previously unpublished branches.
+Direct `git ls-remote --heads origin` comparison verified all 133 local/133 remote
+hashes; every retained tip is contained in develop and the checkout was clean.
+Evidence: `/tmp/iop197-first-publication.json`.
+
+Documentation validation passed for 197 unique indexed IDs and mirrored statuses,
+502 local links and six anchors across 39 changed Markdown files. IOP-009 is complete
+as accepted future design; IOP-007 remains Deferred and ADR-0015 Proposed. IOP-144
+and the earlier guide/translation records are explicitly historical. IOP-196 is
+integrated/published with its validated runtime unchanged. Final index: 142 Completed,
+39 Proposed, 15 Deferred and IOP-130 In progress; 55 product stories remain unfinished.
+
+Item/backlog are synchronized and this plan is archived. Publish this final evidence
+increment through the same authorized story-to-develop sequence, then verify parity,
+all-tip ancestry and a clean develop checkout. Stage/master remain at `7009d40`;
+no history rewrite, branch deletion or Docker activation occurred.
