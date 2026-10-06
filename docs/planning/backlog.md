@@ -279,6 +279,7 @@ work under IOP-194 does not implement maps or spatial placements.
 | [IOP-141 — Story branches and review workflow](items/IOP-141-branch-workflow.md) | Completed |
 | [IOP-142 — Align delivery with a fast analytical POC](items/IOP-142-poc-delivery-scope.md) | Completed |
 | [IOP-143 — Local agent instructions and concise documentation](items/IOP-143-concise-workflow.md) | Completed |
+| [IOP-144 — Recommend four next POC stories](items/IOP-144-poc-next-stories.md) | Completed |
 | [IOP-146 — Review POC coverage and closure dependencies](items/IOP-146-poc-readiness-review.md) | Completed |
 | [IOP-195 — Reconcile delivered capabilities and remaining development](items/IOP-195-development-status.md) | Completed |
 | [IOP-197 — Integrate retained branches into develop and origin](items/IOP-197-branch-integration.md) | In progress |

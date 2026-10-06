@@ -63,3 +63,8 @@ fixture-preview evidence, with the current operator guide as the canonical workf
 IOP-140 translation conflicts retain the current complete English IOP-029/129
 contexts and their later delivery evidence/statuses. Retain the earlier translation
 record and its language-rule link. No new translation-only edits are needed.
+
+IOP-144 conflicts likewise retain current English analytical/navigation/fixture
+contexts and their later scope/statuses. Add the missing Completed recommendation
+item/index row and its execution record, marking its dependency statuses as the
+September 25 historical snapshot, superseded by current delivery evidence.
