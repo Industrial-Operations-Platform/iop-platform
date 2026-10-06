@@ -5,7 +5,10 @@
 Completed: owner-requested equipment-catalog review corrections delivered on 2026-10-06. On 2026-10-05 the owner requested full M8 Maintenance Management
 and M10 Asset History delivery on a separate branch, delegated implementation
 and design choices, and explicitly waived intermediate approvals. Existing
-development remains under owner review. M9 Asset Locator is excluded.
+development remains under owner review. M9 Asset Locator is excluded. On
+2026-10-06 the owner approved integration into develop and publication of the
+story and develop to origin, with the checkout left on develop. Further owner
+functional/product testing remains pending; integration is not final acceptance.
 
 ## Scope and acceptance
 
@@ -57,8 +60,11 @@ handover closure, automatic event-to-asset ingestion or M9 completion.
 Analytical daily aggregates retain date-only/reporting-period semantics and RAW
 provenance. Timeline coverage is explicit; access to Assets does not grant access
 to another module's source data. No plant-control operations or external CMMS
-integration. Branch-only publication to origin is authorized by the owner; no merge into develop,
-deployment or alteration of other review branches.
+integration. The owner explicitly authorizes merging
+`feature/IOP-194-maintenance-asset-history` into develop and pushing both refs to
+origin. Deployment, stage/master promotion and alteration of other review branches
+remain outside this publication. See the
+[integration plan](../active/IOP-194-publication-integration-plan.md).
 
 ## Evidence
 
