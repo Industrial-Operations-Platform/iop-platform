@@ -25,3 +25,11 @@ Thirteen original outcomes are reconciled as Completed; eight M9 stories now
 mirror the owner's explicit deferral. Forty inspected Spanish story contexts are
 translated to English with scope/IDs/links preserved. The final index has 56
 unfinished stories: 40 Proposed, 15 Deferred and IOP-130 In progress.
+
+## Owner-approved publication — 2026-10-06
+
+The owner explicitly approved merging `docs/IOP-195-development-status` into
+develop and pushing both branches to origin. Execution:
+[publication plan](../active/IOP-195-publication-plan.md). This approval concerns
+the completed documentation audit; it does not change pending product acceptance,
+authorize deployment or promote stage/master.
