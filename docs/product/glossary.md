@@ -80,3 +80,14 @@ Accepted [ADR-0016](../architecture/adr/ADR-0016-time-and-timezone-model.md) def
 - **Within-area asset grouping**: manually recorded component/group or location
   details inside a configured Bereich, such as a buffer designation. It is not an
   inferred equipment hierarchy or spatial map placement.
+
+## Future audit vocabulary
+
+Accepted [ADR-0017](../architecture/adr/ADR-0017-audit-model.md) defines the future
+audit design; its implementation is explicitly deferred beyond the pilot.
+
+| Term | Meaning in IOP |
+| --- | --- |
+| Material-change audit | Safe record of a committed platform change, persisted in the same transaction when Audit is implemented. |
+| Security observation | Record of an authentication/security outcome or attempt; collection has explicit outage limitations. |
+| Audit retention | Bounded record lifetime by event class, with scoped expiry/disposal and separately governed backup copies. |

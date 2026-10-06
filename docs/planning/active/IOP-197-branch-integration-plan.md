@@ -49,3 +49,9 @@ review and accepted metrics supersede its uninspected-script/open-question wordi
 IOP-007 conflicts retain the current Deferred shared-use parent. ADR-0015 remains
 Proposed and explicitly historical; Accepted ADR-0035 controls delivered local
 authentication. Retain both earlier design-only plans without changing runtime rules.
+
+IOP-009 conflicts retain current module-owned revision coverage and add the
+previously owner-accepted future Audit design/evidence. ADR-0017 is Accepted by
+the earlier explicit decision; IOP-009 becomes Completed as design. IOP-023 remains
+Proposed future implementation. Synchronize architecture/module/model/glossary,
+scope and RBAC applicability without imposing general Audit on current operations.

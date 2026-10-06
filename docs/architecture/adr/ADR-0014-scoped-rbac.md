@@ -282,3 +282,11 @@ profiles/memberships with existing active site grants. Inactive/revoked assignme
 are not restored. Existing grants retain their original semantics. Module-owned
 revisions reuse accepted atomic evidence patterns; broader Audit delivery and
 unrelated Proposed decisions remain outside this request.
+
+## Subsequent audit applicability decision
+
+Accepted [ADR-0017](ADR-0017-audit-model.md) defines the future audit record and
+atomic delivery contract for access changes. The owner explicitly deferred this
+Audit subsystem beyond the pilot; the traceability requirement above does not
+make Audit storage/delivery a pilot prerequisite. Permission, scope and authority
+checks remain part of the accepted RBAC design.
