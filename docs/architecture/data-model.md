@@ -394,3 +394,9 @@ health. Scoped source catalogs supply exact source/sector/area/code options; new
 Handover/analytical aliases use the same asset code. Immutable earlier snapshots
 retain historical names and mappings. Known-source initial inventory preparation is
 explicitly invoked; no import-time entity inference or spatial placement is implied.
+
+IOP-196 extends Handover JSON snapshots with optional bounded image data URLs and
+validated site-person mention IDs/name snapshots. Existing append-only revisions
+supply recipient notification instants and assigned-resolution monthly counts; no
+new table or migration is introduced. Workforce derives current-actor schedule
+statistics from complete bounded records and returns server-owned summary totals.

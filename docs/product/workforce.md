@@ -68,3 +68,18 @@ No cascading deletion, corporate database access, payroll, automatic optimizatio
 or inference of partial absences is included.
 
 [Operator and import guide](../development/workforce.md) documents formats and tests.
+
+## Personal Start summary — IOP-196
+
+Start shows profile/home department/team, assigned reports resolved in the previous
+calendar month and current unfinished Maintenance separately. Its assignment card
+defaults to today and permits an explicit day or Monday–Sunday week with schedule
+hours, shift, zone and duty. It does not change the person's stored assignment.
+
+`POST /api/v1/workforce/summary` derives complete current-actor statistics on the
+server under `workforce.read`: last-month scheduled working dates and shift shares,
+plus distinct scheduled Saturdays/Sundays in the current month through today.
+Work/training/maintenance schedules and explicit assignments count; absences do not.
+Repeated duties for the same date/shift are deduplicated. A schedule with no assignment
+uses matching configured hours or an explicit Other scheduled hours bucket. These
+figures describe plans, not verified attendance. Missing schedule data is explicit.

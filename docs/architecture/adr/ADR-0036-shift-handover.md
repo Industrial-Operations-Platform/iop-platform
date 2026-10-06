@@ -248,3 +248,19 @@ contextual source dropdowns. Included reports are repair membership; related/exc
 reports provide context without closure authority. Repair drafts retain source links
 instead of copying full report narratives. No new hierarchy or transaction framework
 is introduced. M09 remains explicitly deferred while catalog/manual grouping proceed.
+
+## Owner-requested personal/daily refinement — 2026-10-06
+
+[IOP-196](../../planning/items/IOP-196-personal-operational-workflows.md) records the
+owner's Information permission, image, mention and daily-date request. Information
+uses a scoped `coordinatorOnly` category rule under existing coordinator grants.
+Small bounded raster attachments and up to 20 validated site-person mentions extend
+existing content snapshots; revisions retain earlier values. No new file service,
+permission bundle, global feed or architectural pattern is introduced.
+
+Existing scoped revision reads derive recipient notification times and previous-month
+assigned resolution counts. Current pending carry-forward topics use today's upper
+bound independently of historical daily selection, superseding the selected-day
+upper bound in IOP-190. Start defaults to Workforce current/home department and
+partitions attention from other open reports; department browsing remains explicit.
+Maintenance status controls reuse its authorized save and reviewed atomic closure.

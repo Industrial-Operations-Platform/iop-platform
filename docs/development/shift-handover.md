@@ -109,8 +109,9 @@ the selected day and department, including empty sections. Each compact card sho
 only its title and department; open it for the full problem fields and history.
 Each section has independent full counts and pagination (20 entries per page).
 The separate **Department status** disclosure shows only unresolved carry-forward
-topics (Problems/Performance by default), including earlier days through the selected
-date. Resolve an issue to remove it from this section while preserving its history.
+topics (Problems/Performance by default), including earlier days through today.
+Selecting a historical daily date does not hide current pending work. Resolve an
+issue to remove it from this section while preserving its history.
 Other categories remain on their own day and in searchable history.
 
 For **Team Leader**, the tab is **Daily overview**. It defaults to today and includes
@@ -119,8 +120,9 @@ inherit department, personal-history or search filters and does not mix earlier 
 issues into the daily canvas. Its Department status disclosure has its own department
 selector; that selector does not narrow the daily canvas. The date labels the entry's occurrence date, not the
 instant of a later follow-up. This presentation does not grant additional access.
-The selected department is shared with Start during the current session; M6 default
-assignments are not yet connected.
+The calendar is beside the daily section heading and changes every daily category.
+Start uses the current-day Workforce assignment or home department; explicit
+other-department browsing remains available.
 
 Entry detail prioritizes the current report, latest follow-up and immutable history.
 The heading always names the current tab, for example **Shift Handover / Department
@@ -141,19 +143,21 @@ blocked reports or overdue action/feedback dates. These are report-based signals
 not inferred equipment health. Centered summary cards precede inline Needs attention,
 Open reports and Shift Handover selectors. One collection is visible at a time,
 with up to three shared summary cards and access to the complete filtered list.
-Open reports includes issues that also need attention. Expanded previews emphasize
+Open reports excludes issues that need attention; server counts and full-list links
+use the same partition. Expanded previews emphasize
 location, state, equipment reference and labelled deadlines; Journal/Meeting retain
 compact title/location cards. History actions pair a label with a count badge;
 refresh uses the shared busy-aware icon/text control.
-Site-wide highlights remain separate; the analytical snapshot is compact and the
-full tables remain in Data Analysis.
+Highlights follow the selected/assigned department; the analytical snapshot is
+compact and full tables remain in Data Analysis.
 
 There is no hard-delete action. On a revision conflict, return to the Journal and
 reopen the entry before applying the change. On an interrupted publication, retry the unchanged form to recover the
 saved entry instead of creating a duplicate.
 
-All four profiles can read, publish and add attributed follow-up. Authors can
-correct their entries; authors/assignees can progress their issues. Team Leader and
+All four profiles can read and contribute to unrestricted categories. Information
+is coordinator-only (Administrator/Team Leader), including corrections and follow-up.
+Authors can correct their entries; authors/assignees can progress their issues. Team Leader and
 Administrator can additionally correct site entries with a reason, reassign issues,
 and publish/withdraw Start highlights. Every request checks current scoped grants;
 profile labels in the browser do not grant authority. The native impersonation
@@ -224,17 +228,19 @@ records actual executed evidence and remaining limitations.
 
 The header bell polls the existing scoped query every 30 seconds while the page is
 visible, plus on focus and manual refresh. `notificationsAfter` is an optional exact
-UTC timestamp: query results exclude the current author and deleted entries, sort
-by creation time independently of the entry's calendar date, and retain full totals
+UTC timestamp: query results include colleague publications and subsequent revisions
+mentioning or assigning the caller, exclude self-authored revisions/deleted entries,
+sort by `notificationAt` independently of the entry's calendar date, and retain full totals
 and bounded pagination. Every read retains existing authorization and site isolation.
 
 First use establishes a baseline. A browser-local timestamp per organization/site/
 account remembers explicit Mark all as read; entry text and permissions are not
-cached. The panel shows the latest 20 unread publications and opens their details.
+cached. The panel shows the latest 20 unread entry activities and opens their details.
 Read state is local to this browser, with session-only fallback when storage is
-unavailable. Existing-entry follow-ups, other modules, cross-device synchronization
-and external notifications are outside this increment. Failed reads never advance
-the checkpoint, and unavailable notifications have an explicit retry state.
+unavailable. Mentioned/assigned-person follow-ups use the same revision-backed feed.
+Maintenance assignment activity is composed separately in the bell. Cross-device
+synchronization and external notifications remain outside this increment. Failed
+reads never advance the checkpoint, and unavailable notifications have an explicit retry state.
 
 
 ## Operational department matrix
@@ -253,3 +259,16 @@ full-history semantics; Clear search returns to operational scope. A publication
 22:00 UTC during Zurich summer time belongs to the next site day, regardless of its
 selected occurrence date. Notifications continue reporting new publications in all
 categories under their existing scope and read checkpoints.
+
+## Information and media controls — IOP-196
+
+Use the plus beside a daily category to publish for the selected day (coordinators
+may backdate; contributors retain today's publication rule). Information plus/category
+choices appear only for coordinators; direct API writes enforce the same restriction.
+Mention people selects notification recipients. Coordinators can attach two resized
+images, shown in cards/details and retained in correction history. The Handover
+entries/change JSON budget is 192 KiB; other JSON routes keep the 100 KiB limit.
+
+`excludeAttention` selects ordinary open reports. `resolvedFrom`/`resolvedTo`
+with `resolvedForMe` count assigned resolution transitions from immutable revisions.
+`notificationAt` advances read checkpoints for updates without changing `createdAt`.

@@ -23,6 +23,11 @@ Creation retries with the same identity, initial content and reason recover the
 current version of the same logical record without creating another revision.
 There is no physical-delete endpoint or inferred equipment-health status.
 
+Record details expose status actions separately from Edit. Mark as done opens a
+focused review requiring outcome, task completion and workplace/equipment
+confirmation, plus the existing complete linked-report review. The same authorized
+save and atomic resolution rules apply; conflicts retain the review for correction.
+
 The board, records list and personal work view share server-filtered data. Status,
 priority, configured location, asset, responsible person/team, due-date bounds and
 text search apply before total counts and stable pagination. Status counters

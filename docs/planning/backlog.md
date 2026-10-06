@@ -344,4 +344,4 @@ work under IOP-194 does not implement maps or spatial placements.
 | Task context | Status |
 | --- | --- |
 | [IOP-194 — Maintenance Management and Digital Asset Record](items/IOP-194-maintenance-asset-history.md) | Completed |
-| [IOP-196 — Personal Start and operational workflows](items/IOP-196-personal-operational-workflows.md) | In progress |
+| [IOP-196 — Personal Start and operational workflows](items/IOP-196-personal-operational-workflows.md) | Completed |
