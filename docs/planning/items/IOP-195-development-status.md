@@ -29,7 +29,7 @@ unfinished stories: 40 Proposed, 15 Deferred and IOP-130 In progress.
 ## Owner-approved publication — 2026-10-06
 
 The owner explicitly approved merging `docs/IOP-195-development-status` into
-develop and pushing both branches to origin. Execution:
-[publication plan](../active/IOP-195-publication-plan.md). This approval concerns
+develop and pushing both branches to origin. Integration and publication completed;
+execution: [publication evidence](../completed/IOP-195-publication-plan.md). This approval concerns
 the completed documentation audit; it does not change pending product acceptance,
 authorize deployment or promote stage/master.
