@@ -1,5 +1,6 @@
 .maintenance-workspace,
 .maintenance-fields,
+.maintenance-related-group,
 .maintenance-column {
   display: grid;
   gap: var(--iop-sectionGap);

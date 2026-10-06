@@ -14,6 +14,7 @@ import { t } from "../../../../localization/i18n";
 import type { MaintenanceApplication } from "../../application/maintenance";
 import {
   emptyRecord,
+  assetMatchesLocation,
   statuses,
   type Catalog,
   type MaintenanceRecord,
@@ -147,14 +148,21 @@ export function MaintenanceForm({
               {t("Asset")}
               <Select
                 value={data.assetId}
-                disabled={scopeLocked}
+                disabled={scopeLocked || !data.locationId}
                 onChange={(event) => change("assetId", event.target.value)}
               >
                 <option value="">{t("No asset linked")}</option>
                 {catalog.assets
                   .filter(
                     (asset) =>
-                      asset.status !== "retired" || asset.id === data.assetId,
+                      asset.id === data.assetId ||
+                      (asset.status !== "retired" &&
+                        !!data.locationId &&
+                        assetMatchesLocation(
+                          asset.locationId,
+                          data.locationId,
+                          catalog.locations,
+                        )),
                   )
                   .map((asset) => (
                     <option key={asset.id} value={asset.id}>

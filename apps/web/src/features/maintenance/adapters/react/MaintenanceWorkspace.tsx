@@ -203,7 +203,8 @@ export function MaintenanceWorkspace({
     catalog?.canAdminister && (!profile || profile === "administrator");
   const canContribute = catalog?.canContribute && profile !== "executive";
   const canCoordinate =
-    catalog?.canCoordinate && (!profile || profile === "team-leader");
+    catalog?.canCoordinate &&
+    (!profile || ["administrator", "team-leader"].includes(profile));
   const canEdit =
     selected?.canEdit &&
     canContribute &&
@@ -330,7 +331,9 @@ export function MaintenanceWorkspace({
               {!selectedId && !form && tab !== "config" && (
                 <SearchControl
                   label={t("Search maintenance")}
-                placeholder={t("Title, repair target, equipment code or reference")}
+                  placeholder={t(
+                    "Title, repair target, equipment code or reference",
+                  )}
                   value={selection.search ?? ""}
                   onChange={(search) =>
                     setSelection({ ...selection, search, cursor: "" })
@@ -405,6 +408,7 @@ export function MaintenanceWorkspace({
                   renderReportCards={renderReportCards}
                   openReport={openReport}
                   refreshToken={reportRefresh}
+                  completed={selected.data.status === "done"}
                 />
                 <Actions className="iop-form-actions">
                   {canEdit && (

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import {
   Actions,
   Alert,
@@ -14,156 +14,24 @@ import {
   Textarea,
 } from "../../../../design/components";
 import { t } from "../../../../localization/i18n";
-import type { AssetsApplication } from "../../application/assets";
+import {
+  contentFromEquipment,
+  type AssetsApplication,
+} from "../../application/assets";
 import {
   emptyAlias,
   emptyAsset,
-  withinLocation,
-  type Alias,
   type Asset,
   type AssetContent,
   type Context,
+  type EquipmentCandidate,
   type SaveInput,
 } from "../../domain/models";
 import { assetStatusLabel } from "./labels";
+import { AssetAliasFields } from "./AssetAliasFields";
+import { AssetEquipmentPicker } from "./AssetEquipmentPicker";
 
-export interface EquipmentPickerPresentation {
-  renderEquipmentPicker?: (
-    scope: { locations: Context["locations"]; locationId: string },
-    select: (reference: {
-      code: string;
-      departmentId: string;
-      areaId: string;
-    }) => void,
-  ) => ReactNode;
-}
-
-function AliasFields({
-  alias,
-  context,
-  change,
-}: {
-  alias: Alias;
-  context: Context;
-  change: (patch: Partial<Alias>) => void;
-}) {
-  const field = (
-    key: keyof Alias,
-    label: string,
-    maxLength: number,
-    required = false,
-  ) => (
-    <Field>
-      {t(label)}
-      <Input
-        required={required}
-        value={alias[key]}
-        maxLength={maxLength}
-        pattern={
-          key === "sourceId" ? "[A-Za-z0-9][A-Za-z0-9_-]{0,63}" : undefined
-        }
-        onChange={(event) => change({ [key]: event.target.value })}
-      />
-    </Field>
-  );
-  return (
-    <>
-      <FieldRow>
-        <Field>
-          {t("Source namespace")}
-          <Select
-            value={alias.namespace}
-            onChange={(event) =>
-              change({
-                namespace: event.target.value,
-                sourceId: "",
-                departmentId: "",
-                areaId: "",
-                sector: "",
-                area: "",
-              })
-            }
-          >
-            <option value="site-equipment">
-              {t("Shift Handover equipment")}
-            </option>
-            <option value="analytics">
-              {t("Analytical source equipment")}
-            </option>
-            {!["site-equipment", "analytics"].includes(alias.namespace) && (
-              <option value={alias.namespace}>{alias.namespace}</option>
-            )}
-          </Select>
-        </Field>
-        {field("code", "Source equipment code", 160, true)}
-        {alias.namespace !== "site-equipment" &&
-          field("sourceId", "Source ID", 64, alias.namespace === "analytics")}
-      </FieldRow>
-      {alias.namespace === "site-equipment" ? (
-        <FieldRow>
-          <Field>
-            {t("Department")}
-            <Select
-              required
-              value={alias.departmentId}
-              onChange={(event) =>
-                change({ departmentId: event.target.value, areaId: "" })
-              }
-            >
-              <option value="">—</option>
-              {context.locations
-                .filter((location) =>
-                  location.role
-                    ? location.role === "department"
-                    : !location.parentId,
-                )
-                .map((location) => (
-                  <option key={location.id} value={location.id}>
-                    {location.label}
-                  </option>
-                ))}
-            </Select>
-          </Field>
-          <Field>
-            {t("Area")}
-            <Select
-              value={alias.areaId}
-              disabled={!alias.departmentId}
-              onChange={(event) => change({ areaId: event.target.value })}
-            >
-              <option value="">{t("None")}</option>
-              {context.locations
-                .filter(
-                  (location) =>
-                    location.id !== alias.departmentId &&
-                    withinLocation(
-                      location.id,
-                      alias.departmentId,
-                      context.locations,
-                    ),
-                )
-                .map((location) => (
-                  <option key={location.id} value={location.id}>
-                    {location.label}
-                  </option>
-                ))}
-            </Select>
-          </Field>
-        </FieldRow>
-      ) : (
-        <FieldRow>
-          {field(
-            "sector",
-            "Source sector",
-            100,
-            alias.namespace === "analytics",
-          )}
-          {field("area", "Source area", 160, alias.namespace === "analytics")}
-        </FieldRow>
-      )}
-    </>
-  );
-}
+const componentTypes = ["Cassette", "Motor roller", "Photoelectric sensor"];
 export function AssetForm({
   application,
   context,
@@ -171,7 +39,6 @@ export function AssetForm({
   pending,
   save,
   cancel,
-  renderEquipmentPicker,
 }: {
   application: AssetsApplication;
   context: Context;
@@ -179,31 +46,39 @@ export function AssetForm({
   pending: boolean;
   save: (input: SaveInput) => void;
   cancel: () => void;
-} & EquipmentPickerPresentation) {
+}) {
   const [key] = useState(() => application.newKey());
   const [content, setContent] = useState<AssetContent>(() =>
     asset
       ? {
           ...asset.content,
+          name: asset.content.code,
           aliases: asset.content.aliases.map((alias) => ({ ...alias })),
         }
       : emptyAsset(),
   );
   const [note, setNote] = useState("");
   const [equipmentError, setEquipmentError] = useState("");
+  const [otherType, setOtherType] = useState(
+    !!content.type && !componentTypes.includes(content.type),
+  );
   const change = <K extends keyof AssetContent>(
     field: K,
     value: AssetContent[K],
   ) => setContent((current) => ({ ...current, [field]: value }));
+  const chooseEquipment = (candidate: EquipmentCandidate) => {
+    try {
+      const updated = contentFromEquipment(content, candidate);
+      setContent(updated);
+      setEquipmentError("");
+    } catch (exception) {
+      setEquipmentError((exception as Error).message);
+    }
+  };
   return (
     <Panel>
       <h2>{t(asset ? "Edit asset" : "Register asset")}</h2>
       {equipmentError && <Alert>{t(equipmentError)}</Alert>}
-      <p className="assets-muted">
-        {t(
-          "For now, assets represent exact Betriebsmittelkennzeichen and their reported system components. Keep the identity unverified until the physical survey confirms it. Select the component location explicitly.",
-        )}
-      </p>
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -212,105 +87,90 @@ export function AssetForm({
             id: asset?.id ?? "",
             expectedRevision: asset?.revision ?? 0,
             note,
-            content,
+            content: { ...content, name: content.code },
           });
         }}
       >
         <fieldset disabled={pending} className="assets-fields">
-          <FieldRow>
-            <Field>
-              {t("Equipment identifier (Betriebsmittelkennzeichen)")}
-              <Input
-                required
-                maxLength={160}
-                value={content.code}
-                onChange={(event) => change("code", event.target.value)}
-              />
-            </Field>
-            <Field>
-              {t("Asset name")}
-              <Input
-                required
-                maxLength={200}
-                value={content.name}
-                onChange={(event) => change("name", event.target.value)}
-              />
-            </Field>
-            <Field>
-              {t("Asset type")}
-              <Input
-                maxLength={100}
-                value={content.type}
-                onChange={(event) => change("type", event.target.value)}
-              />
-            </Field>
-          </FieldRow>
-          {renderEquipmentPicker && (
-            <Disclosure
-              variant="panel"
-              summary={t("Use a reported equipment identifier")}
-            >
-              <p className="assets-muted">
-                {t(
-                  "Choose a location and exact reported code to prepare an unverified component record with an explicit Handover source alias. This selection does not verify physical identity.",
-                )}
-              </p>
-              {renderEquipmentPicker(
-                {
-                  locations: context.locations,
-                  locationId: content.locationId,
-                },
-                (reference) => {
-                  const alias: Alias = {
-                    namespace: "site-equipment",
-                    code: reference.code,
-                    departmentId: reference.departmentId,
-                    areaId: reference.areaId,
-                    sourceId: "",
-                    sector: "",
-                    area: "",
-                  };
-                  const matches = (value: Alias) =>
-                    value.namespace === alias.namespace &&
-                    value.code === alias.code &&
-                    value.departmentId === alias.departmentId &&
-                    value.areaId === alias.areaId;
-                  if (
-                    content.aliases.length >= 30 &&
-                    !content.aliases.some(matches)
-                  ) {
-                    setEquipmentError(
-                      "The source alias limit is reached. Remove an alias before selecting another code.",
-                    );
-                    return;
-                  }
-                  setEquipmentError("");
-                  setContent((current) => ({
-                    ...current,
-                    code: reference.code,
-                    name:
-                      !current.name || current.name === current.code
-                        ? reference.code
-                        : current.name,
-                    locationId: reference.areaId || reference.departmentId,
-                    status: "unverified",
-                    validationNote: "",
-                    aliases: current.aliases.some(matches)
-                      ? current.aliases
-                      : [...current.aliases, alias],
-                  }));
-                },
+          <AssetEquipmentPicker
+            application={application}
+            context={context}
+            locationId={content.locationId}
+            code={content.code}
+            select={chooseEquipment}
+            onLocationChange={(id) => change("locationId", id)}
+          />
+          <p className="assets-muted">
+            {t(
+              "One exact asset code identifies each current component. Use a manual code when it is absent from the source; physical verification remains a separate step.",
+            )}
+          </p>
+          <Field>
+            {t("Equipment identifier (Betriebsmittelkennzeichen)")}
+            <Input
+              required
+              maxLength={160}
+              value={content.code}
+              onChange={(event) => {
+                const code = event.target.value;
+                setContent((current) => ({
+                  ...current,
+                  code,
+                  name: code,
+                  aliases: current.aliases.filter(
+                    (alias) =>
+                      !["analytics", "site-equipment"].includes(
+                        alias.namespace,
+                      ) || alias.code === code,
+                  ),
+                }));
+              }}
+            />
+          </Field>
+          {asset && (
+            <p className="assets-muted">
+              {t(
+                "Changing the identifier replaces source links with different codes. Earlier revisions preserve the previous identity and links.",
               )}
-            </Disclosure>
+            </p>
           )}
           <FieldRow>
+            <Field>
+              {t("Component type")}
+              <Select
+                value={otherType ? "other" : content.type}
+                onChange={(event) => {
+                  const selected = event.target.value;
+                  setOtherType(selected === "other");
+                  change("type", selected === "other" ? "" : selected);
+                }}
+              >
+                <option value="">{t("Not recorded")}</option>
+                {componentTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {t(type)}
+                  </option>
+                ))}
+                <option value="other">{t("Other component")}</option>
+              </Select>
+            </Field>
+            {otherType && (
+              <Field>
+                {t("Other component type")}
+                <Input
+                  maxLength={100}
+                  value={content.type}
+                  onChange={(event) => change("type", event.target.value)}
+                />
+              </Field>
+            )}
             <Field>
               {t("Location")}
               <Select
                 value={content.locationId}
                 onChange={(event) => change("locationId", event.target.value)}
               >
-                <option value="">—</option>
+                <option value="">{t("Not recorded")}</option>
                 {context.locations.map((location) => (
                   <option key={location.id} value={location.id}>
                     {location.label}
@@ -318,24 +178,40 @@ export function AssetForm({
                 ))}
               </Select>
             </Field>
-            <Field>
-              {t("Validation status")}
-              <Select
-                value={content.status}
-                onChange={(event) =>
-                  change("status", event.target.value as AssetContent["status"])
-                }
-              >
-                {(["unverified", "validated", "retired"] as const).map(
-                  (status) => (
-                    <option key={status} value={status}>
-                      {assetStatusLabel(status)}
-                    </option>
-                  ),
-                )}
-              </Select>
-            </Field>
           </FieldRow>
+          <Field>
+            {t("Manual group / location within Bereich")}
+            <Input
+              maxLength={200}
+              value={content.locationDetails ?? ""}
+              placeholder={t("For example: buffer 1 or buffer 2")}
+              onChange={(event) =>
+                change("locationDetails", event.target.value)
+              }
+            />
+          </Field>
+          <Field>
+            {t("Asset identity status")}
+            <Select
+              value={content.status}
+              onChange={(event) =>
+                change("status", event.target.value as AssetContent["status"])
+              }
+            >
+              {(["unverified", "validated", "retired"] as const).map(
+                (status) => (
+                  <option key={status} value={status}>
+                    {assetStatusLabel(status)}
+                  </option>
+                ),
+              )}
+            </Select>
+          </Field>
+          <p className="assets-muted">
+            {t(
+              "Unverified: physical identity awaits review. Validated: identity was confirmed with a note. Retired: retained for history and hidden from the current directory. These states do not describe location or machine operation.",
+            )}
+          </p>
           <Field>
             {t("Validation note")}
             <Textarea
@@ -349,7 +225,7 @@ export function AssetForm({
           <Field>
             {t("Asset description")}
             <Textarea
-              rows={4}
+              rows={3}
               maxLength={4000}
               value={content.description}
               onChange={(event) => change("description", event.target.value)}
@@ -360,15 +236,18 @@ export function AssetForm({
               <h3>{t("Exact source aliases")}</h3>
               <AddButton
                 label={t("Add source alias")}
-                disabled={pending || content.aliases.length >= 30}
+                disabled={content.aliases.length >= 30}
                 onClick={() =>
-                  change("aliases", [...content.aliases, emptyAlias()])
+                  change("aliases", [
+                    ...content.aliases,
+                    { ...emptyAlias(), code: content.code },
+                  ])
                 }
               />
             </div>
             <p className="assets-muted">
               {t(
-                "Link source evidence only after verifying the complete source identity. Matching codes alone do not identify an asset.",
+                "Analysis supplies measured evidence, Handover keeps reported problems, and Maintenance records the intervention. Open each source from the digital record; source links do not confirm that equipment is working.",
               )}
             </p>
             {content.aliases.map((alias, index) => (
@@ -379,9 +258,12 @@ export function AssetForm({
                 summary={`${t("Source alias")} ${index + 1}`}
               >
                 <div className="assets-alias-fields">
-                  <AliasFields
-                    alias={alias}
+                  <AssetAliasFields
+                    application={application}
                     context={context}
+                    alias={alias}
+                    code={content.code}
+                    locationId={content.locationId}
                     change={(patch) =>
                       change(
                         "aliases",

@@ -13,6 +13,7 @@ export interface AssetContent {
   name: string;
   type: string;
   locationId: string;
+  locationDetails?: string;
   status: AssetStatus;
   validationNote: string;
   description: string;
@@ -55,7 +56,7 @@ export function withinLocation(
 }
 export interface Selection {
   search: string;
-  status: "" | AssetStatus;
+  status: "" | "current" | AssetStatus;
   locationId: string;
   cursor: string;
 }
@@ -118,7 +119,7 @@ export interface TimelineSelection {
 }
 export const emptySelection: Selection = {
   search: "",
-  status: "",
+  status: "current",
   locationId: "",
   cursor: "",
 };
@@ -128,11 +129,55 @@ export function emptyAsset(): AssetContent {
     name: "",
     type: "",
     locationId: "",
+    locationDetails: "",
     status: "unverified",
     validationNote: "",
     description: "",
     aliases: [],
   };
+}
+
+export interface EquipmentCandidate {
+  namespace: "analytics" | "site-equipment";
+  sourceId: string;
+  code: string;
+  sector: string;
+  area: string;
+  departmentId: string;
+  areaId: string;
+}
+export interface EquipmentSelection {
+  locationId: string;
+  search?: string;
+  code?: string;
+  sourceId?: string;
+  sector?: string;
+  area?: string;
+  cursor?: string;
+}
+export interface EquipmentCatalog {
+  candidates: EquipmentCandidate[];
+  total: number;
+  nextCursor: string;
+  sources: string[];
+  sectors: string[];
+  areas: string[];
+}
+export function locationParts(id: string, locations: Location[]) {
+  let current = locations.find((location) => location.id === id);
+  let areaId = current?.role === "department" ? "" : (current?.id ?? "");
+  const seen = new Set<string>();
+  while (current && !seen.has(current.id)) {
+    seen.add(current.id);
+    if (current.role === "area") areaId = current.id;
+    if (current.role === "department" || (!current.role && !current.parentId))
+      return {
+        departmentId: current.id,
+        areaId: current.id === id ? "" : areaId,
+      };
+    current = locations.find((location) => location.id === current?.parentId);
+  }
+  return { departmentId: "", areaId: "" };
 }
 export function emptyAlias(): Alias {
   return {

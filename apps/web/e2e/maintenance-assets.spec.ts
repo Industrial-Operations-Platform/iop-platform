@@ -74,7 +74,7 @@ for (const viewport of [
     await expect(page.getByText("Maintenance saved.")).toBeVisible();
     await page.getByRole("button", { name: "Open asset record" }).click();
     await expect(
-      page.getByRole("heading", { name: "Assembly conveyor", exact: true }),
+      page.getByRole("heading", { name: "DRIVE-01", exact: true }),
     ).toBeVisible();
     await expect(page.getByText("Showing 2 of 3 records.")).toBeVisible();
     await page.getByRole("button", { name: "Load more" }).click();
@@ -106,7 +106,7 @@ for (const viewport of [
       .last()
       .click();
     await expect(
-      page.getByRole("heading", { name: "Assembly conveyor", exact: true }),
+      page.getByRole("heading", { name: "DRIVE-01", exact: true }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Edit asset", exact: true }).click();
     await page.evaluate(
@@ -158,6 +158,7 @@ for (const viewport of [
 }
 for (const profile of [
   "technician",
+  "administrator",
   "team-leader",
   "task-force",
   "executive",
@@ -175,11 +176,11 @@ for (const profile of [
       .click();
     await expect(
       page.getByRole("button", { name: "Configuration", exact: true }),
-    ).toHaveCount(0);
+    ).toHaveCount(profile === "administrator" ? 1 : 0);
     await expect(
       page.getByRole("button", { name: "New maintenance", exact: true }),
     ).toHaveCount(profile === "executive" ? 0 : 1);
-    if (!["team-leader", "task-force"].includes(profile)) {
+    if (!["administrator", "team-leader", "task-force"].includes(profile)) {
       await expect(
         navigation.getByRole("button", { name: "Assets", exact: true }),
       ).toHaveCount(0);
@@ -191,9 +192,7 @@ for (const profile of [
     await expect(
       page.getByRole("button", { name: "Register asset", exact: true }),
     ).toHaveCount(1);
-    await page
-      .getByRole("button", { name: "Assembly conveyor", exact: true })
-      .click();
+    await page.getByRole("button", { name: "DRIVE-01", exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Edit asset", exact: true }),
     ).toHaveCount(1);
@@ -212,7 +211,7 @@ for (const profile of [
   });
 }
 
-test("administrator retains priority configuration without operational Asset access", async ({
+test("administrator retains priority configuration and full operational Asset access", async ({
   page,
 }) => {
   await installMaintenanceAssetsFixture(page, "administrator");
@@ -220,7 +219,7 @@ test("administrator retains priority configuration without operational Asset acc
   const navigation = page.getByRole("navigation", { name: "Main navigation" });
   await expect(
     navigation.getByRole("button", { name: "Assets", exact: true }),
-  ).toHaveCount(0);
+  ).toHaveCount(1);
   await navigation
     .getByRole("button", { name: "Maintenance", exact: true })
     .click();

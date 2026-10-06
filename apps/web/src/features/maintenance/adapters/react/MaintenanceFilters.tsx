@@ -7,7 +7,12 @@ import {
   Select,
 } from "../../../../design/components";
 import { t } from "../../../../localization/i18n";
-import { statuses, type Catalog, type Selection } from "../../domain/models";
+import {
+  statuses,
+  assetMatchesLocation,
+  type Catalog,
+  type Selection,
+} from "../../domain/models";
 import { statusLabel } from "./labels";
 export function MaintenanceFilters({
   catalog,
@@ -82,10 +87,22 @@ export function MaintenanceFilters({
           {field(
             "assetId",
             "Asset",
-            catalog.assets.map((asset) => ({
-              id: asset.id,
-              label: asset.name,
-            })),
+            catalog.assets
+              .filter(
+                (asset) =>
+                  asset.id === selection.assetId ||
+                  !asset.locationId ||
+                  (!!selection.locationId &&
+                    assetMatchesLocation(
+                      asset.locationId,
+                      selection.locationId,
+                      catalog.locations,
+                    )),
+              )
+              .map((asset) => ({
+                id: asset.id,
+                label: asset.name,
+              })),
           )}
           {!mine &&
             field(

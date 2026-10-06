@@ -8,6 +8,7 @@ import {
   within,
 } from "@testing-library/react";
 import { MaintenanceWorkspace } from "../src/features/maintenance/adapters/react/MaintenanceWorkspace";
+import { EntrySummaryCards } from "../src/features/shift-handover/adapters/react/EntrySummaryCards";
 import {
   MaintenanceApplication,
   maintenanceDraftFromReport,
@@ -260,6 +261,7 @@ test("report-started drafts preserve exact scoped identifiers without automatic 
   };
   expect(maintenanceDraftFromReport(source)).toEqual(
     expect.objectContaining({
+      details: "",
       category: "corrective",
       locationId: "line",
       assigneeId: "",
@@ -593,11 +595,25 @@ test("pending reports on later pages must be reviewed before completion", async 
   await waitFor(() => expect(save).toBeEnabled());
 });
 test("returning to a repair refreshes every previously displayed report page", async () => {
-  const second = { ...report, id: "other", content: { ...report.content, summary: "Another failure" } };
-  const related = jest.fn(async input => input.cursor ? { entries: [second], total: 2, nextCursor: "" } : { entries: [report], total: 2, nextCursor: "next" });
+  const second = {
+    ...report,
+    id: "other",
+    content: { ...report.content, summary: "Another failure" },
+  };
+  const related = jest.fn(async (input) =>
+    input.cursor
+      ? { entries: [second], total: 2, nextCursor: "" }
+      : { entries: [report], total: 2, nextCursor: "next" },
+  );
   const { application } = fixture({ related });
-  expect(await application.related({ locationId: "hall", equipment: [] }, 2)).toEqual({ entries: [report, second], total: 2, nextCursor: "" });
-  expect(related).toHaveBeenNthCalledWith(2, { locationId: "hall", equipment: [], cursor: "next" });
+  expect(
+    await application.related({ locationId: "hall", equipment: [] }, 2),
+  ).toEqual({ entries: [report, second], total: 2, nextCursor: "" });
+  expect(related).toHaveBeenNthCalledWith(2, {
+    locationId: "hall",
+    equipment: [],
+    cursor: "next",
+  });
 });
 test("related report navigation preserves unsaved repair details and scope decisions", async () => {
   jest.spyOn(window, "scrollTo").mockImplementation(() => undefined);
@@ -661,4 +677,142 @@ test("status search hides other board columns and historical search is explicit"
       expect.objectContaining({ status: "open", history: true }),
     ),
   );
+});
+test("completed details separate included, excluded and related context before each source card", async () => {
+  const included = {
+    ...report,
+    issueState: "resolved" as const,
+    latestUpdate: {
+      note: "Maintenance order: cassette repair outcome",
+      actorName: "Worker",
+      at: "2026-10-06T09:00:00Z",
+    },
+  };
+  const excluded = {
+    ...report,
+    id: "excluded",
+    content: { ...report.content, summary: "Excluded electrical failure" },
+  };
+  const context = {
+    ...report,
+    id: "context",
+    content: { ...report.content, summary: "Separate drive observation" },
+  };
+  const completedRecord = {
+    ...record,
+    data: {
+      ...record.data,
+      status: "done" as const,
+      outcome: "Cassette repaired",
+      linkedEntries: [
+        {
+          id: "report",
+          expectedRevision: 2,
+          disposition: "include" as const,
+          reason: "",
+        },
+        {
+          id: "excluded",
+          expectedRevision: 2,
+          disposition: "exclude" as const,
+          reason: "Electrical work belongs to a separate order.",
+        },
+      ],
+    },
+  };
+  const { application } = fixture({
+    history: jest.fn(async () => ({
+      record: completedRecord,
+      revisions: [],
+      nextBefore: 0,
+    })),
+    related: jest.fn(async () => ({
+      entries: [included, excluded, context],
+      total: 3,
+      nextCursor: "",
+    })),
+  });
+  render(
+    <MaintenanceWorkspace
+      application={application}
+      timeZone="UTC"
+      initialRecordId="record"
+      renderReportCards={(entries, open) => (
+        <EntrySummaryCards
+          entries={entries}
+          expanded
+          preview="original"
+          open={open}
+        />
+      )}
+    />,
+  );
+  const excludedGroup = await screen.findByRole("region", {
+    name: "Excluded from this repair",
+  });
+  expect(
+    within(excludedGroup).getByText(
+      "Electrical work belongs to a separate order.",
+    ),
+  ).toBeVisible();
+  expect(
+    within(excludedGroup).getByRole("button", {
+      name: /Excluded electrical failure/,
+    }),
+  ).toBeVisible();
+  const includedGroup = screen.getByRole("region", {
+    name: "Included in this repair",
+  });
+  expect(
+    within(includedGroup).getByRole("button", {
+      name: /Cassette direction error/,
+    }),
+  ).toBeVisible();
+  expect(within(includedGroup).queryByText("Reported blocked")).toBeNull();
+  expect(within(includedGroup).getByText(report.content.details)).toBeVisible();
+  expect(
+    within(includedGroup).queryByText(
+      "Maintenance order: cassette repair outcome",
+    ),
+  ).toBeNull();
+  expect(
+    within(includedGroup).queryByText("Excluded electrical failure"),
+  ).toBeNull();
+  expect(
+    within(screen.getByRole("region", { name: "Related context" })).getByText(
+      "Separate drive observation",
+    ),
+  ).toBeVisible();
+  expect(
+    screen.getByText(
+      "Completion closes included open reports only. Excluded reports and related context retain their own status.",
+    ),
+  ).toBeVisible();
+});
+test("source report previews show original observations only when requested", () => {
+  const entry = {
+    ...report,
+    issueState: "resolved" as const,
+    latestUpdate: {
+      note: "Intervention feedback remains in source history",
+      actorName: "Worker",
+      at: "2026-10-06T09:00:00Z",
+    },
+  };
+  const { rerender } = render(
+    <EntrySummaryCards entries={[entry]} expanded open={jest.fn()} />,
+  );
+  expect(screen.getByText(entry.latestUpdate.note)).toBeVisible();
+  expect(screen.queryByText(report.content.details)).toBeNull();
+  rerender(
+    <EntrySummaryCards
+      entries={[entry]}
+      expanded
+      preview="original"
+      open={jest.fn()}
+    />,
+  );
+  expect(screen.getByText(report.content.details)).toBeVisible();
+  expect(screen.queryByText(entry.latestUpdate.note)).toBeNull();
+  expect(screen.queryByText("Reported blocked")).toBeNull();
 });

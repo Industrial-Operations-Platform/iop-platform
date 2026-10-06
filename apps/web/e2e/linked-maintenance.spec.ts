@@ -235,9 +235,7 @@ test("a Handover problem can seed a corrective maintenance proposal", async ({
     .getByRole("navigation", { name: "Main navigation" })
     .getByRole("button", { name: "Assets", exact: true })
     .click();
-  await page
-    .getByRole("button", { name: "Assembly conveyor", exact: true })
-    .click();
+  await page.getByRole("button", { name: "DRIVE-01", exact: true }).click();
   await page
     .getByRole("button", { name: "Shift Handover 1", exact: true })
     .click();
@@ -271,55 +269,257 @@ test("a Handover problem can seed a corrective maintenance proposal", async ({
   ).toHaveValue("include");
 });
 
-test("reported equipment registration remains unverified and retains an explicit source alias", async ({
+for (const viewport of [
+  { width: 1440, height: 1000 },
+  { width: 390, height: 844 },
+]) {
+  test(`code-based asset registration and source choices at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    const { requests } = await installMaintenanceAssetsFixture(
+      page,
+      "administrator",
+    );
+    await page.goto("/");
+    await page
+      .getByRole("navigation", { name: "Main navigation" })
+      .getByRole("button", { name: "Assets", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Register asset", exact: true })
+      .click();
+    const chooser = page.getByRole("region", {
+      name: "Choose reported equipment",
+    });
+    await expect(chooser).toBeVisible();
+    const code = page.getByLabel(
+      "Equipment identifier (Betriebsmittelkennzeichen)",
+      { exact: true },
+    );
+    const positions = await Promise.all([
+      chooser.boundingBox(),
+      code.boundingBox(),
+    ]);
+    expect(positions[0]!.y).toBeLessThan(positions[1]!.y);
+    await page
+      .getByRole("combobox", { name: "Asset Halle", exact: true })
+      .selectOption("assembly");
+    await page
+      .getByRole("combobox", { name: "Asset Bereich", exact: true })
+      .selectOption("assembly-line1");
+    const reported = page.getByRole("combobox", {
+      name: "Reported equipment identifier",
+      exact: true,
+    });
+    await expect(reported).toBeEnabled();
+    const option = reported
+      .locator("option")
+      .filter({ hasText: "=11+11.11.02-B102.1" })
+      .first();
+    await reported.selectOption((await option.getAttribute("value"))!);
+    await expect(code).toHaveValue("=11+11.11.02-B102.1");
+    await expect(page.getByLabel("Asset name", { exact: true })).toHaveCount(0);
+    await expect(
+      page.getByRole("combobox", {
+        name: "Asset identity status",
+        exact: true,
+      }),
+    ).toHaveValue("unverified");
+    await expect(
+      page.getByRole("combobox", { name: "Source ID", exact: true }),
+    ).toHaveValue("daily-alarms");
+    await expect(
+      page.getByRole("combobox", { name: "Source sector", exact: true }),
+    ).toHaveValue("Assembly");
+    await expect(
+      page.getByRole("combobox", { name: "Source area", exact: true }),
+    ).toHaveValue("Line 1");
+    await expect(
+      page.getByRole("combobox", {
+        name: "Source equipment code",
+        exact: true,
+      }),
+    ).toHaveValue("=11+11.11.02-B102.1");
+    await page
+      .getByRole("combobox", { name: "Component type", exact: true })
+      .selectOption("Cassette");
+    await page
+      .getByLabel("Manual group / location within Bereich", { exact: true })
+      .fill("Buffer 1");
+    const chooserBounds = await chooser.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        right: rect.right,
+        controls: [...element.querySelectorAll("input, select")].map(
+          (control) => ({
+            left: control.getBoundingClientRect().left,
+            right: control.getBoundingClientRect().right,
+          }),
+        ),
+      };
+    });
+    expect(chooserBounds.right).toBeLessThanOrEqual(viewport.width);
+    for (const control of chooserBounds.controls)
+      expect(control.right).toBeLessThanOrEqual(chooserBounds.right + 1);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({
+      path: `test-results/IOP-194-code-registration-${viewport.width}.png`,
+      fullPage: true,
+    });
+    await page.getByRole("button", { name: "Save asset", exact: true }).click();
+    await expect(page.getByText("Asset saved.")).toBeVisible();
+    const saved = requests
+      .filter((request) => request.path.endsWith("/assets/save"))
+      .at(-1)!.data.content;
+    expect(saved.name).toBe(saved.code);
+    expect(saved.code).toBe("=11+11.11.02-B102.1");
+    expect(saved.type).toBe("Cassette");
+    expect(saved.locationDetails).toBe("Buffer 1");
+    expect(saved.status).toBe("unverified");
+    expect(saved.locationId).toBe("assembly-line1");
+    expect(saved.aliases).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          namespace: "analytics",
+          sourceId: "daily-alarms",
+          code: saved.code,
+          sector: "Assembly",
+          area: "Line 1",
+        }),
+        expect.objectContaining({
+          namespace: "site-equipment",
+          code: saved.code,
+          departmentId: "assembly",
+          areaId: "assembly-line1",
+        }),
+      ]),
+    );
+    expect(errors).toEqual([]);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  });
+}
+
+test("completed repair distinguishes included members from excluded context", async ({
   page,
 }) => {
-  const { requests } = await installMaintenanceAssetsFixture(
-    page,
-    "task-force",
+  const { sourceReport, completedRecord } =
+    await installMaintenanceAssetsFixture(page, "administrator");
+  const resolved = {
+    ...sourceReport,
+    issueState: "resolved",
+    revision: 2,
+    latestUpdate: {
+      note: "Maintenance completion outcome",
+      actorId: "admin",
+      actorName: "Morgan",
+      at: "2026-10-05T10:00:00Z",
+    },
+    content: { ...sourceReport.content, condition: "blocked" },
+  };
+  const excluded = {
+    ...sourceReport,
+    id: "secondary-issue",
+    content: {
+      ...sourceReport.content,
+      summary: "Separate motor inspection",
+      condition: "blocked",
+    },
+  };
+  const record = {
+    ...completedRecord,
+    data: {
+      ...completedRecord.data,
+      linkedEntries: [
+        {
+          id: resolved.id,
+          expectedRevision: 1,
+          disposition: "include",
+          reason: "",
+        },
+        {
+          id: excluded.id,
+          expectedRevision: 1,
+          disposition: "exclude",
+          reason: "Motor inspection requires a separate intervention.",
+        },
+      ],
+    },
+  };
+  await page.route("**/api/v1/maintenance/history", (route) =>
+    route.fulfill({
+      json: {
+        record,
+        revisions: [
+          {
+            record,
+            actorId: "admin",
+            actorName: "Morgan",
+            action: "status-changed",
+            reason: "Repair completed",
+            at: record.updatedAt,
+          },
+        ],
+        nextBefore: 0,
+      },
+    }),
+  );
+  await page.route("**/api/v1/maintenance/related", (route) =>
+    route.fulfill({
+      json: { entries: [resolved, excluded], total: 2, nextCursor: "" },
+    }),
   );
   await page.goto("/");
   await page
     .getByRole("navigation", { name: "Main navigation" })
-    .getByRole("button", { name: "Assets", exact: true })
+    .getByRole("button", { name: "Maintenance", exact: true })
     .click();
+  await page.getByRole("button", { name: "Load more", exact: true }).click();
   await page
-    .getByRole("button", { name: "Register asset", exact: true })
+    .getByRole("button", { name: "Grease guide rollers", exact: false })
     .click();
-  await page
-    .getByRole("combobox", { name: "Location", exact: true })
-    .selectOption("assembly");
-  await page
-    .getByText("Use a reported equipment identifier", { exact: true })
-    .click();
-  await page
-    .getByRole("combobox", { name: "Equipment area", exact: true })
-    .selectOption("assembly-line1");
-  const reported = page.getByRole("combobox", {
-    name: "Reported equipment codes",
+  await expect(
+    page.getByText(
+      "Completion closes included open reports only. Excluded reports and related context retain their own status.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  const includedGroup = page.getByRole("region", {
+    name: "Included in this repair",
     exact: true,
   });
-  await expect(reported).toBeEnabled();
-  await reported.selectOption("=11+11.11.02-B102.1");
+  const excludedGroup = page.getByRole("region", {
+    name: "Excluded from this repair",
+    exact: true,
+  });
   await expect(
-    page.getByLabel("Equipment identifier (Betriebsmittelkennzeichen)"),
-  ).toHaveValue("=11+11.11.02-B102.1");
+    includedGroup.getByText("Resolved", { exact: true }),
+  ).toBeVisible();
   await expect(
-    page.getByRole("combobox", { name: "Validation status", exact: true }),
-  ).toHaveValue("unverified");
-  await page.getByRole("button", { name: "Save asset", exact: true }).click();
-  await expect(page.getByText("Asset saved.")).toBeVisible();
-  const saved = requests
-    .filter((request) => request.path.endsWith("/assets/save"))
-    .at(-1)!.data.content;
-  expect(saved.status).toBe("unverified");
-  expect(saved.locationId).toBe("assembly-line1");
-  expect(saved.aliases).toEqual([
-    expect.objectContaining({
-      namespace: "site-equipment",
-      code: "=11+11.11.02-B102.1",
-      departmentId: "assembly",
-      areaId: "assembly-line1",
-    }),
-  ]);
+    includedGroup.getByText("Reported blocked", { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    includedGroup.getByText(sourceReport.content.details, { exact: true }),
+  ).toBeVisible();
+  await expect(
+    includedGroup.getByText("Maintenance completion outcome", { exact: true }),
+  ).toHaveCount(0);
+  await expect(excludedGroup.getByText("Open", { exact: true })).toBeVisible();
+  await expect(
+    excludedGroup.getByText(
+      "Motor inspection requires a separate intervention.",
+      { exact: false },
+    ),
+  ).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({
+    path: "test-results/IOP-194-completed-membership-1440.png",
+    fullPage: true,
+  });
 });

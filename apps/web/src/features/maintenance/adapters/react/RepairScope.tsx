@@ -36,6 +36,7 @@ export function RepairScope({
   renderReportCards,
   openReport,
   refreshToken = 0,
+  completed = false,
 }: {
   application: MaintenanceApplication;
   locationId: string;
@@ -44,6 +45,7 @@ export function RepairScope({
   change?: (links: LinkedEntry[]) => void;
   reviewReady?: (ready: boolean) => void;
   refreshToken?: number;
+  completed?: boolean;
 } & ReportPresentation) {
   const [page, setPage] = useState<RelatedPage>();
   const [loading, setLoading] = useState(false);
@@ -135,6 +137,37 @@ export function RepairScope({
         : other,
     );
   };
+  const groups = change
+    ? [{ label: "Reports to review", entries: page?.entries ?? [] }]
+    : [
+        {
+          label: "Included in this repair",
+          entries:
+            page?.entries.filter((entry) =>
+              links.some(
+                (link) =>
+                  link.id === entry.id && link.disposition === "include",
+              ),
+            ) ?? [],
+        },
+        {
+          label: "Excluded from this repair",
+          entries:
+            page?.entries.filter((entry) =>
+              links.some(
+                (link) =>
+                  link.id === entry.id && link.disposition === "exclude",
+              ),
+            ) ?? [],
+        },
+        {
+          label: "Related context",
+          entries:
+            page?.entries.filter(
+              (entry) => !links.some((link) => link.id === entry.id),
+            ) ?? [],
+        },
+      ];
   return (
     <section
       className="maintenance-fields"
@@ -152,9 +185,18 @@ export function RepairScope({
       </div>
       <p className="maintenance-muted">
         {t(
-          "Reports match the selected place and exact equipment identifiers. Review each open issue before completing maintenance.",
+          change
+            ? "Reports match the selected place and exact equipment identifiers. Review each open issue before completing maintenance."
+            : "Included reports belong to this intervention. Exclusions and related context remain outside its repair scope. Open a source card to read its full history.",
         )}
       </p>
+      {completed && (
+        <p className="maintenance-muted">
+          {t(
+            "Completion closes included open reports only. Excluded reports and related context retain their own status.",
+          )}
+        </p>
+      )}
       {error && <Alert>{t(error)}</Alert>}
       {loading && <p role="status">{t("Loading related reports…")}</p>}
       {!locationId && <p>{t("Select a location to find related reports.")}</p>}
@@ -166,85 +208,116 @@ export function RepairScope({
           ])}
         </p>
       )}
-      <div className="maintenance-related-reports">
-        {page?.entries.map((entry) => {
-          const link = links.find((value) => value.id === entry.id);
-          return (
-            <Panel key={entry.id} className="maintenance-related-report">
-              {renderReportCards ? (
-                renderReportCards([entry], (id) => openReport?.(id))
-              ) : (
-                <Button variant="text" onClick={() => openReport?.(entry.id)}>
-                  {entry.content.summary}
-                </Button>
-              )}
-              {change ? (
-                <>
-                  <Field>
-                    {t("Maintenance scope")}
-                    <Select
-                      aria-label={t("Scope for {0}", [entry.content.summary])}
-                      value={link?.disposition ?? ""}
-                      onChange={(event) =>
-                        update(entry, event.target.value, link?.reason)
+      {groups
+        .filter((group) => group.entries.length)
+        .map((group) => (
+          <section
+            className="maintenance-related-group"
+            key={group.label}
+            aria-label={t(group.label)}
+          >
+            <h4>
+              {t(group.label)} <Badge>{group.entries.length}</Badge>
+            </h4>
+            <div className="maintenance-related-reports">
+              {group.entries.map((entry) => {
+                const link = links.find((value) => value.id === entry.id);
+                return (
+                  <Panel key={entry.id} className="maintenance-related-report">
+                    <Badge
+                      tone={
+                        link?.disposition === "include" ? "info" : "neutral"
                       }
                     >
-                      <option value="">{t("Not reviewed")}</option>
-                      <option value="include">
-                        {t("Include in this repair")}
-                      </option>
-                      <option value="exclude">
-                        {t("Exclude from this repair")}
-                      </option>
-                    </Select>
-                  </Field>
-                  {link?.disposition === "exclude" && (
-                    <Field>
-                      {t("Exclusion reason")}
-                      <Textarea
-                        required
-                        maxLength={2000}
-                        rows={2}
-                        value={link.reason}
-                        onChange={(event) =>
-                          update(entry, "exclude", event.target.value)
-                        }
-                      />
-                    </Field>
-                  )}
-                  {link?.disposition === "include" &&
-                    link.expectedRevision !== entry.revision && (
-                      <>
-                        <Alert>
-                          {t(
-                            "This report changed. Select its scope again before completing maintenance.",
-                          )}
-                        </Alert>
-                        <Button
-                          variant="secondary"
-                          onClick={() => update(entry, "include", link.reason)}
-                        >
-                          {t("Confirm latest report")}
-                        </Button>
-                      </>
+                      {t(
+                        link?.disposition === "include"
+                          ? "Included in this repair"
+                          : link?.disposition === "exclude"
+                            ? "Excluded from this repair"
+                            : "Related context",
+                      )}
+                    </Badge>
+                    {!change &&
+                      link?.disposition === "exclude" &&
+                      link.reason && (
+                        <p>
+                          <strong>{t("Exclusion reason")}: </strong>
+                          {link.reason}
+                        </p>
+                      )}
+                    {renderReportCards ? (
+                      renderReportCards([entry], (id) => openReport?.(id))
+                    ) : (
+                      <Button
+                        variant="text"
+                        onClick={() => openReport?.(entry.id)}
+                      >
+                        {entry.content.summary}
+                      </Button>
                     )}
-                </>
-              ) : (
-                <Badge>
-                  {t(
-                    link?.disposition === "exclude"
-                      ? "Excluded from this repair"
-                      : link?.disposition === "include"
-                        ? "Included in this repair"
-                        : "Outside this repair",
-                  )}
-                </Badge>
-              )}
-              {!change && link?.reason && <p>{link.reason}</p>}
-            </Panel>
-          );
-        })}
-      </div>
+                    {change ? (
+                      <>
+                        <Field>
+                          {t("Maintenance scope")}
+                          <Select
+                            aria-label={t("Scope for {0}", [
+                              entry.content.summary,
+                            ])}
+                            value={link?.disposition ?? ""}
+                            onChange={(event) =>
+                              update(entry, event.target.value, link?.reason)
+                            }
+                          >
+                            <option value="">{t("Not reviewed")}</option>
+                            <option value="include">
+                              {t("Include in this repair")}
+                            </option>
+                            <option value="exclude">
+                              {t("Exclude from this repair")}
+                            </option>
+                          </Select>
+                        </Field>
+                        {link?.disposition === "exclude" && (
+                          <Field>
+                            {t("Exclusion reason")}
+                            <Textarea
+                              required
+                              maxLength={2000}
+                              rows={2}
+                              value={link.reason}
+                              onChange={(event) =>
+                                update(entry, "exclude", event.target.value)
+                              }
+                            />
+                          </Field>
+                        )}
+                        {link?.disposition === "include" &&
+                          ["open", "in-progress"].includes(entry.issueState) &&
+                          link.expectedRevision !== entry.revision && (
+                            <>
+                              <Alert>
+                                {t(
+                                  "This report changed. Select its scope again before completing maintenance.",
+                                )}
+                              </Alert>
+                              <Button
+                                variant="secondary"
+                                onClick={() =>
+                                  update(entry, "include", link.reason)
+                                }
+                              >
+                                {t("Confirm latest report")}
+                              </Button>
+                            </>
+                          )}
+                      </>
+                    ) : null}
+                  </Panel>
+                );
+              })}
+            </div>
+          </section>
+        ))}
       {page?.nextCursor && (
         <Actions>
           <Button

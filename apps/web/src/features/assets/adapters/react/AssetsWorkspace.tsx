@@ -29,7 +29,7 @@ import {
   type Timeline,
 } from "../../domain/models";
 import { AssetDetails } from "./AssetDetails";
-import { AssetForm, type EquipmentPickerPresentation } from "./AssetForm";
+import { AssetForm } from "./AssetForm";
 import { AssetTimeline } from "./AssetTimeline";
 import { assetStatusLabel } from "./labels";
 import "./assets.css";
@@ -41,7 +41,6 @@ export function AssetsWorkspace({
   homeVisit = 0,
   initialAssetId = "",
   onOpenSource,
-  renderEquipmentPicker,
 }: {
   application: AssetsApplication;
   profile?: string;
@@ -49,7 +48,7 @@ export function AssetsWorkspace({
   homeVisit?: number;
   initialAssetId?: string;
   onOpenSource?: (kind: SourceKind, id: string) => void;
-} & EquipmentPickerPresentation) {
+}) {
   const today = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -214,7 +213,8 @@ export function AssetsWorkspace({
   }, [application, selectedId, from, to, source, version]);
   const canManage =
     context?.canManage &&
-    (!profile || ["team-leader", "task-force"].includes(profile));
+    (!profile ||
+      ["administrator", "team-leader", "task-force"].includes(profile));
   const refresh = () => setVersion((current) => current + 1);
   const save = async (input: SaveInput) => {
     const epoch = detailEpoch.current;
@@ -320,7 +320,7 @@ export function AssetsWorkspace({
             {!selectedId && !form && (
               <SearchControl
                 label={t("Search assets")}
-                placeholder={t("Asset code, name or description")}
+                placeholder={t("Asset code, component type or manual group")}
                 value={selection.search}
                 onChange={(search) =>
                   setSelection({ ...selection, search, cursor: "" })
@@ -344,7 +344,6 @@ export function AssetsWorkspace({
           <AssetForm
             key={selected?.id ?? "new"}
             application={application}
-            renderEquipmentPicker={renderEquipmentPicker}
             context={context}
             asset={selected}
             pending={saving}
@@ -442,7 +441,7 @@ export function AssetsWorkspace({
                 </Select>
               </Field>
               <Field layout="inline" className="iop-context-field">
-                <span>{t("Validation status")}</span>
+                <span>{t("Asset identity status")}</span>
                 <Select
                   value={selection.status}
                   onChange={(event) =>
@@ -453,7 +452,8 @@ export function AssetsWorkspace({
                     })
                   }
                 >
-                  <option value="">{t("All")}</option>
+                  <option value="current">{t("Current components")}</option>
+                  <option value="">{t("All states including retired")}</option>
                   {(["unverified", "validated", "retired"] as const).map(
                     (status) => (
                       <option key={status} value={status}>
@@ -473,11 +473,11 @@ export function AssetsWorkspace({
                       <thead>
                         <tr>
                           {[
-                            "Asset",
                             "Asset code",
-                            "Asset type",
+                            "Component type",
                             "Location",
-                            "Validation status",
+                            "Manual group / location within Bereich",
+                            "Asset identity status",
                           ].map((label) => (
                             <th scope="col" key={label}>
                               {t(label)}
@@ -497,10 +497,9 @@ export function AssetsWorkspace({
                                   setSelected(asset);
                                 }}
                               >
-                                {asset.content.name}
+                                {asset.content.code}
                               </Button>
                             </td>
-                            <td>{asset.content.code}</td>
                             <td>{asset.content.type || "—"}</td>
                             <td>
                               {context.locations.find(
@@ -508,6 +507,7 @@ export function AssetsWorkspace({
                                   location.id === asset.content.locationId,
                               )?.label || "—"}
                             </td>
+                            <td>{asset.content.locationDetails || "—"}</td>
                             <td>
                               <Badge
                                 tone={

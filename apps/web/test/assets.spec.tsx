@@ -12,6 +12,7 @@ import { AssetForm } from "../src/features/assets/adapters/react/AssetForm";
 import { AssetTimeline } from "../src/features/assets/adapters/react/AssetTimeline";
 import {
   AssetsApplication,
+  contentFromEquipment,
   type Gateway,
 } from "../src/features/assets/application/assets";
 import {
@@ -19,6 +20,7 @@ import {
   type Asset,
   type Context,
   type Timeline,
+  type EquipmentCandidate,
 } from "../src/features/assets/domain/models";
 const asset: Asset = {
   id: "asset",
@@ -66,6 +68,14 @@ function fixture(overrides: Partial<Gateway> = {}) {
     detail: jest.fn(async () => asset),
     history: jest.fn(async () => ({ asset, revisions: [], nextBefore: 0 })),
     timeline: jest.fn(async () => timeline),
+    equipmentCatalog: jest.fn(async () => ({
+      candidates: [],
+      total: 0,
+      nextCursor: "",
+      sources: [],
+      sectors: [],
+      areas: [],
+    })),
     save: jest.fn(async (input) => ({ ...asset, content: input.content })),
     ...overrides,
   };
@@ -74,7 +84,7 @@ function fixture(overrides: Partial<Gateway> = {}) {
     application: new AssetsApplication(gateway, () => "stable-key"),
   };
 }
-test.each(["technician", "administrator", "executive"])(
+test.each(["technician", "executive"])(
   "%s preview cannot manage assets even with administrator capabilities",
   async (profile) => {
     const { application } = fixture();
@@ -87,7 +97,7 @@ test.each(["technician", "administrator", "executive"])(
     );
     await screen.findByRole("table", { name: "Asset directory" });
     expect(screen.queryByRole("button", { name: "Register asset" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Assembly conveyor" }));
+    fireEvent.click(screen.getByRole("button", { name: "AS-001" }));
     await screen.findByLabelText("Asset timeline");
     expect(screen.queryByRole("button", { name: "Edit asset" })).toBeNull();
   },
@@ -116,9 +126,7 @@ test("registration retains its key after rejection and alias fields reflect thei
       target: { value: "AS-001" },
     },
   );
-  fireEvent.change(screen.getByLabelText("Asset name"), {
-    target: { value: "Assembly conveyor" },
-  });
+  expect(screen.queryByLabelText("Asset name")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Add source alias" }));
   expect(screen.getByLabelText("Department")).toBeRequired();
   expect(screen.queryByLabelText("Source ID")).toBeNull();
@@ -132,7 +140,9 @@ test("registration retains its key after rejection and alias fields reflect thei
   );
   fireEvent.click(screen.getByRole("button", { name: "Save asset" }));
   await screen.findByRole("alert");
-  expect(screen.getByLabelText("Asset name")).toHaveValue("Assembly conveyor");
+  expect(
+    screen.getByLabelText("Equipment identifier (Betriebsmittelkennzeichen)"),
+  ).toHaveValue("AS-001");
   fireEvent.click(screen.getByRole("button", { name: "Save asset" }));
   await screen.findByText("Asset saved.");
   expect(save.mock.calls.map(([input]) => input.key)).toEqual([
@@ -280,7 +290,7 @@ test("source alias uses named locations, retains exact IDs and clears an area wh
           expect.objectContaining({
             departmentId: "packing-id",
             areaId: "sorter-id",
-            code: "DRIVE-01",
+            code: "AS-001",
           }),
         ],
       }),
@@ -325,7 +335,7 @@ test.each(["not-authorized", "unavailable", "unmapped"] as const)(
     expect(screen.queryByText("Showing 0 of 0 records.")).toBeNull();
   },
 );
-test.each(["team-leader", "task-force"])(
+test.each(["administrator", "team-leader", "task-force"])(
   "%s can manage provisionally identified components when authorized",
   async (profile) => {
     const { application } = fixture();
@@ -341,16 +351,34 @@ test.each(["team-leader", "task-force"])(
     ).toBeVisible();
   },
 );
-test("deliberately choosing a reported code prepares an unverified component and exact source alias", () => {
-  const { application } = fixture();
+
+const reported: EquipmentCandidate = {
+  namespace: "analytics",
+  code: "=11+11.11.02-B102.1",
+  sourceId: "hitliste",
+  sector: "Halle 11",
+  area: "LB-Puffer",
+  departmentId: "hall",
+  areaId: "line",
+};
+const equipmentContext: Context = {
+  ...context,
+  locations: [
+    { id: "hall", parentId: "", label: "Halle 11", role: "department" },
+    { id: "line", parentId: "hall", label: "LB-Puffer", role: "area" },
+  ],
+};
+test("a single reported identifier is selected before metadata and saves exact source links with code as name", async () => {
+  const equipmentCatalog = jest.fn(async () => ({
+    candidates: [reported],
+    total: 1,
+    nextCursor: "",
+    sources: ["hitliste"],
+    sectors: ["Halle 11"],
+    areas: ["LB-Puffer"],
+  }));
+  const { application } = fixture({ equipmentCatalog });
   const save = jest.fn();
-  const equipmentContext: Context = {
-    ...context,
-    locations: [
-      { id: "hall", parentId: "", label: "Assembly", role: "department" },
-      { id: "line", parentId: "hall", label: "Line", role: "area" },
-    ],
-  };
   render(
     <AssetForm
       application={application}
@@ -358,41 +386,67 @@ test("deliberately choosing a reported code prepares an unverified component and
       pending={false}
       save={save}
       cancel={jest.fn()}
-      renderEquipmentPicker={(_, select) => (
-        <button
-          type="button"
-          onClick={() =>
-            select({
-              code: "=11+11.11.02-B102.1",
-              departmentId: "hall",
-              areaId: "line",
-            })
-          }
-        >
-          Use reported code
-        </button>
-      )}
     />,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Use reported code" }));
+  expect(screen.queryByLabelText("Asset name")).toBeNull();
+  expect(screen.getByLabelText("Reported equipment identifier")).toBeDisabled();
+  fireEvent.change(screen.getByLabelText("Asset Halle"), {
+    target: { value: "hall" },
+  });
+  fireEvent.change(screen.getByLabelText("Asset Bereich"), {
+    target: { value: "line" },
+  });
+  await waitFor(() =>
+    expect(equipmentCatalog).toHaveBeenCalledWith({
+      locationId: "line",
+      search: "",
+      cursor: "",
+    }),
+  );
+  await waitFor(() =>
+    expect(
+      screen.getByLabelText("Reported equipment identifier"),
+    ).toBeEnabled(),
+  );
+  fireEvent.change(screen.getByLabelText("Reported equipment identifier"), {
+    target: { value: "0" },
+  });
   expect(
     screen.getByLabelText("Equipment identifier (Betriebsmittelkennzeichen)"),
-  ).toHaveValue("=11+11.11.02-B102.1");
-  expect(screen.getByLabelText("Asset name")).toHaveValue(
-    "=11+11.11.02-B102.1",
+  ).toHaveValue(reported.code);
+  expect(screen.getByLabelText("Asset identity status")).toHaveValue(
+    "unverified",
   );
-  expect(screen.getByLabelText("Validation status")).toHaveValue("unverified");
+  fireEvent.change(screen.getByLabelText("Component type"), {
+    target: { value: "Cassette" },
+  });
+  fireEvent.change(
+    screen.getByLabelText("Manual group / location within Bereich"),
+    { target: { value: "Puffer 1" } },
+  );
   fireEvent.click(screen.getByRole("button", { name: "Save asset" }));
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({
       content: expect.objectContaining({
-        code: "=11+11.11.02-B102.1",
+        code: reported.code,
+        name: reported.code,
+        type: "Cassette",
+        locationDetails: "Puffer 1",
         status: "unverified",
         locationId: "line",
         aliases: [
           {
+            namespace: "analytics",
+            code: reported.code,
+            sourceId: "hitliste",
+            sector: "Halle 11",
+            area: "LB-Puffer",
+            departmentId: "",
+            areaId: "",
+          },
+          {
             namespace: "site-equipment",
-            code: "=11+11.11.02-B102.1",
+            code: reported.code,
             departmentId: "hall",
             areaId: "line",
             sourceId: "",
@@ -404,49 +458,255 @@ test("deliberately choosing a reported code prepares an unverified component and
     }),
   );
 });
-test("choosing a reported code never discards an existing alias when capacity is full", () => {
-  const { application } = fixture();
+test("source choices are native dropdowns conditioned by location, code, source and sector", async () => {
+  const equipmentCatalog = jest.fn(async (selection) => ({
+    candidates: selection.area === "LB-Puffer" ? [reported] : [],
+    total: 1,
+    nextCursor: "",
+    sources: ["hitliste", "qualified-second-source"],
+    sectors: selection.sourceId ? ["Halle 11"] : [],
+    areas: selection.sector ? ["LB-Puffer"] : [],
+  }));
+  const { application } = fixture({ equipmentCatalog });
+  const save = jest.fn();
   render(
     <AssetForm
       application={application}
-      context={context}
-      asset={{
-        ...asset,
-        content: {
-          ...asset.content,
-          aliases: Array.from({ length: 30 }, (_, index) => ({
-            namespace: "site-equipment",
-            code: `KEPT-${index}`,
-            departmentId: "hall",
+      context={equipmentContext}
+      pending={false}
+      save={save}
+      cancel={jest.fn()}
+    />,
+  );
+  fireEvent.change(
+    screen.getByLabelText("Equipment identifier (Betriebsmittelkennzeichen)"),
+    { target: { value: reported.code } },
+  );
+  fireEvent.change(screen.getByLabelText("Location"), {
+    target: { value: "line" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Add source alias" }));
+  fireEvent.change(screen.getByLabelText("Source namespace"), {
+    target: { value: "analytics" },
+  });
+  await waitFor(() => expect(screen.getByLabelText("Source ID")).toBeEnabled());
+  expect(screen.getByLabelText("Source ID").tagName).toBe("SELECT");
+  expect(screen.getByLabelText("Source ID")).toHaveTextContent(
+    "qualified-second-source",
+  );
+  expect(screen.getByLabelText("Source sector")).toBeDisabled();
+  fireEvent.change(screen.getByLabelText("Source ID"), {
+    target: { value: "hitliste" },
+  });
+  await waitFor(() =>
+    expect(screen.getByLabelText("Source sector")).toBeEnabled(),
+  );
+  fireEvent.change(screen.getByLabelText("Source sector"), {
+    target: { value: "Halle 11" },
+  });
+  await waitFor(() =>
+    expect(screen.getByLabelText("Source area")).toBeEnabled(),
+  );
+  fireEvent.change(screen.getByLabelText("Source area"), {
+    target: { value: "LB-Puffer" },
+  });
+  await waitFor(() =>
+    expect(screen.getByLabelText("Source equipment code")).toBeEnabled(),
+  );
+  fireEvent.change(screen.getByLabelText("Source equipment code"), {
+    target: { value: reported.code },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Save asset" }));
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      content: expect.objectContaining({
+        aliases: [
+          {
+            namespace: "analytics",
+            sourceId: "hitliste",
+            code: reported.code,
+            sector: "Halle 11",
+            area: "LB-Puffer",
+            departmentId: "",
             areaId: "",
-            sourceId: "",
-            sector: "",
-            area: "",
-          })),
-        },
-      }}
+          },
+        ],
+      }),
+    }),
+  );
+  expect(equipmentCatalog).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      locationId: "line",
+      code: reported.code,
+      sourceId: "hitliste",
+      sector: "Halle 11",
+      area: "LB-Puffer",
+    }),
+  );
+  fireEvent.change(screen.getByLabelText("Source ID"), {
+    target: { value: "qualified-second-source" },
+  });
+  await waitFor(() =>
+    expect(screen.getByLabelText("Source sector")).toBeEnabled(),
+  );
+  expect(screen.getByLabelText("Source area")).toHaveValue("");
+  expect(screen.getByLabelText("Source equipment code")).toHaveValue("");
+  expect(screen.getByLabelText("Source equipment code")).toBeDisabled();
+});
+test("reported-code search and pagination keep the selected Bereich and reject stale pages", async () => {
+  let finishPage: (
+    value: Awaited<ReturnType<Gateway["equipmentCatalog"]>>,
+  ) => void = () => undefined;
+  const second = { ...reported, code: "=11+11.11.02-B102.2" };
+  const equipmentCatalog = jest.fn(async (selection) => ({
+    candidates: [reported],
+    total: 2,
+    nextCursor: "next",
+    sources: ["hitliste"],
+    sectors: ["Halle 11"],
+    areas: ["LB-Puffer"],
+  }));
+  equipmentCatalog.mockImplementationOnce(async () => ({
+    candidates: [reported],
+    total: 2,
+    nextCursor: "next",
+    sources: ["hitliste"],
+    sectors: ["Halle 11"],
+    areas: ["LB-Puffer"],
+  }));
+  equipmentCatalog.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finishPage = resolve;
+      }),
+  );
+  equipmentCatalog.mockImplementationOnce(async () => ({
+    candidates: [second],
+    total: 1,
+    nextCursor: "",
+    sources: ["hitliste"],
+    sectors: ["Halle 11"],
+    areas: ["LB-Puffer"],
+  }));
+  const { application } = fixture({ equipmentCatalog });
+  render(
+    <AssetForm
+      application={application}
+      context={equipmentContext}
       pending={false}
       save={jest.fn()}
       cancel={jest.fn()}
-      renderEquipmentPicker={(_, select) => (
-        <button
-          type="button"
-          onClick={() =>
-            select({ code: "NEW-CODE", departmentId: "hall", areaId: "" })
-          }
-        >
-          Use reported code
-        </button>
-      )}
     />,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Use reported code" }));
-  expect(screen.getByRole("alert")).toHaveTextContent("source alias limit");
-  expect(
-    screen.getByLabelText("Equipment identifier (Betriebsmittelkennzeichen)"),
-  ).toHaveValue("AS-001");
-  expect(screen.getAllByLabelText("Source equipment code")).toHaveLength(30);
-  expect(screen.getAllByLabelText("Source equipment code")[29]).toHaveValue(
-    "KEPT-29",
+  fireEvent.change(screen.getByLabelText("Asset Halle"), {
+    target: { value: "hall" },
+  });
+  fireEvent.change(screen.getByLabelText("Asset Bereich"), {
+    target: { value: "line" },
+  });
+  fireEvent.click(
+    await screen.findByRole("button", { name: "More equipment codes" }),
   );
+  fireEvent.change(screen.getByLabelText("Search reported equipment"), {
+    target: { value: "B102.2" },
+  });
+  await waitFor(() =>
+    expect(
+      screen.getByLabelText("Reported equipment identifier"),
+    ).toHaveTextContent(second.code),
+  );
+  await act(async () =>
+    finishPage({
+      candidates: [reported],
+      total: 2,
+      nextCursor: "",
+      sources: ["hitliste"],
+      sectors: ["Halle 11"],
+      areas: ["LB-Puffer"],
+    }),
+  );
+  expect(
+    screen.getByLabelText("Reported equipment identifier"),
+  ).not.toHaveTextContent(reported.code);
+  expect(equipmentCatalog).toHaveBeenLastCalledWith({
+    locationId: "line",
+    search: "B102.2",
+    cursor: "",
+  });
+});
+test("current directory excludes retired by default and explicitly requests retained history", async () => {
+  const { application, gateway } = fixture();
+  render(
+    <AssetsWorkspace
+      application={application}
+      profile="administrator"
+      timeZone="UTC"
+    />,
+  );
+  await screen.findByRole("table", { name: "Asset directory" });
+  expect(gateway.query).toHaveBeenCalledWith(
+    expect.objectContaining({ status: "current" }),
+  );
+  fireEvent.change(screen.getByLabelText("Asset identity status"), {
+    target: { value: "" },
+  });
+  await waitFor(() =>
+    expect(gateway.query).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: "" }),
+    ),
+  );
+});
+test("changing the canonical code retains custom aliases and replaces mismatched source aliases", () => {
+  const content = {
+    ...emptyAsset(),
+    code: "OLD",
+    name: "Legacy name",
+    aliases: [
+      {
+        namespace: "site-equipment",
+        code: "OLD",
+        departmentId: "hall",
+        areaId: "line",
+        sourceId: "",
+        sector: "",
+        area: "",
+      },
+      {
+        namespace: "manual-register",
+        code: "OWNER-REFERENCE",
+        departmentId: "",
+        areaId: "",
+        sourceId: "",
+        sector: "",
+        area: "",
+      },
+    ],
+  };
+  const changed = contentFromEquipment(content, reported);
+  expect(changed.code).toBe(reported.code);
+  expect(changed.name).toBe(reported.code);
+  expect(changed.aliases.some((alias) => alias.code === "OLD")).toBe(false);
+  expect(changed.aliases[0]).toEqual(content.aliases[1]);
+  expect(content.aliases).toHaveLength(2);
+});
+test("selecting another source context never discards current aliases when capacity is full", () => {
+  const content = {
+    ...emptyAsset(),
+    code: reported.code,
+    name: reported.code,
+    aliases: Array.from({ length: 30 }, (_, index) => ({
+      namespace: "manual-register",
+      code: `KEPT-${index}`,
+      departmentId: "",
+      areaId: "",
+      sourceId: "",
+      sector: "",
+      area: "",
+    })),
+  };
+  expect(() => contentFromEquipment(content, reported)).toThrow(
+    "source alias limit",
+  );
+  expect(content.aliases).toHaveLength(30);
+  expect(content.aliases[29].code).toBe("KEPT-29");
 });

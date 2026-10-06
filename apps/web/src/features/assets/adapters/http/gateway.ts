@@ -4,6 +4,7 @@ import type {
   SaveInput,
   Selection,
   TimelineSelection,
+  EquipmentSelection,
 } from "../../domain/models";
 type Schemas = components["schemas"];
 const messages: Record<string, string> = {
@@ -11,7 +12,8 @@ const messages: Record<string, string> = {
     "Check the asset fields, validation note and exact source aliases.",
   asset_denied: "You do not have permission to manage this asset.",
   asset_missing: "The asset is unavailable.",
-  asset_conflict: "This asset or source alias changed. Reload before saving.",
+  asset_conflict:
+    "This code is already registered or this asset changed. Search the directory or reload before saving.",
   asset_alias_conflict:
     "This exact source alias is already linked to another asset. Review the source identity.",
   asset_capacity:
@@ -49,5 +51,11 @@ export class HttpAssetsGateway implements Gateway {
   }
   timeline(selection: TimelineSelection) {
     return request<Schemas["AssetTimelinePageDto"]>("timeline", selection);
+  }
+  equipmentCatalog(selection: EquipmentSelection) {
+    return request<Schemas["AssetEquipmentPageDto"]>(
+      "equipment-catalog",
+      selection,
+    );
   }
 }

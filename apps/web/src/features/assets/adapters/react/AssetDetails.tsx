@@ -23,15 +23,21 @@ export function AssetDetails({
   return (
     <>
       <div className="assets-collection-heading">
-        <h2>{content.name}</h2>
+        <h2>{content.code}</h2>
         <Badge tone={content.status === "validated" ? "success" : "neutral"}>
           {assetStatusLabel(content.status)}
         </Badge>
       </div>
       <dl className="iop-detail-fields">
         {[
-          ["Asset code", content.code],
-          ["Asset type", content.type || "—"],
+          ...(content.name !== content.code
+            ? [["Original recorded name", content.name]]
+            : []),
+          ["Component type", content.type || "—"],
+          [
+            "Manual group / location within Bereich",
+            content.locationDetails || "—",
+          ],
           [
             "Location",
             context.locations.find(
@@ -49,6 +55,11 @@ export function AssetDetails({
           </div>
         ))}
       </dl>
+      <p className="assets-muted">
+        {t(
+          "Identity status records verification or retirement. It does not describe the location or establish whether equipment is operating.",
+        )}
+      </p>
       {content.description && (
         <section>
           <h3>{t("Asset description")}</h3>
@@ -71,8 +82,8 @@ export function AssetDetails({
                     "Source namespace",
                     "Source ID",
                     "Source equipment code",
-                    "Department ID",
-                    "Area ID",
+                    "Department",
+                    "Area",
                     "Source sector",
                     "Source area",
                   ].map((label) => (
@@ -89,8 +100,12 @@ export function AssetDetails({
                       alias.namespace,
                       alias.sourceId,
                       alias.code,
-                      alias.departmentId,
-                      alias.areaId,
+                      context.locations.find(
+                        (location) => location.id === alias.departmentId,
+                      )?.label || alias.departmentId,
+                      context.locations.find(
+                        (location) => location.id === alias.areaId,
+                      )?.label || alias.areaId,
                       alias.sector,
                       alias.area,
                     ].map((value, position) => (

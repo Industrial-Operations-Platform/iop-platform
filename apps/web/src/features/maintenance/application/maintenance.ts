@@ -43,7 +43,7 @@ export function maintenanceDraftFromReport(
   return {
     ...emptyRecord(),
     title: report.content.summary.slice(0, 160),
-    details: report.content.details,
+    details: "",
     repairTarget: report.content.summary.slice(0, 200),
     locationId: report.content.areaId || report.content.departmentId,
     equipment:

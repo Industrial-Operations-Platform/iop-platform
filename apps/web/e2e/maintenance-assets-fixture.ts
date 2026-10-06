@@ -73,12 +73,12 @@ export async function installMaintenanceAssetsFixture(
     createdAt: "2026-10-01T08:00:00Z",
     updatedAt: "2026-10-02T10:00:00Z",
     locationLabel: "Assembly",
-    assetName: "Assembly conveyor",
+    assetName: "DRIVE-01",
     priorityLabel: "Normal",
     assigneeName: "Morgan Administrator",
     teamLabel: "Maintenance team",
     canEdit: profile !== "executive",
-    canReassign: profile === "team-leader",
+    canReassign: ["administrator", "team-leader"].includes(profile),
   }));
   let assets: Asset[] = [
     {
@@ -90,8 +90,8 @@ export async function installMaintenanceAssetsFixture(
       updatedAt: "2026-10-02T10:00:00Z",
       content: {
         ...emptyAsset(),
-        name: "Assembly conveyor",
-        code: "AS-001",
+        name: "DRIVE-01",
+        code: "DRIVE-01",
         type: "Conveyor",
         locationId: "assembly",
         status: "validated",
@@ -130,8 +130,8 @@ export async function installMaintenanceAssetsFixture(
       updatedAt: "2026-10-02T10:00:00Z",
       content: {
         ...emptyAsset(),
-        name: "Packing sorter",
-        code: "AS-002",
+        name: "DRIVE-02",
+        code: "DRIVE-02",
         locationId: "packing",
       },
     },
@@ -308,7 +308,7 @@ export async function installMaintenanceAssetsFixture(
       const catalog: Catalog = {
         actorId: "admin",
         canContribute: profile !== "executive",
-        canCoordinate: profile === "team-leader",
+        canCoordinate: ["administrator", "team-leader"].includes(profile),
         canAdminister: profile === "administrator",
         settings,
         people: [{ id: "admin", name: "Morgan Administrator" }],
@@ -389,17 +389,97 @@ export async function installMaintenanceAssetsFixture(
       };
       return json(settings);
     }
+    if (path.endsWith("/assets/equipment-catalog")) {
+      const all = ["DRIVE-01", "=11+11.11.02-B102.1"].flatMap((code) => [
+        {
+          namespace: "analytics",
+          sourceId: "daily-alarms",
+          code,
+          sector: "Assembly",
+          area: "Line 1",
+          departmentId: "assembly",
+          areaId: "assembly-line1",
+        },
+        {
+          namespace: "site-equipment",
+          sourceId: "",
+          code,
+          sector: "",
+          area: "",
+          departmentId: "assembly",
+          areaId: "assembly-line1",
+        },
+      ]);
+      const base = all.filter(
+        (candidate) =>
+          (!data.locationId ||
+            [candidate.departmentId, candidate.areaId].includes(
+              data.locationId,
+            )) &&
+          (!data.code || candidate.code === data.code) &&
+          (!data.search ||
+            candidate.code.toLowerCase().includes(data.search.toLowerCase())),
+      );
+      const sources = [
+        ...new Set(base.map((candidate) => candidate.sourceId).filter(Boolean)),
+      ];
+      const sourced = base.filter(
+        (candidate) => !data.sourceId || candidate.sourceId === data.sourceId,
+      );
+      const sectors = [
+        ...new Set(
+          sourced.map((candidate) => candidate.sector).filter(Boolean),
+        ),
+      ];
+      const sector = sourced.filter(
+        (candidate) => !data.sector || candidate.sector === data.sector,
+      );
+      const areas = [
+        ...new Set(sector.map((candidate) => candidate.area).filter(Boolean)),
+      ];
+      const candidates = all.filter(
+        (candidate) =>
+          (!data.locationId ||
+            [candidate.departmentId, candidate.areaId].includes(
+              data.locationId,
+            )) &&
+          (!data.code || candidate.code === data.code) &&
+          (!data.search ||
+            candidate.code.toLowerCase().includes(data.search.toLowerCase())) &&
+          (!data.sourceId || candidate.sourceId === data.sourceId) &&
+          (!data.sector || candidate.sector === data.sector) &&
+          (!data.area || candidate.area === data.area),
+      );
+      const unique = (key: "sourceId" | "sector" | "area") => [
+        ...new Set(
+          candidates.map((candidate) => candidate[key]).filter(Boolean),
+        ),
+      ];
+      return json({
+        candidates,
+        total: candidates.length,
+        nextCursor: "",
+        sources,
+        sectors,
+        areas,
+      });
+    }
     if (path.endsWith("/assets/context"))
       return json({
         actorId: "admin",
         timeZone: "UTC",
-        canManage: ["team-leader", "task-force"].includes(profile),
+        canManage: ["administrator", "team-leader", "task-force"].includes(
+          profile,
+        ),
         locations,
       });
     if (path.endsWith("/assets/query")) {
       const matching = assets.filter(
         (asset) =>
-          (!data.status || asset.content.status === data.status) &&
+          (!data.status ||
+            (data.status === "current"
+              ? asset.content.status !== "retired"
+              : asset.content.status === data.status)) &&
           (!data.locationId || asset.content.locationId === data.locationId) &&
           (!data.search ||
             asset.content.name
@@ -509,5 +589,11 @@ export async function installMaintenanceAssetsFixture(
     }
     throw new Error(`Unexpected Maintenance/Assets request: ${path}`);
   });
-  return { requests, assetId, recordId: records[0].id };
+  return {
+    requests,
+    assetId,
+    recordId: records[0].id,
+    sourceReport: handover,
+    completedRecord: records.at(-1)!,
+  };
 }

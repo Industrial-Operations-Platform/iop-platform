@@ -131,6 +131,39 @@ export interface EquipmentReference {
   departmentId: string;
   areaId: string;
 }
+export function withinMaintenanceLocation(
+  id: string,
+  ancestor: string,
+  locations: Catalog["locations"],
+) {
+  const seen = new Set<string>();
+  while (id && !seen.has(id)) {
+    if (id === ancestor) return true;
+    seen.add(id);
+    id = locations.find((location) => location.id === id)?.parentId ?? "";
+  }
+  return false;
+}
+export function assetMatchesLocation(
+  assetLocationId: string,
+  repairLocationId: string,
+  locations: Catalog["locations"],
+) {
+  return (
+    !assetLocationId ||
+    (!!repairLocationId &&
+      (withinMaintenanceLocation(
+        assetLocationId,
+        repairLocationId,
+        locations,
+      ) ||
+        withinMaintenanceLocation(
+          repairLocationId,
+          assetLocationId,
+          locations,
+        )))
+  );
+}
 export interface LinkedEntry {
   id: string;
   expectedRevision: number;

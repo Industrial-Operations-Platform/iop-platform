@@ -13,7 +13,6 @@ import { MaintenanceAssignments } from "../features/maintenance/adapters/react/M
 import { MaintenanceEntryDetail } from "./MaintenanceEntryDetail";
 import { EntrySummaryCards } from "../features/shift-handover/adapters/react/EntrySummaryCards";
 import type { RecordData } from "../features/maintenance/domain/models";
-import { EquipmentScope } from "../features/maintenance/adapters/react/EquipmentScope";
 import { WorkforceToday } from "../features/workforce/adapters/react/WorkforceToday";
 import { WorkforceWorkspace } from "../features/workforce/adapters/react/WorkforceWorkspace";
 import type { WorkforceApplication } from "../features/workforce/application/workforce";
@@ -214,7 +213,9 @@ export function WorkspaceApp({
   const effectiveProfile = previewProfile ?? context?.user?.profile;
   const canReadAssets =
     !!signedIn &&
-    ["team-leader", "task-force"].includes(effectiveProfile ?? "");
+    ["administrator", "team-leader", "task-force"].includes(
+      effectiveProfile ?? "",
+    );
   const openMaintenance = (id: string) => {
     setMaintenanceDraft(undefined);
     setMaintenanceRecord(id);
@@ -511,6 +512,7 @@ export function WorkspaceApp({
           renderReportCards={(entries, open) => (
             <EntrySummaryCards
               entries={entries}
+              preview="original"
               expanded
               personal
               open={open}
@@ -546,21 +548,6 @@ export function WorkspaceApp({
           timeZone={context.scope?.siteTimeZone ?? "UTC"}
           homeVisit={assetVisit}
           initialAssetId={assetRecord}
-          renderEquipmentPicker={
-            equipmentLookup
-              ? (scope, select) => (
-                  <EquipmentScope
-                    catalog={{ locations: scope.locations }}
-                    locationId={scope.locationId}
-                    equipment={[]}
-                    change={(equipment) => {
-                      if (equipment[0]) select(equipment[0]);
-                    }}
-                    lookup={equipmentLookup}
-                  />
-                )
-              : undefined
-          }
           onOpenSource={(kind, id) => {
             window.scrollTo(0, 0);
             if (kind === "maintenance") {

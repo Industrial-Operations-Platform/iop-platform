@@ -25,8 +25,14 @@ export function EntryDetailBody({ entry }: { entry: Entry }) {
             {issueLabel(entry.issueState)}
           </Badge>
           {c.condition && (
-            <Badge tone={c.condition === "blocked" ? "attention" : "neutral"}>
-              {t("Reported ")}
+            <Badge
+              tone={
+                c.condition === "blocked" && entry.issueState !== "resolved"
+                  ? "attention"
+                  : "neutral"
+              }
+            >
+              {t("Original observation on {0}: ", [c.date])}
               {c.condition.replaceAll("-", " ")}
             </Badge>
           )}

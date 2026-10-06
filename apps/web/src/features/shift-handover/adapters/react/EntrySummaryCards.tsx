@@ -9,6 +9,7 @@ export function EntrySummaryCards({
   open,
   expanded = false,
   personal = false,
+  preview = "latest",
 }: {
   entries: (Pick<
     Entry,
@@ -34,6 +35,7 @@ export function EntrySummaryCards({
   open: (id: string) => void;
   expanded?: boolean;
   personal?: boolean;
+  preview?: "latest" | "original";
 }) {
   return (
     <div
@@ -65,18 +67,21 @@ export function EntrySummaryCards({
                 <Badge tone={issueTone(entry.issueState)}>
                   {issueLabel(entry.issueState)}
                 </Badge>
-                {entry.content.condition === "blocked" && (
-                  <Badge tone="attention">{t("Reported blocked")}</Badge>
-                )}
+                {entry.issueState !== "resolved" &&
+                  entry.content.condition === "blocked" && (
+                    <Badge tone="attention">{t("Reported blocked")}</Badge>
+                  )}
               </span>
               {entry.content.equipmentCode && (
                 <span className="handover-card-equipment">
                   {entry.content.equipmentCode}
                 </span>
               )}
-              {(entry.latestUpdate?.note || entry.content.details) && (
+              {((preview === "original" ? "" : entry.latestUpdate?.note) ||
+                entry.content.details) && (
                 <span className="handover-excerpt">
-                  {entry.latestUpdate?.note || entry.content.details}
+                  {(preview === "original" ? "" : entry.latestUpdate?.note) ||
+                    entry.content.details}
                 </span>
               )}
               {expanded && (

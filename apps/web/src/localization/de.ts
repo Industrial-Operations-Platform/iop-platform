@@ -1,5 +1,63 @@
 export const german: Readonly<Record<string, string>> = {
-  "Title, repair target, equipment code or reference": "Titel, Reparaturziel, Betriebsmittelkennzeichen oder Referenz",
+  "Original recorded name": "Ursprünglich erfasster Name",
+  "Choose reported equipment": "Gemeldetes Betriebsmittel auswählen",
+  "Choose Halle, Bereich and one exact code. The selection prepares source links; physical identity remains unverified.":
+    "Wähle Halle, Bereich und ein genaues Kennzeichen. Die Auswahl bereitet Quellenbezüge vor; die physische Identität bleibt ungeprüft.",
+  "Asset Halle": "Halle der Anlage",
+  "Asset Bereich": "Bereich der Anlage",
+  "Choose Bereich": "Bereich auswählen",
+  "Search reported equipment": "Gemeldetes Betriebsmittel suchen",
+  "Reported equipment identifier": "Gemeldetes Betriebsmittelkennzeichen",
+  "Loading equipment catalog…": "Betriebsmittelkatalog wird geladen…",
+  "Reload equipment catalog": "Betriebsmittelkatalog neu laden",
+  "Showing {0} of {1} source references.":
+    "{0} von {1} Quellenbezügen angezeigt.",
+  "No reported code matches. Register an exact manual identifier below if it is absent from the source.":
+    "Kein gemeldetes Kennzeichen passt. Erfasse unten ein genaues manuelles Kennzeichen, wenn es in der Quelle fehlt.",
+  "One exact asset code identifies each current component. Use a manual code when it is absent from the source; physical verification remains a separate step.":
+    "Ein genaues Anlagenkennzeichen identifiziert jede aktuelle Komponente. Verwende ein manuelles Kennzeichen, wenn es in der Quelle fehlt; die physische Prüfung erfolgt gesondert.",
+  "Changing the identifier replaces source links with different codes. Earlier revisions preserve the previous identity and links.":
+    "Eine Änderung des Kennzeichens ersetzt Quellenbezüge mit abweichenden Kennzeichen. Frühere Versionen erhalten die vorherige Identität und ihre Bezüge.",
+  "Component type": "Komponententyp",
+  Cassette: "Kassette",
+  "Motor roller": "Motorrolle",
+  "Photoelectric sensor": "Lichtschranke",
+  "Other component": "Andere Komponente",
+  "Other component type": "Anderer Komponententyp",
+  "Not recorded": "Nicht erfasst",
+  "Manual group / location within Bereich":
+    "Manuelle Gruppe / Standort im Bereich",
+  "For example: buffer 1 or buffer 2": "Zum Beispiel: Puffer 1 oder Puffer 2",
+  "Asset identity status": "Identitätsstatus der Anlage",
+  "Unverified: physical identity awaits review. Validated: identity was confirmed with a note. Retired: retained for history and hidden from the current directory. These states do not describe location or machine operation.":
+    "Ungeprüft: Die physische Identität muss geprüft werden. Bestätigt: Die Identität wurde mit einer Notiz bestätigt. Außer Betrieb: Für die Historie erhalten und im aktuellen Verzeichnis ausgeblendet. Diese Zustände beschreiben weder den Standort noch den Maschinenbetrieb.",
+  "Analysis supplies measured evidence, Handover keeps reported problems, and Maintenance records the intervention. Open each source from the digital record; source links do not confirm that equipment is working.":
+    "Die Analyse liefert Messdaten, die Schichtübergabe bewahrt gemeldete Probleme und die Instandhaltung dokumentiert den Eingriff. Öffne die Quellen im digitalen Datensatz; Quellenbezüge bestätigen nicht die Betriebsfähigkeit.",
+  "Source choices retain the exact reported source, sector, area and code. They link measured evidence and do not establish physical identity.":
+    "Die Quellenauswahl erhält Quelle, Sektor, Bereich und Kennzeichen genau. Sie verknüpft Messdaten und bestätigt keine physische Identität.",
+  Choose: "Auswählen",
+  "Retained reference": "Erhaltener Bezug",
+  "Current components": "Aktuelle Komponenten",
+  "All states including retired": "Alle Zustände einschließlich außer Betrieb",
+  "Asset code, component type or manual group":
+    "Anlagenkennzeichen, Komponententyp oder manuelle Gruppe",
+  "Identity status records verification or retirement. It does not describe the location or establish whether equipment is operating.":
+    "Der Identitätsstatus dokumentiert Prüfung oder Stilllegung. Er beschreibt weder den Standort noch die Betriebsfähigkeit.",
+  "Original observation on {0}:": "Ursprüngliche Beobachtung am {0}:",
+  "Source equipment code": "Quellen-Betriebsmittelkennzeichen",
+  "Source ID": "Quellen-ID",
+  "Source sector": "Quellensektor",
+  "Source area": "Quellenbereich",
+  "This code is already registered or this asset changed. Search the directory or reload before saving.":
+    "Dieses Kennzeichen ist bereits erfasst oder die Anlage wurde geändert. Suche im Verzeichnis oder lade den Datensatz vor dem Speichern neu.",
+  "Reports to review": "Zu prüfende Meldungen",
+  "Related context": "Zugehöriger Kontext",
+  "Included reports belong to this intervention. Exclusions and related context remain outside its repair scope. Open a source card to read its full history.":
+    "Einbezogene Meldungen gehören zu diesem Eingriff. Ausschlüsse und zugehöriger Kontext liegen außerhalb seines Reparaturumfangs. Öffne eine Quellenkarte für die vollständige Historie.",
+  "Completion closes included open reports only. Excluded reports and related context retain their own status.":
+    "Der Abschluss schließt ausschließlich einbezogene offene Meldungen. Ausgeschlossene Meldungen und zugehöriger Kontext behalten ihren eigenen Status.",
+  "Title, repair target, equipment code or reference":
+    "Titel, Reparaturziel, Betriebsmittelkennzeichen oder Referenz",
   "Related reports are unavailable. Reload reports and retry.":
     "Zugehörige Meldungen sind nicht verfügbar. Lade die Meldungen neu und versuche es erneut.",
   "The source alias limit is reached. Remove an alias before selecting another code.":
