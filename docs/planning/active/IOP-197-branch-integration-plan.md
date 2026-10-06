@@ -59,3 +59,7 @@ scope and RBAC applicability without imposing general Audit on current operation
 IOP-136 conflicts retain current startup/delivery documentation and Completed local
 guide status. Keep its earlier guide/preparation plan as explicitly historical
 fixture-preview evidence, with the current operator guide as the canonical workflow.
+
+IOP-140 translation conflicts retain the current complete English IOP-029/129
+contexts and their later delivery evidence/statuses. Retain the earlier translation
+record and its language-rule link. No new translation-only edits are needed.

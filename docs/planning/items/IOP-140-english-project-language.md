@@ -32,3 +32,6 @@ Check links and review wording against the explicit request.
 ## Execution
 
 [Plan](../completed/IOP-140-english-project-language-plan.md).
+
+[Roadmap inspection translation evidence](../completed/IOP-140-roadmap-read-translations-plan.md)
+records the bounded translation-on-read increment for IOP-029 and IOP-129.
