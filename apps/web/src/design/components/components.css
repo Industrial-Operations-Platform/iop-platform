@@ -1271,6 +1271,71 @@
 .iop-ui .iop-notifications .iop-popover-panel {
   width: min(24rem, calc(100vw - 24px));
 }
+.iop-ui .iop-notifications--activity .iop-popover-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12px;
+}
+.iop-notifications--activity .iop-notification-heading,
+.iop-notification-summary {
+  flex: 0 0 auto;
+  padding: 0;
+}
+.iop-notification-title,
+.iop-notification-summary,
+.iop-notification-metadata {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.iop-notification-summary {
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.iop-ui .iop-notification-summary > p {
+  margin: 8px 0 0;
+  padding: 0;
+}
+.iop-ui .iop-notification-summary > .iop-button {
+  flex-shrink: 0;
+  padding-inline: 0;
+  font-size: var(--iop-captionSize);
+}
+.iop-notification-feed {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--iop-line);
+}
+.iop-ui .iop-notification-group {
+  margin: 12px 0 8px;
+  font-size: var(--iop-captionSize);
+  color: var(--iop-muted);
+}
+.iop-notifications--activity .iop-notification-list {
+  display: grid;
+  gap: 8px;
+}
+.iop-notifications--activity .iop-notification-list li {
+  border: 1px solid var(--iop-line);
+  border-radius: var(--iop-cardRadius);
+}
+.iop-ui .iop-notifications--activity .iop-notification-list .iop-button {
+  padding: 12px;
+}
+.iop-ui .iop-notification-list strong {
+  font-weight: var(--iop-labelWeight);
+}
+.iop-notification-metadata {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.iop-notification-metadata time {
+  white-space: nowrap;
+}
 .iop-notification-toggle {
   position: relative;
 }

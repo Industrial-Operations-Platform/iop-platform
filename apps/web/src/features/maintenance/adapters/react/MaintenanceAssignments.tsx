@@ -8,7 +8,10 @@ import {
   RefreshButton,
 } from "../../../../design/components";
 import { t } from "../../../../localization/i18n";
-import type { MaintenanceApplication } from "../../application/maintenance";
+import {
+  assignmentsForPeriod,
+  type MaintenanceApplication,
+} from "../../application/maintenance";
 import type { MaintenanceRecord } from "../../domain/models";
 import { statusLabel, statusTone } from "./labels";
 import "./maintenance.css";
@@ -16,9 +19,13 @@ import "./maintenance.css";
 export function MaintenanceAssignments({
   application,
   open,
+  period,
+  embedded = false,
 }: {
   application: MaintenanceApplication;
   open: (id: string) => void;
+  period?: { from: string; to: string; today: string };
+  embedded?: boolean;
 }) {
   const [records, setRecords] = useState<MaintenanceRecord[]>([]);
   const [error, setError] = useState("");
@@ -54,11 +61,16 @@ export function MaintenanceAssignments({
       window.removeEventListener("focus", refresh);
     };
   }, [application, version]);
+  const visible = period ? assignmentsForPeriod(records, period) : records;
+  const Container = embedded ? "section" : Panel;
   return (
-    <Panel aria-label={t("Your maintenance assignments")}>
+    <Container
+      className="maintenance-assignments"
+      aria-label={t("Your maintenance assignments")}
+    >
       <div className="maintenance-collection-heading">
         <h2>
-          {t("Your maintenance assignments")} <Badge>{records.length}</Badge>
+          {t("Your maintenance assignments")} <Badge>{visible.length}</Badge>
         </h2>
         <RefreshButton
           label={t("Refresh maintenance assignments")}
@@ -66,50 +78,62 @@ export function MaintenanceAssignments({
           onClick={() => setVersion((value) => value + 1)}
         />
       </div>
+      {period && (
+        <p className="maintenance-muted">
+          {t("Due in this period, plus overdue work and work without a due date.")}
+        </p>
+      )}
       {error && <Alert>{t(error)}</Alert>}
-      <div className="maintenance-related-reports">
-        {records.slice(0, 3).map((record) => (
+      <div className="maintenance-assignment-cards">
+        {visible.slice(0, 4).map((record) => (
           <Button
             key={record.id}
             variant="secondary"
-            className="maintenance-card"
+            className="maintenance-card maintenance-assignment-card"
             onClick={() => open(record.id)}
           >
             <strong>{record.data.title}</strong>
-            <span>
-              {record.locationLabel} ·{" "}
-              {record.data.repairTarget || record.assetName}
+            <span className="maintenance-assignment-context">
+              {[record.locationLabel, record.data.repairTarget || record.assetName]
+                .filter(Boolean)
+                .join(" · ")}
             </span>
-            <span>
+            <span className="maintenance-assignment-metadata">
               <Badge tone={statusTone(record.data.status)}>
                 {statusLabel(record.data.status)}
-              </Badge>{" "}
-              {record.priorityLabel}
-            </span>
-            {record.data.dueDate && (
+              </Badge>
               <span>
-                {t("Due date")}: {record.data.dueDate}
+                {t("Priority")}: {record.priorityLabel}
               </span>
-            )}
+              <span className="maintenance-assignment-due">
+                {record.data.dueDate ? (
+                  <>
+                    {t("Due date")}: <time dateTime={record.data.dueDate}>{record.data.dueDate}</time>
+                  </>
+                ) : t("No due date")}
+              </span>
+            </span>
           </Button>
         ))}
       </div>
-      {!records.length && (
+      {!visible.length && (
         <p>
           {t(
             busy
               ? "Loading maintenance assignments…"
-              : "No unfinished maintenance is assigned to you.",
+              : records.length
+                ? "No maintenance is due in this period."
+                : "No unfinished maintenance is assigned to you.",
           )}
         </p>
       )}
-      {records.length > 3 && (
+      {visible.length > 4 && (
         <Actions>
           <Button variant="text" onClick={() => open("")}>
             {t("Open My work")}
           </Button>
         </Actions>
       )}
-    </Panel>
+    </Container>
   );
 }

@@ -235,10 +235,22 @@
   align-items: start;
 }
 .handover-meeting-section {
-  min-height: 12rem;
+  min-width: 0;
 }
 .handover-meeting-section h3 {
   margin: 0;
+}
+.handover-meeting-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.handover-meeting-section > .handover-section-heading {
+  flex-wrap: nowrap;
+  min-height: 44px;
+}
+.iop-ui .handover-meeting-section > .handover-muted {
+  margin: 8px 0 0;
 }
 .handover-summary-cards {
   display: grid;

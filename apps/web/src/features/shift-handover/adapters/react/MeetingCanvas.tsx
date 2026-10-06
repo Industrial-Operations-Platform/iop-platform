@@ -1,5 +1,5 @@
 import { t } from "../../../../localization/i18n";
-import { AddButton, Button, Panel } from "../../../../design/components";
+import { AddButton, Badge, Button, Panel } from "../../../../design/components";
 import type { Choice, Page } from "../../domain/models";
 import { EntrySummaryCards } from "./EntrySummaryCards";
 
@@ -36,8 +36,9 @@ export function MeetingCanvas({
           className="handover-meeting-section"
         >
           <div className="handover-section-heading">
-            <h3>{t(category.label)}</h3>
-            <span>{page.total}</span>
+            <h3 className="handover-meeting-title">
+              {t(category.label)} <Badge>{page.total}</Badge>
+            </h3>
             {add && (!canAdd || canAdd(category)) && <AddButton label={t("Add {0} update", [t(category.label)])} disabled={busy} onClick={() => add(category)} />}
           </div>
           <EntrySummaryCards entries={page.entries} open={open} />

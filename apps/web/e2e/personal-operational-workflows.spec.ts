@@ -394,6 +394,14 @@ for (const width of [1440, 375]) {
     await expect(
       daily.getByText("Today's briefing", { exact: true }),
     ).toBeVisible();
+    const safety = daily.getByRole("region", { name: "Safety section", exact: true });
+    expect((await safety.boundingBox())!.height).toBeLessThan(160);
+    expect(await safety.locator(".handover-meeting-title").evaluate((heading) => {
+      const label = document.createRange();
+      label.selectNodeContents(heading.firstChild!);
+      const count = heading.querySelector(".iop-badge")!.getBoundingClientRect();
+      return count.left - label.getBoundingClientRect().right;
+    })).toBeLessThan(12);
     await page.getByLabel("Overview date").fill("2026-09-28");
     await expect(
       daily.getByText("Historical briefing", { exact: true }),

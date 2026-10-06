@@ -92,7 +92,54 @@
   justify-content: space-between;
 }
 .maintenance-collection-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0;
+}
+.maintenance-assignments {
+  min-width: 0;
+}
+.workforce-start-assignment > .maintenance-assignments {
+  border-top: 1px solid var(--iop-line);
+  margin-top: var(--iop-sectionGap);
+  padding-top: var(--iop-sectionGap);
+}
+.maintenance-assignment-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--iop-sectionGap);
+  margin-top: 12px;
+}
+.iop-ui .maintenance-assignment-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+  align-content: start;
+  align-items: start;
+  gap: 10px;
+  padding: var(--iop-sectionGap);
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.iop-ui .maintenance-assignment-card > strong {
+  font-weight: var(--iop-labelWeight);
+}
+.maintenance-assignment-context {
+  line-height: var(--iop-captionLineHeight);
+}
+.maintenance-assignment-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.maintenance-assignment-metadata > * {
+  white-space: nowrap;
+}
+.maintenance-assignment-due {
+  margin-left: auto;
 }
 .maintenance-detail-layout {
   display: grid;
@@ -117,6 +164,9 @@
   }
 }
 @media (max-width: 650px) {
+  .maintenance-assignment-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .maintenance-board,
   .maintenance-detail-layout {
     grid-template-columns: minmax(0, 1fr);

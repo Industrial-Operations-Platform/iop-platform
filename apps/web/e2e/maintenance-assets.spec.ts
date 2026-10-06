@@ -166,14 +166,21 @@ for (const profile of [
   test(`${profile} operational navigation uses source-specific permissions`, async ({
     page,
   }) => {
+    await page.clock.setFixedTime(new Date("2026-10-06T08:00:00Z"));
     await installMaintenanceAssetsFixture(page, profile);
     await page.goto("/");
     const navigation = page.getByRole("navigation", {
       name: "Main navigation",
     });
-    await navigation
-      .getByRole("button", { name: "Maintenance", exact: true })
-      .click();
+    if (profile === "technician") {
+      await expect(navigation.getByRole("button", { name: "Maintenance", exact: true })).toHaveCount(0);
+      await page.getByRole("region", { name: "Your maintenance assignments", exact: true })
+        .getByRole("button", { name: /Bearing inspection/ }).click();
+      await expect(page.getByRole("heading", { name: "Bearing inspection", exact: true })).toBeVisible();
+      await expect(navigation.getByRole("button", { name: "Assets", exact: true })).toHaveCount(0);
+      return;
+    }
+    await navigation.getByRole("button", { name: "Maintenance", exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Configuration", exact: true }),
     ).toHaveCount(profile === "administrator" ? 1 : 0);

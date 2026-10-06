@@ -129,6 +129,11 @@ export const german: Readonly<Record<string, string>> = {
   "Open, in-progress and blocked work stays visible until completed. Completed work defaults to the previous and current site weeks.":
     "Offene, laufende und blockierte Arbeiten bleiben bis zum Abschluss sichtbar. Abgeschlossene Arbeiten zeigen standardmäßig die vorherige und aktuelle Standortwoche.",
   "Your maintenance assignments": "Deine Instandhaltungsaufträge",
+  "Due in this period, plus overdue work and work without a due date.":
+    "In diesem Zeitraum fällige, überfällige und nicht terminierte Aufträge.",
+  "No maintenance is due in this period.": "In diesem Zeitraum sind keine Aufträge fällig.",
+  "No due date": "Kein Fälligkeitsdatum",
+  "Updating assignments…": "Einsätze werden aktualisiert…",
   "Refresh maintenance assignments": "Instandhaltungsaufträge aktualisieren",
   "Your maintenance assignments are unavailable. Try again.":
     "Deine Instandhaltungsaufträge sind nicht verfügbar. Versuche es erneut.",
