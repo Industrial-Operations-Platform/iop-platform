@@ -53,6 +53,8 @@ export function EntryDetailBody({ entry }: { entry: Entry }) {
           <p className="handover-prose">
             {c.details || t("No additional details.")}
           </p>
+          {!!c.images?.length && <div className="handover-images">{c.images.map((image, index) => <figure key={index}><img src={image.dataUrl} alt={image.name} /><figcaption>{image.name}</figcaption></figure>)}</div>}
+          {!!entry.mentionedPeople?.length && <p><strong>{t("Mentioned people")}: </strong>{entry.mentionedPeople.map((p) => p.name).join(", ")}</p>}
           {followUp.length > 0 && (
             <dl className="handover-detail-follow-up">
               {followUp.map(([label, value]) => (

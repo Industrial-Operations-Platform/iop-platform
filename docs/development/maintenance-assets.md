@@ -30,7 +30,10 @@ The user's shared installation is not a test database.
 3. Open Maintenance, create technical work and select its location, asset,
    priority and responsibility. Work may be recorded without an asset when identity
    is unresolved; this does not fabricate a canonical mapping.
-4. Progress work, explain blockers and record an outcome when completing it.
+4. Use the record's **Move maintenance** actions for Open/In progress/Blocked/Done.
+   **Mark as done** opens a completion review: record the outcome, confirm all tasks
+   and the shown workplace/equipment, then review every pending related report.
+   Blocked and reopening require a reason. **Edit** changes record information.
    Administrators and Team Leaders assign/reassign site work; contributors update authored/assigned work.
 5. Open a work record to inspect its attributed revisions. On a stale-save
    conflict reload the current record and review the newer changes before retrying.

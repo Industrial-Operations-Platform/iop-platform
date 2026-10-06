@@ -2,6 +2,7 @@ import type { WeeklyScheduleInput } from "../../domain/weekly-schedule";
 import type { Gateway } from "../../application/workforce";
 import type {
   Board,
+  PersonalSummary,
   ImportInput,
   Kind,
   Preview,
@@ -40,6 +41,7 @@ async function request<T>(path: string, body: unknown): Promise<T> {
   return data;
 }
 export class HttpWorkforceGateway implements Gateway {
+  summary() { return request<PersonalSummary>("summary", {}); }
   board(from: string, to: string) {
     return request<Board>("board", { from, to });
   }

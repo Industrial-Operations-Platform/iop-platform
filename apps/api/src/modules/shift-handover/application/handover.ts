@@ -212,6 +212,23 @@ export class Handover {
         : {}),
     }));
   }
+  private requireContentPermission(
+    tx: Transaction,
+    content: Content,
+    prior?: Content,
+    checkImages = true,
+  ) {
+    if (
+      !tx.coordinator &&
+      (this.catalog.categories.some(
+        (c) =>
+          c.coordinatorOnly &&
+          [content.categoryId, prior?.categoryId].includes(c.id),
+      ) ||
+        (checkImages && (content.images?.length ?? 0) > 0))
+    )
+      throw new HandoverError("handover_denied");
+  }
   async create(actor: string, input: CreateEntry): Promise<Entry> {
     exact(input, ["key", "content", "issue", "responsibleId"]);
     const key = text(input.key, 64, true),
@@ -239,6 +256,10 @@ export class Handover {
         content.date !== siteDate(at, this.catalog.timeZone)
       )
         throw new HandoverError("handover_today_only");
+      this.requireContentPermission(tx, content);
+      const mentionedPeople = (content.mentionIds ?? []).map((id) =>
+        this.person(people, id),
+      );
       await this.requireEquipment(tx, actor, content);
       const entry: Entry = {
         id: this.ids(),
@@ -248,6 +269,7 @@ export class Handover {
         updatedAt: at,
         revision: 1,
         content,
+        mentionedPeople,
         ...this.labels(content),
         equipmentReferenceId: await tx.reference(content),
         responsibleId,
@@ -318,11 +340,16 @@ export class Handover {
       const entry = await this.existing(tx, input.id);
       if (entry.deleted) throw new HandoverError("handover_missing");
       requireRevision(entry, input.expectedRevision);
+      this.requireContentPermission(tx, entry.content, undefined, false);
       const people = await tx.people(),
         author = this.person(people, actor);
       if (input.action === "correct") {
         requireEditor(entry, actor, tx.coordinator);
         const content = validContent(input.content!, this.catalog);
+        this.requireContentPermission(tx, content, entry.content);
+        entry.mentionedPeople = (content.mentionIds ?? []).map((id) =>
+          this.person(people, id),
+        );
         if (!tx.coordinator && content.date !== entry.content.date)
           throw new HandoverError("handover_today_only");
         await this.requireEquipment(tx, actor, content, entry.content);

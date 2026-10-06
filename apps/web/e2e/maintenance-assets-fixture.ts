@@ -208,6 +208,10 @@ export async function installMaintenanceAssetsFixture(
         users: [],
         scope: { organizationId: "org", siteId: "site", siteTimeZone: "UTC" },
       });
+    if (path.endsWith("/workforce/summary")) return json({
+      actorId: "admin", today: "2026-10-06", currentFrom: "2026-10-01", previousFrom: "2026-09-01", previousTo: "2026-09-30",
+      homeTargetId: "", homeTargetLabel: "", teamLabel: "", scheduledDays: 0, shifts: [], saturdays: 0, sundays: 0,
+    });
     if (path.endsWith("/workforce/board")) return json(emptyWorkforce);
     if (path.endsWith("/handover/context"))
       return json({

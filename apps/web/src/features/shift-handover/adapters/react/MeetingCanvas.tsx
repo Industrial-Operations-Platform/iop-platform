@@ -1,5 +1,5 @@
 import { t } from "../../../../localization/i18n";
-import { Button, Panel } from "../../../../design/components";
+import { AddButton, Button, Panel } from "../../../../design/components";
 import type { Choice, Page } from "../../domain/models";
 import { EntrySummaryCards } from "./EntrySummaryCards";
 
@@ -9,12 +9,16 @@ export function MeetingCanvas({
   more,
   busy,
   outstanding = false,
+  add,
+  canAdd,
 }: {
   sections: { category: Choice; page: Page }[];
   open: (id: string) => void;
   more: (categoryId: string) => Promise<void>;
   busy: boolean;
   outstanding?: boolean;
+  add?: (category: Choice) => void;
+  canAdd?: (category: Choice) => boolean;
 }) {
   return (
     <div
@@ -34,6 +38,7 @@ export function MeetingCanvas({
           <div className="handover-section-heading">
             <h3>{t(category.label)}</h3>
             <span>{page.total}</span>
+            {add && (!canAdd || canAdd(category)) && <AddButton label={t("Add {0} update", [t(category.label)])} disabled={busy} onClick={() => add(category)} />}
           </div>
           <EntrySummaryCards entries={page.entries} open={open} />
           {!page.total && (

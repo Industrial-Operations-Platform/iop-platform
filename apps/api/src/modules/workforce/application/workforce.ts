@@ -1,3 +1,4 @@
+import { personalMonths, personalSummary } from "../domain/personal-summary";
 import {
   sameSchedule,
   validateWeek,
@@ -67,6 +68,14 @@ export class Workforce {
     private readonly timeZone: string,
     private readonly now: () => string,
   ) {}
+  summary(actor: string) {
+    const today = new Intl.DateTimeFormat("en-CA", {
+      timeZone: this.timeZone, year: "numeric", month: "2-digit", day: "2-digit",
+    }).format(new Date(this.now()));
+    const { previousFrom } = personalMonths(today);
+    return this.store.run(actor, "workforce.read", async (tx) =>
+      personalSummary(actor, today, await tx.records(previousFrom, today), await this.configuration(tx)));
+  }
   board(actor: string, from: string, to: string) {
     range(from, to);
     return this.store.run(actor, "workforce.read", async (tx) => {

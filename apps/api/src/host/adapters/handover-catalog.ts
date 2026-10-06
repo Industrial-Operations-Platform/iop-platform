@@ -15,6 +15,7 @@ export const handoverDefaults = {
     id: label.toLowerCase(),
     label,
     carryForward: carryForwardDefaults.has(label.toLowerCase()),
+    coordinatorOnly: label.toLowerCase() === "information",
   })),
 };
 export function handoverCatalog(
@@ -42,10 +43,11 @@ export function handoverCatalog(
     if (
       !c ||
       Object.keys(c)
-        .filter((key) => key !== "carryForward")
+        .filter((key) => !["carryForward", "coordinatorOnly"].includes(key))
         .sort()
         .join() !== "id,label" ||
       (c.carryForward !== undefined && typeof c.carryForward !== "boolean") ||
+      (c.coordinatorOnly !== undefined && typeof c.coordinatorOnly !== "boolean") ||
       typeof c.id !== "string" ||
       !/^[a-z][a-z0-9-]{0,63}$/.test(c.id) ||
       typeof c.label !== "string" ||
@@ -57,6 +59,7 @@ export function handoverCatalog(
       id: c.id,
       label: c.label,
       carryForward: c.carryForward ?? carryForwardDefaults.has(c.id),
+      coordinatorOnly: c.coordinatorOnly ?? c.id === "information",
     };
   });
   if (new Set(categories.map((c) => c.id)).size !== categories.length)

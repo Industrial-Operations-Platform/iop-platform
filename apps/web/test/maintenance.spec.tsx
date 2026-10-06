@@ -22,6 +22,11 @@ import {
   type RelatedEntry,
 } from "../src/features/maintenance/domain/models";
 
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function () { this.open = true; };
+  HTMLDialogElement.prototype.close = function () { this.open = false; };
+});
+
 const catalog: Catalog = {
   actorId: "tech",
   canContribute: true,
@@ -815,4 +820,34 @@ test("source report previews show original observations only when requested", ()
   expect(screen.getByText(report.content.details)).toBeVisible();
   expect(screen.queryByText(entry.latestUpdate.note)).toBeNull();
   expect(screen.queryByText("Reported blocked")).toBeNull();
+});
+
+test("focused completion confirms tasks/place, reviews related scope and preserves record content", async () => {
+  const { gateway, application } = fixture();
+  render(<MaintenanceWorkspace application={application} profile="technician" timeZone="UTC" initialRecordId={record.id} />);
+  fireEvent.click(await screen.findByRole("button", { name: "Mark as done" }));
+  const dialog = screen.getByRole("dialog", { name: "Complete maintenance" });
+  const done = within(dialog).getByRole("button", { name: "Mark as done" });
+  expect(done).toBeDisabled();
+  fireEvent.change(within(dialog).getByLabelText("Work outcome"), { target: { value: "All checks completed." } });
+  fireEvent.click(within(dialog).getByLabelText("All tasks in this maintenance are complete."));
+  fireEvent.click(within(dialog).getByLabelText("I confirm the workplace and equipment shown above are correct."));
+  await waitFor(() => expect(done).toBeEnabled());
+  fireEvent.click(done);
+  await waitFor(() => expect(gateway.save).toHaveBeenCalledWith(expect.objectContaining({
+    id: record.id, expectedRevision: 1, data: { ...record.data, status: "done", outcome: "All checks completed.", linkedEntries: [] },
+  })));
+  expect(await screen.findByText("Maintenance saved.")).toBeVisible();
+});
+
+test("status actions change progress without opening content editing and blocking requires a reason", async () => {
+  const { gateway, application } = fixture();
+  render(<MaintenanceWorkspace application={application} profile="technician" timeZone="UTC" initialRecordId={record.id} />);
+  fireEvent.click(await screen.findByRole("button", { name: "Move to In progress" }));
+  await waitFor(() => expect(gateway.save).toHaveBeenCalledWith(expect.objectContaining({ data: { ...record.data, status: "in-progress" } })));
+  expect(screen.queryByRole("form", { name: "Maintenance form" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Move to Blocked" }));
+  fireEvent.change(screen.getByLabelText("Blocked reason"), { target: { value: "Waiting for spare parts." } });
+  fireEvent.click(screen.getByRole("button", { name: "Save status" }));
+  await waitFor(() => expect(gateway.save).toHaveBeenLastCalledWith(expect.objectContaining({ data: expect.objectContaining({ status: "blocked", blockedReason: "Waiting for spare parts." }) })));
 });

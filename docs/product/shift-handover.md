@@ -102,7 +102,7 @@ own pagination and full matching count. The selected day defaults to today. Full
 responsibility and deadlines are available by opening a card.
 
 **Department status:** a separate disclosure below Journal and Meeting preparation
-shows open/in-progress entries through the selected day for configured carry-forward
+shows current open/in-progress entries through today for configured carry-forward
 categories (Problems and Performance by default). Each category has independent counts
 and pagination. Resolved entries disappear here but remain in daily/history views;
 other categories never carry forward here and are not automatically closed. This
@@ -116,9 +116,11 @@ entry occurrences; this is not a formal shift identity or an inferred live plant
 **Start:** prioritize open department reports with full counts. Attention means an
 unresolved blocked report or an overdue action/feedback deadline; it is not a live
 plant alarm. Show up to three attention reports and three other pending reports,
-with a link to the full filtered history. Show three site-wide highlights and a link
-to all highlights. Withdrawal removes prominence, not history. Start and handover
-share manual operational department selection until M6 assignments are available.
+with a link to the full filtered history. Open reports excludes attention entries.
+Highlights use the same department scope. Withdrawal removes prominence, not history.
+Start defaults to the active/current-day assignment, then the Workforce home department.
+An unassigned person sees an explicit empty state. Explore other departments opens
+separate browsing; closing it restores the assigned department.
 Analytical measures remain a separate compact site-wide snapshot; detailed tables
 belong in Data Analysis. Preserve independent empty/loading/error states; absence
 of reports never proves equipment health.
@@ -163,7 +165,8 @@ Ultimo remains an external reference until an integration is separately requeste
 The IOP-168 implementation uses 20-entry cursor pages and 25-revision history pages.
 Journal ordering is occurrence date, creation instant and ID descending; highlights
 use highlight time and ID. Department status queries only carry-forward categories,
-with no lower occurrence-date bound and the selected day as an inclusive upper bound.
+with no lower occurrence-date bound and today as an inclusive upper bound, independent
+of the selected historical daily date.
 History queries use the current department/equipment link; earlier links and their
 original content remain visible in the entry's immutable revisions.
 
@@ -185,3 +188,22 @@ history. Contributors publish for today at the site, while coordinators retain d
 selection. Equipment selection uses owner-approved imported codes by location and
 retains unverified reference identity. See the [operator workflow](../development/shift-handover.md)
 for exact controls and limits.
+
+## Information, images and person mentions — IOP-196
+
+The scoped catalog marks Information `coordinatorOnly`; Administrator and Team Leader
+may publish/update it. All site readers retain access. Category changes cannot bypass
+the original category restriction. Coordinators can attach up to two PNG/JPEG/WebP
+images. The browser resizes files (up to 10 MB each) into small JPEG previews; each
+stored data URL is at most 65,536 characters. Images and mentioned-person IDs/names
+are retained in the existing authorized snapshots and revisions. No file service or
+external image URL is introduced. Historical records may omit these fields.
+
+Mention people selects up to 20 exact current site users; free-text names do not
+create implicit recipients. Publication and subsequent revisions containing the
+mention generate in-app activity for that person, even when the original entry is
+historical. Notifications preserve their existing browser-local read checkpoint.
+
+Start's assigned-report completion metric counts distinct entries with a resolution
+transition in the previous site-calendar month and responsibility assigned to the
+caller at that transition. Later reopening/correction does not rewrite that fact.

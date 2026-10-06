@@ -111,3 +111,24 @@ export class WorkforceWeekDto {
   @ApiProperty({ type: [WorkforceWeekDayDto], minItems: 1, maxItems: 7 })
   days!: WorkforceWeekDayDto[];
 }
+
+export class WorkforcePersonalShiftDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() label!: string;
+  @ApiProperty() count!: number;
+  @ApiProperty() percentage!: number;
+}
+export class WorkforcePersonalSummaryDto {
+  @ApiProperty() actorId!: string;
+  @ApiProperty() today!: string;
+  @ApiProperty() currentFrom!: string;
+  @ApiProperty() previousFrom!: string;
+  @ApiProperty() previousTo!: string;
+  @ApiProperty() homeTargetId!: string;
+  @ApiProperty() homeTargetLabel!: string;
+  @ApiProperty() teamLabel!: string;
+  @ApiProperty() scheduledDays!: number;
+  @ApiProperty({ type: [WorkforcePersonalShiftDto] }) shifts!: WorkforcePersonalShiftDto[];
+  @ApiProperty() saturdays!: number;
+  @ApiProperty() sundays!: number;
+}

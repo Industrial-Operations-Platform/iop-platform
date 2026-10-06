@@ -68,3 +68,9 @@ IOP-144 conflicts likewise retain current English analytical/navigation/fixture
 contexts and their later scope/statuses. Add the missing Completed recommendation
 item/index row and its execution record, marking its dependency statuses as the
 September 25 historical snapshot, superseded by current delivery evidence.
+
+IOP-196 has only a documentation append conflict: keep both personal snapshot
+semantics and the future Audit section. Every runtime/contract/test/script file
+matches `67126b4` exactly. Its executed PostgreSQL/browser evidence remains valid;
+run typecheck/npm test on the combined tree. Synchronize IOP-196 publication
+authorization and the roadmap's remaining Audit scope after integrating its design.

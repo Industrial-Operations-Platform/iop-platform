@@ -136,3 +136,18 @@ export function visibleShifts(board: Board) {
       });
   return shifts;
 }
+
+export interface PersonalSummary {
+  actorId: string;
+  today: string;
+  currentFrom: string;
+  previousFrom: string;
+  previousTo: string;
+  homeTargetId: string;
+  homeTargetLabel: string;
+  teamLabel: string;
+  scheduledDays: number;
+  shifts: { id: string; label: string; count: number; percentage: number }[];
+  saturdays: number;
+  sundays: number;
+}

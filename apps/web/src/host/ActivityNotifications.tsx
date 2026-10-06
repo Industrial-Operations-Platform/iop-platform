@@ -169,8 +169,8 @@ export function ActivityNotifications({
                         {entry.authorName} ·{" "}
                         {entry.departmentLabel || t("Site-wide")}
                       </span>
-                      <time dateTime={entry.createdAt}>
-                        {instant(entry.createdAt)}
+                      <time dateTime={entry.notificationAt ?? entry.createdAt}>
+                        {instant(entry.notificationAt ?? entry.createdAt)}
                       </time>
                     </Button>
                   </li>

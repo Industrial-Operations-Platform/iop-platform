@@ -1,6 +1,7 @@
 import type { WeeklyScheduleInput } from "../domain/weekly-schedule";
 import type {
   Board,
+  PersonalSummary,
   ImportInput,
   Kind,
   Preview,
@@ -9,6 +10,7 @@ import type {
   SaveInput,
 } from "../domain/models";
 export interface Gateway {
+  summary?(): Promise<PersonalSummary>;
   board(from: string, to: string): Promise<Board>;
   saveWeek(
     input: WeeklyScheduleInput,
@@ -26,6 +28,10 @@ export class WorkforceApplication {
     private readonly gateway: Gateway,
     private readonly ids: () => string,
   ) {}
+  summary() {
+    if (!this.gateway.summary) return Promise.reject(new Error("Personal summary is unavailable."));
+    return this.gateway.summary();
+  }
   board(from: string, to: string) {
     return this.gateway.board(from, to);
   }

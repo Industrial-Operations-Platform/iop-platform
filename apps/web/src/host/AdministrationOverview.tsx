@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { locale, t } from "../localization/i18n";
 import {
   Alert,
@@ -39,12 +39,14 @@ export function AdministrationOverview({
   access,
   analysis,
   timeZone,
+  personal,
 }: {
   canImport: boolean;
   canAdminister: boolean;
   access?: AccessApplication;
   analysis: AnalysisWorkspace;
   timeZone: string;
+  personal?: ReactNode;
 }) {
   const [accounts, setAccounts] = useState<{
     users: UserProfile[];
@@ -121,6 +123,7 @@ export function AdministrationOverview({
           />
         }
       />
+      {personal}
       {pending && <p role="status">{t("Loading…")}</p>}
       {canAdminister && (
         <>

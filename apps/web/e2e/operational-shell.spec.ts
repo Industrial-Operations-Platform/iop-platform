@@ -76,6 +76,10 @@ for (const width of [1440, 1024, 375]) {
             },
           },
         });
+      if (path.endsWith("/workforce/summary")) return route.fulfill({ json: {
+        actorId: emptyWorkforce.actorId, today: "2026-10-06", currentFrom: "2026-10-01", previousFrom: "2026-09-01", previousTo: "2026-09-30",
+        homeTargetId: "hall-a", homeTargetLabel: "Halle A", teamLabel: "", scheduledDays: 0, shifts: [], saturdays: 0, sundays: 0,
+      } });
       if (path.endsWith("/workforce/board"))
         return route.fulfill({ json: emptyWorkforce });
       if (path.endsWith("/handover/context"))

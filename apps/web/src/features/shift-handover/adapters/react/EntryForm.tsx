@@ -1,5 +1,6 @@
 import { t } from "../../../../localization/i18n";
 import type { HandoverApplication } from "../../application/handover";
+import { EntryMediaFields } from "./EntryMediaFields";
 import { EquipmentPicker } from "./EquipmentPicker";
 import { withinLocation } from "../../domain/models";
 import { useState } from "react";
@@ -46,10 +47,12 @@ export function EntryForm({
   ) => Promise<void>;
   onCancel: () => void;
 }) {
+  const [readingImages, setReadingImages] = useState(false);
+  const categories = context.categories.filter((c) => context.canCoordinate || !c.coordinatorOnly);
   const [value, setValue] = useState<Content>(
     entry?.content ?? {
       date: today(context.timeZone),
-      categoryId: context.categories[0].id,
+      categoryId: categories[0]?.id ?? "",
       summary: "",
       details: "",
       departmentId: "",
@@ -88,7 +91,7 @@ export function EntryForm({
             "Write the short update you would share at handover. Add details when needed. ",
           )}
         </p>
-        <fieldset disabled={pending} className="handover-fields">
+        <fieldset disabled={pending || readingImages} className="handover-fields">
           <FieldRow>
             <DateField
               label={t("Date ")}
@@ -104,7 +107,7 @@ export function EntryForm({
                 value={value.categoryId}
                 onChange={(e) => field("categoryId", e.target.value)}
               >
-                {context.categories.map((c) => (
+                {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {t(c.label)}
                   </option>
@@ -290,6 +293,7 @@ export function EntryForm({
               />
             </FieldRow>
           </Disclosure>
+          <EntryMediaFields value={value} context={context} change={setValue} reading={setReadingImages} />
           {!entry && (
             <>
               <Field layout="inline">
@@ -334,7 +338,7 @@ export function EntryForm({
             </Field>
           )}
           <Actions>
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" disabled={pending || readingImages}>
               {pending
                 ? t("Saving…")
                 : entry

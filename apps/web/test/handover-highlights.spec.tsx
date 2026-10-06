@@ -43,20 +43,20 @@ function setup() {
   return { list, open };
 }
 
-test("Start shows one preview, retains overlapping open issues and exposes full attention selection", async () => {
+test("Start shows one preview, requests disjoint open issues and exposes full attention selection", async () => {
   const { open } = setup();
   await screen.findByRole("button", { name: /Guard inspection/ });
   expect(screen.getAllByText("Guard inspection")).toHaveLength(1);
   fireEvent.click(
     screen.getByRole("button", { name: /View all attention items/ }),
   );
-  expect(open).toHaveBeenLastCalledWith(undefined, "attention");
+  expect(open).toHaveBeenLastCalledWith(undefined, "attention", "workshop");
   fireEvent.click(screen.getByRole("button", { name: /Open reports/ }));
   expect(screen.getByText("Guard inspection")).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: /View all open issues/ }));
-  expect(open).toHaveBeenLastCalledWith(undefined, "pending");
+  expect(open).toHaveBeenLastCalledWith(undefined, "pending", "workshop");
   fireEvent.click(screen.getByRole("button", { name: /Guard inspection/ }));
-  expect(open).toHaveBeenLastCalledWith("issue");
+  expect(open).toHaveBeenLastCalledWith("issue", undefined, "workshop");
   fireEvent.click(screen.getByRole("button", { name: /^Shift Handover/ }));
   expect(screen.getByText("No active highlights.")).toBeVisible();
   expect(screen.queryByText("Guard inspection")).not.toBeInTheDocument();
@@ -85,6 +85,6 @@ test("refresh announces loading, permits retry after failure and preserves selec
     expect.objectContaining({ departmentId: "workshop", attention: true }),
   );
   expect(list).toHaveBeenCalledWith(
-    expect.objectContaining({ departmentId: "", highlights: true }),
+    expect.objectContaining({ departmentId: "workshop", highlights: true }),
   );
 });

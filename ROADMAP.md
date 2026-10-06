@@ -40,7 +40,7 @@ survey remain pending; Git integration is not final product acceptance.
 | Improvement Tracking | Decide ownership/inclusion; action, owner/target, evidence and action-linked before/after impact | IOP-098–101 |
 | External integrations | Registry, read-only WinCC/Ultimo contracts, Entra connection and source health; corporate roster connection remains outside manual Workforce import | IOP-102, 104–107 |
 | Delivery infrastructure | Automatic CI; background job design and worker/retry infrastructure | IOP-021; Deferred IOP-010 and Proposed IOP-024 |
-| Audit/security | General Audit design/storage/collection/retention and consolidated authorization/critical-action verification | IOP-009, 023, 108, 111, 131 |
+| Audit/security | General Audit storage/collection/retention under Accepted ADR-0017 and consolidated authorization/critical-action verification | IOP-023, 108, 111, 131 |
 | Operations | Full-platform backup/verified restore, performance baseline/targets and broader job/import recovery | IOP-112–115, 133 |
 | UX | Unified area overview and one global asset/area/issue search | IOP-118–119 |
 | Release | Consolidated pilot measurements, authorized deployment/admin procedures, final architecture review and version/tag/release notes | IOP-130, 134–135, 137–138 |

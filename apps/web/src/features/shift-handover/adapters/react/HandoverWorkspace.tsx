@@ -76,10 +76,11 @@ export function HandoverWorkspace({
   const [day, setDay] = useState("");
   const [selection, setSelection] = useState<Selection>({
     ...emptySelection,
-    departmentId: initialHighlights ? "" : departmentId,
+    departmentId,
     highlights: initialHighlights,
     attention: initialAttention,
     state: initialPending ? "pending" : "",
+    excludeAttention: initialPending,
   });
   const [draft, setDraft] = useState(selection),
     [searching, setSearching] = useState(false);
@@ -129,6 +130,7 @@ export function HandoverWorkspace({
             {
               ...selected,
               from: "",
+              to: today(settings.timeZone),
               departmentId: selection.departmentId,
               state: "pending",
             },
@@ -233,6 +235,7 @@ export function HandoverWorkspace({
         ...(unresolved
           ? {
               from: "",
+              to: today(context!.timeZone),
               departmentId: selection.departmentId,
               state: "pending" as const,
             }
@@ -345,7 +348,7 @@ export function HandoverWorkspace({
               }}
             />
           )}
-          {(view === "meeting" || view === "journal") && (
+          {view === "journal" && (
             <DateField
               label={
                 view === "journal"
@@ -367,9 +370,6 @@ export function HandoverWorkspace({
                 });
               }}
             />
-          )}
-          {view === "meeting" && dailyOverview && (
-            <p>{t("All users · All departments")}</p>
           )}
           {view === "matrix" && !matrixHistory && (
             <p>{t("Pending work and today’s updates")}</p>
@@ -452,12 +452,45 @@ export function HandoverWorkspace({
               />
             ) : view === "meeting" ? (
               <>
-                <h2>{t(meetingLabel)}</h2>
+                <div className="handover-section-heading">
+                  <h2>{t(meetingLabel)}</h2>
+                  <div className="iop-scope-toolbar">
+                    <DateField
+                      label={
+                        dailyOverview ? t("Overview date") : t("Meeting date")
+                      }
+                      required
+                      disabled={busy}
+                      value={day || today(context!.timeZone)}
+                      onChange={(e) => {
+                        if (!e.target.value) return;
+                        setDay(e.target.value);
+                        setFiltered(false);
+                        apply({
+                          ...emptySelection,
+                          departmentId: selection.departmentId,
+                        });
+                      }}
+                    />
+                    <Button variant="text" onClick={() => setDay("")}>
+                      {t("Today")}
+                    </Button>
+                  </div>
+                </div>
+                {dailyOverview && (
+                  <p className="handover-muted">
+                    {t("All users · All departments")}
+                  </p>
+                )}
                 <MeetingCanvas
                   sections={sections}
                   open={open}
                   more={(id) => moreCategory(id)}
                   busy={busy}
+                  add={(category) => setCreating(category.id)}
+                  canAdd={(category) =>
+                    !category.coordinatorOnly || !!context?.canCoordinate
+                  }
                 />
               </>
             ) : (
@@ -532,8 +565,8 @@ export function HandoverWorkspace({
                   />
                 )}
                 <p>
-                  {t("Unresolved topics through {0}", [
-                    day || today(context!.timeZone),
+                  {t("Current unresolved topics through {0}", [
+                    today(context!.timeZone),
                   ])}
                 </p>
                 <MeetingCanvas
@@ -585,6 +618,7 @@ export function HandoverWorkspace({
             application={application}
             context={context}
             defaults={{
+              date: day || today(context.timeZone),
               departmentId: selection.departmentId,
               ...(creating ? { categoryId: creating } : {}),
             }}

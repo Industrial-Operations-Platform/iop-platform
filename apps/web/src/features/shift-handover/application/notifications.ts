@@ -36,14 +36,14 @@ export class EntryNotifications {
       notificationsAfter: this.since ?? notificationEpoch,
     });
     if (this.since === null) {
-      this.since = page.entries[0]?.createdAt ?? notificationEpoch;
+      this.since = (page.entries[0]?.notificationAt ?? page.entries[0]?.createdAt) ?? notificationEpoch;
       this.checkpoint.save(this.since);
       this.current = emptyNotifications;
     } else this.current = page;
     return this.current;
   }
   markAllRead(): Page {
-    const latest = this.current.entries[0]?.createdAt;
+    const latest = (this.current.entries[0]?.notificationAt ?? this.current.entries[0]?.createdAt);
     if (latest) {
       this.since = latest;
       this.checkpoint.save(latest);
