@@ -130,7 +130,7 @@ work, not evidence claimed by this story.
 
 See the [closure review](../completed/IOP-001-closure-review-plan.md). Existing
 responsibility confirmation at 830b943 and report-view decisions from IOP-002 are
-synchronized without merging or deleting their prior review branches. This is
+synchronized. IOP-197 integrates the earlier review branch while retaining it. This is
 documentation acceptance only; no application, runtime tests or pilot measurement.
 
 ## Current delivery — 2026-10-06

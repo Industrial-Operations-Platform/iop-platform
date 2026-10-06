@@ -41,3 +41,7 @@ No stage/master promotion, force push, rebase, branch deletion or Docker activat
 outstanding commit inspection are retained at `/tmp/iop-197-refs-before.json`.
 The seven pending branches contain 11 unique commits; all other retained tips
 are already ancestors of develop. Actual merge/test/publication results follow.
+
+IOP-001 conflicts retain the later Completed baseline and current scope. Preserve
+the earlier responsibility/CSV-port request as historical evidence; later source
+review and accepted metrics supersede its uninspected-script/open-question wording.
