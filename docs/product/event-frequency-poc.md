@@ -74,7 +74,8 @@ The message `Jam` here means the complete tuple `(Jam, 01, 007)`.
 | Reject duplicate July 1 or an invalid July 2 attempt | 9 | 19 | No admitted facts or added coverage/revision from that attempt. |
 | Page size 2 across the all-data selection | 9 across 5 pages | 19 | Each response retains the full total; sum every contributing page once. |
 
-The last two rows are future production-path assertions. Oracle arithmetic alone
+The last two rows require real publication/pagination evidence, supplied by the
+IOP-147 execution record. Oracle arithmetic alone
 does not prove rejection, pagination, authorization or persistence.
 
 Additional runtime gates: exact maximum accepted; maximum plus one fails without
@@ -83,7 +84,7 @@ concurrent successful import invalidates old-revision requests; browser zone/DST
 changes do not change reporting-label membership. Reuse IOP-089's full query test
 matrix rather than building another query or fixture-only production substitute.
 
-## Delivery handoff
+## Original delivery handoff
 
 IOP-089 must supply executable authorized queries backed by production OIP
 publications/facts; ADR-0018 host activation independently gates runtime access.
@@ -91,4 +92,6 @@ Then validate the frequency matrix with `npm test`, `npm run test:database` and
 relevant delivered HTTP/browser checks. Record actual timings and dataset size,
 without introducing a performance target. Runtime completion requires overview,
 detail and all contributing records to reconcile on the same selection/revision.
-The completed specification does not complete IOP-090 or the end-to-end POC.
+The specification alone did not complete IOP-090 or the end-to-end POC. Those
+implementation outcomes are now delivered under IOP-147; see the
+[delivery map](../planning/poc-delivery.md) for executed evidence.

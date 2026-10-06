@@ -4,8 +4,9 @@ Prepared for [IOP-130](../planning/items/IOP-130-pilot-metrics.md).
 Technical observations are recorded in the [IOP-147 execution evidence](../planning/completed/IOP-147-working-analytical-poc-plan.md).
 The [delivered demonstration](running-poc.md) is runnable. The owner gave negative
 feedback on the earlier experience on 2026-09-27; IOP-148–150 deliver the requested
-corrections. Positive usefulness acceptance of the revised experience remains pending;
-measured benefit and human task timings have not been established.
+corrections. The owner accepted the revised charts as Data Analysis v1 on
+2026-09-27. Measured benefit and complete human task timings have not been
+established; IOP-130 remains open for evidence consolidation.
 
 Use the five [IOP-001 acceptance measures](../product/personas-and-pilot-workflow.md#accepted-acceptance-measures)
 within the [local POC boundary](../product/scope-poc.md). One local operator may
@@ -20,7 +21,7 @@ additional participants and shared-use acceptance are not prerequisites.
 | Import integrity | Admitted/rejected/unknown counts and unclassified records remain explicit; invalid and duplicate attempts do not change admitted totals. Reset/reload reproduces the baseline. | Link IOP-129 failure/recreation results and the delivered source-to-fact reconciliation. |
 | Analytical parity | Reported frequency and accumulated alarm seconds in both views equal independent expected values at the same selection and revision, with complete contributing-record identities. | Link the [IOP-132 matrix](reconciliation-poc.md) with expected/observed values and discrepancies. This establishes POC fixture reconciliation, not unexecuted legacy Python/Power BI parity. |
 | Usability/value | Owner imports/reviews, filters by reporting date/sector/area/equipment/message, investigates contributors and presents directly from IOP. Record completed actions, assistance, obstacles and the owner's assessment. | Task observations and explicit owner feedback below; no invented satisfaction score or effort-reduction claim. |
-| Isolation/traceability | Delivered operations reject missing/foreign scope or grants and preserve scoped input-to-result provenance under the accepted local context. | Link IOP-129 preflight denial/positive-control evidence, actual-role RLS checks and contributing RAW/line references. Full audit infrastructure and human login remain deferred. |
+| Isolation/traceability | Delivered operations reject missing/foreign scope or grants and preserve scoped input-to-result provenance under the accepted local context. | Link IOP-129 preflight denial/positive-control evidence, actual-role RLS checks and contributing RAW/line references. General Audit remains pending; local human login is delivered under ADR-0035/IOP-165. |
 
 Expected totals and selections belong to the linked reconciliation matrix. They are
 not observations. Missing imports are not zero-fault periods; unknown source windows
@@ -75,13 +76,14 @@ Missing feedback stays `not collected`; successful automated tests cannot replac
 
 ## Current result and closure
 
-As of 2026-09-27, workflow coverage, import integrity, analytical parity and
+Reviewed on 2026-10-06: workflow coverage, import integrity, analytical parity and
 isolation/traceability have actual automated PostgreSQL/API/browser evidence in
 IOP-147, including recorded import sizes and observed submission timings. They are
 technical observations on fictional data, not a human pilot assessment. Negative
 owner feedback is recorded in IOP-130; subsequent delivery evidence is linked from
 [delivery status](../planning/poc-delivery.md). Positive acceptance of the revised
-workspace and end-to-end human task timing remain outstanding.
+workspace was recorded on 2026-09-27. End-to-end human task timing and the
+consolidated five-measure record remain outstanding.
 
 Close the selected IOP-130 POC slice only after each matrix row has actual evidence,
 IOP-129's real journey passes, both measures reconcile and owner feedback is recorded.

@@ -30,7 +30,7 @@ Scope: Cross-module user experience. See [modules](../../architecture/modules.md
 [planning workflow](../workflow.md). This initial context comes from the
 owner-requested outline; backlog membership does not authorize implementation.
 
-## Current state
+## Original slice state
 
 The local web host provides three navigable destinations with explicit empty states,
 shared scope/filter availability, browser history and keyboard focus. CSV submission,
@@ -82,7 +82,8 @@ Reuse search/read contracts; define pagination and limits only for the selected 
 
 ## UI considerations
 
-Evaluate keyboard use, labels, contrast and empty/error/loading states on laptops and tablets; agree on verifiable targets.
+Evaluate keyboard use, labels, contrast and empty/error/loading states on laptops and
+tablets; agree on verifiable targets.
 
 ## Dependencies
 
@@ -94,7 +95,8 @@ local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery
+to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
@@ -113,3 +115,11 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 No unresolved decisions for this navigation slice. Runtime business access still
 requires an accepted execution mechanism. This completion does not close the
 end-to-end POC or implement import/analytics stories.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

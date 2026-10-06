@@ -5,7 +5,8 @@ limited to the [local POC](scope-poc.md). Reuse the accepted
 [query contract](../architecture/analytics-query-poc.md),
 [aggregate equality](../architecture/event-aggregates-poc.md) and
 [shared selection](../architecture/adr/ADR-0023-poc-analytics-filters.md).
-This specifies expected behavior; no runtime equipment view or grouped API is delivered.
+This specifies the bounded source-equipment contract. IOP-147/148 deliver its
+connected runtime views/grouped reporting; this design text is not executable evidence.
 
 ## Equipment and contributing messages
 
@@ -57,7 +58,7 @@ Reset cursors after filter changes; refresh after revision changes. Loading, fai
 or late responses cannot relabel old totals with a new selection. A display subset
 or contributing page is never the full total; expose remaining groups/records
 without silently truncating results. Bounded grouped transport and presentation
-remain implementation details to resolve within IOP-089 before runtime delivery.
+are delivered by IOP-089/147/148 under the query contract.
 Do not build a parallel browser aggregation of one detail page.
 
 Coverage is based on admitted publications before dimension filters. Distinguish

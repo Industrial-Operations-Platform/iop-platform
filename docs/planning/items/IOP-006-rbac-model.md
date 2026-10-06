@@ -30,7 +30,7 @@ The owner authorized evaluation and translation of items through IOP-006; later
 items are translated when worked on. IOP-001–005 and IOP-002 supporting reviews
 are already English and need no translation edits.
 
-## Current state
+## Original slice state
 
 Only the documentation baseline exists. ADR-0004 separates authentication from
 permission decisions; ADR-0012 establishes Organization/Site and ADR-0013 establishes
@@ -134,3 +134,11 @@ organization-admin delegation authority. Basic pilot access remains separate fro
 future identity integration. No new authentication choice is implied. Schema,
 authorization enforcement, revocation/concurrency tests and bootstrap/recovery
 remain implementation work; no adjacent story is activated by this closure.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

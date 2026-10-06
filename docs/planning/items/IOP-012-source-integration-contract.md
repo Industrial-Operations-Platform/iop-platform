@@ -33,7 +33,7 @@ owner-requested outline; backlog membership alone does not authorize implementat
 The owner requested this POC design on 2026-09-25 and supplied a representative CSV
 plus Python preparation and Power BI classification excerpts.
 
-## Current state
+## Original slice state
 
 The [CSV source contract](../../architecture/csv-source-contract-poc.md) defines
 the bounded format, neutral aggregate, validation and mapping behavior using the
@@ -132,3 +132,11 @@ and unknown coverage. The supplied duration helper was absent, so legacy convers
 parity and DAX comparison parity require evidence in importer/mapping delivery.
 Operational limits, persistence/atomicity, mappings and executable reconciliation
 belong to their separately authorized delivery stories; those are not completed here.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

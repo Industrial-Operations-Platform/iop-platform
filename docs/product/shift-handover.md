@@ -171,8 +171,10 @@ Locations/categories are operator configuration, loaded at startup and scoped to
 one organization/site. Intermediate location nodes are supported; selecting an area
 requires it to belong to the selected department. Stable IDs must not be reassigned
 to another physical place. Existing snapshots preserve historical labels. See
-[setup and use](../development/shift-handover.md). Formal shift closure, canonical
-asset resolution and workforce defaults remain future module integration.
+[setup and use](../development/shift-handover.md). Formal shift closure,
+explicit canonical entry-to-asset references, formal shift binding and Workforce
+location defaults remain future integration. IOP-194 supplies alias-based digital
+history and reviewed Maintenance issue resolution through Handover-owned ports.
 
 ## Board workflow refinement
 

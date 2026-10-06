@@ -16,7 +16,9 @@ plant survey and precise sensor location would delay that delivery and are defer
 This decision supersedes the earlier v1 workflow ending in Asset Locator.
 Individual login and appropriate customer/site-scoped views remain required for
 shared use, after the local POC.
-No application functionality is implemented yet.
+The local analytical workflow and later operational modules are implemented through
+IOP-194; see the [delivery map](../planning/poc-delivery.md). This shared-use baseline
+retains corporate/operating/release requirements beyond local delivery.
 
 ## V1 capabilities to specify
 
@@ -33,7 +35,8 @@ No application functionality is implemented yet.
 - Preserve source-provided sector, equipment and event identifiers where available
   for filtering and context. These do not prove a sensor's physical position.
 - Provide the minimal configuration, access control and traceability needed by
-  that workflow. Authentication provider and detailed RBAC remain separate decisions.
+  that workflow. Temporary local authentication and fixed scoped RBAC are accepted and implemented;
+  corporate provider/shared deployment remains separate work.
 
 Neither a complete surveyed asset inventory nor validated sensor-to-map placement
 is a prerequisite for v1 analytics. Distinguish source equipment references from
@@ -50,8 +53,8 @@ No ERP/CMMS replacement or microservice decomposition.
 
 Future work may connect directly to an authorized source behind WinCC Viewer, add
 meeting/shift functions and provide precise asset location, potentially in 3D.
-Source interfaces, location capture, representation and delivery sequence remain
-undecided. These goals do not impose dependencies on the CSV-based v1.
+Handover, Workforce and Maintenance were separately delivered through IOP-194.
+External source connections and spatial location/representation remain undecided. These goals do not impose dependencies on the CSV-based v1.
 
 ## Shared-use release conditions still to finalize
 
@@ -70,5 +73,5 @@ for this boundary before implementation; do not require all asset/locator storie
 or later workflows as prerequisites.
 
 [Personas and pilot workflow](personas-and-pilot-workflow.md) records the accepted
-baseline and explicit deferrals. IOP-001 is Completed as design; implementation
-and release validation remain open.
+baseline and explicit deferrals. IOP-001 is Completed as design; local
+implementation is delivered, while shared-use release validation remains open.

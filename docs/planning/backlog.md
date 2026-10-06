@@ -4,32 +4,35 @@ This index records existing work; permanent contexts own scope and status.
 Execution plans live in `active/`, and completed evidence in `completed/`.
 See the [workflow](workflow.md).
 
-## Immediate target: analytical POC
+## Current delivery — 2026-10-06
 
-The owner approved a local single-operator CSV → analysis → presentation POC,
-with login and external connections deferred. Follow [POC scope](../product/scope-poc.md)
-and the [complete delivery map](poc-delivery.md) before activating a story.
-Only relevant slices are prerequisites; M1–M17 are a future capability inventory.
-IOP-147 delivers the local host and user selector under ADR-0018/0030 with current
-RLS/RBAC checks. Technical POC blockers are resolved. The owner accepted the charts
-as Data Analysis v1 on 2026-09-27; IOP-130 retains remaining measurement closure.
-IOP-165 delivers the operational home, temporary local authentication and four-profile
-user administration under accepted ADR-0035. Corporate integration remains deferred.
+The original local CSV → analysis → presentation POC is delivered. Later
+owner-authorized increments add local login/four-profile administration, Shift
+Handover, M6 Workforce, M8 Maintenance and M10 Digital Asset Record. IOP-194 was
+integrated into develop and published to origin on 2026-10-06; its owner product
+review and physical verification remain pending. Follow the
+[delivery map](poc-delivery.md) for evidence and the [roadmap](../../ROADMAP.md)
+for the consolidated remaining-work inventory before selecting another story.
 
-The owner requested operational M7 work on 2026-09-29 under
-[IOP-168](items/IOP-168-shift-handover.md). The first journal increment is implemented
-and locally validated under Accepted ADR-0036, including operational history and selected Start highlights.
+The charts were accepted as Data Analysis v1 on 2026-09-27. IOP-130 remains
+In progress for measurement consolidation, not missing usefulness feedback.
+Component acceptance, implementation completion and publication are distinct
+from whole-platform release (IOP-138).
 
-IOP-001–006 and IOP-008 are Completed as design on this branch. Local API and web
-host implementation is completed under IOP-016/017. IOP-007, IOP-010, IOP-028
-and IOP-031 are Deferred beyond
-the POC. Other Proposed implementation stories are selected only through their
-POC slices or remain future work as mapped. Completed governance work is listed
-below. The IOP-009 future audit acceptance remains on its separate review branch;
-this change does not merge it or change that acceptance history.
+IOP-001–006 and IOP-008 are Completed design. Deferred IOP-025–027/029–030 have
+delivered local slices but retain broader lifecycle scope. IOP-028/031 local
+login/admin are Completed through later delivery. General Audit, corporate
+identity, workers, full asset hierarchy/survey, formal shift closure, external
+connections and operating/release controls remain open. M9 is explicitly Deferred.
+IOP-009's separate review decision is not integrated by this documentation audit.
 
 The [legacy map](legacy-backlog-map.md) preserves the original task numbering.
 IDs are never reused. Completing a POC slice does not close unfinished parent work.
+
+Audit snapshot: **194 indexed stories — 138 Completed, 40 Proposed, 15 Deferred
+and 1 In progress (IOP-130)**. Completed includes design/governance and bounded
+local delivery, not whole-platform release. The **56 unfinished stories** retain
+their specific remaining criteria. IOP-195 records this documentation review.
 
 ## M1 — Product & Architecture Definition
 
@@ -72,24 +75,28 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 | [IOP-025 — Organization model](items/IOP-025-organization-model.md) | Deferred |
 | [IOP-026 — Site model](items/IOP-026-site-model.md) | Deferred |
 | [IOP-027 — User model](items/IOP-027-user-model.md) | Deferred |
-| [IOP-028 — Local authentication adapter](items/IOP-028-local-authentication.md) | Deferred |
+| [IOP-028 — Local authentication adapter](items/IOP-028-local-authentication.md) | Completed |
 | [IOP-029 — Authorization/RBAC](items/IOP-029-rbac-enforcement.md) | Deferred |
 | [IOP-030 — User/site membership](items/IOP-030-membership-model.md) | Deferred |
-| [IOP-031 — Admin foundation](items/IOP-031-administration-foundation.md) | Deferred |
+| [IOP-031 — Admin foundation](items/IOP-031-administration-foundation.md) | Completed |
 
 ## M4 — Asset Domain
+
+IOP-194 completes lifecycle, exact aliases and registry search. Type/component text
+and manual within-area grouping provide partial coverage; they do not implement
+full composition, managed type catalogs, controller relations or physical surveys.
 
 | Task context | Status |
 | --- | --- |
 | [IOP-032 — Asset hierarchy model](items/IOP-032-asset-hierarchy.md) | Proposed |
 | [IOP-033 — Asset type model](items/IOP-033-asset-types.md) | Proposed |
-| [IOP-034 — Asset lifecycle](items/IOP-034-asset-lifecycle.md) | Proposed |
+| [IOP-034 — Asset lifecycle](items/IOP-034-asset-lifecycle.md) | Completed |
 | [IOP-035 — Asset parent relationships](items/IOP-035-asset-parent-relations.md) | Proposed |
 | [IOP-036 — Controller relationships](items/IOP-036-controller-relations.md) | Proposed |
-| [IOP-037 — Asset aliases](items/IOP-037-asset-aliases.md) | Proposed |
+| [IOP-037 — Asset aliases](items/IOP-037-asset-aliases.md) | Completed |
 | [IOP-038 — Asset metadata](items/IOP-038-asset-metadata.md) | Proposed |
 | [IOP-039 — Asset survey workflow](items/IOP-039-asset-survey.md) | Proposed |
-| [IOP-040 — Asset search](items/IOP-040-asset-search.md) | Proposed |
+| [IOP-040 — Asset search](items/IOP-040-asset-search.md) | Completed |
 
 ## M5 — Industrial Data Foundation
 
@@ -122,19 +129,19 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 ## M7 — Shift Handover
 
-The requested first operational increment is
-[IOP-168](items/IOP-168-shift-handover.md); the original parent stories below remain
-open. This bounded journal increment does not complete formal shifts, closure or
-canonical asset integration.
+IOP-168/169 and later refinements complete configured categories, entries,
+carry-forward issues and meeting summaries. Shift-bound records/previous-shift
+selection, formal closure and explicit canonical entry-to-asset references remain
+open. IOP-194 adds source-alias history reads and reviewed repair issue resolution.
 
 | Task context | Status |
 | --- | --- |
 | [IOP-060 — Handover record](items/IOP-060-handover-record.md) | Proposed |
-| [IOP-061 — Handover categories](items/IOP-061-handover-categories.md) | Proposed |
-| [IOP-062 — Handover entries](items/IOP-062-handover-entry.md) | Proposed |
+| [IOP-061 — Handover categories](items/IOP-061-handover-categories.md) | Completed |
+| [IOP-062 — Handover entries](items/IOP-062-handover-entry.md) | Completed |
 | [IOP-063 — Asset-linked handover](items/IOP-063-handover-asset-link.md) | Proposed |
-| [IOP-064 — Open issues](items/IOP-064-open-issues.md) | Proposed |
-| [IOP-065 — Handover summary](items/IOP-065-handover-summary.md) | Proposed |
+| [IOP-064 — Open issues](items/IOP-064-open-issues.md) | Completed |
+| [IOP-065 — Handover summary](items/IOP-065-handover-summary.md) | Completed |
 | [IOP-066 — Handover closure](items/IOP-066-handover-closure.md) | Proposed |
 | [IOP-067 — Previous-shift view](items/IOP-067-previous-shift-overview.md) | Proposed |
 
@@ -153,16 +160,19 @@ canonical asset integration.
 
 ## M9 — Asset Locator
 
+Explicitly Deferred by the owner, confirmed on 2026-10-06. Catalog/manual grouping
+work under IOP-194 does not implement maps or spatial placements.
+
 | Task context | Status |
 | --- | --- |
-| [IOP-076 — Map model](items/IOP-076-map-model.md) | Proposed |
-| [IOP-077 — Map upload](items/IOP-077-map-upload.md) | Proposed |
-| [IOP-078 — Normalized coordinates](items/IOP-078-normalized-map-coordinates.md) | Proposed |
-| [IOP-079 — Asset placement](items/IOP-079-asset-placement.md) | Proposed |
-| [IOP-080 — Locator UI](items/IOP-080-asset-locator-ui.md) | Proposed |
-| [IOP-081 — Locator search](items/IOP-081-locator-search.md) | Proposed |
-| [IOP-082 — Ambiguous aliases](items/IOP-082-ambiguous-assets.md) | Proposed |
-| [IOP-083 — Unmapped assets](items/IOP-083-unmapped-assets.md) | Proposed |
+| [IOP-076 — Map model](items/IOP-076-map-model.md) | Deferred |
+| [IOP-077 — Map upload](items/IOP-077-map-upload.md) | Deferred |
+| [IOP-078 — Normalized coordinates](items/IOP-078-normalized-map-coordinates.md) | Deferred |
+| [IOP-079 — Asset placement](items/IOP-079-asset-placement.md) | Deferred |
+| [IOP-080 — Locator UI](items/IOP-080-asset-locator-ui.md) | Deferred |
+| [IOP-081 — Locator search](items/IOP-081-locator-search.md) | Deferred |
+| [IOP-082 — Ambiguous aliases](items/IOP-082-ambiguous-assets.md) | Deferred |
+| [IOP-083 — Unmapped assets](items/IOP-083-unmapped-assets.md) | Deferred |
 
 ## M10 — Asset History / Digital Asset Record
 
@@ -181,7 +191,7 @@ canonical asset integration.
 | [IOP-089 — Analytics query layer](items/IOP-089-analytics-query-layer.md) | Completed |
 | [IOP-090 — Event frequency KPI](items/IOP-090-event-frequency.md) | Completed |
 | [IOP-091 — Accumulated alarm duration (POC)](items/IOP-091-downtime.md) | Completed |
-| [IOP-092 — Trend analysis](items/IOP-092-event-trends.md) | Proposed |
+| [IOP-092 — Trend analysis](items/IOP-092-event-trends.md) | Completed |
 | [IOP-093 — Pareto analysis](items/IOP-093-pareto.md) | Proposed |
 | [IOP-094 — Source equipment analytics (POC)](items/IOP-094-asset-analytics.md) | Completed |
 | [IOP-095 — Area analytics](items/IOP-095-area-analytics.md) | Completed |
@@ -226,7 +236,7 @@ canonical asset integration.
 | Task context | Status |
 | --- | --- |
 | [IOP-116 — App navigation](items/IOP-116-navigation.md) | Completed |
-| [IOP-117 — Role-aware home](items/IOP-117-role-home.md) | Proposed |
+| [IOP-117 — Role-aware home](items/IOP-117-role-home.md) | Completed |
 | [IOP-118 — Area overview](items/IOP-118-area-overview.md) | Proposed |
 | [IOP-119 — Global search](items/IOP-119-global-search.md) | Proposed |
 | [IOP-120 — Empty/error/loading states](items/IOP-120-ui-states.md) | Completed |
@@ -240,8 +250,8 @@ canonical asset integration.
 | [IOP-123 — Synthetic organization](items/IOP-123-demo-organization.md) | Completed |
 | [IOP-124 — Synthetic asset structure](items/IOP-124-demo-assets.md) | Proposed |
 | [IOP-125 — Synthetic analytical CSV fixtures](items/IOP-125-demo-events.md) | Completed |
-| [IOP-126 — Synthetic workforce](items/IOP-126-demo-workforce.md) | Proposed |
-| [IOP-127 — Synthetic maintenance](items/IOP-127-demo-maintenance.md) | Deferred |
+| [IOP-126 — Synthetic workforce](items/IOP-126-demo-workforce.md) | Completed |
+| [IOP-127 — Synthetic maintenance](items/IOP-127-demo-maintenance.md) | Completed |
 | [IOP-128 — Demo reset](items/IOP-128-demo-reset.md) | Completed |
 
 ## M17 — v1 Validation & Release
@@ -269,6 +279,7 @@ canonical asset integration.
 | [IOP-142 — Align delivery with a fast analytical POC](items/IOP-142-poc-delivery-scope.md) | Completed |
 | [IOP-143 — Local agent instructions and concise documentation](items/IOP-143-concise-workflow.md) | Completed |
 | [IOP-146 — Review POC coverage and closure dependencies](items/IOP-146-poc-readiness-review.md) | Completed |
+| [IOP-195 — Reconcile delivered capabilities and remaining development](items/IOP-195-development-status.md) | Completed |
 
 ## Owner-supplied reference data
 

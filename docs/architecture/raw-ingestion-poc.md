@@ -8,8 +8,8 @@ contract; original delivery handoffs below are not outstanding runtime blockers.
 model for the [local POC](../product/scope-poc.md). It specializes the
 [CSV source contract](csv-source-contract-poc.md) and Accepted
 [ADR-0022 preservation contract](csv-preservation-poc.md); it adds no storage
-choice or cross-module transaction mechanism. This is design, not implemented
-persistence, an importer or runtime security evidence by IOP-041. Subsequent IOP-042
+choice or cross-module transaction mechanism. This is IOP-041's logical design,
+not by itself executable persistence/importer/security evidence. Subsequent IOP-042
 implements batch-owned RAW persistence and scoped review; see the [batch model](import-batches-poc.md)
 and its execution record.
 

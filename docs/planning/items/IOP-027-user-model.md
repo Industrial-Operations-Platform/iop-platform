@@ -14,7 +14,7 @@ M3 — Platform Core. The earlier owner-approved IOP-142 scope refinement retain
 full user lifecycle for later shared use; the selected slice is only the minimal
 active development principal required by Accepted ADR-0018.
 
-## Value, context and current state
+## Value, context and original slice state
 
 Administrators and users eventually need access to authorized organizations and
 sites. For the local analytical POC, a stable principal supports later explicit
@@ -69,7 +69,7 @@ are part of this slice. Keep secrets, floor plans and production data out of the
 repository; industrial integrations remain read-only. Record material changes
 where applicable without adding audit infrastructure here.
 
-## Non-goals and remaining scope
+## Original slice non-goals and handoff
 
 Full provisioning, login/sessions, password/recovery flows, lifecycle/admin screens,
 identity-provider integration and complete shared-use user management remain deferred.
@@ -86,8 +86,17 @@ slice; they do not prove business authorization. See the
 [database guide](../../../infra/database/README.md#initial-local-user-seed-iop-027)
 for commands and limits. Item, backlog and plan are synchronized.
 
-## Remaining scope
+## Original slice handoff
 
 No open decision blocks this completed principal seed slice. Full user lifecycle
 remains deferred. Membership/role seed, evaluation and the local host adapter still
 need separately selected work before runtime business access can be enabled.
+
+## Current coverage and remaining work — 2026-10-06
+
+IOP-165/184/188 deliver local provisioning, profiles, renaming and logical
+disable/delete with retained identity/history. Remaining: complete shared-use/provider
+provisioning and lifecycle beyond the single local installation.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

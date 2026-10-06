@@ -32,7 +32,9 @@ outline requested by the owner; inclusion in the backlog does not authorize impl
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+Temporary local authentication design and implementation are accepted under
+ADR-0035/IOP-165. Remaining: corporate identity binding, shared/remote trust boundaries
+and provider/recovery decisions; this broader shared-use parent remains Deferred.
 
 ## Desired state
 
@@ -41,9 +43,9 @@ Define authentication for later shared use.
 ## Requirements
 
 - Deliver only the selected POC slice or explicitly deferred future scope below.
-- Login, passwords and sessions are deferred beyond the POC. Preserve the
-  provider-independent boundary. The older local-login proposal on the separate review
-  branch is not a POC prerequisite; its technical decisions remain unaccepted here.
+- Shared-use authentication remains deferred. The owner separately accepted
+  temporary local passwords/sessions under ADR-0035 and IOP-165. Preserve the
+  provider-independent boundary; the older separate proposal is not integrated here.
 
 ## Acceptance criteria
 
@@ -92,11 +94,13 @@ uses an accepted execution-context contract rather than requiring the full paren
 
 ## Non-goals
 
-Implementing applications, migrations, endpoints or infrastructure. Do not introduce customer names into the core.
+Implementing applications, migrations, endpoints or infrastructure. Do not introduce
+customer names into the core.
 
 ## Validation
 
-Review consistency, links, scenarios and decisions; do not invent commands or write code to validate this design task.
+Review consistency, links, scenarios and decisions; do not invent commands or write code
+to validate this design task.
 
 ## Documentation impact
 
@@ -105,4 +109,14 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Resolve this task’s concrete design decisions with options, a recommendation and an ADR when architecture is affected.
+Resolve this task’s concrete design decisions with options, a recommendation and an ADR
+when architecture is affected.
+
+## Current coverage and remaining work — 2026-10-06
+
+Temporary local authentication design and implementation are accepted under
+ADR-0035/IOP-165. Remaining: corporate identity binding, shared/remote trust boundaries
+and provider/recovery decisions; this broader shared-use parent remains Deferred.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

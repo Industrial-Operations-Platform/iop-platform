@@ -3,15 +3,17 @@
 ## Evidence and scope
 
 Owner-provided CSV excerpt and four Power BI screenshots, captured as context for
-[IOP-002](../planning/items/IOP-002-technology-stack.md). This is a description of
-the current workflow and requested analytical navigation, not an accepted metric
+[IOP-002](../planning/items/IOP-002-technology-stack.md). This is a historical description of
+the earlier workflow and requested analytical navigation, not an accepted metric
 catalog, physical asset survey or selection of frontend/reporting technology.
 Customer records and screenshots are not stored here. Source field names below
 are external vocabulary; generic contracts use English and configurable mappings.
 
-The administrator currently prepares/imports CSV data through a Python script into
-a local database; Power BI presents the results. The owner intends to port the
-transformation behavior to JavaScript, using the accepted TypeScript/Node.js backend.
+The administrator previously prepared/imported CSV data through a Python script into
+a local database; Power BI presented the results. The resulting local
+TypeScript/NestJS/React workflow is delivered; see the
+[delivery map](../planning/poc-delivery.md). The research questions below preserve
+what was known at the time; current contracts and story statuses govern remaining work.
 The owner supplied loader and repository excerpts, reviewed as historical evidence;
 the complete pipeline has not been inspected or executed. Later implementation must reconcile outputs
 on the same representative input before replacing the existing process.

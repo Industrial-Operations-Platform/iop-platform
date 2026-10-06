@@ -1,39 +1,64 @@
 # IOP roadmap
 
-The current priority is the [local analytical POC](docs/product/scope-poc.md):
-**CSV → preparation → persistent history → analysis → presentation**.
+Reviewed on **2026-10-06** against develop at `c0fc3ff` under
+[IOP-195](docs/planning/items/IOP-195-development-status.md).
+The local analytical POC has expanded into an operational platform. This inventory
+records delivery and remaining work; it does not select the next implementation
+or commit to delivery dates. The [backlog](docs/planning/backlog.md) mirrors each
+permanent story's status; the [delivery map](docs/planning/poc-delivery.md) links evidence.
 
-## Delivered
+## Delivered locally
 
-The three-container application imports daily CSVs, preserves originals, prepares
-historical data and provides Executive Overview plus Halle, Bereich, Equipment,
-Error and Daily/monthly analysis. Frontend and backend follow hexagonal boundaries;
-shared presentation components preserve the established identity.
-The [delivery status](docs/planning/poc-delivery.md) links implementation evidence.
+- Docker web/API/PostgreSQL, migrations, persistent history and scoped authorization.
+- Individual local login, four profiles, user administration, logical deletion,
+  English/German presentation and shared identity/components.
+- Data Analysis: CSV preservation/import/preparation, historical reporting,
+  daily/weekly/monthly trends, monthly comparisons, KPIs and source-component Pareto.
+- Shift Handover: configured categories, technician journal, follow-up, durable
+  open issues, department matrices, daily overview, meeting preparation and Start.
+- M6 Workforce: teams/settings, schedule imports/manual weekly planning,
+  assignments, floating duties, phone responsibility and retained revisions.
+- M8 Maintenance: categorized work, reviewed repair scope, ownership/priorities,
+  board/search, immutable outcomes and atomic resolution of included Handover issues.
+- M10 Digital Asset Record: stable registry, exact scoped aliases, validation/
+  retirement, search, manual within-area metadata and source-authorized timeline.
+- Explicit synthetic analytical, Handover, Workforce and Maintenance exercises.
 
-## Remaining acceptance
+IOP-194 was integrated into develop and published to origin on 2026-10-06.
+Owner functional testing, physical inventory verification and missing-component
+survey remain pending; Git integration is not final product acceptance.
 
-[IOP-130](docs/planning/items/IOP-130-pilot-metrics.md) remains open for the owner's
-assessment of usefulness. Review the current reports with representative data;
-automated reconciliation does not establish that the experience meets this goal.
-Any resulting change needs its own scope and execution plan.
+## Remaining development and validation
 
-## Later capabilities
+| Area | Remaining outcome | Stories |
+| --- | --- | --- |
+| Shared-use identity/core | Corporate/provider authentication and complete organization/site/user/membership lifecycle beyond the local installation | IOP-007, 025–027, 029–030, 106 |
+| Assets | Configurable composition hierarchy/types, parent-cycle rules, controller links, extensible metadata, survey workflow and ingestion-time event mapping | IOP-032–033, 035–036, 038–039, 044; synthetic structure IOP-124 |
+| Formal Handover | Shift-bound record, canonical asset references, closure/acknowledgement and previous-shift view; Workforce-prefilled location remains separate integration | IOP-060, 063, 066–067 |
+| Asset Locator | Versioned maps, upload, normalized coordinates, placements and ambiguous/unmapped lookup; explicitly Deferred by the owner | IOP-076–083 |
+| Analytical extension | Full canonical Asset/Area/Event Pareto coverage beyond the delivered source-group charts | IOP-093 |
+| Improvement Tracking | Decide ownership/inclusion; action, owner/target, evidence and action-linked before/after impact | IOP-098–101 |
+| External integrations | Registry, read-only WinCC/Ultimo contracts, Entra connection and source health; corporate roster connection remains outside manual Workforce import | IOP-102, 104–107 |
+| Delivery infrastructure | Automatic CI; background job design and worker/retry infrastructure | IOP-021; Deferred IOP-010 and Proposed IOP-024 |
+| Audit/security | General Audit design/storage/collection/retention and consolidated authorization/critical-action verification | IOP-009, 023, 108, 111, 131 |
+| Operations | Full-platform backup/verified restore, performance baseline/targets and broader job/import recovery | IOP-112–115, 133 |
+| UX | Unified area overview and one global asset/area/issue search | IOP-118–119 |
+| Release | Consolidated pilot measurements, authorized deployment/admin procedures, final architecture review and version/tag/release notes | IOP-130, 134–135, 137–138 |
 
-- Third-party authentication and operating controls before shared use.
-- Pareto as a function within Executive Overview, not a separate POC tab.
-- External connections, full audit, workers, full asset hierarchy/maps,
-  and improvement tracking when explicitly selected.
+The original local outcomes of login/admin, asset lifecycle/aliases/search,
+Handover categories/entries/issues/summary, role-aware Start and Workforce/Maintenance
+fixtures are reflected as Completed in their original stories. Partial parent
+coverage is documented without closing unfulfilled criteria.
 
-The [backlog](docs/planning/backlog.md) owns task statuses and capability groups;
-the [v1 proposal](docs/product/scope-v1.md) describes the broader product direction.
-These are not extra POC exit gates or commitments to delivery dates.
-Follow the [workflow](docs/planning/workflow.md) when selecting work.
+## Acceptance and publication
 
-M6 Workforce is delivered by [IOP-184](docs/planning/items/IOP-184-m6-workforce.md);
-corporate schedule connectivity remains deferred behind the manual import port.
+The owner accepted the charts as **Data Analysis v1** on 2026-09-27.
+[IOP-130](docs/planning/items/IOP-130-pilot-metrics.md) remains In progress for
+consolidating all five accepted measures and actual human timing/dataset evidence;
+usefulness feedback is recorded. Shared-use validation and whole-platform release
+remain separate. Maps, surveys and every future inventory item are not automatically
+analytical release gates.
 
-M8 Maintenance Management and M10 Digital Asset Record are delivered on the
-separate [IOP-194](docs/planning/items/IOP-194-maintenance-asset-history.md) review
-branch. Owner review remains pending; this does not promote changes into develop,
-stage or master. M9 Asset Locator remains deferred by explicit owner instruction.
+Use the [workflow](docs/planning/workflow.md) to select and plan the next authorized
+slice. Existing story publication does not authorize stage/master promotion,
+hosted deployment or a new release.

@@ -26,7 +26,7 @@ See the [execution plan](../completed/IOP-016-backend-bootstrap-plan.md),
 [module boundaries](../../architecture/modules.md) and [workflow](../workflow.md).
 This host composes the modular platform; it is not a separate business microservice.
 
-## Current state
+## Original slice state
 
 The API host, locked npm workspace, TypeScript build, Jest/Supertest tests and
 OpenAPI artifact are implemented and validated from a clean npm installation.
@@ -128,3 +128,11 @@ root README and obsolete repository-baseline statements are synchronized.
 
 No new architecture decision is required for this host. Broader IOP-013 health/log
 contracts and ADR-0018 business execution remain outside its completed scope.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

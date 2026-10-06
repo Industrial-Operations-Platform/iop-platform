@@ -20,9 +20,9 @@ these boundaries. Preserve [visual identity](../../docs/design/visual-identity.m
 and the shared `src/design/identity.ts` tokens; do not copy feature markup/styles
 into new features or redesign the palette per iteration.
 
-Executive Overview alone presents priority KPI cards. Overview/Halle have date-only
-controls; finer views add relevant dimensions. Import counts belong in file review.
-Pareto is deferred. The [product scope](../../docs/product/scope-poc.md) owns these rules.
+Executive Overview alone presents priority KPI cards. Overview uses one month and Halle uses imported-month selection; finer views add relevant dimensions. Import counts belong in file review.
+Selected-month source-group frequency/duration Pareto is delivered under IOP-163;
+broader canonical asset coverage remains with IOP-093. The [product scope](../../docs/product/scope-poc.md) owns these rules.
 
 ## Checks and contracts
 

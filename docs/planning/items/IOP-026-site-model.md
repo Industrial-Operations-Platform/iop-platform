@@ -14,7 +14,7 @@ M3 — Platform Core. Persist one configured site with explicit organization own
 and IANA time zone. CRUD, selectors, lifecycle and administration screens remain
 future parent scope; their deferral must not be reported as completed implementation.
 
-## Value and current state
+## Value and original slice state
 
 The analytical POC needs a persisted site boundary for later scoped imports and
 reports. Platform Core owns site identity/configuration; Users/RBAC owns permission.
@@ -23,7 +23,8 @@ and [glossary](../../product/glossary.md).
 
 IOP-018 validates configuration references and zones. IOP-019 provides migrations;
 IOP-025 persists organizations through an explicit initial seed. IOP-026 now supplies
-`platform_core.sites`, forced two-selector RLS and an explicit insert-only seed under Accepted ADR-0021. Runtime site access remains closed.
+`platform_core.sites`, forced two-selector RLS and an explicit insert-only seed under
+Accepted ADR-0021. Runtime site access remains closed.
 
 ## Requirements and acceptance criteria
 
@@ -79,10 +80,19 @@ denial. Commands and configuration agreement are documented in the
 POC scope and delivery map remain unchanged; no adjacent story is activated.
 This is privileged installation evidence, not runtime business authorization.
 
-## Remaining scope
+## Original slice handoff
 
 No open decision blocks the completed POC slice. Site CRUD, selectors, lifecycle,
 transfers, zone corrections and administration remain deferred. ADR-0018 is Accepted;
 its pending implementation and verification independently gate runtime business access.
 Implementation commits
 remain on the story branch for owner review and publication approval.
+
+## Current coverage and remaining work — 2026-10-06
+
+Site persistence/bootstrap, IANA time zone and exact ownership checks are delivered.
+Remaining: site CRUD/selectors, lifecycle, transfers and reviewed zone correction; the
+Deferred parent is not a runtime blocker.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

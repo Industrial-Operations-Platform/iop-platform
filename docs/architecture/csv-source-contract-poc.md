@@ -63,7 +63,8 @@ mapping revision. Resolve one explicit configured source within its organization
 and site; validate ownership and the site's configured IANA zone before admission.
 CSV labels and filenames cannot select or override scope. Runtime access still
 requires execution-mechanism implementation and validation; ADR-0018 is Accepted,
-but host activation remains pending.
+with host activation subsequently delivered under IOP-147 and local account
+authentication under IOP-165.
 
 Each aggregate retains the import context and a `sourceRecordNumber` (original
 physical line number, including the header and any skipped blank lines):

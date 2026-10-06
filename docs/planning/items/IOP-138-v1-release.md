@@ -24,7 +24,10 @@ owner-requested outline; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+Data Analysis v1 component acceptance is recorded; IOP-194 is integrated into develop
+and published to origin. Remaining: the release gates IOP-130/131/133/134/135/137 and
+explicit authorization for version/tag/release notes; product review remains distinct
+from Git publication.
 
 ## Desired state
 
@@ -67,7 +70,8 @@ Reconcile evidence and test recovery with authorized or synthetic data.
 
 ## API considerations
 
-Validate published contracts and documented compatibility; do not introduce features during release closure.
+Validate published contracts and documented compatibility; do not introduce features
+during release closure.
 
 ## UI considerations
 
@@ -82,11 +86,14 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the whole milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, inferring acceptance of open decisions or expanding
+delivery to the whole milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-The plan must specify executable commands and scenarios for the criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+The plan must specify executable commands and scenarios for the criteria using accepted
+tooling. Include the expected path, errors and relevant access denial; record actual
+results, not fictional tests.
 
 ## Documentation impact
 
@@ -95,4 +102,15 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.
+Confirm the approved contract, edge cases and exact evidence for this slice before
+activating implementation.
+
+## Current coverage and remaining work — 2026-10-06
+
+Data Analysis v1 component acceptance is recorded; IOP-194 is integrated into develop
+and published to origin. Remaining: the release gates IOP-130/131/133/134/135/137 and
+explicit authorization for version/tag/release notes; product review remains distinct
+from Git publication.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

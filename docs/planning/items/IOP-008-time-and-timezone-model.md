@@ -34,7 +34,7 @@ The requested historical `active/IOP-002-backend-stack.md` was migrated to
 [current backend review](IOP-002-backend-review.md) and
 [stack item](IOP-002-technology-stack.md) record the accepted decisions.
 
-## Current state
+## Original slice state
 
 PostgreSQL and TypeScript/NestJS are accepted, and each site requires explicit
 zone context under ADR-0012. Detailed temporal contracts are accepted under ADR-0016.
@@ -159,3 +159,11 @@ and [clarification plan](../completed/IOP-008-csv-date-clarification-plan.md).
 This confirms date-entry and duplicate-rejection intent, not exact reporting hours
 or time zone. ADR-0016 remains Accepted and IOP-008 remains Completed as design;
 import concurrency, retries and UI contracts remain future ingestion work.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

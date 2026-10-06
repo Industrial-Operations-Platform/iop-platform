@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Deferred — M9 explicitly postponed by the owner, confirmed on 2026-10-06.
 
 ## Milestone
 
@@ -10,88 +10,102 @@ M9 — Asset Locator. Proposed delivery slice.
 
 ## Goal
 
-Asset placement. Resultado esperado: Asset puede posicionarse
+Asset placement. Expected outcome: An asset can be placed
 
 ## User / business value
 
-Técnicos necesitan encontrar un activo validado en el plano correcto.
+Technicians need to find a validated asset on the correct map.
 
 ## Context
 
-Ámbito: Asset Locator. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Asset Locator. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+outline requested by the owner; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+M9 maps, spatial placement and locator search are not implemented. IOP-194
+provides a non-spatial asset registry, exact aliases and manual within-area metadata.
 
 ## Desired state
 
-Asset puede posicionarse
+An asset can be placed
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-079.
-- Mapa versionado y placement son diferentes del asset canónico y su jerarquía funcional.
+- Deliver only the outcome described for IOP-079.
+- A versioned map and placement are separate from the canonical asset and its functional hierarchy.
 
 ## Acceptance criteria
 
-- [ ] Asset puede posicionarse
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] An asset can be placed
+- [ ] The plan documents scenarios and necessary decisions without expanding scope.
+- [ ] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
-Mapa versionado y placement son diferentes del asset canónico y su jerarquía funcional.
+A versioned map and placement are separate from the canonical asset and its functional hierarchy.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to make the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permissions and customer/site scope in relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Coordenadas en [0,1] ligadas a una versión de mapa; definir origen y orientación antes de implementar.
+Coordinates in [0,1] are bound to a map version; define origin and orientation before
+implementation.
 
 ## API considerations
 
-Resolver asset/alias por scope; el acceso a archivos de mapas también requiere autorización.
+Resolve assets/aliases within scope; map-file access also requires authorization.
 
 ## UI considerations
 
-Mostrar múltiples coincidencias y activos sin posición; no inventar coordenadas ni seleccionar un match ambiguo.
+Show multiple matches and assets without placement; do not invent coordinates or select
+an ambiguous match.
 
 ## Dependencies
 
 [IOP-077](IOP-077-map-upload.md), [IOP-078](IOP-078-normalized-map-coordinates.md), [IOP-039](IOP-039-asset-survey.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies indicate required contracts/capabilities, not numerical implementation
+order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery
+to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must define executable commands and scenarios for the criteria below using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictional tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, models, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before
+starting implementation.
+
+## Remaining work — 2026-10-06
+
+The original locator outcome and its acceptance criteria remain unfulfilled.
+The owner explicitly deferred M9 while allowing IOP-194 catalog/manual grouping
+work; see [IOP-194](IOP-194-maintenance-asset-history.md). Existing assets and
+source-alias search do not implement versioned maps, coordinates or placement.

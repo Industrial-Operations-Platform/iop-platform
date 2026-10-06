@@ -24,10 +24,10 @@ owner-requested outline; backlog presence does not authorize implementation.
 
 ## Current state
 
-The original planning baseline was documentation-only, with this capability and its
-detailed design not implemented or accepted. The separately authorized
-[IOP-148 reporting slice](IOP-148-analytical-workspace.md) tracks current implementation
-and validation; this broader item is not closed by translating its context.
+IOP-163 delivers selected-month frequency/duration Pareto charts for the chosen
+source grouping, including area/equipment/message, with complete-total cumulative
+percentages and an 80% reference. Remaining: canonical asset-based Pareto and its
+physical identity/mapping contract; source equipment codes do not prove assets.
 
 ## Desired state
 
@@ -103,3 +103,13 @@ contracts, model, guides or ADRs only when their content changes for this task.
 
 Confirm the accepted contract, edge cases and exact evidence for this slice before
 activating its implementation.
+
+## Current coverage and remaining work — 2026-10-06
+
+IOP-163 delivers selected-month frequency/duration Pareto charts for the chosen
+source grouping, including area/equipment/message, with complete-total cumulative
+percentages and an 80% reference. Remaining: canonical asset-based Pareto and its
+physical identity/mapping contract; source equipment codes do not prove assets.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

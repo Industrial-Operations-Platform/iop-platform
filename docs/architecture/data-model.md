@@ -14,10 +14,13 @@ administration are delivered under [ADR-0035](adr/ADR-0035-transitional-authenti
 Corporate identity binding and future operational modules remain deferred; existing
 identity, scoped authorization and RLS requirements continue to apply.
 
-This is primarily a conceptual baseline. The IOP-025 organization storage slice
-is implemented as described below. PostgreSQL is accepted;
-shared-table isolation is accepted under ADR-0013. Beyond that organization slice, physical module schemas, ID encoding/generation,
-detailed constraints and indexing remain to be designed.
+This document combines a conceptual baseline with delivered physical slices below.
+Organization/site, users/memberships/access, import/RAW, analytical projections,
+Handover, Workforce, Maintenance and Asset schemas are implemented through IOP-194.
+PostgreSQL/shared-table isolation follows Accepted ADR-0013. Physical schemas and
+constraints for undelivered capabilities remain to be designed. Earlier bootstrap
+sections describe their original slice; later runtime sections supersede the
+original absence of business grants, receivers and administrative profiles.
 Module ownership is defined in [modules](modules.md).
 
 ## Relationships
@@ -120,8 +123,8 @@ subject to temporal and metric design.
 
 Scope must survive queries, jobs, audit, caches, files and derived views. Current
 authorization policy applies at job execution and result retrieval; stored context
-is not a permanent grant. Physical enforcement follows Accepted ADR-0013; detailed schema implementation
-remains future work, and membership/grant policy follows Accepted ADR-0014.
+is not a permanent grant. Physical enforcement follows Accepted ADR-0013 and is implemented for delivered
+module schemas; undelivered schemas remain future work, and membership/grant policy follows Accepted ADR-0014.
 
 
 ## Accepted storage requirements
@@ -139,7 +142,8 @@ against validated transaction-local scope. Application queries and authorization
 remain scoped too. Derived views/projections and other access paths require their
 own review before runtime grants. Verify pool reuse, rollback, concurrency and
 foreign-reference rejection against actual runtime credentials before claiming
-isolation; this document provides no DDL or executed security evidence.
+isolation; this conceptual section supplies invariants, while the linked migrations and
+completed delivery plans supply DDL and executed isolation evidence.
 
 
 ## Accepted membership and role assignments
@@ -233,7 +237,8 @@ analytical admission. Scoped normalized references retain import identity and or
 physical line numbers. See the [preservation contract](csv-preservation-poc.md) for
 budgets, integrity, authorized retrieval and failure/reset semantics. This is accepted
 design; IOP-042 subsequently implements physical RAW/import tables and publication
-coordination as described below. The production OIP receiver remains pending.
+coordination as described below. IOP-045/147 deliver CSV decoding, the durable
+OIP receiver and connected importer journey.
 The [IOP-041 logical RAW model](raw-ingestion-poc.md) defines immutable receipt
 fields, scoped physical-line references and availability/outcome distinctions.
 IOP-041 is completed design; IOP-042 supplies storage while the importer journey
@@ -277,7 +282,8 @@ cross-module publication and recovery mechanics. IOP-042 implements the Integrat
 receipt/outcome, date-claim and dataset-quota tables with forced RLS and narrow
 column grants. Original bytes and provenance are immutable through runtime grants;
 only a received attempt can become terminal. See the [storage guide](../../infra/database/README.md#internal-import-batches-iop-042).
-OIP receiving storage, CSV parsing and host activation are separate delivery.
+OIP receiving storage, CSV parsing and host activation were delivered separately
+under IOP-045/147/148; they are no longer outstanding runtime blockers.
 
 
 ## POC canonical event aggregates
@@ -288,8 +294,9 @@ accumulated seconds, all five source dimensions, frozen classification and RAW
 provenance. Repeated tuples remain separate facts; no asset/message registry or
 individual occurrence is fabricated. Reporting-date labels retain unknown windows.
 The model defines logical grouping equality and publication invariants under
-Accepted ADR-0023/0027; wire references and production OIP storage/receiver remain
-future delivery. This is completed design, not executable analytical evidence.
+Accepted ADR-0023/0027. IOP-147 implements wire references, immutable aggregate
+storage and the receiver; IOP-148 adds the relational analytical projection.
+The logical design itself is not executable evidence; linked plans provide that.
 
 ## Relational Hitliste analytical projection — IOP-148
 

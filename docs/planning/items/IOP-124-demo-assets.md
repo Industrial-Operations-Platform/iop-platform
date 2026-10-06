@@ -24,7 +24,8 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Only the documentation baseline exists for this capability. It is not implemented, and its detailed design has not been accepted.
+IOP-194 supplies explicit fictional asset identities/exercises and configured
+locations. The broader synthetic physical hierarchy/survey dataset is not delivered.
 
 ## Desired state
 
@@ -43,7 +44,8 @@ Realistic hall/area/assets
 
 ## Domain considerations
 
-Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
+Use fictional organizations, names, assets and relationships; fixtures do not define
+rigid domain levels.
 
 ## Architecture constraints
 
@@ -62,7 +64,8 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Use reproducible data with explicit scope and provenance; include useful invalid/ambiguous cases without secrets.
+Use reproducible data with explicit scope and provenance; include useful
+invalid/ambiguous cases without secrets.
 
 ## API considerations
 
@@ -81,11 +84,14 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, inferring acceptance of open decisions or extending
+delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-The plan must define executable commands and scenarios for the acceptance criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictitious tests.
+The plan must define executable commands and scenarios for the acceptance criteria using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictitious tests.
 
 ## Documentation impact
 
@@ -94,4 +100,15 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.
+Confirm the approved contract, edge cases and exact evidence for this slice before
+activating implementation.
+
+## Current coverage and remaining work — 2026-10-06
+
+IOP-194 supplies fictional stable assets and exercises with configured locations and
+retained aliases; later reconciliation retires training identities. Remaining: the
+proposed realistic synthetic asset structure and survey/hierarchy cases; source-code
+inventory is not a surveyed physical hierarchy.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

@@ -26,7 +26,7 @@ Read [modules](../../architecture/modules.md), [vision](../../product/vision.md)
 and [planning workflow](../workflow.md). The expanded backlog is an inventory of
 proposals, not an agreement to deliver all 138 tasks in v1.
 
-## Current state
+## Original slice state
 
 Only the documentation baseline exists. The owner narrowed v1 to reproduce the
 existing Python → local database → Power BI analytical workflow from CSV.
@@ -34,7 +34,8 @@ Individual logins remain required. Team Leaders analyze/present, Taskforce
 investigates and management receives presentations only, without a login.
 Precise sensor location and Asset Locator/3D are deferred because they require a
 substantial plant survey. Source-provided sector/equipment context may still be
-used in analytics. The Administrator owns import-quality review and user/configuration administration;
+used in analytics. The Administrator owns import-quality review and user/configuration
+administration;
 Team Leader and Taskforce consult/filter predefined reports without editing.
 
 ## Desired state
@@ -131,3 +132,11 @@ See the [closure review](../completed/IOP-001-closure-review-plan.md). Existing
 responsibility confirmation at 830b943 and report-view decisions from IOP-002 are
 synchronized without merging or deleting their prior review branches. This is
 documentation acceptance only; no application, runtime tests or pilot measurement.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

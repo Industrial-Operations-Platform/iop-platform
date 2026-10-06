@@ -27,10 +27,11 @@ The owner requested evaluation and an ADR, with dependent documentation updated
 if the decision is accepted. The original seed names no specific alternatives;
 ADR-0012 compares organization-only, Organization/Site and a generic scope tree.
 
-## Current state
+## Original slice state
 
 Only the documentation baseline exists. Customer-owned sites and isolation are
-accepted foundations, and the detailed Organization/Site model is accepted under ADR-0012. No runtime
+accepted foundations, and the detailed Organization/Site model is accepted under
+ADR-0012. No runtime
 implementation exists. The decision uses explicit Organization → Site ownership,
 with configurable locations outside the authorization scope hierarchy.
 
@@ -59,7 +60,8 @@ operation scope and module responsibilities, with synchronized architecture docs
 
 ADR-0012 defines Organization as the existing customer boundary; each Site belongs
 to exactly one Organization. Source labels and configurable locations are data,
-not identity or additional permission scopes. Physical tenancy and detailed RBAC remain separate decisions.
+not identity or additional permission scopes. Physical tenancy and detailed RBAC remain
+separate decisions.
 
 ## Architecture constraints
 
@@ -129,3 +131,11 @@ alternatives, logical contracts, consequences and twelve design walkthroughs.
 The owner explicitly accepted the ADR on 2026-09-15 and authorized merge to develop
 and push to origin. The acceptance slice synchronizes the baseline and completes
 the parent as design only; no runtime isolation or pilot measurement is claimed.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

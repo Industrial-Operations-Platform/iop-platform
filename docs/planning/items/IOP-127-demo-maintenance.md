@@ -2,18 +2,12 @@
 
 ## Status
 
-Deferred
-
-Deferred beyond the analytical POC under the owner-approved
-[scope](../../product/scope-poc.md) and [delivery map](../poc-delivery.md), which
-explicitly defer maintenance and IOP-126–127 fixtures. The 2026-09-26 review
-introduces no issues/tasks dataset or runtime behavior.
-
-Execution evidence: [POC disposition plan](../completed/IOP-127-poc-disposition-plan.md).
+Completed — original outcome delivered in later owner-authorized local increments;
+reconciled on 2026-10-06.
 
 ## Milestone
 
-M16 — Demo / Pilot Dataset. Proposed delivery slice.
+M16 — Demo / Pilot Dataset. Delivered local slice.
 
 ## Goal
 
@@ -31,7 +25,9 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Only the documentation baseline exists for this capability. It is not implemented, and its detailed design has not been accepted.
+IOP-194 delivers explicitly labelled fictional assets and 30 Maintenance exercises, plus
+four linked Handover problems/repairs. Replay preserves existing data and adds no
+duplicate records/revisions; retired training identities remain historical.
 
 ## Desired state
 
@@ -44,16 +40,18 @@ Issues/tasks
 
 ## Acceptance criteria
 
-- [ ] Issues/tasks
+- [x] Issues/tasks
 - [x] The plan documents scenarios and required decisions without expanding scope.
 - [x] Validation evidence and synchronized documentation exist.
 
-The checked criteria cover the POC disposition review only. Issues/tasks remain
-unimplemented; this story is not Completed.
+The earlier POC deferral is historical; its [disposition evidence](../completed/IOP-127-poc-disposition-plan.md)
+is retained. IOP-194 now supplies the fictional issues/tasks dataset and recorded
+replay/integrity evidence.
 
 ## Domain considerations
 
-Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
+Use fictional organizations, names, assets and relationships; fixtures do not define
+rigid domain levels.
 
 ## Architecture constraints
 
@@ -72,7 +70,8 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Use reproducible data with explicit scope and provenance; include useful invalid/ambiguous cases without secrets.
+Use reproducible data with explicit scope and provenance; include useful
+invalid/ambiguous cases without secrets.
 
 ## API considerations
 
@@ -89,18 +88,20 @@ The user must distinguish demo data from real data; scope does not include desig
 Dependencies indicate required contracts/capabilities, not numerical implementation
 order. Refine them in the plan before changing code.
 
-For the POC, both direct dependencies are deferred capabilities: IOP-124 supplies
-physical asset fixtures; IOP-073 supplies the maintenance board. Neither is a POC
-gate. Revisit their contracts only when maintenance work is explicitly activated
-beyond the POC.
+IOP-194 supplies the supporting stable-asset fixtures and completed IOP-073 board.
+IOP-124’s broader hierarchy/survey dataset remains open; it is not required for
+these explicitly selected Maintenance exercises.
 
 ## Non-goals
 
-Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, inferring acceptance of open decisions or extending
+delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-The plan must define executable commands and scenarios for the acceptance criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictitious tests.
+The plan must define executable commands and scenarios for the acceptance criteria using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictitious tests.
 
 ## Documentation impact
 
@@ -109,5 +110,16 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-No decision is needed to apply the existing POC deferral. Before future maintenance
-implementation, confirm the approved contract, edge cases and exact evidence.
+None for the delivered original outcome. Broader parent capabilities remain
+separately scoped and require an explicit selection before implementation.
+
+## Current coverage — 2026-10-06
+
+IOP-194 delivers explicitly labelled fictional assets and 30 Maintenance exercises, plus
+four linked Handover problems/repairs. Replay preserves existing data and adds no
+duplicate records/revisions; retired training identities remain historical.
+
+Implementation and validation: [execution evidence](../completed/IOP-194-demo-data-plan.md).
+No remaining implementation for this story’s original outcome; broader scope remains
+in the explicitly linked parent stories. Closure does not imply platform release
+or final owner product acceptance.

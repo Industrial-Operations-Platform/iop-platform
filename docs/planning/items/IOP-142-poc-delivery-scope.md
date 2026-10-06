@@ -34,7 +34,8 @@ are review context only; this task does not merge or change their acceptance rec
 Preserve Accepted ADR-0004, ADR-0012/0013/0014 and ADR-0016. Product authorization to
 defer login does not select a technical replacement for identity verification.
 The local execution contract in ADR-0018 was separately accepted on 2026-09-26;
-runtime implementation and validation remain pending. Retain RAW provenance, scoped duplicate prevention and
+runtime implementation and validation remain pending. Retain RAW provenance, scoped
+duplicate prevention and
 reconciled frequency/duration semantics. No runtime isolation claim is made.
 
 ## API, UI and non-goals
@@ -69,3 +70,11 @@ explicit grants and retained RLS boundaries. The original alignment evidence abo
 records the proposal-era state. This acceptance resolves the decision gate, not
 runtime delivery or IOP-096/097 completion. See the
 [acceptance plan](../completed/IOP-142-local-context-acceptance-plan.md).
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

@@ -2,11 +2,12 @@
 
 ## Status
 
-Proposed
+Completed — original outcome delivered in later owner-authorized local increments;
+reconciled on 2026-10-06.
 
 ## Milestone
 
-M15 — UX & Operational Experience. Proposed delivery slice.
+M15 — UX & Operational Experience. Delivered local slice.
 
 ## Goal
 
@@ -24,7 +25,9 @@ owner-requested outline; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+Start now composes current authorized information by profile: analytical summaries,
+Handover highlights/pending reports, personal schedules/assignments and assigned
+Maintenance work. Current server grants control every source.
 
 ## Desired state
 
@@ -37,9 +40,9 @@ Home tailored to the user role
 
 ## Acceptance criteria
 
-- [ ] Home tailored to the user role
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation are available.
+- [x] Home tailored to the user role
+- [x] The plan documents scenarios and necessary decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation are available.
 
 ## Domain considerations
 
@@ -70,7 +73,8 @@ Reuse search/read contracts; define pagination and limits only for the selected 
 
 ## UI considerations
 
-Evaluate keyboard access, labels, contrast and empty/error/loading states on laptop and tablet; agree on verifiable targets.
+Evaluate keyboard access, labels, contrast and empty/error/loading states on laptop and
+tablet; agree on verifiable targets.
 
 ## Dependencies
 
@@ -81,11 +85,14 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the whole milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, inferring acceptance of open decisions or expanding
+delivery to the whole milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-The plan must specify executable commands and scenarios for the criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+The plan must specify executable commands and scenarios for the criteria using accepted
+tooling. Include the expected path, errors and relevant access denial; record actual
+results, not fictional tests.
 
 ## Documentation impact
 
@@ -94,4 +101,16 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.
+None for the delivered original outcome. Broader parent capabilities remain
+separately scoped and require an explicit selection before implementation.
+
+## Current coverage — 2026-10-06
+
+Start now composes current authorized information by profile: analytical summaries,
+Handover highlights/pending reports, personal schedules/assignments and assigned
+Maintenance work. Current server grants control every source.
+
+Implementation and validation: [execution evidence](../completed/IOP-192-operational-cards-account-plan.md).
+No remaining implementation for this story’s original outcome; broader scope remains
+in the explicitly linked parent stories. Closure does not imply platform release
+or final owner product acceptance.

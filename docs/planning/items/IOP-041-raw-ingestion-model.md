@@ -19,7 +19,7 @@ M5 — Industrial Data Foundation. Documentation/design only.
 Define preservation of scoped original CSV input and import provenance so that
 operations can trace imported data and reconcile metrics.
 
-## Context and current state
+## Context and original slice state
 
 Scope: Integrations and Operational Intelligence. See
 [modules](../../architecture/modules.md) and [planning workflow](../workflow.md).
@@ -108,3 +108,11 @@ commit recovery through module contracts. Document new architectural mechanisms
 as Proposed ADRs with options and a recommendation before dependent implementation.
 RAW schemas, retrieval, source configuration and executable reconciliation remain
 future delivery, not evidence supplied by design closure.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

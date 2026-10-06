@@ -61,3 +61,12 @@ Continue on the existing story branch before one combined merge into `develop`:
   Remote push remains subject to separate explicit authorization.
 
 [Refinement and integration plan](../completed/IOP-191-compact-controls-plan.md).
+
+## Current delivery — 2026-10-06
+
+Earlier activation/publication notes above describe the original increment. This
+implementation is present in the current develop baseline; the later
+[IOP-194 validation](../completed/IOP-194-equipment-catalog-refinement-plan.md) and
+[publication](../completed/IOP-194-publication-integration-plan.md) record the
+integrated local application and preserved data. No new activation or publication
+is performed by the IOP-195 documentation audit.

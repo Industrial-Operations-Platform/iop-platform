@@ -42,3 +42,12 @@ recorded in the execution plan. On 2026-10-02 the owner-approved IOP-190 publica
 integrated this story into develop and published its commits to origin. The separate
 IOP-188 review branch is retained; Docker activation remains pending.
 See [publication evidence](../completed/IOP-190-publication-plan.md).
+
+## Current delivery — 2026-10-06
+
+Earlier activation/publication notes above describe the original increment. This
+implementation is present in the current develop baseline; the later
+[IOP-194 validation](../completed/IOP-194-equipment-catalog-refinement-plan.md) and
+[publication](../completed/IOP-194-publication-integration-plan.md) record the
+integrated local application and preserved data. No new activation or publication
+is performed by the IOP-195 documentation audit.

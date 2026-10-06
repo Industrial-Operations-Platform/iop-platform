@@ -14,7 +14,7 @@ M3 — Platform Core. Deliver a configured organization with stable identity and
 scoped ownership. Organization CRUD, lifecycle and administration screens remain
 future parent scope; completing the POC slice must not close those requirements.
 
-## Value, context and current state
+## Value, context and original slice state
 
 The local analytical POC needs a persisted ownership root before site and source
 records can reference it. Platform Core owns organization identity; Authentication
@@ -23,7 +23,8 @@ and Users/RBAC retain their separate responsibilities. See the
 and [glossary](../../product/glossary.md).
 
 IOP-018 validates configuration references but does not persist them. IOP-019
-provides local role provisioning and migrations. IOP-025 now adds `platform_core.organizations`, forced RLS and a scoped initial
+provides local role provisioning and migrations. IOP-025 now adds
+`platform_core.organizations`, forced RLS and a scoped initial
 seed command. There is no runtime connection or organization endpoint.
 
 ## Requirements and acceptance criteria
@@ -83,8 +84,17 @@ preserves the earlier decision preparation. Commands and limits are documented i
 the [database guide](../../../infra/database/README.md). POC scope/delivery remain
 unchanged. No adjacent story was activated.
 
-## Remaining scope
+## Original slice handoff
 
 No open decision blocks the completed organization POC slice. CRUD, lifecycle and
 administrative UI remain future parent scope. ADR-0018 remains Proposed and gates
 later runtime business access independently. Site ownership implementation is IOP-026.
+
+## Current coverage and remaining work — 2026-10-06
+
+Organization persistence/bootstrap and live site-ownership checks are delivered.
+Remaining: organization CRUD, lifecycle and administrative screens; the Deferred parent
+is not a runtime blocker.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

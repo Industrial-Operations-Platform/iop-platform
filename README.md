@@ -1,8 +1,9 @@
 # Industrial Operations Platform (IOP)
 
-IOP is a modular industrial operations platform. Its Operational Intelligence (OIP)
-module provides CSV import, persistent history and analytical report templates.
-The local application has one Administrator; third-party login is deferred.
+IOP is a modular industrial operations platform with Data Analysis (OIP), Shift
+Handover, Workforce, Maintenance Management and a Digital Asset Record. The local
+application uses individual accounts with Administrator, Team Leader, Task Force
+and Technician profiles; corporate login and shared hosting remain pending.
 
 ## Run locally
 
@@ -27,7 +28,7 @@ previews are optional development paths, not the primary installation.
 | --- | --- |
 | Current product behavior and limits | [POC scope](docs/product/scope-poc.md) |
 | Delivered work and remaining acceptance | [Delivery status](docs/planning/poc-delivery.md) |
-| Next priorities and deferred capabilities | [Roadmap](ROADMAP.md) |
+| Remaining development and deferred capabilities | [Roadmap](ROADMAP.md), [story statuses](docs/planning/backlog.md) |
 | Architecture and implementation boundaries | [Architecture](ARCHITECTURE.md) |
 | Reusable frontend components and colors | [Visual identity](docs/design/visual-identity.md) |
 | Development checks | [Testing guide](docs/development/testing-poc.md) |
