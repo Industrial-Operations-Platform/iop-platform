@@ -75,7 +75,10 @@ export function siteRoles(profile: Profile): readonly string[] {
   return profile === "administrator"
     ? [
         "maintenance-contributor",
+        "maintenance-coordinator",
         "maintenance-administrator",
+        "assets-reader",
+        "assets-administrator",
         "workforce-reader",
         "workforce-planner",
         "workforce-administrator",

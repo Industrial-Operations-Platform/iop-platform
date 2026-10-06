@@ -1,6 +1,7 @@
 import {
   AssetError,
   exact,
+  text,
   identifier,
   prose,
   validContent,
@@ -9,6 +10,10 @@ import {
   timelineCursor,
   compareTimeline,
   encodeCursor,
+  aliasKey,
+  readableContent,
+  validEquipmentSelection,
+  cursorValue,
   type Asset,
   type AssetContent,
   type AssetRevision,
@@ -22,9 +27,16 @@ import {
   type SourceResult,
   type TimelineKind,
   type TimelineCoverage,
+  type EquipmentCandidate,
+  type EquipmentSelection,
+  type EquipmentPage,
 } from "../domain/assets";
 export interface Transaction {
   canManage: boolean;
+  equipment(selection?: {
+    code: string;
+    search: string;
+  }): Promise<EquipmentCandidate[]>;
   name(actor: string): Promise<string>;
   get(id: string): Promise<Asset | null>;
   prior(key: string): Promise<{ fingerprint: string; asset: Asset } | null>;
@@ -33,7 +45,7 @@ export interface Transaction {
     revision: AssetRevision,
     request?: { key: string; fingerprint: string },
   ): Promise<void>;
-  list(selection: AssetSelection): Promise<AssetPage>;
+  list(selection: AssetSelection, locationIds: string[]): Promise<AssetPage>;
   history(asset: Asset, before: number): Promise<AssetHistory>;
   sources(
     asset: Asset,
@@ -78,7 +90,101 @@ export class Assets {
   }
   query(actor: string, input: AssetSelection): Promise<AssetPage> {
     const selection = validSelection(input);
-    return this.store.run(actor, "assets.read", (tx) => tx.list(selection));
+    return this.store.run(actor, "assets.read", async (tx) => {
+      const result = await tx.list(
+        selection,
+        this.locationIds(selection.locationId),
+      );
+      return {
+        ...result,
+        assets: result.assets.map((asset) => ({
+          ...asset,
+          content: readableContent(asset.content),
+        })),
+      };
+    });
+  }
+  equipmentCatalog(
+    actor: string,
+    input: EquipmentSelection,
+  ): Promise<EquipmentPage> {
+    const selection = validEquipmentSelection(input);
+    if (
+      selection.locationId &&
+      !this.locations.some((location) => location.id === selection.locationId)
+    )
+      throw new AssetError("invalid_asset");
+    return this.store.run(actor, "assets.read", async (tx) => {
+      const catalog = await tx.equipment({
+        code: selection.code,
+        search: selection.search,
+      });
+      const locationIds = new Set(this.locationIds(selection.locationId));
+      const base = catalog.filter(
+        (candidate) =>
+          (!selection.locationId ||
+            locationIds.has(candidate.areaId || candidate.departmentId)) &&
+          (!selection.code || candidate.code === selection.code) &&
+          (!selection.search ||
+            candidate.code
+              .toLowerCase()
+              .includes(selection.search.toLowerCase())),
+      );
+      const unique = (values: string[]) =>
+        [...new Set(values.filter(Boolean))].sort();
+      const sources = unique(base.map((candidate) => candidate.sourceId));
+      const source = base.filter(
+        (candidate) =>
+          !selection.sourceId || candidate.sourceId === selection.sourceId,
+      );
+      const sectors = unique(source.map((candidate) => candidate.sector));
+      const sector = source.filter(
+        (candidate) =>
+          !selection.sector || candidate.sector === selection.sector,
+      );
+      const areas = unique(sector.map((candidate) => candidate.area));
+      const key = (candidate: EquipmentCandidate) =>
+        JSON.stringify([
+          candidate.code,
+          candidate.namespace,
+          candidate.sourceId,
+          candidate.sector,
+          candidate.area,
+          candidate.departmentId,
+          candidate.areaId,
+        ]);
+      const candidates = sector
+        .filter(
+          (candidate) => !selection.area || candidate.area === selection.area,
+        )
+        .sort((a, b) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0));
+      const context = { ...selection, cursor: "" };
+      let after = "";
+      if (selection.cursor) {
+        const cursor = cursorValue(selection.cursor);
+        exact(cursor, ["v", "selection", "after"]);
+        if (
+          cursor.v !== 1 ||
+          JSON.stringify(cursor.selection) !== JSON.stringify(context)
+        )
+          throw new AssetError("invalid_asset");
+        after = text(cursor.after, 2000, true);
+      }
+      const page = candidates
+        .filter((candidate) => !after || key(candidate) > after)
+        .slice(0, 51);
+      return {
+        sources,
+        sectors,
+        areas,
+        total: candidates.length,
+        candidates: page.slice(0, 50),
+        nextCursor:
+          page.length > 50
+            ? encodeCursor({ v: 1, selection: context, after: key(page[49]) })
+            : "",
+      };
+    });
   }
   detail(actor: string, id: string) {
     identifier(id, true);
@@ -103,14 +209,59 @@ export class Assets {
       if (!id) {
         const prior = await tx.prior(key);
         if (prior) {
-          if (prior.fingerprint !== fingerprint)
+          const legacyContent = { ...content, name: input.content.name };
+          if (input.content.locationDetails === undefined)
+            delete legacyContent.locationDetails;
+          const legacyFingerprint = JSON.stringify({
+            content: legacyContent,
+            note,
+          });
+          if (
+            prior.fingerprint !== fingerprint &&
+            prior.fingerprint !== legacyFingerprint
+          )
             throw new AssetError("asset_conflict");
-          return prior.asset;
+          return {
+            ...prior.asset,
+            content: readableContent(prior.asset.content),
+          };
         }
       }
       const existing = id ? await this.existing(tx, id) : null;
       if (existing && existing.revision !== input.expectedRevision)
         throw new AssetError("asset_conflict");
+      const changed = content.aliases.filter(
+        (alias) =>
+          ["analytics", "site-equipment"].includes(alias.namespace) &&
+          (!existing ||
+            existing.content.code !== content.code ||
+            !existing.content.aliases.some(
+              (previous) => aliasKey(previous) === aliasKey(alias),
+            )),
+      );
+      if (changed.some((alias) => alias.code !== content.code))
+        throw new AssetError("invalid_asset");
+      const analytical = changed.filter(
+        (alias) => alias.namespace === "analytics",
+      );
+      if (analytical.length) {
+        const candidates = await tx.equipment({
+          code: content.code,
+          search: "",
+        });
+        for (const alias of analytical)
+          if (
+            !candidates.some(
+              (candidate) =>
+                candidate.namespace === "analytics" &&
+                candidate.sourceId === alias.sourceId &&
+                candidate.code === alias.code &&
+                candidate.sector === alias.sector &&
+                candidate.area === alias.area,
+            )
+          )
+            throw new AssetError("invalid_asset");
+      }
       const at = this.now(),
         actorName = await tx.name(actor);
       const asset: Asset = {
@@ -199,6 +350,19 @@ export class Assets {
   private async existing(tx: Transaction, id: string): Promise<Asset> {
     const asset = await tx.get(id);
     if (!asset) throw new AssetError("asset_missing");
-    return asset;
+    return { ...asset, content: readableContent(asset.content) };
+  }
+  private locationIds(root: string): string[] {
+    if (!root) return [];
+    const ids = new Set([root]);
+    for (let changed = true; changed; ) {
+      changed = false;
+      for (const location of this.locations)
+        if (ids.has(location.parentId) && !ids.has(location.id)) {
+          ids.add(location.id);
+          changed = true;
+        }
+    }
+    return [...ids];
   }
 }

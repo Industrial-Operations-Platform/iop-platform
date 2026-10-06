@@ -82,6 +82,17 @@ export class AssetsController {
       runtime.assets.save(actor, body),
     );
   }
+  @Post("equipment-catalog")
+  @ApiBody({ type: C.AssetEquipmentSelectionDto })
+  @ApiCreatedResponse({ type: C.AssetEquipmentPageDto })
+  equipmentCatalog(
+    @Req() req: IncomingMessage,
+    @Body() body: C.AssetEquipmentSelectionDto,
+  ) {
+    return this.operation(req, (runtime, actor) =>
+      runtime.assets.equipmentCatalog(actor, body),
+    );
+  }
   @Post("detail")
   @ApiBody({ type: C.AssetDetailRequestDto })
   @ApiCreatedResponse({ type: C.AssetDto })

@@ -25,6 +25,7 @@ const names = [
   "20261005020000-assets",
   "20261005030000-operational-record-permissions",
   "20261005040000-maintenance-scope-access",
+  "20261006000000-admin-operational-access",
 ];
 function target(env: NodeJS.ProcessEnv) {
   if (env.IOP_EXECUTION_MODE !== "local-demo" || env.NODE_ENV === "production")

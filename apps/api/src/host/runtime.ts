@@ -1,3 +1,4 @@
+import { assetEquipmentCatalog } from "./adapters/asset-equipment-catalog";
 import { Workforce } from "../modules/workforce/application/workforce";
 import { workforceTeams } from "../modules/workforce/adapters/postgres/teams";
 import { Maintenance } from "../modules/maintenance/application/maintenance";
@@ -293,6 +294,8 @@ export class PlatformRuntime {
     this.assets = new Assets(
       new PgAssets(pool, this.source, {
         ...operationalDirectory,
+        equipment: (tx, selection) =>
+          assetEquipmentCatalog(tx, this.source, catalog.locations, selection),
         sources: [
           {
             kind: "maintenance",

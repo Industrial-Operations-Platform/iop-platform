@@ -193,6 +193,8 @@ beforeAll(async () => {
         ["disabled-a", "technician"],
         ["revoked-a", "technician"],
         ["asset-revoked-a", "task-force"],
+        ["disabled-admin-a", "administrator"],
+        ["revoked-admin-a", "administrator"],
       ],
     ],
     ["org-a", "site-a2", [["other-site", "technician"]]],
@@ -237,12 +239,12 @@ beforeAll(async () => {
             "INSERT INTO users_rbac.organization_role_assignments VALUES($1,$2,'organization-access-admin',true)",
             [organizationId, id],
           );
-        if (id === "disabled-a")
+        if (id === "disabled-a" || id === "disabled-admin-a")
           await client.query(
             "UPDATE users_rbac.organization_memberships SET is_active=false WHERE organization_id=$1 AND user_id=$2",
             [organizationId, id],
           );
-        if (id === "revoked-a")
+        if (id === "revoked-a" || id === "revoked-admin-a")
           await client.query(
             "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id=$1 AND user_id=$2",
             [organizationId, id],
@@ -347,7 +349,7 @@ test("safe migration grants operational profiles, preserves disabled/revoked acc
   for (const actor of ["admin-a", "tech-a", "task-a", "lead-a"]) {
     const catalog = await app.catalog(actor);
     expect(catalog.canContribute).toBe(true);
-    expect(catalog.canCoordinate).toBe(actor === "lead-a");
+    expect(catalog.canCoordinate).toBe(["admin-a", "lead-a"].includes(actor));
     expect(catalog.canAdminister).toBe(actor === "admin-a");
     expect(catalog.people.map((p) => p.id)).not.toContain("other-site");
     expect(catalog.people.map((p) => p.id)).not.toContain("disabled-a");
@@ -369,12 +371,17 @@ test("safe migration grants operational profiles, preserves disabled/revoked acc
   expect(await migrate(configs.migrator)).toBe(0);
   await provision(configs);
 });
-test("Asset access is limited to Team Leader/Task Force and migration preserves explicit revocation", async () => {
-  for (const actor of ["admin-a", "tech-a", "asset-revoked-a"])
+test("Asset access includes Administrator, Team Leader and Task Force and migration preserves explicit revocation", async () => {
+  for (const actor of [
+    "tech-a",
+    "asset-revoked-a",
+    "disabled-admin-a",
+    "revoked-admin-a",
+  ])
     await expect(assetService().context(actor)).rejects.toThrow(
       "not permitted",
     );
-  for (const actor of ["lead-a", "task-a"])
+  for (const actor of ["admin-a", "lead-a", "task-a"])
     expect((await assetService().context(actor)).canManage).toBe(true);
   expect(
     (
@@ -388,7 +395,7 @@ test("Asset access is limited to Team Leader/Task Force and migration preserves 
     { role_id: "assets-administrator", is_active: false },
     { role_id: "assets-reader", is_active: false },
   ]);
-  expect((await app.catalog("admin-a")).canCoordinate).toBe(false);
+  expect((await app.catalog("admin-a")).canCoordinate).toBe(true);
   expect(
     (await app.history("tech-a", "legacy_completion")).record.completedAt,
   ).toBe("2026-09-01T12:00:00.000Z");

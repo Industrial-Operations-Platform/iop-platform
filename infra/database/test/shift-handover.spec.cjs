@@ -43,6 +43,9 @@ const {
   resolveHandoverMaintenanceIssues,
 } = require("../../../apps/api/dist/modules/shift-handover/adapters/postgres/maintenance-issues");
 const {
+  handoverEquipmentCatalog,
+} = require("../../../apps/api/dist/modules/shift-handover/adapters/postgres/equipment-catalog");
+const {
   NodePasswords,
 } = require("../../../apps/api/dist/modules/authentication/adapters/node-crypto");
 const {
@@ -245,7 +248,7 @@ beforeAll(async () => {
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','tech-a','site-a2','analytics-reader',true)",
     ),
   );
-  expect(await migrate(configs.migrator)).toBe(9);
+  expect(await migrate(configs.migrator)).toBe(10);
   await provision(configs);
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
@@ -324,6 +327,71 @@ const maintenanceOperation = (work, actor = "task-a") =>
     { ...scope, userId: actor, permissions: ["maintenance.contribute"] },
     work,
   );
+
+test("Handover publishes exact scoped equipment identities without journal content", async () => {
+  const f = maintenanceFixture();
+  const original = await f.publish("Private repair narrative");
+  await f.publish("Different source case", f.codes[2]);
+  await f.publish(
+    "Same code in another reporting zone",
+    f.codes[0],
+    f.otherAreaId,
+  );
+  const selection = {
+    locationIds: f.issueScope.locationIds,
+    search: "",
+    code: f.codes[0],
+  };
+  const result = await maintenanceOperation((tx) =>
+    handoverEquipmentCatalog(tx, scope, selection),
+  );
+  expect(result).toEqual([
+    {
+      namespace: "site-equipment",
+      sourceId: "",
+      code: f.codes[0],
+      sector: "",
+      area: "",
+      departmentId: original.content.departmentId,
+      areaId: original.content.areaId,
+    },
+  ]);
+  const retained = await f.handover.remove("admin-a", original.id, 1);
+  expect(retained.deleted).toBe(true);
+  expect(
+    await maintenanceOperation((tx) =>
+      handoverEquipmentCatalog(tx, scope, selection),
+    ),
+  ).toEqual(result);
+  const searched = await maintenanceOperation((tx) =>
+    handoverEquipmentCatalog(tx, scope, {
+      ...selection,
+      search: "b102.1",
+      code: "",
+    }),
+  );
+  expect(searched.map((row) => row.code).sort()).toEqual(
+    [f.codes[0], f.codes[2]].sort(),
+  );
+  expect(
+    await maintenanceOperation((tx) =>
+      handoverEquipmentCatalog(tx, scope, { ...selection, code: f.codes[1] }),
+    ),
+  ).toEqual([]);
+  await expect(
+    maintenanceOperation((tx) =>
+      handoverEquipmentCatalog(tx, { ...scope, siteId: "site-a2" }, selection),
+    ),
+  ).rejects.toThrow("Site operation is not permitted.");
+  await expect(
+    maintenanceOperation((tx) =>
+      handoverEquipmentCatalog(tx, scope, {
+        ...selection,
+        locationIds: [...selection.locationIds, ...selection.locationIds],
+      }),
+    ),
+  ).rejects.toMatchObject({ code: "invalid" });
+});
 
 test("maintenance issue projection matches multiple exact identifiers and zone reports before pagination", async () => {
   const f = maintenanceFixture();

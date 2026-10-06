@@ -364,6 +364,37 @@
         ]
       }
     },
+    "/api/v1/assets/equipment-catalog": {
+      "post": {
+        "operationId": "AssetsController_equipmentCatalog",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetEquipmentSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetEquipmentPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Management"
+        ]
+      }
+    },
     "/api/v1/assets/detail": {
       "post": {
         "operationId": "AssetsController_detail",
@@ -3334,6 +3365,7 @@
             "type": "string",
             "enum": [
               "",
+              "current",
               "unverified",
               "validated",
               "retired"
@@ -3419,6 +3451,11 @@
           },
           "description": {
             "type": "string"
+          },
+          "locationDetails": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Manual location/group details within the configured area; not physical validation."
           },
           "aliases": {
             "maxItems": 30,
@@ -3523,6 +3560,119 @@
           "expectedRevision",
           "note",
           "content"
+        ]
+      },
+      "AssetEquipmentSelectionDto": {
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "description": "Configured location and descendants; empty includes the exact site catalog."
+          },
+          "search": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "Exact, case-sensitive equipment code."
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "locationId"
+        ]
+      },
+      "AssetEquipmentCandidateDto": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "enum": [
+              "analytics",
+              "site-equipment"
+            ]
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "namespace",
+          "sourceId",
+          "code",
+          "sector",
+          "area",
+          "departmentId",
+          "areaId"
+        ]
+      },
+      "AssetEquipmentPageDto": {
+        "type": "object",
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetEquipmentCandidateDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sectors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "areas": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "candidates",
+          "total",
+          "nextCursor",
+          "sources",
+          "sectors",
+          "areas"
         ]
       },
       "AssetDetailRequestDto": {

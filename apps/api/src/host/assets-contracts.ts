@@ -31,6 +31,12 @@ export class AssetContentDto {
   })
   validationNote!: string;
   @ApiProperty() description!: string;
+  @ApiPropertyOptional({
+    maxLength: 2000,
+    description:
+      "Manual location/group details within the configured area; not physical validation.",
+  })
+  locationDetails?: string;
   @ApiProperty({ type: [AssetAliasDto], maxItems: 30 })
   aliases!: AssetAliasDto[];
 }
@@ -53,11 +59,8 @@ export class AssetsContextDto {
 export class AssetsContextRequestDto {}
 export class AssetSelectionDto {
   @ApiProperty() search!: string;
-  @ApiProperty({ enum: ["", "unverified", "validated", "retired"] }) status!:
-    | ""
-    | "unverified"
-    | "validated"
-    | "retired";
+  @ApiProperty({ enum: ["", "current", "unverified", "validated", "retired"] })
+  status!: "" | "current" | "unverified" | "validated" | "retired";
   @ApiProperty() locationId!: string;
   @ApiProperty() cursor!: string;
 }
@@ -159,4 +162,38 @@ export class AssetTimelinePageDto {
   })
   total!: number;
   @ApiProperty() nextCursor!: string;
+}
+export class AssetEquipmentSelectionDto {
+  @ApiProperty({
+    description:
+      "Configured location and descendants; empty includes the exact site catalog.",
+  })
+  locationId!: string;
+  @ApiPropertyOptional() search?: string;
+  @ApiPropertyOptional({ description: "Exact, case-sensitive equipment code." })
+  code?: string;
+  @ApiPropertyOptional() sourceId?: string;
+  @ApiPropertyOptional() sector?: string;
+  @ApiPropertyOptional() area?: string;
+  @ApiPropertyOptional() cursor?: string;
+}
+export class AssetEquipmentCandidateDto {
+  @ApiProperty({ enum: ["analytics", "site-equipment"] }) namespace!:
+    | "analytics"
+    | "site-equipment";
+  @ApiProperty() sourceId!: string;
+  @ApiProperty() code!: string;
+  @ApiProperty() sector!: string;
+  @ApiProperty() area!: string;
+  @ApiProperty() departmentId!: string;
+  @ApiProperty() areaId!: string;
+}
+export class AssetEquipmentPageDto {
+  @ApiProperty({ type: [AssetEquipmentCandidateDto] })
+  candidates!: AssetEquipmentCandidateDto[];
+  @ApiProperty() total!: number;
+  @ApiProperty() nextCursor!: string;
+  @ApiProperty({ type: [String] }) sources!: string[];
+  @ApiProperty({ type: [String] }) sectors!: string[];
+  @ApiProperty({ type: [String] }) areas!: string[];
 }

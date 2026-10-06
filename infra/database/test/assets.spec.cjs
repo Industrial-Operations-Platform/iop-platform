@@ -19,6 +19,9 @@ const {
   assetReferences,
 } = require("../../../apps/api/dist/modules/assets/adapters/postgres/store");
 const {
+  importedEquipmentCatalog,
+} = require("../../../apps/api/dist/modules/oip/adapters/postgres/equipment-catalog");
+const {
   Handover,
 } = require("../../../apps/api/dist/modules/shift-handover/application/handover");
 const {
@@ -136,6 +139,12 @@ function directory(target = scope) {
     allowed: (tx, actor, permission) => allowed(tx, target, actor, permission),
     names: (tx, ids) =>
       sitePersonNames(tx, target.organizationId, target.siteId, ids),
+    equipment: async (tx) =>
+      (await importedEquipmentCatalog(tx, runtime.source)).map((candidate) => ({
+        ...candidate,
+        departmentId: "department",
+        areaId: "area",
+      })),
   };
 }
 function service(target = scope, connection = pool, sourceReaders) {
@@ -279,6 +288,12 @@ beforeAll(async () => {
     users: [{ id: "admin-a", name: "Administrator" }],
     origins: [],
     mappings,
+    handover: {
+      ...scope,
+      locations,
+      categories: [{ id: "problems", label: "Problems" }],
+      externalSystemLabel: "External reference",
+    },
   });
   initialProfileVersion = new PgReportingProfiles(
     pool,
@@ -299,7 +314,7 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
   await expect(
     app.save("lead-a", {
       ...input,
-      content: { ...input.content, name: "Different" },
+      content: { ...input.content, type: "Different" },
     }),
   ).rejects.toMatchObject({ code: "asset_conflict" });
   const edit = {
@@ -341,13 +356,13 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
     await restarted.end();
   }
 });
-test("only Team Leaders and Task Force manage assets; exact aliases conflict atomically and cannot map two assets to one source tuple", async () => {
+test("Administrator, Team Leaders and Task Force manage assets; exact aliases conflict atomically and cannot map two assets to one source tuple", async () => {
   await expect(app.save("tech-a", create())).rejects.toBeInstanceOf(
     SiteAccessDeniedError,
   );
-  await expect(app.save("admin-a", create())).rejects.toBeInstanceOf(
-    SiteAccessDeniedError,
-  );
+  expect(
+    (await app.save("admin-a", create("administrator-managed"))).content.name,
+  ).toBe("administrator-managed");
   expect((await app.save("task-a", create("task-managed"))).content.code).toBe(
     "task-managed",
   );
@@ -356,7 +371,17 @@ test("only Team Leaders and Task Force manage assets; exact aliases conflict ato
     content: {
       ...content,
       code: "alias-asset",
-      aliases: aliases.map((alias) => ({ ...alias, code: "alias-test-code" })),
+      aliases: [
+        {
+          namespace: "manual-reference",
+          sourceId: "",
+          code: "external-reference",
+          departmentId: "",
+          areaId: "",
+          sector: "",
+          area: "",
+        },
+      ],
     },
   };
   const mapped = await app.save("lead-a", aliasInput);
@@ -382,7 +407,17 @@ test("only Team Leaders and Task Force manage assets; exact aliases conflict ato
     content: {
       ...content,
       code: "different-area",
-      aliases: [{ ...aliases[1], area: "Area B" }],
+      aliases: [
+        {
+          namespace: "manual-reference",
+          sourceId: "",
+          code: "external-reference",
+          departmentId: "",
+          areaId: "",
+          sector: "",
+          area: "Area B",
+        },
+      ],
     },
   });
   expect(separate.id).not.toBe(mapped.id);
@@ -457,7 +492,7 @@ test("digital record reads owner evidence with exact mapping and denies Technici
     ),
   );
   expect(imported.outcome).toBe("succeeded");
-  const mapped = await app.save("lead-a", create("history-asset", true));
+  const mapped = await app.save("lead-a", create("=EQ-001", true));
   const lookup = {
     ...directory(),
     people: (tx) => sitePeople(tx, scope.organizationId, scope.siteId),
@@ -565,9 +600,7 @@ test("digital record reads owner evidence with exact mapping and denies Technici
   await expect(app.timeline("tech-a", input)).rejects.toBeInstanceOf(
     SiteAccessDeniedError,
   );
-  await expect(app.timeline("admin-a", input)).rejects.toBeInstanceOf(
-    SiteAccessDeniedError,
-  );
+  expect((await app.timeline("admin-a", input)).total).toBe(all.total);
   const onlyAnalytical = await app.timeline("lead-a", {
     ...input,
     kind: "analytics",
@@ -793,10 +826,10 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
     }),
   ).rejects.toMatchObject({ code: "invalid_asset" });
   const mapped = await app.save("lead-a", {
-    ...create("timeline-pages"),
+    ...create("timeline-code"),
     content: {
       ...content,
-      code: "timeline-pages",
+      code: "timeline-code",
       aliases: [{ ...aliases[0], code: "timeline-code" }],
     },
   });
@@ -887,4 +920,183 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
   await expect(
     app.timeline("lead-a", { ...window, cursor: first.nextCursor }),
   ).rejects.toMatchObject({ code: "asset_conflict" });
+});
+
+test("equipment catalogs retain exact imported source context, include department descendants, and keep source grants independent", async () => {
+  const query = { locationId: "department", code: "=EQ-001" };
+  const catalog = await runtime.assets.equipmentCatalog("admin-a", query);
+  expect(
+    catalog.candidates.find((candidate) => candidate.namespace === "analytics"),
+  ).toMatchObject({
+    sourceId: "source-a",
+    code: "=EQ-001",
+    sector: "Preparation",
+    area: "Area A",
+    departmentId: "department",
+    areaId: "area",
+  });
+  expect(catalog.sources).toEqual(["source-a"]);
+  await expect(
+    runtime.assets.equipmentCatalog("tech-a", query),
+  ).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  await db("bootstrap", (client) =>
+    client.query(
+      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='admin-a' AND role_id='handover-contributor'",
+    ),
+  );
+  try {
+    const independent = await runtime.assets.equipmentCatalog("admin-a", query);
+    expect(independent.candidates).not.toHaveLength(0);
+    expect(
+      independent.candidates.every(
+        (candidate) => candidate.namespace === "analytics",
+      ),
+    ).toBe(true);
+  } finally {
+    await db("bootstrap", (client) =>
+      client.query(
+        "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='admin-a' AND role_id='handover-contributor'",
+      ),
+    );
+  }
+  const imported = await runSiteOperation(
+    pool,
+    { ...scope, userId: "admin-a", permissions: ["assets.read"] },
+    (tx) =>
+      importedEquipmentCatalog(tx, runtime.source, {
+        code: "=EQ-001",
+        search: "",
+      }),
+  );
+  expect(imported).toHaveLength(1);
+  expect(imported[0]).toMatchObject({
+    sourceId: "source-a",
+    code: "=EQ-001",
+    sector: "Preparation",
+    area: "Area A",
+  });
+  await expect(
+    runSiteOperation(
+      pool,
+      { ...scope, userId: "admin-a", permissions: ["assets.read"] },
+      (tx) =>
+        importedEquipmentCatalog(tx, { ...runtime.source, siteId: "site-a2" }),
+    ),
+  ).rejects.toBeInstanceOf(SiteAccessDeniedError);
+});
+test("new analytical aliases validate exact known code tuples and new name/group metadata preserves attributed history", async () => {
+  const known = {
+    ...aliases[1],
+    code: "=EQ-002",
+    sector: "Dispatch",
+    area: "Area B",
+  };
+  const created = await runtime.assets.save("admin-a", {
+    ...create("=EQ-002"),
+    content: {
+      ...content,
+      code: "=EQ-002",
+      name: "Invented machine name",
+      locationDetails: "Puffer 1",
+      aliases: [known],
+    },
+  });
+  expect(created.content.name).toBe("=EQ-002");
+  expect(created.content.locationDetails).toBe("Puffer 1");
+  await expect(
+    runtime.assets.save("admin-a", {
+      ...create("=EQ-003"),
+      content: {
+        ...content,
+        code: "=EQ-003",
+        aliases: [{ ...known, code: "=EQ-003", sourceId: "guessed-source" }],
+      },
+    }),
+  ).rejects.toMatchObject({ code: "invalid_asset" });
+  await expect(
+    runtime.assets.save("admin-a", {
+      ...create("=EQ-003"),
+      content: { ...content, code: "=EQ-003", aliases: [known] },
+    }),
+  ).rejects.toMatchObject({ code: "invalid_asset" });
+  const corrected = await runtime.assets.save("admin-a", {
+    key: "",
+    id: created.id,
+    expectedRevision: 1,
+    note: "Add manual component grouping",
+    content: { ...created.content, locationDetails: "Puffer 2 / motor roller" },
+  });
+  expect(corrected.content.name).toBe(created.content.code);
+  const history = await runtime.assets.history("admin-a", created.id, 0);
+  expect(history.revisions[1].asset.content.locationDetails).toBe("Puffer 1");
+});
+test("current registry filters retired assets before totals and pagination, and parent locations cover configured areas", async () => {
+  for (let index = 0; index < 28; index++) {
+    const created = await app.save("admin-a", {
+      ...create(`current-filter-${String(index).padStart(3, "0")}`),
+      content: {
+        ...content,
+        code: `current-filter-${String(index).padStart(3, "0")}`,
+        locationDetails: index === 0 ? "Puffer group" : "",
+      },
+    });
+    if (index < 2)
+      await app.save("admin-a", {
+        key: "",
+        id: created.id,
+        expectedRevision: 1,
+        note: "Archive obsolete reference",
+        content: { ...created.content, status: "retired" },
+      });
+  }
+  const input = {
+    locationId: "department",
+    search: "current-filter-",
+    status: "current",
+    cursor: "",
+  };
+  const first = await app.query("admin-a", input),
+    second = await app.query("admin-a", { ...input, cursor: first.nextCursor });
+  expect(first.total).toBe(26);
+  expect(first.assets).toHaveLength(25);
+  expect(second.assets).toHaveLength(1);
+  expect(second.total).toBe(26);
+  expect((await app.query("admin-a", { ...input, status: "" })).total).toBe(28);
+  expect(
+    (await app.query("admin-a", { ...input, status: "retired" })).total,
+  ).toBe(2);
+  expect(
+    (
+      await app.query("admin-a", {
+        ...input,
+        status: "",
+        search: "Puffer group",
+      })
+    ).total,
+  ).toBe(1);
+});
+test("runtime asset registration and narrow references support more than the former 500-record pilot bound", async () => {
+  for (let index = 0; index < 510; index++)
+    await app.save(
+      "admin-a",
+      create(`large-catalog-${String(index).padStart(4, "0")}`),
+    );
+  const references = await runSiteOperation(
+    pool,
+    { ...scope, userId: "tech-a", permissions: ["maintenance.read"] },
+    (tx) => assetReferences(tx, scope, "large-catalog-"),
+  );
+  expect(references).toHaveLength(510);
+  const registered = await app.save("admin-a", create("large-catalog-final"));
+  expect(registered.content.name).toBe("large-catalog-final");
+  expect(
+    (
+      await app.query("admin-a", {
+        search: "large-catalog-",
+        status: "current",
+        locationId: "",
+        cursor: "",
+      })
+    ).total,
+  ).toBe(511);
 });

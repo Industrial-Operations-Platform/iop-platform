@@ -24,6 +24,7 @@ import {
   type SourceResult,
   type TimelineCoverage,
   type TimelineAsset,
+  type EquipmentCandidate,
 } from "../../domain/assets";
 export interface Scope {
   organizationId: string;
@@ -46,6 +47,10 @@ export interface Lookup {
   ): Promise<boolean>;
   names(tx: SiteTransaction, ids: string[]): Promise<Map<string, string>>;
   sources: AssetSource[];
+  equipment?(
+    tx: SiteTransaction,
+    selection?: { code: string; search: string },
+  ): Promise<EquipmentCandidate[]>;
 }
 export class PgAssets implements Store {
   constructor(
@@ -97,6 +102,15 @@ class PgAssetTransaction implements Transaction {
   private get selectors() {
     return [this.scope.organizationId, this.scope.siteId];
   }
+  async equipment(selection?: {
+    code: string;
+    search: string;
+  }): Promise<EquipmentCandidate[]> {
+    if (!this.lookup.equipment) throw new AssetError("asset_capacity");
+    const candidates = await this.lookup.equipment(this.tx, selection);
+    if (candidates.length > 10000) throw new AssetError("asset_capacity");
+    return candidates;
+  }
   async name(actor: string): Promise<string> {
     return (await this.lookup.names(this.tx, [actor])).get(actor) ?? actor;
   }
@@ -134,7 +148,7 @@ class PgAssetTransaction implements Transaction {
         "SELECT count(*)::integer AS total FROM assets.records WHERE organization_id=$1 AND site_id=$2",
         this.selectors,
       );
-      if (Number(capacity.rows[0].total) >= 500)
+      if (Number(capacity.rows[0].total) >= 10000)
         throw new AssetError("asset_capacity");
     }
     const code = await this.tx.query(
@@ -197,7 +211,10 @@ class PgAssetTransaction implements Transaction {
       ],
     );
   }
-  async list(selection: AssetSelection): Promise<AssetPage> {
+  async list(
+    selection: AssetSelection,
+    locationIds: string[],
+  ): Promise<AssetPage> {
     let cursorCode = "",
       cursorId = "";
     if (selection.cursor) {
@@ -216,15 +233,15 @@ class PgAssetTransaction implements Transaction {
     const result = await this.tx.query(
       `WITH matching AS MATERIALIZED (
       SELECT id,code,snapshot FROM assets.records WHERE organization_id=$1 AND site_id=$2
-      AND ($3='' OR strpos(lower(concat_ws(' ',code,snapshot->'content'->>'name',snapshot->'content'->>'type',snapshot->'content'->>'description',snapshot->'content'->>'aliases')),lower($3))>0)
-      AND ($4='' OR status=$4) AND ($5='' OR location_id=$5)
+      AND ($3='' OR strpos(lower(concat_ws(' ',code,snapshot->'content'->>'name',snapshot->'content'->>'type',snapshot->'content'->>'description',snapshot->'content'->>'locationDetails',snapshot->'content'->>'aliases')),lower($3))>0)
+      AND ($4='' OR $4='current' AND status<>'retired' OR status=$4) AND (cardinality($5::text[])=0 OR location_id=ANY($5::text[]))
     ), page AS (SELECT * FROM matching WHERE $6='' OR (code COLLATE "C",id COLLATE "C")>($6 COLLATE "C",$7 COLLATE "C") ORDER BY code COLLATE "C",id COLLATE "C" LIMIT 26)
     SELECT (SELECT count(*)::integer FROM matching) AS total,coalesce((SELECT jsonb_agg(snapshot ORDER BY code COLLATE "C",id COLLATE "C") FROM page),'[]'::jsonb) AS records`,
       [
         ...this.selectors,
         selection.search,
         selection.status,
-        selection.locationId,
+        locationIds,
         cursorCode,
         cursorId,
       ],
@@ -324,10 +341,10 @@ export async function assetReferences(
   const result = await tx.query(
     `SELECT id,code,status,location_id,snapshot FROM assets.records WHERE organization_id=$1 AND site_id=$2
     AND ($3='' OR strpos(lower(concat_ws(' ',code,snapshot->'content'->>'name')),lower($3))>0)
-    AND ($4 OR status<>'retired') ORDER BY code COLLATE "C",id COLLATE "C" LIMIT 501`,
+    AND ($4 OR status<>'retired') ORDER BY code COLLATE "C",id COLLATE "C" LIMIT 10001`,
     [scope.organizationId, scope.siteId, search, includeRetired],
   );
-  if (result.rows.length > 500) throw new AssetError("asset_capacity");
+  if (result.rows.length > 10000) throw new AssetError("asset_capacity");
   return result.rows.map(reference);
 }
 function reference(row: Record<string, unknown>): AssetReference {

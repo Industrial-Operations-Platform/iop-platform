@@ -101,14 +101,18 @@ async function retainOperationalResetEvidence() {
       [scope.organizationId, scope.siteId, role],
     );
   }
+  const knownEquipment = (await runtime.assets.equipmentCatalog("demo-b", {
+    locationId: "",
+  })).candidates.find(candidate => candidate.namespace === "analytics");
+  expect(knownEquipment).toBeDefined();
   const asset = await runtime.assets.save("demo-b", {
     key: "reset-evidence-asset",
     id: "",
     expectedRevision: 0,
     note: "",
     content: {
-      code: "RESET-PRESERVED-001",
-      name: "Retained reset fixture",
+      code: knownEquipment.code,
+      name: knownEquipment.code,
       type: "",
       locationId: "",
       status: "unverified",
@@ -118,11 +122,11 @@ async function retainOperationalResetEvidence() {
         {
           namespace: "analytics",
           sourceId: scope.sourceId,
-          code: "PRESERVED-CODE",
+          code: knownEquipment.code,
           departmentId: "",
           areaId: "",
-          sector: "Reset fixture sector",
-          area: "Reset fixture area",
+          sector: knownEquipment.sector,
+          area: knownEquipment.area,
         },
       ],
     },

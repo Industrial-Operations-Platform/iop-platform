@@ -41,6 +41,33 @@ export interface AssetContent {
   validationNote: string;
   description: string;
   aliases: Alias[];
+  locationDetails?: string;
+}
+export interface EquipmentCandidate {
+  namespace: "analytics" | "site-equipment";
+  sourceId: string;
+  code: string;
+  sector: string;
+  area: string;
+  departmentId: string;
+  areaId: string;
+}
+export interface EquipmentSelection {
+  locationId: string;
+  search?: string;
+  code?: string;
+  sourceId?: string;
+  sector?: string;
+  area?: string;
+  cursor?: string;
+}
+export interface EquipmentPage {
+  candidates: EquipmentCandidate[];
+  total: number;
+  nextCursor: string;
+  sources: string[];
+  sectors: string[];
+  areas: string[];
 }
 export interface Asset {
   id: string;
@@ -68,7 +95,7 @@ export interface AssetRevision {
 }
 export interface AssetSelection {
   search: string;
-  status: "" | AssetStatus;
+  status: "" | "current" | AssetStatus;
   locationId: string;
   cursor: string;
 }
@@ -196,6 +223,9 @@ export function validContent(
     "validationNote",
     "description",
     "aliases",
+    ...(Object.hasOwn(value ?? {}, "locationDetails")
+      ? ["locationDetails"]
+      : []),
   ]);
   const status = value.status as AssetStatus;
   if (
@@ -256,21 +286,66 @@ export function validContent(
   });
   if (new Set(aliases.map(aliasKey)).size !== aliases.length)
     throw new AssetError("asset_alias_conflict");
+  text(value.name, 200, true);
+  const code = text(value.code, 160, true);
   return {
-    code: text(value.code, 160, true),
-    name: text(value.name, 200, true),
+    code,
+    name: code,
     type: text(value.type, 100),
     locationId,
     status,
     validationNote: prose(value.validationNote, 2000, status === "validated"),
     description: prose(value.description, 4000),
     aliases,
+    locationDetails:
+      value.locationDetails === undefined
+        ? ""
+        : prose(value.locationDetails, 2000),
+  };
+}
+/** Old attributed snapshots retain their original names; new metadata has a readable default. */
+export function readableContent(content: AssetContent): AssetContent {
+  return { ...content, locationDetails: content.locationDetails ?? "" };
+}
+export function validEquipmentSelection(
+  input: unknown,
+): Required<EquipmentSelection> {
+  if (
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input) ||
+    !Object.hasOwn(input, "locationId") ||
+    Object.keys(input).some(
+      (key) =>
+        ![
+          "locationId",
+          "search",
+          "code",
+          "sourceId",
+          "sector",
+          "area",
+          "cursor",
+        ].includes(key),
+    )
+  )
+    throw new AssetError("invalid_asset");
+  const value = input as EquipmentSelection;
+  return {
+    locationId: identifier(value.locationId),
+    search: text(value.search ?? "", 160),
+    code: text(value.code ?? "", 160),
+    sourceId: identifier(value.sourceId ?? ""),
+    sector: text(value.sector ?? "", 100),
+    area: text(value.area ?? "", 160),
+    cursor: text(value.cursor ?? "", 2000),
   };
 }
 export function validSelection(input: unknown): AssetSelection {
   exact(input, ["search", "status", "locationId", "cursor"]);
   if (
-    !["", "unverified", "validated", "retired"].includes(String(input.status))
+    !["", "current", "unverified", "validated", "retired"].includes(
+      String(input.status),
+    )
   )
     throw new AssetError("invalid_asset");
   return {

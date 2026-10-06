@@ -41,6 +41,7 @@ describe("Asset transport contract", () => {
     allowed = true;
     tx = {
       canManage: true,
+      equipment: async () => [],
       name: async () => "Verified administrator",
       get: async () => saved,
       prior: async () => null,
@@ -104,6 +105,20 @@ describe("Asset transport contract", () => {
           timeZone: "UTC",
         }),
       );
+    await api
+      .post("/api/v1/assets/equipment-catalog")
+      .send({ locationId: "" })
+      .expect(201)
+      .expect(({ body }) =>
+        expect(body).toEqual({
+          candidates: [],
+          total: 0,
+          nextCursor: "",
+          sources: [],
+          sectors: [],
+          areas: [],
+        }),
+      );
     const created = (
       await api.post("/api/v1/assets/save").send(input).expect(201)
     ).body;
@@ -141,6 +156,47 @@ describe("Asset transport contract", () => {
           { kind: "analytics", status: "not-authorized", total: 0 },
         ]),
       );
+  });
+  test("equipment catalog validation accepts exact source choices and rejects invented filters", async () => {
+    tx.equipment = async () => [
+      {
+        namespace: "analytics",
+        sourceId: "source",
+        code: "0001",
+        sector: "Workshop",
+        area: "Area",
+        departmentId: "",
+        areaId: "",
+      },
+    ];
+    const api = request(app.getHttpServer());
+    await api
+      .post("/api/v1/assets/equipment-catalog")
+      .send({
+        locationId: "",
+        code: "0001",
+        sourceId: "source",
+        sector: "Workshop",
+        area: "Area",
+      })
+      .expect(201)
+      .expect(({ body }) => {
+        expect(body.total).toBe(1);
+        expect(body.candidates[0].sourceId).toBe("source");
+      });
+    await api
+      .post("/api/v1/assets/equipment-catalog")
+      .send({ locationId: "", permissions: ["assets.manage"] })
+      .expect(400);
+    await api
+      .post("/api/v1/assets/equipment-catalog")
+      .send({ locationId: "", sourceId: "guessed source" })
+      .expect(400);
+    allowed = false;
+    await api
+      .post("/api/v1/assets/equipment-catalog")
+      .send({ locationId: "" })
+      .expect(403);
   });
   test("authenticating and authorizing each operation prevents direct protected access", async () => {
     authenticated = false;

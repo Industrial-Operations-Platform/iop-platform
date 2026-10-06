@@ -184,6 +184,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assets/equipment-catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetsController_equipmentCatalog"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assets/detail": {
         parameters: {
             query?: never;
@@ -1132,7 +1148,7 @@ export interface components {
         AssetSelectionDto: {
             search: string;
             /** @enum {string} */
-            status: "" | "unverified" | "validated" | "retired";
+            status: "" | "current" | "unverified" | "validated" | "retired";
             locationId: string;
             cursor: string;
         };
@@ -1157,6 +1173,8 @@ export interface components {
             /** @description Required evidence when validating a manually registered asset. */
             validationNote: string;
             description: string;
+            /** @description Manual location/group details within the configured area; not physical validation. */
+            locationDetails?: string;
             aliases: components["schemas"]["AssetAliasDto"][];
         };
         AssetDto: {
@@ -1181,6 +1199,35 @@ export interface components {
             expectedRevision: number;
             note: string;
             content: components["schemas"]["AssetContentDto"];
+        };
+        AssetEquipmentSelectionDto: {
+            /** @description Configured location and descendants; empty includes the exact site catalog. */
+            locationId: string;
+            search?: string;
+            /** @description Exact, case-sensitive equipment code. */
+            code?: string;
+            sourceId?: string;
+            sector?: string;
+            area?: string;
+            cursor?: string;
+        };
+        AssetEquipmentCandidateDto: {
+            /** @enum {string} */
+            namespace: "analytics" | "site-equipment";
+            sourceId: string;
+            code: string;
+            sector: string;
+            area: string;
+            departmentId: string;
+            areaId: string;
+        };
+        AssetEquipmentPageDto: {
+            candidates: components["schemas"]["AssetEquipmentCandidateDto"][];
+            total: number;
+            nextCursor: string;
+            sources: string[];
+            sectors: string[];
+            areas: string[];
         };
         AssetDetailRequestDto: {
             id: string;
@@ -2150,6 +2197,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssetDto"];
+                };
+            };
+        };
+    };
+    AssetsController_equipmentCatalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetEquipmentSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetEquipmentPageDto"];
                 };
             };
         };

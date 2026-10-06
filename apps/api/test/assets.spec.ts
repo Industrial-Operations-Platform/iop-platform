@@ -80,6 +80,17 @@ function fixture() {
   const revisions: AssetRevision[] = [];
   const tx: Transaction = {
     canManage: true,
+    equipment: async () => [
+      {
+        namespace: "analytics",
+        sourceId: "source",
+        code: "0001",
+        sector: "Workshop",
+        area: "Area",
+        departmentId: "department",
+        areaId: "area",
+      },
+    ],
     name: async (actor) => (actor === "admin" ? "Administrator" : actor),
     get: async () => structuredClone(saved),
     prior: async () => structuredClone(prior),
@@ -138,7 +149,7 @@ test("registration preserves leading zeros and explicit unverified identity with
   await expect(
     app.save("admin", {
       ...create,
-      content: { ...content, name: "Different" },
+      content: { ...content, type: "Different" },
     }),
   ).rejects.toMatchObject({ code: "asset_conflict" });
   await expect(
@@ -390,4 +401,179 @@ test("dates and bounded inputs reject manufactured timestamps and impossible day
   expect(() =>
     validContent({ ...content, extraPermission: true }, locations),
   ).toThrow("invalid_asset");
+});
+
+test("current asset names equal exact codes while manual location details remain descriptive metadata", async () => {
+  const { app, revisions } = fixture();
+  const registered = await app.save("admin", {
+    ...create,
+    content: {
+      ...content,
+      name: "Unrelated display name",
+      locationDetails: "Puffer 1 / lower drive",
+    },
+  });
+  expect(registered.content.name).toBe(content.code);
+  expect(registered.content.locationDetails).toBe("Puffer 1 / lower drive");
+  expect(revisions[0].asset.content.name).toBe(content.code);
+});
+test("legacy reads and create recovery retain old attributed names without rewriting revisions", async () => {
+  const { app, tx } = fixture();
+  const legacy: Asset = {
+    id: "asset-id",
+    revision: 1,
+    authorId: "admin",
+    authorName: "Administrator",
+    createdAt: "2026-10-01T12:00:00.000Z",
+    updatedAt: "2026-10-01T12:00:00.000Z",
+    content,
+  };
+  tx.prior = async () => ({
+    asset: legacy,
+    fingerprint: JSON.stringify({ content, note: "" }),
+  });
+  tx.get = async () => legacy;
+  expect((await app.save("admin", create)).content.name).toBe("Conveyor");
+  expect((await app.detail("admin", legacy.id)).content.locationDetails).toBe(
+    "",
+  );
+  const updated = await app.save("admin", {
+    ...create,
+    key: "",
+    id: legacy.id,
+    expectedRevision: 1,
+    note: "Use the exact source identifier",
+  });
+  expect(updated.content.name).toBe("0001");
+  expect(legacy.content.name).toBe("Conveyor");
+});
+test("conditioned equipment catalog facets cover full matches and stable pages bind their filters", async () => {
+  const { app, tx } = fixture();
+  tx.equipment = async () =>
+    Array.from({ length: 73 }, (_, index) => ({
+      namespace: "analytics",
+      sourceId: index < 60 ? "source" : "second-source",
+      code: `CODE-${String(index).padStart(3, "0")}`,
+      sector: "Workshop",
+      area: index < 60 ? "Area" : "Second area",
+      departmentId: "department",
+      areaId: "area",
+    }));
+  const first = await app.equipmentCatalog("admin", {
+    locationId: "department",
+  });
+  expect(first.total).toBe(73);
+  expect(first.candidates).toHaveLength(50);
+  expect(first.sources).toEqual(["second-source", "source"]);
+  expect(first.areas).toEqual(["Area", "Second area"]);
+  const second = await app.equipmentCatalog("admin", {
+    locationId: "department",
+    cursor: first.nextCursor,
+  });
+  expect(second.candidates).toHaveLength(23);
+  expect(second.nextCursor).toBe("");
+  expect(
+    new Set(
+      [...first.candidates, ...second.candidates].map(
+        (candidate) => candidate.code,
+      ),
+    ).size,
+  ).toBe(73);
+  await expect(
+    app.equipmentCatalog("admin", {
+      locationId: "department",
+      sourceId: "source",
+      cursor: first.nextCursor,
+    }),
+  ).rejects.toMatchObject({ code: "invalid_asset" });
+  expect(
+    (
+      await app.equipmentCatalog("admin", {
+        locationId: "department",
+        code: "CODE-072",
+        sourceId: "second-source",
+      })
+    ).candidates[0].area,
+  ).toBe("Second area");
+  expect(
+    (await app.equipmentCatalog("admin", { locationId: "other" })).total,
+  ).toBe(0);
+});
+test("new source aliases require the exact asset code and a known analytical source tuple", async () => {
+  const { app } = fixture();
+  for (const alias of [
+    { ...analyticAlias, sourceId: "guessed-source" },
+    { ...analyticAlias, code: "different-code" },
+    { ...analyticAlias, area: "Guessed area" },
+    { ...handoverAlias, code: "other-equipment" },
+  ])
+    await expect(
+      app.save("admin", {
+        ...create,
+        content: { ...content, aliases: [alias] },
+      }),
+    ).rejects.toMatchObject({ code: "invalid_asset" });
+  expect(
+    (
+      await app.save("admin", {
+        ...create,
+        content: { ...content, aliases: [analyticAlias, handoverAlias] },
+      })
+    ).content.aliases,
+  ).toHaveLength(2);
+});
+test("unchanged unverified legacy aliases remain readable and editable while corrections revalidate identity", async () => {
+  const { app, tx } = fixture();
+  const oldAlias = {
+    ...analyticAlias,
+    code: "different-code",
+    sourceId: "old-source",
+  };
+  const legacy: Asset = {
+    id: "asset-id",
+    revision: 1,
+    authorId: "admin",
+    authorName: "Administrator",
+    createdAt: "2026-10-01T12:00:00.000Z",
+    updatedAt: "2026-10-01T12:00:00.000Z",
+    content: { ...content, aliases: [oldAlias] },
+  };
+  tx.get = async () => legacy;
+  const updated = await app.save("admin", {
+    ...create,
+    key: "",
+    id: legacy.id,
+    expectedRevision: 1,
+    note: "Document physical inspection plan",
+    content: {
+      ...legacy.content,
+      description: "Unverified manual registration",
+    },
+  });
+  expect(updated.content.aliases).toEqual([oldAlias]);
+  await expect(
+    app.save("admin", {
+      ...create,
+      key: "",
+      id: legacy.id,
+      expectedRevision: 1,
+      note: "Change the source tuple",
+      content: { ...legacy.content, aliases: [{ ...oldAlias, area: "Other" }] },
+    }),
+  ).rejects.toMatchObject({ code: "invalid_asset" });
+});
+test("asset query resolves location descendants without changing the transport selection", async () => {
+  const { app, tx } = fixture();
+  const list = jest.fn(async () => ({ assets: [], total: 0, nextCursor: "" }));
+  tx.list = list;
+  await app.query("admin", {
+    locationId: "department",
+    status: "current",
+    search: "",
+    cursor: "",
+  });
+  expect(list).toHaveBeenCalledWith(
+    { locationId: "department", status: "current", search: "", cursor: "" },
+    ["department", "area"],
+  );
 });
