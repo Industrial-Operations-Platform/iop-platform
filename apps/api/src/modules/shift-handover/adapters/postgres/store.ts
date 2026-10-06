@@ -230,11 +230,26 @@ class PgTransaction implements Transaction {
       matrix?.ongoingCategoryIds ?? [],
       matrix?.dailyCategoryIds ?? [],
       matrix?.timeZone ?? "UTC",
+      s.excludeAttention ?? false,
+      s.resolvedFrom ?? "",
+      s.resolvedTo ?? "",
+      s.resolvedForMe ?? false,
     ];
     const r = await this.tx.query(
       `WITH matching AS (
-      SELECT id,snapshot,CASE WHEN $21<>'' THEN snapshot->>'createdAt' WHEN $11 THEN snapshot->>'highlightedAt' ELSE occurrence_date::text || '/' || (snapshot->>'createdAt') END AS sort_key
-      FROM shift_handover.entries WHERE organization_id=$1 AND site_id=$2 AND coalesce(snapshot->>'deleted','false')<>'true'
+      SELECT id,snapshot,CASE WHEN $21<>'' THEN n.notification_at WHEN $11 THEN snapshot->>'highlightedAt' ELSE occurrence_date::text || '/' || (snapshot->>'createdAt') END AS sort_key
+      FROM shift_handover.entries e
+      LEFT JOIN LATERAL (
+        SELECT max(r.snapshot->>'at') AS notification_at FROM shift_handover.revisions r
+        WHERE $21<>'' AND r.organization_id=e.organization_id AND r.site_id=e.site_id AND r.entry_id=e.id
+          AND r.actor_id<>$22 AND (r.revision=1 OR r.snapshot->'entry'->>'responsibleId'=$22
+            OR coalesce(r.snapshot->'entry'->'content'->'mentionIds','[]'::jsonb) ? $22)
+      ) n ON true
+      CROSS JOIN LATERAL (SELECT coalesce(snapshot->>'issueState' IN ('open','in-progress') AND
+        (snapshot->'content'->>'condition'='blocked'
+        OR NULLIF(snapshot->'content'->>'dueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date
+        OR NULLIF(snapshot->'content'->>'feedbackDueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date),false) AS needs_attention) urgency
+      WHERE organization_id=$1 AND site_id=$2 AND coalesce(snapshot->>'deleted','false')<>'true'
       AND ($3='' OR occurrence_date >= NULLIF($3,'')::date) AND ($4='' OR occurrence_date <= NULLIF($4,'')::date)
       AND ($5='' OR snapshot->'content'->>'departmentId'=$5) AND ($6='' OR snapshot->'content'->>'areaId'=$6)
       AND ($7='' OR equipment_id=$7) AND ($8='' OR snapshot->'content'->>'categoryId'=$8)
@@ -247,17 +262,24 @@ class PgTransaction implements Transaction {
       AND ($18::text IS NULL OR coalesce(snapshot->>'responsibleId','')=$18)
       AND ($19='' OR strpos(lower(snapshot->'content'->>'externalReference'),lower($19))>0)
       AND ($20='' OR snapshot->'content'->>'condition'=$20)
-      AND ($21='' OR (created_at > NULLIF($21,'')::timestamptz AND author_id<>$22))
+      AND ($21='' OR n.notification_at > $21)
       AND ($23='' OR (
         (snapshot->'content'->>'categoryId'=ANY($24::text[]) AND snapshot->>'issueState' IN ('open','in-progress'))
         OR (snapshot->'content'->>'categoryId'=ANY($25::text[]) AND snapshot->>'issueState'<>'resolved'
           AND (created_at AT TIME ZONE $26)::date=NULLIF($23,'')::date)))
-      AND (NOT $15 OR (snapshot->>'issueState' IN ('open','in-progress') AND
-        (snapshot->'content'->>'condition'='blocked'
-        OR NULLIF(snapshot->'content'->>'dueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date
-        OR NULLIF(snapshot->'content'->>'feedbackDueDate','')::date < (CURRENT_TIMESTAMP AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date)))
+      AND (NOT $15 OR needs_attention) AND (NOT $27 OR NOT needs_attention)
+      AND ($28='' OR EXISTS (
+        SELECT 1 FROM shift_handover.revisions r
+        LEFT JOIN shift_handover.revisions prior ON prior.organization_id=r.organization_id
+          AND prior.site_id=r.site_id AND prior.entry_id=r.entry_id AND prior.revision=r.revision-1
+        WHERE r.organization_id=e.organization_id AND r.site_id=e.site_id AND r.entry_id=e.id
+          AND r.snapshot->'entry'->>'issueState'='resolved'
+          AND coalesce(prior.snapshot->'entry'->>'issueState','none')<>'resolved'
+          AND (NOT $30 OR r.snapshot->'entry'->>'responsibleId'=$22)
+          AND (r.recorded_at AT TIME ZONE (SELECT time_zone FROM platform_core.sites WHERE organization_id=$1 AND site_id=$2))::date
+            BETWEEN NULLIF($28,'')::date AND NULLIF($29,'')::date))
     ), page AS (SELECT * FROM matching WHERE $12='' OR (sort_key,id)<($12,$13) ORDER BY sort_key DESC,id DESC LIMIT 21)
-    SELECT (SELECT count(*)::integer FROM matching) AS total,coalesce((SELECT jsonb_agg(jsonb_build_object('entry',snapshot,'sort',sort_key) ORDER BY sort_key DESC,id DESC) FROM page),'[]'::jsonb) AS results`,
+    SELECT (SELECT count(*)::integer FROM matching) AS total,coalesce((SELECT jsonb_agg(jsonb_build_object('entry',CASE WHEN $21<>'' THEN snapshot || jsonb_build_object('notificationAt',sort_key) ELSE snapshot END,'sort',sort_key) ORDER BY sort_key DESC,id DESC) FROM page),'[]'::jsonb) AS results`,
       values,
     );
     const rows = r.rows[0].results as { entry: Entry; sort: string }[],

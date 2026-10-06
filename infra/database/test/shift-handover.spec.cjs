@@ -1448,6 +1448,8 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await button("Save update").click();
     await pw(page.getByText(/Revision 4 · highlight/)).toBeVisible();
     await button("Start").click();
+    await page.getByText("Explore other departments", { exact: true }).click();
+    await page.getByLabel("Browse departments").selectOption("department");
     await page
       .getByRole("navigation", { name: "Operational updates" })
       .getByRole("button", { name: /^Shift Handover/ })
@@ -1488,6 +1490,8 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await button("Save update").click();
     await pw(page.getByText(/Revision 6 · highlight/)).toBeVisible();
     await button("Start").click();
+    await page.getByText("Explore other departments", { exact: true }).click();
+    await page.getByLabel("Browse departments").selectOption("department");
     await page
       .getByRole("navigation", { name: "Operational updates" })
       .getByRole("button", { name: /^Shift Handover/ })
@@ -1515,7 +1519,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await pw(page.getByText("No entries for this day.")).toHaveCount(6);
     await pw(button("Paging 22 Workshop")).not.toBeVisible();
     await page.getByText(/Department status ·/).click();
-    await pw(button("Paging 22 Workshop")).not.toBeVisible();
+    await pw(button("Paging 22 Workshop")).toBeVisible();
     await page.getByLabel("Meeting date", { exact: true }).fill("2026-09-28");
     await pw(
       page
@@ -1871,6 +1875,41 @@ test("matrix column filters combine before counts and cursor pagination, with li
       })
     ).total,
   ).toBe(0);
+});
+
+test("IOP-196 partitions urgent reports, counts resolution revisions and notifies mentioned people on updates", async () => {
+  let at = "2026-09-20T12:00:00.000Z";
+  const service196 = service(scope, pool, { now: () => at });
+  const create = (summary, extra = {}) => service196.create("lead-a", {
+    key: randomUUID(), issue: true, responsibleId: "tech-a",
+    content: { ...content(`IOP-196 ${summary}`), date: "2026-09-20", dueDate: "2099-01-01", feedbackDueDate: "", ...extra },
+  });
+  const ordinary = await create("Routine inspection");
+  const urgent = await create("Blocked equipment", { condition: "blocked" });
+  const selected = { ...emptySelection, departmentId: "department", search: "IOP-196", state: "pending" };
+  expect((await service196.list("tech-a", { ...selected, attention: true })).entries.map((e) => e.id)).toEqual([urgent.id]);
+  expect((await service196.list("tech-a", { ...selected, excludeAttention: true })).entries.map((e) => e.id)).toEqual([ordinary.id]);
+  at = "2026-09-25T12:00:00.000Z";
+  const closed = await service196.change("lead-a", { id: ordinary.id, expectedRevision: 1, action: "state", state: "resolved", note: "Inspection complete" });
+  at = "2026-10-06T12:00:00.000Z";
+  await service196.change("lead-a", { id: closed.id, expectedRevision: closed.revision, action: "state", state: "open", note: "Additional check" });
+  const month = { ...emptySelection, search: "IOP-196", resolvedFrom: "2026-09-01", resolvedTo: "2026-09-30", resolvedForMe: true };
+  expect((await service196.list("tech-a", month)).total).toBe(1);
+  expect((await service196.list("lead-a", month)).total).toBe(0);
+  expect((await service196.list("tech-a", { ...month, resolvedFrom: "2026-10-01", resolvedTo: "2026-10-31" })).total).toBe(0);
+  const png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZlVQAAAAASUVORK5CYII=";
+  const infoContent = { ...content("IOP-196 Information"), date: "2026-10-06", categoryId: "information", mentionIds: ["tech-a"], images: [{ name: "Inspection.png", dataUrl: png }] };
+  await expect(service196.create("tech-a", { key: randomUUID(), issue: false, responsibleId: "", content: infoContent })).rejects.toMatchObject({ code: "handover_denied" });
+  const information = await service196.create("lead-a", { key: randomUUID(), issue: false, responsibleId: "", content: infoContent });
+  at = "2026-10-06T12:01:00.000Z";
+  const corrected = await service196.change("lead-a", { id: information.id, expectedRevision: 1, action: "correct", content: { ...infoContent, summary: "IOP-196 Updated Information" }, note: "Updated meeting information" });
+  const notices = await service196.list("tech-a", { ...emptySelection, search: "IOP-196", notificationsAfter: information.createdAt });
+  expect(notices.entries).toHaveLength(1);
+  expect(notices.entries[0]).toMatchObject({ id: corrected.id, notificationAt: at, content: { images: [{ dataUrl: png }] } });
+  expect((await service196.list("lead-a", { ...emptySelection, search: "IOP-196", notificationsAfter: information.createdAt })).total).toBe(0);
+  const durable = await service(scope, pool).history("tech-a", information.id);
+  expect(durable.revisions).toHaveLength(2);
+  expect(durable.revisions[1].entry.content.images[0].dataUrl).toBe(png);
 });
 
 test("administrator logical deletion retains author name, journal history and audit; final administrator is protected", async () => {

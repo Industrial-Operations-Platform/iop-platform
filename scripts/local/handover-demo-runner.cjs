@@ -217,6 +217,7 @@ async function run(options, fixture) {
         today,
         people,
         coordinator: operator,
+        restrictedCategoryIds: catalog.categories.filter((category) => category.coordinatorOnly).map((category) => category.id),
         departments,
       });
       scenarios.forEach((scenario) => validContent(scenario.content, catalog));

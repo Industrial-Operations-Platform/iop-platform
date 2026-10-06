@@ -14,6 +14,12 @@ export function configureApplication(app: INestApplication): void {
     limit: 5242880,
     inflate: false,
   });
+  adapter.useBodyParser("json", false, {
+    limit: 196608, inflate: false,
+    type: (req: { url?: string; headers: Record<string, unknown> }) =>
+      ["/api/v1/handover/entries", "/api/v1/handover/change"].includes(req.url ?? "") &&
+      String(req.headers["content-type"] ?? "").split(";")[0] === "application/json",
+  });
   adapter.useBodyParser("json", false, { limit: 102400, inflate: false });
   adapter.useBodyParser("urlencoded", false, {
     limit: 102400,
