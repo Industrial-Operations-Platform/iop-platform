@@ -1,6 +1,6 @@
 # IOP-194 — Develop integration and publication
 
-Status: In progress. Explicit owner authorization on 2026-10-06.
+Status: Completed. Explicit owner authorization on 2026-10-06.
 Branch: `feature/IOP-194-maintenance-asset-history`, the existing IOP-194 story
 branched from develop. Documentation is prepared on the story before integration.
 
@@ -30,3 +30,20 @@ Verify branch ancestry, merge/tree parity, documentation links/status consistenc
 `git diff --check`, contract consistency and suitable build/test checks. Previous
 API, Web, PostgreSQL and browser evidence remains in the
 [equipment-catalog execution record](../completed/IOP-194-equipment-catalog-refinement-plan.md).
+
+## Evidence and outcome — 2026-10-06
+
+- Working tree was clean. `git fetch origin` found local develop and the story
+  synchronized with their remote refs; origin/develop was an ancestor of the story.
+- Authorization/plan commit: `d59f6ad`. Local integration merge: `f6b6bfc`.
+  The merge completed without conflicts; `git diff --exit-code` verified its tree
+  exactly matched the reviewed story. Product, schema and runtime files therefore
+  retain the previously recorded API/Web/PostgreSQL/browser validation evidence.
+  No new runtime changes or repeated source/data operations were necessary.
+- Atomic publication of the story and develop to origin succeeded. Both comparisons
+  against origin reported zero commits ahead/behind, with a clean develop checkout.
+- Further owner functional testing and physical inventory verification remain pending.
+  M09 stays deferred; the story branch remains available for review.
+- This completed evidence increment is committed on the story and promoted/published
+  through the same authorized path; the final checkout remains develop. Final ref
+  hashes and remote parity are verified after that documentation-only promotion.

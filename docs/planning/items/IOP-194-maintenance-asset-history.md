@@ -7,7 +7,8 @@ and M10 Asset History delivery on a separate branch, delegated implementation
 and design choices, and explicitly waived intermediate approvals. Existing
 development remains under owner review. M9 Asset Locator is excluded. On
 2026-10-06 the owner approved integration into develop and publication of the
-story and develop to origin, with the checkout left on develop. Further owner
+story and develop to origin. Integration and publication completed; the checkout
+is left on develop. Further owner
 functional/product testing remains pending; integration is not final acceptance.
 
 ## Scope and acceptance
@@ -64,7 +65,7 @@ integration. The owner explicitly authorizes merging
 `feature/IOP-194-maintenance-asset-history` into develop and pushing both refs to
 origin. Deployment, stage/master promotion and alteration of other review branches
 remain outside this publication. See the
-[integration plan](../active/IOP-194-publication-integration-plan.md).
+[integration plan](../completed/IOP-194-publication-integration-plan.md).
 
 ## Evidence
 
