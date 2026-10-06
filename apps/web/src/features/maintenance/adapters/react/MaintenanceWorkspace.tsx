@@ -21,8 +21,13 @@ import type {
   Priority,
   SaveInput,
   Selection,
+  Status,
 } from "../../domain/models";
 import { MaintenanceCollection } from "./MaintenanceCollection";
+import { MaintenanceStatusDialog } from "./MaintenanceStatusDialog";
+import { statusChange } from "../../application/maintenance";
+import { statuses } from "../../domain/models";
+import { statusLabel } from "./labels";
 import { MaintenanceDetails } from "./MaintenanceDetails";
 import { MaintenanceFilters } from "./MaintenanceFilters";
 import { MaintenanceForm } from "./MaintenanceForm";
@@ -97,6 +102,7 @@ export function MaintenanceWorkspace({
   const [selectedId, setSelectedId] = useState(initialRecordId);
   const [history, setHistory] = useState<History>();
   const [form, setForm] = useState(false);
+  const [statusDialog, setStatusDialog] = useState<Status>();
   const queryEpoch = useRef(0);
   const detailEpoch = useRef(0);
   const pending = catalogLoading || queryLoading || detailLoading || saving;
@@ -108,6 +114,7 @@ export function MaintenanceWorkspace({
     setDetailLoading(false);
     setDetailError("");
     setForm(false);
+    setStatusDialog(undefined);
   };
   const goHome = () => {
     leaveDetails();
@@ -235,6 +242,7 @@ export function MaintenanceWorkspace({
         setSelected(record);
         setSelectedId(record.id);
         setForm(false);
+        setStatusDialog(undefined);
       }
       setMessage("Maintenance saved.");
       refresh();
@@ -343,7 +351,7 @@ export function MaintenanceWorkspace({
             </Actions>
           }
         />
-        {[error, catalogError, queryError, detailError]
+        {[statusDialog ? "" : error, catalogError, queryError, detailError]
           .filter(Boolean)
           .map((value, index) => (
             <Alert key={index}>{t(value)}</Alert>
@@ -400,6 +408,57 @@ export function MaintenanceWorkspace({
             ) : selected ? (
               <Panel>
                 <MaintenanceDetails record={selected} timeZone={timeZone} />
+                {canEdit && (
+                  <section
+                    aria-label={t("Maintenance workflow")}
+                    className="maintenance-status-actions"
+                  >
+                    <h3>{t("Move maintenance")}</h3>
+                    <Actions>
+                      {statuses
+                        .filter((status) => status !== selected.data.status)
+                        .map((status) => (
+                          <Button
+                            key={status}
+                            variant={
+                              status === "done" ? undefined : "secondary"
+                            }
+                            disabled={pending}
+                            onClick={() => {
+                              setError("");
+                              if (
+                                status === "done" ||
+                                status === "blocked" ||
+                                selected.data.status === "done"
+                              )
+                                setStatusDialog(status);
+                              else void save(statusChange(selected, status));
+                            }}
+                          >
+                            {status === "done"
+                              ? t("Mark as done")
+                              : t("Move to {0}", [statusLabel(status)])}
+                          </Button>
+                        ))}
+                    </Actions>
+                  </section>
+                )}
+                {statusDialog && canEdit && (
+                  <MaintenanceStatusDialog
+                    key={`${selected.id}:${statusDialog}`}
+                    record={selected}
+                    status={statusDialog}
+                    suspended={!!reportId}
+                    error={error}
+                    application={application}
+                    pending={saving}
+                    save={save}
+                    cancel={() => setStatusDialog(undefined)}
+                    renderReportCards={renderReportCards}
+                    openReport={openReport}
+                    reportRefresh={reportRefresh}
+                  />
+                )}
                 <RepairScope
                   application={application}
                   locationId={selected.data.locationId}

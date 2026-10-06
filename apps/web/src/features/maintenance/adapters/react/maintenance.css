@@ -126,3 +126,5 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.maintenance-status-actions { padding: var(--iop-sectionGap); margin: var(--iop-sectionGap) 0; border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); background: var(--iop-canvas); }
+.iop-ui .maintenance-status-actions h3 { margin-top: 0; }

@@ -78,6 +78,10 @@ for (const width of [1440, 820, 375]) {
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
       if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
+      if (path.endsWith("/workforce/summary")) return route.fulfill({ json: {
+        actorId: emptyWorkforce.actorId, today: "2026-10-06", currentFrom: "2026-10-01", previousFrom: "2026-09-01", previousTo: "2026-09-30",
+        homeTargetId: "hall-a", homeTargetLabel: "Halle A", teamLabel: "", scheduledDays: 0, shifts: [], saturdays: 0, sundays: 0,
+      } });
       if (path.endsWith("/workforce/board")) {
         await route.fulfill({ json: emptyWorkforce });
         return;
@@ -262,7 +266,8 @@ for (const width of [1440, 820, 375]) {
         .getByRole("button", { name: entry.content.summary, exact: false }),
     ).toBeVisible();
     await startViews.getByRole("button", { name: /Shift Handover/ }).click();
-    await expect(operational.getByText(/Site-wide highlights/)).toBeVisible();
+    await expect(operational.getByText(/Selected highlights for this department/)).toBeVisible();
+    await operational.getByText("Explore other departments", { exact: true }).click();
     const standaloneDepartment = operational.locator(".iop-department-scope");
     expect(
       (await standaloneDepartment.boundingBox())!.width,
@@ -272,7 +277,7 @@ for (const width of [1440, 820, 375]) {
       startViews.getByRole("button", { name: /Shift Handover/ }),
     ).toHaveAttribute("aria-pressed", "true");
     await page
-      .getByRole("combobox", { name: "Start department" })
+      .getByRole("combobox", { name: "Browse departments" })
       .selectOption("hall-a");
     await startViews.getByRole("button", { name: /Needs attention/ }).click();
     await operational

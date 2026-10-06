@@ -1,0 +1,87 @@
+.start-profile-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--iop-sectionGap);
+}
+.start-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--iop-activeSurface);
+  color: var(--iop-activeInk);
+  font-size: var(--iop-sectionTitleSize);
+  font-weight: var(--iop-headingWeight);
+}
+.start-profile-identity {
+  flex: 1;
+  min-width: 0;
+}
+.iop-ui .start-profile-identity h2 {
+  margin: 2px 0 6px;
+}
+.start-caption,
+.start-profile-context dt {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.start-profile-context {
+  display: flex;
+  gap: var(--iop-sectionGap);
+  flex-wrap: wrap;
+  padding-bottom: var(--iop-sectionGap);
+  border-bottom: 1px solid var(--iop-line);
+}
+.start-profile-context dd {
+  margin: 4px 0 0;
+  font-weight: var(--iop-labelWeight);
+}
+.start-personal-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--iop-sectionGap);
+}
+.start-personal-metrics > div {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+.start-personal-metrics strong {
+  font-size: var(--iop-metricCompactSize);
+  font-weight: var(--iop-metricWeight);
+  font-variant-numeric: tabular-nums;
+}
+.start-personal-metrics :is(span, small) {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
+.start-shift-share {
+  margin-top: var(--iop-sectionGap);
+}
+.start-shift-row {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(60px, 2fr) 3em;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.start-shift-row progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--iop-primary);
+}
+.start-shift-row strong {
+  text-align: right;
+  font-weight: var(--iop-labelWeight);
+}
+@media (max-width: 1100px) {
+  .start-personal-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.start-shift-row progress { appearance: none; border: 0; border-radius: var(--iop-cardRadius); background: var(--iop-canvas); overflow: hidden; }
+.start-shift-row progress::-webkit-progress-bar { background: var(--iop-canvas); }
+.start-shift-row progress::-webkit-progress-value { background: var(--iop-primary); border-radius: var(--iop-cardRadius); }
+.start-shift-row progress::-moz-progress-bar { background: var(--iop-primary); border-radius: var(--iop-cardRadius); }

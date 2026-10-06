@@ -30,6 +30,7 @@ export function EntrySummaryCards({
       | "equipmentCode"
       | "dueDate"
       | "feedbackDueDate"
+      | "images"
     > & { condition: string };
   })[];
   open: (id: string) => void;
@@ -61,6 +62,7 @@ export function EntrySummaryCards({
               <span className="handover-card-area"> · {entry.areaLabel}</span>
             )}
           </span>
+          {entry.content.images?.[0] && <img className="handover-card-image" src={entry.content.images[0].dataUrl} alt={entry.content.images[0].name} />}
           {expanded && (
             <>
               <span className="handover-card-tags">

@@ -254,3 +254,8 @@
     grid-template-columns: 1fr;
   }
 }
+.workforce-start-days { display: grid; gap: 10px; margin: var(--iop-sectionGap) 0; }
+.workforce-start-day { padding: var(--iop-sectionGap); border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); background: var(--iop-canvas); }
+.workforce-start-duty { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.workforce-start-duty > span { color: var(--iop-muted); font-size: var(--iop-captionSize); }
+.iop-ui .workforce-start-day .workforce-personal-heading { margin-bottom: 8px; }

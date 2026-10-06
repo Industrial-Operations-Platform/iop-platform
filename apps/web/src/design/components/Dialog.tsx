@@ -7,17 +7,20 @@ export function Dialog({
   title,
   onClose,
   busy = false,
+  suspended = false,
   children,
 }: {
   title: string;
   onClose: () => void;
   busy?: boolean;
+  suspended?: boolean;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   useEffect(() => {
     const dialog = ref.current!;
+    if (suspended) return;
     const previous = document.activeElement as HTMLElement | null;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -27,7 +30,7 @@ export function Dialog({
       document.body.style.overflow = overflow;
       previous?.focus();
     };
-  }, []);
+  }, [suspended]);
   return (
     <dialog
       ref={ref}

@@ -1,5 +1,7 @@
 import type {
   Catalog,
+  Status,
+  LinkedEntry,
   History,
   MaintenanceRecord,
   Page,
@@ -69,6 +71,38 @@ export function maintenanceDraftFromReport(
             },
           ]
         : [],
+  };
+}
+/** Focused status changes retain the current content and optimistic revision. */
+export function statusChange(
+  record: MaintenanceRecord,
+  status: Status,
+  input: {
+    outcome?: string;
+    reason?: string;
+    linkedEntries?: LinkedEntry[];
+  } = {},
+): SaveInput {
+  const reason =
+    input.reason?.trim() ||
+    (status === "done"
+      ? "Maintenance completion confirmed."
+      : `Status changed to ${status}.`);
+  return {
+    id: record.id,
+    expectedRevision: record.revision,
+    reason,
+    data: {
+      ...record.data,
+      status,
+      ...(status === "done"
+        ? {
+            outcome: input.outcome?.trim() ?? record.data.outcome,
+            linkedEntries: input.linkedEntries ?? record.data.linkedEntries,
+          }
+        : {}),
+      blockedReason: status === "blocked" ? (input.reason?.trim() ?? "") : "",
+    },
   };
 }
 /** Browser use cases keep transport and React outside the application boundary. */

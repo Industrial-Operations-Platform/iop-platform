@@ -231,6 +231,12 @@ for (const width of [1440, 375]) {
         );
         return route.fulfill({ json: { ok: true } });
       }
+      if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
+      if (path.endsWith("/handover/query")) return route.fulfill({ json: { entries: [], total: 0, nextCursor: "" } });
+      if (path.endsWith("/workforce/summary")) return route.fulfill({ json: {
+        actorId: "admin", today: "2026-10-06", currentFrom: "2026-10-01", previousFrom: "2026-09-01", previousTo: "2026-09-30",
+        homeTargetId: "", homeTargetLabel: "", teamLabel: "", scheduledDays: 0, shifts: [], saturdays: 0, sundays: 0,
+      } });
       if (path.endsWith("/workforce/board")) {
         const board = workforce(route.request().postDataJSON().from);
         const names = new Map(users.map((user) => [user.id, user.name]));

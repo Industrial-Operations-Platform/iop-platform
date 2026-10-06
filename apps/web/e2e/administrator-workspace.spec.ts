@@ -11,6 +11,10 @@ for (const width of [1440, 375]) {
       const path = new URL(route.request().url()).pathname;
       if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
       requests.push(path);
+      if (path.endsWith("/workforce/summary")) return route.fulfill({ json: {
+        actorId: emptyWorkforce.actorId, today: "2026-10-06", currentFrom: "2026-10-01", previousFrom: "2026-09-01", previousTo: "2026-09-30",
+        homeTargetId: "", homeTargetLabel: "", teamLabel: "", scheduledDays: 0, shifts: [], saturdays: 0, sundays: 0,
+      } });
       if (path.endsWith("/workforce/board")) {
         await route.fulfill({ json: emptyWorkforce });
         return;

@@ -15,6 +15,10 @@ for (const width of [1440, 375]) {
       if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
       const dates = ["2026-05-01", "2026-06-01", "2026-07-01"];
       let body: unknown;
+      if (path.endsWith("/workforce/summary")) return route.fulfill({ json: {
+        actorId: emptyWorkforce.actorId, today: "2026-10-06", currentFrom: "2026-10-01", previousFrom: "2026-09-01", previousTo: "2026-09-30",
+        homeTargetId: "", homeTargetLabel: "", teamLabel: "", scheduledDays: 0, shifts: [], saturdays: 0, sundays: 0,
+      } });
       if (path.endsWith("/workforce/board")) {
         await route.fulfill({ json: emptyWorkforce });
         return;

@@ -94,3 +94,15 @@ test("read checkpoints survive reload and isolate accounts, sites and organizati
   read.mockRestore();
   localStorage.clear();
 });
+
+test("mention updates advance the checkpoint by notification time rather than the original publication", async () => {
+  const update = { ...publication("existing", "2026-09-01T12:00:00.000Z"), notificationAt: "2026-10-06T12:00:00.000Z" };
+  const checkpoint = { load: () => "2026-10-05T12:00:00.000Z", save: jest.fn() };
+  const list = jest.fn().mockResolvedValue(page([update]));
+  const notifications = new EntryNotifications({ list }, checkpoint);
+  expect((await notifications.refresh()).total).toBe(1);
+  notifications.markAllRead();
+  expect(checkpoint.save).toHaveBeenCalledWith(update.notificationAt);
+  await notifications.refresh();
+  expect(list).toHaveBeenLastCalledWith(expect.objectContaining({ notificationsAfter: update.notificationAt }));
+});
