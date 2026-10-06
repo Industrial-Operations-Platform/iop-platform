@@ -378,3 +378,12 @@ entries remain Handover-owned; no report copy or inferred spatial relationship i
 stored. Completion appends both module histories on the existing scoped transaction
 through the owning receiver contract. Assignment revisions supply in-app recipient
 activity; current unfinished work supplies Start independently of unread state.
+
+
+IOP-194 review refinement keeps a unique current exact equipment-code asset, with
+name equal to code and optional manually recorded within-area group/location details.
+Asset verification/retirement states describe identity lifecycle, never location
+health. Scoped source catalogs supply exact source/sector/area/code options; new
+Handover/analytical aliases use the same asset code. Immutable earlier snapshots
+retain historical names and mappings. Known-source initial inventory preparation is
+explicitly invoked; no import-time entity inference or spatial placement is implied.

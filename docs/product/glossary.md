@@ -72,3 +72,11 @@ Accepted [ADR-0016](../architecture/adr/ADR-0016-time-and-timezone-model.md) def
 | Elapsed duration | Difference between resolved instants in a stated unit; distinct from accumulated alarm duration. |
 | Shift business date | Local start date labeling a shift instance or assignment, including overnight shifts. |
 | Time ambiguity | A local clock value is missing or repeated because of an offset change; requires explicit handling. |
+
+
+- **Asset verification status**: lifecycle of a registered identity: Unverified until
+  physically checked, Validated with evidence, Retired when removed from current
+  work selection. It does not describe location health.
+- **Within-area asset grouping**: manually recorded component/group or location
+  details inside a configured Bereich, such as a buffer designation. It is not an
+  inferred equipment hierarchy or spatial map placement.

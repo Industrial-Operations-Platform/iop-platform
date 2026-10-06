@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-Completed: implementation and linked-maintenance follow-up; owner review pending. On 2026-10-05 the owner requested full M8 Maintenance Management
+Completed: owner-requested equipment-catalog review corrections delivered on 2026-10-06. On 2026-10-05 the owner requested full M8 Maintenance Management
 and M10 Asset History delivery on a separate branch, delegated implementation
 and design choices, and explicitly waived intermediate approvals. Existing
 development remains under owner review. M9 Asset Locator is excluded.
@@ -36,7 +36,7 @@ Owner-requested on 2026-10-05; [execution plan](../completed/IOP-194-linked-main
 - [x] Completion resolves explicitly included open issues; exclusions retain their
   open state and require a reason. Unreviewed scope prevents accidental closure.
 - [x] Team Leader assignment authority, worker Start summaries and activity notices.
-- [x] Assets restricted to Team Leader and Task Force, with provisional source-code
+- [x] Assets available to Administrator, Team Leader and Task Force, with provisional source-code
   identities preserved as unverified until the owner checks them.
 - [x] Default board retains unfinished work and previous/current-week completions;
   searchable historical scope and focused status layouts show three cards per row
@@ -74,3 +74,20 @@ The additional local dataset contains two unverified equipment assets, four Hand
 problems and four assigned repairs. Repeated application preserves earlier data and
 creates no duplicate records or revisions. Search `[DEMO LINKED]` to explore it.
 Owner product acceptance remains a review after local delivery.
+
+## Equipment-catalog review corrections
+
+[Execution plan](../completed/IOP-194-equipment-catalog-refinement-plan.md).
+The owner explicitly restores Administrator operational access and requests one
+current asset per exact code with name equal to code, Halle/Bereich-scoped reported
+code choices, conditioned source dropdowns and manual component/group metadata.
+Archive superseded training identities from the current directory while retaining
+referenced history. Included report closure remains atomic; distinguish inclusion
+from related/excluded context and avoid copying report narratives into interventions.
+The current asset registry/digital record does not implement M09 spatial placement;
+the owner confirmed on 2026-10-06 that M09 remains deferred while catalog and manual
+within-area grouping proceed.
+
+The retained local registry now contains 5,643 current code identities and 12
+retired training identities. Source, Handover and Maintenance history preservation
+and zero-write replay were verified; physical product acceptance remains owner review.

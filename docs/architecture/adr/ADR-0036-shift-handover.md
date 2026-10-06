@@ -227,3 +227,24 @@ Completion and included resolutions commit together. A site-scoped coordination
 lease serializes Handover mutations against final scope review so concurrent new
 reports cannot escape review. This refines the explicit unrelated-issue safeguard,
 not formal shift closure, global Audit or analytical event ownership.
+
+
+## Owner review corrections — 2026-10-06
+
+The owner restores Administrator access to all delivered operational capabilities,
+including Assets/M10 and Maintenance coordination. This supersedes the Administrator
+exclusion in the 2026-10-05 increment. Site/profile activity and current authorization
+still apply; other profiles retain their existing responsibilities.
+
+The owner requests one current asset per exact equipment code, with name equal to
+code, scoped Halle/Bereich source choices and manual within-area component/group
+metadata. A deliberately invoked initial catalog preparation registers known source
+identifiers as unverified. This is not automatic ingestion or physical validation.
+Superseded training identities leave the current directory through retained retirement
+revisions; analytical facts, reports and work histories stay owned by their modules.
+
+Reuse the existing narrow source read ports and scoped transaction patterns for
+contextual source dropdowns. Included reports are repair membership; related/excluded
+reports provide context without closure authority. Repair drafts retain source links
+instead of copying full report narratives. No new hierarchy or transaction framework
+is introduced. M09 remains explicitly deferred while catalog/manual grouping proceed.
