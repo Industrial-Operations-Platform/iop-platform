@@ -45,3 +45,7 @@ are already ancestors of develop. Actual merge/test/publication results follow.
 IOP-001 conflicts retain the later Completed baseline and current scope. Preserve
 the earlier responsibility/CSV-port request as historical evidence; later source
 review and accepted metrics supersede its uninspected-script/open-question wording.
+
+IOP-007 conflicts retain the current Deferred shared-use parent. ADR-0015 remains
+Proposed and explicitly historical; Accepted ADR-0035 controls delivered local
+authentication. Retain both earlier design-only plans without changing runtime rules.
