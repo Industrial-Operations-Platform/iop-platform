@@ -34,6 +34,7 @@ product requirements. This page records delivery and outstanding acceptance.
 | Reviewed repair scope, assignment activity and atomic included-Handover issue resolution | [IOP-194 linked workflow](completed/IOP-194-linked-maintenance-plan.md) |
 | Explicit synthetic assets/work, exact scoped catalog and manual component/group metadata | [IOP-194 fixtures](completed/IOP-194-demo-data-plan.md), [catalog review](completed/IOP-194-equipment-catalog-refinement-plan.md) |
 | Owner-authorized Maintenance/Assets integration into develop and publication to origin | [IOP-194 publication](completed/IOP-194-publication-integration-plan.md) |
+| Personal Start, assignment statistics, focused Maintenance status/completion and daily Information/media/person notices | [IOP-196](completed/IOP-196-personal-operational-workflows-plan.md) |
 
 Full-history totals come from persisted data, independently of the displayed page.
 Original CSV fields and durations remain traceable. Source-reported frequency is

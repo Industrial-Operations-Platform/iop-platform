@@ -15,8 +15,8 @@ not connected. This guide does not establish completion of the
 
 ## Open the application
 
-Ask the local operator to follow either the [native startup instructions](../../apps/web/README.md#run-locally)
-or the [Docker startup instructions](../../infra/docker/README.md#first-startup).
+Ask the local operator to follow either the [native startup reference](../../apps/web/README.md)
+or the [Docker startup reference](../../infra/docker/README.md).
 They cover prerequisites, configuration and stopping the application. Open the
 address for the chosen mode:
 

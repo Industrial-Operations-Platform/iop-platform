@@ -32,8 +32,9 @@ IDs are never reused. Completing a POC slice does not close unfinished parent wo
 
 IOP-195 audit snapshot: **194 indexed stories — 138 Completed, 40 Proposed, 15 Deferred
 and 1 In progress (IOP-130)**. Completed includes design/governance and bounded
-local delivery, not whole-platform release. The **56 unfinished stories** retain
-their specific remaining criteria. IOP-195 records this documentation review.
+local delivery, not whole-platform release. At that review, **56 unfinished stories**
+retained specific remaining criteria. IOP-195 records that snapshot; IOP-197 later
+integrates IOP-009's completed design and the previously missing IOP-144 evidence.
 
 ## M1 — Product & Architecture Definition
 

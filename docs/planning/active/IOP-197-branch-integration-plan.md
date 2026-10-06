@@ -74,3 +74,18 @@ semantics and the future Audit section. Every runtime/contract/test/script file
 matches `67126b4` exactly. Its executed PostgreSQL/browser evidence remains valid;
 run typecheck/npm test on the combined tree. Synchronize IOP-196 publication
 authorization and the roadmap's remaining Audit scope after integrating its design.
+
+## Combined-tree validation
+
+On Node 24.21.0, typecheck passed for API/web/database. `npm test` passed: API 412,
+web 143, database configuration 77, secret scanner 18 and design contracts 3 tests,
+with builds, architecture/design guards and generated browser-contract parity.
+`npm run check:secrets` passed for 912 indexed files; diff hygiene and conflict-marker
+checks passed. Runtime directories/contracts/tests/scripts exactly match IOP-196
+at `67126b4`; reuse its 54 PostgreSQL and 37 browser scenarios without repeating
+unchanged behavior. Logs: `/tmp/iop197-{typecheck,test}.log`.
+
+All 257 retained local/origin refs are contained in the integration story. Review
+the final documentation links/anchors, unique IDs and mirrored statuses before
+publication; two historical guide anchors were corrected to existing startup
+references. No consulted current story needs a new translation-only change.
