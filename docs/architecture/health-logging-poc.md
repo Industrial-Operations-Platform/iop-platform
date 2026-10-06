@@ -23,8 +23,8 @@ every possible bootstrap fault.
 
 Before demonstrating imports, follow the delivered migration/seed instructions and
 exercise a known scoped import/read. That evidence, rather than a green health
-badge, establishes usability. ADR-0018 is Accepted; its adapter/grant/RLS verification
-remains pending. Health never opens or bypasses business access.
+badge, establishes usability. ADR-0018 adapter/grant/RLS paths were verified under
+IOP-147; IOP-165 adds local sessions. Health never bypasses business access.
 
 ## Error diagnostics and correlation
 
@@ -38,14 +38,15 @@ console entry. Do not add per-request success or health-poll logs for this POC.
 
 Public validation errors remain limited to 50 fixed-schema pointer/code entries,
 with pointers at most 256 characters. Import row diagnostics are separate scoped
-result data, not extra unrestricted Problem Details fields. The current API has
-no database or importer; its implemented 5xx record does not identify an import.
+result data, not extra unrestricted Problem Details fields. The API now has
+connected persistence/import paths; authorization and retained import identity
+remain separate from a public error correlation ID.
 
-Future import delivery must make a failure diagnosable through the existing
+Import delivery must make a failure diagnosable through the existing
 application-generated opaque `importId` and safe stored outcome. When an admitted
 attempt fails with an HTTP problem, retain its error `traceId` with that attempt's
 bounded diagnostics so an authorized review can connect it to the console record.
-This is an implementation handoff, not a claim that such persistence exists today.
+This is the diagnostic contract; linked delivering plans own implementation evidence.
 An identifier provides correlation only; retrieval still requires explicit scope
 and `imports.review`. Never copy browser-supplied scope or identifiers into logs.
 
@@ -100,4 +101,5 @@ The following are design walkthroughs, not executed runtime tests.
 
 Future implementation must run its relevant API tests (`npm test`) and importer/UI
 checks, including captured output assertions. This document introduces no runtime
-behavior and does not claim that pending import or business-access checks pass.
+behavior. Delivered import/business-access checks and their limitations are
+recorded in the [delivery map](../planning/poc-delivery.md).

@@ -24,7 +24,9 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+IOP-194 supplies stable assets and manual within-area grouping; configured locations
+have their own hierarchy. Remaining: an actual configurable asset composition hierarchy;
+location/group text is not an asset parent graph.
 
 ## Desired state
 
@@ -43,7 +45,8 @@ Configurable hierarchy without hard-coded levels
 
 ## Domain considerations
 
-Separate composition, physical location, controller relationships and external identifiers; do not fix Hall/Area levels.
+Separate composition, physical location, controller relationships and external
+identifiers; do not fix Hall/Area levels.
 
 ## Architecture constraints
 
@@ -62,7 +65,8 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Keep canonical identity and references in the same scope; preserve validation evidence and handle ambiguous aliases.
+Keep canonical identity and references in the same scope; preserve validation evidence
+and handle ambiguous aliases.
 
 ## API considerations
 
@@ -81,11 +85,13 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing applications, migrations, endpoints or infrastructure. Do not introduce customer names in the core.
+Implementing applications, migrations, endpoints or infrastructure. Do not introduce
+customer names in the core.
 
 ## Validation
 
-Review consistency, links, scenarios and decisions; do not invent commands or write code to validate this design task.
+Review consistency, links, scenarios and decisions; do not invent commands or write code
+to validate this design task.
 
 ## Documentation impact
 
@@ -94,4 +100,14 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Resolve concrete design decisions for this task with options, a recommendation and an ADR when architecture is affected.
+Resolve concrete design decisions for this task with options, a recommendation and an
+ADR when architecture is affected.
+
+## Current coverage and remaining work — 2026-10-06
+
+IOP-194 supplies stable assets and manual within-area grouping; configured locations
+have their own hierarchy. Remaining: an actual configurable asset composition hierarchy;
+location/group text is not an asset parent graph.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

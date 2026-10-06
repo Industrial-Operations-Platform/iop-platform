@@ -130,10 +130,10 @@ the test entry point and foundation evidence.
 
 ## Verification boundary
 
-Source inspection confirms a health-only [Nest module](../../../apps/api/src/app.module.ts)
+Source inspection at audit commit `4ee268a` confirms a health-only [Nest module](https://github.com/Industrial-Operations-Platform/iop-platform/blob/4ee268a5a6c26ccce41705629e4a81ae77f597a4/apps/api/src/app.module.ts)
 and [OpenAPI artifact](../../../apps/api/contracts/openapi.json), seven existing
 [migrations](../../../infra/database/migrations) without production OIP receiving
-storage, and an [import page](../../../apps/web/src/App.tsx) that explicitly cannot
+storage, and an [import page](https://github.com/Industrial-Operations-Platform/iop-platform/blob/4ee268a5a6c26ccce41705629e4a81ae77f597a4/apps/web/src/App.tsx) that explicitly cannot
 submit files. `batch_receiver_probe` exists only in the
 [database integration test](../../../infra/database/test/import-batches.spec.cjs).
 This is direct evidence of missing composition, not an inference from story labels alone.

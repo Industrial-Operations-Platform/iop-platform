@@ -1,7 +1,9 @@
 # Maintenance Management and Digital Asset Record
 
 [IOP-194](../planning/items/IOP-194-maintenance-asset-history.md) implements the
-owner-requested M8 and M10 development increment on an isolated review branch.
+owner-requested M8 and M10 increment, integrated into develop and published to
+origin on 2026-10-06. Further owner product testing and physical verification remain
+pending; integration does not imply final product acceptance.
 M9 maps and placements remain deferred. See the [operator guide](../development/maintenance-assets.md).
 
 ## Maintenance

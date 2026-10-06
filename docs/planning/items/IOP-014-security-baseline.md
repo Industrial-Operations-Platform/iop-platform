@@ -21,7 +21,7 @@ M1 — Product & Architecture Definition. Documentation/design only.
 Define the local POC trust boundary and minimum input/configuration controls so
 local bootstrap and CSV/analytics delivery have concrete safety requirements.
 
-## Context and current state
+## Context and original slice state
 
 The owner requested IOP-014 with [IOP-016](IOP-016-backend-bootstrap.md) as context.
 That completed host provides loopback process health, PORT validation and sanitized
@@ -112,3 +112,11 @@ Exact numeric budgets, importer cleanup/transaction behavior, origin/host contro
 configuration loading and executable RLS evidence belong to their delivery plans.
 The local execution mechanism remains Proposed; all dependent runtime work waits
 for its acceptance or an accepted alternative.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

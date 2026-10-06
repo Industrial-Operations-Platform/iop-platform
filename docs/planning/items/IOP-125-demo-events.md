@@ -31,7 +31,7 @@ Scope: synthetic demo and pilot fixtures. See [modules](../../architecture/modul
 the [planning workflow](../workflow.md). This initial context comes from the
 owner-requested outline; backlog membership alone does not authorize implementation.
 
-## Current state
+## Original slice state
 
 The [fixture corpus](../../../fixtures/analytical-poc/README.md) provides 14 synthetic
 CSV files, explicit fictional scope/mapping and literal expected outputs. The
@@ -59,7 +59,8 @@ Provide representative CSV aggregates and independent expected totals.
 
 ## Domain considerations
 
-Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
+Use fictional organizations, names, assets and relationships; fixtures do not define
+rigid domain levels.
 
 ## Architecture constraints
 
@@ -78,7 +79,8 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Use reproducible data with explicit scope and provenance; include useful invalid/ambiguous cases without secrets.
+Use reproducible data with explicit scope and provenance; include useful
+invalid/ambiguous cases without secrets.
 
 ## API considerations
 
@@ -102,7 +104,8 @@ local execution-context mechanism; Proposed ADR-0018 is not yet that acceptance.
 
 ## Non-goals
 
-Implementing adjacent tasks, inferring acceptance of open decisions or extending delivery to the entire milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, inferring acceptance of open decisions or extending
+delivery to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
@@ -122,3 +125,11 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 No open decision blocks static fixture delivery. Seed binding, real importer
 validation and observed end-to-end timings remain later handoffs. Reporting windows
 and exporter grouping remain unknown as required by the source contract.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

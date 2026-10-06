@@ -27,13 +27,14 @@ hosting and corporate identity integration remain later steps.
   the local operator guide synchronized with delivered behavior.
 
 The owner confirmed Administrator, Technician, Task Force and Team Leader. Only
-Administrator can import; the other three currently have identical capabilities.
-Differences will be defined when further modules exist, not inferred from job labels.
+Administrator can import; the other three initially had identical capabilities.
+Later IOP-171/184/194 define differences through explicit module permissions.
 Existing accepted grants
 remain governed by [ADR-0014](../../architecture/adr/ADR-0014-scoped-rbac.md).
 
-Real operational publishing, maintenance lifecycles and shift scheduling are future
-increments; this initial home uses placeholders where those sources do not exist.
+This original increment used explicit placeholders. IOP-168/184/194 now supply
+real operational publishing, scheduling and Maintenance summaries through the
+authorized sources; IOP-171 removes Technician analytical access.
 Reuse scoped sector/Bereich classification, without turning analytical equipment
 codes into validated assets or interpreting alarms as repair/blocking evidence.
 
@@ -57,6 +58,14 @@ see the [login layout evidence](../completed/IOP-165-login-layout-plan.md).
 authentication, four profiles and administrator-created users are verified locally.
 Docker is rebuilt, the initial administrator is issued with mandatory password
 change, and imported history is unchanged. Corporate integration, remote hosting
-and real operational records remain deferred. No merge or remote push is implied.
+remain deferred; operational records are delivered by IOP-168/184/194. No merge or
+remote push is implied.
 Data Analysis v1 acceptance does not create a tag, hosted deployment or shared-use
 platform release; IOP-138 retains its separate gates.
+
+## Current delivery — 2026-10-06
+
+Four-profile account administration is delivered; profile capabilities are now
+distinct. Start uses authorized Handover, Workforce and Maintenance sources.
+Original local login/admin and role-home outcomes are reconciled as Completed in
+IOP-028/031/117. Corporate identity and shared hosting remain open.

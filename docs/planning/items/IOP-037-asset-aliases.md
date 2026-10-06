@@ -2,11 +2,12 @@
 
 ## Status
 
-Proposed
+Completed — original outcome delivered in later owner-authorized local increments;
+reconciled on 2026-10-06.
 
 ## Milestone
 
-M4 — Asset Domain. Proposed delivery slice.
+M4 — Asset Domain. Delivered local slice.
 
 ## Goal
 
@@ -24,7 +25,9 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+IOP-194 delivers explicit exact source aliases with namespace and
+organization/site/location context, duplicate/conflict rejection and retained historical
+mappings. No physical identity is inferred.
 
 ## Desired state
 
@@ -37,13 +40,14 @@ Support BMK, external codes and aliases
 
 ## Acceptance criteria
 
-- [ ] Support BMK, external codes and aliases
-- [ ] The plan documents scenarios and required decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Support BMK, external codes and aliases
+- [x] The plan documents scenarios and required decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
-Separate composition, physical location, controller relationships and external identifiers; do not fix Hall/Area levels.
+Separate composition, physical location, controller relationships and external
+identifiers; do not fix Hall/Area levels.
 
 ## Architecture constraints
 
@@ -62,7 +66,8 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Keep canonical identity and references in the same scope; preserve validation evidence and handle ambiguous aliases.
+Keep canonical identity and references in the same scope; preserve validation evidence
+and handle ambiguous aliases.
 
 ## API considerations
 
@@ -81,11 +86,14 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names in the core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery
+to the entire milestone. Do not introduce customer names in the core.
 
 ## Validation
 
-The plan must define executable commands and scenarios for the criteria below using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+The plan must define executable commands and scenarios for the criteria below using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictional tests.
 
 ## Documentation impact
 
@@ -94,4 +102,16 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+None for the delivered original outcome. Broader parent capabilities remain
+separately scoped and require an explicit selection before implementation.
+
+## Current coverage — 2026-10-06
+
+IOP-194 delivers explicit exact source aliases with namespace and
+organization/site/location context, duplicate/conflict rejection and retained historical
+mappings. No physical identity is inferred.
+
+Implementation and validation: [execution evidence](../completed/IOP-194-equipment-catalog-refinement-plan.md).
+No remaining implementation for this story’s original outcome; broader scope remains
+in the explicitly linked parent stories. Closure does not imply platform release
+or final owner product acceptance.

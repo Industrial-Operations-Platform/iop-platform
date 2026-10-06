@@ -9,7 +9,7 @@ scope and data invariants in delivered paths. The local selector is implemented
 under ADR-0018/0030/0034. [IOP-165](../planning/items/IOP-165-operational-home.md)
 implements temporary authenticated access and user administration under accepted
 [ADR-0035](adr/ADR-0035-transitional-authentication.md). Shift Handover supplies operational entries and selected Start highlights under
-ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); Maintenance and supporting stable Assets/Digital Asset Record are delivered on the isolated IOP-194 review branch. M9 Asset Locator and full M4 capabilities remain deferred. Existing identity, authorization and RLS requirements still apply.
+ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); Maintenance and supporting stable Assets/Digital Asset Record are delivered under IOP-194, integrated into develop and published to origin on 2026-10-06; owner product review remains pending. M9 Asset Locator and full M4 capabilities remain deferred. Existing identity, authorization and RLS requirements still apply.
 
 [IOP-168](../planning/items/IOP-168-shift-handover.md) captures the requested first
 Shift Handover increment. [ADR-0036](adr/ADR-0036-shift-handover.md) defines its accepted
@@ -85,8 +85,8 @@ configured mappings and pass validated scope to receiving modules. Derived resul
 files and caches preserve scope and cannot substitute for access checks.
 
 IOP-029 implements the bounded site-ownership and current-permission interfaces
-under Accepted ADR-0026; the other responsibilities remain logical contracts. Scope transport
-remains undecided. Accepted [ADR-0014](adr/ADR-0014-scoped-rbac.md) defines grants
+under Accepted ADR-0026; the other responsibilities remain logical contracts. Delivered HTTP operations bind the configured organization/site through the host;
+broader multi-site transport remains separate design. Accepted [ADR-0014](adr/ADR-0014-scoped-rbac.md) defines grants
 without inheritance. Persistence enforcement follows Accepted
 [ADR-0013](adr/ADR-0013-tenancy-data-isolation.md).
 
@@ -122,15 +122,16 @@ use equivalent actor/action/target checks; RLS does not replace business permiss
 
 Access changes require organization-scoped delegation checks, traceable mutations
 and concurrency protection for authority revocation and last-admin removal.
-Identity bootstrap/recovery, concrete transaction coordination and audit delivery
-remain implementation contracts; no administrative UI or provider is selected.
+Local identity bootstrap/recovery, scoped transaction coordination and profile
+administration are implemented under ADR-0026/0027/0035. Corporate provider binding
+and general Audit delivery remain future contracts.
 
 
 ## Temporal responsibilities
 
 Accepted [ADR-0016](adr/ADR-0016-time-and-timezone-model.md) assigns site IANA zone
 configuration to Platform Core, source interpretation/RAW provenance to Integrations,
-event/aggregate and reporting-period semantics to OIP, and future shift intent and
+event/aggregate and reporting-period semantics to OIP, and shift intent and
 instances to Workforce. Each module validates its temporal invariants and preserves
 explicit organization/site scope; shared conversion helpers do not own business rules.
 
@@ -140,8 +141,8 @@ preserve site zone, period, grain, coverage and interpretation context across AP
 workers and any future caches/exports. Unknown source windows remain visible.
 Receiving modules must not infer occurrence/shift evidence from date-only aggregates.
 Site-zone corrections after use require reviewed reprocessing; completed periods
-retain their interpretation. Library choice and runtime verification remain future
-work; this decision does not activate scheduling or cross-site reports.
+retain their interpretation. Workforce runtime resolution and scheduling are delivered under IOP-184.
+Cross-site reporting and reviewed site-zone corrections remain separate scope.
 
 
 ## Implemented POC authorization boundary
@@ -152,8 +153,9 @@ site-ownership contract in `apps/api/src/modules/`, composed by the pinned
 and scoped query handle only after authorization. Lookup and authorized business
 selectors are distinct; runtime reads are limited to the columns specified in
 [ADR-0026](adr/ADR-0026-poc-authorization-lookup.md). Repositories must use the supplied
-handle and enforce domain references. The health host does not activate this path;
-local host binding and business operations remain pending under ADR-0018.
+handle and enforce domain references. IOP-147 activates local business paths under ADR-0018/0030; IOP-165 adds the
+ADR-0035 local password/session adapter. All delivered business modules reuse
+current authorization; public health remains process liveness only.
 
 
 ## Internal POC import batch boundary
@@ -161,8 +163,8 @@ local host binding and business operations remain pending under ADR-0018.
 IOP-042 implements Integrations-owned receipt, quota, outcome and date-claim storage
 under [ADR-0027](adr/ADR-0027-poc-import-publication.md). Its API-local internal
 service reuses ADR-0026 authorization/transactions and invokes an injected owning
-OIP publication/reconciliation contract. No production OIP receiver, parser or HTTP
-activation is introduced. See the [batch model](import-batches-poc.md) and
+OIP publication/reconciliation contract. IOP-042 originally delivered only the internal lifecycle slice. IOP-045/147/148
+subsequently supply CSV decoding, the OIP receiver, HTTP activation and reporting. See the [batch model](import-batches-poc.md) and
 [internal integration guide](../../infra/database/README.md#internal-import-batches-iop-042).
 
 Workforce owns personal availability, teams, shift definitions, assignments and

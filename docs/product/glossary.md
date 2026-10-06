@@ -10,7 +10,7 @@
 | Tenant | Isolation/deployment vocabulary; maps to Organization in the shared-table layout accepted by ADR-0013, without adding another ownership hierarchy. |
 | Site | Operational scope with stable opaque identity, exactly one owning Organization, configurable name and explicit time-zone context. |
 | Location | Configurable physical subdivision of a site; local names are data, not additional authorization scopes. |
-| Asset | Canonically identified equipment or component, validated independently of imported message text. |
+| Asset | Stable registered equipment/component identity with explicit verification status; imported message text alone does not validate physical identity. |
 | Asset hierarchy | Parent/child composition or functional grouping; distinct from physical placement. |
 | External identifier | Source-scoped alias mapped to a canonical entity; not assumed globally unique. |
 | Asset Locator | Module for finding an asset's physical placement and functional context. |

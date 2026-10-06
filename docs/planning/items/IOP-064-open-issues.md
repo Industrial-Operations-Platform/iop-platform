@@ -2,11 +2,12 @@
 
 ## Status
 
-Proposed
+Completed — original outcome delivered in later owner-authorized local increments;
+reconciled on 2026-10-06.
 
 ## Milestone
 
-M7 — Shift Handover. Proposed delivery slice.
+M7 — Shift Handover. Delivered local slice.
 
 ## Goal
 
@@ -24,7 +25,9 @@ outline requested by the owner; inclusion in the backlog does not authorize impl
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+IOP-168/169/190 deliver open/in-progress/resolved issues, carry-forward across dates,
+responsibility/deadlines and retained follow-up. IOP-194 adds atomic resolution of
+explicitly reviewed repair issues; excluded issues remain open.
 
 ## Desired state
 
@@ -37,9 +40,9 @@ Open issues survive shift changes
 
 ## Acceptance criteria
 
-- [ ] Open issues survive shift changes
-- [ ] The plan documents required scenarios and decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Open issues survive shift changes
+- [x] The plan documents required scenarios and decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
@@ -66,11 +69,13 @@ Preserve authorship, shift, references and changes; closure does not delete pend
 
 ## API considerations
 
-Validate writes/closure against permissions and state; asset references use contracts from the owning module.
+Validate writes/closure against permissions and state; asset references use contracts
+from the owning module.
 
 ## UI considerations
 
-Distinguish draft, open and closed states; make the previous shift easy to read without mixing scopes.
+Distinguish draft, open and closed states; make the previous shift easy to read without
+mixing scopes.
 
 ## Dependencies
 
@@ -81,11 +86,14 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery
+to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-The plan must define executable commands and scenarios for the criteria below using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+The plan must define executable commands and scenarios for the criteria below using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictional tests.
 
 ## Documentation impact
 
@@ -94,4 +102,16 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+None for the delivered original outcome. Broader parent capabilities remain
+separately scoped and require an explicit selection before implementation.
+
+## Current coverage — 2026-10-06
+
+IOP-168/169/190 deliver open/in-progress/resolved issues, carry-forward across dates,
+responsibility/deadlines and retained follow-up. IOP-194 adds atomic resolution of
+explicitly reviewed repair issues; excluded issues remain open.
+
+Implementation and validation: [execution evidence](../completed/IOP-194-linked-maintenance-plan.md).
+No remaining implementation for this story’s original outcome; broader scope remains
+in the explicitly linked parent stories. Closure does not imply platform release
+or final owner product acceptance.

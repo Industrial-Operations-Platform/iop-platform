@@ -14,7 +14,7 @@ M3 — Platform Core. The IOP-142 scope refinement selects only the explicit see
 membership and fixed site grants required by Accepted ADR-0018; it does not require
 lifecycle UI or delegation workflows.
 
-## Value, context and current state
+## Value, context and original slice state
 
 Administrators and users eventually need access to authorized organizations/sites.
 The local POC needs organization membership and both explicit site roles for its
@@ -83,8 +83,17 @@ PostgreSQL. These prove installation behavior, not runtime business authorizatio
 Update this item, backlog and plan together; update contracts/guides only when this
 slice changes them. A finished POC slice does not complete the broader parent.
 
-## Remaining scope
+## Original slice handoff
 
 No open decision blocks this completed POC seed slice. Full membership lifecycle
 and administration remain deferred. Runtime evaluation and the local host adapter
 still require their separately selected implementation and verification.
+
+## Current coverage and remaining work — 2026-10-06
+
+IOP-165 local administration creates/revokes exact-site profile grants and membership
+with retained access history. Remaining: general multi-organization membership lifecycle
+and administration.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

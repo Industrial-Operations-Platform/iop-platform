@@ -90,3 +90,11 @@ records type checks, unit/integration/startup and browser tests, Compose model
 validation, documentation checks and limitations. Startup instructions, the
 configuration contract, item and backlog are synchronized. No open decision blocks
 this completed local configuration slice.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

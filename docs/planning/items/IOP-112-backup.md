@@ -10,88 +10,105 @@ M14 — Security & Reliability. Proposed delivery slice.
 
 ## Goal
 
-Backup process. Resultado esperado: Backup reproducible
+Backup process. Expected outcome: Reproducible backup
 
 ## User / business value
 
-Clientes y operadores necesitan aislamiento verificable y recuperación reproducible.
+Customers and operators need verifiable isolation and reproducible recovery.
 
 ## Context
 
-Ámbito: Security and operational reliability. Ver [módulos](../../architecture/modules.md) y
-[workflow de planificación](../workflow.md). Este contexto inicial procede del
-outline solicitado por el usuario; estar en backlog no autoriza implementación.
+Scope: Security and operational reliability. See [modules](../../architecture/modules.md) and
+[planning workflow](../workflow.md). This initial context comes from the
+outline requested by the owner; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Solo existe la baseline documental. Esta capacidad no está implementada ni su diseño detallado aceptado.
+Persistent Docker volumes and source provenance survive restart. Remaining: reproducible
+full-platform backup, authority/secret handling and documented verification; importing
+an analytics backup is not platform backup.
 
 ## Desired state
 
-Backup reproducible
+Reproducible backup
 
 ## Requirements
 
-- Entregar únicamente el resultado descrito para IOP-112.
-- Aplicar controles desde cada vertical slice; este hito verifica y endurece, no posterga seguridad hasta el final.
+- Deliver only the outcome described for IOP-112.
+- Apply controls in each vertical slice; this milestone verifies and hardens them rather than postponing security until the end.
 
 ## Acceptance criteria
 
-- [ ] Backup reproducible
-- [ ] El plan documenta escenarios y decisiones necesarias sin ampliar el alcance.
-- [ ] Existe evidencia de validación y documentación sincronizada.
+- [ ] Reproducible backup
+- [ ] The plan documents scenarios and necessary decisions without expanding scope.
+- [ ] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
-Aplicar controles desde cada vertical slice; este hito verifica y endurece, no posterga seguridad hasta el final.
+Apply controls in each vertical slice; this milestone verifies and hardens them rather
+than postponing security until the end.
 
 ## Architecture constraints
 
 [ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
 [ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
 [ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) y
+[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
 [ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-ADRs Proposed son propuestas, no permisos para tomar la decisión.
+Proposed ADRs are proposals, not permission to make the decision.
 
 ## Security considerations
 
-Verificar permiso y scope de customer/site en operaciones y referencias relevantes.
-No incluir secretos, planos ni datos productivos en el repositorio. Mantener las
-integraciones industriales read-only; registrar cambios materiales cuando aplique.
+Verify permissions and customer/site scope in relevant operations and references.
+Do not include secrets, floor plans or production data in the repository. Keep
+industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Retención, restauración y datos sensibles siguen decisiones acordadas; no copiar datos productivos al repositorio.
+Retention, restoration and sensitive data follow agreed decisions; do not copy
+production data into the repository.
 
 ## API considerations
 
-Probar límites de autorización, entrada, errores y recuperación relevantes a la tarea.
+Test the authorization, input, error and recovery boundaries relevant to the task.
 
 ## UI considerations
 
-Cuando haya UI, comprobar errores útiles sin datos sensibles y con contexto de scope correcto.
+Where a UI exists, check useful errors without sensitive data and with correct scope context.
 
 ## Dependencies
 
 [IOP-019](IOP-019-database-bootstrap.md), [IOP-011](IOP-011-file-storage-model.md), [IOP-014](IOP-014-security-baseline.md)
 
-Las dependencias indican contratos/capacidades requeridos, no orden numérico de
-implementación. Refinarlas en el plan antes de tocar código.
+Dependencies indicate required contracts/capabilities, not numerical implementation
+order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementar tareas vecinas, aceptar decisiones abiertas por inferencia o extender la entrega a todo el hito. No introducir nombres de cliente en el core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery
+to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-El plan debe fijar comandos y escenarios ejecutables para los criterios siguientes usando el tooling aceptado. Incluir camino esperado, errores y denegación de acceso relevante; registrar resultados reales, no tests ficticios.
+The plan must define executable commands and scenarios for the criteria below using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictional tests.
 
 ## Documentation impact
 
-Actualizar este item, su estado en [backlog](../backlog.md) y el plan de ejecución.
-Actualizar contratos, modelo, guías o ADRs solo si cambia su contenido por esta tarea.
+Update this item, its status in the [backlog](../backlog.md) and the execution plan.
+Update contracts, models, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirmar el contrato aprobado, casos límite y evidencia exacta de este slice antes de activar implementación.
+Confirm the approved contract, edge cases and exact evidence for this slice before
+starting implementation.
+
+## Current coverage and remaining work — 2026-10-06
+
+Persistent Docker volumes and source provenance survive restart. Remaining: reproducible
+full-platform backup, authority/secret handling and documented verification; importing
+an analytics backup is not platform backup.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

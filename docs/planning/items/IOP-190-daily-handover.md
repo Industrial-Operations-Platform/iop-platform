@@ -43,3 +43,12 @@ References: [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-bou
 [visual identity](../../design/visual-identity.md).
 [Execution plan](../completed/IOP-190-daily-handover-plan.md).
 [Publication evidence](../completed/IOP-190-publication-plan.md).
+
+## Current delivery — 2026-10-06
+
+Earlier activation/publication notes above describe the original increment. This
+implementation is present in the current develop baseline; the later
+[IOP-194 validation](../completed/IOP-194-equipment-catalog-refinement-plan.md) and
+[publication](../completed/IOP-194-publication-integration-plan.md) record the
+integrated local application and preserved data. No new activation or publication
+is performed by the IOP-195 documentation audit.

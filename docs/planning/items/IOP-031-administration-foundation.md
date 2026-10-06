@@ -2,7 +2,8 @@
 
 ## Status
 
-Deferred
+Completed — original outcome delivered in later owner-authorized local increments;
+reconciled on 2026-10-06.
 
 ## POC delivery applicability
 
@@ -10,11 +11,11 @@ Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
 2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
 control the selected slice; older general platform prose is future context, not
 an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+[delivery map](../poc-delivery.md). The original disposition is superseded by the delivered local increment below.
 
 ## Milestone
 
-M3 — Platform Core. Proposed delivery slice.
+M3 — Platform Core. Delivered local slice.
 
 ## Goal
 
@@ -32,7 +33,9 @@ owner-requested outline; backlog inclusion does not authorize implementation.
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+Administrator-only user/profile management, import preparation, KPI settings, Workforce
+configuration and Maintenance priorities are delivered. Full organization/site lifecycle
+administration remains with IOP-025/026.
 
 ## Desired state
 
@@ -41,20 +44,20 @@ Deliver administration after the analytical POC.
 ## Requirements
 
 - Deliver only the selected POC slice or explicitly deferred future scope below.
-- User/configuration administration screens are later work. The POC uses versioned
-  configuration/seed data and has no dependency on this administration foundation for
-  navigation or import.
+- The original analytical-only POC used configuration/seeds. Later owner-requested
+  increments deliver local user and module-configuration administration screens.
 
 ## Acceptance criteria
 
-- [ ] Deliver administration after the analytical POC.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
+- [x] Deliver administration after the analytical POC.
+- [x] Validate the slice-specific outcomes and limitations in Requirements.
+- [x] Record evidence and synchronize the story/plan; do not close a broader parent with
   unfinished future scope.
 
 ## Domain considerations
 
-Organization represents the generic customer/tenant; identity, membership and permissions have separate responsibilities.
+Organization represents the generic customer/tenant; identity, membership and
+permissions have separate responsibilities.
 
 ## Architecture constraints
 
@@ -77,7 +80,8 @@ Preserve scope in entities and relationships; define uniqueness and lifecycle be
 
 ## API considerations
 
-Public operations must verify identity, permission and scope; do not expose unauthorized operations during bootstrap.
+Public operations must verify identity, permission and scope; do not expose unauthorized
+operations during bootstrap.
 
 ## UI considerations
 
@@ -92,11 +96,14 @@ uses an accepted execution-context contract rather than requiring the full paren
 
 ## Non-goals
 
-Implementing adjacent tasks, inferring acceptance of open decisions or expanding delivery to the whole milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, inferring acceptance of open decisions or expanding
+delivery to the whole milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-The plan must specify executable commands and scenarios for the criteria using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+The plan must specify executable commands and scenarios for the criteria using accepted
+tooling. Include the expected path, errors and relevant access denial; record actual
+results, not fictional tests.
 
 ## Documentation impact
 
@@ -105,4 +112,16 @@ Update contracts, model, guides or ADRs only if this task changes their content.
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before activating implementation.
+None for the delivered original outcome. Broader parent capabilities remain
+separately scoped and require an explicit selection before implementation.
+
+## Current coverage — 2026-10-06
+
+Administrator-only user/profile management, import preparation, KPI settings, Workforce
+configuration and Maintenance priorities are delivered. Full organization/site lifecycle
+administration remains with IOP-025/026.
+
+Implementation and validation: [execution evidence](../completed/IOP-165-transitional-access-plan.md).
+No remaining implementation for this story’s original outcome; broader scope remains
+in the explicitly linked parent stories. Closure does not imply platform release
+or final owner product acceptance.

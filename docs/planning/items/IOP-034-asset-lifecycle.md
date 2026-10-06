@@ -2,11 +2,12 @@
 
 ## Status
 
-Proposed
+Completed — original outcome delivered in later owner-authorized local increments;
+reconciled on 2026-10-06.
 
 ## Milestone
 
-M4 — Asset Domain. Proposed delivery slice.
+M4 — Asset Domain. Delivered local slice.
 
 ## Goal
 
@@ -24,7 +25,9 @@ outline requested by the owner; inclusion in the backlog does not authorize impl
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+IOP-194 delivers stable asset creation/update, Unverified/Validated/Retired lifecycle,
+validation evidence, logical retirement and immutable revisions. Physical surveying is
+the separate IOP-039 story.
 
 ## Desired state
 
@@ -37,13 +40,14 @@ Create/update/archive/validation
 
 ## Acceptance criteria
 
-- [ ] Create/update/archive/validation
-- [ ] The plan documents required scenarios and decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Create/update/archive/validation
+- [x] The plan documents required scenarios and decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
-Separate composition, physical location, controller relationships and external identifiers; do not fix Hall/Area levels.
+Separate composition, physical location, controller relationships and external
+identifiers; do not fix Hall/Area levels.
 
 ## Architecture constraints
 
@@ -62,7 +66,8 @@ integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Keep canonical identity and references within the same scope; preserve validation evidence and handle ambiguous aliases.
+Keep canonical identity and references within the same scope; preserve validation
+evidence and handle ambiguous aliases.
 
 ## API considerations
 
@@ -81,11 +86,14 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery
+to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-The plan must define executable commands and scenarios for the criteria below using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+The plan must define executable commands and scenarios for the criteria below using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictional tests.
 
 ## Documentation impact
 
@@ -94,4 +102,16 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+None for the delivered original outcome. Broader parent capabilities remain
+separately scoped and require an explicit selection before implementation.
+
+## Current coverage — 2026-10-06
+
+IOP-194 delivers stable asset creation/update, Unverified/Validated/Retired lifecycle,
+validation evidence, logical retirement and immutable revisions. Physical surveying is
+the separate IOP-039 story.
+
+Implementation and validation: [execution evidence](../completed/IOP-194-maintenance-asset-history-plan.md).
+No remaining implementation for this story’s original outcome; broader scope remains
+in the explicitly linked parent stories. Closure does not imply platform release
+or final owner product acceptance.

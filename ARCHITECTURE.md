@@ -129,7 +129,9 @@ and [roadmap](ROADMAP.md). Proposed decisions are not accepted implementations.
 Shift Handover follows [ADR-0036](docs/architecture/adr/ADR-0036-shift-handover.md):
 operator-configured locations, explicit unverified equipment references and durable
 revision history, independent of analytics. [Setup and workflow](docs/development/shift-handover.md)
-document permissions and the deferred Workforce/Asset integrations.
+document permissions and current journal behavior. Formal shift binding, Workforce
+location defaults and explicit canonical entry-to-asset references remain separate
+integration work; IOP-194 supplies alias-based history and repair resolution.
 
 Workforce is delivered under [IOP-184](docs/planning/items/IOP-184-m6-workforce.md).
 It reuses accepted scoped authorization and revision patterns. Personal availability
@@ -137,9 +139,10 @@ and operational assignments remain separate; Integrations decodes manual sources
 [Module contract](docs/product/workforce.md) and [implementation guide](docs/development/workforce.md)
 cover time resolution, role boundaries, import preview, logical deletion and retained names.
 
-Maintenance Management and the Digital Asset Record are implemented on the
-isolated [IOP-194](docs/planning/items/IOP-194-maintenance-asset-history.md) review
-branch. They reuse existing scoped authorization, pinned transactions and atomic
+Maintenance Management and the Digital Asset Record are implemented under
+[IOP-194](docs/planning/items/IOP-194-maintenance-asset-history.md), integrated into
+develop and published to origin on 2026-10-06. They reuse existing scoped
+authorization, pinned transactions and atomic
 revision patterns. Assets orchestrates explicit source read ports; Maintenance,
 Handover and OIP retain their records/joins and enforce source permissions. Stable
 asset registration is deliberate; aliases never infer physical identity from

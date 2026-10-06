@@ -14,7 +14,7 @@ M3 — Platform Core. Deliver current scoped permission checks for the seeded lo
 principal independently of identity-provider details. Full shared-user enforcement,
 login and interactive access administration remain future parent scope.
 
-## Context and current state
+## Context and original slice state
 
 Users/RBAC owns principal, membership, assignments and permission evaluation;
 Platform Core owns organization/site identity and ownership. See the
@@ -62,7 +62,7 @@ boundaries; ADR-0012/0013/0014 govern scope, RLS and permission; ADR-0018 govern
 local host. Follow ADR-0007/0008. See the [ADR directory](../../architecture/adr/).
 Accepted ADR-0026 authorizes this bounded implementation.
 
-## Boundaries and remaining parent scope
+## Original slice boundaries and handoff
 
 No login, sessions, user lifecycle, membership editor, role delegation, organization
 admin bootstrap, wildcard policy, custom-role engine or full audit infrastructure.
@@ -85,3 +85,12 @@ scope, column limits, rollback, timeout/cancellation and pool reuse. See the
 [database guide](../../../infra/database/README.md#current-site-authorization-lookup-iop-029).
 No end-to-end import/read or local host activation claim follows from those tests.
 The selected plan is complete; the broader parent remains Deferred.
+
+## Current coverage and remaining work — 2026-10-06
+
+IOP-165 and later operational modules enforce current per-user grants, revocation,
+scoped administration and last-administrator protection. Remaining: broader
+shared-use/custom lifecycle verification and policy beyond the bounded local contracts.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

@@ -31,7 +31,7 @@ Scope: Integrations and Operational Intelligence. See [modules](../../architectu
 the [planning workflow](../workflow.md). This initial context comes from the
 owner-requested outline; backlog membership alone does not authorize implementation.
 
-## Current state
+## Original slice state
 
 The [POC canonical aggregate model](../../architecture/event-aggregates-poc.md)
 now specializes the existing source/RAW contracts and accepted temporal, scope,
@@ -58,7 +58,8 @@ Model source-reported event aggregates without fabricating occurrences.
 
 ## Domain considerations
 
-RAW → validation → normalization; the receiving module validates invariants. Do not infer a physical asset from text alone.
+RAW → validation → normalization; the receiving module validates invariants. Do not
+infer a physical asset from text alone.
 
 ## Architecture constraints
 
@@ -79,7 +80,8 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Preserve provenance and grain; distinguish occurrences from aggregates. Rejections and corrections must be visible.
+Preserve provenance and grain; distinguish occurrences from aggregates. Rejections and
+corrections must be visible.
 
 ## API considerations
 
@@ -87,7 +89,8 @@ Use ingestion contracts; credentials and external column names stay in adapters/
 
 ## UI considerations
 
-Expose import states, errors and results only if requested by this task; do not create a full dashboard.
+Expose import states, errors and results only if requested by this task; do not create a
+full dashboard.
 
 ## Dependencies
 
@@ -102,11 +105,13 @@ Existing IOP-041/042 RAW/publication contracts are reused without activating adj
 
 ## Non-goals
 
-Implementing applications, migrations, endpoints or infrastructure. Do not introduce customer names into the core.
+Implementing applications, migrations, endpoints or infrastructure. Do not introduce
+customer names into the core.
 
 ## Validation
 
-Review consistency, links, scenarios and decisions; do not invent commands or write runtime code to validate this design task.
+Review consistency, links, scenarios and decisions; do not invent commands or write
+runtime code to validate this design task.
 The [completed plan](../completed/IOP-043-canonical-event-model-plan.md) records
 documentation checks and synthetic walkthroughs, not executable importer evidence.
 
@@ -128,10 +133,21 @@ delivery. Physical storage and runtime receiver validation remain future work.
 
 ## Owner-supplied CSV and reporting context
 
-Model the supplied input as aggregate alarm statistics with frequency, duration, source dimensions and explicit reporting coverage. Do not synthesize individual event timestamps. Resolve exact grain and distinguish aggregate facts from future occurrence-level sources before defining the canonical contract.
+Model the supplied input as aggregate alarm statistics with frequency, duration, source
+dimensions and explicit reporting coverage. Do not synthesize individual event
+timestamps. Resolve exact grain and distinguish aggregate facts from future
+occurrence-level sources before defining the canonical contract.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
 under IOP-002 at the owner's request. IOP-012 establishes one aggregate per source
 record; this story defines the receiving model without claiming exporter tuple
 uniqueness, occurrence-level evidence or new metric formulas. No runtime
 implementation is claimed.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

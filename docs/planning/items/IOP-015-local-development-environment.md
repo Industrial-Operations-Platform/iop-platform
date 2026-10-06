@@ -23,7 +23,7 @@ The owner requested IOP-015 limited to the POC. The
 [execution plan](../completed/IOP-015-local-development-environment-plan.md) records
 branch, dependency refinement, implementation and validation.
 
-## Current state
+## Original slice state
 
 Compose builds the existing React UI and NestJS API with multi-stage images and
 starts PostgreSQL with dedicated persistent storage. Only the web port is published
@@ -117,3 +117,11 @@ container statements in the architecture baseline.
 
 No new architecture decision blocks this bounded startup story. Completing it
 neither completes POC increment 1 nor selects future database/business mechanisms.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

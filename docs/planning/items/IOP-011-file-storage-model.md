@@ -32,11 +32,12 @@ Scope: product and cross-module architecture. See [modules](../../architecture/m
 and the [planning workflow](../workflow.md). This initial context comes from the
 owner's requested outline; a backlog entry alone does not authorize implementation.
 
-## Current state
+## Original slice state
 
 The [preservation contract](../../architecture/csv-preservation-poc.md) defines
 original-byte retention, scoped provenance/retrieval, fixed admission budgets and
-failure/reset boundaries. ADR-0022 selects bounded PostgreSQL binary rows after comparing storage options.
+failure/reset boundaries. ADR-0022 selects bounded PostgreSQL binary rows after
+comparing storage options.
 The design is accepted; runtime implementation remains future work.
 
 ## Desired state
@@ -132,3 +133,11 @@ were already English. Architecture and data-model guidance now link the accepted
 No design-closure question remains for this bounded POC slice. Ingestion transaction/publication and
 reset implementation remain separate delivery work; acceptance of this design does
 not accept ADR-0018 or complete those stories.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

@@ -25,7 +25,7 @@ owner-requested outline; backlog inclusion alone does not authorize implementati
 The owner selected only the [POC scope](../../product/scope-poc.md) and
 [delivery map](../poc-delivery.md) for this execution.
 
-## Current state
+## Original slice state
 
 API/web Jest, HTTP/process, Playwright and disposable PostgreSQL tests already
 exist. IOP-020 consolidates their invocation and documents coverage boundaries;
@@ -127,3 +127,11 @@ not permission to implement adjacent stories.
 [completed plan](../completed/IOP-020-poc-testing-foundation-plan.md) records the
 actual layer results and limitations. No new test framework or runtime behavior
 was introduced.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

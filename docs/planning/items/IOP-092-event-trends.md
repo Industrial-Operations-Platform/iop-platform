@@ -2,11 +2,11 @@
 
 ## Status
 
-Proposed
+Completed — day/week/month reporting delivered under IOP-148, reconciled on 2026-10-06.
 
 ## Milestone
 
-M11 — OIP / Operational Intelligence. Proposed delivery slice.
+M11 — OIP / Operational Intelligence. Delivered local slice.
 
 ## Goal
 
@@ -24,10 +24,9 @@ owner-requested outline; backlog presence does not authorize implementation.
 
 ## Current state
 
-The original planning baseline was documentation-only, with this capability and its
-detailed design not implemented or accepted. The separately authorized
-[IOP-148 reporting slice](IOP-148-analytical-workspace.md) tracks current implementation
-and validation; this broader item is not closed by translating its context.
+IOP-148 delivers validated day/week/month selection, server-owned exact period
+aggregation and connected charts. IOP-153/160/161 add monthly comparison and
+interactive trend controls. Source dates remain reporting labels with unknown windows.
 
 ## Desired state
 
@@ -40,9 +39,9 @@ Day/week/month.
 
 ## Acceptance criteria
 
-- [ ] Day/week/month.
-- [ ] The plan records necessary scenarios and decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Day/week/month.
+- [x] The plan records necessary scenarios and decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
@@ -101,13 +100,31 @@ contracts, model, guides or ADRs only when their content changes for this task.
 
 ## Open questions
 
-Confirm the accepted contract, edge cases and exact evidence for this slice before
-activating its implementation.
+None for the delivered original outcome. Broader parent capabilities remain
+separately scoped and require an explicit selection before implementation.
 
 ## Owner-supplied CSV and reporting context
 
-The screenshots show daily trends and month comparisons, but the supplied CSV has no date field. The loader obtains a date from `Hitliste-YYYYMMDD.csv` and assigns it to all rows. Resolve the represented reporting window and comparable coverage before implementing trend calculations. Missing imports must not appear as zero incidents; targets and improvement formulas remain unvalidated.
+The screenshots show daily trends and month comparisons, but the supplied CSV has no
+date field. The loader obtains a date from `Hitliste-YYYYMMDD.csv` and assigns it to all
+rows. Resolve the represented reporting window and comparable coverage before
+implementing trend calculations. Missing imports must not appear as zero incidents;
+targets and improvement formulas remain unvalidated.
 
 See the [shared evidence](../../product/csv-and-reporting-reference.md), captured
-under IOP-002 at the owner's request. This is context for future planning; this
-item remains Proposed and no implementation or metric formula is accepted here.
+under IOP-002 at the owner's request. This preserves original research context; the
+selected reporting-label grain
+contract and implementation are delivered under IOP-148.
+
+## Current coverage — 2026-10-06
+
+- Validated `day`/`week`/`month` request values and PostgreSQL `date_trunc` grouping
+  provide full matching frequency/duration totals with the analysis calendar.
+- Browser period controls, weekly/monthly axes and chart/calendar tests exist.
+- [IOP-148 execution evidence](../completed/IOP-148-analytical-workspace-plan.md)
+  records connected reporting validation; later comparison/chart refinements are
+  linked in the [delivery map](../poc-delivery.md).
+
+No remaining implementation for the original day/week/month outcome. This closure
+is source-aggregate trend delivery, not occurrence reconstruction, downtime
+measurement or whole-platform release acceptance.

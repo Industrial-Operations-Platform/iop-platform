@@ -24,7 +24,9 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+The Digital Asset Record can read analytical evidence through exact explicit aliases.
+Remaining: ingestion-time canonical event-to-asset mapping with unresolved/ambiguous
+handling; existing RAW/aggregate facts are not rewritten or automatically assigned.
 
 ## Desired state
 
@@ -43,7 +45,8 @@ Events can be linked to assets
 
 ## Domain considerations
 
-RAW → validation → normalization; the receiving module validates invariants. Do not infer a physical asset from text alone.
+RAW → validation → normalization; the receiving module validates invariants. Do not
+infer a physical asset from text alone.
 
 ## Architecture constraints
 
@@ -62,7 +65,8 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Preserve provenance and grain; distinguish occurrences from aggregates. Rejections and corrections must remain visible.
+Preserve provenance and grain; distinguish occurrences from aggregates. Rejections and
+corrections must remain visible.
 
 ## API considerations
 
@@ -70,7 +74,8 @@ Use ingestion contracts; external credentials and column names remain in adapter
 
 ## UI considerations
 
-Expose import states, errors and results only when requested by this task; do not create a full dashboard.
+Expose import states, errors and results only when requested by this task; do not create
+a full dashboard.
 
 ## Dependencies
 
@@ -81,11 +86,14 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names in the core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery
+to the entire milestone. Do not introduce customer names in the core.
 
 ## Validation
 
-The plan must define executable commands and scenarios for the criteria below using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+The plan must define executable commands and scenarios for the criteria below using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictional tests.
 
 ## Documentation impact
 
@@ -94,4 +102,14 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+Confirm the approved contract, edge cases and exact evidence for this slice before
+starting implementation.
+
+## Current coverage and remaining work — 2026-10-06
+
+The Digital Asset Record can read analytical evidence through exact explicit aliases.
+Remaining: ingestion-time canonical event-to-asset mapping with unresolved/ambiguous
+handling; existing RAW/aggregate facts are not rewritten or automatically assigned.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.

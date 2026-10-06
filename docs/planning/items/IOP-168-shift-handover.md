@@ -65,3 +65,11 @@ test environments are validated. The owner subsequently authorized implementatio
 merge/push and the local Docker update; the rebuilt stack is healthy and loads the
 approved catalog. Existing accounts were preserved and all 78 historical seed dates
 reconciled unchanged. See the [activation record](../completed/IOP-168-shift-handover-publication-plan.md).
+
+## Current boundaries — 2026-10-06
+
+Later IOP-184 and IOP-194 deliver Workforce, Maintenance and Digital Asset Record.
+IOP-061/062/064/065 original outcomes are Completed; IOP-060/063/066/067 remain
+open for shift-bound records, canonical entry references, closure and previous-shift
+selection. Workforce defaults remain separate integration. Earlier exclusions
+above describe this story’s initial scope, not absence of those later modules.

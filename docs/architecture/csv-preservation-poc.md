@@ -6,7 +6,8 @@ This specializes the [CSV source contract](csv-source-contract-poc.md) and
 [security baseline](security-baseline-poc.md) for the [local POC](../product/scope-poc.md).
 This document defines design, not endpoint or runtime security evidence. Subsequent
 IOP-042 implements bounded batch/RAW storage and internal review; see the
-[batch model](import-batches-poc.md). HTTP delivery and parser/OIP integration remain pending.
+[batch model](import-batches-poc.md). IOP-045/147 subsequently deliver parser/OIP integration, authorized HTTP import
+and exact original-file retrieval; see the [delivery map](../planning/poc-delivery.md).
 
 ## Ownership and evidence
 
@@ -151,4 +152,5 @@ IOP-041/042/047 own RAW lifecycle, quota races, publication and retry consistenc
 IOP-045/046 own parser bounds; API delivery owns retrieval/permission and timeout
 checks; IOP-128 owns reset evidence. Exercise connection reuse/rollback and foreign
 references under ADR-0013. No adjacent story is activated here. Runtime business
-access independently waits for ADR-0018 or another accepted execution mechanism.
+access is implemented under Accepted ADR-0018/0035; the walkthrough remains a
+design contract, while delivering plans own executed evidence.

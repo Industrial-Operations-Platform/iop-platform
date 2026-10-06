@@ -24,7 +24,7 @@ The owner requested IOP-017 using [IOP-016](IOP-016-backend-bootstrap.md) as con
 See the [execution plan](../completed/IOP-017-frontend-bootstrap-plan.md),
 [module boundaries](../../architecture/modules.md) and [workflow](../workflow.md).
 
-## Current state
+## Original slice state
 
 The React/Vite host consumes the existing API through a loopback proxy. Generated
 browser types, Jest/RTL behavior checks and built-app Playwright journeys are
@@ -114,3 +114,11 @@ root README, architecture baseline and agent navigation.
 ## Open questions
 
 No architecture decision blocks this bounded host bootstrap.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

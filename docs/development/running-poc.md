@@ -1,4 +1,4 @@
-# Run and demonstrate the analytical POC
+# Run the local platform and demonstrate Data Analysis
 
 The application supports **CSV → persistent history → analytical report templates**, with individual local accounts. The Docker installation uses temporary password
 authentication under [ADR-0035](../architecture/adr/ADR-0035-transitional-authentication.md).
@@ -75,9 +75,12 @@ Bereich groups; **Open Data Analysis** opens the full reporting workspace. Refre
 the overview after new imports. Totals retain the report's calendar exclusions and
 coverage; alarm duration is not downtime or evidence of equipment condition.
 
-Weekly shifts/departments, technician publications and blocked/restored equipment
-are explicitly unavailable placeholders. No operational records are fabricated from
-alarm data.
+Start now uses current authorized Workforce schedules/assignments, Handover
+highlights/pending reports and assigned Maintenance work. Analytical summaries are
+hidden for Technicians. Administrator opens Administration by default; operational
+users open Start. Reported conditions come from operational records, not alarm
+totals. See the [Handover](shift-handover.md), [Workforce](workforce.md) and
+[Maintenance/Assets](maintenance-assets.md) guides for the delivered workflows.
 
 ## Local accounts and profiles
 
@@ -143,13 +146,15 @@ LAN or internet; remote deployment requires HTTPS and secure cookies.
    **Save historical preparation** persists the profile and applies it to historical
    reports. It never edits retained originals or immutable import-time facts. A stale
    editor/report version is rejected; refresh before continuing.
-6. Restart the application and select **Administrator** to demonstrate
+6. Restart the application and sign in with an authorized account to demonstrate
    persistence. Full totals use all matching records, not only the current page.
 
 The report range is bounded to 3,660 days; pages contain 50 contributing rows,
 rankings/scatter up to 100 groups and comparison/heatmap series up to 10 groups.
 Executive KPIs use the full filtered data, independently of ranking and row limits.
-Pareto is deferred to a future feature inside Executive Overview; there is no Pareto tab.
+Investigation views include selected-month frequency/duration top-10 Pareto charts,
+full-total cumulative percentages and an 80% reference. There is no separate Pareto
+tab; IOP-093 retains broader canonical asset coverage.
 Only admitted coverage appears; missing days are gaps rather than zero activity.
 Source frequency is an integer. Duration is summed as exact seconds and divided by
 60 before display rounding; it is **not plant downtime**. Filename dates do not
@@ -174,7 +179,9 @@ relational projection using the saved preparation profile; later uploads and
 profile saves update it within their existing transaction. There is no backup
 restoration or silent dropped-row join. Reports refuse incomplete/stale projections;
 restart with Administrator configured to prepare them. A reader-only principal
-cannot perform reconstruction. Current POC configuration exposes Administrator only.
+cannot perform reconstruction. Current local profiles separate Administrator
+preparation authority from Team Leader/Task Force analytical reads and Technician
+operational access.
 
 ## Executive indicators and stable visual identity
 
@@ -202,8 +209,8 @@ before editing its private file: `.local-platform/config/mappings.json` for Dock
 Keep organization/site/source IDs aligned with that installation's scope file, update
 `mappingRevision` and preserve sector-key meaning. These settings affect future
 import-time facts; use the database reporting profile for historical interpretation.
-The current POC keeps only Administrator; future provider integration replaces the
-principal/session adapter in `apps/api/src/host/`.
+The current local installation supports four profiles; future corporate provider
+integration replaces the authentication adapter while preserving platform IDs.
 
 ## Optional native development installation
 

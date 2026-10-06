@@ -70,6 +70,8 @@ validation, change filters silently or repair data to manufacture a pass.
 Close IOP-129 only after the real demonstration, denial evidence and reproducible
 reset/reload pass. Link results for IOP-132's separate final numerical acceptance;
 its prepared matrix is usable now and its final story closure is not a prerequisite
-for starting this demonstration. Owner feedback remains IOP-130. Login, shared-use
-release acceptance, memberships UI, surveys, maps, shifts, maintenance and live
-integrations remain outside this procedure.
+for starting this demonstration. IOP-129/132 are Completed and Data Analysis v1
+usefulness feedback is recorded; IOP-130 retains measurement consolidation. Local
+login, Workforce, Handover and Maintenance are delivered through later increments,
+with separate module guides. Shared-use release, surveys/maps and live integrations
+remain outside this analytical demonstration procedure.

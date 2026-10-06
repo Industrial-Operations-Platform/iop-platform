@@ -30,7 +30,7 @@ Scope: Product and cross-module architecture. See [modules](../../architecture/m
 [planning workflow](../workflow.md). This initial context comes from the
 owner-requested outline; inclusion in the backlog does not authorize implementation.
 
-## Current state
+## Original slice state
 
 The API host implements process liveness, sanitized startup diagnostics and the
 IOP-022 error-occurrence correlation contract. The [POC diagnostic baseline](../../architecture/health-logging-poc.md)
@@ -101,7 +101,8 @@ does not block the independent health/diagnostic design.
 
 ## Non-goals
 
-Implementing applications, migrations, endpoints or infrastructure. Do not introduce customer names into the core.
+Implementing applications, migrations, endpoints or infrastructure. Do not introduce
+customer names into the core.
 
 ## Validation
 
@@ -121,3 +122,11 @@ No POC design blocker remains. Reusing process liveness and bounded console erro
 meets this slice; a readiness/metrics platform would exceed it. Import correlation
 and output verification belong to the delivering stories. Broader observability
 is explicitly deferred, not completed by this design.
+
+## Current delivery — 2026-10-06
+
+This story retains its original design/bootstrap evidence. Later IOP-147/148/165
+and operational increments through IOP-194 deliver connected business paths,
+scoped persistence and local accounts. ADR-0018 and ADR-0035 are Accepted; the
+original runtime handoffs above are historical, not current blockers. See the
+[delivery map](../poc-delivery.md) for implementation and remaining scope.

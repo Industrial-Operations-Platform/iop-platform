@@ -24,7 +24,9 @@ outline requested by the owner; inclusion in the backlog does not authorize impl
 
 ## Current state
 
-Only the documentation baseline exists. This capability is not implemented and its detailed design is not accepted.
+Individual issues can be resolved/reopened and retain history. Remaining: formal
+handover-record closure, acknowledgement and retained closed shift records; issue
+resolution is not record closure.
 
 ## Desired state
 
@@ -66,11 +68,13 @@ Preserve authorship, shift, references and changes; closure does not delete pend
 
 ## API considerations
 
-Validate writes/closure against permissions and state; asset references use contracts from the owning module.
+Validate writes/closure against permissions and state; asset references use contracts
+from the owning module.
 
 ## UI considerations
 
-Distinguish draft, open and closed states; make the previous shift easy to read without mixing scopes.
+Distinguish draft, open and closed states; make the previous shift easy to read without
+mixing scopes.
 
 ## Dependencies
 
@@ -81,11 +85,14 @@ order. Refine them in the plan before changing code.
 
 ## Non-goals
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery to the entire milestone. Do not introduce customer names into the core.
+Implementing adjacent tasks, accepting open decisions by inference or extending delivery
+to the entire milestone. Do not introduce customer names into the core.
 
 ## Validation
 
-The plan must define executable commands and scenarios for the criteria below using accepted tooling. Include the expected path, errors and relevant access denial; record actual results, not fictional tests.
+The plan must define executable commands and scenarios for the criteria below using
+accepted tooling. Include the expected path, errors and relevant access denial; record
+actual results, not fictional tests.
 
 ## Documentation impact
 
@@ -94,4 +101,14 @@ Update contracts, models, guides or ADRs only if this task changes their content
 
 ## Open questions
 
-Confirm the approved contract, edge cases and exact evidence for this slice before starting implementation.
+Confirm the approved contract, edge cases and exact evidence for this slice before
+starting implementation.
+
+## Current coverage and remaining work — 2026-10-06
+
+Individual issues can be resolved/reopened and retain history. Remaining: formal
+handover-record closure, acknowledgement and retained closed shift records; issue
+resolution is not record closure.
+
+See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
+This update does not authorize the remaining work or accept a Proposed decision.
