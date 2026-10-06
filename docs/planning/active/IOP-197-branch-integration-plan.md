@@ -55,3 +55,7 @@ previously owner-accepted future Audit design/evidence. ADR-0017 is Accepted by
 the earlier explicit decision; IOP-009 becomes Completed as design. IOP-023 remains
 Proposed future implementation. Synchronize architecture/module/model/glossary,
 scope and RBAC applicability without imposing general Audit on current operations.
+
+IOP-136 conflicts retain current startup/delivery documentation and Completed local
+guide status. Keep its earlier guide/preparation plan as explicitly historical
+fixture-preview evidence, with the current operator guide as the canonical workflow.

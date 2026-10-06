@@ -51,3 +51,8 @@ setup/start/fixtures/recreate verification, real browser behavior, error/access
 checks and link consistency. Update this permanent item, [backlog](../backlog.md)
 and evidence when behavior changes; avoid duplicate guides. No blocking design
 question remains for this selected local slice.
+
+IOP-197 also retains the earlier [fixture-preview guide](../../product/user-guide-poc.md)
+and [preparation evidence](../completed/IOP-136-poc-user-guide-plan.md) as history.
+Their September 26 runtime blockers were resolved by IOP-147; they do not replace
+the current canonical guide or reopen this completed local slice.
