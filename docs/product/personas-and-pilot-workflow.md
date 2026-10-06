@@ -24,7 +24,11 @@ under IOP-002; see the [reporting evidence](csv-and-reporting-reference.md).
 The complete pipeline has not been executed and KPI parity is not verified.
 
 IOP v1 should reproduce the useful analytical behavior inside the product with
-individual logins and appropriate views. Python, Power BI embedding, source-code
+individual logins and appropriate views. The earlier owner request at `830b943`
+specified a TypeScript/Node.js port of the Python CSV-processing behavior, checked
+against representative identical inputs. Source-specific rules stay in adapters;
+the later reviewed excerpts and accepted metric contracts govern that comparison.
+Full legacy-pipeline parity is not claimed. Power BI embedding, literal source-code
 reuse and the future IOP database schema are not selected by this requirement.
 
 ## Responsibilities
@@ -131,7 +135,7 @@ No measured improvement or runtime acceptance is claimed.
   management only receives presentations. Application users have individual logins.
 - Confirmed: Administrator owns imports/error review and user/configuration
   administration; analysts consult/filter without editing. Prior evidence is recorded
-  in commit `830b943`; this review synchronizes those confirmations without a merge.
+  in commit `830b943`; its review branch is integrated under IOP-197.
 - Accepted: frequency and accumulated alarm duration in executive/detail views,
   reconciled filter-consistent totals, scoped read access and direct presentation.
 - Deferred: export and numerical performance targets before release acceptance;

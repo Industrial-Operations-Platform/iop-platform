@@ -158,3 +158,17 @@ ADR-0027's coordinated pinned transaction; each module retains its own history.
 Exact equipment codes provisionally represent parts while physical verification
 and 3D/radius selection remain deferred. See the [contract](docs/product/maintenance-assets.md)
 and [ADR-0036 refinement](docs/architecture/adr/ADR-0036-shift-handover.md).
+
+## Accepted audit design — deferred beyond the pilot
+
+[ADR-0017](docs/architecture/adr/ADR-0017-audit-model.md) defines explicit
+module-emitted, Audit-owned PostgreSQL records committed atomically with material
+changes, separately handled security observations and restricted operator
+inspection. Future retention defaults are 365 days for changes/maintenance and
+90 days for security events, with scoped expiry and separately bounded backups.
+
+The owner accepted this as a future design and explicitly excluded implementation
+from the pilot. Audit storage, capture, inspection and retention infrastructure
+are not pilot release gates; absent Audit infrastructure does not block pilot
+operations. IOP-009 is complete as design. IOP-023 remains future work, and existing
+source provenance, authorization and scope requirements retain their own owners.

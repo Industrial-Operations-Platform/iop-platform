@@ -9,6 +9,7 @@ import {
   RefreshButton,
   CollectionAction,
   ViewNavigation,
+  Disclosure,
 } from "../../../../design/components";
 import type { HandoverApplication } from "../../application/handover";
 import type { Context, Page } from "../../domain/models";
@@ -18,17 +19,27 @@ const blank: Page = { entries: [], total: 0, nextCursor: "" };
 export function HandoverHighlights({
   application,
   departmentId,
+  assignedDepartmentId,
+  departmentReady = true,
   onDepartmentChange,
   open,
 }: {
   application: HandoverApplication;
   departmentId: string;
+  assignedDepartmentId?: string;
+  departmentReady?: boolean;
   onDepartmentChange: (id: string) => void;
   open: (
     id?: string,
     collection?: "highlights" | "pending" | "attention",
+    selectedDepartment?: string,
   ) => void;
 }) {
+  const [otherDepartments, setOtherDepartments] = useState(false);
+  const scopedDepartment = otherDepartments
+    ? departmentId
+    : (assignedDepartmentId ?? departmentId);
+  const missingDepartment = !otherDepartments && assignedDepartmentId === "";
   const [view, setView] = useState<"attention" | "pending" | "highlights">(
     "attention",
   );
@@ -43,11 +54,25 @@ export function HandoverHighlights({
     let active = true;
     setLoading(true);
     setError("");
+    if (!departmentReady) return;
     void Promise.all([
       application.context(),
-      application.list({ departmentId, state: "pending" }),
-      application.list({ departmentId, attention: true }),
-      application.list({ highlights: true }),
+      missingDepartment
+        ? Promise.resolve(blank)
+        : application.list({
+            departmentId: scopedDepartment,
+            state: "pending",
+            excludeAttention: true,
+          }),
+      missingDepartment
+        ? Promise.resolve(blank)
+        : application.list({ departmentId: scopedDepartment, attention: true }),
+      missingDepartment
+        ? Promise.resolve(blank)
+        : application.list({
+            departmentId: scopedDepartment,
+            highlights: true,
+          }),
     ])
       .then(([c, p, a, h]) => {
         if (active) {
@@ -66,7 +91,13 @@ export function HandoverHighlights({
     return () => {
       active = false;
     };
-  }, [application, departmentId, refresh]);
+  }, [
+    application,
+    scopedDepartment,
+    missingDepartment,
+    departmentReady,
+    refresh,
+  ]);
   const selected = { attention, pending, highlights }[view];
   const viewLabel = {
     attention: "Needs attention",
@@ -95,12 +126,29 @@ export function HandoverHighlights({
         />
       </div>
       {context && (
-        <DepartmentScope
-          value={departmentId}
-          onChange={onDepartmentChange}
-          label="Start department"
-          choices={context.locations.filter((l) => l.role === "department")}
-        />
+        <>
+          <p className="handover-muted">
+            {context.locations.find((l) => l.id === scopedDepartment)?.label ||
+              t(
+                "No department assigned. Explore other departments to see updates.",
+              )}
+          </p>
+          <Disclosure
+            summary={t("Explore other departments")}
+            onToggle={(event) => {
+              setOtherDepartments(event.currentTarget.open);
+              if (!event.currentTarget.open)
+                onDepartmentChange(assignedDepartmentId ?? departmentId);
+            }}
+          >
+            <DepartmentScope
+              value={departmentId}
+              onChange={onDepartmentChange}
+              label="Browse departments"
+              choices={context.locations.filter((l) => l.role === "department")}
+            />
+          </Disclosure>
+        </>
       )}
       {loading ? (
         <p role="status">{t("Loading operational updates…")}</p>
@@ -138,11 +186,10 @@ export function HandoverHighlights({
             <div className="handover-section-heading">
               <h3>{viewLabel}</h3>
               <p className="handover-muted">
-                {view === "highlights"
-                  ? t("Site-wide highlights")
-                  : departmentId
-                    ? t("Selected department")
-                    : t("All departments")}
+                {scopedDepartment
+                  ? context?.locations.find((l) => l.id === scopedDepartment)
+                      ?.label || t("Selected department")
+                  : t("All departments")}
                 {selected.total > 0 &&
                   t(" · Showing {0} of {1}", [
                     Math.min(selected.entries.length, 3),
@@ -150,10 +197,19 @@ export function HandoverHighlights({
                   ])}
               </p>
             </div>
+            <p className="handover-muted">
+              {t(
+                view === "attention"
+                  ? "Blocking reports and overdue action or feedback."
+                  : view === "pending"
+                    ? "Other open reports. Urgent items appear in Needs attention."
+                    : "Selected highlights for this department.",
+              )}
+            </p>
             <EntryCards
               compact
               entries={selected.entries.slice(0, 3)}
-              open={(id) => open(id)}
+              open={(id) => open(id, undefined, scopedDepartment)}
             />
             {!selected.total && (
               <p className="handover-empty">{emptyMessage}</p>
@@ -161,7 +217,7 @@ export function HandoverHighlights({
             {selected.total > 0 && (
               <CollectionAction
                 count={selected.total}
-                onClick={() => open(undefined, view)}
+                onClick={() => open(undefined, view, scopedDepartment)}
               >
                 {view === "highlights"
                   ? t("View all highlights")
@@ -174,7 +230,10 @@ export function HandoverHighlights({
         </>
       )}
       <Actions>
-        <Button variant="secondary" onClick={() => open()}>
+        <Button
+          variant="secondary"
+          onClick={() => open(undefined, undefined, scopedDepartment)}
+        >
           {t("Open Shift Handover ")}
         </Button>
       </Actions>

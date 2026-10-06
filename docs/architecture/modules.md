@@ -181,3 +181,15 @@ source adapters remain within Maintenance, Handover and OIP; no consumer joins
 another module's private tables or writes its evidence. Access is current and
 source-specific. See the [product contract](../product/maintenance-assets.md) and
 [implementation guide](../development/maintenance-assets.md).
+
+## Future audit responsibilities
+
+Accepted [ADR-0017](adr/ADR-0017-audit-model.md) assigns record validation,
+persistence and disposal to Audit; emitting modules own event meaning and safe
+change fields. When implemented, material changes and their records share one
+scoped transaction/connection through explicit contracts. Security observations
+have separate outage behavior; Audit never coordinates business workflows.
+
+The owner deferred this capability beyond the pilot. Its absence is not a pilot
+mutation or release blocker. Audit inspection adds no implicit permission to
+current roles. General job delivery and authentication remain separate decisions.

@@ -45,7 +45,9 @@ Define authentication for later shared use.
 - Deliver only the selected POC slice or explicitly deferred future scope below.
 - Shared-use authentication remains deferred. The owner separately accepted
   temporary local passwords/sessions under ADR-0035 and IOP-165. Preserve the
-  provider-independent boundary; the older separate proposal is not integrated here.
+  provider-independent boundary. IOP-197 integrates the older
+  [ADR-0015 proposal](../../architecture/adr/ADR-0015-authentication-sessions.md)
+  and its historical evidence without accepting its remaining technical choices.
 
 ## Acceptance criteria
 
@@ -120,3 +122,8 @@ and provider/recovery decisions; this broader shared-use parent remains Deferred
 
 See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
 This update does not authorize the remaining work or accept a Proposed decision.
+
+Earlier design-only evidence: [evaluation](../completed/IOP-007-authentication-evaluation-plan.md)
+and [prototype scope revision](../completed/IOP-007-prototype-scope-plan.md).
+Their then-pending local-login decisions are historical; ADR-0035 controls current
+local delivery. The broader shared-use parent remains Deferred.

@@ -89,12 +89,15 @@ function dayOffset(day, offset) {
     .slice(0, 10);
 }
 
-function buildScenarios({ today, people, coordinator, departments }) {
+function buildScenarios({ today, people, coordinator, departments, restrictedCategoryIds = ["information"] }) {
   if (!people.length || !departments.length || departments.length > 20)
     throw new Error("Demo requires 1–20 departments and active contributors.");
   return departments.flatMap((department, departmentIndex) =>
     examples.map((example, index) => {
-      const author = people[(departmentIndex + index) % people.length];
+      const author = restrictedCategoryIds.includes(example.category)
+        ? people.find((person) => person.id === coordinator)
+        : people[(departmentIndex + index) % people.length];
+      if (!author) throw new Error("Restricted demo categories require an active coordinator.");
       const responsible = people[(departmentIndex + index + 1) % people.length];
       const date = dayOffset(today, -(example.age ?? 0));
       const equipment =

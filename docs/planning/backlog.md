@@ -24,15 +24,17 @@ delivered local slices but retain broader lifecycle scope. IOP-028/031 local
 login/admin are Completed through later delivery. General Audit, corporate
 identity, workers, full asset hierarchy/survey, formal shift closure, external
 connections and operating/release controls remain open. M9 is explicitly Deferred.
-IOP-009's separate review decision is not integrated by this documentation audit.
+IOP-197 integrates IOP-009's previously accepted future-design decision; general
+Audit implementation remains future work.
 
 The [legacy map](legacy-backlog-map.md) preserves the original task numbering.
 IDs are never reused. Completing a POC slice does not close unfinished parent work.
 
-Audit snapshot: **194 indexed stories — 138 Completed, 40 Proposed, 15 Deferred
+IOP-195 audit snapshot: **194 indexed stories — 138 Completed, 40 Proposed, 15 Deferred
 and 1 In progress (IOP-130)**. Completed includes design/governance and bounded
-local delivery, not whole-platform release. The **56 unfinished stories** retain
-their specific remaining criteria. IOP-195 records this documentation review.
+local delivery, not whole-platform release. At that review, **56 unfinished stories**
+retained specific remaining criteria. IOP-195 records that snapshot; IOP-197 later
+integrates IOP-009's completed design and the previously missing IOP-144 evidence.
 
 ## M1 — Product & Architecture Definition
 
@@ -46,7 +48,7 @@ their specific remaining criteria. IOP-195 records this documentation review.
 | [IOP-006 — Design the RBAC model](items/IOP-006-rbac-model.md) | Completed |
 | [IOP-007 — Design authentication for later shared use](items/IOP-007-authentication-model.md) | Deferred |
 | [IOP-008 — Define the time and time-zone model](items/IOP-008-time-and-timezone-model.md) | Completed |
-| [IOP-009 — Retain future audit design](items/IOP-009-audit-model.md) | Proposed |
+| [IOP-009 — Retain future audit design](items/IOP-009-audit-model.md) | Completed |
 | [IOP-010 — Design background jobs for later delivery](items/IOP-010-background-job-model.md) | Deferred |
 | [IOP-011 — Define CSV preservation for the POC](items/IOP-011-file-storage-model.md) | Completed |
 | [IOP-012 — Define the CSV source contract](items/IOP-012-source-integration-contract.md) | Completed |
@@ -278,8 +280,10 @@ work under IOP-194 does not implement maps or spatial placements.
 | [IOP-141 — Story branches and review workflow](items/IOP-141-branch-workflow.md) | Completed |
 | [IOP-142 — Align delivery with a fast analytical POC](items/IOP-142-poc-delivery-scope.md) | Completed |
 | [IOP-143 — Local agent instructions and concise documentation](items/IOP-143-concise-workflow.md) | Completed |
+| [IOP-144 — Recommend four next POC stories](items/IOP-144-poc-next-stories.md) | Completed |
 | [IOP-146 — Review POC coverage and closure dependencies](items/IOP-146-poc-readiness-review.md) | Completed |
 | [IOP-195 — Reconcile delivered capabilities and remaining development](items/IOP-195-development-status.md) | Completed |
+| [IOP-197 — Integrate retained branches into develop and origin](items/IOP-197-branch-integration.md) | In progress |
 
 ## Owner-supplied reference data
 
@@ -344,3 +348,4 @@ work under IOP-194 does not implement maps or spatial placements.
 | Task context | Status |
 | --- | --- |
 | [IOP-194 — Maintenance Management and Digital Asset Record](items/IOP-194-maintenance-asset-history.md) | Completed |
+| [IOP-196 — Personal Start and operational workflows](items/IOP-196-personal-operational-workflows.md) | Completed |

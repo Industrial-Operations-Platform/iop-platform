@@ -49,6 +49,15 @@ export class WorkforceController {
       throw e;
     }
   }
+  @Post("summary")
+  @ApiBody({ schema: { type: "object", additionalProperties: false } })
+  @ApiCreatedResponse({ type: C.WorkforcePersonalSummaryDto })
+  summary(@Req() req: IncomingMessage, @Body() body: Record<string, unknown>) {
+    return this.operation(req, (r, a) => {
+      assert(body && typeof body === "object" && !Array.isArray(body) && Object.keys(body).length === 0);
+      return r.workforce.summary(a);
+    });
+  }
   @Post("board")
   @ApiBody({ type: C.WorkforceRangeDto })
   @ApiCreatedResponse({ type: C.WorkforceBoardDto })

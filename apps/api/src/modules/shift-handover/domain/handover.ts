@@ -22,6 +22,7 @@ export interface Choice {
   id: string;
   label: string;
   carryForward?: boolean;
+  coordinatorOnly?: boolean;
 }
 export interface Catalog {
   locations: Location[];
@@ -33,7 +34,13 @@ export interface Person {
   id: string;
   name: string;
 }
+export interface ImageAttachment {
+  name: string;
+  dataUrl: string;
+}
 export interface Content {
+  mentionIds?: string[];
+  images?: ImageAttachment[];
   date: string;
   categoryId: string;
   summary: string;
@@ -59,6 +66,8 @@ export interface Content {
 }
 export type IssueState = "none" | "open" | "in-progress" | "resolved";
 export interface Entry {
+  notificationAt?: string;
+  mentionedPeople?: Person[];
   deleted?: boolean;
   latestUpdate?: { note: string; actorName: string; at: string };
   id: string;
@@ -97,6 +106,10 @@ export interface History {
   nextBefore: number;
 }
 export interface Selection {
+  excludeAttention?: boolean;
+  resolvedFrom?: string;
+  resolvedTo?: string;
+  resolvedForMe?: boolean;
   departmentMatrix?: boolean;
   notificationsAfter?: string;
   dueFrom?: string;
@@ -169,8 +182,41 @@ export function date(value: unknown, required = false): string {
     invalid();
   return result;
 }
+export function validMentions(input: unknown): string[] {
+  if (!Array.isArray(input) || input.length > 20) invalid();
+  const ids = input.map((id) => text(id, 64, true));
+  if (new Set(ids).size !== ids.length) invalid();
+  return ids;
+}
+export function validImages(input: unknown): ImageAttachment[] {
+  if (!Array.isArray(input) || input.length > 2) invalid();
+  return input.map((image) => {
+    exact(image, ["name", "dataUrl"]);
+    const name = text(image.name, 160, true);
+    const dataUrl = text(image.dataUrl, 65536, true);
+    if (
+      !/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(
+        dataUrl,
+      )
+    )
+      invalid();
+    const [header, data] = dataUrl.split(",");
+    if (
+      data.length % 4 !== 0 ||
+      (header.includes("png") && !data.startsWith("iVBORw0KGgo")) ||
+      (header.includes("jpeg") && !data.startsWith("/9j/")) ||
+      (header.includes("webp") &&
+        (!data.startsWith("UklGR") || data.slice(11, 16) !== "XRUJQ"))
+    )
+      invalid();
+    return { name, dataUrl };
+  });
+}
 export function validContent(input: Content, catalog: Catalog): Content {
   exact(input, [
+    ...["mentionIds", "images"].filter((key) =>
+      Object.hasOwn(input ?? {}, key),
+    ),
     "date",
     "categoryId",
     "summary",
@@ -205,6 +251,12 @@ export function validContent(input: Content, catalog: Catalog): Content {
     dueDate: date(input.dueDate),
     feedbackDueDate: date(input.feedbackDueDate),
     discuss: input.discuss,
+    ...(input.mentionIds !== undefined
+      ? { mentionIds: validMentions(input.mentionIds) }
+      : {}),
+    ...(input.images !== undefined
+      ? { images: validImages(input.images) }
+      : {}),
   };
   if (
     typeof value.discuss !== "boolean" ||
@@ -244,6 +296,10 @@ export function validSelection(input: Selection): Selection {
     ...(Object.hasOwn(input ?? {}, "attention") ? ["attention"] : []),
     ...[
       "departmentMatrix",
+      "excludeAttention",
+      "resolvedFrom",
+      "resolvedTo",
+      "resolvedForMe",
       "notificationsAfter",
       "dueFrom",
       "dueTo",
@@ -255,6 +311,10 @@ export function validSelection(input: Selection): Selection {
   if (
     (input.departmentMatrix !== undefined &&
       typeof input.departmentMatrix !== "boolean") ||
+    (input.excludeAttention !== undefined &&
+      typeof input.excludeAttention !== "boolean") ||
+    (input.resolvedForMe !== undefined &&
+      typeof input.resolvedForMe !== "boolean") ||
     (input.mine !== undefined && typeof input.mine !== "boolean") ||
     (input.attention !== undefined && typeof input.attention !== "boolean")
   )
@@ -303,6 +363,20 @@ export function validSelection(input: Selection): Selection {
     ].includes(input.condition)
   )
     invalid();
+  if (input.resolvedFrom !== undefined)
+    result.resolvedFrom = date(input.resolvedFrom, true);
+  if (input.resolvedTo !== undefined)
+    result.resolvedTo = date(input.resolvedTo, true);
+  if (
+    !!result.resolvedFrom !== !!result.resolvedTo ||
+    (result.resolvedFrom &&
+      result.resolvedTo &&
+      (result.resolvedFrom > result.resolvedTo ||
+        Date.parse(result.resolvedTo) - Date.parse(result.resolvedFrom) >
+          366 * 86400000))
+  )
+    invalid();
+  if (input.resolvedForMe && !result.resolvedFrom) invalid();
   result.search = text(input.search, 240);
   result.cursor = text(input.cursor, 100);
   if (

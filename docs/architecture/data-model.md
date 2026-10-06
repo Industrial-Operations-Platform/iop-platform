@@ -394,3 +394,24 @@ health. Scoped source catalogs supply exact source/sector/area/code options; new
 Handover/analytical aliases use the same asset code. Immutable earlier snapshots
 retain historical names and mappings. Known-source initial inventory preparation is
 explicitly invoked; no import-time entity inference or spatial placement is implied.
+
+IOP-196 extends Handover JSON snapshots with optional bounded image data URLs and
+validated site-person mention IDs/name snapshots. Existing append-only revisions
+supply recipient notification instants and assigned-resolution monthly counts; no
+new table or migration is introduced. Workforce derives current-actor schedule
+statistics from complete bounded records and returns server-owned summary totals.
+
+## Future audit records
+
+Accepted [ADR-0017](adr/ADR-0017-audit-model.md) defines versioned records with
+stable event identity, explicit scope, actor/initiator, subject, outcome, safe
+before/after fields, UTC observation/recording times and operation correlation.
+Organization, site and restricted platform-security records remain distinct.
+Ordinary runtime writes append; corrections link new records and subject deletion
+does not cascade into audit history. No RAW payloads or secrets are copied.
+
+Future retention defaults are 365 days for material changes/maintenance and
+90 days for security events, measured from recording time. Online expiry/purge
+does not promise simultaneous backup erasure. These are conceptual requirements
+for later implementation: the owner explicitly excluded Audit infrastructure and
+its retention obligations from the pilot. No physical schema is selected.

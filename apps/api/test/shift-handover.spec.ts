@@ -512,9 +512,9 @@ test("carry-forward is configured by category ID, preserves labels and accepts e
     ],
   };
   expect(handoverCatalog(config, config, "UTC").categories).toEqual([
-    { id: "problems", label: "Renamed problems", carryForward: false },
-    { id: "custom", label: "Local topics", carryForward: true },
-    { id: "information", label: "Information", carryForward: false },
+    { id: "problems", label: "Renamed problems", carryForward: false, coordinatorOnly: false },
+    { id: "custom", label: "Local topics", carryForward: true, coordinatorOnly: false },
+    { id: "information", label: "Information", carryForward: false, coordinatorOnly: true },
   ]);
   expect(() =>
     handoverCatalog(
@@ -628,3 +628,38 @@ test.each(["true", 1, null, [], {}])(
     ).toThrow("invalid_handover");
   },
 );
+
+test("Information publication/correction requires coordinator authority and mentions resolve exact site people", async () => {
+  const { tx, entry } = fixture();
+  const restricted = new Handover(
+    { run: async (_actor, _permission, work) => work(tx) },
+    { ...catalog, categories: [...catalog.categories, { id: "information", label: "Information", coordinatorOnly: true }] },
+    () => "information-entry", () => "2026-09-29T12:00:00.000Z",
+  );
+  const publication = { ...input, issue: false, responsibleId: "", content: { ...input.content, categoryId: "information", mentionIds: ["colleague"] } };
+  await expect(restricted.create("author", publication)).rejects.toMatchObject({ code: "handover_denied" });
+  expect(tx.save).not.toHaveBeenCalled();
+  tx.coordinator = true;
+  const saved = await restricted.create("author", publication);
+  expect(saved.mentionedPeople).toEqual([{ id: "colleague", name: "Colleague" }]);
+  tx.coordinator = false;
+  await expect(restricted.change("author", { id: saved.id, expectedRevision: 1, action: "correct", note: "Correction", content: { ...saved.content, categoryId: "safety" } })).rejects.toMatchObject({ code: "handover_denied" });
+  expect(entry().revision).toBe(1);
+  tx.coordinator = true;
+  await expect(restricted.change("author", { id: saved.id, expectedRevision: 1, action: "correct", note: "Correction", content: { ...saved.content, mentionIds: ["foreign-person"] } })).rejects.toMatchObject({ code: "handover_denied" });
+  expect(entry().revision).toBe(1);
+});
+
+test("raster attachments and mentions are bounded snapshot content with no executable image format", () => {
+  const png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZlVQAAAAASUVORK5CYII=";
+  expect(validContent({ ...input.content, images: [{ name: "Inspection.png", dataUrl: png }], mentionIds: ["author"] }, catalog).images).toHaveLength(1);
+  for (const images of [
+    [{ name: "unsafe.svg", dataUrl: "data:image/svg+xml;base64,PHN2Zy8+" }],
+    [{ name: "fake.png", dataUrl: "data:image/png;base64,YWJjZA==" }],
+    Array.from({ length: 3 }, () => ({ name: "image.png", dataUrl: png })),
+    [{ name: "huge.png", dataUrl: png + "A".repeat(65536) }],
+  ]) expect(() => validContent({ ...input.content, images }, catalog)).toThrow("invalid_handover");
+  expect(() => validContent({ ...input.content, mentionIds: ["author", "author"] }, catalog)).toThrow("invalid_handover");
+  for (const selected of [{ resolvedFrom: "2026-09-01" }, { resolvedFrom: "2026-09-30", resolvedTo: "2026-09-01" }, { excludeAttention: "yes" }])
+    expect(() => validSelection({ ...emptySelection, ...selected } as never)).toThrow("invalid_handover");
+});

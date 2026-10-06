@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+export class HandoverImageDto {
+  @ApiProperty() name!: string;
+  @ApiProperty() dataUrl!: string;
+}
 export class HandoverContentDto {
+  @ApiPropertyOptional({ type: [String], maxItems: 20 }) mentionIds?: string[];
+  @ApiPropertyOptional({ type: [HandoverImageDto], maxItems: 2 }) images?: HandoverImageDto[];
   @ApiProperty() date!: string;
   @ApiProperty() categoryId!: string;
   @ApiProperty() summary!: string;
@@ -44,6 +50,7 @@ export class HandoverLocationDto {
     | "location";
 }
 export class HandoverChoiceDto {
+  @ApiPropertyOptional() coordinatorOnly?: boolean;
   @ApiPropertyOptional() carryForward?: boolean;
   @ApiProperty() id!: string;
   @ApiProperty() label!: string;
@@ -69,6 +76,8 @@ export class HandoverLatestUpdateDto {
   @ApiProperty() at!: string;
 }
 export class HandoverEntryDto {
+  @ApiPropertyOptional() notificationAt?: string;
+  @ApiPropertyOptional({ type: [HandoverPersonDto] }) mentionedPeople?: HandoverPersonDto[];
   @ApiPropertyOptional() deleted?: boolean;
   @ApiPropertyOptional({ type: HandoverLatestUpdateDto })
   latestUpdate?: HandoverLatestUpdateDto;
@@ -112,6 +121,10 @@ export class HandoverChangeDto {
   @ApiPropertyOptional() highlighted?: boolean;
 }
 export class HandoverSelectionDto {
+  @ApiPropertyOptional() excludeAttention?: boolean;
+  @ApiPropertyOptional() resolvedFrom?: string;
+  @ApiPropertyOptional() resolvedTo?: string;
+  @ApiPropertyOptional() resolvedForMe?: boolean;
   @ApiPropertyOptional({
     description:
       "Operational matrix: pending carry-forward categories and unresolved daily categories published today in the site time zone.",
@@ -119,7 +132,7 @@ export class HandoverSelectionDto {
   departmentMatrix?: boolean;
   @ApiPropertyOptional({
     description:
-      "New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.",
+      "Colleague publications and revisions mentioning/assigning the caller after this UTC instant; ordered by notification time independently of entry date.",
     format: "date-time",
   })
   notificationsAfter?: string;

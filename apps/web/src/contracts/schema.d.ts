@@ -248,6 +248,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workforce/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_summary"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workforce/board": {
         parameters: {
             query?: never;
@@ -1061,12 +1077,22 @@ export interface components {
             search?: string;
             cursor?: string;
         };
+        HandoverPersonDto: {
+            id: string;
+            name: string;
+        };
         HandoverLatestUpdateDto: {
             note: string;
             actorName: string;
             at: string;
         };
+        HandoverImageDto: {
+            name: string;
+            dataUrl: string;
+        };
         HandoverContentDto: {
+            mentionIds?: string[];
+            images?: components["schemas"]["HandoverImageDto"][];
             date: string;
             categoryId: string;
             summary: string;
@@ -1086,6 +1112,8 @@ export interface components {
             discuss: boolean;
         };
         HandoverEntryDto: {
+            notificationAt?: string;
+            mentionedPeople?: components["schemas"]["HandoverPersonDto"][];
             deleted?: boolean;
             latestUpdate?: components["schemas"]["HandoverLatestUpdateDto"];
             id: string;
@@ -1296,6 +1324,26 @@ export interface components {
             /** @description Full matching count across currently authorized and available sources. */
             total: number;
             nextCursor: string;
+        };
+        WorkforcePersonalShiftDto: {
+            id: string;
+            label: string;
+            count: number;
+            percentage: number;
+        };
+        WorkforcePersonalSummaryDto: {
+            actorId: string;
+            today: string;
+            currentFrom: string;
+            previousFrom: string;
+            previousTo: string;
+            homeTargetId: string;
+            homeTargetLabel: string;
+            teamLabel: string;
+            scheduledDays: number;
+            shifts: components["schemas"]["WorkforcePersonalShiftDto"][];
+            saturdays: number;
+            sundays: number;
         };
         WorkforceRangeDto: {
             /** Format: date */
@@ -1809,13 +1857,10 @@ export interface components {
             id: string;
         };
         HandoverChoiceDto: {
+            coordinatorOnly?: boolean;
             carryForward?: boolean;
             id: string;
             label: string;
-        };
-        HandoverPersonDto: {
-            id: string;
-            name: string;
         };
         HandoverContextDto: {
             canDelete: boolean;
@@ -1838,11 +1883,15 @@ export interface components {
             nextCursor: string;
         };
         HandoverSelectionDto: {
+            excludeAttention?: boolean;
+            resolvedFrom?: string;
+            resolvedTo?: string;
+            resolvedForMe?: boolean;
             /** @description Operational matrix: pending carry-forward categories and unresolved daily categories published today in the site time zone. */
             departmentMatrix?: boolean;
             /**
              * Format: date-time
-             * @description New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.
+             * @description Colleague publications and revisions mentioning/assigning the caller after this UTC instant; ordered by notification time independently of entry date.
              */
             notificationsAfter?: string;
             dueFrom?: string;
@@ -2289,6 +2338,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssetTimelinePageDto"];
+                };
+            };
+        };
+    };
+    WorkforceController_summary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforcePersonalSummaryDto"];
                 };
             };
         };

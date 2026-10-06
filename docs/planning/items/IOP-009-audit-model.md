@@ -1,123 +1,118 @@
-# IOP-009 — Retain future audit design
+# IOP-009 — Design the audit trail
 
 ## Status
 
-Proposed
-
-## POC delivery applicability
-
-Owner-approved scope refinement under [IOP-142](IOP-142-poc-delivery-scope.md),
-2026-09-15. The revised Goal, Requirements, Acceptance criteria and Dependencies
-control the selected slice; older general platform prose is future context, not
-an additional POC gate. See [POC scope](../../product/scope-poc.md) and
-[delivery map](../poc-delivery.md). No implementation is claimed.
+Completed — [ADR-0017](../../architecture/adr/ADR-0017-audit-model.md) accepted
+as a future design. The owner explicitly deferred audit implementation beyond
+the pilot; it is not a pilot release requirement.
 
 ## Milestone
 
 M1 — Product & Architecture Definition. Documentation/design only.
 
-## Goal
+## Goal and business value
 
-Retain audit design for later delivery.
+Define auditable events and retention so operators can investigate material
+changes and security events without exposing customer data or collecting an
+unbounded duplicate of operational history.
 
-## User / business value
+## Context and current state
 
-The team needs reviewable decisions before building a reusable platform.
+Users/RBAC access-change evidence and immutable operational module revisions are
+implemented. General Audit capture, inspection and retention remain future work.
+Accepted tenancy and RBAC decisions establish scope enforcement and traceable
+access changes. V1 is CSV ingestion and analytics; future transactional modules
+are not activated by this task. The original seed listed an outcome but no named
+alternatives. The owner requested evaluation, an ADR and documentation updates
+conditional on acceptance. The owner subsequently accepted the design while
+clarifying that this capability is unnecessary for the pilot and should remain
+planned for later.
 
-## Context
+## Desired state and requirements
 
-Scope: Product and cross-module architecture. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+- Define audit-event categories, ownership, safe record fields and retention.
+- Compare capture and delivery options against module boundaries and PostgreSQL.
+- Separate identity, permission, scope and provider details.
+- Define failure, retry, inspection, disposal and isolation behavior without DDL.
+- Keep proposed policy distinct from accepted architecture and runtime evidence.
 
-## Current state
+## Accepted design and delivery boundary
 
-Access-change audit and module-owned immutable operational revisions exist. Remaining:
-the integrated general Audit design, unified collection, retention and delivery
-guarantees. The separate IOP-009 review branch is not merged by this audit.
+[ADR-0017](../../architecture/adr/ADR-0017-audit-model.md) compares operational logs,
+database triggers, explicit module records, event sourcing and external storage;
+it also compares same-transaction append, an outbox and post-commit delivery.
+The accepted future design uses explicit Audit-owned PostgreSQL records committed atomically with material
+changes. Security observations have separately documented failure behavior.
 
-## Desired state
-
-Retain audit design for later delivery.
-
-## Requirements
-
-- Deliver only the selected POC slice or explicitly deferred future scope below.
-- Full Audit storage, atomic appends, security-event collection and retention/purge
-  infrastructure are outside the POC. Import provenance and reconciliation remain
-  required. The separate IOP-009 review branch records accepted future design and pilot
-  deferral; this branch does not merge or restate that design as integrated.
+The future design uses 365-day retention for material changes/maintenance and 90 days for security
+events, with scoped expiry/purge and separately bounded backup handling before
+production. These are reviewable defaults, not established customer requirements.
+General audit browsing is not added to existing roles; inspection is restricted to
+an explicitly authorized operator procedure. No new identity mechanism is chosen.
 
 ## Acceptance criteria
 
-- [ ] Retain audit design for later delivery.
-- [ ] Validate the slice-specific outcomes and limitations in Requirements.
-- [ ] Record evidence and synchronize the story/plan; do not close a broader parent with
-  unfinished future scope.
+- [x] Auditable events and retention options evaluated with a concrete recommendation.
+- [x] Plan and ADR document required decisions, scenarios and boundaries.
+- [x] Proposal validation evidence and planning documentation synchronized.
+- [x] Owner accepts the audit model and retention policy for later implementation.
+- [x] Architecture, modules, data model, glossary and pilot scope synchronized.
 
-## Domain considerations
+IOP-009 is complete as design. Audit capture, inspection and retention are not
+pilot release gates; IOP-023 remains unimplemented future work.
 
-Define contracts and decisions; keep identity, permissions, scope and providers separate.
+## Domain, security and data considerations
 
-## Architecture constraints
+Audit receives explicit records from owning modules; it does not coordinate their
+workflows. Customer records preserve validated organization/site scope and RLS.
+Platform security events cannot contain unscoped business payloads. Keep safe
+before/after grant information, stable identities and correlation; exclude secrets,
+RAW data and unrestricted serialized objects. Retention does not imply tamper-proof
+storage or physical erasure from backups at online expiry.
 
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
+## API and UI considerations
 
-## Security considerations
+No endpoint or UI is selected. Any future audit browsing requires reviewed access
+permissions and the accepted API contract strategy. Current product roles gain no
+implicit audit permission from this design.
 
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
+## Dependencies and architecture constraints
 
-## Data considerations
+- [IOP-005](IOP-005-tenancy-and-data-isolation.md) and
+  [IOP-006](IOP-006-rbac-model.md): accepted prerequisites.
+- [IOP-008](IOP-008-time-and-timezone-model.md): accepted instant semantics.
+- [IOP-007](IOP-007-authentication-model.md): authentication integration remains
+  separate; this design relies only on the accepted provider-independent boundary.
+- [IOP-023](IOP-023-audit-infrastructure.md): future implementation consumer,
+  not authorized by this design task.
 
-Document persistence and isolation implications without creating schemas.
-
-## API considerations
-
-Specify contracts where appropriate; do not create endpoints.
-
-## UI considerations
-
-Document user needs; do not select or build UI by inference.
-
-## Dependencies
-
-[IOP-005](IOP-005-tenancy-and-data-isolation.md), [IOP-006](IOP-006-rbac-model.md).
-
-These are future parent dependencies, not POC gates. Any minimal local seed slice
-uses an accepted execution-context contract rather than requiring the full parent.
+Follow Accepted ADR-0001/0003/0004/0005/0006/0007/0008/0011/0012/0013/0014/0016.
+ADR-0017 is Accepted through explicit owner approval, with implementation deferred
+beyond the pilot.
+See [architecture](../../../ARCHITECTURE.md), [modules](../../architecture/modules.md)
+and [workflow](../workflow.md).
 
 ## Non-goals
 
-Implementing applications, migrations, endpoints or infrastructure. Do not introduce
-customer names into the core.
+Application code, migrations, endpoints, infrastructure, general event sourcing,
+queue selection, self-service audit UI, enterprise identity integration or
+customer-specific core logic. Do not start adjacent implementation stories.
 
-## Validation
+## Validation and evidence
 
-Review consistency, links, scenarios and decisions; do not invent commands or write code
-to validate this design task.
+The [completed proposal plan](../completed/IOP-009-audit-model-plan.md) records
+sources, scenario review, local link/status checks and limitations. ADR walkthroughs
+cover atomicity, retries, partial imports, scope denial, inspection, secret
+exclusion, clock ordering and retention. No general Audit runtime tests are claimed.
 
-## Documentation impact
+## Acceptance evidence
 
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
+The [acceptance plan](../completed/IOP-009-audit-acceptance-plan.md) records owner
+approval and synchronized architecture, module, data-model, glossary and product
+scope documentation. No runtime capability or test evidence is claimed. Future
+implementation must revisit operating constraints and customer retention needs;
+no implementation story is activated by design completion.
 
-## Open questions
-
-Resolve this task’s concrete design decisions with options, a recommendation and an ADR
-when architecture is affected.
-
-## Current coverage and remaining work — 2026-10-06
-
-Access-change audit and module-owned immutable operational revisions exist. Remaining:
-the integrated general Audit design, unified collection, retention and delivery
-guarantees. The separate IOP-009 review branch is not merged by this audit.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+IOP-197 integrates the previously retained review branch on 2026-10-06. Completion
+reflects the owner's recorded future-design acceptance, not newly inferred approval
+or delivery of IOP-023.

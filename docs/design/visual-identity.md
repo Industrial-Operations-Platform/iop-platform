@@ -136,8 +136,8 @@ customer words inside prose. Attention is a report-based signal, not equipment
 health. Existing semantic error tokens provide restrained attention emphasis.
 
 Show one Start collection at a time with at most three entries and an explicit
-shown/total count. Open reports includes attention entries; site-wide highlights
-retain their separate scope. Empty collections show an explanatory state. Ordinary
+shown/total count. Open reports excludes attention entries under IOP-196; highlights
+follow the assigned or explicitly browsed department. Empty collections show an explanatory state. Ordinary
 buttons preserve Tab/Enter/Space navigation without claiming ARIA tab semantics.
 
 ## Operational collections — IOP-181
@@ -371,3 +371,17 @@ Escape/outside dismissal and visible sign-out semantics.
 The matrix caption distinguishes pending work/today's updates from explicitly
 searched history. Ordinary column filters keep the operational scope; Clear search
 restores it after historical search. Table alignment and shared controls are unchanged.
+
+## Personal Start and daily controls — IOP-196
+
+Profile uses a token-based initials avatar, role badge, labelled department/team,
+compact personal figures and accessible shift-share progress bars. Assignment uses
+shared DateField/inline Day–Week navigation and dated duty surfaces. Administrative
+Start retains its role-specific account/data summary alongside personal cards.
+
+Assigned-department content has a separate Explore other departments disclosure.
+Attention and Open reports are disjoint; highlights follow the same department.
+Place the meeting/daily date beside its section heading, with Today's reset action.
+Current pending topics remain in their separate disclosure. Category add icons and
+Maintenance completion dialogs use shared controls, visible focus and narrow layouts.
+Image previews preserve their aspect ratio and never widen their card/page.

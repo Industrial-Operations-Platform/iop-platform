@@ -26,7 +26,7 @@ outline requested by the owner; inclusion in the backlog does not authorize impl
 
 Users/RBAC access-change audit plus Handover, Workforce, Maintenance and Asset revisions
 are implemented. Remaining: a general module-independent Audit
-collection/storage/retention mechanism under the pending audit design.
+collection/storage/retention mechanism under Accepted ADR-0017's future design.
 
 ## Desired state
 
@@ -106,7 +106,14 @@ starting implementation.
 
 Users/RBAC access-change audit plus Handover, Workforce, Maintenance and Asset revisions
 are implemented. Remaining: a general module-independent Audit
-collection/storage/retention mechanism under the pending audit design.
+collection/storage/retention mechanism under Accepted ADR-0017's future design.
 
 See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
 This update does not authorize the remaining work or accept a Proposed decision.
+
+## Delivery boundary after IOP-009 acceptance
+
+The owner accepted [ADR-0017](../../architecture/adr/ADR-0017-audit-model.md) as a
+future design and explicitly excluded audit implementation from the pilot.
+This item remains Proposed future work, not a pilot prerequisite. Activate it only
+through a separate request; recheck retention and operating assumptions then.

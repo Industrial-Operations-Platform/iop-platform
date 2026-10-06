@@ -488,6 +488,38 @@
         ]
       }
     },
+    "/api/v1/workforce/summary": {
+      "post": {
+        "operationId": "WorkforceController_summary",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkforcePersonalSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
     "/api/v1/workforce/board": {
       "post": {
         "operationId": "WorkforceController_board",
@@ -3031,6 +3063,21 @@
           "equipment"
         ]
       },
+      "HandoverPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
       "HandoverLatestUpdateDto": {
         "type": "object",
         "properties": {
@@ -3050,9 +3097,38 @@
           "at"
         ]
       },
+      "HandoverImageDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "dataUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "dataUrl"
+        ]
+      },
       "HandoverContentDto": {
         "type": "object",
         "properties": {
+          "mentionIds": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "images": {
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverImageDto"
+            }
+          },
           "date": {
             "type": "string"
           },
@@ -3132,6 +3208,15 @@
       "HandoverEntryDto": {
         "type": "object",
         "properties": {
+          "notificationAt": {
+            "type": "string"
+          },
+          "mentionedPeople": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverPersonDto"
+            }
+          },
           "deleted": {
             "type": "boolean"
           },
@@ -3908,6 +3993,87 @@
           "sources",
           "total",
           "nextCursor"
+        ]
+      },
+      "WorkforcePersonalShiftDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          },
+          "percentage": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "count",
+          "percentage"
+        ]
+      },
+      "WorkforcePersonalSummaryDto": {
+        "type": "object",
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "today": {
+            "type": "string"
+          },
+          "currentFrom": {
+            "type": "string"
+          },
+          "previousFrom": {
+            "type": "string"
+          },
+          "previousTo": {
+            "type": "string"
+          },
+          "homeTargetId": {
+            "type": "string"
+          },
+          "homeTargetLabel": {
+            "type": "string"
+          },
+          "teamLabel": {
+            "type": "string"
+          },
+          "scheduledDays": {
+            "type": "number"
+          },
+          "shifts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforcePersonalShiftDto"
+            }
+          },
+          "saturdays": {
+            "type": "number"
+          },
+          "sundays": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "actorId",
+          "today",
+          "currentFrom",
+          "previousFrom",
+          "previousTo",
+          "homeTargetId",
+          "homeTargetLabel",
+          "teamLabel",
+          "scheduledDays",
+          "shifts",
+          "saturdays",
+          "sundays"
         ]
       },
       "WorkforceRangeDto": {
@@ -6003,6 +6169,9 @@
       "HandoverChoiceDto": {
         "type": "object",
         "properties": {
+          "coordinatorOnly": {
+            "type": "boolean"
+          },
           "carryForward": {
             "type": "boolean"
           },
@@ -6016,21 +6185,6 @@
         "required": [
           "id",
           "label"
-        ]
-      },
-      "HandoverPersonDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
         ]
       },
       "HandoverContextDto": {
@@ -6125,13 +6279,25 @@
       "HandoverSelectionDto": {
         "type": "object",
         "properties": {
+          "excludeAttention": {
+            "type": "boolean"
+          },
+          "resolvedFrom": {
+            "type": "string"
+          },
+          "resolvedTo": {
+            "type": "string"
+          },
+          "resolvedForMe": {
+            "type": "boolean"
+          },
           "departmentMatrix": {
             "type": "boolean",
             "description": "Operational matrix: pending carry-forward categories and unresolved daily categories published today in the site time zone."
           },
           "notificationsAfter": {
             "type": "string",
-            "description": "New publications by other actors after this UTC instant; ordered by creation time, independently of entry date.",
+            "description": "Colleague publications and revisions mentioning/assigning the caller after this UTC instant; ordered by notification time independently of entry date.",
             "format": "date-time"
           },
           "dueFrom": {

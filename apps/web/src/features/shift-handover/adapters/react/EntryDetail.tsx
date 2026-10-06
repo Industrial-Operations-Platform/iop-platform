@@ -88,9 +88,9 @@ export function EntryDetail({
     canEdit =
       !!e &&
       !e.deleted &&
-      (context.canCoordinate || e.authorId === context.actorId),
+      (context.canCoordinate || (e.authorId === context.actorId && !context.categories.find((c) => c.id === e.content.categoryId)?.coordinatorOnly)),
     canProgress =
-      !!e && !e.deleted && (canEdit || e.responsibleId === context.actorId);
+      !!e && !e.deleted && (context.canCoordinate || !context.categories.find((c) => c.id === e.content.categoryId)?.coordinatorOnly) && (canEdit || e.responsibleId === context.actorId);
   return (
     <section aria-label={t("Handover entry")} className="handover-workspace">
       <HandoverHeading

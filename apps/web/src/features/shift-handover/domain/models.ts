@@ -9,6 +9,7 @@ export interface Choice {
   id: string;
   label: string;
   carryForward?: boolean;
+  coordinatorOnly?: boolean;
 }
 export interface Catalog {
   locations: Location[];
@@ -20,7 +21,13 @@ export interface Person {
   id: string;
   name: string;
 }
+export interface ImageAttachment {
+  name: string;
+  dataUrl: string;
+}
 export interface Content {
+  mentionIds?: string[];
+  images?: ImageAttachment[];
   date: string;
   categoryId: string;
   summary: string;
@@ -46,6 +53,8 @@ export interface Content {
 }
 export type IssueState = "none" | "open" | "in-progress" | "resolved";
 export interface Entry {
+  notificationAt?: string;
+  mentionedPeople?: Person[];
   deleted?: boolean;
   latestUpdate?: { note: string; actorName: string; at: string };
   id: string;
@@ -84,6 +93,10 @@ export interface History {
   nextBefore: number;
 }
 export interface Selection {
+  excludeAttention?: boolean;
+  resolvedFrom?: string;
+  resolvedTo?: string;
+  resolvedForMe?: boolean;
   departmentMatrix?: boolean;
   notificationsAfter?: string;
   dueFrom?: string;

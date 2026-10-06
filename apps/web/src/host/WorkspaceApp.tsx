@@ -1,3 +1,4 @@
+import { StartPersonalProfile } from "./StartPersonalProfile";
 import { EntryNotifications } from "../features/shift-handover/application/notifications";
 import { MaintenanceWorkspace } from "../features/maintenance/adapters/react/MaintenanceWorkspace";
 import { AssetsWorkspace } from "../features/assets/adapters/react/AssetsWorkspace";
@@ -92,6 +93,8 @@ export function WorkspaceApp({
   const [handoverEntry, setHandoverEntry] = useState("");
   const [handoverHighlights, setHandoverHighlights] = useState(false);
   const [departmentId, setDepartmentId] = useState("");
+  const [assignedDepartmentId, setAssignedDepartmentId] = useState<string>();
+
   const [handoverAttention, setHandoverAttention] = useState(false);
   const [handoverPending, setHandoverPending] = useState(false);
   const [preview, setPreview] = useState<{
@@ -104,6 +107,7 @@ export function WorkspaceApp({
     [error, setError] = useState<unknown>(),
     [pending, setPending] = useState(false),
     [connectionAttempt, setConnectionAttempt] = useState(0);
+  useEffect(() => { setAssignedDepartmentId(undefined); setDepartmentId(""); }, [context?.user?.id]);
   useEffect(() => {
     let active = true;
     setPending(true);
@@ -586,6 +590,13 @@ export function WorkspaceApp({
         />
       ) : page === "start" && administration ? (
         <AdministrationOverview
+          personal={workforce && signedIn ? <>
+            <div className="analysis-home-grid">
+              <StartPersonalProfile name={context.user!.name} profileLabel={profileLabels.administrator} workforce={workforce} handover={handover} onDepartment={setAssignedDepartmentId} />
+              <WorkforceToday application={workforce} timeZone={context.scope?.siteTimeZone ?? "UTC"} open={() => setPage("workforce")} />
+            </div>
+            {maintenance && <MaintenanceAssignments application={maintenance} open={openMaintenance} />}
+          </> : undefined}
           canImport={!!context?.canImport}
           canAdminister={!!showUserAdministration}
           access={access}
@@ -644,6 +655,11 @@ export function WorkspaceApp({
           }
           canReadAnalytics={canReadAnalytics}
           authenticated={context.authentication === "password"}
+          personalProfile={workforce && signedIn ? (
+            <StartPersonalProfile name={context.user!.name}
+              profileLabel={profileLabels[effectiveProfile as Profile] ?? "Profile"}
+              workforce={workforce} handover={handover} onDepartment={setAssignedDepartmentId} />
+          ) : undefined}
           workforce={
             workforce && signedIn ? (
               <WorkforceToday
@@ -666,9 +682,12 @@ export function WorkspaceApp({
               <HandoverHighlights
                 key={context.user?.id}
                 application={handover}
+                assignedDepartmentId={assignedDepartmentId}
+                departmentReady={!workforce || assignedDepartmentId !== undefined}
                 departmentId={departmentId}
                 onDepartmentChange={setDepartmentId}
-                open={(id, collection) => {
+                open={(id, collection, selectedDepartment) => {
+                  if (selectedDepartment !== undefined) setDepartmentId(selectedDepartment);
                   setHandoverAttention(collection === "attention");
                   setHandoverPending(collection === "pending");
                   setHandoverEntry(id ?? "");

@@ -479,3 +479,10 @@
   display: grid;
   gap: var(--iop-sectionGap);
 }
+.handover-images { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--iop-sectionGap); }
+.handover-images figure { margin: 0; min-width: 0; }
+.handover-images img { width: 100%; max-height: 360px; object-fit: contain; border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); background: var(--iop-canvas); }
+.handover-images figcaption { color: var(--iop-muted); font-size: var(--iop-captionSize); overflow-wrap: anywhere; }
+.handover-card-image { width: 100%; max-height: 140px; object-fit: contain; border-radius: var(--iop-cardRadius); }
+
+.handover-workspace { grid-template-columns: minmax(0, 1fr); }

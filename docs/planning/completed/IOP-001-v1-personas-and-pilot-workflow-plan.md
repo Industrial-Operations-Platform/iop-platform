@@ -154,6 +154,16 @@ The final KPI acceptance baseline and explicit deferrals are proposed for owner
 confirmation in the product workflow. Keep the parent active until confirmed.
 See [closure review plan](IOP-001-closure-review-plan.md).
 
+## Earlier responsibility-confirmation slice retained by IOP-197
+
+Commit `830b943` on `docs/IOP-001-persona-validation` recorded the owner's
+Administrator versus analytical-profile responsibilities and requested porting
+Python CSV behavior to TypeScript/Node.js with equivalent representative outputs.
+That slice inspected no script and implemented no conversion; IOP-002 later
+reviewed source excerpts. Its then-open report/acceptance questions are superseded
+by the final acceptance below. The earlier branch is now integrated, without
+reopening this completed design or claiming full legacy-pipeline parity.
+
 ## Final owner acceptance
 
 On 2026-09-14 the owner explicitly accepted the final pilot baseline and export/
