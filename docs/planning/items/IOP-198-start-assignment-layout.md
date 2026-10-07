@@ -30,6 +30,10 @@ Dependencies: [IOP-196](IOP-196-personal-operational-workflows.md),
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md),
 [ADR-0036](../../architecture/adr/ADR-0036-shift-handover.md),
 [visual identity](../../design/visual-identity.md).
-No API/schema, permission, deployment or publication changes are requested.
+No API/schema or permission change is included. Deployment remains outside scope.
 Execution: [plan](../completed/IOP-198-start-assignment-layout-plan.md).
-Implemented and validated locally; owner review and publication remain separate.
+Implemented and validated locally. On 2026-10-07 the owner approved integration
+into develop and publication of the story branch and develop to origin. Merge
+`e76477d` completed without conflicts and both remote refs were independently
+verified after the atomic push. See [publication evidence](../completed/IOP-198-publication-plan.md).
+Owner product review remains separate from publication.
