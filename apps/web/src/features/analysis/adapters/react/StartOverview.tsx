@@ -147,7 +147,7 @@ export function StartOverview({
         </Panel>
       ) : (
         <>
-          <div className="analysis-home-grid">
+          <div className="analysis-start-personal">
             {personalProfile ?? <Panel>
               <span className="analysis-home-label">{t("Profile")}</span>
               <h2>{context.user.name}</h2>

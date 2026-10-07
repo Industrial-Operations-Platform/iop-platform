@@ -1,3 +1,8 @@
+.analysis-start-personal {
+  display: grid;
+  gap: var(--iop-sectionGap);
+  min-width: 0;
+}
 .start-profile-heading {
   display: flex;
   align-items: center;

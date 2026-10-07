@@ -120,6 +120,7 @@ for (const viewport of [
 test("worker assignments appear on Start and in assignment activity", async ({
   page,
 }) => {
+  await page.clock.setFixedTime(new Date("2026-10-06T08:00:00Z"));
   await installMaintenanceAssetsFixture(page, "technician");
   await page.goto("/");
   await expect(

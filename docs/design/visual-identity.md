@@ -84,6 +84,25 @@ comparisons between Meeting preparation and detail, responsive overflow, actual
 module navigation and manually inspected screenshots. The opt-in
 legacy fixture preview is outside this identity baseline.
 
+### Personal operational presentation — IOP-198
+
+Start places Profile above Your assignment. Day/Week controls and the date field
+share one toolbar; day/week switching reuses the loaded week and keeps the
+department summary visible. Assigned maintenance is embedded below shifts,
+using two desktop columns and one narrow column. Titles and repair/location
+context stack above wrapping status/priority/date metadata; badges and dates
+remain whole. The selected date-only due period retains overdue and undated work.
+Technicians open assigned work through Start or notifications; their sidebar
+does not include Maintenance. Other delivered profile navigation remains scoped.
+
+Meeting category headings group label/count with an 8px gap and retain the add
+action at the right. Empty sections size to their content. Activity notifications
+group title/unread count and read/refresh actions above a separately scrollable
+feed of bordered cards. The anchored panel remains viewport-bounded and preserves
+Escape/focus return and native keyboard controls. Reuse existing tokens and
+shared components throughout. See [IOP-198](../planning/items/IOP-198-start-assignment-layout.md)
+for scope and desktop/narrow evidence.
+
 
 ## Reusable component contract
 

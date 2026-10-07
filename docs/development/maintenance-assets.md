@@ -42,8 +42,10 @@ The user's shared installation is not a test database.
    the original context. Follow subsequent pages to inspect all matching history.
 
 No analytics imports still permits registered assets and technical work.
-No alias means no inferred Handover/analytical history. Technicians read Maintenance
-and Handover in their own workspaces; digital asset records require Administrator, Team Leader or Task Force. Missing source grants appear as denied coverage.
+No alias means no inferred Handover/analytical history. Technicians open assigned
+Maintenance from Start or the activity bell and use the Handover workspace;
+their sidebar has no Maintenance entry. Digital asset records require
+Administrator, Team Leader or Task Force. Missing source grants appear as denied coverage.
 Retired assets retain their digital record; historical references survive catalog
 and profile changes.
 
@@ -63,8 +65,12 @@ an aborted database transaction as a complete timeline.
 3. Review Related operational reports. Open a report to inspect the existing
    Handover detail and follow-up, then return to the same maintenance context.
    Department matrix entries are these same Handover records.
-4. Administrator or Team Leader assigns a site person/team. Workers find unfinished assignments on
-   Start and new assignment activity in the existing bell. Viewing an assignment
+4. Administrator or Team Leader assigns a site person/team. Workers find unfinished
+   maintenance inside Your assignment below Profile on Start, and new assignment
+   activity in the existing bell. Day/Week and Assignment date select work due in
+   that period, also retaining overdue work (before today in the site time zone)
+   and work without a due date. Cards use two desktop columns with stacked metadata;
+   the department summary stays available in both period views. Viewing an assignment
    preserves its work destination. This is an in-app notice; no email is sent.
 5. Before saving Done, provide the actual repair outcome and review every pending
    scoped report. Include issues addressed by the work or exclude them with a

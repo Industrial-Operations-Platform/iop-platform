@@ -80,7 +80,7 @@ export function ActivityNotifications({
     <Popover
       label={t("Notifications")}
       description={error ? t(error) : t("{0} unread notifications", [total])}
-      className="iop-notifications"
+      className="iop-notifications iop-notifications--activity"
       triggerClassName="iop-toolbar-icon iop-notification-toggle"
       trigger={
         <>
@@ -99,24 +99,20 @@ export function ActivityNotifications({
       {(close) => (
         <>
           <div className="iop-notification-heading">
-            <strong>{t("Notifications")}</strong>
+            <strong className="iop-notification-title">
+              {t("Notifications")} {total > 0 && <Badge>{total}</Badge>}
+            </strong>
             <RefreshButton
               label={t("Refresh notifications")}
               busy={busy}
               onClick={() => setReload((value) => value + 1)}
             />
           </div>
-          <p className="iop-notification-caption">
-            {t("Colleague reports and maintenance assigned to you")}
-          </p>
-          {error && (
-            <p role="alert" className="iop-notification-caption">
-              {t(error)}
+          <div className="iop-notification-summary">
+            <p className="iop-notification-caption">
+              {t("Colleague reports and maintenance assigned to you")}
             </p>
-          )}
-          {total > 0 && (
-            <div className="iop-notification-heading">
-              <Badge>{total}</Badge>
+            {total > 0 && (
               <Button
                 variant="text"
                 disabled={busy}
@@ -127,70 +123,85 @@ export function ActivityNotifications({
               >
                 {t("Mark all as read")}
               </Button>
-            </div>
-          )}
-          {!!events.length && (
-            <>
-              <h3>{t("Maintenance assignments")}</h3>
-              <ul className="iop-notification-list">
-                {events.map((event) => (
-                  <li key={event.id}>
-                    <Button
-                      variant="text"
-                      onClick={() => {
-                        close();
-                        openMaintenance(event.recordId);
-                      }}
-                    >
-                      <strong>{event.title}</strong>
-                      <span>{t("Assigned to you")}</span>
-                      <time dateTime={event.at}>{instant(event.at)}</time>
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-          {!!page.entries.length && (
-            <>
-              <h3>{t("Shift Handover")}</h3>
-              <ul className="iop-notification-list">
-                {page.entries.map((entry) => (
-                  <li key={entry.id}>
-                    <Button
-                      variant="text"
-                      onClick={() => {
-                        close();
-                        openEntry(entry.id);
-                      }}
-                    >
-                      <strong>{entry.content.summary}</strong>
-                      <span>
-                        {entry.authorName} ·{" "}
-                        {entry.departmentLabel || t("Site-wide")}
-                      </span>
-                      <time dateTime={entry.notificationAt ?? entry.createdAt}>
-                        {instant(entry.notificationAt ?? entry.createdAt)}
-                      </time>
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-          {!total && !error && (
-            <p className="iop-notification-empty">
-              {t(busy ? "Checking for new entries…" : "You're all caught up.")}
+            )}
+          </div>
+          {error && (
+            <p role="alert" className="iop-notification-caption">
+              {t(error)}
             </p>
           )}
-          {page.total > page.entries.length && (
-            <p className="iop-notification-caption">
-              {t("Showing the latest {0} of {1}", [
-                page.entries.length,
-                page.total,
-              ])}
-            </p>
-          )}
+          <div className="iop-notification-feed">
+            {!!events.length && (
+              <>
+                <h3 className="iop-notification-group">
+                  {t("Maintenance assignments")}
+                </h3>
+                <ul className="iop-notification-list">
+                  {events.map((event) => (
+                    <li key={event.id}>
+                      <Button
+                        variant="text"
+                        onClick={() => {
+                          close();
+                          openMaintenance(event.recordId);
+                        }}
+                      >
+                        <strong>{event.title}</strong>
+                        <span className="iop-notification-metadata">
+                          <span>{t("Assigned to you")}</span>
+                          <time dateTime={event.at}>{instant(event.at)}</time>
+                        </span>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {!!page.entries.length && (
+              <>
+                <h3 className="iop-notification-group">
+                  {t("Shift Handover")}
+                </h3>
+                <ul className="iop-notification-list">
+                  {page.entries.map((entry) => (
+                    <li key={entry.id}>
+                      <Button
+                        variant="text"
+                        onClick={() => {
+                          close();
+                          openEntry(entry.id);
+                        }}
+                      >
+                        <strong>{entry.content.summary}</strong>
+                        <span className="iop-notification-metadata">
+                          <span>
+                            {entry.authorName} ·{" "}
+                            {entry.departmentLabel || t("Site-wide")}
+                          </span>
+                          <time dateTime={entry.notificationAt ?? entry.createdAt}>
+                            {instant(entry.notificationAt ?? entry.createdAt)}
+                          </time>
+                        </span>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {!total && !error && (
+              <p className="iop-notification-empty">
+                {t(busy ? "Checking for new entries…" : "You're all caught up.")}
+              </p>
+            )}
+            {page.total > page.entries.length && (
+              <p className="iop-notification-caption">
+                {t("Showing the latest {0} of {1}", [
+                  page.entries.length,
+                  page.total,
+                ])}
+              </p>
+            )}
+          </div>
         </>
       )}
     </Popover>

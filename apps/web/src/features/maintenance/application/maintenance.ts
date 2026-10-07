@@ -15,6 +15,19 @@ import type {
 } from "../domain/models";
 import { emptyRecord } from "../domain/models";
 
+/** Date-only personal browsing retains overdue and undated unfinished work. */
+export function assignmentsForPeriod(
+  records: MaintenanceRecord[],
+  period: { from: string; to: string; today: string },
+): MaintenanceRecord[] {
+  return records.filter(
+    ({ data }) =>
+      !data.dueDate ||
+      data.dueDate < period.today ||
+      (data.dueDate >= period.from && data.dueDate <= period.to),
+  );
+}
+
 export interface Gateway {
   catalog(): Promise<Catalog>;
   query(selection: Selection): Promise<Page>;

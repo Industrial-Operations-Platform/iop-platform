@@ -456,7 +456,7 @@ export function WorkspaceApp({
             ...(handover && signedIn
               ? [{ id: "handover" as const, label: t("Shift Handover") }]
               : []),
-            ...(maintenance && signedIn
+            ...(maintenance && signedIn && effectiveProfile !== "technician"
               ? [{ id: "maintenance" as const, label: t("Maintenance") }]
               : []),
             ...(assets && canReadAssets
@@ -590,13 +590,30 @@ export function WorkspaceApp({
         />
       ) : page === "start" && administration ? (
         <AdministrationOverview
-          personal={workforce && signedIn ? <>
-            <div className="analysis-home-grid">
-              <StartPersonalProfile name={context.user!.name} profileLabel={profileLabels.administrator} workforce={workforce} handover={handover} onDepartment={setAssignedDepartmentId} />
-              <WorkforceToday application={workforce} timeZone={context.scope?.siteTimeZone ?? "UTC"} open={() => setPage("workforce")} />
+          personal={workforce && signedIn ? (
+            <div className="analysis-start-personal">
+              <StartPersonalProfile
+                name={context.user!.name}
+                profileLabel={profileLabels.administrator}
+                workforce={workforce}
+                handover={handover}
+                onDepartment={setAssignedDepartmentId}
+              />
+              <WorkforceToday
+                application={workforce}
+                timeZone={context.scope?.siteTimeZone ?? "UTC"}
+                open={() => setPage("workforce")}
+                relatedWork={maintenance ? (period) => (
+                  <MaintenanceAssignments
+                    application={maintenance}
+                    open={openMaintenance}
+                    period={period}
+                    embedded
+                  />
+                ) : undefined}
+              />
             </div>
-            {maintenance && <MaintenanceAssignments application={maintenance} open={openMaintenance} />}
-          </> : undefined}
+          ) : undefined}
           canImport={!!context?.canImport}
           canAdminister={!!showUserAdministration}
           access={access}
@@ -666,11 +683,19 @@ export function WorkspaceApp({
                 application={workforce}
                 timeZone={context.scope?.siteTimeZone ?? "Europe/Zurich"}
                 open={() => setPage("workforce")}
+                relatedWork={maintenance ? (period) => (
+                  <MaintenanceAssignments
+                    application={maintenance}
+                    open={openMaintenance}
+                    period={period}
+                    embedded
+                  />
+                ) : undefined}
               />
             ) : undefined
           }
           maintenance={
-            maintenance && signedIn ? (
+            maintenance && signedIn && !workforce ? (
               <MaintenanceAssignments
                 application={maintenance}
                 open={openMaintenance}

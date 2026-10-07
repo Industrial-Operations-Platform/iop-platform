@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MaintenanceNotifications } from "../src/features/maintenance/application/notifications";
-import { MaintenanceApplication } from "../src/features/maintenance/application/maintenance";
+import { assignmentsForPeriod, MaintenanceApplication } from "../src/features/maintenance/application/maintenance";
 import { BrowserAssignmentCheckpoint } from "../src/features/maintenance/adapters/browser/assignment-checkpoint";
 import { ActivityNotifications } from "../src/host/ActivityNotifications";
 import { MaintenanceAssignments } from "../src/features/maintenance/adapters/react/MaintenanceAssignments";
@@ -114,4 +114,16 @@ test("Start prioritizes unfinished assigned work with relevant repair informatio
   expect(open).toHaveBeenCalledWith("repair");
   expect(screen.getByText("Assembly · Cassette 2")).toBeVisible();
   expect(screen.getByText("In progress")).toBeVisible();
+});
+
+test("personal maintenance periods include due work, overdue work and undated work without pulling future periods in", () => {
+  const records = ["2026-10-02", "2026-10-06", "2026-10-09", "2026-10-13", ""].map((dueDate) => ({
+    id: dueDate || "undated", data: { ...emptyRecord(), dueDate },
+  } as MaintenanceRecord));
+  expect(assignmentsForPeriod(records, { from: "2026-10-06", to: "2026-10-06", today: "2026-10-06" }).map((r) => r.id))
+    .toEqual(["2026-10-02", "2026-10-06", "undated"]);
+  expect(assignmentsForPeriod(records, { from: "2026-10-05", to: "2026-10-11", today: "2026-10-06" }).map((r) => r.id))
+    .toEqual(["2026-10-02", "2026-10-06", "2026-10-09", "undated"]);
+  expect(assignmentsForPeriod(records, { from: "2026-10-12", to: "2026-10-18", today: "2026-10-06" }).map((r) => r.id))
+    .toEqual(["2026-10-02", "2026-10-13", "undated"]);
 });
