@@ -12,6 +12,7 @@ import {
 } from "../../../../design/components";
 import type { HandoverApplication } from "../../application/handover";
 import type {
+  CompletedReference,
   Context,
   Entry,
   History,
@@ -32,6 +33,7 @@ export function EntryDetail({
   onChanged,
   onEquipment,
   onMaintenance,
+  onReference,
 }: {
   id: string;
   context: Context;
@@ -43,6 +45,7 @@ export function EntryDetail({
   onChanged: () => void;
   onEquipment?: (entry: Entry) => void;
   onMaintenance?: (entry: Entry) => void;
+  onReference?: (reference: CompletedReference) => void;
 }) {
   const [history, setHistory] = useState<History | null>(null),
     [error, setError] = useState(""),
@@ -84,13 +87,12 @@ export function EntryDetail({
       setBusy(false);
     }
   };
-  const e = history?.entry,
-    canEdit =
-      !!e &&
-      !e.deleted &&
-      (context.canCoordinate || (e.authorId === context.actorId && !context.categories.find((c) => c.id === e.content.categoryId)?.coordinatorOnly)),
-    canProgress =
-      !!e && !e.deleted && (context.canCoordinate || !context.categories.find((c) => c.id === e.content.categoryId)?.coordinatorOnly) && (canEdit || e.responsibleId === context.actorId);
+  const e = history?.entry;
+  const category = context.categories.find((choice) => choice.id === e?.content.categoryId);
+  const categoryWritable = category?.canPublish !== false && (context.canCoordinate || !category?.coordinatorOnly);
+  const canEdit = !!e && !e.deleted && categoryWritable && (context.canCoordinate || e.authorId === context.actorId);
+  const canProgress = !!e && !e.deleted && categoryWritable && category?.workflow !== "success" &&
+    (canEdit || e.responsibleId === context.actorId);
   return (
     <section aria-label={t("Handover entry")} className="handover-workspace">
       <HandoverHeading
@@ -105,7 +107,7 @@ export function EntryDetail({
         <>
           <Panel className="handover-detail-panel">
             <h2>{e.content.summary}</h2>
-            <EntryDetailBody entry={e} />
+            <EntryDetailBody entry={e} onReference={onReference} />
             <p className="handover-detail-recorded">
               {t("Recorded ")}
               {new Date(e.createdAt).toLocaleString(locale())}
@@ -150,14 +152,14 @@ export function EntryDetail({
                   {t("Delete entry")}
                 </Button>
               )}
-              <Button
+              {categoryWritable && <Button
                 onClick={() => {
                   setInitialState(undefined);
                   setFollowing(true);
                 }}
               >
                 {t("Add follow-up ")}
-              </Button>
+              </Button>}
               {canProgress && e.issueState !== "none" && (
                 <Button
                   variant="secondary"

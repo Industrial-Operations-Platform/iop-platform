@@ -404,3 +404,15 @@ Place the meeting/daily date beside its section heading, with Today's reset acti
 Current pending topics remain in their separate disclosure. Category add icons and
 Maintenance completion dialogs use shared controls, visible focus and narrow layouts.
 Image previews preserve their aspect ratio and never widen their card/page.
+
+## Handover category workflow presentation — IOP-199
+
+Meeting preparation and the personal Journal share the Handover workspace; the
+Journal replaces My entries and uses its expanded personal summary cards. Meeting
+preparation retains compact cards. Populated category panels may span two desktop
+columns and return to one on narrow screens. Information and People headings use
+accessible shared buttons to expand full content or the existing dated Workforce
+view in the shared Dialog. Information also appears above personal Start content
+for every profile, independently of department selection. Forms reuse shared fields,
+date controls, existing image previews and completion confirmation controls.
+This supersedes earlier navigation/density statements for the affected views.

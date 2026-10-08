@@ -35,9 +35,10 @@ export function FollowUpForm({
   const [note, setNote] = useState(""),
     [responsible, setResponsible] = useState(entry.responsibleId);
   const canProgress =
-    context.canCoordinate ||
+    context.categories.find((category) => category.id === entry.content.categoryId)?.workflow !== "success" &&
+    (context.canCoordinate ||
     entry.authorId === context.actorId ||
-    entry.responsibleId === context.actorId;
+    entry.responsibleId === context.actorId);
   return (
     <form
       className="handover-form"

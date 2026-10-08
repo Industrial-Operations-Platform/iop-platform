@@ -127,3 +127,14 @@ test("personal maintenance periods include due work, overdue work and undated wo
   expect(assignmentsForPeriod(records, { from: "2026-10-12", to: "2026-10-18", today: "2026-10-06" }).map((r) => r.id))
     .toEqual(["2026-10-02", "2026-10-13", "undated"]);
 });
+
+test("successful details clear only the assignment revisions seen, including feed/detail races", async () => {
+  const checkpoint = { load: () => [], save: jest.fn() };
+  const other = { ...event, id: "other", recordId: "other-work" };
+  const assignments = jest.fn(async () => ({ records: [], events: [event, other] }));
+  const notifications = new MaintenanceNotifications({ assignments }, checkpoint);
+  notifications.markRead("repair", 2);
+  expect(await notifications.refresh()).toEqual([other]);
+  assignments.mockResolvedValueOnce({ records: [], events: [{ ...event, id: "later", revision: 3 }, other] });
+  expect((await notifications.refresh()).map((notice) => notice.id)).toEqual(["later", "other"]);
+});

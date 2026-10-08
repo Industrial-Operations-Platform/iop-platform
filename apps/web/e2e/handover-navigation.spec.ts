@@ -99,6 +99,7 @@ for (const width of [1440, 820, 375]) {
             scope: null,
           },
         });
+      if (path.endsWith("/handover/default-location")) return route.fulfill({ json: { departmentId: "hall-a" } });
       if (path.endsWith("/handover/context"))
         return route.fulfill({
           json: {
@@ -318,12 +319,11 @@ for (const width of [1440, 820, 375]) {
       "Meeting preparation",
       "Journal",
       "Department matrix",
-      "My entries",
     ]);
     await tabs.getByRole("button", { name: "Journal", exact: true }).click();
     await expect(path.locator('[aria-current="page"]')).toHaveText("Journal");
     const journalCard = page
-      .getByRole("region", { name: "Problems", exact: true })
+      .locator(".handover-summary-cards")
       .getByRole("button", { name: entry.content.summary, exact: false });
     await expect(journalCard).toBeVisible();
     const journalStyle = await renderedSummaryStyle(journalCard);
@@ -354,9 +354,10 @@ for (const width of [1440, 820, 375]) {
           .getByRole("button", { name: entry.content.summary, exact: false })
           .evaluate(summaryStyle),
       )
-      .toEqual(journalStyle);
+      .toMatchObject({ background: journalStyle.background, border: journalStyle.border,
+        font: journalStyle.font, ink: journalStyle.ink, muted: journalStyle.muted });
     const sectionStyle = await meeting
-      .getByRole("heading", { name: "Problems", exact: true })
+      .getByRole("heading", { name: /^Problems/ })
       .evaluate((element) => {
         const style = getComputedStyle(element);
         return {
@@ -610,10 +611,8 @@ for (const width of [1440, 820, 375]) {
     await search
       .getByRole("button", { name: "Close Search handover history" })
       .click();
-    await tabs.getByRole("button", { name: "My entries", exact: true }).click();
-    await expect(path.locator('[aria-current="page"]')).toHaveText(
-      "My entries",
-    );
+    await tabs.getByRole("button", { name: "Journal", exact: true }).click();
+    await expect(path.locator('[aria-current="page"]')).toHaveText("Journal");
     await page.screenshot({
       path: `/tmp/iop-191-compact-mine-${width}.png`,
       fullPage: true,
@@ -627,10 +626,10 @@ for (const width of [1440, 820, 375]) {
       .getByRole("button", { name: entry.content.summary, exact: false })
       .click();
     await breadcrumb
-      .getByRole("button", { name: "My entries", exact: true })
+      .getByRole("button", { name: "Journal", exact: true })
       .click();
     await expect(
-      tabs.getByRole("button", { name: "My entries", exact: true }),
+      tabs.getByRole("button", { name: "Journal", exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
     await page
       .getByRole("button", { name: entry.content.summary, exact: false })

@@ -744,6 +744,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/handover/default-location": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_defaultLocation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/completion-targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_completionTargets"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/handover/equipment": {
         parameters: {
             query?: never;
@@ -1077,6 +1109,13 @@ export interface components {
             search?: string;
             cursor?: string;
         };
+        HandoverCompletedReferenceDto: {
+            /** @enum {string} */
+            source: "handover" | "maintenance";
+            id: string;
+            title: string;
+            location: string;
+        };
         HandoverPersonDto: {
             id: string;
             name: string;
@@ -1086,11 +1125,19 @@ export interface components {
             actorName: string;
             at: string;
         };
+        HandoverResolutionDto: {
+            /** @enum {string} */
+            source: "handover" | "maintenance";
+            id: string;
+            expectedRevision: number;
+        };
         HandoverImageDto: {
             name: string;
             dataUrl: string;
         };
         HandoverContentDto: {
+            displayUntil?: string;
+            resolutions?: components["schemas"]["HandoverResolutionDto"][];
             mentionIds?: string[];
             images?: components["schemas"]["HandoverImageDto"][];
             date: string;
@@ -1112,6 +1159,7 @@ export interface components {
             discuss: boolean;
         };
         HandoverEntryDto: {
+            completedReferences?: components["schemas"]["HandoverCompletedReferenceDto"][];
             notificationAt?: string;
             mentionedPeople?: components["schemas"]["HandoverPersonDto"][];
             deleted?: boolean;
@@ -1857,6 +1905,10 @@ export interface components {
             id: string;
         };
         HandoverChoiceDto: {
+            publisherProfiles?: string[];
+            canPublish?: boolean;
+            /** @enum {string} */
+            workflow?: "safety" | "information" | "success" | "people" | "technical-problem" | "technical-blocked";
             coordinatorOnly?: boolean;
             carryForward?: boolean;
             id: string;
@@ -1872,6 +1924,32 @@ export interface components {
             externalSystemLabel: string;
             timeZone: string;
         };
+        HandoverDefaultRequestDto: {
+            date: string;
+        };
+        HandoverDefaultLocationDto: {
+            departmentId: string;
+        };
+        HandoverTargetRequestDto: {
+            /** @enum {string} */
+            source: "handover" | "maintenance";
+            search: string;
+            cursor: string;
+        };
+        HandoverCompletionTargetDto: {
+            /** @enum {string} */
+            source: "handover" | "maintenance";
+            id: string;
+            expectedRevision: number;
+            title: string;
+            location: string;
+            canComplete: boolean;
+        };
+        HandoverCompletionPageDto: {
+            targets: components["schemas"]["HandoverCompletionTargetDto"][];
+            nextCursor: string;
+            total: number;
+        };
         HandoverEquipmentRequestDto: {
             departmentId: string;
             areaId: string;
@@ -1882,7 +1960,15 @@ export interface components {
             codes: string[];
             nextCursor: string;
         };
+        HandoverNotificationReadDto: {
+            id: string;
+            /** Format: date-time */
+            at: string;
+        };
         HandoverSelectionDto: {
+            displayOn?: string;
+            resolutionCandidates?: boolean;
+            notificationReads?: components["schemas"]["HandoverNotificationReadDto"][];
             excludeAttention?: boolean;
             resolvedFrom?: string;
             resolvedTo?: string;
@@ -3833,6 +3919,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HandoverContextDto"];
+                };
+            };
+        };
+    };
+    HandoverController_defaultLocation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverDefaultRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverDefaultLocationDto"];
+                };
+            };
+        };
+    };
+    HandoverController_completionTargets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverTargetRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverCompletionPageDto"];
                 };
             };
         };

@@ -106,3 +106,20 @@ test("mention updates advance the checkpoint by notification time rather than th
   await notifications.refresh();
   expect(list).toHaveBeenLastCalledWith(expect.objectContaining({ notificationsAfter: update.notificationAt }));
 });
+
+test("reading one detail persists its exact seen time without hiding peers or later updates", async () => {
+  localStorage.clear();
+  const checkpoint = new BrowserNotificationCheckpoint("org", "site", "alice");
+  checkpoint.save(notificationEpoch);
+  let entries = [publication("one", "2026-10-07T10:00:00.000Z"), publication("two", "2026-10-07T10:00:00.000Z")];
+  const list = jest.fn(async (selection) => page(entries.filter((entry) => !(selection.notificationReads ?? []).some((read: {id:string;at:string}) => read.id === entry.id && read.at >= entry.createdAt))));
+  const app = new EntryNotifications({ list }, checkpoint);
+  await app.refresh();
+  expect(app.markRead("one", entries[0].createdAt).entries.map((entry) => entry.id)).toEqual(["two"]);
+  const reloaded = new EntryNotifications({ list }, new BrowserNotificationCheckpoint("org", "site", "alice"));
+  expect((await reloaded.refresh()).total).toBe(1);
+  expect(new BrowserNotificationCheckpoint("org", "site", "bob").loadReads()).toEqual([]);
+  entries = [publication("one", "2026-10-07T11:00:00.000Z"), entries[1]];
+  expect((await reloaded.refresh()).total).toBe(2);
+  localStorage.clear();
+});

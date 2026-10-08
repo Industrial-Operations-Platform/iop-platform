@@ -221,7 +221,6 @@ for (const width of [1440, 1024, 375]) {
     await page
       .getByRole("button", { name: "Notifications", exact: true })
       .click();
-    await notices.getByRole("button", { name: "Mark all as read" }).click();
     await expect(notices.getByText("You're all caught up.")).toBeVisible();
     await page.reload();
     await page
@@ -237,7 +236,7 @@ for (const width of [1440, 1024, 375]) {
     await expect(add).toHaveText("");
     await expect(add.locator("svg")).toHaveCount(1);
     await screenshot("daily");
-    await page.getByRole("button", { name: "My entries", exact: true }).click();
+    await page.getByRole("button", { name: "Journal", exact: true }).click();
     await grid();
     await screenshot("mine");
     await page

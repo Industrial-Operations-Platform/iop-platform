@@ -1,7 +1,7 @@
 import { t } from "../../../../localization/i18n";
 import { MeetingCanvas } from "./MeetingCanvas";
 import { EntrySummaryCards } from "./EntrySummaryCards";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   DepartmentScope,
   Actions,
@@ -29,15 +29,15 @@ import {
   type Page,
   type Selection,
 } from "../../domain/models";
-import { EntryCards, EntryMatrix } from "./Entries";
+import { EntryMatrix } from "./Entries";
 import { EntryDetail } from "./EntryDetail";
 import { EntryForm, today } from "./EntryForm";
 import { HandoverFilters } from "./HandoverFilters";
-import { CategoryBoard } from "./CategoryBoard";
+
 import { HandoverHeading } from "./HandoverHeading";
 import "./handover.css";
 const blankPage: Page = { entries: [], nextCursor: "", total: 0 };
-type View = "journal" | "matrix" | "meeting" | "mine";
+type View = "journal" | "matrix" | "meeting";
 export function HandoverWorkspace({
   application,
   dailyOverview = false,
@@ -50,6 +50,9 @@ export function HandoverWorkspace({
   onEntryOpened,
   onHome,
   onMaintenance,
+  onPeople,
+  onOpenMaintenance,
+  renderPeople,
 }: {
   application: HandoverApplication;
   dailyOverview?: boolean;
@@ -62,6 +65,9 @@ export function HandoverWorkspace({
   onEntryOpened?: () => void;
   onHome?: () => void;
   onMaintenance?: (entry: Entry) => void;
+  onPeople?: () => void;
+  onOpenMaintenance?: (id: string) => void;
+  renderPeople?: (date: string) => ReactNode;
 }) {
   const [context, setContext] = useState<Context | null>(null),
     [error, setError] = useState("");
@@ -91,7 +97,9 @@ export function HandoverWorkspace({
     initialHighlights || initialPending || initialAttention,
   );
   const query =
-    view === "matrix" ? matrixSelection(selection, matrixHistory) : selection;
+    view === "matrix" ? matrixSelection(selection, matrixHistory) : view === "journal"
+      ? { ...selection, ...(filtered ? {} : { from: day || today(context?.timeZone ?? "UTC"), to: day || today(context?.timeZone ?? "UTC") }), mine: true }
+      : selection;
   const [page, setPage] = useState(blankPage);
   const [outstanding, setOutstanding] = useState<
     { category: Choice; page: Page }[]
@@ -101,13 +109,12 @@ export function HandoverWorkspace({
   );
   const [creating, setCreating] = useState<string | null>(null),
     [detail, setDetail] = useState(initialEntry);
-  const board = view === "journal" && !filtered;
   const meetingLabel = dailyOverview ? "Daily overview" : "Meeting preparation";
   const viewLabels: Record<View, string> = {
     meeting: meetingLabel,
     journal: "Journal",
     matrix: "Department matrix",
-    mine: "My entries",
+
   };
   useEffect(() => {
     onEntryOpened?.();
@@ -117,7 +124,7 @@ export function HandoverWorkspace({
     setLoading(true);
     setError("");
     const load = async () => {
-      if (board || view === "meeting") {
+      if (view === "meeting") {
         const settings = context ?? (await application.context());
         const selected = meetingSelection(
           day || today(settings.timeZone),
@@ -165,7 +172,6 @@ export function HandoverWorkspace({
     selection,
     view,
     refresh,
-    board,
     dailyOverview,
     day,
     matrixHistory,
@@ -240,6 +246,7 @@ export function HandoverWorkspace({
               state: "pending" as const,
             }
           : {}),
+        ...(!unresolved && section.category.workflow === "information" ? { from: "", to: "", departmentId: "", areaId: "", displayOn: day || today(context!.timeZone) } : {}),
         categoryId,
         cursor: section.page.nextCursor,
       });
@@ -297,6 +304,7 @@ export function HandoverWorkspace({
         onChanged={() => setRefresh((n) => n + 1)}
         onEquipment={equipmentHistory}
         onMaintenance={onMaintenance}
+        onReference={(reference) => reference.source === "handover" ? open(reference.id) : onOpenMaintenance?.(reference.id)}
       />
     );
   return (
@@ -315,7 +323,7 @@ export function HandoverWorkspace({
                 setCreating("");
               }}
             />
-            {(view === "matrix" || view === "mine") && (
+            {(view === "matrix" || view === "journal") && (
               <IconButton
                 label={t("Search history")}
                 disabled={!context}
@@ -374,7 +382,7 @@ export function HandoverWorkspace({
           {view === "matrix" && !matrixHistory && (
             <p>{t("Pending work and today’s updates")}</p>
           )}
-          {view === "mine" && <p>{t("Entries you published")}</p>}
+          {view === "journal" && <p>{t("Your Journal · entries you published")}</p>}
         </div>
       )}
       <ViewNavigation
@@ -395,7 +403,7 @@ export function HandoverWorkspace({
           apply({
             ...emptySelection,
             departmentId: selection.departmentId,
-            mine: next === "mine",
+            mine: next === "journal",
           });
         }}
       />
@@ -420,7 +428,7 @@ export function HandoverWorkspace({
               apply({
                 ...emptySelection,
                 departmentId: selection.departmentId,
-                mine: view === "mine",
+                mine: view === "journal",
               });
             }}
           >
@@ -433,24 +441,7 @@ export function HandoverWorkspace({
       ) : (
         !error && (
           <>
-            {board ? (
-              <CategoryBoard
-                sections={sections}
-                add={setCreating}
-                open={open}
-                history={(categoryId) => {
-                  apply({
-                    ...meetingSelection(
-                      day || today(context!.timeZone),
-                      selection.departmentId,
-                      false,
-                    ),
-                    categoryId,
-                  });
-                  setFiltered(true);
-                }}
-              />
-            ) : view === "meeting" ? (
+            {view === "meeting" ? (
               <>
                 <div className="handover-section-heading">
                   <h2>{t(meetingLabel)}</h2>
@@ -484,12 +475,15 @@ export function HandoverWorkspace({
                 )}
                 <MeetingCanvas
                   sections={sections}
+                  openIssueTotal={outstanding.reduce((total, section) => total + section.page.total, 0)}
+                  onPeople={onPeople}
+                  peopleContent={renderPeople?.(day || today(context!.timeZone))}
                   open={open}
                   more={(id) => moreCategory(id)}
                   busy={busy}
                   add={(category) => setCreating(category.id)}
                   canAdd={(category) =>
-                    !category.coordinatorOnly || !!context?.canCoordinate
+                    category.canPublish !== false && (!category.coordinatorOnly || !!context?.canCoordinate)
                   }
                 />
               </>
@@ -524,15 +518,13 @@ export function HandoverWorkspace({
                       }
                       open={open}
                     />
-                  ) : view === "mine" ? (
+                  ) : (
                     <EntrySummaryCards
                       entries={page.entries}
                       open={open}
                       expanded
                       personal
                     />
-                  ) : (
-                    <EntryCards entries={page.entries} open={open} />
                   ))}
                 {page.nextCursor && (
                   <Button
@@ -545,7 +537,7 @@ export function HandoverWorkspace({
                 )}
               </>
             )}
-            {(board || view === "meeting") && (
+            {(view === "meeting") && (
               <Disclosure
                 summary={t("Department status · {0} open issues", [
                   outstanding.reduce(
@@ -601,7 +593,7 @@ export function HandoverWorkspace({
               setDraft({
                 ...emptySelection,
                 departmentId: selection.departmentId,
-                mine: view === "mine",
+                mine: view === "journal",
               })
             }
           />
@@ -619,7 +611,6 @@ export function HandoverWorkspace({
             context={context}
             defaults={{
               date: day || today(context.timeZone),
-              departmentId: selection.departmentId,
               ...(creating ? { categoryId: creating } : {}),
             }}
             pending={busy}

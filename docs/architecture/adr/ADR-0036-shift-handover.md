@@ -264,3 +264,28 @@ bound independently of historical daily selection, superseding the selected-day
 upper bound in IOP-190. Start defaults to Workforce current/home department and
 partitions attention from other open reports; department browsing remains explicit.
 Maintenance status controls reuse its authorized save and reviewed atomic closure.
+
+## Owner-requested category workflows — 2026-10-07
+
+[IOP-199](../../planning/items/IOP-199-handover-category-workflows.md) records the
+owner's explicit refinements. Scoped category workflows distinguish Safety without
+components, condition-derived technical Problems/Performance, Success references,
+Information display periods and Workforce-backed People. Information's current
+publishing profile restriction defaults to Team Leader, in addition to coordinator
+grants; it supersedes IOP-196's Administrator publication default. A current profile
+is an additional configured restriction, never an alternative to active scoped grants.
+
+Workforce's previously accepted receiving port now supplies the author's actual
+zone assignment for the entry date; floating/unassigned/unzoned leaders have no
+location default and every author retains manual override. Success publication
+reuses the existing coordinated receiver pattern for selected report resolution
+and Maintenance completion. Existing permissions, expected revisions, outcomes and
+complete repair review remain mandatory. Both owners' histories and the Success
+publish atomically; corrections never trigger a second closure. The coordination
+lease precedes the Maintenance lease at both mutation entry points.
+
+Information broadcasts use existing revisions and local read state; selected display
+periods affect prominence, never history. Successful details acknowledge only their
+seen activity, preserving other notices and later updates. Journal is the personal
+filter of the shared workspace, replacing My entries. No new schema/service, grant
+bundle, file store, formal shift closure or architectural pattern is introduced.

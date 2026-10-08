@@ -129,9 +129,9 @@ and [roadmap](ROADMAP.md). Proposed decisions are not accepted implementations.
 Shift Handover follows [ADR-0036](docs/architecture/adr/ADR-0036-shift-handover.md):
 operator-configured locations, explicit unverified equipment references and durable
 revision history, independent of analytics. [Setup and workflow](docs/development/shift-handover.md)
-document permissions and current journal behavior. Formal shift binding, Workforce
-location defaults and explicit canonical entry-to-asset references remain separate
-integration work; IOP-194 supplies alias-based history and repair resolution.
+document permissions and current journal behavior. Formal shift binding and explicit canonical entry-to-asset references remain separate
+integration work; Workforce location defaults use a receiving-owned dated lookup under
+IOP-199; IOP-194 supplies alias-based history and repair resolution.
 
 Workforce is delivered under [IOP-184](docs/planning/items/IOP-184-m6-workforce.md).
 It reuses accepted scoped authorization and revision patterns. Personal availability
@@ -172,3 +172,12 @@ from the pilot. Audit storage, capture, inspection and retention infrastructure
 are not pilot release gates; absent Audit infrastructure does not block pilot
 operations. IOP-009 is complete as design. IOP-023 remains future work, and existing
 source provenance, authorization and scope requirements retain their own owners.
+
+IOP-199 reuses these patterns for category workflows: configured Safety/technical
+rules, dated Workforce defaults, Team Leader Information publication and display
+windows, exact browser-local notification acknowledgments, and Success-linked
+closure. Handover invokes Maintenance-owned reads/completion validation on the
+existing pinned transaction; source modules retain their records/revisions. Writes
+acquire the shared coordination namespace before the Maintenance lease. No new
+service, storage schema, permission grant, formal shift identity or live equipment
+health claim is introduced. See the [Handover contract](docs/product/shift-handover.md).

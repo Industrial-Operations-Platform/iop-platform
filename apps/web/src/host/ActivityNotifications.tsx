@@ -33,6 +33,8 @@ export function ActivityNotifications({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [reload, setReload] = useState(0);
+  useEffect(() => handover?.subscribe(setPage), [handover]);
+  useEffect(() => maintenance?.subscribe(setEvents), [maintenance]);
   useEffect(() => {
     let active = true,
       fetching = false;

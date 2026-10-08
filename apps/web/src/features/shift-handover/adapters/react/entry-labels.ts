@@ -3,7 +3,7 @@ import type { Entry } from "../../domain/models";
 export const issueLabel = (state: Entry["issueState"]) =>
   t(
     {
-      none: "Information",
+      none: "Update",
       open: "Open",
       "in-progress": "In progress",
       resolved: "Resolved",
