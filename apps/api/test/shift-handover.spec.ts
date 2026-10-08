@@ -19,7 +19,7 @@ const catalog = handoverCatalog(
     organizationId: "org",
     siteId: "site",
     externalSystemLabel: "Work order",
-    categories: [{ id: "safety", label: "Safety" }],
+    categories: [{ id: "observations", label: "Observations" }],
     locations: [
       {
         id: "dept",
@@ -46,7 +46,7 @@ const input: CreateEntry = {
   responsibleId: "colleague",
   content: {
     date: "2026-09-29",
-    categoryId: "safety",
+    categoryId: "observations",
     summary: "Guard inspected",
     details: "",
     departmentId: "dept",
@@ -264,7 +264,7 @@ test.each([
     ),
   ).toThrow("invalid_handover");
 });
-test("accepts incomplete safety reports and independent feedback deadlines, but rejects forged fields", () => {
+test("accepts incomplete reports and independent feedback deadlines, but rejects forged fields", () => {
   expect(
     validContent(
       {
@@ -512,9 +512,9 @@ test("carry-forward is configured by category ID, preserves labels and accepts e
     ],
   };
   expect(handoverCatalog(config, config, "UTC").categories).toEqual([
-    { id: "problems", label: "Renamed problems", carryForward: false, coordinatorOnly: false },
+    { id: "problems", label: "Renamed problems", carryForward: false, coordinatorOnly: false, workflow: "technical-problem" },
     { id: "custom", label: "Local topics", carryForward: true, coordinatorOnly: false },
-    { id: "information", label: "Information", carryForward: false, coordinatorOnly: true },
+    { id: "information", label: "Information", carryForward: false, coordinatorOnly: true, workflow: "information", publisherProfiles: ["team-leader"] },
   ]);
   expect(() =>
     handoverCatalog(
@@ -643,7 +643,7 @@ test("Information publication/correction requires coordinator authority and ment
   const saved = await restricted.create("author", publication);
   expect(saved.mentionedPeople).toEqual([{ id: "colleague", name: "Colleague" }]);
   tx.coordinator = false;
-  await expect(restricted.change("author", { id: saved.id, expectedRevision: 1, action: "correct", note: "Correction", content: { ...saved.content, categoryId: "safety" } })).rejects.toMatchObject({ code: "handover_denied" });
+  await expect(restricted.change("author", { id: saved.id, expectedRevision: 1, action: "correct", note: "Correction", content: { ...saved.content, categoryId: "observations" } })).rejects.toMatchObject({ code: "handover_denied" });
   expect(entry().revision).toBe(1);
   tx.coordinator = true;
   await expect(restricted.change("author", { id: saved.id, expectedRevision: 1, action: "correct", note: "Correction", content: { ...saved.content, mentionIds: ["foreign-person"] } })).rejects.toMatchObject({ code: "handover_denied" });

@@ -3,7 +3,31 @@ export class HandoverImageDto {
   @ApiProperty() name!: string;
   @ApiProperty() dataUrl!: string;
 }
+export class HandoverResolutionDto {
+  @ApiProperty({ enum: ["handover", "maintenance"] }) source!: "handover" | "maintenance";
+  @ApiProperty() id!: string;
+  @ApiProperty() expectedRevision!: number;
+}
+export class HandoverCompletionTargetDto extends HandoverResolutionDto {
+  @ApiProperty() title!: string;
+  @ApiProperty() location!: string;
+  @ApiProperty() canComplete!: boolean;
+}
+export class HandoverCompletionPageDto {
+  @ApiProperty({ type: [HandoverCompletionTargetDto] }) targets!: HandoverCompletionTargetDto[];
+  @ApiProperty() nextCursor!: string;
+  @ApiProperty() total!: number;
+}
+export class HandoverTargetRequestDto {
+  @ApiProperty({ enum: ["handover", "maintenance"] }) source!: "handover" | "maintenance";
+  @ApiProperty() search!: string;
+  @ApiProperty() cursor!: string;
+}
+export class HandoverDefaultRequestDto { @ApiProperty() date!: string; }
+export class HandoverDefaultLocationDto { @ApiProperty() departmentId!: string; }
 export class HandoverContentDto {
+  @ApiPropertyOptional() displayUntil?: string;
+  @ApiPropertyOptional({ type: [HandoverResolutionDto], maxItems: 20 }) resolutions?: HandoverResolutionDto[];
   @ApiPropertyOptional({ type: [String], maxItems: 20 }) mentionIds?: string[];
   @ApiPropertyOptional({ type: [HandoverImageDto], maxItems: 2 }) images?: HandoverImageDto[];
   @ApiProperty() date!: string;
@@ -50,6 +74,9 @@ export class HandoverLocationDto {
     | "location";
 }
 export class HandoverChoiceDto {
+  @ApiPropertyOptional({ type: [String] }) publisherProfiles?: string[];
+  @ApiPropertyOptional() canPublish?: boolean;
+  @ApiPropertyOptional({ enum: ["safety", "information", "success", "people", "technical-problem", "technical-blocked"] }) workflow?: "safety" | "information" | "success" | "people" | "technical-problem" | "technical-blocked";
   @ApiPropertyOptional() coordinatorOnly?: boolean;
   @ApiPropertyOptional() carryForward?: boolean;
   @ApiProperty() id!: string;
@@ -75,7 +102,14 @@ export class HandoverLatestUpdateDto {
   @ApiProperty() actorName!: string;
   @ApiProperty() at!: string;
 }
+export class HandoverCompletedReferenceDto {
+  @ApiProperty({ enum: ["handover", "maintenance"] }) source!: "handover" | "maintenance";
+  @ApiProperty() id!: string;
+  @ApiProperty() title!: string;
+  @ApiProperty() location!: string;
+}
 export class HandoverEntryDto {
+  @ApiPropertyOptional({ type: [HandoverCompletedReferenceDto] }) completedReferences?: HandoverCompletedReferenceDto[];
   @ApiPropertyOptional() notificationAt?: string;
   @ApiPropertyOptional({ type: [HandoverPersonDto] }) mentionedPeople?: HandoverPersonDto[];
   @ApiPropertyOptional() deleted?: boolean;
@@ -120,7 +154,14 @@ export class HandoverChangeDto {
   @ApiPropertyOptional() responsibleId?: string;
   @ApiPropertyOptional() highlighted?: boolean;
 }
+export class HandoverNotificationReadDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ format: "date-time" }) at!: string;
+}
 export class HandoverSelectionDto {
+  @ApiPropertyOptional() displayOn?: string;
+  @ApiPropertyOptional() resolutionCandidates?: boolean;
+  @ApiPropertyOptional({ type: [HandoverNotificationReadDto], maxItems: 1000 }) notificationReads?: HandoverNotificationReadDto[];
   @ApiPropertyOptional() excludeAttention?: boolean;
   @ApiPropertyOptional() resolvedFrom?: string;
   @ApiPropertyOptional() resolvedTo?: string;

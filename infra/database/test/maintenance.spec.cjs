@@ -1144,3 +1144,49 @@ test("a failed Maintenance append after owner resolution rolls back both actual 
   });
   expect((await journal.history("tech-a", issue.id)).revisions).toHaveLength(1);
 });
+
+test("IOP-199 Success uses Maintenance's reviewed scope and one real transaction for publication, work and included reports", async () => {
+  const { Handover } = require("../../../apps/api/dist/modules/shift-handover/application/handover");
+  const { PgHandover } = require("../../../apps/api/dist/modules/shift-handover/adapters/postgres/store");
+  const departmentId = "success-" + randomUUID(), areaId = "success-" + randomUUID();
+  const localLocations = [{ ...locations[0], id: departmentId }, { ...locations[1], id: areaId, parentId: departmentId }];
+  const workStore = service().store;
+  const workApp = new Maintenance(workStore, localLocations, priorities, now);
+  let failPublication = false;
+  const journal = new Handover(new PgHandover(pool, scope, {
+    allowed: (tx, actor, permission) => allowed(tx, scope, actor, permission),
+    people: (tx) => sitePeople(tx, scope.organizationId, scope.siteId),
+    names: (tx, ids) => sitePersonNames(tx, scope.organizationId, scope.siteId, ids),
+    equipment: async () => ({ codes: [], nextCursor: "" }),
+    completeMaintenance: (tx, actor, reference, outcome, successId) => workStore.within(tx, actor, "maintenance.contribute", async (work) => {
+      const record = await workApp.completeWithin(work, actor, reference, outcome, successId);
+      if (failPublication) throw new Error("Synthetic publication failure after completion");
+      return { title: record.data.title, location: record.locationLabel };
+    }),
+  }), { locations: localLocations, timeZone: "UTC", externalSystemLabel: "Reference",
+    categories: [{ id: "problems", label: "Problems", workflow: "technical-problem" }, { id: "successes", label: "Success", workflow: "success" }],
+  }, randomUUID, now);
+  const reportContent = { date: "2026-10-05", categoryId: "problems", summary: "IOP-199 reviewed report", details: "",
+    departmentId, areaId, equipmentCode: "", equipmentNamespace: "site-equipment", condition: "inspection-needed",
+    externalReference: "", challenge: "", cause: "", measure: "", dueDate: "", feedbackDueDate: "", discuss: false };
+  const report = await journal.create("admin-a", { key: randomUUID(), content: reportContent, issue: false, responsibleId: "" });
+  const unrelated = await journal.create("admin-a", { key: randomUUID(), content: { ...reportContent, summary: "Excluded context" }, issue: false, responsibleId: "" });
+  const record = await workApp.save("admin-a", { ...request("IOP-199 work"), data: { ...request().data, title: "IOP-199 work", assigneeId: "admin-a", assetId: "", locationId: areaId,
+    linkedEntries: [{ id: report.id, expectedRevision: 1, disposition: "include", reason: "" },
+      { id: unrelated.id, expectedRevision: 1, disposition: "exclude", reason: "Separate repair is required." }],
+  } });
+  const success = () => ({ key: randomUUID(), issue: false, responsibleId: "", content: { ...reportContent, categoryId: "successes", summary: "IOP-199 completed work",
+    condition: "", details: "Completed and checked the selected repair.", resolutions: [{ source: "maintenance", id: record.id, expectedRevision: record.revision }],
+  } });
+  failPublication = true;
+  await expect(journal.create("admin-a", success())).rejects.toThrow("Synthetic publication failure");
+  expect((await workApp.history("admin-a", record.id)).record.data.status).toBe("open");
+  expect((await journal.history("admin-a", report.id)).entry.issueState).toBe("open");
+  failPublication = false;
+  const published = await journal.create("admin-a", success());
+  expect(published.completedReferences[0]).toMatchObject({ id: record.id, source: "maintenance", title: "IOP-199 work" });
+  expect((await workApp.history("admin-a", record.id)).record.data).toMatchObject({ status: "done", outcome: "Completed and checked the selected repair." });
+  expect((await journal.history("admin-a", report.id)).entry.issueState).toBe("resolved");
+  expect((await journal.history("admin-a", unrelated.id)).entry.issueState).toBe("open");
+  await expect(journal.create("admin-a", success())).rejects.toMatchObject({ code: "maintenance_conflict" });
+});

@@ -25,6 +25,12 @@ export interface Scope {
   siteId: string;
 }
 export interface AccessLookup {
+  profile?(tx: SiteTransaction, actor: string): Promise<string>;
+  broadcastCategoryIds?: string[];
+  technicalCategoryIds?: string[];
+  assignmentTarget?(tx: SiteTransaction, actor: string, day: string): Promise<string>;
+  maintenanceTargets?(tx: SiteTransaction, actor: string, search: string, cursor: string): ReturnType<NonNullable<Transaction["maintenanceTargets"]>>;
+  completeMaintenance?(tx: SiteTransaction, actor: string, ...args: Parameters<NonNullable<Transaction["completeMaintenance"]>>): ReturnType<NonNullable<Transaction["completeMaintenance"]>>;
   allowed(
     tx: SiteTransaction,
     actor: string,
@@ -61,7 +67,7 @@ export class PgHandover implements Store {
           throw new SiteAccessDeniedError();
         if (permission === "handover.contribute")
           await tx.query(
-            "SELECT pg_advisory_xact_lock_shared(hashtext('iop-handover-maintenance'),hashtext($1))",
+            "SELECT pg_advisory_xact_lock(hashtext('iop-handover-maintenance'),hashtext($1))",
             [this.scope.organizationId + ":" + this.scope.siteId],
           );
         const coordinator = await this.lookup.allowed(
@@ -79,6 +85,8 @@ export class PgHandover implements Store {
             (...args) => this.lookup.equipment(tx, ...args),
             await this.lookup.allowed(tx, actor, "site-configuration.manage"),
             (ids) => this.lookup.names(tx, ids),
+            this.lookup,
+            await this.lookup.profile?.(tx, actor),
           ),
         );
       },
@@ -95,7 +103,18 @@ class PgTransaction implements Transaction {
     readonly equipment: EquipmentLookup["search"],
     readonly canDelete = false,
     readonly names: (userIds: string[]) => Promise<Map<string, string>>,
+    private readonly lookup: AccessLookup,
+    readonly publisherProfile?: string,
   ) {}
+  assignmentTarget(day: string) { return this.lookup.assignmentTarget?.(this.tx, this.actor, day) ?? Promise.resolve(""); }
+  maintenanceTargets(search: string, cursor: string) {
+    if (!this.lookup.maintenanceTargets) throw new SiteAccessDeniedError();
+    return this.lookup.maintenanceTargets(this.tx, this.actor, search, cursor);
+  }
+  completeMaintenance(...args: Parameters<NonNullable<Transaction["completeMaintenance"]>>) {
+    if (!this.lookup.completeMaintenance) throw new SiteAccessDeniedError();
+    return this.lookup.completeMaintenance(this.tx, this.actor, ...args);
+  }
   private get selectors() {
     return [this.scope.organizationId, this.scope.siteId];
   }
@@ -234,6 +253,11 @@ class PgTransaction implements Transaction {
       s.resolvedFrom ?? "",
       s.resolvedTo ?? "",
       s.resolvedForMe ?? false,
+      JSON.stringify(s.notificationReads ?? []),
+      this.lookup.broadcastCategoryIds ?? [],
+      s.displayOn ?? "",
+      s.resolutionCandidates ?? false,
+      this.lookup.technicalCategoryIds ?? [],
     ];
     const r = await this.tx.query(
       `WITH matching AS (
@@ -243,7 +267,8 @@ class PgTransaction implements Transaction {
         SELECT max(r.snapshot->>'at') AS notification_at FROM shift_handover.revisions r
         WHERE $21<>'' AND r.organization_id=e.organization_id AND r.site_id=e.site_id AND r.entry_id=e.id
           AND r.actor_id<>$22 AND (r.revision=1 OR r.snapshot->'entry'->>'responsibleId'=$22
-            OR coalesce(r.snapshot->'entry'->'content'->'mentionIds','[]'::jsonb) ? $22)
+            OR coalesce(r.snapshot->'entry'->'content'->'mentionIds','[]'::jsonb) ? $22
+            OR r.snapshot->'entry'->'content'->>'categoryId'=ANY($32::text[]))
       ) n ON true
       CROSS JOIN LATERAL (SELECT coalesce(snapshot->>'issueState' IN ('open','in-progress') AND
         (snapshot->'content'->>'condition'='blocked'
@@ -252,6 +277,9 @@ class PgTransaction implements Transaction {
       WHERE organization_id=$1 AND site_id=$2 AND coalesce(snapshot->>'deleted','false')<>'true'
       AND ($3='' OR occurrence_date >= NULLIF($3,'')::date) AND ($4='' OR occurrence_date <= NULLIF($4,'')::date)
       AND ($5='' OR snapshot->'content'->>'departmentId'=$5) AND ($6='' OR snapshot->'content'->>'areaId'=$6)
+      AND ($33='' OR (occurrence_date<=NULLIF($33,'')::date AND
+        coalesce(NULLIF(snapshot->'content'->>'displayUntil',''),occurrence_date::text)>= $33))
+      AND (NOT $34 OR snapshot->'content'->>'categoryId'=ANY($35::text[]))
       AND ($7='' OR equipment_id=$7) AND ($8='' OR snapshot->'content'->>'categoryId'=$8)
       AND ($9='' OR ($9='pending' AND snapshot->>'issueState' IN ('open','in-progress')) OR snapshot->>'issueState'=$9)
       AND ($10='' OR strpos(lower(concat_ws(' ',snapshot->'content'->>'summary',snapshot->'content'->>'details',snapshot->'content'->>'equipmentCode',snapshot->'content'->>'externalReference',snapshot->'content'->>'challenge',snapshot->'content'->>'cause',snapshot->'content'->>'measure',snapshot->>'departmentLabel',snapshot->>'areaLabel',snapshot->'latestUpdate'->>'note',snapshot->>'authorName')),lower($10))>0)
@@ -262,7 +290,9 @@ class PgTransaction implements Transaction {
       AND ($18::text IS NULL OR coalesce(snapshot->>'responsibleId','')=$18)
       AND ($19='' OR strpos(lower(snapshot->'content'->>'externalReference'),lower($19))>0)
       AND ($20='' OR snapshot->'content'->>'condition'=$20)
-      AND ($21='' OR n.notification_at > $21)
+      AND ($21='' OR (n.notification_at > $21 AND NOT EXISTS (
+        SELECT 1 FROM jsonb_to_recordset($31::jsonb) AS acknowledged(id text, at text)
+        WHERE acknowledged.id=e.id AND acknowledged.at>=n.notification_at)))
       AND ($23='' OR (
         (snapshot->'content'->>'categoryId'=ANY($24::text[]) AND snapshot->>'issueState' IN ('open','in-progress'))
         OR (snapshot->'content'->>'categoryId'=ANY($25::text[]) AND snapshot->>'issueState'<>'resolved'
