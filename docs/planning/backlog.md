@@ -355,4 +355,4 @@ work under IOP-194 does not implement maps or spatial placements.
 | [IOP-196 — Personal Start and operational workflows](items/IOP-196-personal-operational-workflows.md) | Completed |
 | [IOP-198 — Start assignment layout and operational presentation](items/IOP-198-start-assignment-layout.md) | Completed |
 | [IOP-199 — Handover category workflows](items/IOP-199-handover-category-workflows.md) | Completed |
-| [IOP-200 — Project state and native development travel guide](items/IOP-200-native-development-guide.md) | In progress |
+| [IOP-200 — Project state and native development travel guide](items/IOP-200-native-development-guide.md) | Completed |
