@@ -44,5 +44,6 @@ Dependencies: [IOP-184](IOP-184-m6-workforce.md),
 [IOP-194](IOP-194-maintenance-asset-history.md),
 [IOP-196](IOP-196-personal-operational-workflows.md).
 Execution and validation: [completed plan](../completed/IOP-199-handover-category-workflows-plan.md).
-Completed locally on 2026-10-08; remote publication and local Docker activation
-remain separate operator-approved steps.
+Completed locally on 2026-10-08. Owner-approved integration into develop, both
+pushes to origin and local Docker activation completed on 2026-10-09; see
+[publication evidence](../completed/IOP-199-publication-activation-plan.md).
