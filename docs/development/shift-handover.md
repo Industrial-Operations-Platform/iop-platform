@@ -68,17 +68,16 @@ No automatic publication or local stack restart is implied by code validation.
 ## Worker workflow
 
 Open **Shift Handover** from the left navigation to **Meeting preparation** and select
-a department and date. Tabs continue with **Journal**, **Department matrix** and
-**My entries**. The Journal board shows up to three entries for that selected day
-in each configured category, with full matching counts and a **View entries** action
-for the same day/category. The date carries between Journal and Meeting preparation.
-Journal and Meeting preparation reuse the
-same bordered summary cards: semibold blue entry titles and semibold muted department labels,
-distinct from the bold navy category headings. Select
-a card for its full report, date, author and status. Each category's **+** opens a modal form with
-that category, the selected department and today's site-local date. Technicians and
-Task Force publish only on the current date; Team Leader and Administrator can
-select historical dates. The API enforces this rule independently of the browser.
+a department and date. The same workspace offers **Journal** for only your entries
+and **Department matrix** for shared operational follow-up. The selected date carries
+between the meeting and Journal; Journal history search retains the server author
+filter. Meeting cards stay compact; Journal uses expanded personal cards.
+
+Each category's **+** opens its form for the selected day. New work defaults to the
+author's actual dated Workforce assignment department, with manual override. Floating
+support, unassigned days and leaders without a zone start with no department. Browsing
+a different department or having a home department never changes that default.
+Technicians and Task Force publish only today; coordinators retain historical dates.
 
 Select an area to choose a **Betriebsmittelkennzeichen** from imported codes. This
 identifies a component, such as a sensor or motor. Use **Find component** and
@@ -88,21 +87,22 @@ Arbitrary new codes are rejected by the API. Unchanged older references remain
 readable/correctable even if absent from current imports. Equipment references are
 still unverified external identifiers, not canonical assets. Reports without equipment
 remain available when no codes are imported. Reporting damaged, blocked or inspection-
-needed equipment initially selects **Track as an open issue**, which can be reviewed
-before publication.
+needed equipment is recorded through **Technical issue**. Blocked/nonoperating
+conditions become Performance and other technical reports become Problems; both
+are tracked automatically. Safety hides and rejects the equipment/condition fields.
 
 Expand details for the Ultimo-generated code, challenge, cause, measure, completion
 and feedback dates. Codes remain text, preserving leading zeros. An issue can be
 published before cause, responsibility or deadlines are known. Its assignee is a
 current site user. Meeting discussion and Start highlighting are separate choices.
 
-Use **Search history** in Department matrix or My entries to open text, date,
+Use **Search history** in Department matrix or Journal to open text, date,
 location, category and status filters. Matrix column filter icons additionally
 support occurrence/due-date ranges, external reference substring, responsible person
 (including unassigned) and issue state/reported condition. What? and Details have no
 column filters. Apply combines filters; Clear filter removes only that column's
 criteria. Headers remain available when nothing matches. Search stays closed during
-entry creation. **My entries** filters by
+entry creation. **Journal** filters by
 the authenticated author on the server, including later pages; Department matrix
 keeps the tabular view. **Meeting preparation** is a six-section category canvas for
 the selected day and department, including empty sections. Each compact card shows
@@ -112,7 +112,8 @@ The separate **Department status** disclosure shows only unresolved carry-forwar
 topics (Problems/Performance by default), including earlier days through today.
 Selecting a historical daily date does not hide current pending work. Resolve an
 issue to remove it from this section while preserving its history.
-Other categories remain on their own day and in searchable history.
+Other categories remain on their own day and in searchable history, except active
+Information, which follows its inclusive display period.
 
 For **Team Leader**, the tab is **Daily overview**. It defaults to today and includes
 all authors and departments at the authorized site for the selected day. It does not
@@ -145,8 +146,8 @@ Open reports and Shift Handover selectors. One collection is visible at a time,
 with up to three shared summary cards and access to the complete filtered list.
 Open reports excludes issues that need attention; server counts and full-list links
 use the same partition. Expanded previews emphasize
-location, state, equipment reference and labelled deadlines; Journal/Meeting retain
-compact title/location cards. History actions pair a label with a count badge;
+location, state, equipment reference and labelled deadlines; Journal uses the same
+expanded cards, while Meeting retains compact title/location cards. History actions pair a label with a count badge;
 refresh uses the shared busy-aware icon/text control.
 Highlights follow the selected/assigned department; the analytical snapshot is
 compact and full tables remain in Data Analysis.
@@ -156,7 +157,8 @@ reopen the entry before applying the change. On an interrupted publication, retr
 saved entry instead of creating a duplicate.
 
 All four profiles can read and contribute to unrestricted categories. Information
-is coordinator-only (Administrator/Team Leader), including corrections and follow-up.
+requires coordinator grants and a permitted publisher profile, defaulting to Team
+Leader, including corrections and follow-up.
 Authors can correct their entries; authors/assignees can progress their issues. Team Leader and
 Administrator can additionally correct site entries with a reason, reassign issues,
 and publish/withdraw Start highlights. Every request checks current scoped grants;
@@ -165,10 +167,11 @@ mode does not automatically receive operational roles or a profile directory.
 
 ## Optional local demonstration entries
 
-With the local Docker stack running, `npm run local:handover-demo` previews a
-bounded dataset without writing. `npm run local:handover-demo -- --apply` explicitly
-inserts it; `npm run local:handover-demo -- --inspect` reports stored coverage.
-This is never part of startup, migrations or analytical import.
+The legacy IOP-173 generator predates IOP-199 Safety/Success/publication rules and
+must not be used to prepare or apply new fixtures with these workflows. Updating
+that optional generator is outside this story. Preserve existing demo records and
+the private manifest; `npm run local:handover-demo -- --inspect` remains read-only.
+Demo writing is never part of startup, migrations or analytical import.
 
 Each configured department receives twelve `[DEMO]` entries: six for the seed day
 and six from 1–90 days earlier. Existing active contributors alternate as authors
@@ -204,7 +207,7 @@ checks and actor/site-scoped idempotency for creation. The existing analytics-on
 maintenance command does not erase this operational history.
 
 The versioned API provides `GET /api/v1/handover/context` and POST operations under
-`/api/v1/handover/{query,entries,change,history,equipment}`. OpenAPI owns transport schemas;
+`/api/v1/handover/{query,entries,change,history,equipment,default-location,completion-targets}`. OpenAPI owns transport schemas;
 server domain/use cases own rules. Query pages expose full matching counts and a
 next cursor; revision history exposes `nextBefore`. No request accepts client
 organization/site selectors or trusted client authorship. Scope comes from the
@@ -234,10 +237,14 @@ sort by `notificationAt` independently of the entry's calendar date, and retain 
 and bounded pagination. Every read retains existing authorization and site isolation.
 
 First use establishes a baseline. A browser-local timestamp per organization/site/
-account remembers explicit Mark all as read; entry text and permissions are not
-cached. The panel shows the latest 20 unread entry activities and opens their details.
+account remembers Mark all as read and up to 1,000 exact entry seen-time
+acknowledgments; entry text and permissions are not cached. Successful detail reads
+acknowledge only that entry through its observed update time. The query applies
+`notificationReads` before full totals/pagination; later revisions still appear. The panel shows the latest 20 unread entry activities and opens their details.
 Read state is local to this browser, with session-only fallback when storage is
-unavailable. Mentioned/assigned-person follow-ups use the same revision-backed feed.
+unavailable. Mentioned/assigned-person follow-ups and Information broadcasts use the same
+revision-backed feed. Maintenance acknowledges exact assignment-event revisions
+when its detail loads successfully, including feed/detail races.
 Maintenance assignment activity is composed separately in the bell. Cross-device
 synchronization and external notifications remain outside this increment. Failed
 reads never advance the checkpoint, and unavailable notifications have an explicit retry state.
@@ -264,7 +271,9 @@ categories under their existing scope and read checkpoints.
 
 Use the plus beside a daily category to publish for the selected day (coordinators
 may backdate; contributors retain today's publication rule). Information plus/category
-choices appear only for coordinators; direct API writes enforce the same restriction.
+choices use the current category publication policy; IOP-199 defaults Information
+to Team Leader only, still requiring coordinator grants. Direct API writes enforce
+both checks.
 Mention people selects notification recipients. Coordinators can attach two resized
 images, shown in cards/details and retained in correction history. The Handover
 entries/change JSON budget is 192 KiB; other JSON routes keep the 100 KiB limit.
@@ -272,3 +281,33 @@ entries/change JSON budget is 192 KiB; other JSON routes keep the 100 KiB limit.
 `excludeAttention` selects ordinary open reports. `resolvedFrom`/`resolvedTo`
 with `resolvedForMe` count assigned resolution transitions from immutable revisions.
 `notificationAt` advances read checkpoints for updates without changing `createdAt`.
+
+## Configured workflows and linked completion — IOP-199
+
+Optional category `workflow` values are `safety`, `information`, `success`, `people`,
+`technical-problem` and `technical-blocked`. The host supplies these defaults for
+the six established IDs; custom IDs can declare their workflow explicitly. Category
+labels remain site configuration. `publisherProfiles` restricts publishing in addition
+to existing grants; Information defaults to `["team-leader"]`. Context returns the
+server-derived `canPublish` flag for forms/add/correction controls.
+
+`POST /api/v1/handover/default-location` accepts a date and returns the current
+actor's assigned department or an empty ID. The source-owned Workforce adapter
+checks current read access and exact actor scope. `completion-targets` provides
+bounded, paginated technical-report or Maintenance references with completion
+availability. Success content stores exact source/ID/expected-revision references;
+server-produced `completedReferences` retains titles/location evidence.
+
+Success publication and selected closures share the existing pinned transaction.
+Handover validates/writes its reports; Maintenance validates work, outcome and the
+complete current include/exclude repair review through its receiving contract.
+The coordination lease precedes the Maintenance lease for writes, avoiding inverse
+lock acquisition across the two entry points. No migration or independent nested
+commit is introduced. Review unresolved work in Maintenance before publishing Success
+when completion reports a scope/revision conflict; the failed publication closes nothing.
+
+Information `displayUntil` is inclusive. The `displayOn` query applies occurrence
+start and end dates without deleting expired entries. Meeting preparation and Start
+read all active site Information independent of department browsing. Heading expansion
+shows full retained content and images; People uses the same dated Workforce view.
+Installation/activation still requires the operator's separate local stack command.

@@ -68,44 +68,53 @@ export class PgMaintenance implements Store {
       this.pool,
       { ...this.scope, userId: actor, permissions: [permission] },
       async (tx) => {
-        await tx.query(
-          "SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))",
-          [this.scope.organizationId],
-        );
-        if (!(await this.directory.allowed(tx, actor, permission)))
-          throw new SiteAccessDeniedError();
-        // Serializing the site makes optimistic checks and both retained snapshots atomic.
-        await tx.query(
-          "SELECT pg_advisory_xact_lock(hashtext('iop-maintenance'),hashtext($1))",
-          [this.scope.organizationId + ":" + this.scope.siteId],
-        );
-        return work(
-          new PgMaintenanceTransaction(
-            tx,
-            this.scope,
-            {
-              canContribute: await this.directory.allowed(
-                tx,
-                actor,
-                "maintenance.contribute",
-              ),
-              canCoordinate: await this.directory.allowed(
-                tx,
-                actor,
-                "maintenance.coordinate",
-              ),
-              canAdminister: await this.directory.allowed(
-                tx,
-                actor,
-                "maintenance.administer",
-              ),
-            },
-            this.directory,
-          ),
-        );
+        return this.within(tx, actor, permission, work);
       },
     );
   }
+  /** Reuse an already scoped host transaction; this receiver never commits independently. */
+  async within<T>(tx: SiteTransaction, actor: string, permission: Parameters<Store["run"]>[1], work: (tx: Transaction) => Promise<T>): Promise<T> {
+    if (tx.context.organizationId !== this.scope.organizationId || tx.context.siteId !== this.scope.siteId || tx.context.userId !== actor)
+      throw new SiteAccessDeniedError();
+    await tx.query(
+      "SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))",
+      [this.scope.organizationId],
+    );
+    if (!(await this.directory.allowed(tx, actor, permission)))
+      throw new SiteAccessDeniedError();
+    if (permission === "maintenance.contribute")
+      await tx.query("SELECT pg_advisory_xact_lock(hashtext('iop-handover-maintenance'),hashtext($1))", [this.scope.organizationId + ":" + this.scope.siteId]);
+    // Serializing the site makes optimistic checks and both retained snapshots atomic.
+    await tx.query(
+      "SELECT pg_advisory_xact_lock(hashtext('iop-maintenance'),hashtext($1))",
+      [this.scope.organizationId + ":" + this.scope.siteId],
+    );
+    return work(
+      new PgMaintenanceTransaction(
+        tx,
+        this.scope,
+        {
+          canContribute: await this.directory.allowed(
+            tx,
+            actor,
+            "maintenance.contribute",
+          ),
+          canCoordinate: await this.directory.allowed(
+            tx,
+            actor,
+            "maintenance.coordinate",
+          ),
+          canAdminister: await this.directory.allowed(
+            tx,
+            actor,
+            "maintenance.administer",
+          ),
+        },
+        this.directory,
+      ),
+    );
+  }
+
 }
 class PgMaintenanceTransaction implements Transaction {
   readonly canContribute: boolean;

@@ -214,158 +214,179 @@ export class Maintenance {
     );
     const request = structuredClone(input);
     request.data = normalized(request.data);
-    return this.store.run(actor, "maintenance.contribute", async (tx) => {
-      const before = await tx.get(request.id);
-      if (before && request.expectedRevision === 0) {
-        const original = await tx.creation(request.id);
-        assert(
-          original &&
-            original.record.authorId === actor &&
-            sameData(original.record.data, request.data) &&
-            original.reason === request.reason,
-          "maintenance_conflict",
-        );
-        return this.view((await this.currentNames(tx, [before]))[0], actor, tx);
-      }
+    return this.store.run(actor, "maintenance.contribute", (tx) => this.savePrepared(tx, actor, request));
+  }
+  private async savePrepared(tx: Transaction, actor: string, request: SaveInput) {
+    const before = await tx.get(request.id);
+    if (before && request.expectedRevision === 0) {
+      const original = await tx.creation(request.id);
       assert(
-        (before?.revision ?? 0) === request.expectedRevision,
+        original &&
+          original.record.authorId === actor &&
+          sameData(original.record.data, request.data) &&
+          original.reason === request.reason,
         "maintenance_conflict",
       );
+      return this.view((await this.currentNames(tx, [before]))[0], actor, tx);
+    }
+    assert(
+      (before?.revision ?? 0) === request.expectedRevision,
+      "maintenance_conflict",
+    );
+    assert(
+      !before ||
+        tx.canCoordinate ||
+        before.authorId === actor ||
+        before.data.assigneeId === actor,
+      "maintenance_denied",
+    );
+    if (before) {
+      assert(!!request.reason.trim());
       assert(
-        !before ||
-          tx.canCoordinate ||
-          before.authorId === actor ||
-          before.data.assigneeId === actor,
+        tx.canCoordinate ||
+          (before.data.assigneeId === request.data.assigneeId &&
+            before.data.teamId === request.data.teamId),
         "maintenance_denied",
       );
-      if (before) {
-        assert(!!request.reason.trim());
+      if ((before.data.assigneeId || before.data.teamId) && !tx.canCoordinate)
         assert(
-          tx.canCoordinate ||
-            (before.data.assigneeId === request.data.assigneeId &&
-              before.data.teamId === request.data.teamId),
+          before.data.locationId === request.data.locationId &&
+            before.data.assetId === request.data.assetId &&
+            sameEquipment(
+              before.data.equipment ?? [],
+              request.data.equipment ?? [],
+            ),
           "maintenance_denied",
         );
-        if ((before.data.assigneeId || before.data.teamId) && !tx.canCoordinate)
-          assert(
-            before.data.locationId === request.data.locationId &&
-              before.data.assetId === request.data.assetId &&
-              sameEquipment(
-                before.data.equipment ?? [],
-                request.data.equipment ?? [],
-              ),
-            "maintenance_denied",
-          );
-        transition(before.data.status, request.data.status, request.reason);
-      } else {
-        assert(request.data.status === "open");
-        assert(
-          tx.canCoordinate ||
-            (!request.data.assigneeId && !request.data.teamId),
-          "maintenance_denied",
-        );
-      }
-      const references = await this.references(tx, actor, request.data, before);
-      const at = this.now();
-      const scope = this.issueScope(
-        request.data.locationId,
-        request.data.equipment ?? [],
+      transition(before.data.status, request.data.status, request.reason);
+    } else {
+      assert(request.data.status === "open");
+      assert(
+        tx.canCoordinate ||
+          (!request.data.assigneeId && !request.data.teamId),
+        "maintenance_denied",
       );
-      const completing =
-        before &&
-        before.data.status !== "done" &&
-        request.data.status === "done";
-      const closing = request.data.status === "done";
-      const pending = closing ? await tx.pending(scope) : [];
-      const decisions = request.data.linkedEntries ?? [];
-      if (decisions.length) {
-        const selected = await tx.related(scope, {
-          ids: decisions.map((entry) => entry.id),
-          limit: 100,
-        });
-        assert(selected.total === decisions.length, "maintenance_conflict");
-        for (const decision of decisions) {
-          const entry = selected.entries.find(
-            (entry) => entry.id === decision.id,
-          );
-          assert(entry, "maintenance_conflict");
-          if (
-            closing &&
-            decision.disposition === "include" &&
-            (entry.issueState === "open" || entry.issueState === "in-progress")
-          )
-            assert(
-              entry.revision === decision.expectedRevision,
-              "maintenance_conflict",
-            );
-        }
-      }
-      if (closing) {
-        assert(pending.length <= 100, "maintenance_capacity");
-        for (const entry of pending)
+    }
+    const references = await this.references(tx, actor, request.data, before);
+    const at = this.now();
+    const scope = this.issueScope(
+      request.data.locationId,
+      request.data.equipment ?? [],
+    );
+    const completing =
+      before &&
+      before.data.status !== "done" &&
+      request.data.status === "done";
+    const closing = request.data.status === "done";
+    const pending = closing ? await tx.pending(scope) : [];
+    const decisions = request.data.linkedEntries ?? [];
+    if (decisions.length) {
+      const selected = await tx.related(scope, {
+        ids: decisions.map((entry) => entry.id),
+        limit: 100,
+      });
+      assert(selected.total === decisions.length, "maintenance_conflict");
+      for (const decision of decisions) {
+        const entry = selected.entries.find(
+          (entry) => entry.id === decision.id,
+        );
+        assert(entry, "maintenance_conflict");
+        if (
+          closing &&
+          decision.disposition === "include" &&
+          (entry.issueState === "open" || entry.issueState === "in-progress")
+        )
           assert(
-            decisions.some((decision) => decision.id === entry.id),
+            entry.revision === decision.expectedRevision,
             "maintenance_conflict",
           );
-        const included = pending.filter(
-          (entry) =>
-            decisions.find((decision) => decision.id === entry.id)
-              ?.disposition === "include",
-        );
-        assert(
-          !included.length ||
-            tx.canCoordinate ||
-            before?.data.assigneeId === actor,
-          "maintenance_denied",
-        );
-        await tx.resolve(
-          included.map((entry) => ({
-            id: entry.id,
-            expectedRevision: decisions.find(
-              (decision) => decision.id === entry.id,
-            )!.expectedRevision,
-          })),
-          { maintenanceId: request.id, outcome: request.data.outcome, at },
-        );
       }
-      const record: MaintenanceRecord = {
-        id: request.id,
-        revision: request.expectedRevision + 1,
-        data: request.data,
-        authorId: before?.authorId ?? actor,
-        authorName: before?.authorName ?? references.actorName,
-        createdAt: before?.createdAt ?? at,
-        updatedAt: at,
-        locationLabel: references.locationLabel,
-        assetName: references.assetName,
-        priorityLabel: references.priorityLabel,
-        assigneeName: references.assigneeName,
-        teamLabel: references.teamLabel,
-        assignedAt:
-          request.data.assigneeId &&
-          request.data.assigneeId !== before?.data.assigneeId
-            ? at
-            : (before?.assignedAt ?? ""),
-        completedAt: completing
+    }
+    if (closing) {
+      assert(pending.length <= 100, "maintenance_capacity");
+      for (const entry of pending)
+        assert(
+          decisions.some((decision) => decision.id === entry.id),
+          "maintenance_conflict",
+        );
+      const included = pending.filter(
+        (entry) =>
+          decisions.find((decision) => decision.id === entry.id)
+            ?.disposition === "include",
+      );
+      assert(
+        !included.length ||
+          tx.canCoordinate ||
+          before?.data.assigneeId === actor,
+        "maintenance_denied",
+      );
+      await tx.resolve(
+        included.map((entry) => ({
+          id: entry.id,
+          expectedRevision: decisions.find(
+            (decision) => decision.id === entry.id,
+          )!.expectedRevision,
+        })),
+        { maintenanceId: request.id, outcome: request.data.outcome, at },
+      );
+    }
+    const record: MaintenanceRecord = {
+      id: request.id,
+      revision: request.expectedRevision + 1,
+      data: request.data,
+      authorId: before?.authorId ?? actor,
+      authorName: before?.authorName ?? references.actorName,
+      createdAt: before?.createdAt ?? at,
+      updatedAt: at,
+      locationLabel: references.locationLabel,
+      assetName: references.assetName,
+      priorityLabel: references.priorityLabel,
+      assigneeName: references.assigneeName,
+      teamLabel: references.teamLabel,
+      assignedAt:
+        request.data.assigneeId &&
+        request.data.assigneeId !== before?.data.assigneeId
           ? at
-          : request.data.status === "done"
-            ? (before?.completedAt ?? before?.updatedAt ?? at)
-            : "",
-      };
-      await tx.save(record, {
-        record,
-        actorId: actor,
-        actorName: references.actorName,
-        at,
-        action: !before
-          ? "created"
-          : before.data.status === record.data.status
-            ? "updated"
-            : "status-changed",
-        reason: request.reason,
-      });
-      return this.view((await this.currentNames(tx, [record]))[0], actor, tx);
+          : (before?.assignedAt ?? ""),
+      completedAt: completing
+        ? at
+        : request.data.status === "done"
+          ? (before?.completedAt ?? before?.updatedAt ?? at)
+          : "",
+    };
+    await tx.save(record, {
+      record,
+      actorId: actor,
+      actorName: references.actorName,
+      at,
+      action: !before
+        ? "created"
+        : before.data.status === record.data.status
+          ? "updated"
+          : "status-changed",
+      reason: request.reason,
     });
+    return this.view((await this.currentNames(tx, [record]))[0], actor, tx);
+  }
+
+  async completionTargetsWithin(tx: Transaction, actor: string, search: string, cursor: string) {
+    const input = { search, cursor, history: true, limit: 20 };
+    selection(input);
+    const page = await tx.query(input, []);
+    return { total: page.total, nextCursor: page.nextCursor, targets: page.records.map((record) => ({
+      id: record.id, expectedRevision: record.revision, title: record.data.title, location: record.locationLabel,
+      canComplete: record.data.status !== "done" && this.view(record, actor, tx).canEdit,
+    })) };
+  }
+  async completeWithin(tx: Transaction, actor: string, reference: { id: string; expectedRevision: number }, outcome: string, successId: string) {
+    assert(tx.canContribute, "maintenance_denied");
+    const record = await tx.get(reference.id);
+    assert(record && record.revision === reference.expectedRevision && record.data.status !== "done", "maintenance_conflict");
+    const request = { id: record.id, expectedRevision: record.revision,
+      data: { ...record.data, status: "done" as const, outcome, blockedReason: "" },
+      reason: `Completed through Success ${successId}.` };
+    validateData(request.data);
+    return this.savePrepared(tx, actor, request);
   }
   private issueScope(
     locationId: string,

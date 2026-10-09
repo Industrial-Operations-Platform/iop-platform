@@ -25,6 +25,8 @@ import {
   HandoverError,
   exact,
 } from "../modules/shift-handover/domain/handover";
+import { MaintenanceError } from "../modules/maintenance/domain/maintenance";
+import { MaintenanceIssuesError } from "../modules/shift-handover/application/maintenance-issues";
 import * as C from "./handover-contracts";
 @ApiTags("Shift Handover")
 @Controller("api/v1/handover")
@@ -41,6 +43,15 @@ export class HandoverController {
     try {
       return await work(this.runtime, await this.runtime.actor(req));
     } catch (error) {
+      if (error instanceof MaintenanceError || error instanceof MaintenanceIssuesError) {
+        const code = error.code;
+        if (code === "capacity" || code === "maintenance_capacity")
+          throw new BusinessException(503, "handover_completion_capacity");
+        const denied = code === "denied" || code === "maintenance_denied";
+        const conflict = code === "conflict" || code === "maintenance_conflict";
+        throw new BusinessException(denied ? 403 : conflict ? 409 : 400,
+          denied ? "handover_denied" : conflict ? "handover_completion_conflict" : "invalid_handover");
+      }
       if (error instanceof HandoverError)
         throw new BusinessException(
           error.code === "handover_denied"
@@ -63,6 +74,18 @@ export class HandoverController {
   @ApiOkResponse({ type: C.HandoverContextDto })
   context(@Req() req: IncomingMessage) {
     return this.operation(req, (r, a) => r.handover.context(a));
+  }
+  @Post("default-location")
+  @ApiBody({ type: C.HandoverDefaultRequestDto })
+  @ApiCreatedResponse({ type: C.HandoverDefaultLocationDto })
+  defaultLocation(@Req() req: IncomingMessage, @Body() body: C.HandoverDefaultRequestDto) {
+    return this.operation(req, (r, a) => { exact(body, ["date"]); return r.handover.defaultDepartment(a, body.date); });
+  }
+  @Post("completion-targets")
+  @ApiBody({ type: C.HandoverTargetRequestDto })
+  @ApiCreatedResponse({ type: C.HandoverCompletionPageDto })
+  completionTargets(@Req() req: IncomingMessage, @Body() body: C.HandoverTargetRequestDto) {
+    return this.operation(req, (r, a) => r.handover.targets(a, body));
   }
   @Post("equipment")
   @ApiBody({ type: C.HandoverEquipmentRequestDto })

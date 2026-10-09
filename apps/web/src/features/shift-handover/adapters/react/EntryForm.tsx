@@ -3,7 +3,9 @@ import type { HandoverApplication } from "../../application/handover";
 import { EntryMediaFields } from "./EntryMediaFields";
 import { EquipmentPicker } from "./EquipmentPicker";
 import { withinLocation } from "../../domain/models";
-import { useState } from "react";
+import { selectDraftCategory, selectDraftCondition } from "../../application/entry-draft";
+import { SuccessReferences } from "./SuccessReferences";
+import { useEffect, useRef, useState } from "react";
 import {
   Actions,
   Button,
@@ -47,10 +49,12 @@ export function EntryForm({
   ) => Promise<void>;
   onCancel: () => void;
 }) {
+  const locationTouched = useRef(false);
+  const [assignmentNotice, setAssignmentNotice] = useState("");
   const [readingImages, setReadingImages] = useState(false);
-  const categories = context.categories.filter((c) => context.canCoordinate || !c.coordinatorOnly);
+  const categories = context.categories.filter((c) => c.canPublish !== false && (context.canCoordinate || !c.coordinatorOnly));
   const [value, setValue] = useState<Content>(
-    entry?.content ?? {
+    entry ? { ...entry.content, ...(context.categories.find((c) => c.id === entry.content.categoryId)?.workflow === "safety" ? { equipmentCode: "", condition: "" as const } : {}), ...(context.categories.find((c) => c.id === entry.content.categoryId)?.workflow === "information" ? { displayUntil: entry.content.displayUntil || entry.content.date } : {}) } : {
       date: today(context.timeZone),
       categoryId: categories[0]?.id ?? "",
       summary: "",
@@ -75,6 +79,20 @@ export function EntryForm({
     ),
     [responsible, setResponsible] = useState(entry?.responsibleId ?? ""),
     [note, setNote] = useState("");
+  const workflow = categories.find((category) => category.id === value.categoryId)?.workflow;
+  const technical = workflow?.startsWith("technical-");
+  const technicalCategory = categories.find((category) => category.workflow === "technical-problem")
+    ?? categories.find((category) => category.workflow === "technical-blocked");
+  useEffect(() => {
+    if (entry) return;
+    let active = true;
+    locationTouched.current = false;
+    setAssignmentNotice("");
+    void application.defaultDepartment?.(value.date).then(({ departmentId }) => {
+      if (active && !locationTouched.current) setValue((current) => ({ ...current, departmentId, areaId: "", equipmentCode: "", condition: "" }));
+    }).catch(() => { if (active) setAssignmentNotice("Assignment default is unavailable. Choose the work location."); });
+    return () => { active = false; };
+  }, [application, value.date, entry]);
   const field = <K extends keyof Content>(key: K, next: Content[K]) =>
     setValue((v) => ({ ...v, [key]: next }));
   return (
@@ -83,7 +101,7 @@ export function EntryForm({
         aria-label={entry ? t("Correct entry") : t("New handover entry")}
         onSubmit={(e) => {
           e.preventDefault();
-          void onSave(value, issue, responsible, note);
+          void onSave({ ...value, ...(workflow === "information" ? { displayUntil: value.displayUntil || value.date } : {}) }, issue || !!technical, responsible, note);
         }}
       >
         <p>
@@ -104,12 +122,17 @@ export function EntryForm({
               {t("Category ")}
               <Select
                 aria-label={t("Category")}
-                value={value.categoryId}
-                onChange={(e) => field("categoryId", e.target.value)}
+                value={technical ? technicalCategory?.id : value.categoryId}
+                onChange={(e) => {
+                  const category = categories.find((c) => c.id === e.target.value);
+                  setValue((v) => selectDraftCategory(v, e.target.value, categories));
+                  setIssue(!!category?.workflow?.startsWith("technical-"));
+                  setResponsible("");
+                }}
               >
-                {categories.map((c) => (
+                {categories.filter((c) => !c.workflow?.startsWith("technical-") || c.id === technicalCategory?.id).map((c) => (
                   <option key={c.id} value={c.id}>
-                    {t(c.label)}
+                    {t(c.workflow?.startsWith("technical-") ? "Technical issue" : c.label)}
                   </option>
                 ))}
               </Select>
@@ -125,23 +148,27 @@ export function EntryForm({
               onChange={(e) => field("summary", e.target.value)}
             />
           </Field>
+          {assignmentNotice && <p role="status">{t(assignmentNotice)}</p>}
+          {workflow === "information" && <DateField label={t("Display through")} required min={value.date}
+            value={value.displayUntil || value.date} onChange={(e) => field("displayUntil", e.target.value)} />}
           <FieldRow>
             <Field>
               {t("Department / Halle ")}
               <Select
                 aria-label={t("Department / Halle")}
                 value={value.departmentId}
-                onChange={(e) =>
+                onChange={(e) => {
+                  locationTouched.current = true;
                   setValue((v) => ({
                     ...v,
                     departmentId: e.target.value,
                     areaId: "",
                     equipmentCode: "",
                     condition: "",
-                  }))
-                }
+                  }));
+                }}
               >
-                <option value="">{t("Site-wide information")}</option>
+                <option value="">{t(workflow === "information" ? "Site-wide information" : "No department selected")}</option>
                 {context.locations
                   .filter((l) => l.role === "department")
                   .map((l) => (
@@ -157,14 +184,15 @@ export function EntryForm({
                 aria-label={t("Area / Bereich")}
                 value={value.areaId}
                 disabled={!value.departmentId}
-                onChange={(e) =>
+                onChange={(e) => {
+                  locationTouched.current = true;
                   setValue((v) => ({
                     ...v,
                     areaId: e.target.value,
                     equipmentCode: "",
                     condition: "",
-                  }))
-                }
+                  }));
+                }}
               >
                 <option value="">{t("No specific area")}</option>
                 {context.locations
@@ -192,7 +220,7 @@ export function EntryForm({
               )}
             </p>
           )}
-          <EquipmentPicker
+          {workflow !== "safety" && workflow !== "success" && <EquipmentPicker
             application={application}
             departmentId={value.departmentId}
             areaId={value.areaId}
@@ -211,10 +239,11 @@ export function EntryForm({
               {t("Reported condition ")}
               <Select
                 aria-label={t("Reported condition")}
-                disabled={!value.equipmentCode}
+                disabled={technical ? !value.departmentId : !value.equipmentCode}
                 value={value.condition}
                 onChange={(e) => {
-                  field("condition", e.target.value as Content["condition"]);
+                  const condition = e.target.value as Content["condition"];
+                  setValue((v) => selectDraftCondition(v, condition, categories));
                   if (
                     ["damaged", "inspection-needed", "blocked"].includes(
                       e.target.value,
@@ -228,12 +257,15 @@ export function EntryForm({
                 <option value="inspection-needed">
                   {t("Inspection needed")}
                 </option>
-                <option value="blocked">{t("Blocked")}</option>
-                <option value="repaired">{t("Repaired")}</option>
-                <option value="restored">{t("Restored")}</option>
+                <option value="blocked">{t("Blocked · not operating · corrective maintenance needed")}</option>
+                {!technical && <option value="repaired">{t("Repaired")}</option>}
+                {!technical && <option value="restored">{t("Restored")}</option>}
               </Select>
             </Field>
-          </EquipmentPicker>
+          </EquipmentPicker>}
+          {technical && <p>{t(value.condition === "blocked" ? "Performance · blocked plant requiring corrective maintenance." : "Problems · technical issue or inspection needed.")}</p>}
+          {workflow === "safety" && <p>{t("Record the danger or near miss. A single area is enough; no equipment reference is recorded.")}</p>}
+          {workflow === "success" && !entry && <SuccessReferences application={application} value={value.resolutions ?? []} onChange={(references) => field("resolutions", references)} />}
           {value.equipmentCode && (
             <p>
               {t(
@@ -294,7 +326,7 @@ export function EntryForm({
             </FieldRow>
           </Disclosure>
           <EntryMediaFields value={value} context={context} change={setValue} reading={setReadingImages} />
-          {!entry && (
+          {!entry && workflow !== "success" && !technical && (
             <>
               <Field layout="inline">
                 <Input
@@ -326,6 +358,10 @@ export function EntryForm({
               )}
             </>
           )}
+          {!entry && technical && <Field>{t("Responsible person")}
+            <Select aria-label={t("Responsible person")} value={responsible} onChange={(event) => setResponsible(event.target.value)}>
+              <option value="">{t("Unassigned")}</option>{context.people.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}
+            </Select></Field>}
           {entry && (
             <Field>
               {t("Reason for correction ")}

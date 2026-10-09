@@ -180,7 +180,6 @@ for (const width of [1440, 375]) {
       "Meeting preparation",
       "Journal",
       "Department matrix",
-      "My entries",
     ]);
     await expect(
       tabs.getByRole("button", { name: "Meeting preparation", exact: true }),
@@ -222,18 +221,18 @@ for (const width of [1440, 375]) {
     ).toHaveCount(0);
     await tabs.getByRole("button", { name: "Journal", exact: true }).click();
     await expect(page.getByLabel("Journal date")).toHaveValue("2026-10-01");
-    const journal = page.locator(".handover-board");
+    const journal = page.locator(".handover-summary-cards");
     await expect(
-      journal.getByRole("button", { name: /^Today safety/ }),
+      journal.getByRole("button", { name: /Today safety/ }),
     ).toBeVisible();
     await expect(
-      journal.getByRole("button", { name: /^Prior safety/ }),
+      journal.getByRole("button", { name: /Prior safety/ }),
     ).toHaveCount(0);
     await page.getByLabel("Journal date").fill("2026-09-30");
     await expect(
-      journal.getByRole("button", { name: /^Prior safety/ }),
+      journal.getByRole("button", { name: /Prior safety/ }),
     ).toBeVisible();
-    await expect(journal.getByRole("button", { name: /^Today/ })).toHaveCount(
+    await expect(journal.getByRole("button", { name: /Today/ })).toHaveCount(
       0,
     );
     const scope = page.locator(".iop-scope-toolbar");
@@ -259,46 +258,14 @@ for (const width of [1440, 375]) {
         ),
       ).toBeLessThan(2);
     }
-    await journal
-      .getByLabel("Safety", { exact: true })
-      .getByRole("button", { name: /^View entries/ })
-      .click();
     const breadcrumb = page.getByRole("navigation", { name: "Breadcrumb" });
-    await expect(breadcrumb).toHaveText(/Shift Handover.*Journal.*Safety/);
-    await page.getByRole("button", { name: /^Prior safety/ }).click();
-    await expect(breadcrumb).toHaveText(
-      /Shift Handover.*Journal.*Safety.*Details/,
-    );
-    await breadcrumb
-      .getByRole("button", { name: "Safety", exact: true })
-      .click();
+    await journal.getByRole("button", { name: /Prior safety/ }).click();
+    await expect(breadcrumb).toHaveText(/Shift Handover.*Journal.*Details/);
+    await breadcrumb.getByRole("button", { name: "Journal", exact: true }).click();
     await expect(page.getByLabel("Journal date")).toHaveValue("2026-09-30");
     await expect(page.getByLabel("Selected department")).toHaveValue("hall-a");
-    await page.screenshot({
-      path: `/tmp/iop-191-compact-journal-category-${width}.png`,
-      fullPage: true,
-    });
-    await breadcrumb
-      .getByRole("button", { name: "Journal", exact: true })
-      .click();
-    await expect(
-      journal.getByRole("button", { name: /^Prior safety/ }),
-    ).toBeVisible();
-    await expect(page.getByLabel("Journal date")).toHaveValue("2026-09-30");
-    await expect(page.getByLabel("Selected department")).toHaveValue("hall-a");
-    await journal
-      .getByLabel("Information", { exact: true })
-      .getByRole("button", { name: /^View entries/ })
-      .click();
-    await expect(page.getByText("No updates for this selection")).toBeVisible();
-    await breadcrumb
-      .getByRole("button", { name: "Journal", exact: true })
-      .click();
-    await expect(journal).toBeVisible();
-    await page.screenshot({
-      path: `/tmp/iop-191-compact-journal-${width}.png`,
-      fullPage: true,
-    });
+    await expect(journal.getByRole("button", { name: /Prior safety/ })).toBeVisible();
+    await page.screenshot({ path: `/tmp/iop-199-personal-journal-${width}.png`, fullPage: true });
     await tabs
       .getByRole("button", { name: "Meeting preparation", exact: true })
       .click();

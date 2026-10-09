@@ -32,11 +32,11 @@ The generic domain stores category IDs, not customer-specific conditional logic.
 
 | Meeting heading | Default category | Content |
 | --- | --- | --- |
-| Safety | Safety | Hazards, safety notices and discussion topics |
-| Infos | Information | Important operational information |
-| Erfolge | Successes | Successful work and improvements |
-| People | People | Operational team information relevant to the handover |
-| Performance: Gesperrte Anlagen und offene Punkte | Performance | Reported equipment restrictions and open points |
+| Safety | Safety | Hazards and near misses; at most one area, no equipment identifier or condition |
+| Infos | Information | Team Leader announcements, images and an inclusive display-until date; visible site-wide |
+| Erfolge | Successes | Outcome linked to selected technical reports or reviewed Maintenance work; publication completes those records |
+| People | People | Dated Workforce assignments and shift information, using the existing planning view |
+| Performance: Gesperrte Anlagen und offene Punkte | Performance | Blocked/nonoperating plant reports requiring corrective maintenance, plus the current Department status open-issue count |
 | Probleme | Problems | Challenge, cause, measure, responsible person and deadlines |
 
 | Field | Meaning / behavior |
@@ -66,14 +66,17 @@ this increment does not introduce private personnel records.
 
 ## Views and presentation
 
-Tabs appear in this order: Meeting preparation, Journal, Department matrix, My entries.
+Tabs appear in this order: Meeting preparation, Journal, Department matrix.
+Journal replaces the separate My entries destination.
 Opening Handover defaults to Meeting preparation (Daily overview for Team Leader).
 
-**Journal:** show only entries for the selected site-calendar day and department,
-defaulting to today. Category previews link to that day's full category results.
-The selected day carries between Journal and Meeting preparation.
+**Journal:** show only the authenticated author's entries for the selected day and
+department, defaulting to today. Reuse expanded personal summary cards. Search history
+keeps the author filter while opening earlier dates/categories. The selected day
+carries between Journal and Meeting preparation. Meeting preparation remains the
+shared review for all authorized site authors.
 
-**History:** Department matrix and My entries retain paginated server-side filtering
+**History:** Department matrix and the personal Journal retain paginated server-side filtering
 by date range, department, area, equipment reference, category and issue state, plus
 text search. Order by occurrence date with stable creation/ID tie-breakers. An entry detail
 shows author, recorded date/time, original content, revisions and follow-up. A
@@ -83,10 +86,11 @@ resolved issue remains searchable. Unverified references are explicitly labelled
 Problems and Performance) across days, plus non-resolved daily categories (Safety,
 Information, Successes and People) only on their server publication day in the site
 time zone. This uses creation time rather than a coordinator's backdated entry date.
-Resolved entries and untracked carry-forward notes stay in history. Ordinary column
+Resolved entries and historical untracked carry-forward notes stay in history. New
+technical reports are always tracked, independently of a checkbox. Ordinary column
 filters narrow this operational scope; explicit Search history and equipment-history
 navigation recover other days/categories/states. Clear search restores the default.
-Notifications and existing daily Journal/meeting selections remain unchanged.
+Information display dates are independent of this matrix policy.
 
 Columns: Date, What?, Details, Ultimo reference, Due date, Responsible
 person and Status. Include category, follow-up state and an entry link. Each column
@@ -101,7 +105,7 @@ including empty sections, and compact title/department cards. Each section has i
 own pagination and full matching count. The selected day defaults to today. Full problem analysis,
 responsibility and deadlines are available by opening a card.
 
-**Department status:** a separate disclosure below Journal and Meeting preparation
+**Department status:** a separate disclosure below Meeting preparation
 shows current open/in-progress entries through today for configured carry-forward
 categories (Problems and Performance by default). Each category has independent counts
 and pagination. Resolved entries disappear here but remain in daily/history views;
@@ -134,10 +138,12 @@ See the [component library](../../apps/web/src/design/components/README.md).
 
 ## Future module integration
 
-M6 will supply actual shift context and the technician's assigned location as a
-form default. The technician can override it when helping elsewhere; the recorded
-work location must describe the work actually reported. Schedule changes must not
-rewrite old entries. Team Leader assignment tooling remains M6 scope.
+M6 supplies the author's actual zone assignment for the entry day through a narrow
+receiving-owned lookup. New entries default to its configured department, with manual
+override. Floating/maintenance support, unassigned days, ambiguous assignments and
+leaders without a zone have no default. A home department or browsed department is
+not an assignment. Schedule changes never rewrite published work locations. Formal
+shift binding remains future scope; Workforce continues to own assignment planning.
 
 Asset Management will validate equipment identities and aliases; a reviewed link
 will connect existing reference history to a canonical asset without destroying
@@ -175,15 +181,15 @@ one organization/site. Intermediate location nodes are supported; selecting an a
 requires it to belong to the selected department. Stable IDs must not be reassigned
 to another physical place. Existing snapshots preserve historical labels. See
 [setup and use](../development/shift-handover.md). Formal shift closure,
-explicit canonical entry-to-asset references, formal shift binding and Workforce
-location defaults remain future integration. IOP-194 supplies alias-based digital
+explicit canonical entry-to-asset references and formal shift binding remain future
+integration. Workforce defaults are delivered under IOP-199. IOP-194 supplies alias-based digital
 history and reviewed Maintenance issue resolution through Handover-owned ports.
 
 ## Board workflow refinement
 
 [IOP-169](../planning/items/IOP-169-handover-board.md) refines this increment into a
 category board, on-demand search and modal creation/follow-up. Start prioritizes
-open/blocked/overdue department reports; My entries provides authenticated-author
+open/blocked/overdue department reports; the personal Journal provides authenticated-author
 history. Contributors publish for today at the site, while coordinators retain date
 selection. Equipment selection uses owner-approved imported codes by location and
 retains unverified reference identity. See the [operator workflow](../development/shift-handover.md)
@@ -191,8 +197,10 @@ for exact controls and limits.
 
 ## Information, images and person mentions — IOP-196
 
-The scoped catalog marks Information `coordinatorOnly`; Administrator and Team Leader
-may publish/update it. All site readers retain access. Category changes cannot bypass
+The original IOP-196 increment used coordinator publication. IOP-199 retains
+`coordinatorOnly` and adds a scoped `publisherProfiles` restriction: the pilot
+default is Team Leader only, including corrections. Current grants are still required;
+a profile alone never authorizes a write. All site readers retain access. Category changes cannot bypass
 the original category restriction. Coordinators can attach up to two PNG/JPEG/WebP
 images. The browser resizes files (up to 10 MB each) into small JPEG previews; each
 stored data URL is at most 65,536 characters. Images and mentioned-person IDs/names
@@ -202,8 +210,37 @@ external image URL is introduced. Historical records may omit these fields.
 Mention people selects up to 20 exact current site users; free-text names do not
 create implicit recipients. Publication and subsequent revisions containing the
 mention generate in-app activity for that person, even when the original entry is
-historical. Notifications preserve their existing browser-local read checkpoint.
+historical. Information revisions additionally notify every other site reader,
+without requiring a mention. Opening a successful detail records its seen revision/
+time in browser-local account/site read state; unrelated notices and later updates
+remain unread. Mark all as read remains available.
 
 Start's assigned-report completion metric counts distinct entries with a resolution
 transition in the previous site-calendar month and responsibility assigned to the
 caller at that transition. Later reopening/correction does not rewrite that fact.
+
+## Category workflows — IOP-199
+
+The form presents one **Technical issue** choice. Blocked operation selects the
+configured Performance workflow; other technical conditions select Problems. The
+API derives the same classification and always opens the issue. Plant-level reports
+can use a department/area without inventing a component code. Safety rejects an
+equipment code or condition on the server and omits those fields in the form.
+
+Success requires one to twenty explicit references of one source type: pending
+Performance/Problem reports or unfinished Maintenance work. Publication supplies
+its details (or summary) as the outcome and closes only selected, authorized current
+records. Maintenance reuses its complete existing repair review and ownership rules;
+unreviewed, stale or denied work rejects the whole publication. The entry, closures
+and both owners' revisions commit together. Corrections retain the original closure
+references and do not execute new closures. Success is an outcome, not another
+open issue; state controls cannot turn it into one. Source titles/locations remain in the
+Success evidence, with navigation to original records.
+
+Information authors choose **Display through**, inclusive from the occurrence date.
+Meeting preparation and every profile's Start show active Information independently
+of the browsed department; expiration removes display prominence, not history. Select
+Information to expand readable details/images. Category panels grow with their entry
+count. People expands the existing Workforce daily view for the selected date,
+without introducing a second assignment editor. See
+[IOP-199](../planning/items/IOP-199-handover-category-workflows.md) for execution evidence.

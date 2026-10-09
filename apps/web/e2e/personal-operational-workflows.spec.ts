@@ -225,6 +225,7 @@ for (const width of [1440, 375]) {
           },
         });
       }
+      if (path.endsWith("/handover/default-location")) return route.fulfill({ json: { departmentId: "" } });
       if (path.endsWith("/handover/context"))
         return route.fulfill({
           json: {

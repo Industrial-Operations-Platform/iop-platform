@@ -8,6 +8,8 @@ import type {
 import type { components } from "../../../../contracts/schema";
 type Schema = components["schemas"];
 const messages: Record<string, string> = {
+  handover_completion_capacity: "This repair has too many pending reports. Narrow and review its scope in Maintenance before publishing Success.",
+  handover_completion_conflict: "Review the linked reports in Maintenance and reload the work before publishing Success. No selected records were completed.",
   handover_today_only:
     "New entries must use today’s date at your site. Historical dates require a coordinator.",
   handover_equipment_unavailable:
@@ -39,6 +41,10 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   return data;
 }
 export class HttpHandoverGateway implements Gateway {
+  defaultDepartment(date: string) { return request<Schema["HandoverDefaultLocationDto"]>("default-location", { date }); }
+  targets(input: { source: "handover" | "maintenance"; search: string; cursor: string }) {
+    return request<Schema["HandoverCompletionPageDto"]>("completion-targets", input);
+  }
   equipment(selection: EquipmentSelection) {
     return request<Schema["HandoverEquipmentPageDto"]>("equipment", selection);
   }

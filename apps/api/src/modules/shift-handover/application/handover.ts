@@ -1,6 +1,7 @@
 import {
   HandoverError,
   siteDate,
+  date,
   withinLocation,
   exact,
   text,
@@ -18,6 +19,8 @@ import {
   type History,
   type Selection,
   type IssueState,
+  type CompletionPage,
+  type ResolutionReference,
 } from "../domain/handover";
 export interface MatrixScope {
   date: string;
@@ -26,6 +29,10 @@ export interface MatrixScope {
   dailyCategoryIds: string[];
 }
 export interface Transaction {
+  publisherProfile?: string;
+  assignmentTarget?(day: string): Promise<string>;
+  maintenanceTargets?(search: string, cursor: string): Promise<CompletionPage>;
+  completeMaintenance?(reference: ResolutionReference, outcome: string, successId: string): Promise<{ title: string; location: string }>;
   coordinator: boolean;
   canDelete?: boolean;
   equipment: EquipmentLookup["search"];
@@ -83,9 +90,41 @@ export class Handover {
     private readonly ids: () => string,
     private readonly now: () => string,
   ) {}
+  defaultDepartment(actor: string, day: string) {
+    date(day, true);
+    return this.store.run(actor, "handover.read", async (tx) => {
+      const target = await tx.assignmentTarget?.(day) ?? "";
+      const department = target ? this.catalog.locations.find((location) =>
+        location.role === "department" && withinLocation(target, location.id, this.catalog.locations)) : undefined;
+      return { departmentId: department?.id ?? "" };
+    });
+  }
+  targets(actor: string, input: { source: "handover" | "maintenance"; search: string; cursor: string }): Promise<CompletionPage> {
+    exact(input, ["source", "search", "cursor"]);
+    text(input.search, 200);
+    text(input.cursor, 100);
+    if (!["handover", "maintenance"].includes(input.source)) throw new HandoverError("invalid_handover");
+    return this.store.run(actor, "handover.read", async (tx) => {
+      if (input.source === "maintenance") {
+        if (!tx.maintenanceTargets) throw new HandoverError("handover_denied");
+        return tx.maintenanceTargets(input.search, input.cursor);
+      }
+      const page = await tx.list(validSelection({
+        from: "", to: "", departmentId: "", areaId: "", equipmentReferenceId: "", categoryId: "",
+        search: input.search, cursor: input.cursor, highlights: false, state: "pending", resolutionCandidates: true,
+      }));
+      return { total: page.total, nextCursor: page.nextCursor, targets: page.entries.map((entry) => ({
+        source: "handover", id: entry.id, expectedRevision: entry.revision, title: entry.content.summary,
+        location: [entry.departmentLabel, entry.areaLabel].filter(Boolean).join(" · "),
+        canComplete: tx.coordinator || entry.authorId === actor || entry.responsibleId === actor,
+      })) };
+    });
+  }
   context(actor: string) {
     return this.store.run(actor, "handover.read", async (tx) => ({
       ...this.catalog,
+      categories: this.catalog.categories.map((category) => ({ ...category, canPublish:
+        (!category.coordinatorOnly || tx.coordinator) && (!category.publisherProfiles || category.publisherProfiles.includes(tx.publisherProfile ?? "")) })),
       people: await tx.people(),
       canCoordinate: tx.coordinator,
       canDelete: !!tx.canDelete,
@@ -218,6 +257,9 @@ export class Handover {
     prior?: Content,
     checkImages = true,
   ) {
+    if (this.catalog.categories.some((category) =>
+      category.publisherProfiles && [content.categoryId, prior?.categoryId].includes(category.id) &&
+      !category.publisherProfiles.includes(tx.publisherProfile ?? ""))) throw new HandoverError("handover_denied");
     if (
       !tx.coordinator &&
       (this.catalog.categories.some(
@@ -236,6 +278,8 @@ export class Handover {
       responsibleId = text(input.responsibleId, 64);
     if (typeof input.issue !== "boolean" || (!input.issue && responsibleId))
       throw new HandoverError("invalid_handover");
+    const workflow = this.catalog.categories.find((c) => c.id === content.categoryId)?.workflow;
+    if (workflow === "success" && (input.issue || responsibleId)) throw new HandoverError("invalid_handover");
     const fingerprint = JSON.stringify({
       content,
       issue: input.issue,
@@ -276,10 +320,11 @@ export class Handover {
         responsibleName: responsibleId
           ? this.person(people, responsibleId).name
           : "",
-        issueState: input.issue ? "open" : "none",
+        issueState: input.issue || workflow?.startsWith("technical-") ? "open" : "none",
         highlighted: false,
         highlightedAt: "",
       };
+      if (workflow === "success") await this.completeReferences(tx, actor, entry, author);
       await tx.save(
         entry,
         {
@@ -294,6 +339,30 @@ export class Handover {
       );
       return (await this.currentNames(tx, [entry]))[0];
     });
+  }
+  private async completeReferences(tx: Transaction, actor: string, success: Entry, author: Person) {
+    const outcome = success.content.details || success.content.summary;
+    success.completedReferences = [];
+    for (const reference of [...(success.content.resolutions ?? [])].sort((a, b) => a.id.localeCompare(b.id))) {
+      if (reference.source === "maintenance") {
+        if (!tx.completeMaintenance) throw new HandoverError("handover_denied");
+        const completed = await tx.completeMaintenance(reference, outcome, success.id);
+        success.completedReferences.push({ source: reference.source, id: reference.id, ...completed });
+        continue;
+      }
+      const entry = await this.existing(tx, reference.id);
+      requireRevision(entry, reference.expectedRevision);
+      const category = this.catalog.categories.find((c) => c.id === entry.content.categoryId);
+      if (entry.deleted || !category?.workflow?.startsWith("technical-") || !["open", "in-progress"].includes(entry.issueState))
+        throw new HandoverError("handover_conflict");
+      success.completedReferences.push({ source: reference.source, id: entry.id, title: entry.content.summary, location: [entry.departmentLabel, entry.areaLabel].filter(Boolean).join(" · ") });
+      changeIssue(entry, actor, tx.coordinator, "resolved", outcome);
+      entry.revision++;
+      entry.updatedAt = success.createdAt;
+      entry.latestUpdate = { note: outcome, actorName: author.name, at: entry.updatedAt };
+      await tx.save(entry, { entry, actorId: actor, actorName: author.name, action: "state",
+        note: `Success ${success.id}: ${success.content.summary}`, at: entry.updatedAt });
+    }
   }
   remove(actor: string, id: string, expectedRevision: number) {
     text(id, 64, true);
@@ -341,11 +410,17 @@ export class Handover {
       if (entry.deleted) throw new HandoverError("handover_missing");
       requireRevision(entry, input.expectedRevision);
       this.requireContentPermission(tx, entry.content, undefined, false);
+      if (input.state !== undefined && this.catalog.categories.find((category) =>
+        category.id === entry.content.categoryId)?.workflow === "success")
+        throw new HandoverError("invalid_handover");
       const people = await tx.people(),
         author = this.person(people, actor);
       if (input.action === "correct") {
         requireEditor(entry, actor, tx.coordinator);
         const content = validContent(input.content!, this.catalog);
+        // Corrections retain the original closure evidence; they never close another record.
+        if (JSON.stringify(content.resolutions ?? []) !== JSON.stringify(entry.content.resolutions ?? []))
+          throw new HandoverError("handover_conflict");
         this.requireContentPermission(tx, content, entry.content);
         entry.mentionedPeople = (content.mentionIds ?? []).map((id) =>
           this.person(people, id),

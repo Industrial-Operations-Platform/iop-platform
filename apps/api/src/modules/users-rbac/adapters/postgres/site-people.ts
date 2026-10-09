@@ -55,3 +55,9 @@ export async function workforcePeople(
     throw new Error("Site directory exceeds the configured limit.");
   return result.rows as { id: string; name: string; profile: string }[];
 }
+
+/** Current scoped profile for receiving modules' configured publishing policies. */
+export async function sitePersonProfile(query: LookupQuery, organizationId: string, siteId: string, userId: string): Promise<string> {
+  const result = await query.query("SELECT profile FROM users_rbac.profiles WHERE organization_id=$1 AND site_id=$2 AND user_id=$3", [organizationId, siteId, userId]);
+  return (result.rows[0]?.profile as string | undefined) ?? "";
+}

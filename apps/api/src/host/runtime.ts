@@ -1,3 +1,4 @@
+import { workforceAssignedTarget } from "../modules/workforce/adapters/postgres/assignment-default";
 import { assetEquipmentCatalog } from "./adapters/asset-equipment-catalog";
 import { Workforce } from "../modules/workforce/application/workforce";
 import { workforceTeams } from "../modules/workforce/adapters/postgres/teams";
@@ -23,6 +24,7 @@ import { IntlSiteClock } from "../modules/workforce/adapters/time/site-clock";
 import { ManualScheduleDecoder } from "../modules/integrations/adapters/schedule/decoder";
 import {
   workforcePeople,
+  sitePersonProfile,
   sitePersonNames,
 } from "../modules/users-rbac/adapters/postgres/site-people";
 import { workforceDefaults } from "./adapters/workforce-defaults";
@@ -334,8 +336,7 @@ export class PlatformRuntime {
       randomUUID,
       () => new Date().toISOString(),
     );
-    this.maintenance = new Maintenance(
-      new PgMaintenance(pool, this.source, {
+    const maintenanceStore = new PgMaintenance(pool, this.source, {
         ...operationalDirectory,
         people: (tx) =>
           sitePeople(tx, this.source.organizationId, this.source.siteId),
@@ -354,7 +355,9 @@ export class PlatformRuntime {
             resolutions,
             evidence,
           ),
-      }),
+      });
+    this.maintenance = new Maintenance(
+      maintenanceStore,
       catalog.locations,
       maintenanceDefaults,
       () => new Date().toISOString(),
@@ -388,6 +391,18 @@ export class PlatformRuntime {
     );
     this.handover = new Handover(
       new PgHandover(pool, this.source, {
+        profile: (tx, actor) => sitePersonProfile(tx, this.source.organizationId, this.source.siteId, actor),
+        broadcastCategoryIds: catalog.categories.filter((c) => c.workflow === "information").map((c) => c.id),
+        technicalCategoryIds: catalog.categories.filter((c) => c.workflow?.startsWith("technical-")).map((c) => c.id),
+        assignmentTarget: async (tx, actor, day) => (await operationalDirectory.allowed(tx, actor, "workforce.read"))
+          ? workforceAssignedTarget(tx, actor, day) : "",
+        maintenanceTargets: (tx, actor, search, cursor) => maintenanceStore.within(tx, actor, "maintenance.read", async (work) => {
+          const page = await this.maintenance.completionTargetsWithin(work, actor, search, cursor);
+          return { ...page, targets: page.targets.map((target) => ({ ...target, source: "maintenance" as const })) };
+        }),
+        completeMaintenance: (tx, actor, reference, outcome, successId) => maintenanceStore.within(tx, actor, "maintenance.contribute",
+          async (work) => { const record = await this.maintenance.completeWithin(work, actor, reference, outcome, successId);
+            return { title: record.data.title, location: record.locationLabel }; }),
         allowed: async (tx, actor, permission) =>
           (
             await evaluateSiteAccess(tx, {

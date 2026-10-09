@@ -120,6 +120,11 @@ export function statusChange(
 }
 /** Browser use cases keep transport and React outside the application boundary. */
 export class MaintenanceApplication {
+  private viewed = new Set<(record: MaintenanceRecord) => void>();
+  subscribeViewed(listener: (record: MaintenanceRecord) => void) {
+    this.viewed.add(listener);
+    return () => { this.viewed.delete(listener); };
+  }
   constructor(
     private readonly gateway: Gateway,
     private readonly ids: () => string,
@@ -137,7 +142,10 @@ export class MaintenanceApplication {
     return this.gateway.save(input);
   }
   history(id: string, before?: number) {
-    return this.gateway.history(id, before);
+    return this.gateway.history(id, before).then((history) => {
+      this.viewed.forEach((listener) => listener(history.record));
+      return history;
+    });
   }
   settings(expectedRevision: number, priorities: Priority[]) {
     return this.gateway.settings(expectedRevision, priorities);

@@ -18,7 +18,11 @@ export interface Location {
   role: "department" | "area" | "location";
   sectorKey: string;
 }
+export type CategoryWorkflow = "safety" | "information" | "success" | "people" | "technical-problem" | "technical-blocked";
 export interface Choice {
+  publisherProfiles?: string[];
+  canPublish?: boolean;
+  workflow?: CategoryWorkflow;
   id: string;
   label: string;
   carryForward?: boolean;
@@ -38,7 +42,24 @@ export interface ImageAttachment {
   name: string;
   dataUrl: string;
 }
+export interface ResolutionReference {
+  source: "handover" | "maintenance";
+  id: string;
+  expectedRevision: number;
+}
+export interface CompletionTarget extends ResolutionReference {
+  title: string;
+  location: string;
+  canComplete: boolean;
+}
+export interface CompletionPage {
+  targets: CompletionTarget[];
+  nextCursor: string;
+  total: number;
+}
 export interface Content {
+  displayUntil?: string;
+  resolutions?: ResolutionReference[];
   mentionIds?: string[];
   images?: ImageAttachment[];
   date: string;
@@ -65,7 +86,14 @@ export interface Content {
   discuss: boolean;
 }
 export type IssueState = "none" | "open" | "in-progress" | "resolved";
+export interface CompletedReference {
+  source: "handover" | "maintenance";
+  id: string;
+  title: string;
+  location: string;
+}
 export interface Entry {
+  completedReferences?: CompletedReference[];
   notificationAt?: string;
   mentionedPeople?: Person[];
   deleted?: boolean;
@@ -105,7 +133,14 @@ export interface History {
   revisions: Revision[];
   nextBefore: number;
 }
+export interface NotificationRead {
+  id: string;
+  at: string;
+}
 export interface Selection {
+  notificationReads?: NotificationRead[];
+  displayOn?: string;
+  resolutionCandidates?: boolean;
   excludeAttention?: boolean;
   resolvedFrom?: string;
   resolvedTo?: string;
@@ -212,9 +247,20 @@ export function validImages(input: unknown): ImageAttachment[] {
     return { name, dataUrl };
   });
 }
+export function validResolutions(input: unknown): ResolutionReference[] {
+  if (!Array.isArray(input) || input.length > 20) invalid();
+  const result = input.map((reference) => {
+    exact(reference, ["source", "id", "expectedRevision"]);
+    if (!["handover", "maintenance"].includes(reference.source as string) ||
+      !Number.isSafeInteger(reference.expectedRevision) || (reference.expectedRevision as number) < 1 || (reference.expectedRevision as number) > 2147483647) invalid();
+    return { source: reference.source as ResolutionReference["source"], id: text(reference.id, 64, true), expectedRevision: reference.expectedRevision as number };
+  });
+  if (new Set(result.map((r) => r.id)).size !== result.length || new Set(result.map((r) => r.source)).size > 1) invalid();
+  return result;
+}
 export function validContent(input: Content, catalog: Catalog): Content {
   exact(input, [
-    ...["mentionIds", "images"].filter((key) =>
+    ...["displayUntil", "resolutions", "mentionIds", "images"].filter((key) =>
       Object.hasOwn(input ?? {}, key),
     ),
     "date",
@@ -235,6 +281,8 @@ export function validContent(input: Content, catalog: Catalog): Content {
     "discuss",
   ]);
   const value: Content = {
+    ...(input.displayUntil !== undefined ? { displayUntil: date(input.displayUntil, true) } : {}),
+    ...(input.resolutions !== undefined ? { resolutions: validResolutions(input.resolutions) } : {}),
     date: date(input.date, true),
     categoryId: text(input.categoryId, 64, true),
     summary: text(input.summary, 240, true),
@@ -286,7 +334,21 @@ export function validContent(input: Content, catalog: Catalog): Content {
   )
     invalid();
   if ((value.equipmentCode || value.condition) && !department) invalid();
-  if (value.condition && !value.equipmentCode) invalid();
+  const workflow = catalog.categories.find((c) => c.id === value.categoryId)?.workflow;
+  if (workflow === "safety" && (value.equipmentCode || value.condition)) invalid();
+  if (value.condition && !value.equipmentCode && !workflow?.startsWith("technical-")) invalid();
+  if (workflow?.startsWith("technical-")) {
+    const classification = catalog.categories.find((c) => c.workflow === (value.condition === "blocked" ? "technical-blocked" : "technical-problem"));
+    if (!classification) invalid();
+    value.categoryId = classification.id;
+  }
+  if (workflow === "information") {
+    value.displayUntil ??= value.date;
+    if (value.displayUntil < value.date) invalid();
+  } else if (value.displayUntil) invalid();
+  if (workflow === "success") {
+    if (!value.resolutions?.length) invalid();
+  } else if (value.resolutions?.length) invalid();
   return value;
 }
 export function validSelection(input: Selection): Selection {
@@ -295,6 +357,9 @@ export function validSelection(input: Selection): Selection {
     ...(Object.hasOwn(input ?? {}, "mine") ? ["mine"] : []),
     ...(Object.hasOwn(input ?? {}, "attention") ? ["attention"] : []),
     ...[
+      "displayOn",
+      "resolutionCandidates",
+      "notificationReads",
       "departmentMatrix",
       "excludeAttention",
       "resolvedFrom",
@@ -327,6 +392,18 @@ export function validSelection(input: Selection): Selection {
     "categoryId",
   ] as const)
     result[key] = text(input[key], 64);
+  if (input.displayOn !== undefined) result.displayOn = date(input.displayOn, true);
+  if (input.resolutionCandidates !== undefined && typeof input.resolutionCandidates !== "boolean") invalid();
+  if (input.notificationReads !== undefined) {
+    if (!Array.isArray(input.notificationReads) || input.notificationReads.length > 1000) invalid();
+    result.notificationReads = input.notificationReads.map((read) => {
+      exact(read, ["id", "at"]);
+      const id = text(read.id, 64, true);
+      const at = text(read.at, 24, true);
+      if (!Number.isFinite(Date.parse(at)) || new Date(at).toISOString() !== at) invalid();
+      return { id, at };
+    });
+  }
   if (input.notificationsAfter !== undefined) {
     const since = input.notificationsAfter;
     if (

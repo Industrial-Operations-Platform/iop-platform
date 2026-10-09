@@ -30,6 +30,7 @@ const {
 const {
   sitePeople,
   sitePersonNames,
+  sitePersonProfile,
 } = require("../../../apps/api/dist/modules/users-rbac/adapters/postgres/site-people");
 const {
   evaluateSiteAccess,
@@ -80,7 +81,7 @@ const config = {
     "People",
     "Performance",
     "Problems",
-  ].map((label) => ({ id: label.toLowerCase(), label })),
+  ].map((label) => ({ id: label.toLowerCase(), label, ...(label === "Information" ? { publisherProfiles: ["administrator", "team-leader"] } : {}) })),
   externalSystemLabel: "Ultimo",
 };
 const password = "Synthetic handover password 168";
@@ -97,6 +98,10 @@ async function db(role, work) {
 }
 function service(target = scope, connection = pool, options = {}) {
   const store = new PgHandover(connection, target, {
+    profile: (tx, actor) => sitePersonProfile(tx, target.organizationId, target.siteId, actor),
+    broadcastCategoryIds: ["information"],
+    technicalCategoryIds: ["problems", "performance"],
+    ...options.lookup,
     allowed: async (tx, actor, permission) =>
       (
         await evaluateSiteAccess(tx, {
@@ -306,12 +311,13 @@ function maintenanceFixture() {
       })),
     },
     publish: (summary, code = codes[0], selectedArea = areaId, issue = true) =>
-      handover.create("tech-a", {
+      handover.create(issue ? "tech-a" : "lead-a", {
         key: randomUUID(),
         issue,
         responsibleId: issue ? "lead-a" : "",
         content: {
           ...content(summary),
+          categoryId: issue ? "problems" : "information",
           departmentId,
           areaId: selectedArea,
           equipmentCode: code,
@@ -1102,16 +1108,15 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     });
     await pw(button("Administration")).toHaveCount(0);
     await button("Shift Handover").click();
-    await button("Journal").click();
     await pw(page.getByLabel("Search", { exact: true })).toHaveCount(0);
     await page.getByLabel("Selected department").selectOption("department");
-    await pw(button("Add Safety entry")).toBeVisible();
+    await pw(button("New entry")).toBeVisible();
     mkdirSync("/tmp/iop-169-browser", { recursive: true });
     await page.screenshot({
       path: "/tmp/iop-169-browser/board-desktop.png",
       fullPage: true,
     });
-    await button("Add Safety entry").click();
+    await button("New entry").click();
     await pw(
       page.getByRole("dialog", { name: "New handover entry" }),
     ).toBeVisible();
@@ -1121,11 +1126,13 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     );
     await pw(
       page.getByLabel("Department / Halle", { exact: true }),
-    ).toHaveValue("department");
+    ).toHaveValue("");
+    await pw(page.getByLabel("Betriebsmittelkennzeichen", { exact: true })).toHaveCount(0);
     await page.keyboard.press("Escape");
     await pw(page.getByRole("dialog")).toHaveCount(0);
-    await pw(button("Add Safety entry")).toBeFocused();
-    await button("Add Safety entry").click();
+    await pw(button("New entry")).toBeFocused();
+    await button("New entry").click();
+    await page.getByLabel("Category", { exact: true }).selectOption("problems");
     await page
       .getByLabel("Summary", { exact: true })
       .fill("Browser repair report");
@@ -1171,7 +1178,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await page
       .getByLabel("Details", { exact: true })
       .fill("Inspect the replaced guard before next use.");
-    await page.getByLabel("Track as an open issue", { exact: true }).check();
+    await pw(page.getByLabel("Track as an open issue", { exact: true })).toHaveCount(0);
     await page
       .getByLabel("Responsible person", { exact: true })
       .selectOption("lead-a");
@@ -1286,7 +1293,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await pw(
       page.getByRole("button", { name: /Browser repair corrected/ }),
     ).toBeVisible();
-    await button("My entries").click();
+    await button("Journal").click();
     await pw(
       page.getByRole("button", { name: /Browser repair corrected/ }),
     ).toBeVisible();
@@ -1368,7 +1375,6 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       page.getByRole("heading", { name: "Notification integration entry" }),
     ).toBeVisible();
     await button("Notifications").click();
-    await button("Mark all as read").click();
     await pw(
       notificationPanel.getByText("You're all caught up."),
     ).toBeVisible();
@@ -1377,7 +1383,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       .getByRole("navigation", { name: "Breadcrumb" })
       .getByRole("button", { name: "Shift Handover", exact: true })
       .click();
-    await button("My entries").click();
+    await button("Journal").click();
     await page.getByLabel("Selected department").selectOption("department");
     const dayNote = {
       ...content("Daily overview note"),
@@ -1912,6 +1918,58 @@ test("IOP-196 partitions urgent reports, counts resolution revisions and notifie
   expect(durable.revisions[1].entry.content.images[0].dataUrl).toBe(png);
 });
 
+test("IOP-199 Workforce assignment defaults respect the day, floating duty and exact actor scope", async () => {
+  const { workforceAssignedTarget } = require("../../../apps/api/dist/modules/workforce/adapters/postgres/assignment-default");
+  const workforce = workforceService();
+  const imported = { format: "csv", userId: "", text: "userId,date,status,start,end\ntech-a,2026-10-12,work,05:00,14:15" };
+  const preview = await workforce.preview("admin-a", imported);
+  await workforce.import("admin-a", imported, preview);
+  const request = { kind: "assignment", id: "iop-199-default-assignment", expectedRevision: 0, deleted: false,
+    data: { userId: "tech-a", date: "2026-10-12", shiftId: "early", targetId: "zone", duty: "zone", phone: "",
+      start: "05:00", end: "14:15", startsAt: "", endsAt: "" } };
+  const assigned = await workforce.save("lead-a", request);
+  const journal = service(scope, pool, { locations: [...config.locations, { id: "zone", label: "Zone", parentId: "department", role: "area", sectorKey: "" }],
+    lookup: { assignmentTarget: (tx, actor, day) => workforceAssignedTarget(tx, actor, day) } });
+  expect(await journal.defaultDepartment("tech-a", "2026-10-12")).toEqual({ departmentId: "department" });
+  expect(await journal.defaultDepartment("tech-a", "2026-10-13")).toEqual({ departmentId: "" });
+  await workforce.save("lead-a", { ...request, expectedRevision: assigned.revision, data: { ...request.data, duty: "floating", targetId: "" } });
+  expect(await journal.defaultDepartment("tech-a", "2026-10-12")).toEqual({ departmentId: "" });
+  await expect(maintenanceOperation((tx) => workforceAssignedTarget(tx, "tech-a", "2026-10-12"), "task-a")).rejects.toThrow("Site operation is not permitted.");
+});
+
+test("IOP-199 Information broadcasts revisions, inclusive display dates and individual read exclusion keep exact totals", async () => {
+  let at = "2026-10-07T12:00:00.000Z";
+  const journal = service(scope, pool, { now: () => at });
+  const notice = await journal.create("lead-a", { key: randomUUID(), issue: false, responsibleId: "", content: {
+    ...content("IOP-199 Broadcast"), date: "2026-10-07", categoryId: "information", displayUntil: "2026-10-09", mentionIds: [],
+  } });
+  at = "2026-10-08T12:00:00.000Z";
+  const updated = await journal.change("lead-a", { id: notice.id, expectedRevision: 1, action: "correct", note: "Broadcast correction",
+    content: { ...notice.content, details: "Everyone needs this corrected information." } });
+  const selected = { ...emptySelection, search: "IOP-199 Broadcast", notificationsAfter: notice.createdAt };
+  const feed = await journal.list("task-a", selected);
+  expect(feed.total).toBe(1); expect(feed.entries[0].notificationAt).toBe(at);
+  expect((await journal.list("task-a", { ...selected, notificationReads: [{ id: notice.id, at }] })).total).toBe(0);
+  expect((await journal.list("task-a", { ...selected, notificationReads: [{ id: notice.id, at: notice.createdAt }] })).total).toBe(1);
+  expect((await journal.list("task-a", { ...emptySelection, search: "IOP-199 Broadcast", displayOn: "2026-10-09" })).total).toBe(1);
+  expect((await journal.list("task-a", { ...emptySelection, search: "IOP-199 Broadcast", displayOn: "2026-10-10" })).total).toBe(0);
+  expect((await journal.history("task-a", updated.id)).revisions).toHaveLength(2);
+});
+test("IOP-199 Success closes exact report references atomically and concurrent publications cannot close twice", async () => {
+  const selected = await app.create("task-a", { key: randomUUID(), issue: false, responsibleId: "", content: content("IOP-199 Selected report") });
+  const unrelated = await app.create("task-a", { key: randomUUID(), issue: false, responsibleId: "", content: content("IOP-199 Unrelated report") });
+  const success = (expectedRevision) => ({ key: randomUUID(), issue: false, responsibleId: "", content: {
+    ...content("IOP-199 Success"), categoryId: "successes", equipmentCode: "", condition: "", details: "The selected repair is complete.",
+    resolutions: [{ source: "handover", id: selected.id, expectedRevision }],
+  } });
+  const results = await Promise.allSettled([app.create("task-a", success(1)), app.create("task-a", success(1))]);
+  expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+  expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
+  expect((await app.history("admin-a", selected.id)).entry).toMatchObject({ issueState: "resolved", revision: 2 });
+  expect((await app.history("admin-a", unrelated.id)).entry.issueState).toBe("open");
+  expect((await app.list("admin-a", { ...emptySelection, search: "IOP-199 Success" })).total).toBe(1);
+});
+
 test("administrator logical deletion retains author name, journal history and audit; final administrator is protected", async () => {
   const entry = await publish("Retained author after profile removal");
   await expect(access.users.remove("tech-a", "task-a")).rejects.toThrow();
@@ -2127,6 +2185,8 @@ test("operational matrix applies configured carry-forward, publication day and r
       content: {
         ...content(`Matrix policy fixture: ${label}`),
         categoryId,
+        equipmentCode: ["safety", "information", "people"].includes(categoryId) ? "" : "0001",
+        condition: categoryId === "performance" ? "blocked" : categoryId === "problems" ? "inspection-needed" : "",
         date: "2026-09-01",
       },
       issue,
@@ -2157,12 +2217,12 @@ test("operational matrix applies configured carry-forward, publication day and r
     state: "resolved",
     note: "Work completed",
   });
-  await create("performance", "not an issue");
-  for (const category of ["safety", "information", "successes", "people"])
+  expected.push((await create("performance", "automatic issue tracking")).id);
+  for (const category of ["safety", "information", "people"])
     await create(category, `old ${category}`, true);
   // UTC still says the previous day, but publication is on today's site-local date.
   instant = "2026-09-27T22:00:00.000Z";
-  for (const category of ["safety", "information", "successes", "people"])
+  for (const category of ["safety", "information", "people"])
     expected.push((await create(category, `today ${category}`)).id);
   const closedToday = await create("safety", "closed today", true);
   await matrix.change("admin-a", {
@@ -2222,7 +2282,7 @@ test("operational matrix applies configured carry-forward, publication day and r
       .total,
   ).toBe(0);
   instant = "2026-09-28T22:00:00.000Z";
-  expect((await matrix.list("admin-a", selection)).total).toBe(22);
+  expect((await matrix.list("admin-a", selection)).total).toBe(23);
   await expect(matrix.list("other-site", selection)).rejects.toThrow(
     "Site operation is not permitted.",
   );

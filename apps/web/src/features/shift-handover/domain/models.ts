@@ -5,7 +5,11 @@ export interface Location {
   role: "department" | "area" | "location";
   sectorKey: string;
 }
+export type CategoryWorkflow = "safety" | "information" | "success" | "people" | "technical-problem" | "technical-blocked";
 export interface Choice {
+  publisherProfiles?: string[];
+  canPublish?: boolean;
+  workflow?: CategoryWorkflow;
   id: string;
   label: string;
   carryForward?: boolean;
@@ -25,7 +29,24 @@ export interface ImageAttachment {
   name: string;
   dataUrl: string;
 }
+export interface ResolutionReference {
+  source: "handover" | "maintenance";
+  id: string;
+  expectedRevision: number;
+}
+export interface CompletionTarget extends ResolutionReference {
+  title: string;
+  location: string;
+  canComplete: boolean;
+}
+export interface CompletionPage {
+  targets: CompletionTarget[];
+  nextCursor: string;
+  total: number;
+}
 export interface Content {
+  displayUntil?: string;
+  resolutions?: ResolutionReference[];
   mentionIds?: string[];
   images?: ImageAttachment[];
   date: string;
@@ -52,7 +73,14 @@ export interface Content {
   discuss: boolean;
 }
 export type IssueState = "none" | "open" | "in-progress" | "resolved";
+export interface CompletedReference {
+  source: "handover" | "maintenance";
+  id: string;
+  title: string;
+  location: string;
+}
 export interface Entry {
+  completedReferences?: CompletedReference[];
   notificationAt?: string;
   mentionedPeople?: Person[];
   deleted?: boolean;
@@ -92,7 +120,14 @@ export interface History {
   revisions: Revision[];
   nextBefore: number;
 }
+export interface NotificationRead {
+  id: string;
+  at: string;
+}
 export interface Selection {
+  notificationReads?: NotificationRead[];
+  displayOn?: string;
+  resolutionCandidates?: boolean;
   excludeAttention?: boolean;
   resolvedFrom?: string;
   resolvedTo?: string;

@@ -415,3 +415,10 @@ Future retention defaults are 365 days for material changes/maintenance and
 does not promise simultaneous backup erasure. These are conceptual requirements
 for later implementation: the owner explicitly excluded Audit infrastructure and
 its retention obligations from the pilot. No physical schema is selected.
+
+IOP-199 extends existing Handover snapshots with inclusive Information display dates,
+exact Success source/ID/revision references and server-produced completed-record
+labels. Source records and their revisions stay with Handover/Maintenance; publication
+and authorized selected closures share one pinned transaction. Browser checkpoints
+retain only scoped notification IDs/seen times, not record content or permissions.
+No new table, migration or canonical equipment identity is introduced.

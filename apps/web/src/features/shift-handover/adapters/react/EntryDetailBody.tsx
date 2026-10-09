@@ -1,10 +1,10 @@
 import { t } from "../../../../localization/i18n";
-import { Badge } from "../../../../design/components";
-import type { Entry } from "../../domain/models";
+import { Badge, Button } from "../../../../design/components";
+import type { CompletedReference, Entry } from "../../domain/models";
 import { issueLabel, issueTone } from "./entry-labels";
 import { CategoryBadge } from "./CategoryBadge";
 
-export function EntryDetailBody({ entry }: { entry: Entry }) {
+export function EntryDetailBody({ entry, onReference }: { entry: Entry; onReference?: (reference: CompletedReference) => void }) {
   const c = entry.content;
   const followUp = Object.entries({
     Challenge: c.challenge,
@@ -55,6 +55,13 @@ export function EntryDetailBody({ entry }: { entry: Entry }) {
           </p>
           {!!c.images?.length && <div className="handover-images">{c.images.map((image, index) => <figure key={index}><img src={image.dataUrl} alt={image.name} /><figcaption>{image.name}</figcaption></figure>)}</div>}
           {!!entry.mentionedPeople?.length && <p><strong>{t("Mentioned people")}: </strong>{entry.mentionedPeople.map((p) => p.name).join(", ")}</p>}
+          {!!entry.completedReferences?.length && <div>
+            <h3>{t("Completed records")}</h3>
+            {entry.completedReferences.map((reference) => <p key={reference.id}>
+              {onReference ? <Button variant="text" onClick={() => onReference(reference)}>{reference.title}</Button> : <strong>{reference.title}</strong>}
+              {reference.location && ` · ${reference.location}`}
+            </p>)}
+          </div>}
           {followUp.length > 0 && (
             <dl className="handover-detail-follow-up">
               {followUp.map(([label, value]) => (
@@ -89,6 +96,7 @@ export function EntryDetailBody({ entry }: { entry: Entry }) {
               <dd>{c.externalReference}</dd>
             </div>
           )}
+          {c.displayUntil && <div><dt>{t("Display through")}</dt><dd><time dateTime={c.displayUntil}>{c.displayUntil}</time></dd></div>}
           {c.dueDate && (
             <div className="handover-detail-dates">
               <dt>{t("Due date")}</dt>

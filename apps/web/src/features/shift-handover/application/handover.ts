@@ -1,5 +1,6 @@
 import {
   emptySelection,
+  type CompletionPage,
   type EquipmentSelection,
   type EquipmentPage,
   type Context,
@@ -11,6 +12,8 @@ import {
   type ChangeEntry,
 } from "../domain/models";
 export interface Gateway {
+  defaultDepartment?(date: string): Promise<{ departmentId: string }>;
+  targets?(input: { source: "handover" | "maintenance"; search: string; cursor: string }): Promise<CompletionPage>;
   equipment(selection: EquipmentSelection): Promise<EquipmentPage>;
   context(): Promise<Context>;
   remove?(id:string,expectedRevision:number):Promise<Entry>;
@@ -21,10 +24,20 @@ export interface Gateway {
 }
 export class HandoverApplication {
   private attempts = new Map<string, string>();
+  private viewed = new Set<(entry: Entry) => void>();
+  subscribeViewed(listener: (entry: Entry) => void) {
+    this.viewed.add(listener);
+    return () => { this.viewed.delete(listener); };
+  }
   constructor(
     private readonly gateway: Gateway,
     private readonly newKey: () => string,
   ) {}
+  defaultDepartment(date: string) { return this.gateway.defaultDepartment?.(date) ?? Promise.resolve({ departmentId: "" }); }
+  targets(source: "handover" | "maintenance", search = "", cursor = "") {
+    if (!this.gateway.targets) return Promise.reject(new Error("Completion references are unavailable."));
+    return this.gateway.targets({ source, search, cursor });
+  }
   equipment(selection: EquipmentSelection) {
     return this.gateway.equipment(selection);
   }
@@ -35,7 +48,10 @@ export class HandoverApplication {
         .filter((category) => !carryForwardOnly || category.carryForward)
         .map(async (category) => ({
           category,
-          page: await this.list({ ...selection, categoryId: category.id }),
+          page: await this.list({ ...selection, categoryId: category.id,
+            ...(category.workflow === "information" && !carryForwardOnly
+              ? { from: "", to: "", departmentId: "", areaId: "", displayOn: selection.to || selection.from } : {}),
+          }),
         })),
     );
     return { context, sections };
@@ -47,7 +63,10 @@ export class HandoverApplication {
     return this.gateway.list({ ...emptySelection, ...selection });
   }
   history(id: string, before = 0) {
-    return this.gateway.history(id, before);
+    return this.gateway.history(id, before).then((history) => {
+      this.viewed.forEach((listener) => listener(history.entry));
+      return history;
+    });
   }
   remove(entry:Entry) {
     if(!this.gateway.remove) throw new Error("Entry deletion is unavailable.");

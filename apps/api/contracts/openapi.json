@@ -2027,6 +2027,68 @@
         ]
       }
     },
+    "/api/v1/handover/default-location": {
+      "post": {
+        "operationId": "HandoverController_defaultLocation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverDefaultRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverDefaultLocationDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/completion-targets": {
+      "post": {
+        "operationId": "HandoverController_completionTargets",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverTargetRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverCompletionPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
+    },
     "/api/v1/handover/equipment": {
       "post": {
         "operationId": "HandoverController_equipment",
@@ -3063,6 +3125,33 @@
           "equipment"
         ]
       },
+      "HandoverCompletedReferenceDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "handover",
+              "maintenance"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "id",
+          "title",
+          "location"
+        ]
+      },
       "HandoverPersonDto": {
         "type": "object",
         "properties": {
@@ -3097,6 +3186,29 @@
           "at"
         ]
       },
+      "HandoverResolutionDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "handover",
+              "maintenance"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "source",
+          "id",
+          "expectedRevision"
+        ]
+      },
       "HandoverImageDto": {
         "type": "object",
         "properties": {
@@ -3115,6 +3227,16 @@
       "HandoverContentDto": {
         "type": "object",
         "properties": {
+          "displayUntil": {
+            "type": "string"
+          },
+          "resolutions": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverResolutionDto"
+            }
+          },
           "mentionIds": {
             "maxItems": 20,
             "type": "array",
@@ -3208,6 +3330,12 @@
       "HandoverEntryDto": {
         "type": "object",
         "properties": {
+          "completedReferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverCompletedReferenceDto"
+            }
+          },
           "notificationAt": {
             "type": "string"
           },
@@ -6169,6 +6297,26 @@
       "HandoverChoiceDto": {
         "type": "object",
         "properties": {
+          "publisherProfiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "canPublish": {
+            "type": "boolean"
+          },
+          "workflow": {
+            "type": "string",
+            "enum": [
+              "safety",
+              "information",
+              "success",
+              "people",
+              "technical-problem",
+              "technical-blocked"
+            ]
+          },
           "coordinatorOnly": {
             "type": "boolean"
           },
@@ -6235,6 +6383,108 @@
           "timeZone"
         ]
       },
+      "HandoverDefaultRequestDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "date"
+        ]
+      },
+      "HandoverDefaultLocationDto": {
+        "type": "object",
+        "properties": {
+          "departmentId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "departmentId"
+        ]
+      },
+      "HandoverTargetRequestDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "handover",
+              "maintenance"
+            ]
+          },
+          "search": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "search",
+          "cursor"
+        ]
+      },
+      "HandoverCompletionTargetDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "handover",
+              "maintenance"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "canComplete": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source",
+          "id",
+          "expectedRevision",
+          "title",
+          "location",
+          "canComplete"
+        ]
+      },
+      "HandoverCompletionPageDto": {
+        "type": "object",
+        "properties": {
+          "targets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverCompletionTargetDto"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "targets",
+          "nextCursor",
+          "total"
+        ]
+      },
       "HandoverEquipmentRequestDto": {
         "type": "object",
         "properties": {
@@ -6276,9 +6526,38 @@
           "nextCursor"
         ]
       },
+      "HandoverNotificationReadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "at"
+        ]
+      },
       "HandoverSelectionDto": {
         "type": "object",
         "properties": {
+          "displayOn": {
+            "type": "string"
+          },
+          "resolutionCandidates": {
+            "type": "boolean"
+          },
+          "notificationReads": {
+            "maxItems": 1000,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverNotificationReadDto"
+            }
+          },
           "excludeAttention": {
             "type": "boolean"
           },

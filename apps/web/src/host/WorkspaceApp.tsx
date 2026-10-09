@@ -1,3 +1,5 @@
+import { HandoverPeople } from "./HandoverPeople";
+import { InformationNotices } from "../features/shift-handover/adapters/react/InformationNotices";
 import { StartPersonalProfile } from "./StartPersonalProfile";
 import { EntryNotifications } from "../features/shift-handover/application/notifications";
 import { MaintenanceWorkspace } from "../features/maintenance/adapters/react/MaintenanceWorkspace";
@@ -207,6 +209,13 @@ export function WorkspaceApp({
     context?.mustChangePassword,
   ]);
 
+  useEffect(() => handover?.subscribeViewed?.((entry) => {
+    notifications?.markRead(entry.id, entry.updatedAt);
+  }), [handover, notifications]);
+  useEffect(() => maintenance?.subscribeViewed?.((record) => {
+    maintenanceNotifications?.markRead(record.id, record.revision);
+  }), [maintenance, maintenanceNotifications]);
+
   const canViewProfiles =
     !!signedIn && !!(context.canImport || context.canAdminister);
   const previewProfile =
@@ -246,6 +255,11 @@ export function WorkspaceApp({
   const openTool = (tool: AdministrationTool) => {
     setAdministrationTool(tool);
     setPage("administration");
+  };
+  const openInformation = (id: string) => {
+    setHandoverEntry(id); setHandoverVisit((visit) => visit + 1);
+    setHandoverHighlights(false); setHandoverPending(false); setHandoverAttention(false);
+    setPage("handover");
   };
   const openHandoverHome = () => {
     setHandoverEntry("");
@@ -590,7 +604,10 @@ export function WorkspaceApp({
         />
       ) : page === "start" && administration ? (
         <AdministrationOverview
-          personal={workforce && signedIn ? (
+          personal={signedIn && (workforce || handover) ? (
+            <>
+            {handover && <InformationNotices application={handover} open={openInformation} />}
+            {workforce && (
             <div className="analysis-start-personal">
               <StartPersonalProfile
                 name={context.user!.name}
@@ -613,6 +630,8 @@ export function WorkspaceApp({
                 ) : undefined}
               />
             </div>
+            )}
+            </>
           ) : undefined}
           canImport={!!context?.canImport}
           canAdminister={!!showUserAdministration}
@@ -630,6 +649,9 @@ export function WorkspaceApp({
         <HandoverWorkspace
           key={`${context.user?.id}:${handoverVisit}`}
           onHome={openHandoverHome}
+          onPeople={() => setPage("workforce")}
+          renderPeople={workforce ? (date) => <HandoverPeople application={workforce} date={date} open={() => setPage("workforce")} /> : undefined}
+          onOpenMaintenance={openMaintenance}
           application={handover}
           dailyOverview={effectiveProfile === "team-leader"}
           initialEntry={handoverEntry}
@@ -672,10 +694,15 @@ export function WorkspaceApp({
           }
           canReadAnalytics={canReadAnalytics}
           authenticated={context.authentication === "password"}
-          personalProfile={workforce && signedIn ? (
+          personalProfile={signedIn && (workforce || handover) ? (
+            <>
+            {handover && <InformationNotices application={handover} open={openInformation} />}
+            {workforce && (
             <StartPersonalProfile name={context.user!.name}
               profileLabel={profileLabels[effectiveProfile as Profile] ?? "Profile"}
               workforce={workforce} handover={handover} onDepartment={setAssignedDepartmentId} />
+            )}
+            </>
           ) : undefined}
           workforce={
             workforce && signedIn ? (
