@@ -1,6 +1,6 @@
 # IOP-201 — Docker icon delivery and publication
 
-In progress. The owner approved merging `feature/IOP-201-platform-landing` into
+Completed on 2026-10-09. The owner approved merging `feature/IOP-201-platform-landing` into
 `develop` and publishing both refs to `origin`, subject to verifying the selected
 icon throughout the Docker application after `npm run local:up`.
 [Scope](../items/IOP-201-platform-landing.md). Retain the story branch, created from
@@ -58,5 +58,15 @@ packaging read-only. No Spanish dependency story was read.
 - All 236 relative documentation links, pending-publication statuses and whitespace
   checks passed. Secret hygiene passed for 948 indexed files.
 
-Approved publication remains pending. Item/backlog remain In progress until the
-story is integrated and published; preserve previous completed evidence.
+## Publication
+
+The cache fix is `42667d1`. It was merged into `develop` as `5a68a4a` after verifying
+that the resulting tree exactly matched the reviewed story. Atomic publication
+of both refs to `origin` succeeded. `git ls-remote` verified the initial published
+snapshot: story `42667d138638cc5008cee50e7cd125cc959c02c1`, develop
+`5a68a4aa1a7ff4ca22881a02ac8abc6ac9f11cd5`.
+
+This completed evidence record follows on the retained story branch and uses the
+same owner-approved publication path. Runtime and publication criteria passed;
+item/backlog are Completed. Prior evidence and review branches are preserved;
+stage/master and deployment settings were not promoted.
