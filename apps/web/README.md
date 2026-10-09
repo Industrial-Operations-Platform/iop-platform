@@ -78,6 +78,8 @@ selects the browser language automatically and persists explicit overrides.
 The owner-selected Unified Record SVG mark in `public/iop-mark.svg` is reused by
 the introduction, shell and favicon and copied into the web image. See the
 [Workforce guide](../../docs/development/workforce.md).
+All branding consumers use the `unified-record` URL revision; Docker revalidates
+the icon and entry HTML so browser caches receive the selected mark after rebuilds.
 
 ## Maintenance and Digital Asset Record — IOP-194
 

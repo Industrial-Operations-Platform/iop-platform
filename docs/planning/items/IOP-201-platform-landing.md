@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed. The owner's 2026-10-09 refinement requests a minimal, modern presentation
+In progress. The owner's 2026-10-09 refinement requests a minimal, modern presentation
 home from `develop`, with subtle interactive 3D movement focused on Data Analysis,
 Maintenance and Workforce, preserving the platform identity and existing login.
 Sign-in must open only after an explicit button action; detailed product content
@@ -33,6 +33,8 @@ two nested rounded-square loops with white strokes and a blue lower/right segmen
   actual desktop/narrow browser rendering is inspected.
 - [x] The shared application mark matches the owner's selected Unified Record
   image, is legible at small sizes, and is reused in the homepage, shell and favicon.
+- [x] Docker rebuild includes the selected mark and required design checks; actual
+  Docker delivery and all branding consumers resolve the new icon without stale URLs.
 
 Presentation belongs to the browser host; the scoped public-home visual refinement
 is recorded in the visual identity. Credential rules, HTTP adapters, API
@@ -41,7 +43,8 @@ contracts, permissions and data storage remain with their existing owners. Follo
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md) and
 [ADR-0035](../../architecture/adr/ADR-0035-transitional-authentication.md).
 Do not add registration, new providers, invented operational data or future-module
-claims. Remote publication requires the owner's explicit approval.
+claims. The owner approved story-to-develop integration and publication of both
+branches to origin, after Docker icon verification.
 
 ## Evidence and remaining work
 
@@ -49,6 +52,8 @@ claims. Remote publication requires the owner's explicit approval.
 `947e61e`. The [completed presentation refinement](../completed/IOP-201-minimal-presentation-plan.md)
 records the initial presentation criteria and validation on the retained story branch.
 The [completed capability scene plan](../completed/IOP-201-capability-scene-plan.md) covers the
-foreground-only refinement. Remote publication remains unauthorized.
+foreground-only refinement.
 The [completed selected icon plan](../completed/IOP-201-selected-icon-plan.md) records the final
 owner-selected mark replacement.
+The [Docker delivery/publication plan](../active/IOP-201-docker-icon-publication-plan.md)
+covers the reported rebuild issue and the approved publication sequence.

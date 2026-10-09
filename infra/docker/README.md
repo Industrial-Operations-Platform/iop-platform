@@ -34,6 +34,11 @@ not a production support or image-digest policy.
 Re-run `npm run local:up` to rebuild after code changes. Images have no hot-reload
 source mounts; use the optional native path for rapid development. Port conflicts,
 a stopped daemon or registry failures must be resolved before startup can succeed.
+The entry HTML and platform SVG use `Cache-Control: no-cache` for revalidation.
+The selected platform mark also has a shared `unified-record` URL revision in the
+header, introduction and favicon, bypassing cached icons from earlier designs.
+Reload the browser after a successful rebuild; the running web container must
+serve the same SVG bytes as `apps/web/public/iop-mark.svg`.
 This stack uses individual temporary local accounts and remains loopback-only.
 After the first startup, run `npm run local:admin` to issue the initial administrator
 password in your terminal, then change it at first sign-in. Existing accounts and

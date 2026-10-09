@@ -1,4 +1,5 @@
 import { useEffect, useRef, type CSSProperties, type PointerEvent } from "react";
+import { platformMarkUrl } from "../design/components/PlatformMark";
 
 export type IntroModule = "analysis" | "maintenance" | "workforce";
 type Capability = "signals" | "distribution" | "equipment" | "people" | "planning" | "history";
@@ -80,7 +81,7 @@ export function IntroScene({ active, paused }: { active: IntroModule; paused: bo
             <circle className="intro-hub-halo" cx="300" cy="252" r="82" />
             <circle className="intro-hub-rim" cx="300" cy="252" r="70" />
             <circle className="intro-hub-surface" cx="300" cy="252" r="62" />
-            <image className="intro-hub-mark" href="/iop-mark.svg" x="262" y="214" width="76" height="76" />
+            <image className="intro-hub-mark" href={platformMarkUrl} x="262" y="214" width="76" height="76" />
           </g>
           {capabilities.map((capability, index) => (
             <g key={capability.id} className="intro-capability"

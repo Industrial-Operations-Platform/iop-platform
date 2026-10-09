@@ -232,7 +232,9 @@ by `PlatformMark`, the introduction and the browser favicon. IOP-201 replaces it
 geometry with the owner's selected [Unified Record reference](references/IOP-201-unified-record.png):
 two nested rounded-square loops with rounded white ends and a blue outer segment.
 The SVG removes the preview's surrounding whitespace and uses flat navy/white/blue
-colors from this identity. German and English interface text share the presentation
+colors from this identity. All branding consumers use the same `unified-record`
+URL revision; the Docker web server revalidates the mark and entry HTML after
+rebuilds. German and English interface text share the presentation
 dictionary; localized text must use the same component hierarchy and tokens.
 
 ## Shared navigation and compact account controls — M6 refinement
