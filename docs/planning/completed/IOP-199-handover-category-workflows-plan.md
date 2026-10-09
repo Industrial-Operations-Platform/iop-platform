@@ -80,6 +80,7 @@ Validated implementation commits: `5869a72` (API/source transactions) and `f20ea
 
 No operator data or private configuration was changed; no migration is required.
 Read state remains browser-local. The optional legacy demo writer needs separate
-authorized adaptation to the new category rules. No Docker activation, merge,
-remote push, stage/master promotion or deployment occurred. Publication approval
-must name this story, its merge into develop and both pushes to origin.
+authorized adaptation to the new category rules. At implementation closure no
+activation or publication had occurred. The owner approved integration, both pushes
+and local activation on 2026-10-09; see the [publication/activation evidence](IOP-199-publication-activation-plan.md).
+No stage/master promotion or shared deployment is implied.
