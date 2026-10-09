@@ -43,7 +43,7 @@ remain in the shared [component stylesheet](../../apps/web/src/design/components
 The owner requested a minimal, modern interactive presentation home on 2026-10-09.
 For the signed-out introduction only, use the original navy/blue/white palette
 on a navy canvas with subtle radial light, translucent illustrative surfaces,
-CSS 3D depth and gently animated background geometry. The shared `introTitleSize`
+layered vector depth and gently animated background geometry. The shared `introTitleSize`
 and `introTitleLineHeight` tokens provide the larger presentation heading; the
 existing font remains unchanged. This scoped refinement permits these effects
 on the public introduction while workspace cards, headings and controls retain
@@ -55,6 +55,15 @@ Only an explicit Sign in action reveals existing access controls. Decorative
 illustrations never claim live operational data. Respect reduced motion, provide
 a pause control and make module selection available through labelled keyboard
 buttons. See [IOP-201](../planning/items/IOP-201-platform-landing.md).
+
+The owner's foreground-only refinement replaces the cube and tilted labelled cards
+with six upright, unnamed capability glyphs around the platform mark. Signals,
+distribution, equipment, people, planning and history are illustrative features;
+module selection illuminates the relevant glyphs and paths, with history shared
+across all three selections. Keep the approved background, palette and movement.
+The refreshed shared SVG mark uses three connected modules around an open hub and
+remains the same asset in the header, workspace shell and favicon. Preserve small
+size legibility, keyboard module selection, optional parallax and reduced motion.
 
 Use the existing `Inter, system-ui, sans-serif` stack. Inter is not bundled; when it
 is unavailable the same system fallback applies to every view. Do not load a
@@ -385,8 +394,8 @@ and semantically red. Do not add a Settings item without an implemented destinat
 Use ordinary button/select Tab navigation, initial focus, Escape restoration and
 outside-click dismissal. The notification bell sits immediately before the account
 trigger; its count has a textual accessible equivalent. Notification and account
-panels use the same surface and typography. The source SVG mark/favicon uses a
-simplified operational I glyph inside a blue hexagonal outline; IOP remains the name.
+panels use the same surface and typography. The source SVG mark/favicon uses the
+connected-module symbol refined under IOP-201; IOP remains the name.
 
 Department matrix uses shared `Table variant="records"`: quiet alternating surfaces,
 a stronger sticky header, comfortable cell padding and hover/focus highlighting.

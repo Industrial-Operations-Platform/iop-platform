@@ -66,7 +66,9 @@ Data Analysis, Maintenance and Workforce. Sign in opens the existing individual
 account login or configured native demo selector in a shared dialog; About contains
 the full module/workflow presentation. Restored sessions open their assigned
 workspace directly, and initial-password replacement keeps its dedicated screen.
-CSS/SVG depth and pointer interaction are decorative, support reduced motion and
+The foreground uses six unnamed capability glyphs that illuminate in groups when
+a main module is selected, around the refreshed shared platform mark. Layered
+SVG depth and pointer parallax are decorative, support reduced motion and
 can be paused. The host composes Access without new authentication endpoints or
 dependencies. Original identity tokens and English/German resources remain shared.
 

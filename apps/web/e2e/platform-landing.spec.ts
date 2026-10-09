@@ -73,6 +73,42 @@ async function noOverflow(page: Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 }
 
+async function illuminatedCapabilities(page: Page, features: readonly string[]) {
+  for (const selector of [".intro-capability", ".intro-connection"]) {
+    await expect.poll(() => page.locator(`${selector}[data-illuminated="true"]`)
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-feature")).sort()))
+      .toEqual([...features].sort());
+  }
+}
+
+async function graphicalCapabilities(page: Page) {
+  const scene = page.locator(".intro-scene");
+  await expect(scene).toHaveAttribute("aria-hidden", "true");
+  await expect(scene).toHaveText("");
+  await expect(scene.locator(".intro-core, .intro-scene-card, .intro-card-label, svg text")).toHaveCount(0);
+  const capabilities = scene.locator(".intro-capability[data-feature]");
+  await expect(capabilities).toHaveCount(6);
+  expect(await capabilities.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-feature")).sort()))
+    .toEqual(["distribution", "equipment", "history", "people", "planning", "signals"]);
+  await expect(scene.locator(".intro-connection[data-feature]")).toHaveCount(6);
+  await expect(scene.locator(".intro-capability .intro-scene-float")).toHaveCount(6);
+  await expect(scene.locator(".intro-hub-mark")).toHaveAttribute("href", "/iop-mark.svg");
+  expect(await capabilities.evaluateAll((nodes) => nodes.every((node) => {
+    const box = node.getBoundingClientRect();
+    const sceneBox = node.closest(".intro-scene")!.getBoundingClientRect();
+    return box.width > 0 && box.height > 0 && box.left >= sceneBox.left &&
+      box.right <= sceneBox.right && box.top >= sceneBox.top && box.bottom <= sceneBox.bottom;
+  }))).toBe(true);
+  const mark = page.locator(".intro-brand img");
+  await expect(mark).toBeVisible();
+  await expect(mark).toHaveAttribute("src", "/iop-mark.svg");
+  await expect.poll(() => mark.evaluate((node) => {
+    const image = node as HTMLImageElement;
+    return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+  })).toBe(true);
+  await illuminatedCapabilities(page, ["signals", "distribution", "history"]);
+}
+
 async function openAccess(page: Page) {
   await page.getByRole("navigation", { name: "Platform navigation" })
     .getByRole("button", { name: "Sign in", exact: true }).click();
@@ -104,9 +140,10 @@ for (const width of [1440, 1024, 375]) {
     await minimalHome(page);
     await expect(page.getByRole("navigation", { name: "Explore main modules" })
       .getByRole("button", { name: "Data Analysis", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await graphicalCapabilities(page);
     expect(fixture.requests.every((path) => path.endsWith("/session/context"))).toBe(true);
     await noOverflow(page);
-    await page.screenshot({ path: `/tmp/iop-201-intro-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `/tmp/iop-201-capabilities-${width}.png`, fullPage: true });
 
     await page.getByRole("link", { name: "Skip to platform overview" }).focus();
     await page.keyboard.press("Enter");
@@ -118,7 +155,7 @@ for (const width of [1440, 1024, 375]) {
     await expect(about.getByRole("heading", { name: "From shift context to retained history" })).toBeVisible();
     await expect(about.getByRole("heading", { name: "Digital Asset Record", exact: true })).toBeVisible();
     await expect(about.getByLabel("Username", { exact: true })).toHaveCount(0);
-    await page.screenshot({ path: `/tmp/iop-201-intro-about-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `/tmp/iop-201-capabilities-about-${width}.png`, fullPage: true });
     await page.keyboard.press("Escape");
     await expect(about).toHaveCount(0);
     await expect(aboutButton).toBeFocused();
@@ -126,7 +163,8 @@ for (const width of [1440, 1024, 375]) {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Den Betrieb in den Fokus rücken.");
     await expect(page.locator("html")).toHaveAttribute("lang", "de");
     await noOverflow(page);
-    await page.screenshot({ path: `/tmp/iop-201-intro-de-${width}.png`, fullPage: true });
+    await graphicalCapabilities(page);
+    await page.screenshot({ path: `/tmp/iop-201-capabilities-de-${width}.png`, fullPage: true });
     await page.reload();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Den Betrieb in den Fokus rücken.");
     await page.getByRole("combobox", { name: "Sprache" }).selectOption("en");
@@ -293,12 +331,17 @@ test("main module selection and animation controls support keyboard interaction"
   await page.goto("/");
   const modules = page.getByRole("navigation", { name: "Explore main modules" });
   await expect(modules.getByRole("button", { name: "Data Analysis", exact: true })).toHaveAttribute("aria-pressed", "true");
-  for (const name of ["Maintenance", "Workforce", "Data Analysis"]) {
+  for (const [name, features] of [
+    ["Maintenance", ["equipment", "planning", "history"]],
+    ["Workforce", ["people", "planning", "history"]],
+    ["Data Analysis", ["signals", "distribution", "history"]],
+  ] as const) {
     const button = modules.getByRole("button", { name, exact: true });
     await button.focus();
     await page.keyboard.press("Enter");
     await expect(button).toHaveAttribute("aria-pressed", "true");
     await expect(modules.locator('[aria-pressed="true"]')).toHaveCount(1);
+    await illuminatedCapabilities(page, features);
   }
   const scene = page.locator(".intro-scene");
   const before = await scene.getAttribute("style");
@@ -318,7 +361,7 @@ test("main module selection and animation controls support keyboard interaction"
   await expect(page.getByRole("button", { name: "Pause animation", exact: true })).toBeVisible();
 });
 
-test("reduced motion removes decorative animation and pointer tilt", async ({ page }) => {
+test("reduced motion removes decorative animation and pointer parallax", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await accessFixture(page);
   await page.goto("/");

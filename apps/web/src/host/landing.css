@@ -165,205 +165,98 @@
 .intro-scene {
   min-width: 0;
   height: clamp(380px, 43vw, 540px);
-  perspective: 1200px;
   touch-action: pan-y;
 }
 .intro-scene-depth {
   height: 100%;
   position: relative;
-  transform-style: preserve-3d;
-  transform: rotateX(var(--intro-tilt-x)) rotateY(var(--intro-tilt-y));
+  transform: translate3d(var(--intro-offset-x), var(--intro-offset-y), 0);
   transition: transform 350ms ease-out;
 }
-.intro-scene-ring {
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  width: 420px;
-  height: 420px;
-  border: 1px solid color-mix(in srgb, var(--iop-chartFrequency) 30%, transparent);
-  border-radius: 50%;
-  transform: translate(-50%, -50%) rotateX(65deg) rotateZ(-28deg);
-}
-.intro-scene-ring--inner {
-  width: 320px;
-  height: 320px;
-  border-style: dashed;
-  opacity: 0.55;
-}
-.intro-scene-links {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  stroke: color-mix(in srgb, var(--iop-chartFrequency) 34%, transparent);
-  stroke-width: 1;
-  stroke-dasharray: 3 7;
-}
-.intro-core-float {
-  position: absolute;
-  left: calc(50% - 78px);
-  top: calc(50% - 78px);
-  width: 156px;
-  height: 156px;
-}
-.intro-core {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  transform: rotateX(-20deg) rotateY(-32deg);
-}
-.intro-core-face {
-  position: absolute;
-  inset: 0;
-  border: 1px solid color-mix(in srgb, var(--iop-chartFrequency) 65%, transparent);
-  background: color-mix(in srgb, var(--iop-primary) 20%, var(--iop-ink));
-  backface-visibility: hidden;
-}
-.intro-core-face--front {
-  transform: translateZ(78px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--iop-primary) 55%, var(--iop-ink)), var(--iop-ink));
-  box-shadow: inset 0 0 44px color-mix(in srgb, var(--iop-chartFrequency) 12%, transparent);
-}
-.intro-core-face--front img {
-  width: 64px;
-  height: 64px;
-}
-.intro-core-face--front > span {
-  font-size: var(--iop-brandSize);
-  font-weight: var(--iop-headingWeight);
-  letter-spacing: 0.12em;
-}
-.intro-core-face--right {
-  transform: rotateY(90deg) translateZ(78px);
-  background: color-mix(in srgb, var(--iop-primary) 32%, var(--iop-ink));
-}
-.intro-core-face--top {
-  transform: rotateX(90deg) translateZ(78px);
-  background: color-mix(in srgb, var(--iop-chartFrequency) 48%, var(--iop-ink));
-}
-.intro-core-face--back { transform: rotateY(180deg) translateZ(78px); }
-.intro-core-face--bottom { transform: rotateX(-90deg) translateZ(78px); }
-.intro-core-face--left { transform: rotateY(-90deg) translateZ(78px); }
-.intro-scene-float {
-  animation: intro-float 8s ease-in-out infinite;
-  transform-style: preserve-3d;
-}
-.intro-scene-float--analysis {
-  position: absolute;
-  width: 204px;
-  left: 0;
-  top: 5%;
-  animation-delay: -2s;
-}
-.intro-scene-float--maintenance {
-  position: absolute;
-  width: 190px;
-  right: -6px;
-  top: 37%;
-  animation-delay: -5s;
-  animation-duration: 10s;
-}
-.intro-scene-float--workforce {
-  position: absolute;
-  width: 206px;
-  left: 9%;
-  bottom: 1%;
-  animation-delay: -4s;
-  animation-duration: 9s;
-}
-.intro-scene-card {
-  padding: 20px;
-  border: 1px solid color-mix(in srgb, var(--iop-surface) 22%, transparent);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--iop-ink) 88%, var(--iop-surface));
-  box-shadow: 0 20px 48px color-mix(in srgb, var(--iop-ink) 55%, transparent);
-  transform: translateZ(120px) rotateY(-12deg) rotateX(8deg);
-  opacity: 0.55;
-  transition: opacity 300ms, border-color 300ms, box-shadow 300ms;
-}
-.intro-scene-card[data-active="true"] {
-  border-color: var(--iop-chartFrequency);
-  opacity: 1;
-  box-shadow: 0 0 40px color-mix(in srgb, var(--iop-primary) 14%, transparent);
-}
-.intro-card-label {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: var(--iop-captionSize);
-  font-weight: var(--iop-labelWeight);
-  white-space: nowrap;
-}
-.intro-card-dot {
-  width: 5px;
-  height: 5px;
-  background: var(--iop-chartFrequency);
-  border-radius: 50%;
-}
-.intro-chart {
-  width: 100%;
+.intro-capability-map {
   display: block;
-  margin-top: 18px;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
-.intro-chart-grid {
+.intro-map-orbit {
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 12%, transparent);
+  stroke-width: 1;
+}
+.intro-map-orbit--inner {
+  stroke: color-mix(in srgb, var(--iop-surface) 6%, transparent);
+  stroke-dasharray: 2 9;
+}
+.intro-connection {
   stroke: color-mix(in srgb, var(--iop-surface) 12%, transparent);
   stroke-width: 1;
+  transition: stroke 450ms ease;
 }
-.intro-chart-bar {
-  stroke: color-mix(in srgb, var(--iop-chartFrequency) 55%, transparent);
-  stroke-width: 12;
-}
-.intro-chart-line {
-  stroke: var(--iop-surface);
+.intro-connection[data-illuminated="true"] {
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 65%, transparent);
   stroke-width: 1.5;
 }
-.intro-maintenance-graphic {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 18px;
+.intro-hub-halo {
+  fill: color-mix(in srgb, var(--iop-primary) 5%, transparent);
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 15%, transparent);
 }
-.intro-maintenance-graphic svg {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  color: var(--iop-chartFrequency);
+.intro-hub-rim {
+  fill: color-mix(in srgb, var(--iop-primary) 8%, var(--iop-ink));
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 75%, transparent);
+  stroke-width: 1.5;
 }
-.intro-maintenance-lines {
-  display: grid;
-  gap: 9px;
-  flex: 1;
+.intro-hub-surface {
+  fill: var(--iop-ink);
+  stroke: color-mix(in srgb, var(--iop-surface) 12%, transparent);
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--iop-ink) 60%, transparent));
 }
-.intro-maintenance-lines > span {
-  height: 3px;
-  border-radius: 2px;
-  background: color-mix(in srgb, var(--iop-surface) 35%, transparent);
+.intro-hub-mark {
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--iop-primary) 15%, transparent));
 }
-.intro-maintenance-lines > span:nth-child(2) { width: 70%; }
-.intro-maintenance-lines > span:nth-child(3) { width: 45%; background: var(--iop-chartFrequency); }
-.intro-people {
-  width: 100%;
-  display: block;
-  margin-top: 18px;
-  color: var(--iop-chartFrequency);
+.intro-scene-float {
+  animation: intro-float 8s ease-in-out infinite;
 }
-.intro-scene-point {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--iop-chartFrequency);
-  box-shadow: 0 0 24px var(--iop-primary);
+.intro-capability-halo {
+  fill: transparent;
+  stroke: transparent;
+  transition: fill 450ms ease, stroke 450ms ease;
 }
-.intro-scene-point--one { top: 18%; right: 20%; }
-.intro-scene-point--two { bottom: 18%; right: 28%; width: 3px; height: 3px; }
+.intro-capability-rim {
+  fill: color-mix(in srgb, var(--iop-surface) 4%, var(--iop-ink));
+  stroke: color-mix(in srgb, var(--iop-surface) 17%, transparent);
+  stroke-width: 1;
+  transition: stroke 450ms ease, fill 450ms ease;
+}
+.intro-capability-surface {
+  fill: var(--iop-ink);
+  stroke: color-mix(in srgb, var(--iop-surface) 5%, transparent);
+}
+.intro-capability-glyph {
+  stroke: color-mix(in srgb, var(--iop-surface) 35%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 450ms ease, filter 450ms ease;
+}
+.intro-capability-indicator {
+  fill: color-mix(in srgb, var(--iop-surface) 20%, var(--iop-ink));
+  transition: fill 450ms ease;
+}
+.intro-capability[data-illuminated="true"] .intro-capability-halo {
+  fill: color-mix(in srgb, var(--iop-primary) 7%, transparent);
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 17%, transparent);
+}
+.intro-capability[data-illuminated="true"] .intro-capability-rim {
+  fill: color-mix(in srgb, var(--iop-primary) 18%, var(--iop-ink));
+  stroke: var(--iop-chartFrequency);
+}
+.intro-capability[data-illuminated="true"] .intro-capability-glyph {
+  stroke: var(--iop-chartFrequency);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--iop-primary) 55%, transparent));
+}
+.intro-capability[data-illuminated="true"] .intro-capability-indicator {
+  fill: var(--iop-chartFrequency);
+}
 .intro-explore {
   max-width: 760px;
 }
@@ -508,12 +401,6 @@
 @media (max-width: 1100px) {
   .intro-container { width: calc(100% - 64px); }
   .intro-composition { gap: 20px; }
-  .intro-scene-float--analysis { width: 180px; }
-  .intro-scene-float--maintenance { width: 172px; right: 0; }
-  .intro-scene-float--workforce { width: 184px; }
-  .intro-scene-card { padding: 16px; }
-  .intro-scene-ring { width: 340px; height: 340px; }
-  .intro-scene-ring--inner { width: 260px; height: 260px; }
 }
 @media (max-width: 760px) {
   .intro-container { width: calc(100% - 40px); }
@@ -528,14 +415,6 @@
   .iop-ui .intro-copy h1 { max-width: 500px; margin-bottom: 20px; }
   .intro-copy-rule { display: none; }
   .intro-scene { height: 360px; max-width: 480px; width: 100%; margin: 0 auto; }
-  .intro-scene-float--analysis { width: 160px; top: 4%; }
-  .intro-scene-float--maintenance { width: 150px; top: 41%; }
-  .intro-scene-float--workforce { width: 164px; left: 2%; bottom: 0; }
-  .intro-card-label { font-size: var(--iop-compactSize); gap: 6px; }
-  .intro-maintenance-graphic { gap: 8px; }
-  .intro-maintenance-graphic svg { width: 48px; height: 48px; }
-  .intro-core-float { left: calc(38% - 78px); }
-  .intro-core { transform: scale(0.6) rotateX(-20deg) rotateY(-32deg); }
   .intro-module-navigation { gap: 8px; }
   .landing .intro-module-navigation .iop-button { gap: 8px; padding-block: 16px; font-size: var(--iop-captionSize); }
   .intro-module-arrow { display: none; }
@@ -550,7 +429,6 @@
   .intro-navigation { margin-left: auto; gap: 4px; font-size: var(--iop-captionSize); }
   .landing .intro-navigation > .iop-button { padding-inline: 8px; }
   .landing .intro-navigation > .iop-button--primary { gap: 8px; }
-  .intro-scene-card { padding: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .landing *, .landing *::before, .landing *::after {

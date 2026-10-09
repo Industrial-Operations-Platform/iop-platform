@@ -8,17 +8,22 @@ Maintenance and Workforce, preserving the platform identity and existing login.
 Sign-in must open only after an explicit button action; detailed product content
 belongs in About. The supplied reference informs composition, without pricing,
 trials or a copied marketing design.
+The subsequent foreground-only request replaces the cube and three tilted,
+labelled cards with a professional graphical capability composition and a new
+platform mark. Selecting a main module illuminates its relevant capability symbols.
+Retain the approved background, palette, movement, home composition and access flow.
 
 ## Scope and acceptance
 
-- [x] The initial entry is minimal and presents the three main modules through a
-  responsive, interactive 3D scene with subtle animated background elements.
+- [x] The initial entry is minimal and uses six unnamed graphical capabilities
+  around a refreshed platform mark, with no cube or tilted module cards. Module
+  selection illuminates the corresponding capability subset.
 - [x] Sign in opens existing access controls on demand; About contains the detailed
   delivered module/workflow information, independently of the initial home.
 - [x] The existing individual-account sign-in, mandatory password change, session
   restoration and logout still work; the landing also composes the existing
   selector in explicitly configured native demo mode.
-- [x] Desktop and narrow layouts preserve the shared mark, font and palette,
+- [x] Desktop and narrow layouts use the refreshed shared mark and preserve font and palette,
   controls and accessible keyboard navigation, with English/German presentation.
 - [x] Reduced-motion preferences and an explicit animation pause control provide
   a static presentation; pointer interaction is optional.
@@ -38,5 +43,6 @@ claims. Remote publication requires the owner's explicit approval.
 
 [Initial delivery](../completed/IOP-201-platform-landing-plan.md) is committed at
 `947e61e`. The [completed presentation refinement](../completed/IOP-201-minimal-presentation-plan.md)
-records the updated criteria and validation on the retained story branch. Remote
-publication remains unauthorized.
+records the initial presentation criteria and validation on the retained story branch.
+The [completed capability scene plan](../completed/IOP-201-capability-scene-plan.md) covers the
+foreground-only refinement. Remote publication remains unauthorized.
