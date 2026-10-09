@@ -80,5 +80,7 @@ only, so no new API unit-test run is claimed. The verified IOP-199 test baseline
 retained in the guide. A fresh laptop install and interactive native login were not
 performed; no computer-use browser was available. Preparation instructions say so.
 
-No guide merge/push is authorized yet. The story branch is retained for review;
-publication must separately name its merge into develop and both pushes to origin.
+At local delivery closure the guide had not been authorized for publication.
+The owner subsequently approved merge into develop and publication to origin on
+2026-10-09. See [verified publication evidence](IOP-200-publication-plan.md).
+The story branch is retained; no stage/master promotion or deployment is implied.

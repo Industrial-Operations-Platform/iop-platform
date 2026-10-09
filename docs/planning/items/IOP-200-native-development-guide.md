@@ -29,7 +29,9 @@ Dependencies: [IOP-199](IOP-199-handover-category-workflows.md), Accepted
 [ADR-0034](../../architecture/adr/ADR-0034-local-container-platform.md).
 Execution and evidence: [completed plan](../completed/IOP-200-native-development-guide-plan.md).
 Artifact: [12-page PDF](../../../output/pdf/iop-project-native-development-guide.pdf).
-Completed locally on 2026-10-09; guide publication remains owner-controlled.
+Completed locally on 2026-10-09; owner-approved integration into develop and
+publication of both branches to origin completed that day. See
+[publication evidence](../completed/IOP-200-publication-plan.md).
 
 ## Boundaries
 
@@ -37,5 +39,6 @@ Documentation and reversible local recipe validation only. The standard Compose
 contract stays unchanged; a private development overlay exposes PostgreSQL only on
 127.0.0.1. Native mode reuses existing supported local authentication/authorization
 and the single-host lease. No new business features, grants, reset, demo fixture
-writes, portable database migration, production/shared deployment or remote guide
-publication is authorized by this request.
+writes, portable database migration or production/shared deployment is authorized
+by the original guide request. Subsequent guide publication has its own explicit
+owner approval and evidence above.
