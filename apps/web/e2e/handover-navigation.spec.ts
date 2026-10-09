@@ -227,7 +227,7 @@ for (const width of [1440, 820, 375]) {
     }
     await expect(attentionTab).toHaveCSS(
       "border-bottom-color",
-      "rgb(8, 123, 213)",
+      "rgb(8, 118, 202)",
     );
     const attentionBounds = await attentionTab.boundingBox();
     const reportsBounds = await startViews
@@ -255,7 +255,7 @@ for (const width of [1440, 820, 375]) {
     await page.keyboard.press("Enter");
     await expect(
       startViews.getByRole("button", { name: /Open reports/ }),
-    ).toHaveCSS("border-bottom-color", "rgb(8, 123, 213)");
+    ).toHaveCSS("border-bottom-color", "rgb(8, 118, 202)");
     await expect(attentionTab).toHaveAttribute("aria-pressed", "false");
     await expect(attentionTab).toHaveCSS(
       "border-bottom-color",

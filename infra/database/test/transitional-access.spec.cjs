@@ -1,3 +1,4 @@
+const { openWorkspaceAccess, workspaceSignIn } = require("./browser-access.cjs");
 const { PostgreSqlContainer } = require("@testcontainers/postgresql");
 const { Client, Pool } = require("pg");
 const { provision } = require("../dist/provision");
@@ -229,6 +230,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
         headers: { Origin: origin, "X-IOP-Demo": "1" },
       });
     await page.goto(origin);
+    await openWorkspaceAccess(page);
     await pw(
       page.getByRole("heading", { name: "Sign in to IOP" }),
     ).toBeVisible();
@@ -249,7 +251,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     ).toBe(403);
     await page.getByLabel("Username", { exact: true }).fill("admin");
     await page.getByLabel("Password", { exact: true }).fill(chosen);
-    await button("Sign in").click();
+    await workspaceSignIn(page).click();
     await button("Administration").click();
     await button("Users & profiles").click();
     await pw(
@@ -312,6 +314,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     });
     await button("User menu").click();
     await button("Sign out").click();
+    await openWorkspaceAccess(page);
     await pw(
       page.getByRole("heading", { name: "Sign in to IOP" }),
     ).toBeVisible();
@@ -319,7 +322,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
       .getByLabel("Username", { exact: true })
       .fill("browser-colleague");
     await page.getByLabel("Password", { exact: true }).fill(secret);
-    await button("Sign in").click();
+    await workspaceSignIn(page).click();
     await pw(
       page.getByRole("heading", { name: "Choose your own password" }),
     ).toBeVisible();
@@ -332,6 +335,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     await page.getByLabel("New password", { exact: true }).fill(chosen);
     await page.getByLabel("Confirm new password", { exact: true }).fill(chosen);
     await button("Change password").click();
+    await openWorkspaceAccess(page);
     await pw(
       page.getByRole("heading", { name: "Sign in to IOP" }),
     ).toBeVisible();
@@ -339,7 +343,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
       .getByLabel("Username", { exact: true })
       .fill("browser-colleague");
     await page.getByLabel("Password", { exact: true }).fill(chosen);
-    await button("Sign in").click();
+    await workspaceSignIn(page).click();
     await pw(page.getByRole("region", { name: "Start page" })).toBeVisible();
     await pw(button("Users & profiles")).toHaveCount(0);
     await pw(button("Administration")).toHaveCount(0);
@@ -373,6 +377,7 @@ test("browser login, first password change, profiles, logout and direct HTTP den
     ).toBe(403);
     await button("User menu").click();
     await button("Sign out").click();
+    await openWorkspaceAccess(page);
     await pw(page.getByRole("heading", { name: "Sign in to IOP" })).toBeVisible();
     expect((await page.request.get(origin + "/api/v1/users")).status()).toBe(
       401,

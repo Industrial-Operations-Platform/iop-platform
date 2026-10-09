@@ -1,4 +1,5 @@
 const { PostgreSqlContainer } = require("@testcontainers/postgresql");
+const { openWorkspaceAccess } = require("./browser-access.cjs");
 const { Client, Pool } = require("pg");
 const request = require("supertest");
 const { readFileSync } = require("node:fs");
@@ -846,8 +847,9 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     const kpi = page.locator('.analysis-kpis strong').first();
     const input = page.getByLabel('CSV file', { exact: true });
     await page.goto(browserOrigin);
+    await openWorkspaceAccess(page);
     await page.getByLabel('Demo user', { exact: true }).selectOption('demo-a');
-    await pw(page.getByRole('region', { name: 'Start page' })).toBeVisible();
+    await pw(page.getByRole('region', { name: 'Administration overview' })).toBeVisible();
     await pw(button('Import & prepare')).toHaveCount(0);
     await button('Data analysis').click();
     await button('Administration').click();
@@ -930,7 +932,9 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await pw(page.locator('.analysis-plot svg').first()).toBeVisible();
     await button('Executive Overview').click();
     await page.getByLabel('Demo user', { exact: true }).selectOption('demo-b');
-    await pw(page.getByRole('region', { name: 'Start page' })).toBeVisible();
+    // Both seeded demo identities retain import grants and open administration.
+    await pw(page.getByRole('region', { name: 'Administration overview' })).toBeVisible();
+    await pw(page.getByLabel('Demo user', { exact: true })).toHaveValue('demo-b');
     await button('Data analysis').click();
     await pw(kpi).toHaveText('4.5');
     await page.reload();
