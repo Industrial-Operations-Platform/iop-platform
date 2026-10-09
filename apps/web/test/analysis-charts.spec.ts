@@ -1,14 +1,18 @@
 import {
   options,
   pareto,
+  chartTheme,
 } from "../src/features/analysis/adapters/echarts/charts";
-import { identity } from "../src/design/identity";
+import { identity, darkIdentity } from "../src/design/identity";
+import { setLanguage } from "../src/localization/i18n";
 import type { Report } from "../src/features/analysis/domain/models";
 
 jest.mock("echarts/core", () => ({ use: jest.fn(), init: jest.fn() }));
 jest.mock("echarts/charts", () => ({}));
 jest.mock("echarts/components", () => ({}));
 jest.mock("echarts/renderers", () => ({}));
+
+afterEach(() => setLanguage("en"));
 
 const report = {
   selection: { dimension: "area", metric: "duration" },
@@ -64,6 +68,40 @@ test("frequency Pareto is independent of the comparison measure and includes the
       { data: [{ value: [25, "Duration leader"] }] },
     ],
   });
+});
+
+test("dark charts preserve analytical values and use readable axis, tooltip, legend and zoom roles", () => {
+  const light = options("frequency", report);
+  const dark = options("frequency", report, darkIdentity);
+  expect(dark).toMatchObject({
+    textStyle: { color: darkIdentity.chartText },
+    series: [{ itemStyle: { color: darkIdentity.chartFrequency } },
+      { itemStyle: { color: darkIdentity.chartAccent } }],
+  });
+  expect((dark.series as { data: unknown }[]).map((series) => series.data))
+    .toEqual((light.series as { data: unknown }[]).map((series) => series.data));
+  expect(chartTheme(darkIdentity)).toMatchObject({
+    categoryAxis: { axisLabel: { color: darkIdentity.chartText } },
+    valueAxis: { splitLine: { lineStyle: { color: darkIdentity.line } } },
+    tooltip: { backgroundColor: darkIdentity.surface, textStyle: { color: darkIdentity.ink } },
+    legend: { textStyle: { color: darkIdentity.chartText } },
+    visualMap: { textStyle: { color: darkIdentity.chartText } },
+    dataZoom: { backgroundColor: darkIdentity.canvas },
+  });
+});
+
+test("localized legend labels match the plotted series in both appearances", () => {
+  setLanguage("de");
+  const complete = { ...report, dates: [], timeline: [], series: [],
+    selection: { ...report.selection, from: "2026-07-01", toExclusive: "2026-08-01", period: "day" },
+  } as Report;
+  for (const tokens of [identity, darkIdentity]) {
+    for (const kind of ["frequency", "daily-overlay", "trend"] as const) {
+      const chart = options(kind, complete, tokens);
+      expect((chart.legend as { data: string[] }).data)
+        .toEqual((chart.series as { name: string }[]).map((series) => series.name));
+    }
+  }
 });
 
 test("Pareto retains full totals beyond the top 10 and handles exact thresholds and zero totals", () => {

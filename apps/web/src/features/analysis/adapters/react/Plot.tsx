@@ -1,6 +1,8 @@
 import { t } from "../../../../localization/i18n";
 import { useEffect, useRef } from "react";
 import { Panel } from "../../../../design/components";
+import { useAppearance } from "../../../../design/useAppearance";
+import { appearanceIdentity } from "../../../../design/identity";
 import type { Report } from "../../domain/models";
 import { mountChart, pareto, type ChartKind } from "../echarts/charts";
 export function Plot({
@@ -15,10 +17,13 @@ export function Plot({
   title: string;
 }) {
   const element = useRef<HTMLDivElement>(null);
+  const { resolved } = useAppearance();
   useEffect(() => {
     if (element.current)
-      return mountChart(element.current, kind, report, onSelect);
-  }, [kind, report, onSelect]);
+      return mountChart(
+        element.current, kind, report, onSelect, appearanceIdentity(resolved),
+      );
+  }, [kind, report, onSelect, resolved]);
   return (
     <Panel variant="chart">
       <h2>{title}</h2>

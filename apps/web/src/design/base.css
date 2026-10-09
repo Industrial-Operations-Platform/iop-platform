@@ -6,4 +6,6 @@
 }
 body {
   margin: 0;
+  background: var(--iop-canvas);
+  color: var(--iop-ink);
 }

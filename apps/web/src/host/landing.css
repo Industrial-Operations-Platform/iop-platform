@@ -5,8 +5,8 @@
   flex-direction: column;
   min-height: 100dvh;
   overflow: hidden;
-  color: var(--iop-surface);
-  background: var(--iop-ink);
+  color: var(--iop-introForeground);
+  background: var(--iop-introCanvas);
 }
 .intro-container {
   width: min(calc(100% - 96px), 1240px);
@@ -24,14 +24,14 @@
 .intro-background-light {
   position: absolute;
   inset: -20%;
-  background: radial-gradient(ellipse at 76% 42%, color-mix(in srgb, var(--iop-primary) 26%, transparent), transparent 55%);
+  background: radial-gradient(ellipse at 76% 42%, color-mix(in srgb, var(--iop-introAccent) 26%, transparent), transparent 55%);
   animation: intro-light 26s ease-in-out infinite alternate;
 }
 .intro-background-orbit {
   position: absolute;
   width: 1000px;
   height: 760px;
-  border: 1px solid color-mix(in srgb, var(--iop-surface) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--iop-introForeground) 7%, transparent);
   border-radius: 50%;
   right: -240px;
   top: -340px;
@@ -52,7 +52,7 @@
   right: -100px;
   bottom: -460px;
   opacity: 0.05;
-  background-image: linear-gradient(var(--iop-surface) 1px, transparent 1px), linear-gradient(90deg, var(--iop-surface) 1px, transparent 1px);
+  background-image: linear-gradient(var(--iop-introForeground) 1px, transparent 1px), linear-gradient(90deg, var(--iop-introForeground) 1px, transparent 1px);
   background-size: 52px 52px;
   transform: perspective(600px) rotateX(58deg) rotateZ(-24deg);
 }
@@ -67,7 +67,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--iop-surface);
+  color: var(--iop-introForeground);
   text-decoration: none;
 }
 .intro-brand > span {
@@ -79,7 +79,7 @@
   line-height: var(--iop-titleLineHeight);
 }
 .intro-brand > span > span {
-  color: color-mix(in srgb, var(--iop-surface) 60%, transparent);
+  color: color-mix(in srgb, var(--iop-introForeground) 60%, transparent);
   font-size: var(--iop-smallSize);
 }
 .intro-navigation {
@@ -90,21 +90,21 @@
 .landing .intro-navigation .iop-button--text,
 .landing .intro-navigation .iop-language,
 .landing .intro-navigation .iop-language .iop-select {
-  color: var(--iop-surface);
+  color: var(--iop-introForeground);
 }
 .landing .intro-navigation .iop-language .iop-select {
   background: transparent;
 }
 .landing .intro-navigation .iop-language:hover {
-  background: color-mix(in srgb, var(--iop-surface) 8%, transparent);
+  background: color-mix(in srgb, var(--iop-introForeground) 8%, transparent);
 }
 .landing .intro-navigation .iop-button--text:not(:disabled):hover,
 .landing .intro-footer .intro-motion:not(:disabled):hover {
-  background: color-mix(in srgb, var(--iop-surface) 8%, transparent);
+  background: color-mix(in srgb, var(--iop-introForeground) 8%, transparent);
 }
 .landing .intro-navigation .iop-select option {
-  color: var(--iop-ink);
-  background: var(--iop-surface);
+  color: var(--iop-introCanvas);
+  background: var(--iop-introForeground);
 }
 .landing .intro-navigation > .iop-button--primary {
   min-width: 112px;
@@ -134,14 +134,14 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: color-mix(in srgb, var(--iop-surface) 72%, transparent);
+  color: color-mix(in srgb, var(--iop-introForeground) 72%, transparent);
   font-size: var(--iop-captionSize);
 }
 .intro-eyebrow > span {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--iop-chartFrequency);
+  background: var(--iop-introHighlight);
 }
 .iop-ui .intro-copy h1 {
   max-width: 520px;
@@ -152,7 +152,7 @@
 }
 .iop-ui .intro-description {
   max-width: 380px;
-  color: color-mix(in srgb, var(--iop-surface) 66%, transparent);
+  color: color-mix(in srgb, var(--iop-introForeground) 66%, transparent);
   margin: 0;
 }
 .intro-copy-rule {
@@ -160,7 +160,7 @@
   width: 48px;
   height: 2px;
   margin-top: 32px;
-  background: var(--iop-chartFrequency);
+  background: var(--iop-introHighlight);
 }
 .intro-scene {
   min-width: 0;
@@ -180,38 +180,38 @@
   overflow: visible;
 }
 .intro-map-orbit {
-  stroke: color-mix(in srgb, var(--iop-chartFrequency) 12%, transparent);
+  stroke: color-mix(in srgb, var(--iop-introHighlight) 12%, transparent);
   stroke-width: 1;
 }
 .intro-map-orbit--inner {
-  stroke: color-mix(in srgb, var(--iop-surface) 6%, transparent);
+  stroke: color-mix(in srgb, var(--iop-introForeground) 6%, transparent);
   stroke-dasharray: 2 9;
 }
 .intro-connection {
-  stroke: color-mix(in srgb, var(--iop-surface) 12%, transparent);
+  stroke: color-mix(in srgb, var(--iop-introForeground) 12%, transparent);
   stroke-width: 1;
   transition: stroke 450ms ease;
 }
 .intro-connection[data-illuminated="true"] {
-  stroke: color-mix(in srgb, var(--iop-chartFrequency) 65%, transparent);
+  stroke: color-mix(in srgb, var(--iop-introHighlight) 65%, transparent);
   stroke-width: 1.5;
 }
 .intro-hub-halo {
-  fill: color-mix(in srgb, var(--iop-primary) 5%, transparent);
-  stroke: color-mix(in srgb, var(--iop-chartFrequency) 15%, transparent);
+  fill: color-mix(in srgb, var(--iop-introAccent) 5%, transparent);
+  stroke: color-mix(in srgb, var(--iop-introHighlight) 15%, transparent);
 }
 .intro-hub-rim {
-  fill: color-mix(in srgb, var(--iop-primary) 8%, var(--iop-ink));
-  stroke: color-mix(in srgb, var(--iop-chartFrequency) 75%, transparent);
+  fill: color-mix(in srgb, var(--iop-introAccent) 8%, var(--iop-introCanvas));
+  stroke: color-mix(in srgb, var(--iop-introHighlight) 75%, transparent);
   stroke-width: 1.5;
 }
 .intro-hub-surface {
-  fill: var(--iop-ink);
-  stroke: color-mix(in srgb, var(--iop-surface) 12%, transparent);
-  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--iop-ink) 60%, transparent));
+  fill: var(--iop-introCanvas);
+  stroke: color-mix(in srgb, var(--iop-introForeground) 12%, transparent);
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--iop-introCanvas) 60%, transparent));
 }
 .intro-hub-mark {
-  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--iop-primary) 15%, transparent));
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--iop-introAccent) 15%, transparent));
 }
 .intro-scene-float {
   animation: intro-float 8s ease-in-out infinite;
@@ -222,40 +222,40 @@
   transition: fill 450ms ease, stroke 450ms ease;
 }
 .intro-capability-rim {
-  fill: color-mix(in srgb, var(--iop-surface) 4%, var(--iop-ink));
-  stroke: color-mix(in srgb, var(--iop-surface) 17%, transparent);
+  fill: color-mix(in srgb, var(--iop-introForeground) 4%, var(--iop-introCanvas));
+  stroke: color-mix(in srgb, var(--iop-introForeground) 17%, transparent);
   stroke-width: 1;
   transition: stroke 450ms ease, fill 450ms ease;
 }
 .intro-capability-surface {
-  fill: var(--iop-ink);
-  stroke: color-mix(in srgb, var(--iop-surface) 5%, transparent);
+  fill: var(--iop-introCanvas);
+  stroke: color-mix(in srgb, var(--iop-introForeground) 5%, transparent);
 }
 .intro-capability-glyph {
-  stroke: color-mix(in srgb, var(--iop-surface) 35%, transparent);
+  stroke: color-mix(in srgb, var(--iop-introForeground) 35%, transparent);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   transition: stroke 450ms ease, filter 450ms ease;
 }
 .intro-capability-indicator {
-  fill: color-mix(in srgb, var(--iop-surface) 20%, var(--iop-ink));
+  fill: color-mix(in srgb, var(--iop-introForeground) 20%, var(--iop-introCanvas));
   transition: fill 450ms ease;
 }
 .intro-capability[data-illuminated="true"] .intro-capability-halo {
-  fill: color-mix(in srgb, var(--iop-primary) 7%, transparent);
-  stroke: color-mix(in srgb, var(--iop-chartFrequency) 17%, transparent);
+  fill: color-mix(in srgb, var(--iop-introAccent) 7%, transparent);
+  stroke: color-mix(in srgb, var(--iop-introHighlight) 17%, transparent);
 }
 .intro-capability[data-illuminated="true"] .intro-capability-rim {
-  fill: color-mix(in srgb, var(--iop-primary) 18%, var(--iop-ink));
-  stroke: var(--iop-chartFrequency);
+  fill: color-mix(in srgb, var(--iop-introAccent) 18%, var(--iop-introCanvas));
+  stroke: var(--iop-introHighlight);
 }
 .intro-capability[data-illuminated="true"] .intro-capability-glyph {
-  stroke: var(--iop-chartFrequency);
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--iop-primary) 55%, transparent));
+  stroke: var(--iop-introHighlight);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--iop-introAccent) 55%, transparent));
 }
 .intro-capability[data-illuminated="true"] .intro-capability-indicator {
-  fill: var(--iop-chartFrequency);
+  fill: var(--iop-introHighlight);
 }
 .intro-explore {
   max-width: 760px;
@@ -263,7 +263,7 @@
 .intro-module-navigation {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-top: 1px solid color-mix(in srgb, var(--iop-surface) 16%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--iop-introForeground) 16%, transparent);
 }
 .landing .intro-module-navigation .iop-button {
   justify-content: flex-start;
@@ -272,19 +272,19 @@
   border-radius: 0;
   border: 0;
   border-top: 2px solid transparent;
-  color: color-mix(in srgb, var(--iop-surface) 55%, transparent);
+  color: color-mix(in srgb, var(--iop-introForeground) 55%, transparent);
   text-align: left;
 }
 .landing .intro-module-navigation .iop-button[aria-pressed="true"] {
-  color: var(--iop-surface);
-  border-top-color: var(--iop-chartFrequency);
+  color: var(--iop-introForeground);
+  border-top-color: var(--iop-introHighlight);
 }
 .landing .intro-module-navigation .iop-button:hover {
-  color: var(--iop-surface);
-  background: color-mix(in srgb, var(--iop-surface) 3%, transparent);
+  color: var(--iop-introForeground);
+  background: color-mix(in srgb, var(--iop-introForeground) 3%, transparent);
 }
 .intro-module-index {
-  color: var(--iop-chartFrequency);
+  color: var(--iop-introHighlight);
   font-size: var(--iop-smallSize);
 }
 .intro-module-arrow {
@@ -294,7 +294,7 @@
 .iop-ui .intro-module-caption {
   margin: 0;
   min-height: 24px;
-  color: color-mix(in srgb, var(--iop-surface) 58%, transparent);
+  color: color-mix(in srgb, var(--iop-introForeground) 58%, transparent);
   font-size: var(--iop-captionSize);
 }
 .intro-footer {
@@ -303,11 +303,11 @@
   justify-content: space-between;
   gap: 16px;
   min-height: 76px;
-  color: color-mix(in srgb, var(--iop-surface) 60%, transparent);
+  color: color-mix(in srgb, var(--iop-introForeground) 60%, transparent);
   font-size: var(--iop-smallSize);
 }
 .landing .intro-motion {
-  color: color-mix(in srgb, var(--iop-surface) 60%, transparent);
+  color: color-mix(in srgb, var(--iop-introForeground) 60%, transparent);
   font-size: var(--iop-smallSize);
 }
 .landing .iop-dialog:has(.intro-access) {

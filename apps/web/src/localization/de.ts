@@ -1,4 +1,8 @@
 export const german: Readonly<Record<string, string>> = {
+  Appearance: "Darstellung",
+  Light: "Hell",
+  Dark: "Dunkel",
+  System: "System",
   "About IOP": "Über IOP",
   About: "Über",
   "Connected operations": "Verbundene Abläufe",
