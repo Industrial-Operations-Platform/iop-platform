@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-In progress. The owner's 2026-10-09 refinement requests a minimal, modern presentation
+Completed. The owner's 2026-10-09 refinement requests a minimal, modern presentation
 home from `develop`, with subtle interactive 3D movement focused on Data Analysis,
 Maintenance and Workforce, preserving the platform identity and existing login.
 Sign-in must open only after an explicit button action; detailed product content
@@ -43,8 +43,8 @@ contracts, permissions and data storage remain with their existing owners. Follo
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md) and
 [ADR-0035](../../architecture/adr/ADR-0035-transitional-authentication.md).
 Do not add registration, new providers, invented operational data or future-module
-claims. The owner approved story-to-develop integration and publication of both
-branches to origin, after Docker icon verification.
+claims. After Docker icon verification, the owner-approved story-to-develop
+integration and publication of both branches to origin completed on 2026-10-09.
 
 ## Evidence and remaining work
 
@@ -55,5 +55,5 @@ The [completed capability scene plan](../completed/IOP-201-capability-scene-plan
 foreground-only refinement.
 The [completed selected icon plan](../completed/IOP-201-selected-icon-plan.md) records the final
 owner-selected mark replacement.
-The [Docker delivery/publication plan](../active/IOP-201-docker-icon-publication-plan.md)
-covers the reported rebuild issue and the approved publication sequence.
+The [completed Docker delivery/publication plan](../completed/IOP-201-docker-icon-publication-plan.md)
+records runtime verification, cache refresh and the approved publication sequence.
