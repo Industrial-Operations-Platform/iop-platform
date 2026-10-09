@@ -30,6 +30,14 @@ skipped checks. Fix the reported prerequisite or failing test and rerun the affe
 command; only report the complete run as passing when every layer passes.
 The component commands retain their own builds so they also work independently.
 
+IOP-202 adds semantic text-contrast and appearance lifecycle checks, plus desktop/
+narrow light/dark module navigation, browser persistence, system changes, German
+labels and keyboard focus. The analytical month-comparison journey changes chart
+appearance without new report requests. Real database/browser journeys open the
+public home's explicit Sign in dialog through a shared test helper; do not bypass
+the delivered access flow. Historical closure traceability is recorded in the
+[quality review](../planning/reviews/IOP-202-platform-quality-review.md).
+
 | Command | Existing layer and evidence | Boundary |
 | --- | --- | --- |
 | `npm run typecheck` | API, web and database TypeScript checks | Type safety does not replace runtime tests. |

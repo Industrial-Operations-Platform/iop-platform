@@ -4,6 +4,12 @@ The application supports **CSV → persistent history → analytical report temp
 authentication under [ADR-0035](../architecture/adr/ADR-0035-transitional-authentication.md).
 It remains a loopback-only demonstration; corporate login and hosted/shared use are deferred.
 
+Open the initials menu to select **Appearance → Light, Dark or System**, alongside
+Language and profile settings. System follows the device's current appearance.
+The choice is saved in this browser, survives reload/sign-out and synchronizes other
+tabs. It does not change account access or operational data. The presentation home
+keeps its approved artwork; sign-in/About dialogs use the selected appearance.
+
 ## Primary local installation — Docker Compose
 
 Prerequisites: Node 24.21.0/npm 10.9.2 for the small host launcher, and Docker with

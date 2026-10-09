@@ -20,6 +20,12 @@ these boundaries. Preserve [visual identity](../../docs/design/visual-identity.m
 and the shared `src/design/identity.ts` tokens; do not copy feature markup/styles
 into new features or redesign the palette per iteration.
 
+Appearance in the account dropdown offers Light, Dark and System beside Language.
+`src/design/appearance.ts` owns browser persistence/device/tab subscriptions;
+`IdentityRoot` and charts consume the same selected semantic palette. Extend shared
+roles rather than embedding light-only colors or using surface colors as action ink.
+The public introduction keeps its illustration colors; dialogs follow appearance.
+
 Executive Overview alone presents priority KPI cards. Overview uses one month and Halle uses imported-month selection; finer views add relevant dimensions. Import counts belong in file review.
 Selected-month source-group frequency/duration Pareto is delivered under IOP-163;
 broader canonical asset coverage remains with IOP-093. The [product scope](../../docs/product/scope-poc.md) owns these rules.
