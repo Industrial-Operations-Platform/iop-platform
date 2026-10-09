@@ -12,6 +12,8 @@ The subsequent foreground-only request replaces the cube and three tilted,
 labelled cards with a professional graphical capability composition and a new
 platform mark. Selecting a main module illuminates its relevant capability symbols.
 Retain the approved background, palette, movement, home composition and access flow.
+The owner selected Unified Record (round-two option 10) as the application icon:
+two nested rounded-square loops with white strokes and a blue lower/right segment.
 
 ## Scope and acceptance
 
@@ -29,6 +31,8 @@ Retain the approved background, palette, movement, home composition and access f
   a static presentation; pointer interaction is optional.
 - [x] Relevant web tests, identity/architecture guards and production build pass;
   actual desktop/narrow browser rendering is inspected.
+- [x] The shared application mark matches the owner's selected Unified Record
+  image, is legible at small sizes, and is reused in the homepage, shell and favicon.
 
 Presentation belongs to the browser host; the scoped public-home visual refinement
 is recorded in the visual identity. Credential rules, HTTP adapters, API
@@ -46,3 +50,5 @@ claims. Remote publication requires the owner's explicit approval.
 records the initial presentation criteria and validation on the retained story branch.
 The [completed capability scene plan](../completed/IOP-201-capability-scene-plan.md) covers the
 foreground-only refinement. Remote publication remains unauthorized.
+The [completed selected icon plan](../completed/IOP-201-selected-icon-plan.md) records the final
+owner-selected mark replacement.

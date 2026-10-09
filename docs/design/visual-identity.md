@@ -61,8 +61,9 @@ with six upright, unnamed capability glyphs around the platform mark. Signals,
 distribution, equipment, people, planning and history are illustrative features;
 module selection illuminates the relevant glyphs and paths, with history shared
 across all three selections. Keep the approved background, palette and movement.
-The refreshed shared SVG mark uses three connected modules around an open hub and
-remains the same asset in the header, workspace shell and favicon. Preserve small
+The owner-selected Unified Record mark uses two nested rounded-square loops, with
+white strokes and a blue outer lower/right segment on a navy tile. It remains the
+same SVG asset in the header, workspace shell and favicon. Preserve small
 size legibility, keyboard module selection, optional parallax and reduced motion.
 
 Use the existing `Inter, system-ui, sans-serif` stack. Inter is not bundled; when it
@@ -226,9 +227,12 @@ visible focus. Counts continue to show the full existing collection totals.
 
 ## Platform mark and localization
 
-IOP-184 adds the connected-cell [SVG mark](../../apps/web/public/iop-mark.svg),
-reused by `PlatformMark` and the browser favicon. Its navy/white/blue colors come
-from this identity. German and English interface text share the presentation
+IOP-184 introduced the shared [SVG mark](../../apps/web/public/iop-mark.svg), reused
+by `PlatformMark`, the introduction and the browser favicon. IOP-201 replaces its
+geometry with the owner's selected [Unified Record reference](references/IOP-201-unified-record.png):
+two nested rounded-square loops with rounded white ends and a blue outer segment.
+The SVG removes the preview's surrounding whitespace and uses flat navy/white/blue
+colors from this identity. German and English interface text share the presentation
 dictionary; localized text must use the same component hierarchy and tokens.
 
 ## Shared navigation and compact account controls — M6 refinement
@@ -395,7 +399,7 @@ Use ordinary button/select Tab navigation, initial focus, Escape restoration and
 outside-click dismissal. The notification bell sits immediately before the account
 trigger; its count has a textual accessible equivalent. Notification and account
 panels use the same surface and typography. The source SVG mark/favicon uses the
-connected-module symbol refined under IOP-201; IOP remains the name.
+owner-selected Unified Record symbol under IOP-201; IOP remains the name.
 
 Department matrix uses shared `Table variant="records"`: quiet alternating surfaces,
 a stronger sticky header, comfortable cell padding and hover/focus highlighting.

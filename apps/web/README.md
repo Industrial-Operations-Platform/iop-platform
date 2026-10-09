@@ -75,8 +75,9 @@ dependencies. Original identity tokens and English/German resources remain share
 Workforce provides technician daily visibility, leader weekly planning and
 administrator schedule import/configuration. The shared English/German dictionary
 selects the browser language automatically and persists explicit overrides.
-The SVG mark in `public/iop-mark.svg` is reused by the shell and favicon and copied
-into the web image. See the [Workforce guide](../../docs/development/workforce.md).
+The owner-selected Unified Record SVG mark in `public/iop-mark.svg` is reused by
+the introduction, shell and favicon and copied into the web image. See the
+[Workforce guide](../../docs/development/workforce.md).
 
 ## Maintenance and Digital Asset Record — IOP-194
 
