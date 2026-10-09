@@ -38,6 +38,24 @@ remain in the shared [component stylesheet](../../apps/web/src/design/components
 
 ## Typography and hierarchy
 
+### Owner-requested presentation home — IOP-201
+
+The owner requested a minimal, modern interactive presentation home on 2026-10-09.
+For the signed-out introduction only, use the original navy/blue/white palette
+on a navy canvas with subtle radial light, translucent illustrative surfaces,
+CSS 3D depth and gently animated background geometry. The shared `introTitleSize`
+and `introTitleLineHeight` tokens provide the larger presentation heading; the
+existing font remains unchanged. This scoped refinement permits these effects
+on the public introduction while workspace cards, headings and controls retain
+the flat identity above. Shared white dialogs contain sign-in and About content.
+
+The first view has concise copy and three selectable visual modules: Data Analysis,
+Maintenance and Workforce. Detailed module/workflow prose belongs in About.
+Only an explicit Sign in action reveals existing access controls. Decorative
+illustrations never claim live operational data. Respect reduced motion, provide
+a pause control and make module selection available through labelled keyboard
+buttons. See [IOP-201](../planning/items/IOP-201-platform-landing.md).
+
 Use the existing `Inter, system-ui, sans-serif` stack. Inter is not bundled; when it
 is unavailable the same system fallback applies to every view. Do not load a
 feature-specific typeface. Sizes below are CSS pixels before browser zoom.

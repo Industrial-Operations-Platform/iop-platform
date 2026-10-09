@@ -26,6 +26,15 @@ jest.mock("../src/features/analysis/adapters/echarts/charts", () => ({
   number: String,
 }));
 
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+  };
+});
+
 const profile: ProfileResult = {
   version: "1",
   profile: {
@@ -423,14 +432,19 @@ test("signing out of a preview restores the next administrator session to admini
   await screen.findByRole("region", { name: "Profile preview" });
   fireEvent.click(screen.getByRole("button", { name: "User menu" }));
   fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
-  await screen.findByRole("heading", { name: "Sign in to IOP" });
-  fireEvent.change(screen.getByLabelText("Username"), {
+  await screen.findByRole("heading", { name: "Bring operations into focus." });
+  expect(screen.queryByLabelText("Username")).not.toBeInTheDocument();
+  fireEvent.click(within(screen.getByRole("navigation", { name: "Platform navigation" }))
+    .getByRole("button", { name: /^Sign in$/ }));
+  const accessDialog = await screen.findByRole("dialog", { name: /^Workspace access$/ });
+  expect(within(accessDialog).getByRole("heading", { name: "Sign in to IOP" })).toBeVisible();
+  fireEvent.change(within(accessDialog).getByLabelText("Username"), {
     target: { value: "admin" },
   });
-  fireEvent.change(screen.getByLabelText("Password"), {
+  fireEvent.change(within(accessDialog).getByLabelText("Password"), {
     target: { value: "test-only-input" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+  fireEvent.click(within(accessDialog).getByRole("button", { name: /^Sign in$/ }));
   await screen.findByRole("region", { name: "Administration overview" });
   expect(
     screen.queryByRole("region", { name: "Profile preview" }),

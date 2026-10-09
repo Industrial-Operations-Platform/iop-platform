@@ -8,13 +8,17 @@ test("the built workspace uses the real health/context proxy even with the retir
   expect(health.ok()).toBe(true);
   await page.goto("/?preview=1");
   await expect(
-    page.getByRole("heading", { name: "A shared view of your daily operations." }),
+    page.getByRole("heading", { name: "Bring operations into focus." }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Retry connection" })).toHaveCount(0);
+  await page.getByRole("navigation", { name: "Platform navigation" })
+    .getByRole("button", { name: "Sign in", exact: true }).click();
+  const access = page.getByRole("dialog", { name: "Workspace access", exact: true });
+  await expect(
+    access.getByText("Connect the local API to open your workspace."),
   ).toBeVisible();
   await expect(
-    page.getByText("Connect the local API to open your workspace."),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Retry connection" }),
+    access.getByRole("button", { name: "Retry connection" }),
   ).toBeEnabled();
   await expect(
     page.getByText("Navigation preview", { exact: false }),
@@ -44,18 +48,27 @@ for (const width of [1440, 375]) {
           }),
     );
     await page.goto("/");
-    await expect(page.getByRole("alert")).toBeVisible();
-    available = true;
-    await page.getByRole("button", { name: "Retry connection" }).click();
     await expect(page.getByRole("alert")).toHaveCount(0);
+    await expect(page.getByRole("combobox", { name: "Demo user" })).toHaveCount(0);
+    await page.getByRole("navigation", { name: "Platform navigation" })
+      .getByRole("button", { name: "Sign in", exact: true }).click();
+    const access = page.getByRole("dialog", { name: "Workspace access", exact: true });
+    await expect(access.getByRole("alert")).toBeVisible();
+    available = true;
+    await access.getByRole("button", { name: "Retry connection" }).click();
+    await expect(access.getByRole("alert")).toHaveCount(0);
     await expect(
-      page.getByRole("combobox", { name: "Demo user" }),
+      access.getByRole("combobox", { name: "Demo user" }),
     ).toContainText("Reader");
     await expect(
-      page.getByRole("heading", { name: "Open the demo workspace" }),
+      access.getByRole("heading", { name: "Open the demo workspace" }),
     ).toBeVisible();
     await expect(page.getByLabel("Username", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Data analysis", exact: true })).toHaveCount(0);
+    await page.keyboard.press("Escape");
+    await expect(access).toHaveCount(0);
+    await expect(page.getByRole("navigation", { name: "Platform navigation" })
+      .getByRole("button", { name: "Sign in", exact: true })).toBeFocused();
     await page.getByRole("link", { name: "Skip to platform overview" }).focus();
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/#landing-main$/);

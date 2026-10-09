@@ -1,4 +1,17 @@
 export const german: Readonly<Record<string, string>> = {
+  "About IOP": "Über IOP",
+  About: "Über",
+  "Connected operations": "Verbundene Abläufe",
+  "Bring operations into focus.": "Den Betrieb in den Fokus rücken.",
+  "A shared space for analytical insight, technical work and the people behind every shift.":
+    "Ein gemeinsamer Raum für Analysen, technische Arbeiten und die Menschen hinter jeder Schicht.",
+  "Explore main modules": "Hauptmodule erkunden",
+  "See the patterns. Follow the evidence.": "Muster erkennen. Den Nachweisen folgen.",
+  "Bring the work into view. Follow it through.": "Aufgaben sichtbar machen. Bis zum Abschluss verfolgen.",
+  "People, shifts and responsibilities. In perspective.": "Menschen, Schichten und Zuständigkeiten. Im Überblick.",
+  "One platform. A clearer perspective.": "Eine Plattform. Ein klarerer Blick.",
+  "Pause animation": "Animation pausieren",
+  "Resume animation": "Animation fortsetzen",
   "Skip to platform overview": "Zur Plattformübersicht springen",
   "IOP platform overview": "IOP-Plattformübersicht",
   "Platform navigation": "Plattformnavigation",

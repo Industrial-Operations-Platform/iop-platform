@@ -92,6 +92,7 @@ export function WorkspaceApp({
   const [analyticalSource, setAnalyticalSource] = useState("");
   const [workforceVisit, setWorkforceVisit] = useState(0);
   const [editingName, setEditingName] = useState(false);
+  const [accessPending, setAccessPending] = useState(false);
   const [handoverVisit, setHandoverVisit] = useState(0);
   const [handoverEntry, setHandoverEntry] = useState("");
   const [handoverHighlights, setHandoverHighlights] = useState(false);
@@ -326,7 +327,7 @@ export function WorkspaceApp({
       );
     }
     return (
-      <LandingPage>
+      <LandingPage busy={accessPending}>
         {accessError}
         {context?.authentication === "password" ? (
           <LoginPanel
@@ -334,6 +335,7 @@ export function WorkspaceApp({
             changeRequired={false}
             headingLevel="h2"
             onSession={updateSession}
+            onPendingChange={setAccessPending}
           />
         ) : context?.enabled ? (
           <Panel className="access-login">

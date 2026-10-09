@@ -14,11 +14,13 @@ export function LoginPanel({
   changeRequired,
   onSession,
   headingLevel = "h1",
+  onPendingChange,
 }: {
   application: AccessApplication;
   changeRequired: boolean;
   onSession: (context: SessionContext) => void;
   headingLevel?: "h1" | "h2";
+  onPendingChange?: (pending: boolean) => void;
 }) {
   const Heading = headingLevel;
   const [username, setUsername] = useState(""),
@@ -43,6 +45,7 @@ export function LoginPanel({
         onSubmit={(event) => {
           event.preventDefault();
           setPending(true);
+          onPendingChange?.(true);
           setError("");
           const work = changeRequired
             ? application.changePassword(current, password, confirmation)
@@ -59,7 +62,10 @@ export function LoginPanel({
                 reason instanceof Error ? reason.message : "Sign-in failed.",
               ),
             )
-            .finally(() => setPending(false));
+            .finally(() => {
+              setPending(false);
+              onPendingChange?.(false);
+            });
         }}
       >
         {!changeRequired && (

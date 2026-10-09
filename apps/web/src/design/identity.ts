@@ -33,6 +33,8 @@ export const identity = {
   font: "Inter, system-ui, sans-serif",
   bodySize: "14px",
   pageTitleSize: "28px",
+  introTitleSize: "clamp(42px, 5.2vw, 76px)",
+  introTitleLineHeight: "1.08",
   sectionTitleSize: "16px",
   captionSize: "12.8px",
   smallSize: "11px",
