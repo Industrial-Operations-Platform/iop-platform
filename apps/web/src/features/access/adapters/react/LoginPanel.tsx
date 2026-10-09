@@ -13,11 +13,14 @@ export function LoginPanel({
   application,
   changeRequired,
   onSession,
+  headingLevel = "h1",
 }: {
   application: AccessApplication;
   changeRequired: boolean;
   onSession: (context: SessionContext) => void;
+  headingLevel?: "h1" | "h2";
 }) {
+  const Heading = headingLevel;
   const [username, setUsername] = useState(""),
     [password, setPassword] = useState(""),
     [current, setCurrent] = useState(""),
@@ -26,9 +29,9 @@ export function LoginPanel({
     [error, setError] = useState("");
   return (
     <Panel className="access-login">
-      <h1>
+      <Heading>
         {changeRequired ? t("Choose your own password") : t("Sign in to IOP")}
-      </h1>
+      </Heading>
       <p>
         {changeRequired
           ? t(

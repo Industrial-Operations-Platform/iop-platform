@@ -8,10 +8,10 @@ test("the built workspace uses the real health/context proxy even with the retir
   expect(health.ok()).toBe(true);
   await page.goto("/?preview=1");
   await expect(
-    page.getByRole("heading", { name: "Data analysis" }),
+    page.getByRole("heading", { name: "A shared view of your daily operations." }),
   ).toBeVisible();
   await expect(
-    page.getByText("Connect the local API to open the analytical workspace."),
+    page.getByText("Connect the local API to open your workspace."),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Retry connection" }),
@@ -51,15 +51,14 @@ for (const width of [1440, 375]) {
     await expect(
       page.getByRole("combobox", { name: "Demo user" }),
     ).toContainText("Reader");
-    await page
-      .getByRole("button", { name: "Data analysis", exact: true })
-      .click();
     await expect(
-      page.getByText("Select a user in the header to open the workspace."),
+      page.getByRole("heading", { name: "Open the demo workspace" }),
     ).toBeVisible();
-    await page.getByRole("link", { name: "Skip to workspace" }).focus();
+    await expect(page.getByLabel("Username", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Data analysis", exact: true })).toHaveCount(0);
+    await page.getByRole("link", { name: "Skip to platform overview" }).focus();
     await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/#analysis-main$/);
+    await expect(page).toHaveURL(/#landing-main$/);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= window.innerWidth,

@@ -61,6 +61,14 @@ remain. Tests and fixtures are not production build inputs.
 
 ## Workforce, localization and identity
 
+The signed-out entry presents the platform landing and the existing
+individual-account sign-in in password mode. Signed-in sessions open their assigned workspace
+directly; initial-password replacement keeps its dedicated access screen. The
+host owns the landing presentation and composes the Access feature's login without
+new authentication endpoints. Explicit native demo mode composes its existing user
+selector into the landing instead of exposing workspace navigation before selection.
+The landing uses the shared identity and English/German presentation resources.
+
 Workforce provides technician daily visibility, leader weekly planning and
 administrator schedule import/configuration. The shared English/German dictionary
 selects the browser language automatically and persists explicit overrides.

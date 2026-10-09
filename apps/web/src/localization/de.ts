@@ -1,4 +1,65 @@
 export const german: Readonly<Record<string, string>> = {
+  "Skip to platform overview": "Zur Plattformübersicht springen",
+  "IOP platform overview": "IOP-Plattformübersicht",
+  "Platform navigation": "Plattformnavigation",
+  "The platform": "Die Plattform",
+  "How it connects": "So greift alles ineinander",
+  "Go to sign-in": "Zur Anmeldung",
+  "People. Equipment. Shared context.": "Menschen. Anlagen. Gemeinsamer Kontext.",
+  "A shared view of your daily operations.": "Ein gemeinsamer Blick auf den täglichen Betrieb.",
+  "IOP brings operational reports, people, maintenance and analytical evidence into a modular workspace. Keep the next shift informed and the work ahead visible.":
+    "IOP vereint betriebliche Meldungen, Menschen, Instandhaltung und Analysedaten in einem modularen Arbeitsbereich. Informiere die nächste Schicht und behalte anstehende Aufgaben im Blick.",
+  "Explore the platform": "Plattform entdecken",
+  "Connected operational context": "Verknüpfter betrieblicher Kontext",
+  "One platform, connected work": "Eine Plattform, verknüpfte Aufgaben",
+  "Reports and evidence": "Meldungen und Nachweise",
+  "People and action": "Menschen und Maßnahmen",
+  "Equipment and history": "Anlagen und Historie",
+  "Shift Handover · Data Analysis": "Schichtübergabe · Datenanalyse",
+  "Workforce · Maintenance": "Personalplanung · Wartung",
+  "Digital Asset Record": "Digitaler Anlagendatensatz",
+  "Data Analysis": "Datenanalyse",
+  Workforce: "Personalplanung",
+  "Access administration": "Zugriffsverwaltung",
+  "Workspace access": "Zugang zum Arbeitsbereich",
+  "Your profile determines which tools are available. Contact your administrator if you need access.":
+    "Dein Profil bestimmt, welche Werkzeuge verfügbar sind. Wende dich an deinen Administrator, wenn du Zugang benötigst.",
+  "Connect the local API to open your workspace.": "Verbinde die lokale API, um deinen Arbeitsbereich zu öffnen.",
+  "Open the demo workspace": "Demo-Arbeitsbereich öffnen",
+  "Use the configured demo user selector.": "Verwende die konfigurierte Demo-Benutzerauswahl.",
+  "The tools behind your daily operations": "Die Werkzeuge für deinen täglichen Betrieb",
+  "Independent modules, brought together around the work of your team.":
+    "Eigenständige Module, verbunden durch die Aufgaben deines Teams.",
+  "Understand the evidence": "Die Daten verstehen",
+  "Explore imported alarm frequency and accumulated duration, compare reporting periods and trace results to their source.":
+    "Untersuche importierte Alarmhäufigkeiten und kumulierte Dauer, vergleiche Berichtszeiträume und verfolge Ergebnisse bis zur Quelle.",
+  "Keep the next shift informed": "Die nächste Schicht informieren",
+  "Share daily reports, safety observations and open issues. Prepare team meetings and retain the history of each follow-up.":
+    "Teile Tagesmeldungen, Sicherheitsbeobachtungen und offene Probleme. Bereite Teamgespräche vor und bewahre die Historie jeder Nachverfolgung.",
+  "Coordinate people and shifts": "Menschen und Schichten koordinieren",
+  "See personal schedules and daily assignments, plan the week and keep teams and operational responsibilities in view.":
+    "Sieh persönliche Dienstpläne und tägliche Zuweisungen, plane die Woche und behalte Teams und betriebliche Zuständigkeiten im Blick.",
+  "Turn reports into action": "Aus Meldungen Maßnahmen machen",
+  "Plan technical work, assign responsibility and track progress. Link reported issues to a reviewed repair scope and its completion.":
+    "Plane technische Arbeiten, weise Zuständigkeiten zu und verfolge den Fortschritt. Verknüpfe gemeldete Probleme mit einem geprüften Reparaturumfang und dessen Abschluss.",
+  "Retain the equipment context": "Den Anlagenkontext bewahren",
+  "Register equipment identities and review linked maintenance, handover and analytical evidence in one source-linked history.":
+    "Erfasse Anlagenidentitäten und prüfe verknüpfte Wartungs-, Übergabe- und Analysenachweise in einer Historie mit Quellenbezug.",
+  "Give each person their workspace": "Jeder Person ihren Arbeitsbereich geben",
+  "Administrators manage individual accounts and profiles. Each person opens the tools available to their assigned role.":
+    "Administratoren verwalten persönliche Konten und Profile. Jede Person öffnet die Werkzeuge, die ihrer zugewiesenen Rolle zur Verfügung stehen.",
+  "From shift context to retained history": "Vom Schichtkontext zur bewahrten Historie",
+  "Each module keeps its own records, while explicit links help your team follow the work.":
+    "Jedes Modul bewahrt seine eigenen Datensätze. Ausdrückliche Verknüpfungen helfen deinem Team, die Arbeit nachzuvollziehen.",
+  "Report and understand": "Melden und verstehen",
+  "Record the shift context and consult the analytical evidence.":
+    "Erfasse den Schichtkontext und ziehe die Analysedaten heran.",
+  "Coordinate and resolve": "Koordinieren und lösen",
+  "Make responsibilities visible and follow technical work through completion.":
+    "Mache Zuständigkeiten sichtbar und verfolge technische Arbeiten bis zum Abschluss.",
+  "Keep the history": "Die Historie bewahren",
+  "Return to the original reports, interventions and source records when you need context.":
+    "Greife auf die ursprünglichen Meldungen, Eingriffe und Quelldatensätze zurück, wenn du Kontext benötigst.",
   "Original recorded name": "Ursprünglich erfasster Name",
   "Choose reported equipment": "Gemeldetes Betriebsmittel auswählen",
   "Choose Halle, Bereich and one exact code. The selection prepares source links; physical identity remains unverified.":
