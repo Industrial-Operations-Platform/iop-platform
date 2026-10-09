@@ -1,0 +1,438 @@
+.iop-ui.landing {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  overflow: hidden;
+  color: var(--iop-surface);
+  background: var(--iop-ink);
+}
+.intro-container {
+  width: min(calc(100% - 96px), 1240px);
+  margin-inline: auto;
+  position: relative;
+  z-index: 1;
+}
+.intro-background {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.intro-background-light {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse at 76% 42%, color-mix(in srgb, var(--iop-primary) 26%, transparent), transparent 55%);
+  animation: intro-light 26s ease-in-out infinite alternate;
+}
+.intro-background-orbit {
+  position: absolute;
+  width: 1000px;
+  height: 760px;
+  border: 1px solid color-mix(in srgb, var(--iop-surface) 7%, transparent);
+  border-radius: 50%;
+  right: -240px;
+  top: -340px;
+  animation: intro-orbit 54s linear infinite;
+}
+.intro-background-orbit--two {
+  width: 1400px;
+  height: 850px;
+  right: -400px;
+  top: 240px;
+  animation-direction: reverse;
+  animation-duration: 70s;
+}
+.intro-background-grid {
+  position: absolute;
+  width: 1000px;
+  height: 700px;
+  right: -100px;
+  bottom: -460px;
+  opacity: 0.05;
+  background-image: linear-gradient(var(--iop-surface) 1px, transparent 1px), linear-gradient(90deg, var(--iop-surface) 1px, transparent 1px);
+  background-size: 52px 52px;
+  transform: perspective(600px) rotateX(58deg) rotateZ(-24deg);
+}
+.intro-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 108px;
+}
+.iop-ui .intro-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--iop-surface);
+  text-decoration: none;
+}
+.intro-brand > span {
+  display: grid;
+  gap: 3px;
+}
+.intro-brand strong {
+  font-size: var(--iop-brandSize);
+  line-height: var(--iop-titleLineHeight);
+}
+.intro-brand > span > span {
+  color: color-mix(in srgb, var(--iop-surface) 60%, transparent);
+  font-size: var(--iop-smallSize);
+}
+.intro-navigation {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.landing .intro-navigation .iop-button--text,
+.landing .intro-navigation .iop-language,
+.landing .intro-navigation .iop-language .iop-select {
+  color: var(--iop-surface);
+}
+.landing .intro-navigation .iop-language .iop-select {
+  background: transparent;
+}
+.landing .intro-navigation .iop-language:hover {
+  background: color-mix(in srgb, var(--iop-surface) 8%, transparent);
+}
+.landing .intro-navigation .iop-button--text:not(:disabled):hover,
+.landing .intro-footer .intro-motion:not(:disabled):hover {
+  background: color-mix(in srgb, var(--iop-surface) 8%, transparent);
+}
+.landing .intro-navigation .iop-select option {
+  color: var(--iop-ink);
+  background: var(--iop-surface);
+}
+.landing .intro-navigation > .iop-button--primary {
+  min-width: 112px;
+  gap: 24px;
+}
+.intro-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  padding-block: 24px 36px;
+}
+.intro-composition {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: 40px;
+}
+.intro-copy {
+  position: relative;
+  z-index: 2;
+  padding-bottom: 24px;
+}
+.iop-ui .intro-eyebrow {
+  margin: 0 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: color-mix(in srgb, var(--iop-surface) 72%, transparent);
+  font-size: var(--iop-captionSize);
+}
+.intro-eyebrow > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--iop-chartFrequency);
+}
+.iop-ui .intro-copy h1 {
+  max-width: 520px;
+  font-size: var(--iop-introTitleSize);
+  line-height: var(--iop-introTitleLineHeight);
+  letter-spacing: -0.045em;
+  margin: 0 0 28px;
+}
+.iop-ui .intro-description {
+  max-width: 380px;
+  color: color-mix(in srgb, var(--iop-surface) 66%, transparent);
+  margin: 0;
+}
+.intro-copy-rule {
+  display: block;
+  width: 48px;
+  height: 2px;
+  margin-top: 32px;
+  background: var(--iop-chartFrequency);
+}
+.intro-scene {
+  min-width: 0;
+  height: clamp(380px, 43vw, 540px);
+  touch-action: pan-y;
+}
+.intro-scene-depth {
+  height: 100%;
+  position: relative;
+  transform: translate3d(var(--intro-offset-x), var(--intro-offset-y), 0);
+  transition: transform 350ms ease-out;
+}
+.intro-capability-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.intro-map-orbit {
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 12%, transparent);
+  stroke-width: 1;
+}
+.intro-map-orbit--inner {
+  stroke: color-mix(in srgb, var(--iop-surface) 6%, transparent);
+  stroke-dasharray: 2 9;
+}
+.intro-connection {
+  stroke: color-mix(in srgb, var(--iop-surface) 12%, transparent);
+  stroke-width: 1;
+  transition: stroke 450ms ease;
+}
+.intro-connection[data-illuminated="true"] {
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 65%, transparent);
+  stroke-width: 1.5;
+}
+.intro-hub-halo {
+  fill: color-mix(in srgb, var(--iop-primary) 5%, transparent);
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 15%, transparent);
+}
+.intro-hub-rim {
+  fill: color-mix(in srgb, var(--iop-primary) 8%, var(--iop-ink));
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 75%, transparent);
+  stroke-width: 1.5;
+}
+.intro-hub-surface {
+  fill: var(--iop-ink);
+  stroke: color-mix(in srgb, var(--iop-surface) 12%, transparent);
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--iop-ink) 60%, transparent));
+}
+.intro-hub-mark {
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--iop-primary) 15%, transparent));
+}
+.intro-scene-float {
+  animation: intro-float 8s ease-in-out infinite;
+}
+.intro-capability-halo {
+  fill: transparent;
+  stroke: transparent;
+  transition: fill 450ms ease, stroke 450ms ease;
+}
+.intro-capability-rim {
+  fill: color-mix(in srgb, var(--iop-surface) 4%, var(--iop-ink));
+  stroke: color-mix(in srgb, var(--iop-surface) 17%, transparent);
+  stroke-width: 1;
+  transition: stroke 450ms ease, fill 450ms ease;
+}
+.intro-capability-surface {
+  fill: var(--iop-ink);
+  stroke: color-mix(in srgb, var(--iop-surface) 5%, transparent);
+}
+.intro-capability-glyph {
+  stroke: color-mix(in srgb, var(--iop-surface) 35%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 450ms ease, filter 450ms ease;
+}
+.intro-capability-indicator {
+  fill: color-mix(in srgb, var(--iop-surface) 20%, var(--iop-ink));
+  transition: fill 450ms ease;
+}
+.intro-capability[data-illuminated="true"] .intro-capability-halo {
+  fill: color-mix(in srgb, var(--iop-primary) 7%, transparent);
+  stroke: color-mix(in srgb, var(--iop-chartFrequency) 17%, transparent);
+}
+.intro-capability[data-illuminated="true"] .intro-capability-rim {
+  fill: color-mix(in srgb, var(--iop-primary) 18%, var(--iop-ink));
+  stroke: var(--iop-chartFrequency);
+}
+.intro-capability[data-illuminated="true"] .intro-capability-glyph {
+  stroke: var(--iop-chartFrequency);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--iop-primary) 55%, transparent));
+}
+.intro-capability[data-illuminated="true"] .intro-capability-indicator {
+  fill: var(--iop-chartFrequency);
+}
+.intro-explore {
+  max-width: 760px;
+}
+.intro-module-navigation {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid color-mix(in srgb, var(--iop-surface) 16%, transparent);
+}
+.landing .intro-module-navigation .iop-button {
+  justify-content: flex-start;
+  padding: 22px 10px 18px 0;
+  gap: 12px;
+  border-radius: 0;
+  border: 0;
+  border-top: 2px solid transparent;
+  color: color-mix(in srgb, var(--iop-surface) 55%, transparent);
+  text-align: left;
+}
+.landing .intro-module-navigation .iop-button[aria-pressed="true"] {
+  color: var(--iop-surface);
+  border-top-color: var(--iop-chartFrequency);
+}
+.landing .intro-module-navigation .iop-button:hover {
+  color: var(--iop-surface);
+  background: color-mix(in srgb, var(--iop-surface) 3%, transparent);
+}
+.intro-module-index {
+  color: var(--iop-chartFrequency);
+  font-size: var(--iop-smallSize);
+}
+.intro-module-arrow {
+  margin-left: auto;
+  margin-right: 16px;
+}
+.iop-ui .intro-module-caption {
+  margin: 0;
+  min-height: 24px;
+  color: color-mix(in srgb, var(--iop-surface) 58%, transparent);
+  font-size: var(--iop-captionSize);
+}
+.intro-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 76px;
+  color: color-mix(in srgb, var(--iop-surface) 60%, transparent);
+  font-size: var(--iop-smallSize);
+}
+.landing .intro-motion {
+  color: color-mix(in srgb, var(--iop-surface) 60%, transparent);
+  font-size: var(--iop-smallSize);
+}
+.landing .iop-dialog:has(.intro-access) {
+  width: min(440px, calc(100vw - 2rem));
+}
+.landing .iop-dialog:has(.intro-about) {
+  width: min(900px, calc(100vw - 2rem));
+}
+.landing .intro-access .access-login {
+  margin: 0;
+  max-width: none;
+}
+.landing .intro-access .access-login > p {
+  color: var(--iop-muted);
+  margin: 8px 0 24px;
+}
+.landing .intro-access form > .iop-button {
+  width: 100%;
+}
+.iop-ui .intro-access-note {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+  margin-bottom: 0;
+}
+.intro-about {
+  display: grid;
+  gap: 28px;
+}
+.intro-about > p,
+.intro-about-heading p,
+.intro-about-module > p:last-child,
+.intro-about-steps p {
+  color: var(--iop-muted);
+}
+.intro-about > p { margin: 0; }
+.intro-about-heading { margin-bottom: 20px; }
+.intro-about-heading p { margin: 0; }
+.intro-about-modules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--iop-sectionGap);
+}
+.landing .iop-dialog .intro-about-module {
+  border: 1px solid var(--iop-line);
+  padding: var(--iop-panelPadding);
+}
+.intro-about-module-heading { display: flex; align-items: center; gap: 12px; }
+.iop-ui .intro-about-module-heading h3 { margin: 0; }
+.intro-about-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: var(--iop-controlRadius);
+  color: var(--iop-activeInk);
+  background: var(--iop-activeSurface);
+}
+.intro-about-icon svg { width: 20px; height: 20px; }
+.iop-ui .intro-about-purpose { margin: 16px 0 6px; font-weight: var(--iop-labelWeight); }
+.intro-about-module > p:last-child { margin: 0; }
+.intro-about-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.intro-about-step-number { color: var(--iop-activeInk); font-size: var(--iop-captionSize); }
+.iop-ui .intro-about-steps h3 { margin: 12px 0 8px; }
+.intro-about-steps p { margin: 0 0 12px; }
+.intro-about-step-modules { font-size: var(--iop-captionSize); font-weight: var(--iop-labelWeight); }
+@keyframes intro-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes intro-orbit {
+  from { transform: rotate(-24deg); }
+  to { transform: rotate(336deg); }
+}
+@keyframes intro-light {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-4%, 4%); }
+}
+.landing[data-motion="paused"] *,
+.landing[data-motion="paused"] *::before,
+.landing[data-motion="paused"] *::after {
+  animation-play-state: paused;
+}
+@media (max-width: 1100px) {
+  .intro-container { width: calc(100% - 64px); }
+  .intro-composition { gap: 20px; }
+}
+@media (max-width: 760px) {
+  .intro-container { width: calc(100% - 40px); }
+  .intro-header { min-height: 92px; gap: 16px; }
+  .intro-brand > span > span { display: none; }
+  .intro-navigation { gap: 8px; }
+  .landing .intro-navigation > .iop-button--primary { min-width: 0; gap: 12px; }
+  .intro-main { padding-top: 24px; gap: 24px; }
+  .intro-composition { grid-template-columns: 1fr; gap: 8px; }
+  .intro-copy { padding-bottom: 0; }
+  .iop-ui .intro-eyebrow { margin-bottom: 20px; }
+  .iop-ui .intro-copy h1 { max-width: 500px; margin-bottom: 20px; }
+  .intro-copy-rule { display: none; }
+  .intro-scene { height: 360px; max-width: 480px; width: 100%; margin: 0 auto; }
+  .intro-module-navigation { gap: 8px; }
+  .landing .intro-module-navigation .iop-button { gap: 8px; padding-block: 16px; font-size: var(--iop-captionSize); }
+  .intro-module-arrow { display: none; }
+  .intro-footer { flex-wrap: wrap; min-height: 64px; gap: 8px; padding-bottom: 12px; }
+  .intro-about-modules, .intro-about-steps { grid-template-columns: 1fr; }
+}
+@media (max-width: 400px) {
+  .intro-header { flex-wrap: wrap; padding-block: 16px; gap: 10px; }
+  .intro-brand { gap: 8px; }
+  .intro-brand strong { font-size: var(--iop-brandCompactSize); }
+  .intro-brand img { width: 28px; height: 28px; }
+  .intro-navigation { margin-left: auto; gap: 4px; font-size: var(--iop-captionSize); }
+  .landing .intro-navigation > .iop-button { padding-inline: 8px; }
+  .landing .intro-navigation > .iop-button--primary { gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing *, .landing *::before, .landing *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

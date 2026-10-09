@@ -61,11 +61,25 @@ remain. Tests and fixtures are not production build inputs.
 
 ## Workforce, localization and identity
 
+The signed-out entry is a minimal interactive presentation home focused on
+Data Analysis, Maintenance and Workforce. Sign in opens the existing individual
+account login or configured native demo selector in a shared dialog; About contains
+the full module/workflow presentation. Restored sessions open their assigned
+workspace directly, and initial-password replacement keeps its dedicated screen.
+The foreground uses six unnamed capability glyphs that illuminate in groups when
+a main module is selected, around the refreshed shared platform mark. Layered
+SVG depth and pointer parallax are decorative, support reduced motion and
+can be paused. The host composes Access without new authentication endpoints or
+dependencies. Original identity tokens and English/German resources remain shared.
+
 Workforce provides technician daily visibility, leader weekly planning and
 administrator schedule import/configuration. The shared English/German dictionary
 selects the browser language automatically and persists explicit overrides.
-The SVG mark in `public/iop-mark.svg` is reused by the shell and favicon and copied
-into the web image. See the [Workforce guide](../../docs/development/workforce.md).
+The owner-selected Unified Record SVG mark in `public/iop-mark.svg` is reused by
+the introduction, shell and favicon and copied into the web image. See the
+[Workforce guide](../../docs/development/workforce.md).
+All branding consumers use the `unified-record` URL revision; Docker revalidates
+the icon and entry HTML so browser caches receive the selected mark after rebuilds.
 
 ## Maintenance and Digital Asset Record — IOP-194
 

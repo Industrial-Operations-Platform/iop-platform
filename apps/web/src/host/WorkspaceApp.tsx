@@ -1,4 +1,5 @@
 import { HandoverPeople } from "./HandoverPeople";
+import { LandingPage } from "./LandingPage";
 import { InformationNotices } from "../features/shift-handover/adapters/react/InformationNotices";
 import { StartPersonalProfile } from "./StartPersonalProfile";
 import { EntryNotifications } from "../features/shift-handover/application/notifications";
@@ -91,6 +92,7 @@ export function WorkspaceApp({
   const [analyticalSource, setAnalyticalSource] = useState("");
   const [workforceVisit, setWorkforceVisit] = useState(0);
   const [editingName, setEditingName] = useState(false);
+  const [accessPending, setAccessPending] = useState(false);
   const [handoverVisit, setHandoverVisit] = useState(0);
   const [handoverEntry, setHandoverEntry] = useState("");
   const [handoverHighlights, setHandoverHighlights] = useState(false);
@@ -278,68 +280,95 @@ export function WorkspaceApp({
       .catch(setError)
       .finally(() => setPending(false));
   };
-  if (
-    access &&
-    (!context || (context.authentication === "password" && !signedIn))
-  ) {
-    return (
-      <IdentityRoot>
-        <main className="access-entry">
-          <div className="access-language">
-            <LanguageControl />
-          </div>
-          {!!error && (
-            <Alert>
-              {error instanceof Error
-                ? error.message
-                : t("The operation failed.")}
-            </Alert>
-          )}
-          {context ? (
-            <>
-              <LoginPanel
-                key={context.mustChangePassword ? "change" : "login"}
-                application={access}
-                changeRequired={!!context.mustChangePassword}
-                onSession={updateSession}
-              />
-              {context.user && (
-                <Button
-                  variant="secondary"
-                  className="iop-sign-out"
-                  aria-label={t("Sign out")}
-                  title={t("Sign out")}
-                  onClick={signOut}
-                  disabled={pending}
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    aria-hidden="true"
-                  >
-                    <path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h12" />
-                  </svg>
-                  <span>{t("Sign out")}</span>
-                </Button>
-              )}
-            </>
-          ) : (
-            <Panel>
-              <h1>{t("Sign in to IOP")}</h1>
+  if (access && !signedIn) {
+    const accessError = !!error && (
+      <Alert>
+        {error instanceof Error ? error.message : t("The operation failed.")}
+      </Alert>
+    );
+    if (context?.mustChangePassword) {
+      return (
+        <IdentityRoot>
+          <main className="access-entry">
+            <div className="access-language">
+              <LanguageControl />
+            </div>
+            {accessError}
+            <LoginPanel
+              application={access}
+              changeRequired
+              onSession={updateSession}
+            />
+            {context.user && (
               <Button
+                variant="secondary"
+                className="iop-sign-out"
+                aria-label={t("Sign out")}
+                title={t("Sign out")}
+                onClick={signOut}
                 disabled={pending}
-                onClick={() => setConnectionAttempt((n) => n + 1)}
               >
-                {pending ? t("Connecting…") : t("Retry connection")}
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  aria-hidden="true"
+                >
+                  <path d="M10 4H4v16h6M14 8l4 4-4 4M8 12h12" />
+                </svg>
+                <span>{t("Sign out")}</span>
               </Button>
-            </Panel>
-          )}
-        </main>
-      </IdentityRoot>
+            )}
+          </main>
+        </IdentityRoot>
+      );
+    }
+    return (
+      <LandingPage busy={accessPending}>
+        {accessError}
+        {context?.authentication === "password" ? (
+          <LoginPanel
+            application={access}
+            changeRequired={false}
+            headingLevel="h2"
+            onSession={updateSession}
+            onPendingChange={setAccessPending}
+          />
+        ) : context?.enabled ? (
+          <Panel className="access-login">
+            <h2>{t("Open the demo workspace")}</h2>
+            <p>{t("Use the configured demo user selector.")}</p>
+            <Field>
+              {t("User")}
+              <Select
+                aria-label={t("Demo user")}
+                value=""
+                disabled={pending}
+                onChange={(event) => void choose(event.target.value)}
+              >
+                <option value="" disabled>{t("Select a user ")}</option>
+                {context.users.map((user) => (
+                  <option key={user.id} value={user.id}>{user.name}</option>
+                ))}
+              </Select>
+            </Field>
+          </Panel>
+        ) : (
+          <Panel className="access-login" aria-busy={pending}>
+            <h2>{t("Sign in to IOP")}</h2>
+            <p role="status">{t("Connect the local API to open your workspace.")}</p>
+            <Button
+              disabled={pending}
+              onClick={() => setConnectionAttempt((n) => n + 1)}
+            >
+              {pending ? t("Connecting…") : t("Retry connection")}
+            </Button>
+          </Panel>
+        )}
+      </LandingPage>
     );
   }
   return (
