@@ -182,6 +182,7 @@ export function AssetDomainWorkspace({
       invalidate();
       setView(value);
       setError("");
+      if (!context) void refresh();
     }} placement="tabs" items={[{
       id: "inventory",
       label: t("Inventory model")

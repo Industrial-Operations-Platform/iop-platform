@@ -146,3 +146,12 @@ and pending completion. Pagination uses the loaded search/cursor and cannot mix
 results with a newer search. Cancelled/unmounted mapping saves cannot close another
 source's editor. Pareto application replacement ignores obsolete results.
 Root rebuild and actual read-only browser QA remain the next evidence step.
+
+Additional planned regression before follow-up: selecting a tab while the initial
+combined catalog/inventory request is pending must restart configuration loading
+for that current view, rather than invalidating the only load and leaving it blank.
+Limit the change to Workspace/tab selection and one deferred regression.
+
+The initial-load tab regression passes with all 13 Asset domain feature tests.
+Current tab selection restarts configuration loading when the initial combined
+request has not completed; late initial pages remain ignored.

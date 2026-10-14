@@ -802,3 +802,19 @@ test("an obsolete Pareto request cannot overwrite the result after application r
     name: "CURRENT-PARETO"
   })).toBeVisible();
 });
+test("selecting a tab during initial loading retains a current configuration request", async () => {
+  const first = deferred<ReferencePage>();
+  let calls = 0;
+  const {
+    application
+  } = setup({
+    references: jest.fn(() => ++calls === 1 ? first.promise : Promise.resolve(refs))
+  });
+  render(<AssetDomainWorkspace application={application} timeZone="UTC" />);
+  fireEvent.click(screen.getByRole("button", {
+    name: "Type catalog"
+  }));
+  expect(await screen.findByLabelText("Type to configure")).toBeVisible();
+  await act(async () => first.resolve(page("OUTDATED-INITIAL-PAGE")));
+  expect(screen.getByLabelText("Type to configure")).toBeVisible();
+});
