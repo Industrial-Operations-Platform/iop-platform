@@ -1,3 +1,5 @@
+import {ConnectionsApplication} from "../features/integrations/application/connections";
+import {HttpConnectionsGateway} from "../features/integrations/adapters/http/gateway";
 import { WorkforceApplication } from "../features/workforce/application/workforce";
 import { MaintenanceApplication } from "../features/maintenance/application/maintenance";
 import { HttpMaintenanceGateway } from "../features/maintenance/adapters/http/gateway";
@@ -12,6 +14,7 @@ import { AnalysisWorkspace } from "../features/analysis/application/workspace";
 import { HttpAnalysisGateway } from "../features/analysis/adapters/http/gateway";
 import { WorkspaceApp } from "./WorkspaceApp";
 
+const connections = new ConnectionsApplication(new HttpConnectionsGateway());
 const workforce = new WorkforceApplication(new HttpWorkforceGateway(), () =>
   crypto.randomUUID(),
 );
@@ -36,6 +39,7 @@ export function AnalyticalApp() {
       workforce={workforce}
       maintenance={maintenance}
       assets={assets}
+      connections={connections}
     />
   );
 }

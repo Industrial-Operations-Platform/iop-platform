@@ -23,6 +23,7 @@ const roles: Readonly<Record<string, readonly string[]>> = Object.freeze({
   "locator-manager": Object.freeze(["locator.manage"]),
   "integration-reader": Object.freeze(["integrations.read"]),
   "integration-manager": Object.freeze(["integrations.manage"]),
+  "jobs-administrator": Object.freeze(["jobs.manage"]),
   "maintenance-contributor": Object.freeze([
     "maintenance.read",
     "maintenance.contribute",

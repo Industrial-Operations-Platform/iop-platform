@@ -1,3 +1,4 @@
+import {ConnectionsController} from "./connections-controller";
 import { WorkforceController } from "./workforce-controller";
 import { MaintenanceController } from "./maintenance-controller";
 import { AssetsController } from "./assets-controller";
@@ -441,6 +442,7 @@ export class PlatformModule {
     return {
       module: PlatformModule,
       controllers: [
+        ConnectionsController,
         MaintenanceController,
         AssetsController,
         WorkforceController,

@@ -17,6 +17,9 @@ branches. This authorization does not publish or promote the resulting changes.
 | [IOP-205 — Improvement Tracking](items/IOP-205-improvement-tracking.md) | In progress |
 | [IOP-206 — Reusable 3D Asset Locator](items/IOP-206-3d-asset-locator.md) | In progress |
 | [IOP-207 — External integration readiness](items/IOP-207-integration-readiness.md) | In progress |
+| [IOP-208 — Local operating infrastructure](items/IOP-208-local-delivery-infrastructure.md) | In progress |
+| [IOP-209 — Independent Asset domain completion](items/IOP-209-asset-domain-completion.md) | In progress |
+| [IOP-210 — Global search and area overview](items/IOP-210-operational-search-overview.md) | In progress |
 
 ## Current delivery — 2026-10-06
 

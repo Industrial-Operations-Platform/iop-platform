@@ -24,6 +24,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/integrations/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConnectionsController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConnectionsController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConnectionsController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/maintenance/catalog": {
         parameters: {
             query?: never;
@@ -908,6 +956,51 @@ export interface components {
              * @enum {string}
              */
             status: "ok";
+        };
+        ConnectionConfigurationDto: {
+            /** @enum {string} */
+            kind: "wincc" | "ultimo" | "entra";
+            label: string;
+            enabled: boolean;
+            /** @description HTTPS endpoint without credentials, query or fragment. */
+            endpoint: string;
+            contractVersion: string;
+            /** @description Logical reference only; never a secret value. */
+            credentialReference: string;
+            tenantId: string;
+            clientId: string;
+        };
+        ConnectionReadinessDto: {
+            configuration: components["schemas"]["ConnectionConfigurationDto"];
+            revision: number;
+            updatedAt: string;
+            updatedBy: string;
+            /** @enum {string} */
+            status: "disabled" | "configuration-pending" | "transport-pending";
+            /** @enum {string} */
+            adapter: "contract-ready";
+            missingInputs: string[];
+            lastSuccessfulConnection: string | null;
+        };
+        ConnectionsDto: {
+            connections: components["schemas"]["ConnectionReadinessDto"][];
+        };
+        ConnectionSaveDto: {
+            expectedRevision: number;
+            configuration: components["schemas"]["ConnectionConfigurationDto"];
+        };
+        ConnectionHistoryRequestDto: {
+            /** @enum {string} */
+            kind: "wincc" | "ultimo" | "entra";
+        };
+        ConnectionDto: {
+            configuration: components["schemas"]["ConnectionConfigurationDto"];
+            revision: number;
+            updatedAt: string;
+            updatedBy: string;
+        };
+        ConnectionHistoryDto: {
+            revisions: components["schemas"]["ConnectionDto"][];
         };
         MaintenancePriorityDto: {
             id: string;
@@ -2106,6 +2199,71 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ConnectionsController_query: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectionsDto"];
+                };
+            };
+        };
+    };
+    ConnectionsController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConnectionSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectionReadinessDto"];
+                };
+            };
+        };
+    };
+    ConnectionsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConnectionHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectionHistoryDto"];
                 };
             };
         };

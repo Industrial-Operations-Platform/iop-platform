@@ -32,6 +32,7 @@ function configuration() {
   mkdirSync(directory, { recursive: true, mode: 0o700 });
   mkdirSync(join(directory, "config"), { recursive: true, mode: 0o700 });
   mkdirSync(join(directory, "seed"), { recursive: true, mode: 0o700 });
+  mkdirSync(join(directory, "locator"), { recursive: true, mode: 0o700 });
   if (!existsSync(join(directory, "setup.env"))) {
     // An old volume with missing credentials must not be silently adopted.
     const probe = spawnSync(
@@ -189,6 +190,7 @@ function main() {
     if (backup) extract(backup);
     docker(["build", "setup", "api", "web"]);
     docker(["run", "--rm", "setup"]);
+    docker(["run", "--rm", "locator-setup"]);
     docker(["up", "-d", "--wait", "api", "web"]);
     console.log(
       "Platform ready at http://127.0.0.1:8080. Sign in to use the platform. For first access, run npm run local:admin.",

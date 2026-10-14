@@ -1,4 +1,6 @@
+import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
+  ...integrationGerman,
   Appearance: "Darstellung",
   Light: "Hell",
   Dark: "Dunkel",

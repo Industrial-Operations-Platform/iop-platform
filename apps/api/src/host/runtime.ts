@@ -1,3 +1,5 @@
+import {composeConnections} from "./connections-composition";
+import type {Connections} from "../modules/integrations/application/connections";
 import { workforceAssignedTarget } from "../modules/workforce/adapters/postgres/assignment-default";
 import { assetEquipmentCatalog } from "./adapters/asset-equipment-catalog";
 import { Workforce } from "../modules/workforce/application/workforce";
@@ -231,6 +233,7 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly connections: Connections;
   readonly maintenance: Maintenance;
   readonly assets: Assets;
   readonly workforce: Workforce;
@@ -264,6 +267,7 @@ export class PlatformRuntime {
       profileRevision: "aggregate-poc-v1",
       mappingRevision: mappings.configuration.mappingRevision,
     });
+    this.connections = composeConnections(pool, this.source);
     const catalog = handoverCatalog(
       config.handover,
       this.source,

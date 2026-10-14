@@ -64,6 +64,89 @@
         ]
       }
     },
+    "/api/v1/integrations/query": {
+      "post": {
+        "operationId": "ConnectionsController_query",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Integration readiness"
+        ]
+      }
+    },
+    "/api/v1/integrations/save": {
+      "post": {
+        "operationId": "ConnectionsController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectionSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionReadinessDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Integration readiness"
+        ]
+      }
+    },
+    "/api/v1/integrations/history": {
+      "post": {
+        "operationId": "ConnectionsController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectionHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Integration readiness"
+        ]
+      }
+    },
     "/api/v1/maintenance/catalog": {
       "post": {
         "operationId": "MaintenanceController_catalog",
@@ -2367,6 +2450,192 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "ConnectionConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wincc",
+              "ultimo",
+              "entra"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "endpoint": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "HTTPS endpoint without credentials, query or fragment."
+          },
+          "contractVersion": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "credentialReference": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Logical reference only; never a secret value."
+          },
+          "tenantId": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "clientId": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "kind",
+          "label",
+          "enabled",
+          "endpoint",
+          "contractVersion",
+          "credentialReference",
+          "tenantId",
+          "clientId"
+        ]
+      },
+      "ConnectionReadinessDto": {
+        "type": "object",
+        "properties": {
+          "configuration": {
+            "$ref": "#/components/schemas/ConnectionConfigurationDto"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "updatedBy": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "disabled",
+              "configuration-pending",
+              "transport-pending"
+            ]
+          },
+          "adapter": {
+            "type": "string",
+            "enum": [
+              "contract-ready"
+            ]
+          },
+          "missingInputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "lastSuccessfulConnection": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "configuration",
+          "revision",
+          "updatedAt",
+          "updatedBy",
+          "status",
+          "adapter",
+          "missingInputs",
+          "lastSuccessfulConnection"
+        ]
+      },
+      "ConnectionsDto": {
+        "type": "object",
+        "properties": {
+          "connections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConnectionReadinessDto"
+            }
+          }
+        },
+        "required": [
+          "connections"
+        ]
+      },
+      "ConnectionSaveDto": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/ConnectionConfigurationDto"
+          }
+        },
+        "required": [
+          "expectedRevision",
+          "configuration"
+        ]
+      },
+      "ConnectionHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wincc",
+              "ultimo",
+              "entra"
+            ]
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "ConnectionDto": {
+        "type": "object",
+        "properties": {
+          "configuration": {
+            "$ref": "#/components/schemas/ConnectionConfigurationDto"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "updatedBy": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "configuration",
+          "revision",
+          "updatedAt",
+          "updatedBy"
+        ]
+      },
+      "ConnectionHistoryDto": {
+        "type": "object",
+        "properties": {
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConnectionDto"
+            }
+          }
+        },
+        "required": [
+          "revisions"
         ]
       },
       "MaintenancePriorityDto": {

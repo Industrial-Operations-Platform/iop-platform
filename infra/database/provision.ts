@@ -216,6 +216,61 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
     }
     updates.push(...['code','status','location_id','revision','snapshot'].map(name => `assets.records.${name}`), 'assets.aliases.active');
   }
+  const formalHandoverInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261014010000-formal-handover'",
+  )).rowCount;
+  if (formalHandoverInstalled) {
+    for (const [table,names] of Object.entries({
+      records: ['organization_id','site_id','id','shift_id','business_date','starts_at','department_id','area_id','author_id','created_at','revision','snapshot','request_key','fingerprint'],
+      record_revisions: ['organization_id','site_id','record_id','revision','actor_id','recorded_at','snapshot'],
+    })) {
+      const columns = names.map(name => `shift_handover.${table}.${name}`);
+      allowedColumns.push(...columns); inserts.push(...columns);
+    }
+    updates.push('shift_handover.records.revision','shift_handover.records.snapshot');
+  }
+  const improvementsInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261014020000-improvement-tracking'",
+  )).rowCount;
+  if (improvementsInstalled) {
+    schemas.push('improvement');
+    for (const [table,names] of Object.entries({
+      actions: ['organization_id','site_id','id','revision','status','location_id','asset_id','owner_id','author_id','updated_at','snapshot'],
+      revisions: ['organization_id','site_id','action_id','revision','actor_id','at','snapshot'],
+      evidence: ['organization_id','site_id','id','action_id','action_revision','actor_id','at','supersedes_id','snapshot'],
+      comparisons: ['organization_id','site_id','id','action_id','action_revision','actor_id','at','snapshot'],
+    })) {
+      const columns = names.map(name => `improvement.${table}.${name}`);
+      allowedColumns.push(...columns); inserts.push(...columns);
+    }
+    updates.push(...['revision','status','location_id','asset_id','owner_id','updated_at','snapshot'].map(name => `improvement.actions.${name}`));
+  }
+  const locatorInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261014030000-asset-locator'",
+  )).rowCount;
+  if (locatorInstalled) {
+    schemas.push('asset_locator');
+    for (const [table,names] of Object.entries({
+      scenes: ['organization_id','site_id','id','revision','snapshot'],
+      revisions: ['organization_id','site_id','scene_id','revision','snapshot'],
+      placements: ['organization_id','site_id','scene_id','revision','component_id','asset_id','current'],
+    })) {
+      const columns = names.map(name => `asset_locator.${table}.${name}`);
+      allowedColumns.push(...columns); inserts.push(...columns);
+    }
+    updates.push('asset_locator.scenes.revision','asset_locator.scenes.snapshot','asset_locator.placements.current');
+  }
+  const connectionsInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261014040000-integration-registry'",
+  )).rowCount;
+  if (connectionsInstalled) {
+    for (const table of ['connections','connection_revisions']) {
+      const columns = ['organization_id','site_id','kind','revision','snapshot']
+        .map(name => `integrations.${table}.${name}`);
+      allowedColumns.push(...columns); inserts.push(...columns);
+    }
+    updates.push('integrations.connections.revision','integrations.connections.snapshot');
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

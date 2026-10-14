@@ -1,3 +1,5 @@
+import type {ConnectionsApplication} from "../features/integrations/application/connections";
+import {ConnectionsWorkspace} from "../features/integrations/adapters/react/ConnectionsWorkspace";
 import { HandoverPeople } from "./HandoverPeople";
 import { LandingPage } from "./LandingPage";
 import { InformationNotices } from "../features/shift-handover/adapters/react/InformationNotices";
@@ -60,6 +62,7 @@ export function WorkspaceApp({
   workforce,
   maintenance,
   assets,
+  connections,
 }: {
   application: AnalysisWorkspace;
   access?: AccessApplication;
@@ -67,6 +70,7 @@ export function WorkspaceApp({
   workforce?: WorkforceApplication;
   maintenance?: MaintenanceApplication;
   assets?: AssetsApplication;
+  connections?: ConnectionsApplication;
 }) {
   const currentLanguage = useSyncExternalStore(subscribeLanguage, language);
   useEffect(() => {
@@ -81,6 +85,7 @@ export function WorkspaceApp({
     | "workforce"
     | "maintenance"
     | "assets"
+    | "integrations"
   >("start");
   const [maintenanceVisit, setMaintenanceVisit] = useState(0);
   const [assetVisit, setAssetVisit] = useState(0);
@@ -505,6 +510,9 @@ export function WorkspaceApp({
             ...(assets && canReadAssets
               ? [{ id: "assets" as const, label: t("Assets") }]
               : []),
+            ...(connections && canReadAssets
+              ? [{id: "integrations" as const, label: t("Integrations")}]
+              : []),
             ...(showUserAdministration
               ? [{ id: "users" as const, label: t("Users & profiles") }]
               : []),
@@ -544,7 +552,9 @@ export function WorkspaceApp({
           </Button>
         </Panel>
       )}
-      {page === "maintenance" && maintenance && signedIn ? (
+      {page === "integrations" && connections && canReadAssets ? (
+        <ConnectionsWorkspace application={connections} canManage={effectiveProfile === "administrator"}/>
+      ) : page === "maintenance" && maintenance && signedIn ? (
         <MaintenanceWorkspace
           key={`${context.user?.id}:${effectiveProfile}`}
           application={maintenance}

@@ -30,6 +30,7 @@ services:
       IOP_LOCAL_IDENTITY_FILE: /config/users.json
       IOP_MAPPING_CONFIG_FILE: /config/mappings.json
       IOP_HANDOVER_CONFIG_FILE: /config/handover.json
+      IOP_LOCATOR_REFERENCE_ROOT: /locator
     volumes:
       - ./.local-platform/config:/config:ro
       - ./.local-platform/seed:/seed:ro
@@ -44,6 +45,7 @@ services:
     environment: *local
     volumes:
       - ./.local-platform/config:/config:ro
+      - locator-references:/locator:ro
     depends_on:
       database:
         condition: service_healthy
@@ -54,6 +56,16 @@ services:
       timeout: 3s
       retries: 30
       start_period: 20s
+  locator-setup:
+    profiles: [tools]
+    image: iop-platform-local-api
+    user: '0:0'
+    network_mode: none
+    command: [node, /tool/locator-private-copy.cjs]
+    volumes:
+      - ./.local-platform/locator:/source:ro
+      - locator-references:/destination
+      - ./scripts/local/locator-private-copy.cjs:/tool/locator-private-copy.cjs:ro
   web:
     build:
       context: .
@@ -70,3 +82,4 @@ services:
       retries: 20
 volumes:
   platform-data:
+  locator-references:
