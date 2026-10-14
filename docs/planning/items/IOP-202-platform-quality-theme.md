@@ -29,12 +29,15 @@ is browser presentation, not business policy or a new backend preference service
 This request does not accept Proposed ADRs or close pending product/release work.
 The initial request excluded merge, push, deployment, destructive cleanup and
 dependency upgrades. The owner's follow-up on 2026-10-14 explicitly authorizes
-integrating all outstanding commits into `develop`. Remote publication and
-deployment require separate authorization.
+integrating all outstanding commits into `develop`. The owner's affirmative
+publication reply on the same date authorizes pushing the story and develop to
+origin, including their publication evidence. Deployment requires separate
+authorization.
 
 ## Evidence and remaining work
 
 [Execution plan](../completed/IOP-202-platform-quality-theme-plan.md).
 [Completed integration plan](../completed/IOP-202-develop-integration-plan.md)
-records the 2026-10-14 follow-up. All retained commits are integrated locally into
-`develop`; remote publication awaits separate owner authorization.
+records the 2026-10-14 follow-up. All retained commits are integrated into `develop`.
+[Publication evidence](../completed/IOP-202-origin-publication-plan.md) confirms
+that the story and develop were published to origin on 2026-10-14.
