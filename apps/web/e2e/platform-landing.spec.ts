@@ -1,3 +1,4 @@
+import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixture";
 import { expect, test, type Page } from "@playwright/test";
 import { emptyWorkforce } from "./workforce-fixture";
 
@@ -21,6 +22,8 @@ async function accessFixture(page: Page, options: { signedIn?: boolean; initial?
     const path = new URL(route.request().url()).pathname;
     requests.push(path);
     switch (path) {
+      case "/api/v1/overview/context":
+        return fulfillOverviewContext(route,overviewContextFixture({locations:[],timeZone:"UTC",today:"2026-10-09",coverage:{handover:"available"}}));
       case "/api/v1/session/context":
         return route.fulfill({
           status: unavailable ? 503 : 200,

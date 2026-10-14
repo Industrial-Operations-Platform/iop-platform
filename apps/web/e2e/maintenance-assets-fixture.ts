@@ -1,3 +1,4 @@
+import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixture";
 import type { Page as BrowserPage } from "@playwright/test";
 import { emptyWorkforce } from "./workforce-fixture";
 import {
@@ -181,6 +182,7 @@ export async function installMaintenanceAssetsFixture(
   };
   await page.route("**/api/v1/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
+    if (path === "/api/v1/overview/context") return fulfillOverviewContext(route,overviewContextFixture({locations,timeZone:"UTC",today:"2026-10-06",coverage:{handover:"available",...(["administrator","team-leader","task-force"].includes(profile)?{assets:"available" as const,maintenance:"available" as const,analytics:"available" as const,shifts:"not-configured" as const}:{})}}));
     const data =
       route.request().method() === "POST" ? route.request().postDataJSON() : {};
     requests.push({ path, data });
