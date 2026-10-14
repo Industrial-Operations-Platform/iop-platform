@@ -1,0 +1,41 @@
+name: Platform validation
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  local-platform:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+      - name: Install locked tooling
+        run: |
+          npm install --global npm@10.9.2
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Check repository secrets
+        run: npm run check:secrets
+      - name: Validate complete local platform
+        run: npm run test:poc
+      - name: Retain synthetic browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-failure-${{ github.run_id }}
+          path: |
+            apps/web/test-results/
+            apps/web/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
