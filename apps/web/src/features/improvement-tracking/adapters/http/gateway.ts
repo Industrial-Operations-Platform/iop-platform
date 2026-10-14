@@ -1,5 +1,7 @@
+import type { components } from "../../../../contracts/schema";
 import type { Gateway } from "../../application/improvement";
-import type { AddEvidence, ActionView, Catalog, Comparison, ComparisonPage, CompareAction, EvidencePage, History, IssueReference, Page, SaveAction, SaveComparison, Selection } from "../../domain/models";
+import type { AddEvidence, CompareAction, SaveAction, SaveComparison, Selection } from "../../domain/models";
+type Schema = components["schemas"];
 const messages: Record<string, string> = {
   invalid_improvement: "Check the improvement fields, dates and workflow requirements.",
   improvement_denied: "Improvement Tracking requires current Administrator, Team Leader or Task Force access.",
@@ -24,54 +26,45 @@ async function request<T>(route: string, body: unknown): Promise<T> {
 }
 export class HttpImprovementGateway implements Gateway {
   catalog() {
-    return request<Catalog>("catalog", {});
+    return request<Schema["ImprovementCatalogDto"]>("catalog", {});
   }
   query(input: Selection) {
-    return request<Page>("query", input);
+    return request<Schema["ImprovementPageDto"]>("query", input);
   }
   save(input: SaveAction) {
-    return request<ActionView>("save", input);
+    return request<Schema["ImprovementViewDto"]>("save", input);
   }
   issues(search: string, cursor = "") {
-    return request<{
-      issues: IssueReference[];
-      nextCursor: string;
-    }>("issues", {
+    return request<Schema["ImprovementIssuePageDto"]>("issues", {
       search,
       cursor
     });
   }
   history(id: string, before = 0) {
-    return request<History>("history", {
+    return request<Schema["ImprovementHistoryDto"]>("history", {
       id,
       before
     });
   }
   evidence(id: string, cursor = "") {
-    return request<EvidencePage>("evidence", {
+    return request<Schema["ImprovementEvidencePageDto"]>("evidence", {
       id,
       cursor
     });
   }
   comparisons(id: string, cursor = "") {
-    return request<ComparisonPage>("comparisons", {
+    return request<Schema["ImprovementComparisonPageDto"]>("comparisons", {
       id,
       cursor
     });
   }
   addEvidence(input: AddEvidence) {
-    return request<{
-      action: ActionView;
-      evidence: EvidencePage["evidence"][number];
-    }>("add-evidence", input);
+    return request<Schema["ImprovementEvidenceSavedDto"]>("add-evidence", input);
   }
   compare(input: CompareAction) {
-    return request<Comparison>("compare", input);
+    return request<Schema["ImprovementComparisonDto"]>("compare", input);
   }
   saveComparison(input: SaveComparison) {
-    return request<{
-      action: ActionView;
-      saved: ComparisonPage["comparisons"][number];
-    }>("save-comparison", input);
+    return request<Schema["ImprovementComparisonSavedDto"]>("save-comparison", input);
   }
 }

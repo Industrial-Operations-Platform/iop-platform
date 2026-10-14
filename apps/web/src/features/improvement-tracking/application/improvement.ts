@@ -22,7 +22,11 @@ export interface Gateway {
 }
 /** Browser use cases own request orchestration; React and HTTP remain replaceable adapters. */
 export class ImprovementApplication {
-  constructor(private readonly gateway: Gateway, private readonly ids: () => string) {}
+  constructor(private readonly gateway: Gateway, private readonly ids: () => string,
+    private readonly assetLookup?: (search:string,cursor:string)=>Promise<{assets:Catalog['assets'];nextCursor:string;total:number}>) {}
+  assetChoices(search:string,cursor='',fallback:Catalog['assets']=[]) {
+    return this.assetLookup ? this.assetLookup(search,cursor) : Promise.resolve({assets:fallback,nextCursor:'',total:fallback.length});
+  }
   newId() {
     return this.ids();
   }

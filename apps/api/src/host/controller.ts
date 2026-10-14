@@ -1,3 +1,6 @@
+import {FormalHandoverController} from "./formal-handover-controller";
+import {ImprovementController} from "./improvement-controller";
+import {LocatorController} from "./locator-controller";
 import {ConnectionsController} from "./connections-controller";
 import { WorkforceController } from "./workforce-controller";
 import { MaintenanceController } from "./maintenance-controller";
@@ -443,6 +446,9 @@ export class PlatformModule {
       module: PlatformModule,
       controllers: [
         ConnectionsController,
+        FormalHandoverController,
+        ImprovementController,
+        LocatorController,
         MaintenanceController,
         AssetsController,
         WorkforceController,

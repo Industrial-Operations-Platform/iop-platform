@@ -1,3 +1,9 @@
+import type {FormalHandoverApplication} from "../features/shift-handover/application/formal-records";
+import {FormalHandoverWorkspace} from "../features/shift-handover/adapters/react/FormalHandoverWorkspace";
+import type {ImprovementApplication} from "../features/improvement-tracking/application/improvement";
+import {ImprovementWorkspace} from "../features/improvement-tracking/adapters/react/ImprovementWorkspace";
+import type {LocatorApplication} from "../features/asset-locator/application/locator";
+import {LocatorWorkspace} from "../features/asset-locator/adapters/react/LocatorWorkspace";
 import type {ConnectionsApplication} from "../features/integrations/application/connections";
 import {ConnectionsWorkspace} from "../features/integrations/adapters/react/ConnectionsWorkspace";
 import { HandoverPeople } from "./HandoverPeople";
@@ -63,6 +69,9 @@ export function WorkspaceApp({
   maintenance,
   assets,
   connections,
+  formalHandover,
+  improvements,
+  locator,
 }: {
   application: AnalysisWorkspace;
   access?: AccessApplication;
@@ -71,6 +80,9 @@ export function WorkspaceApp({
   maintenance?: MaintenanceApplication;
   assets?: AssetsApplication;
   connections?: ConnectionsApplication;
+  formalHandover?: FormalHandoverApplication;
+  improvements?: ImprovementApplication;
+  locator?: LocatorApplication;
 }) {
   const currentLanguage = useSyncExternalStore(subscribeLanguage, language);
   useEffect(() => {
@@ -86,6 +98,9 @@ export function WorkspaceApp({
     | "maintenance"
     | "assets"
     | "integrations"
+    | "formal-handover"
+    | "improvements"
+    | "locator"
   >("start");
   const [maintenanceVisit, setMaintenanceVisit] = useState(0);
   const [assetVisit, setAssetVisit] = useState(0);
@@ -510,6 +525,15 @@ export function WorkspaceApp({
             ...(assets && canReadAssets
               ? [{ id: "assets" as const, label: t("Assets") }]
               : []),
+            ...(formalHandover && canReadAssets
+              ? [{id: "formal-handover" as const, label: t("Formal Handover")}]
+              : []),
+            ...(improvements && canReadAssets
+              ? [{id: "improvements" as const, label: t("Improvements")}]
+              : []),
+            ...(locator && canReadAssets
+              ? [{id: "locator" as const, label: t("Asset Locator")}]
+              : []),
             ...(connections && canReadAssets
               ? [{id: "integrations" as const, label: t("Integrations")}]
               : []),
@@ -552,7 +576,15 @@ export function WorkspaceApp({
           </Button>
         </Panel>
       )}
-      {page === "integrations" && connections && canReadAssets ? (
+      {page === "formal-handover" && formalHandover && canReadAssets ? (
+        <FormalHandoverWorkspace application={formalHandover} departmentId={departmentId} onEntry={openInformation}/>
+      ) : page === "improvements" && improvements && canReadAssets ? (
+        <ImprovementWorkspace application={improvements} timeZone={context.scope?.siteTimeZone ?? "UTC"}
+          onOpenAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}} onOpenIssue={openInformation}/>
+      ) : page === "locator" && locator && canReadAssets ? (
+        <LocatorWorkspace application={locator} onAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}}
+          onProblem={(kind,id) => kind === "maintenance" ? openMaintenance(id) : openInformation(id)}/>
+      ) : page === "integrations" && connections && canReadAssets ? (
         <ConnectionsWorkspace application={connections} canManage={effectiveProfile === "administrator"}/>
       ) : page === "maintenance" && maintenance && signedIn ? (
         <MaintenanceWorkspace

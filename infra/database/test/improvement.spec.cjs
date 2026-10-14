@@ -475,3 +475,19 @@ test("OIP compares exact imported aliases, coverage and server-generated immutab
   })).rejects.toBeInstanceOf(SiteAccessDeniedError);
   await admin("UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='task' AND role_id='analytics-reader'");
 });
+
+test("large registries keep Tracking available and paginated asset lookup reaches every identity", async () => {
+  await admin(`INSERT INTO assets.records(organization_id,site_id,id,code,status,location_id,revision,snapshot,author_id,created_at,request_key,fingerprint)
+    SELECT organization_id,site_id,'registry-'||n,'REG-'||lpad(n::text,4,'0'),status,location_id,revision,
+      jsonb_set(jsonb_set(jsonb_set(snapshot,'{id}',to_jsonb('registry-'||n)),
+        '{content,code}',to_jsonb('REG-'||lpad(n::text,4,'0'))),'{content,aliases}','[]'::jsonb),
+      author_id,created_at,'registry-key-'||n,'registry-fingerprint-'||n
+    FROM assets.records CROSS JOIN generate_series(1,1001) n WHERE id=$1`,[asset.id]);
+  const catalog = await app.catalog("admin");
+  expect(catalog.assets.length).toBeLessThanOrEqual(100);
+  const page = await runtime.assets.query("admin",{search:"REG-1001",cursor:"",status:"current",locationId:""});
+  expect(page.total).toBe(1);
+  expect(page.assets[0].id).toBe("registry-1001");
+  const saved=await app.save("admin",{...request(),data:{...request().data,assetId:page.assets[0].id,issueId:""}});
+  expect(saved.data.assetId).toBe("registry-1001");
+});

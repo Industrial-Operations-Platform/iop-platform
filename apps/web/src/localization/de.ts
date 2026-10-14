@@ -1,6 +1,18 @@
+import {formalHandoverGerman} from "./formal-handover-de";
+import {improvementGerman} from "./improvement-de";
+import {locatorGerman} from "./locator-de";
 import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
   ...integrationGerman,
+  ...formalHandoverGerman,
+  ...improvementGerman,
+  ...locatorGerman,
+  "Formal Handover": "Formale Schichtübergabe",
+  "Improvements": "Verbesserungen",
+  "Find registered asset": "Registriertes Betriebsmittel suchen",
+  "registered assets": "registrierte Betriebsmittel",
+  "Refine the search to find other assets.": "Suche eingrenzen, um weitere Betriebsmittel zu finden.",
+  "Load more assets": "Weitere Betriebsmittel laden",
   Appearance: "Darstellung",
   Light: "Hell",
   Dark: "Dunkel",

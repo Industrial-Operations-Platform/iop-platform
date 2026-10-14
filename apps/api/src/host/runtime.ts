@@ -1,3 +1,10 @@
+import {resolve} from "node:path";
+import {composeFormalHandover} from "./formal-handover-composition";
+import type {FormalHandover} from "../modules/shift-handover/application/formal-records";
+import {composeImprovements} from "./improvement-composition";
+import type {Improvements} from "../modules/improvement-tracking/application/improvement";
+import {composePlatformLocator} from "./locator-composition";
+import type {Locator} from "../modules/asset-locator/application/locator";
 import {composeConnections} from "./connections-composition";
 import type {Connections} from "../modules/integrations/application/connections";
 import { workforceAssignedTarget } from "../modules/workforce/adapters/postgres/assignment-default";
@@ -88,6 +95,7 @@ export interface LocalUser {
 }
 export interface LocalIdentityConfiguration {
   passwordAuthentication?: boolean;
+  locatorReferenceRoot?: string;
   handover?: unknown;
   users: LocalUser[];
   origins: string[];
@@ -185,6 +193,7 @@ export function readLocalIdentityConfiguration(
       throw new Error();
     return {
       users,
+      ...(env.IOP_LOCATOR_REFERENCE_ROOT ? {locatorReferenceRoot: env.IOP_LOCATOR_REFERENCE_ROOT} : {}),
       ...(env.IOP_HANDOVER_CONFIG_FILE
         ? { handover: jsonFile(env.IOP_HANDOVER_CONFIG_FILE, 262144) }
         : {}),
@@ -233,6 +242,9 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly formalHandover: FormalHandover;
+  readonly improvements: Improvements;
+  readonly locator: Locator;
   readonly connections: Connections;
   readonly maintenance: Maintenance;
   readonly assets: Assets;
@@ -273,6 +285,8 @@ export class PlatformRuntime {
       this.source,
       this.source.siteTimeZone,
     );
+    this.formalHandover = composeFormalHandover(pool, this.source, catalog.locations, this.source.siteTimeZone);
+    this.locator = composePlatformLocator(pool, this.source, catalog.locations, config.locatorReferenceRoot ?? resolve(__dirname, "../../../../.local-platform/locator"));
     const operationalDirectory = {
       allowed: async (
         tx: import("../persistence/site-operation").SiteTransaction,
@@ -395,6 +409,14 @@ export class PlatformRuntime {
     );
     this.handover = new Handover(
       new PgHandover(pool, this.source, {
+        assetReference: async (tx, actor, id) => {
+          if (!(await operationalDirectory.allowed(tx, actor, "assets.read"))) throw new SiteAccessDeniedError();
+          return assetReference(tx, this.source, id);
+        },
+        assetReferences: async (tx, actor, search) => {
+          if (!(await operationalDirectory.allowed(tx, actor, "assets.read"))) throw new SiteAccessDeniedError();
+          return assetReferences(tx, this.source, search);
+        },
         profile: (tx, actor) => sitePersonProfile(tx, this.source.organizationId, this.source.siteId, actor),
         broadcastCategoryIds: catalog.categories.filter((c) => c.workflow === "information").map((c) => c.id),
         technicalCategoryIds: catalog.categories.filter((c) => c.workflow?.startsWith("technical-")).map((c) => c.id),
@@ -468,6 +490,7 @@ export class PlatformRuntime {
       hitlisteReportingProfile(mappings.configuration),
     );
     this.profileRepository = profileRepository;
+    this.improvements = composeImprovements(pool, this.source, catalog.locations, profileRepository.initialVersion, hitlisteAnalysisCalendar);
     this.receiver = new OipReceiver(this.source, (tx, id) =>
       profileRepository.project(tx, id),
     );

@@ -1,10 +1,7 @@
 import type { components } from "../../../../contracts/schema";
 import type { FormalGateway } from "../../application/formal-records";
-import type { FormalContext, ShiftReference, RecordSelection, RecordPage, SaveRecord,
-  TransitionRecord, FormalRecord, RecordHistory, PreviousShift, CandidatePage } from "../../domain/formal-models";
+import type { RecordSelection, SaveRecord, TransitionRecord } from "../../domain/formal-models";
 type Schema = components["schemas"];
-// Root composition regenerates bindings after registering the new controller.
-type Wire<K extends string, Fallback> = K extends keyof Schema ? Schema[K] : Fallback;
 const messages: Record<string, string> = {
   handover_denied: "Formal shift records require Administrator, Team Leader or Task Force access.",
   handover_missing: "This shift record is unavailable.",
@@ -23,14 +20,14 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   return data;
 }
 export class HttpFormalHandoverGateway implements FormalGateway {
-  context() { return request<Wire<"FormalHandoverContextDto", FormalContext>>("context"); }
-  shifts(input: RecordSelection) { return request<Wire<"FormalHandoverShiftsDto", { shifts: ShiftReference[]; coverage: "planned-assignments" }>>("shifts", input); }
-  query(input: RecordSelection) { return request<Wire<"FormalHandoverPageDto", RecordPage>>("query", input); }
-  save(input: SaveRecord) { return request<Wire<"FormalHandoverRecordDto", FormalRecord>>("save", input); }
-  transition(input: TransitionRecord) { return request<Wire<"FormalHandoverRecordDto", FormalRecord>>("transition", input); }
-  history(id: string, before: number) { return request<Wire<"FormalHandoverHistoryDto", RecordHistory>>("history", { id, before }); }
-  previous(id: string) { return request<Wire<"FormalHandoverPreviousDto", PreviousShift>>("previous", { id }); }
+  context() { return request<Schema["FormalHandoverContextDto"]>("context"); }
+  shifts(input: RecordSelection) { return request<Schema["FormalHandoverShiftsDto"]>("shifts", input); }
+  query(input: RecordSelection) { return request<Schema["FormalHandoverPageDto"]>("query", input); }
+  save(input: SaveRecord) { return request<Schema["FormalHandoverRecordDto"]>("save", input); }
+  transition(input: TransitionRecord) { return request<Schema["FormalHandoverRecordDto"]>("transition", input); }
+  history(id: string, before: number) { return request<Schema["FormalHandoverHistoryDto"]>("history", { id, before }); }
+  previous(id: string) { return request<Schema["FormalHandoverPreviousDto"]>("previous", { id }); }
   candidates(departmentId: string, areaId: string, through: string) {
-    return request<Wire<"FormalHandoverCandidatesDto", CandidatePage>>("candidates", { departmentId, areaId, through });
+    return request<Schema["FormalHandoverCandidatesDto"]>("candidates", { departmentId, areaId, through });
   }
 }

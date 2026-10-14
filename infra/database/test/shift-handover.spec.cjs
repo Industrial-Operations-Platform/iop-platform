@@ -254,7 +254,8 @@ beforeAll(async () => {
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','tech-a','site-a2','analytics-reader',true)",
     ),
   );
-  expect(await migrate(configs.migrator)).toBe(10);
+  const remainingMigrations = readdirSync(join(__dirname, "../migrations")).filter(file => file.endsWith(".sql") && file >= "20261001000000").length;
+  expect(await migrate(configs.migrator)).toBe(remainingMigrations);
   await provision(configs);
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
@@ -855,10 +856,10 @@ test("RLS, privilege limits, cross-site references and atomic revision rollback"
   ).rejects.toThrow();
   const r = await db("bootstrap", (c) =>
     c.query(
-      "SELECT relrowsecurity,relforcerowsecurity FROM pg_class WHERE relnamespace='shift_handover'::regnamespace AND relkind='r'",
+      "SELECT relname,relrowsecurity,relforcerowsecurity FROM pg_class WHERE relnamespace='shift_handover'::regnamespace AND relkind='r'",
     ),
   );
-  expect(r.rows).toHaveLength(3);
+  expect(r.rows.map(row => row.relname).sort()).toEqual(["entries", "equipment_references", "record_revisions", "records", "revisions"]);
   expect(r.rows.every((r) => r.relrowsecurity && r.relforcerowsecurity)).toBe(
     true,
   );

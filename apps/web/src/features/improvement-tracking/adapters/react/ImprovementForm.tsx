@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Actions, Button, DateField, Field, FieldRow, Input, Panel, Select, Textarea } from "../../../../design/components";
 import { t } from "../../../../localization/i18n";
 import type { ImprovementApplication } from "../../application/improvement";
@@ -26,6 +26,23 @@ export function ImprovementForm({
   const [issues, setIssues] = useState<IssueReference[]>([]);
   const [cursor, setCursor] = useState("");
   const [issueError, setIssueError] = useState("");
+  const [assetSearch,setAssetSearch] = useState('');
+  const [assetOptions,setAssetOptions] = useState(catalog.assets);
+  const [assetCursor,setAssetCursor] = useState('');
+  const [assetTotal,setAssetTotal] = useState(catalog.assets.length);
+  const [assetError,setAssetError] = useState('');
+  const [assetLoading,setAssetLoading] = useState(false);
+  const assetSelection = useRef('');
+  assetSelection.current = assetSearch;
+  useEffect(() => {
+    let active = true;
+    setAssetLoading(true);
+    application.assetChoices(assetSearch,'',catalog.assets).then(page => {
+      if (!active) return;
+      setAssetOptions(page.assets);setAssetCursor(page.nextCursor);setAssetTotal(page.total);setAssetError('');
+    }).catch(error => {if(active)setAssetError(error.message);}).finally(()=>{if(active)setAssetLoading(false);});
+    return () => {active=false;};
+  },[application,assetSearch,catalog.assets]);
   useEffect(() => {
     let active = true;
     application.issues(search).then(r => {
@@ -59,7 +76,19 @@ export function ImprovementForm({
     <FieldRow><Field>{t("Location")}<Select required value={data.locationId} onChange={e => change("locationId", e.target.value)}>{catalog.locations.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}</Select></Field>
       <Field>{t("Owner")}<Select value={data.ownerId} disabled={!catalog.canCoordinate} onChange={e => change("ownerId", e.target.value)}><option value="">{t("Unassigned")}</option>{catalog.people.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}{data.ownerId && !catalog.people.some(p => p.id === data.ownerId) && <option value={data.ownerId}>{action?.ownerName || data.ownerId} ({t("Inactive")})</option>}</Select></Field>
       <DateField label={t("Target date")} value={data.dueDate} onChange={e => change("dueDate", e.target.value)} /></FieldRow>
-    <FieldRow><Field>{t("Linked asset")}<Select value={data.assetId} onChange={e => change("assetId", e.target.value)}><option value="">{t("No linked asset")}</option>{catalog.assets.map(a => <option key={a.id} value={a.id}>{a.code} · {a.name}</option>)}{data.assetId && !catalog.assets.some(a => a.id === data.assetId) && <option value={data.assetId}>{action?.assetName || data.assetId} ({t("Historical reference")})</option>}</Select></Field>
+    <Field>{t('Find registered asset')}<Input value={assetSearch} maxLength={160} onChange={event=>setAssetSearch(event.target.value)}/></Field>
+    <p>{assetOptions.length} {t('of')} {assetTotal} {t('registered assets')}. {t('Refine the search to find other assets.')}</p>
+    {assetError&&<p role="alert">{assetError}</p>}
+    {assetCursor&&<Button variant="secondary" disabled={pending||assetLoading} onClick={()=>{
+      const searchAtRequest=assetSearch;
+      setAssetLoading(true);
+      void application.assetChoices(searchAtRequest,assetCursor,catalog.assets).then(page=>{
+        if(assetSelection.current!==searchAtRequest)return;
+        setAssetOptions(current=>[...current,...page.assets]);setAssetCursor(page.nextCursor);setAssetTotal(page.total);
+      }).catch(error=>{if(assetSelection.current===searchAtRequest)setAssetError(error.message);})
+        .finally(()=>{if(assetSelection.current===searchAtRequest)setAssetLoading(false);});
+    }}>{t('Load more assets')}</Button>}
+    <FieldRow><Field>{t("Linked asset")}<Select value={data.assetId} onChange={e => change("assetId", e.target.value)}><option value="">{t("No linked asset")}</option>{assetOptions.map(a => <option key={a.id} value={a.id}>{a.code} · {a.name}</option>)}{data.assetId && !assetOptions.some(a => a.id === data.assetId) && <option value={data.assetId}>{action?.assetName || data.assetId} ({t("Historical reference")})</option>}</Select></Field>
       <Field>{t("Find reported issue")}<Input value={search} maxLength={200} onChange={e => setSearch(e.target.value)} /></Field>
       <Field>{t("Linked issue")}<Select value={data.issueId} onChange={e => change("issueId", e.target.value)}><option value="">{t("No linked issue")}</option>{issues.map(i => <option key={i.id} value={i.id}>{i.title} · {i.equipmentCode}</option>)}{data.issueId && !issues.some(i => i.id === data.issueId) && <option value={data.issueId}>{action?.issueTitle || data.issueId}</option>}</Select></Field></FieldRow>
     {issueError && <p role="alert">{issueError}</p>}{cursor && <Button disabled={pending} onClick={() => application.issues(search, cursor).then(r => {

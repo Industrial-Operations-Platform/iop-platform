@@ -4,7 +4,7 @@ import { Actions, Alert, Button } from '../../../../design/components';
 import { identity, darkIdentity } from '../../../../design/identity';
 import { useAppearance } from '../../../../design/useAppearance';
 import type { Scene, Reference } from '../../domain/models';
-import { createSceneRenderer, type CameraControls } from '../three/renderer';
+import type { CameraControls } from '../three/renderer';
 import { referenceUrl } from '../http/gateway';
 /** Area tiles are navigation cards, explicitly unrelated to physical adjacency. */
 export function PlantOverview({ scenes, references, onScene }: {
@@ -22,15 +22,18 @@ export function PlantOverview({ scenes, references, onScene }: {
       return;
     setFailed(false);
     let view: CameraControls | null = null;
-    try {
-      view = createSceneRenderer(element.current, { ...overview, aspect: 1.65, palette: resolved === 'dark' ? darkIdentity : identity, selectedId: '', problemAssetIds: new Set(), onSelect: id => choose.current(id) });
+    let active = true;
+    const host = element.current;
+    void import('../three/renderer').then(({createSceneRenderer}) => {
+      if (!active) return;
+      view = createSceneRenderer(host, { ...overview, aspect: 1.65, palette: resolved === 'dark' ? darkIdentity : identity, selectedId: '', problemAssetIds: new Set(), onSelect: id => choose.current(id) });
       controls.current = view;
-    }
-    catch {
+    }).catch(() => {
+      if (!active) return;
       setFailed(true);
-      element.current.replaceChildren();
-    }
-    return () => { view?.dispose(); controls.current = null; };
+      host.replaceChildren();
+    });
+    return () => { active = false; view?.dispose(); controls.current = null; };
   }, [overview, resolved, scenes.length]);
   if (!scenes.length)
     return null;

@@ -147,6 +147,792 @@
         ]
       }
     },
+    "/api/v1/handover/records/context": {
+      "get": {
+        "operationId": "FormalHandoverController_context",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormalHandoverContextDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Formal Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/records/shifts": {
+      "post": {
+        "operationId": "FormalHandoverController_shifts",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormalHandoverSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormalHandoverShiftsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Formal Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/records/query": {
+      "post": {
+        "operationId": "FormalHandoverController_query",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormalHandoverSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormalHandoverPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Formal Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/records/save": {
+      "post": {
+        "operationId": "FormalHandoverController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormalHandoverSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormalHandoverRecordDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Formal Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/records/transition": {
+      "post": {
+        "operationId": "FormalHandoverController_transition",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormalHandoverTransitionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormalHandoverRecordDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Formal Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/records/history": {
+      "post": {
+        "operationId": "FormalHandoverController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormalHandoverHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormalHandoverHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Formal Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/records/previous": {
+      "post": {
+        "operationId": "FormalHandoverController_previous",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormalHandoverPreviousRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormalHandoverPreviousDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Formal Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/handover/records/candidates": {
+      "post": {
+        "operationId": "FormalHandoverController_candidates",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormalHandoverCandidatesRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormalHandoverCandidatesDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Formal Shift Handover"
+        ]
+      }
+    },
+    "/api/v1/improvements/catalog": {
+      "post": {
+        "operationId": "ImprovementController_catalog",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementCatalogDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/issues": {
+      "post": {
+        "operationId": "ImprovementController_issues",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementIssueQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementIssuePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/query": {
+      "post": {
+        "operationId": "ImprovementController_query",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/save": {
+      "post": {
+        "operationId": "ImprovementController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementViewDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/history": {
+      "post": {
+        "operationId": "ImprovementController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/add-evidence": {
+      "post": {
+        "operationId": "ImprovementController_addEvidence",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementEvidenceRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementEvidenceSavedDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/evidence": {
+      "post": {
+        "operationId": "ImprovementController_evidence",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementCollectionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementEvidencePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/compare": {
+      "post": {
+        "operationId": "ImprovementController_compare",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementCompareDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementComparisonDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/save-comparison": {
+      "post": {
+        "operationId": "ImprovementController_saveComparison",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementSaveComparisonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementComparisonSavedDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/improvements/comparisons": {
+      "post": {
+        "operationId": "ImprovementController_comparisons",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementCollectionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementComparisonPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Improvement Tracking"
+        ]
+      }
+    },
+    "/api/v1/locator/context": {
+      "post": {
+        "operationId": "LocatorController_context",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorEmptyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorContextDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/query": {
+      "post": {
+        "operationId": "LocatorController_query",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/detail": {
+      "post": {
+        "operationId": "LocatorController_detail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorIdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/save": {
+      "post": {
+        "operationId": "LocatorController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorSceneDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/history": {
+      "post": {
+        "operationId": "LocatorController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/search": {
+      "post": {
+        "operationId": "LocatorController_search",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorSearchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorSearchResultsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/bootstrap": {
+      "post": {
+        "operationId": "LocatorController_bootstrap",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorEmptyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorBootstrapDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/references/{id}": {
+      "get": {
+        "operationId": "LocatorController_reference",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized original private PNG; never included in the public bundle.",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
     "/api/v1/maintenance/catalog": {
       "post": {
         "operationId": "MaintenanceController_catalog",
@@ -2172,6 +2958,37 @@
         ]
       }
     },
+    "/api/v1/handover/assets": {
+      "post": {
+        "operationId": "HandoverController_assets",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandoverAssetsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HandoverAssetsPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Shift Handover"
+        ]
+      }
+    },
     "/api/v1/handover/equipment": {
       "post": {
         "operationId": "HandoverController_equipment",
@@ -2636,6 +3453,2589 @@
         },
         "required": [
           "revisions"
+        ]
+      },
+      "HandoverLocationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "sectorKey": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "department",
+              "area",
+              "location"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "parentId",
+          "sectorKey",
+          "role"
+        ]
+      },
+      "FormalHandoverContextDto": {
+        "type": "object",
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "canManageRecords": {
+            "type": "boolean"
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverLocationDto"
+            }
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "actorId",
+          "canManageRecords",
+          "locations",
+          "timeZone"
+        ]
+      },
+      "FormalHandoverSelectionDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "departmentId",
+          "areaId",
+          "cursor"
+        ]
+      },
+      "FormalHandoverAssignmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "revision"
+        ]
+      },
+      "FormalHandoverShiftDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "shiftTypeId": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "targetLabel": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": "string"
+          },
+          "endsAt": {
+            "type": "string"
+          },
+          "assignments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverAssignmentDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "date",
+          "shiftTypeId",
+          "label",
+          "targetId",
+          "targetLabel",
+          "startsAt",
+          "endsAt",
+          "assignments"
+        ]
+      },
+      "FormalHandoverShiftsDto": {
+        "type": "object",
+        "properties": {
+          "shifts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverShiftDto"
+            }
+          },
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "planned-assignments"
+            ]
+          }
+        },
+        "required": [
+          "shifts",
+          "coverage"
+        ]
+      },
+      "FormalHandoverContentDto": {
+        "type": "object",
+        "properties": {
+          "shiftId": {
+            "type": "string"
+          },
+          "shiftDate": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "entryIds": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "shiftId",
+          "shiftDate",
+          "departmentId",
+          "areaId",
+          "title",
+          "summary",
+          "entryIds"
+        ]
+      },
+      "HandoverResolutionDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "handover",
+              "maintenance"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "source",
+          "id",
+          "expectedRevision"
+        ]
+      },
+      "HandoverImageDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "dataUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "dataUrl"
+        ]
+      },
+      "HandoverContentDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "displayUntil": {
+            "type": "string"
+          },
+          "resolutions": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverResolutionDto"
+            }
+          },
+          "mentionIds": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "images": {
+            "maxItems": 2,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverImageDto"
+            }
+          },
+          "date": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "equipmentCode": {
+            "type": "string"
+          },
+          "equipmentNamespace": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "",
+              "damaged",
+              "inspection-needed",
+              "blocked",
+              "repaired",
+              "restored"
+            ]
+          },
+          "externalReference": {
+            "type": "string"
+          },
+          "challenge": {
+            "type": "string"
+          },
+          "cause": {
+            "type": "string"
+          },
+          "measure": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string"
+          },
+          "feedbackDueDate": {
+            "type": "string"
+          },
+          "discuss": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "date",
+          "categoryId",
+          "summary",
+          "details",
+          "departmentId",
+          "areaId",
+          "equipmentCode",
+          "equipmentNamespace",
+          "condition",
+          "externalReference",
+          "challenge",
+          "cause",
+          "measure",
+          "dueDate",
+          "feedbackDueDate",
+          "discuss"
+        ]
+      },
+      "HandoverAssetReferenceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unverified",
+              "validated",
+              "retired"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "locationId",
+          "status"
+        ]
+      },
+      "FormalHandoverEvidenceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/HandoverContentDto"
+          },
+          "departmentLabel": {
+            "type": "string"
+          },
+          "areaLabel": {
+            "type": "string"
+          },
+          "categoryLabel": {
+            "type": "string"
+          },
+          "responsibleId": {
+            "type": "string"
+          },
+          "responsibleName": {
+            "type": "string"
+          },
+          "issueState": {
+            "type": "string",
+            "enum": [
+              "none",
+              "open",
+              "in-progress",
+              "resolved"
+            ]
+          },
+          "assetReference": {
+            "$ref": "#/components/schemas/HandoverAssetReferenceDto"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "authorId",
+          "authorName",
+          "createdAt",
+          "content",
+          "departmentLabel",
+          "areaLabel",
+          "categoryLabel",
+          "responsibleId",
+          "responsibleName",
+          "issueState"
+        ]
+      },
+      "FormalHandoverAcknowledgementDto": {
+        "type": "object",
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "actorId",
+          "actorName",
+          "at",
+          "note"
+        ]
+      },
+      "FormalHandoverRecordDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "closed"
+            ]
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "shift": {
+            "$ref": "#/components/schemas/FormalHandoverShiftDto"
+          },
+          "departmentLabel": {
+            "type": "string"
+          },
+          "areaLabel": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/FormalHandoverContentDto"
+          },
+          "closedBy": {
+            "type": "string"
+          },
+          "closedByName": {
+            "type": "string"
+          },
+          "closedAt": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverEvidenceDto"
+            }
+          },
+          "pending": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverEvidenceDto"
+            }
+          },
+          "acknowledgements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverAcknowledgementDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "state",
+          "authorId",
+          "authorName",
+          "createdAt",
+          "updatedAt",
+          "shift",
+          "departmentLabel",
+          "areaLabel",
+          "content",
+          "closedBy",
+          "closedByName",
+          "closedAt",
+          "outcome",
+          "entries",
+          "pending",
+          "acknowledgements"
+        ]
+      },
+      "FormalHandoverPageDto": {
+        "type": "object",
+        "properties": {
+          "records": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverRecordDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "records",
+          "total",
+          "nextCursor"
+        ]
+      },
+      "FormalHandoverSaveDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "content": {
+            "$ref": "#/components/schemas/FormalHandoverContentDto"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "id",
+          "expectedRevision",
+          "content",
+          "note"
+        ]
+      },
+      "FormalHandoverTransitionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "publish",
+              "close",
+              "acknowledge"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision",
+          "action",
+          "note"
+        ]
+      },
+      "FormalHandoverHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "before": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "before"
+        ]
+      },
+      "FormalHandoverRevisionDto": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "#/components/schemas/FormalHandoverRecordDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "created",
+              "corrected",
+              "published",
+              "closed",
+              "acknowledged"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "record",
+          "actorId",
+          "actorName",
+          "at",
+          "action",
+          "note"
+        ]
+      },
+      "FormalHandoverHistoryDto": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "#/components/schemas/FormalHandoverRecordDto"
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverRevisionDto"
+            }
+          },
+          "nextBefore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "record",
+          "revisions",
+          "nextBefore"
+        ]
+      },
+      "FormalHandoverPreviousRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "FormalHandoverPreviousDto": {
+        "type": "object",
+        "properties": {
+          "shift": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FormalHandoverShiftDto"
+              }
+            ]
+          },
+          "record": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FormalHandoverRecordDto"
+              }
+            ]
+          },
+          "overlaps": {
+            "type": "boolean"
+          },
+          "pending": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverEvidenceDto"
+            }
+          },
+          "pendingTotal": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "shift",
+          "record",
+          "overlaps",
+          "pending",
+          "pendingTotal"
+        ]
+      },
+      "FormalHandoverCandidatesRequestDto": {
+        "type": "object",
+        "properties": {
+          "departmentId": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": "string"
+          },
+          "through": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "departmentId",
+          "areaId",
+          "through"
+        ]
+      },
+      "FormalHandoverCandidatesDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormalHandoverEvidenceDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "entries",
+          "total"
+        ]
+      },
+      "ImprovementPersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ImprovementLocationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "parentId"
+        ]
+      },
+      "ImprovementAssetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code",
+          "status"
+        ]
+      },
+      "ImprovementCatalogDto": {
+        "type": "object",
+        "properties": {
+          "actorId": {
+            "type": "string"
+          },
+          "canContribute": {
+            "type": "boolean"
+          },
+          "canCoordinate": {
+            "type": "boolean"
+          },
+          "people": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementPersonDto"
+            }
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementLocationDto"
+            }
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementAssetDto"
+            }
+          }
+        },
+        "required": [
+          "actorId",
+          "canContribute",
+          "canCoordinate",
+          "people",
+          "locations",
+          "assets"
+        ]
+      },
+      "ImprovementIssueQueryDto": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        }
+      },
+      "ImprovementIssueDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "equipmentCode": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "state",
+          "revision",
+          "equipmentCode",
+          "area"
+        ]
+      },
+      "ImprovementIssuePageDto": {
+        "type": "object",
+        "properties": {
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementIssueDto"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "issues",
+          "nextCursor"
+        ]
+      },
+      "ImprovementSelectionDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "",
+              "planned",
+              "in-progress",
+              "blocked",
+              "implemented",
+              "evaluated",
+              "cancelled"
+            ]
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "assetId": {
+            "type": "string"
+          },
+          "search": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "cursor": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
+      },
+      "ImprovementTargetDto": {
+        "type": "object",
+        "properties": {
+          "objective": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "frequency",
+              "alarm-seconds"
+            ]
+          },
+          "reductionPercent": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "objective",
+          "metric",
+          "reductionPercent"
+        ]
+      },
+      "ImprovementDataDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "hypothesis": {
+            "type": "string",
+            "maxLength": 8000
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "assetId": {
+            "type": "string"
+          },
+          "issueId": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Optional site calendar date, or empty string."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "in-progress",
+              "blocked",
+              "implemented",
+              "evaluated",
+              "cancelled"
+            ]
+          },
+          "implementedDate": {
+            "type": "string",
+            "description": "Required for implemented/evaluated; site calendar date."
+          },
+          "target": {
+            "$ref": "#/components/schemas/ImprovementTargetDto"
+          },
+          "result": {
+            "type": "string",
+            "maxLength": 8000
+          },
+          "blockedReason": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "cancellationReason": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "title",
+          "hypothesis",
+          "locationId",
+          "assetId",
+          "issueId",
+          "ownerId",
+          "dueDate",
+          "status",
+          "implementedDate",
+          "target",
+          "result",
+          "blockedReason",
+          "cancellationReason"
+        ]
+      },
+      "ImprovementViewDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number",
+            "minimum": 1
+          },
+          "data": {
+            "$ref": "#/components/schemas/ImprovementDataDto"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "ownerName": {
+            "type": "string"
+          },
+          "assetName": {
+            "type": "string"
+          },
+          "issueTitle": {
+            "type": "string"
+          },
+          "locationLabel": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "evidenceCount": {
+            "type": "number"
+          },
+          "comparisonCount": {
+            "type": "number"
+          },
+          "canEdit": {
+            "type": "boolean"
+          },
+          "canCoordinate": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "data",
+          "authorId",
+          "authorName",
+          "ownerName",
+          "assetName",
+          "issueTitle",
+          "locationLabel",
+          "createdAt",
+          "updatedAt",
+          "evidenceCount",
+          "comparisonCount",
+          "canEdit",
+          "canCoordinate"
+        ]
+      },
+      "ImprovementCountsDto": {
+        "type": "object",
+        "properties": {
+          "planned": {
+            "type": "number"
+          },
+          "in-progress": {
+            "type": "number"
+          },
+          "blocked": {
+            "type": "number"
+          },
+          "implemented": {
+            "type": "number"
+          },
+          "evaluated": {
+            "type": "number"
+          },
+          "cancelled": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "planned",
+          "in-progress",
+          "blocked",
+          "implemented",
+          "evaluated",
+          "cancelled"
+        ]
+      },
+      "ImprovementPageDto": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementViewDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          },
+          "statusCounts": {
+            "$ref": "#/components/schemas/ImprovementCountsDto"
+          }
+        },
+        "required": [
+          "actions",
+          "total",
+          "nextCursor",
+          "statusCounts"
+        ]
+      },
+      "ImprovementSaveDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "data": {
+            "$ref": "#/components/schemas/ImprovementDataDto"
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision",
+          "reason",
+          "data"
+        ]
+      },
+      "ImprovementHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "before": {
+            "type": "number",
+            "minimum": 0
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ImprovementActionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number",
+            "minimum": 1
+          },
+          "data": {
+            "$ref": "#/components/schemas/ImprovementDataDto"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "ownerName": {
+            "type": "string"
+          },
+          "assetName": {
+            "type": "string"
+          },
+          "issueTitle": {
+            "type": "string"
+          },
+          "locationLabel": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "evidenceCount": {
+            "type": "number"
+          },
+          "comparisonCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "data",
+          "authorId",
+          "authorName",
+          "ownerName",
+          "assetName",
+          "issueTitle",
+          "locationLabel",
+          "createdAt",
+          "updatedAt",
+          "evidenceCount",
+          "comparisonCount"
+        ]
+      },
+      "ImprovementRevisionDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ImprovementActionDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "change": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updated",
+              "status-changed",
+              "evidence-added",
+              "comparison-saved"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "referenceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "actorId",
+          "actorName",
+          "at",
+          "change",
+          "reason",
+          "referenceId"
+        ]
+      },
+      "ImprovementHistoryDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ImprovementViewDto"
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementRevisionDto"
+            }
+          },
+          "nextBefore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "action",
+          "revisions",
+          "nextBefore"
+        ]
+      },
+      "ImprovementEvidenceRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "actionId": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "note",
+              "result"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 8000
+          },
+          "externalReference": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "supersedesId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "actionId",
+          "expectedRevision",
+          "kind",
+          "note",
+          "externalReference",
+          "supersedesId"
+        ]
+      },
+      "ImprovementEvidenceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "actionId": {
+            "type": "string"
+          },
+          "actionRevision": {
+            "type": "number"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "note",
+              "result"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "externalReference": {
+            "type": "string"
+          },
+          "supersedesId": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "actionId",
+          "actionRevision",
+          "kind",
+          "note",
+          "externalReference",
+          "supersedesId",
+          "actorId",
+          "actorName",
+          "at"
+        ]
+      },
+      "ImprovementEvidenceSavedDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ImprovementViewDto"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/ImprovementEvidenceDto"
+          }
+        },
+        "required": [
+          "action",
+          "evidence"
+        ]
+      },
+      "ImprovementCollectionRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ImprovementEvidencePageDto": {
+        "type": "object",
+        "properties": {
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementEvidenceDto"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence",
+          "nextCursor"
+        ]
+      },
+      "ImprovementPeriodDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "toExclusive": {
+            "type": "string",
+            "format": "date",
+            "description": "Exclusive calendar-date boundary."
+          }
+        },
+        "required": [
+          "from",
+          "toExclusive"
+        ]
+      },
+      "ImprovementFiltersDto": {
+        "type": "object",
+        "properties": {
+          "sector": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          },
+          "equipment": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sector",
+          "area",
+          "equipment",
+          "message"
+        ]
+      },
+      "ImprovementComparisonSelectionDto": {
+        "type": "object",
+        "properties": {
+          "before": {
+            "$ref": "#/components/schemas/ImprovementPeriodDto"
+          },
+          "after": {
+            "$ref": "#/components/schemas/ImprovementPeriodDto"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "asset",
+              "selection"
+            ]
+          },
+          "filters": {
+            "$ref": "#/components/schemas/ImprovementFiltersDto"
+          }
+        },
+        "required": [
+          "before",
+          "after",
+          "scope",
+          "filters"
+        ]
+      },
+      "ImprovementCompareDto": {
+        "type": "object",
+        "properties": {
+          "actionId": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 1
+          },
+          "selection": {
+            "$ref": "#/components/schemas/ImprovementComparisonSelectionDto"
+          }
+        },
+        "required": [
+          "actionId",
+          "expectedRevision",
+          "selection"
+        ]
+      },
+      "ImprovementAliasDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "sector",
+          "area"
+        ]
+      },
+      "ImprovementMeasureDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "toExclusive": {
+            "type": "string",
+            "format": "date",
+            "description": "Exclusive calendar-date boundary."
+          },
+          "eligibleDates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "admittedDates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "missingDates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "excludedDates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "frequency": {
+            "type": "number"
+          },
+          "alarmSeconds": {
+            "type": "number"
+          },
+          "records": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "from",
+          "toExclusive",
+          "eligibleDates",
+          "admittedDates",
+          "missingDates",
+          "excludedDates",
+          "frequency",
+          "alarmSeconds",
+          "records"
+        ]
+      },
+      "ImprovementObservedChangeDto": {
+        "type": "object",
+        "properties": {
+          "before": {
+            "type": "number",
+            "nullable": true
+          },
+          "after": {
+            "type": "number",
+            "nullable": true
+          },
+          "change": {
+            "type": "number",
+            "nullable": true
+          },
+          "reductionPercent": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "before",
+          "after",
+          "change",
+          "reductionPercent"
+        ]
+      },
+      "ImprovementComparisonDto": {
+        "type": "object",
+        "properties": {
+          "sourceId": {
+            "type": "string"
+          },
+          "siteTimeZone": {
+            "type": "string"
+          },
+          "publicationRevision": {
+            "type": "string"
+          },
+          "profileVersion": {
+            "type": "string"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/ImprovementComparisonSelectionDto"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementAliasDto"
+            }
+          },
+          "before": {
+            "$ref": "#/components/schemas/ImprovementMeasureDto"
+          },
+          "after": {
+            "$ref": "#/components/schemas/ImprovementMeasureDto"
+          },
+          "mapped": {
+            "type": "boolean"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "frequencyPerObservedDate": {
+            "$ref": "#/components/schemas/ImprovementObservedChangeDto"
+          },
+          "alarmSecondsPerObservedDate": {
+            "$ref": "#/components/schemas/ImprovementObservedChangeDto"
+          },
+          "target": {
+            "$ref": "#/components/schemas/ImprovementTargetDto"
+          },
+          "observedTarget": {
+            "type": "string",
+            "enum": [
+              "not-assessable",
+              "met",
+              "not-met",
+              "not-quantified"
+            ]
+          },
+          "attribution": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sourceId",
+          "siteTimeZone",
+          "publicationRevision",
+          "profileVersion",
+          "selection",
+          "aliases",
+          "before",
+          "after",
+          "mapped",
+          "warnings",
+          "frequencyPerObservedDate",
+          "alarmSecondsPerObservedDate",
+          "target",
+          "observedTarget",
+          "attribution"
+        ]
+      },
+      "ImprovementSaveComparisonDto": {
+        "type": "object",
+        "properties": {
+          "actionId": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 1
+          },
+          "selection": {
+            "$ref": "#/components/schemas/ImprovementComparisonSelectionDto"
+          },
+          "id": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "actionId",
+          "expectedRevision",
+          "selection",
+          "id",
+          "note"
+        ]
+      },
+      "ImprovementSavedComparisonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "actionId": {
+            "type": "string"
+          },
+          "actionRevision": {
+            "type": "number"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "note": {
+            "type": "string"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/ImprovementComparisonDto"
+          }
+        },
+        "required": [
+          "id",
+          "actionId",
+          "actionRevision",
+          "actorId",
+          "actorName",
+          "at",
+          "note",
+          "comparison"
+        ]
+      },
+      "ImprovementComparisonSavedDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ImprovementViewDto"
+          },
+          "saved": {
+            "$ref": "#/components/schemas/ImprovementSavedComparisonDto"
+          }
+        },
+        "required": [
+          "action",
+          "saved"
+        ]
+      },
+      "ImprovementComparisonPageDto": {
+        "type": "object",
+        "properties": {
+          "comparisons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImprovementSavedComparisonDto"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparisons",
+          "nextCursor"
+        ]
+      },
+      "LocatorEmptyDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LocatorReferenceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string"
+          },
+          "sourcePath": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "bytes": {
+            "type": "number"
+          },
+          "importedAt": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "schematic",
+              "legend"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "group",
+          "sourcePath",
+          "sha256",
+          "width",
+          "height",
+          "bytes",
+          "importedAt",
+          "kind"
+        ]
+      },
+      "LocatorLocationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "parentId"
+        ]
+      },
+      "LocatorTemplateDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "conveyor",
+              "curve",
+              "junction",
+              "lift",
+              "sensor",
+              "scanner",
+              "scale",
+              "cabinet"
+            ]
+          },
+          "width": {
+            "type": "number"
+          },
+          "depth": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "kind",
+          "width",
+          "depth",
+          "height"
+        ]
+      },
+      "LocatorContextDto": {
+        "type": "object",
+        "properties": {
+          "canManage": {
+            "type": "boolean"
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorReferenceDto"
+            }
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorLocationDto"
+            }
+          },
+          "componentCatalog": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorTemplateDto"
+            }
+          },
+          "coordinateSystem": {
+            "type": "string"
+          },
+          "globalCalibration": {
+            "type": "string",
+            "enum": [
+              "pending"
+            ]
+          }
+        },
+        "required": [
+          "canManage",
+          "references",
+          "locations",
+          "componentCatalog",
+          "coordinateSystem",
+          "globalCalibration"
+        ]
+      },
+      "LocatorQueryDto": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "search",
+          "group"
+        ]
+      },
+      "LocatorComponentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "conveyor",
+              "curve",
+              "junction",
+              "lift",
+              "sensor",
+              "scanner",
+              "scale",
+              "cabinet"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "elevation": {
+            "type": "number",
+            "nullable": true,
+            "description": "Unknown until surveyed; normalized elevation, never metric height."
+          },
+          "rotation": {
+            "type": "number"
+          },
+          "width": {
+            "type": "number"
+          },
+          "depth": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "assetId": {
+            "type": "string"
+          },
+          "verification": {
+            "type": "string",
+            "enum": [
+              "provisional",
+              "surveyed"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "label",
+          "x",
+          "y",
+          "elevation",
+          "rotation",
+          "width",
+          "depth",
+          "height",
+          "assetId",
+          "verification",
+          "note"
+        ]
+      },
+      "LocatorContentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "referenceId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "calibration": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "surveyed"
+            ]
+          },
+          "surveyNote": {
+            "type": "string"
+          },
+          "components": {
+            "maxItems": 1000,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorComponentDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "group",
+          "locationId",
+          "referenceId",
+          "description",
+          "calibration",
+          "surveyNote",
+          "components"
+        ]
+      },
+      "LocatorSceneDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "authorId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/LocatorContentDto"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "authorId",
+          "createdAt",
+          "updatedAt",
+          "content"
+        ]
+      },
+      "LocatorPageDto": {
+        "type": "object",
+        "properties": {
+          "scenes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorSceneDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "scenes",
+          "total"
+        ]
+      },
+      "LocatorIdDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "LocatorAssetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "locationId",
+          "status"
+        ]
+      },
+      "LocatorProblemDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "handover",
+              "maintenance"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "recordedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetId",
+          "kind",
+          "id",
+          "title",
+          "status",
+          "recordedAt"
+        ]
+      },
+      "LocatorCoverageDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "handover",
+              "maintenance"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "not-authorized",
+              "unavailable"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "status"
+        ]
+      },
+      "LocatorProblemsDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorProblemDto"
+            }
+          },
+          "coverage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorCoverageDto"
+            }
+          }
+        },
+        "required": [
+          "items",
+          "coverage"
+        ]
+      },
+      "LocatorDetailDto": {
+        "type": "object",
+        "properties": {
+          "scene": {
+            "$ref": "#/components/schemas/LocatorSceneDto"
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorAssetDto"
+            }
+          },
+          "problems": {
+            "$ref": "#/components/schemas/LocatorProblemsDto"
+          }
+        },
+        "required": [
+          "scene",
+          "assets",
+          "problems"
+        ]
+      },
+      "LocatorSaveDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "note": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/LocatorContentDto"
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision",
+          "note",
+          "content"
+        ]
+      },
+      "LocatorHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "before": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "before"
+        ]
+      },
+      "LocatorRevisionDto": {
+        "type": "object",
+        "properties": {
+          "scene": {
+            "$ref": "#/components/schemas/LocatorSceneDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "scene",
+          "actorId",
+          "note",
+          "at"
+        ]
+      },
+      "LocatorHistoryDto": {
+        "type": "object",
+        "properties": {
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorRevisionDto"
+            }
+          },
+          "nextBefore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "revisions",
+          "nextBefore"
+        ]
+      },
+      "LocatorSearchDto": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string"
+          },
+          "unplacedOnly": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "search",
+          "unplacedOnly"
+        ]
+      },
+      "LocatorPlacementDto": {
+        "type": "object",
+        "properties": {
+          "sceneId": {
+            "type": "string"
+          },
+          "sceneName": {
+            "type": "string"
+          },
+          "componentId": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "verification": {
+            "type": "string",
+            "enum": [
+              "provisional",
+              "surveyed"
+            ]
+          }
+        },
+        "required": [
+          "sceneId",
+          "sceneName",
+          "componentId",
+          "label",
+          "verification"
+        ]
+      },
+      "LocatorSearchResultDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/LocatorAssetDto"
+          },
+          "placements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorPlacementDto"
+            }
+          }
+        },
+        "required": [
+          "asset",
+          "placements"
+        ]
+      },
+      "LocatorSearchResultsDto": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorSearchResultDto"
+            }
+          },
+          "problems": {
+            "$ref": "#/components/schemas/LocatorProblemsDto"
+          },
+          "total": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "results",
+          "problems",
+          "total",
+          "limit"
+        ]
+      },
+      "LocatorBootstrapDto": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "number"
+          },
+          "referenceCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "created",
+          "referenceCount"
         ]
       },
       "MaintenancePriorityDto": {
@@ -3455,150 +6855,12 @@
           "at"
         ]
       },
-      "HandoverResolutionDto": {
-        "type": "object",
-        "properties": {
-          "source": {
-            "type": "string",
-            "enum": [
-              "handover",
-              "maintenance"
-            ]
-          },
-          "id": {
-            "type": "string"
-          },
-          "expectedRevision": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "source",
-          "id",
-          "expectedRevision"
-        ]
-      },
-      "HandoverImageDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "dataUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "dataUrl"
-        ]
-      },
-      "HandoverContentDto": {
-        "type": "object",
-        "properties": {
-          "displayUntil": {
-            "type": "string"
-          },
-          "resolutions": {
-            "maxItems": 20,
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/HandoverResolutionDto"
-            }
-          },
-          "mentionIds": {
-            "maxItems": 20,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "images": {
-            "maxItems": 2,
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/HandoverImageDto"
-            }
-          },
-          "date": {
-            "type": "string"
-          },
-          "categoryId": {
-            "type": "string"
-          },
-          "summary": {
-            "type": "string"
-          },
-          "details": {
-            "type": "string"
-          },
-          "departmentId": {
-            "type": "string"
-          },
-          "areaId": {
-            "type": "string"
-          },
-          "equipmentCode": {
-            "type": "string"
-          },
-          "equipmentNamespace": {
-            "type": "string"
-          },
-          "condition": {
-            "type": "string",
-            "enum": [
-              "",
-              "damaged",
-              "inspection-needed",
-              "blocked",
-              "repaired",
-              "restored"
-            ]
-          },
-          "externalReference": {
-            "type": "string"
-          },
-          "challenge": {
-            "type": "string"
-          },
-          "cause": {
-            "type": "string"
-          },
-          "measure": {
-            "type": "string"
-          },
-          "dueDate": {
-            "type": "string"
-          },
-          "feedbackDueDate": {
-            "type": "string"
-          },
-          "discuss": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "date",
-          "categoryId",
-          "summary",
-          "details",
-          "departmentId",
-          "areaId",
-          "equipmentCode",
-          "equipmentNamespace",
-          "condition",
-          "externalReference",
-          "challenge",
-          "cause",
-          "measure",
-          "dueDate",
-          "feedbackDueDate",
-          "discuss"
-        ]
-      },
       "HandoverEntryDto": {
         "type": "object",
         "properties": {
+          "assetReference": {
+            "$ref": "#/components/schemas/HandoverAssetReferenceDto"
+          },
           "completedReferences": {
             "type": "array",
             "items": {
@@ -3778,38 +7040,6 @@
       "AssetsContextRequestDto": {
         "type": "object",
         "properties": {}
-      },
-      "HandoverLocationDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "label": {
-            "type": "string"
-          },
-          "parentId": {
-            "type": "string"
-          },
-          "sectorKey": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "department",
-              "area",
-              "location"
-            ]
-          }
-        },
-        "required": [
-          "id",
-          "label",
-          "parentId",
-          "sectorKey",
-          "role"
-        ]
       },
       "AssetsContextDto": {
         "type": "object",
@@ -6607,6 +9837,9 @@
       "HandoverContextDto": {
         "type": "object",
         "properties": {
+          "canLinkAssets": {
+            "type": "boolean"
+          },
           "canDelete": {
             "type": "boolean"
           },
@@ -6752,6 +9985,31 @@
           "targets",
           "nextCursor",
           "total"
+        ]
+      },
+      "HandoverAssetsRequestDto": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "search"
+        ]
+      },
+      "HandoverAssetsPageDto": {
+        "type": "object",
+        "properties": {
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HandoverAssetReferenceDto"
+            }
+          }
+        },
+        "required": [
+          "assets"
         ]
       },
       "HandoverEquipmentRequestDto": {

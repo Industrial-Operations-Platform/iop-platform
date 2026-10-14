@@ -4,7 +4,7 @@ import { Actions, Alert, Button } from '../../../../design/components';
 import { identity, darkIdentity } from '../../../../design/identity';
 import { useAppearance } from '../../../../design/useAppearance';
 import type { Scene, Reference } from '../../domain/models';
-import { createSceneRenderer, type CameraControls } from '../three/renderer';
+import type { CameraControls } from '../three/renderer';
 import { referenceUrl } from '../http/gateway';
 export function SceneViewport({ scene, reference, selectedId, problemAssetIds, onSelect, onPlace }: {
   scene: Scene;
@@ -32,15 +32,19 @@ export function SceneViewport({ scene, reference, selectedId, problemAssetIds, o
     setUnavailable(false);
     setImageError(false);
     let view: CameraControls | null = null;
-    try {
-      view = createSceneRenderer(element.current, { scene, aspect: reference ? reference.width / reference.height : 1.65, referenceUrl: reference ? referenceUrl(reference.id) : undefined, palette: resolved === 'dark' ? darkIdentity : identity, selectedId, problemAssetIds, cameraState: camera.current, onSelect: id => select.current(id), onPlace: point => place.current?.(point), onReferenceError: () => setImageError(true) });
+    let active = true;
+    const host = element.current;
+    void import('../three/renderer').then(({createSceneRenderer}) => {
+      if (!active) return;
+      view = createSceneRenderer(host, { scene, aspect: reference ? reference.width / reference.height : 1.65, referenceUrl: reference ? referenceUrl(reference.id) : undefined, palette: resolved === 'dark' ? darkIdentity : identity, selectedId, problemAssetIds, cameraState: camera.current, onSelect: id => select.current(id), onPlace: point => place.current?.(point), onReferenceError: () => {if (active) setImageError(true);} });
       renderer.current = view;
-    }
-    catch {
+    }).catch(() => {
+      if (!active) return;
       setUnavailable(true);
-      element.current.replaceChildren();
-    }
+      host.replaceChildren();
+    });
     return () => {
+      active = false;
       if (view) {
         camera.current = view.snapshot();
         view.dispose();

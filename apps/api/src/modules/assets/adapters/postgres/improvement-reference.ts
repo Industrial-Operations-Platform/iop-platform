@@ -2,7 +2,7 @@ import type { SiteTransaction } from "../../../../persistence/site-operation";
 import { SiteAccessDeniedError } from "../../../../persistence/site-operation";
 import { evaluateSiteAccess } from "../../../users-rbac";
 import type { Asset } from "../../domain/assets";
-import { ImprovementError, type AssetReference } from "../../../improvement-tracking/domain/improvement";
+import type { AssetReference } from "../../../improvement-tracking/domain/improvement";
 interface Scope {
   organizationId: string;
   siteId: string;
@@ -35,7 +35,7 @@ export async function improvementAsset(tx: SiteTransaction, scope: Scope, id: st
 }
 export async function improvementAssets(tx: SiteTransaction, scope: Scope): Promise<AssetReference[]> {
   await authorize(tx, scope);
-  const r = await tx.query("SELECT snapshot FROM assets.records WHERE organization_id=$1 AND site_id=$2 AND status<>'retired' ORDER BY code COLLATE \"C\",id COLLATE \"C\" LIMIT 1001", [scope.organizationId, scope.siteId]);
-  if (r.rows.length > 1000) throw new ImprovementError("improvement_capacity");
+  // Initial choices only. The browser uses Assets' paginated query for full lookup.
+  const r = await tx.query("SELECT snapshot FROM assets.records WHERE organization_id=$1 AND site_id=$2 AND status<>'retired' ORDER BY code COLLATE \"C\",id COLLATE \"C\" LIMIT 100", [scope.organizationId, scope.siteId]);
   return r.rows.map(r => reference(r.snapshot as Asset));
 }

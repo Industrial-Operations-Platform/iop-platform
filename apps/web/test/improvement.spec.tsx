@@ -355,3 +355,23 @@ test("navigation to linked assets/issues is caller-owned", async () => {
   expect(asset).toHaveBeenCalledWith("asset");
   expect(issue).toHaveBeenCalledWith("issue");
 });
+
+test("refines and pages a large registry while retaining the selected asset", async () => {
+  const {gateway}=setup();
+  const lookup=jest.fn(async(search:string,cursor:string)=>({
+    assets: search ? [{id:"distant",code:"REG-5655",name:"Distant scanner",status:"validated" as const}]
+      : cursor ? [{id:"next",code:"REG-0101",name:"Next drive",status:"validated" as const}] : catalog.assets,
+    total:search?1:5655,nextCursor:search||cursor?"":"next-page"
+  }));
+  render(<ImprovementWorkspace application={new ImprovementApplication(gateway,()=>"new",lookup)} timeZone="UTC"/>);
+  fireEvent.click(await screen.findByRole("button",{name:"New action"}));
+  expect(await screen.findByText(/5655 registered assets/)).toBeVisible();
+  fireEvent.click(screen.getByRole("button",{name:"Load more assets"}));
+  expect(await screen.findByRole("option",{name:"REG-0101 · Next drive"})).toBeVisible();
+  fireEvent.change(screen.getByLabelText("Find registered asset"),{target:{value:"5655"}});
+  expect(await screen.findByRole("option",{name:"REG-5655 · Distant scanner"})).toBeVisible();
+  fireEvent.change(screen.getByLabelText("Linked asset"),{target:{value:"distant"}});
+  fireEvent.change(screen.getByLabelText("Find registered asset"),{target:{value:""}});
+  await waitFor(()=>expect(screen.getByLabelText("Linked asset")).toHaveValue("distant"));
+  expect(lookup).toHaveBeenCalledWith("","next-page");
+});
