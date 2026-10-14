@@ -2,7 +2,7 @@
 
 ## Scope and branch
 
-In progress on `feature/IOP-209-asset-domain-completion` from develop `24b6269`,
+In progress: importer compatibility follow-up on `feature/IOP-209-asset-domain-completion` from develop `24b6269`,
 worktree `/private/tmp/iop-209`. Implements the [item](../items/IOP-209-asset-domain-completion.md)
 and [ADR-0039](../../architecture/adr/ADR-0039-asset-domain-enrichment.md).
 Original IOP-032/033/035/036/038/039/044/093/124 and relevant dependencies were read
@@ -63,3 +63,52 @@ composition and browser acceptance; no plant acceptance is inferred.
 - Complete build/typecheck and reviewed contract check passed; no generated schema
   was edited in this isolated worktree. Root registers the controller and regenerates
   the assembled contract. Parent performs integrated browser acceptance.
+
+## Completion and handoff
+
+Validated commits: `f029215` API/schema/projection/fixture and `a2a6cfe` web.
+Final documentation synchronizes the original story contexts, guide and narrow
+[composition/provision contract](../../architecture/asset-domain-integration.md).
+No shared root files or generated contract edits are included. No merge/push occurred.
+
+Commands executed with Node 24.21.0:
+
+```sh
+npm test --workspace=@iop/api
+npm test --workspace=@iop/web
+node --experimental-vm-modules node_modules/jest/bin/jest.js --config infra/database/jest.config.cjs --runInBand --testPathPatterns asset-domain
+npm run build
+npm run typecheck
+npm run contract:check --workspace=@iop/web
+npm run test:secrets
+```
+
+Full API 427/427, web 162/162, real PostgreSQL 5/5, design 4/4 and secrets
+18/18 passed. Markdown links/IDs/statuses and diff whitespace were checked.
+Shared translation assembly was the only temporary test dependency and is restored.
+The new migration grants explicit columns and forces all nine tables' RLS; root
+retains post-migration provisioning validation by adding the documented allowlists.
+
+The software module is complete; root-owned combined assembly/browser acceptance
+continues under IOP-203. Physical survey/evidence and actual plant mapping/type/wiring
+data remain pending operator inputs, explicitly retained in IOP-039 and the guide.
+
+## Importer compatibility follow-up — planned before edits
+
+Root review found that canonical publication required assets.read, although native
+site-operator importers legitimately have imports.submit/analytics.read without
+registry grants. Add explicit receiving-owned publication decision/projection ports
+that use current imports.submit only and return no public registry data. Keep
+mapping review, candidate lookup and Pareto independent Asset permissions.
+Files: Assets decision adapter, OIP canonical adapter, host composition, real PG
+regression, ADR0039 and composition/product guide. Validate a no-profile native
+importer with site-operator/analytics-reader only, unchanged RAW provenance, automatic
+reviewed mapping preparation and revocation denial. No broad grant/backfill change.
+
+Publication ports now separate interactive analytics/Assets authorization from
+receiving-owned imports.submit preparation. Full API re-run: 427/427 passed.
+Six PostgreSQL cases passed with a no-profile native importer, exactly site-operator
+and analytics-reader roles, zero Asset grants, mapped/unmapped preparation and
+current import revocation. The final assertion also exercises the callback itself
+on an independently authorized analytics transaction after imports.submit loss.
+No native importer receives a registry directory/public Asset response.

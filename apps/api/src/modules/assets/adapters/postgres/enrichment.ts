@@ -200,6 +200,18 @@ export async function assetMappingDecisions(tx: SiteTransaction, scope: DomainSc
     userId: tx.context.userId,
     permissions: ["assets.read"]
   })).allowed) throw new SiteAccessDeniedError();
+  return readMappingDecisions(tx, scope, sourceId);
+}
+/** Receiving-owned import preparation; exposes no registry directory or public response. */
+export async function assetPublicationMappingDecisions(tx: SiteTransaction, scope: DomainScope, sourceId: string) {
+  if (tx.context.organizationId !== scope.organizationId || tx.context.siteId !== scope.siteId || !(await evaluateSiteAccess(tx, {
+    ...scope,
+    userId: tx.context.userId,
+    permissions: ["imports.submit"]
+  })).allowed) throw new SiteAccessDeniedError();
+  return readMappingDecisions(tx, scope, sourceId);
+}
+async function readMappingDecisions(tx: SiteTransaction, scope: DomainScope, sourceId: string) {
   const r = await tx.query(`SELECT m.id,m.revision,m.snapshot->'data'->'source' AS source,m.snapshot->'data'->>'status' AS status,m.snapshot->'data'->'candidateIds' AS candidates,a.status AS asset_status FROM assets.source_mappings m LEFT JOIN assets.records a ON a.organization_id=m.organization_id AND a.site_id=m.site_id AND a.id=m.snapshot->'data'->'candidateIds'->>0 WHERE m.organization_id=$1 AND m.site_id=$2 AND m.snapshot->'data'->'source'->>'sourceId'=$3 ORDER BY m.id LIMIT 30001`, [scope.organizationId, scope.siteId, sourceId]);
   assert(r.rows.length <= 30000, "asset_domain_capacity");
   return r.rows.map(row => {

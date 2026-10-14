@@ -57,7 +57,7 @@ const {
     createImportWorkflow
   } = require("../../../apps/api/dist/host/adapters/import-gateway"),
   {
-    SiteAccessDeniedError
+    SiteAccessDeniedError, runSiteOperation
   } = require("../../../apps/api/dist/persistence/site-operation");
 let container,
   configs,
@@ -92,9 +92,9 @@ const save = (key, typeId, patch = {}) => ({
     ...patch
   }
 });
-async function publish(day) {
+async function publish(day, actor = "admin") {
   const csv = '"Häufigkeit";"Dauer";"Bereich";"Betriebsmittelkennzeichen";"Meldetext";"Typ";"Meldegruppe"\r\n10;0 0:01:00;Demo area;SOURCE-S1;Jam;01;007\r\n30;0 0:02:00;Demo area;UNKNOWN-SOURCE;Fault;01;007\r\n';
-  return imports.submit("admin", "Hitliste-" + day + ".csv", Buffer.from("\ufeff" + csv, "utf16le"));
+  return imports.submit(actor, "Hitliste-" + day + ".csv", Buffer.from("\ufeff" + csv, "utf16le"));
 }
 beforeAll(async () => {
   container = await new PostgreSqlContainer("postgres:17.6-bookworm").withDatabase("iop_local").withUsername("iop_bootstrap").withPassword("synthetic-bootstrap-password").start();
@@ -135,6 +135,18 @@ beforeAll(async () => {
       for (const role of siteRoles(profile)) await admin("INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,$2,$3,$4,true)", [organizationId, id, siteId, role]);
     }
   }
+  await seedUser({
+    ...seedEnv,
+    IOP_SEED_USER_ID: "native-importer"
+  });
+  await seedMembership({
+    ...seedEnv,
+    IOP_SEED_ORGANIZATION_ID: scope.organizationId,
+    IOP_SEED_SITE_ID: scope.siteId,
+    IOP_SEED_USER_ID: "native-importer"
+  });
+  await admin("DELETE FROM users_rbac.site_role_assignments WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer'",[scope.organizationId,scope.siteId]);
+  for (const role of ["site-operator", "analytics-reader"]) await admin("INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,$2,$3,$4,true)", [scope.organizationId, "native-importer", scope.siteId, role]);
   pool = new Pool({
     ...configs.runtime,
     max: 5
@@ -472,4 +484,32 @@ test("opt-in synthetic fixture is reusable, scoped and preserves later user revi
     }
   });
   await expect(seedSyntheticAssetDomain(runtime.assets, app, "leader", options)).rejects.toThrow(/user edits are preserved/);
+});
+test("native importers prepare reviewed canonical links without registry-read grants", async () => {
+  const roles = await admin("SELECT role_id FROM users_rbac.site_role_assignments WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer' AND is_active ORDER BY role_id", [scope.organizationId, scope.siteId]);
+  expect(roles.rows.map(r => r.role_id)).toEqual(["analytics-reader", "site-operator"]);
+  expect((await admin("SELECT 1 FROM users_rbac.profiles WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer'", [scope.organizationId, scope.siteId])).rowCount).toBe(0);
+  await expect(app.catalog("native-importer")).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  await expect(app.pareto("native-importer", {
+    from: "2026-10-09",
+    toExclusive: "2026-10-10",
+    metric: "frequency"
+  })).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  const imported = await publish("20261009", "native-importer");
+  expect(imported.outcome).toBe("succeeded");
+  const prepared = await admin("SELECT l.state,l.asset_id,f.payload->>'sourceEquipmentReference' AS original_code FROM oip.canonical_asset_links l JOIN oip.facts f USING(organization_id,site_id,source_id,import_id,source_record_number) WHERE l.organization_id=$1 AND l.site_id=$2 AND f.reporting_date='2026-10-09' ORDER BY f.source_record_number", [scope.organizationId, scope.siteId]);
+  expect(prepared.rows).toEqual([{
+    state: "mapped",
+    asset_id: assets.sensor.id,
+    original_code: "SOURCE-S1"
+  }, {
+    state: "unmapped",
+    asset_id: null,
+    original_code: "UNKNOWN-SOURCE"
+  }]);
+  await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer' AND role_id='site-operator'", [scope.organizationId, scope.siteId]);
+  const publication = await admin("SELECT import_id FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND reporting_date='2026-10-09'",[scope.organizationId,scope.siteId]);
+  await expect(runSiteOperation(pool,{...scope,userId:"native-importer",permissions:["analytics.read"]},tx=>composition.published(tx,publication.rows[0].import_id))).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  await expect(publish("20261008", "native-importer")).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  expect((await admin("SELECT 1 FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND reporting_date='2026-10-08'", [scope.organizationId, scope.siteId])).rowCount).toBe(0);
 });

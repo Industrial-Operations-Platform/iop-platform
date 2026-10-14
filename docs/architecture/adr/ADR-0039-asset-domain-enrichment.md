@@ -42,7 +42,11 @@ the mapped subset cannot masquerade as complete coverage. Frequency/alarm second
 retain their original aggregate grain and do not establish downtime or causality.
 
 Administrator, Team Leader and Task Force use existing assets.read/manage grants and
-current-profile checks. Source analytics permissions are independently required.
+current-profile checks. Mapping review, source lookup and Pareto independently require
+Assets/source analytics permissions. A separate receiving-owned import publication
+port uses current imports.submit only to consume compact reviewed decisions and
+prepare derived links. It exposes no registry directory or public Asset response;
+native importers need no additional Asset grants.
 Schemas use exact scoped foreign keys, forced RLS and explicit column grants;
 frameworks/SQL/transport remain adapters. Actual types, dimensions, physical surveys,
 canonical review decisions and plant exposure are operating-team inputs.

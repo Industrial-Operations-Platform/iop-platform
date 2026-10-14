@@ -5,18 +5,26 @@ import { AnalysisCalendar } from "../../domain/analysis-calendar";
 import { exactTotal } from "../../domain/values";
 import { scopeTuple, digest } from "./analytics";
 import { assert, type MappingDecision, type SourceCandidate, type ParetoSelection, type CanonicalPareto } from "../../../assets/domain/enrichment";
-async function authorize(tx: SiteTransaction, source: ImportSource, permission = "analytics.read") {
+async function authorize(tx: SiteTransaction, source: ImportSource, permissions: string[] = ["analytics.read", "assets.read"]) {
   if (tx.context.organizationId !== source.organizationId || tx.context.siteId !== source.siteId) throw new SiteAccessDeniedError();
   await tx.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [source.organizationId]);
   if (!(await evaluateSiteAccess(tx, {
     ...source,
     userId: tx.context.userId,
-    permissions: [permission, "assets.read"]
+    permissions
   })).allowed) throw new SiteAccessDeniedError();
 }
 /** Derived links preserve original immutable RAW/fact identity and mapping revision evidence. */
-export async function projectCanonicalAssetLinks(tx: SiteTransaction, source: ImportSource, decisions: MappingDecision[], importId: string | null = null) {
-  await authorize(tx, source, importId ? "imports.submit" : "analytics.read");
+export async function projectCanonicalAssetLinks(tx: SiteTransaction, source: ImportSource, decisions: MappingDecision[]) {
+  await authorize(tx, source);
+  await writeCanonicalAssetLinks(tx, source, decisions, null);
+}
+/** Internal receiving-owned publication callback; valid imports need no registry-read grant. */
+export async function publishCanonicalAssetLinks(tx: SiteTransaction, source: ImportSource, decisions: MappingDecision[], importId: string) {
+  await authorize(tx, source, ["imports.submit"]);
+  await writeCanonicalAssetLinks(tx, source, decisions, importId);
+}
+async function writeCanonicalAssetLinks(tx: SiteTransaction, source: ImportSource, decisions: MappingDecision[], importId: string | null) {
   assert(decisions.length <= 30000, "asset_domain_capacity");
   assert(decisions.every(d => d.source.sourceId === source.sourceId && d.source.namespace === "source-equipment"));
   await tx.query(`WITH facts AS MATERIALIZED (
