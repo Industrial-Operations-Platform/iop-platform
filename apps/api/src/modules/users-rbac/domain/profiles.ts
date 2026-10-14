@@ -72,7 +72,7 @@ export function requireRemainingAdministrator(
     throw new AccessError("last_administrator");
 }
 export function siteRoles(profile: Profile): readonly string[] {
-  return profile === "administrator"
+  const existing = profile === "administrator"
     ? [
         "maintenance-contributor",
         "maintenance-coordinator",
@@ -113,6 +113,17 @@ export function siteRoles(profile: Profile): readonly string[] {
             "assets-reader",
             "assets-administrator",
           ];
+  if (profile === "technician") return existing;
+  return [
+    ...existing,
+    "handover-record-manager",
+    "improvement-contributor",
+    "improvement-coordinator",
+    "locator-reader",
+    "locator-manager",
+    "integration-reader",
+    ...(profile === "administrator" ? ["integration-manager", "jobs-administrator"] : []),
+  ];
 }
 
 /** Complete managed catalog, including roles to revoke after a profile change. */

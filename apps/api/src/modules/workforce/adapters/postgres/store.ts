@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
 import {
   runSiteOperation,
@@ -16,6 +17,7 @@ interface Scope {
   siteId: string;
 }
 export interface Directory {
+  audit?: SiteMaterialAudit;
   allowed(
     tx: SiteTransaction,
     actor: string,
@@ -58,6 +60,7 @@ export class PgWorkforce implements Store {
             await this.directory.allowed(tx, actor, "workforce.administer"),
             () => this.directory.people(tx),
             (ids) => this.directory.names(tx, ids),
+            this.directory.audit,
           ),
         );
       },
@@ -72,6 +75,7 @@ class PgWorkforceTransaction implements Transaction {
     readonly canAdminister: boolean,
     readonly people: () => Promise<Person[]>,
     readonly names: (userIds: string[]) => Promise<Map<string, string>>,
+    private readonly audit?: SiteMaterialAudit,
   ) {}
   private get selectors() {
     return [this.scope.organizationId, this.scope.siteId];
@@ -93,6 +97,7 @@ class PgWorkforceTransaction implements Transaction {
     return (r.rows[0]?.snapshot as RecordEntry) ?? null;
   }
   async save(entry: RecordEntry, revision: Revision) {
+    const before = this.audit ? await this.get(entry.kind,entry.id) : null;
     await this.tx.query(
       `INSERT INTO workforce.records(organization_id,site_id,kind,id,business_date,revision,snapshot) VALUES($1,$2,$3,$4,$5,$6,$7)
       ON CONFLICT(organization_id,site_id,kind,id) DO UPDATE SET business_date=EXCLUDED.business_date,revision=EXCLUDED.revision,snapshot=EXCLUDED.snapshot`,
@@ -115,6 +120,7 @@ class PgWorkforceTransaction implements Transaction {
         JSON.stringify(revision),
       ],
     );
+    await this.audit?.(this.tx,{subjectType:entry.kind==="settings"?"workforce-settings":entry.kind==="worker"?"workforce-worker":entry.kind==="schedule"?"workforce-schedule":"workforce-assignment",id:entry.id,action:entry.revision===1?"created":entry.deleted?"removed":"changed",revision:entry.revision,beforeRevision:before?.revision??0,state:entry.deleted?"removed":"active",beforeState:before?(before.deleted?"removed":"active"):"",occurredAt:revision.at});
   }
   async history(kind: Kind, id: string): Promise<Revision[]> {
     const r = await this.tx.query(

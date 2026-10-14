@@ -1,3 +1,13 @@
+import {AssetDomainApplication} from "../features/assets-domain/application/domain";
+import {HttpAssetDomainGateway} from "../features/assets-domain/adapters/http/gateway";
+import {createOperationalOverviewApplication} from "../features/operational-overview/adapters/http/gateway";
+import {FormalHandoverApplication} from "../features/shift-handover/application/formal-records";
+import {HttpFormalHandoverGateway} from "../features/shift-handover/adapters/http/formal-gateway";
+import {ImprovementApplication} from "../features/improvement-tracking/application/improvement";
+import {HttpImprovementGateway} from "../features/improvement-tracking/adapters/http/gateway";
+import {createLocatorApplication} from "../features/asset-locator/adapters/http/gateway";
+import {ConnectionsApplication} from "../features/integrations/application/connections";
+import {HttpConnectionsGateway} from "../features/integrations/adapters/http/gateway";
 import { WorkforceApplication } from "../features/workforce/application/workforce";
 import { MaintenanceApplication } from "../features/maintenance/application/maintenance";
 import { HttpMaintenanceGateway } from "../features/maintenance/adapters/http/gateway";
@@ -12,6 +22,15 @@ import { AnalysisWorkspace } from "../features/analysis/application/workspace";
 import { HttpAnalysisGateway } from "../features/analysis/adapters/http/gateway";
 import { WorkspaceApp } from "./WorkspaceApp";
 
+const formalHandover = new FormalHandoverApplication(new HttpFormalHandoverGateway(), () => crypto.randomUUID());
+const improvements = new ImprovementApplication(new HttpImprovementGateway(), () => crypto.randomUUID(), async (search,cursor) => {
+  const page = await assets.query({search,cursor,status:'current',locationId:''});
+  return {assets:page.assets.map(asset=>({id:asset.id,code:asset.content.code,name:asset.content.name,status:asset.content.status})),nextCursor:page.nextCursor,total:page.total};
+});
+const assetDomain = new AssetDomainApplication(new HttpAssetDomainGateway(),()=>crypto.randomUUID());
+const overview = createOperationalOverviewApplication();
+const locator = createLocatorApplication();
+const connections = new ConnectionsApplication(new HttpConnectionsGateway());
 const workforce = new WorkforceApplication(new HttpWorkforceGateway(), () =>
   crypto.randomUUID(),
 );
@@ -36,6 +55,12 @@ export function AnalyticalApp() {
       workforce={workforce}
       maintenance={maintenance}
       assets={assets}
+      connections={connections}
+      formalHandover={formalHandover}
+      improvements={improvements}
+      locator={locator}
+      overview={overview}
+      assetDomain={assetDomain}
     />
   );
 }

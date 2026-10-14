@@ -1,3 +1,15 @@
+import { siteMaterialAudit } from "../modules/audit/adapters/postgres/site-material";
+import {composeAssetDomain} from "./asset-domain-composition";
+import {composePlatformOverview} from "./overview-composition";
+import {resolve} from "node:path";
+import {composeFormalHandover} from "./formal-handover-composition";
+import type {FormalHandover} from "../modules/shift-handover/application/formal-records";
+import {composeImprovements} from "./improvement-composition";
+import type {Improvements} from "../modules/improvement-tracking/application/improvement";
+import {composePlatformLocator} from "./locator-composition";
+import type {Locator} from "../modules/asset-locator/application/locator";
+import {composeConnections} from "./connections-composition";
+import type {Connections} from "../modules/integrations/application/connections";
 import { workforceAssignedTarget } from "../modules/workforce/adapters/postgres/assignment-default";
 import { assetEquipmentCatalog } from "./adapters/asset-equipment-catalog";
 import { Workforce } from "../modules/workforce/application/workforce";
@@ -86,6 +98,7 @@ export interface LocalUser {
 }
 export interface LocalIdentityConfiguration {
   passwordAuthentication?: boolean;
+  locatorReferenceRoot?: string;
   handover?: unknown;
   users: LocalUser[];
   origins: string[];
@@ -183,6 +196,7 @@ export function readLocalIdentityConfiguration(
       throw new Error();
     return {
       users,
+      ...(env.IOP_LOCATOR_REFERENCE_ROOT ? {locatorReferenceRoot: env.IOP_LOCATOR_REFERENCE_ROOT} : {}),
       ...(env.IOP_HANDOVER_CONFIG_FILE
         ? { handover: jsonFile(env.IOP_HANDOVER_CONFIG_FILE, 262144) }
         : {}),
@@ -231,6 +245,12 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly assetDomain: ReturnType<typeof composeAssetDomain>["domain"];
+  readonly overview: ReturnType<typeof composePlatformOverview>;
+  readonly formalHandover: FormalHandover;
+  readonly improvements: Improvements;
+  readonly locator: Locator;
+  readonly connections: Connections;
   readonly maintenance: Maintenance;
   readonly assets: Assets;
   readonly workforce: Workforce;
@@ -264,12 +284,16 @@ export class PlatformRuntime {
       profileRevision: "aggregate-poc-v1",
       mappingRevision: mappings.configuration.mappingRevision,
     });
+    this.connections = composeConnections(pool, this.source);
     const catalog = handoverCatalog(
       config.handover,
       this.source,
       this.source.siteTimeZone,
     );
+    this.formalHandover = composeFormalHandover(pool, this.source, catalog.locations, this.source.siteTimeZone);
+    this.locator = composePlatformLocator(pool, this.source, catalog.locations, config.locatorReferenceRoot ?? resolve(__dirname, "../../../../.local-platform/locator"));
     const operationalDirectory = {
+      audit: siteMaterialAudit,
       allowed: async (
         tx: import("../persistence/site-operation").SiteTransaction,
         actor: string,
@@ -354,6 +378,7 @@ export class PlatformRuntime {
             this.source,
             resolutions,
             evidence,
+            siteMaterialAudit,
           ),
       });
     this.maintenance = new Maintenance(
@@ -365,6 +390,7 @@ export class PlatformRuntime {
     );
     this.workforce = new Workforce(
       new PgWorkforce(pool, this.source, {
+        audit: siteMaterialAudit,
         allowed: async (tx, actor, permission) =>
           (
             await evaluateSiteAccess(tx, {
@@ -391,6 +417,15 @@ export class PlatformRuntime {
     );
     this.handover = new Handover(
       new PgHandover(pool, this.source, {
+        audit: siteMaterialAudit,
+        assetReference: async (tx, actor, id) => {
+          if (!(await operationalDirectory.allowed(tx, actor, "assets.read"))) throw new SiteAccessDeniedError();
+          return assetReference(tx, this.source, id);
+        },
+        assetReferences: async (tx, actor, search) => {
+          if (!(await operationalDirectory.allowed(tx, actor, "assets.read"))) throw new SiteAccessDeniedError();
+          return assetReferences(tx, this.source, search);
+        },
         profile: (tx, actor) => sitePersonProfile(tx, this.source.organizationId, this.source.siteId, actor),
         broadcastCategoryIds: catalog.categories.filter((c) => c.workflow === "information").map((c) => c.id),
         technicalCategoryIds: catalog.categories.filter((c) => c.workflow?.startsWith("technical-")).map((c) => c.id),
@@ -457,16 +492,21 @@ export class PlatformRuntime {
     this.access = config.passwordAuthentication
       ? composeAccess(pool, this.source)
       : null;
-    this.batches = new ImportBatches(pool, this.source);
+    this.batches = new ImportBatches(pool, this.source, siteMaterialAudit);
     const profileRepository = new PgReportingProfiles(
       pool,
       this.source,
       hitlisteReportingProfile(mappings.configuration),
+      siteMaterialAudit,
     );
     this.profileRepository = profileRepository;
-    this.receiver = new OipReceiver(this.source, (tx, id) =>
-      profileRepository.project(tx, id),
-    );
+    this.improvements = composeImprovements(pool, this.source, catalog.locations, profileRepository.initialVersion, hitlisteAnalysisCalendar);
+    const assetDomainComposition = composeAssetDomain(pool,this.source,hitlisteAnalysisCalendar);
+    this.assetDomain = assetDomainComposition.domain;
+    this.receiver = new OipReceiver(this.source, async (tx,id) => {
+      await profileRepository.project(tx,id);
+      await assetDomainComposition.published(tx,id);
+    }, siteMaterialAudit);
     this.imports = createImportWorkflow(
       this.batches,
       this.receiver,
@@ -480,6 +520,7 @@ export class PlatformRuntime {
     this.reports = new OipReports(
       new PgReportRepository(profileRepository, hitlisteAnalysisCalendar),
     );
+    this.overview = composePlatformOverview(pool,this.source,catalog.locations,{assets:this.assets,handover:this.handover,maintenance:this.maintenance,formalHandover:this.formalHandover,reports:this.reports});
   }
   async start(): Promise<void> {
     const client = await this.pool.connect();

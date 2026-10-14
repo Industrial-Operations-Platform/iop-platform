@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
 import {
   runSiteOperation,
@@ -40,6 +41,7 @@ export interface AssetSource {
   ): Promise<SourceResult>;
 }
 export interface Lookup {
+  audit?: SiteMaterialAudit;
   allowed(
     tx: SiteTransaction,
     actor: string,
@@ -142,6 +144,7 @@ class PgAssetTransaction implements Transaction {
     revision: AssetRevision,
     request?: { key: string; fingerprint: string },
   ): Promise<void> {
+    const before = this.lookup.audit && !request ? await this.get(asset.id) : null;
     // The site lease makes explicit code/alias conflicts deterministic without swallowing database failures.
     if (request) {
       const capacity = await this.tx.query(
@@ -210,6 +213,7 @@ class PgAssetTransaction implements Transaction {
         JSON.stringify(revision),
       ],
     );
+    await this.lookup.audit?.(this.tx,{subjectType:"asset",id:asset.id,action:asset.revision===1?"created":"changed",revision:asset.revision,beforeRevision:before?.revision??0,state:asset.content.status,beforeState:before?.content.status??"",occurredAt:revision.at});
   }
   async list(
     selection: AssetSelection,

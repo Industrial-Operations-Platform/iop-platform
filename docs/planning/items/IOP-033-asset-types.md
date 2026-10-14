@@ -1,112 +1,41 @@
 # IOP-033 — Asset type model
 
-## Status
+## Status and goal
 
-Proposed
+Completed. Managed extensible sensor, motor, conveyor, controller and other types.
 
-## Milestone
+## Delivered scope — 2026-10-14
 
-M4 — Asset Domain. Proposed delivery slice.
+A site-scoped versioned catalog configures labels, active status, containment/controller capabilities and typed metadata. Removing or reinterpreting used types/fields fails rather than invalidating current records. The editor supports additional customer-defined types without core vocabulary changes.
 
-## Goal
+The owner explicitly authorized this implementation in
+[IOP-209](IOP-209-asset-domain-completion.md) under the
+[IOP-203](IOP-203-platform-completion.md) delegated completion request.
+[ADR-0039](../../architecture/adr/ADR-0039-asset-domain-enrichment.md) is Accepted
+under that authorization. Historical Proposed decisions are not accepted by inference.
 
-Asset type model. Expected outcome: Configurable sensor, motor, conveyor, PLC and other types
+## Acceptance and evidence
 
-## User / business value
+- [x] Managed extensible sensor, motor, conveyor, controller and other types.
+- [x] Planned scenarios, scoped contracts, decisions and working UI/API are documented.
+- [x] Domain/HTTP, frontend and disposable PostgreSQL evidence is recorded in the
+  [completed IOP-209 plan](../completed/IOP-209-asset-domain-completion-plan.md).
 
-Technicians need to identify and maintain reliable assets independently of customer vocabulary.
-
-## Context
-
-Scope: Asset Management. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
-
-## Current state
-
-IOP-194 permits manual asset component/type text. Remaining: a managed extensible type
-catalog with validation; free text is not the proposed configurable asset-type model.
-
-## Desired state
-
-Configurable sensor, motor, conveyor, PLC and other types
-
-## Requirements
-
-- Deliver only the outcome described for IOP-033.
-- Separate composition, physical location, controller relationships and external identifiers; do not fix Hall/Area levels.
-
-## Acceptance criteria
-
-- [ ] Configurable sensor, motor, conveyor, PLC and other types
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
-
-## Domain considerations
-
-Separate composition, physical location, controller relationships and external
-identifiers; do not fix Hall/Area levels.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Keep canonical identity and references in the same scope; preserve validation evidence
-and handle ambiguous aliases.
-
-## API considerations
-
-Expose asset-module contracts, not internal tables or provider models.
-
-## UI considerations
-
-Show validation, ambiguity and missing data explicitly; maps belong to Asset Locator.
+The PostgreSQL cases include 1,506 scoped identities, pagination/refinement,
+current-role denial, scope/RLS, concurrency, cycle/controller invariants,
+immutable mapping history, unchanged RAW/facts and atomic rollback. Synthetic
+cases establish software behavior rather than plant acceptance.
 
 ## Dependencies
 
 [IOP-032](IOP-032-asset-hierarchy.md)
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+## Remaining external inputs and boundaries
 
-## Non-goals
+Actual type labels, required fields and units remain site configuration inputs.
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-IOP-194 permits manual asset component/type text. Remaining: a managed extensible type
-catalog with validation; free text is not the proposed configurable asset-type model.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+Administrator, Team Leader and Task Force use current Assets permissions; source
+analytics authorization is checked independently. Customer vocabulary remains
+configuration; physical placement is Locator-owned. See the
+[Asset domain guide](../../product/asset-domain.md) and
+[composition contract](../../architecture/asset-domain-integration.md).

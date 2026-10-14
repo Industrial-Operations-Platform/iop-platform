@@ -2,114 +2,64 @@
 
 ## Status
 
-Proposed
+In progress
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M17 — v1 Validation & Release. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M17 — v1 Validation & Release. Local operating procedures delivered; other-environment proof pending.
 
-Deployment documentation. Expected outcome: IOP can be deployed in another environment
-
-## User / business value
-
-Users and administrators need a demonstrable, operable and documented version.
-
-## Context
-
-Scope: Validation and release readiness. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+IOP can be deployed in another authorized environment.
 
 ## Current state
 
-Docker startup/rebuild/stop, private configuration and operator troubleshooting are
-documented. Remaining: another authorized deployment environment,
-operating/security/backup/restore prerequisites and reproducibility evidence; remote
-hosting is not delivered.
+Local Docker build/start/stop/rebuild, private scoped configuration and operator
+troubleshooting are documented. IOP-208 adds CI/checks, encryption/key separation,
+full backup/isolated restore, jobs, scoped Audit operation and readiness measurement
+procedures. Root IOP-203 assembles these with the operational modules; remote
+hosting and another authorized deployment environment remain unverified.
 
-## Desired state
+## Requirements and delivery boundary
 
-IOP can be deployed in another environment
-
-## Requirements
-
-- Deliver only the outcome described for IOP-134.
-- Verify the agreed v1 scope without requiring every future backlog idea.
+Use the current local stack and reviewed private configuration. Keep source
+references and credentials outside Git, start migrations/provisioning explicitly,
+and preserve runtime privilege allowlists. A fresh stopped restore artifact is
+not an activated deployment. Publication/promotion requires separate authority.
 
 ## Acceptance criteria
 
-- [ ] IOP can be deployed in another environment
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Document current local packaging/configuration, operation and recovery prerequisites.
+- [ ] Execute and record deployment/recovery in another authorized environment.
+- [ ] Review credentials/origins/storage/security/CI evidence and limitations for that environment.
 
-## Domain considerations
+## Validation and evidence
 
-Verify the agreed v1 scope without requiring every future backlog idea.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Reconcile evidence and test recovery with authorized or synthetic data.
-
-## API considerations
-
-Validar contratos publicados y compatibilidad documentada; no introducir features
-durante cierre de release.
-
-## UI considerations
-
-Validate the agreed workflow and documentation for each persona; record known limitations.
+Current local software builds and repository validation pass. See the
+[platform guide](../../development/platform-completion.md), [local operating guide](../../development/local-operations.md),
+[local configuration](../../development/local-configuration.md) and
+[IOP-203 plan](../completed/IOP-203-platform-completion-plan.md).
+Actual local backup/isolated restore passes under IOP-112/113; remote CI and
+another deployment environment remain pending. No new remote environment was deployed.
 
 ## Dependencies
 
-[IOP-015](IOP-015-local-development-environment.md), [IOP-021](IOP-021-ci-baseline.md), [IOP-113](IOP-113-restore.md)
+[IOP-015](IOP-015-local-development-environment.md), [IOP-021](IOP-021-ci-baseline.md), [IOP-113](IOP-113-restore.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+Select and authorize the additional environment, supply its operating/security
+constraints, verify clean reproducibility and recovery, and record human acceptance.
+This documentation increment does not publish, deploy or complete v1 release.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-Docker startup/rebuild/stop, private configuration and operator troubleshooting are
-documented. Remaining: another authorized deployment environment,
-operating/security/backup/restore prerequisites and reproducibility evidence; remote
-hosting is not delivered.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).

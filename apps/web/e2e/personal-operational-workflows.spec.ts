@@ -1,3 +1,4 @@
+import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixture";
 import { expect, test } from "@playwright/test";
 import { emptyRecord } from "../src/features/maintenance/domain/models";
 
@@ -116,6 +117,7 @@ for (const width of [1440, 375]) {
     const writes: any[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
+      if (path === "/api/v1/overview/context") return fulfillOverviewContext(route,overviewContextFixture({locations,timeZone:"Europe/Zurich",today:"2026-10-06",coverage:{assets:"available",handover:"available",maintenance:"available",shifts:"not-configured"}}));
       if (path.endsWith("/session/context"))
         return route.fulfill({
           json: {

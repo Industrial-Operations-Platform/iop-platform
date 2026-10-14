@@ -11,12 +11,16 @@ select the first analytical slices. The broader model below is not a requirement
 to implement every module, entity or lifecycle before the demonstration. Preserve
 scope and data invariants in delivered paths. Temporary local login and profile
 administration are delivered under [ADR-0035](adr/ADR-0035-transitional-authentication.md).
-Corporate identity binding and future operational modules remain deferred; existing
+Corporate identity binding and undelivered capabilities remain separate scope;
+the current selected operational increments are listed below. Existing
 identity, scoped authorization and RLS requirements continue to apply.
 
 This document combines a conceptual baseline with delivered physical slices below.
 Organization/site, users/memberships/access, import/RAW, analytical projections,
-Handover, Workforce, Maintenance and Asset schemas are implemented through IOP-194.
+Handover, Workforce, Maintenance and Asset schemas were implemented through IOP-194.
+IOP-203–210 add formal records, improvements, locator scenes/placements, integration
+configuration, Asset type/enrichment/mapping sidecars, canonical OIP links, jobs and
+site Audit. See the [completion guide](../development/platform-completion.md).
 PostgreSQL/shared-table isolation follows Accepted ADR-0013. Physical schemas and
 constraints for undelivered capabilities remain to be designed. Earlier bootstrap
 sections describe their original slice; later runtime sections supersede the
@@ -51,7 +55,8 @@ for forced RLS, constraints and enumerated grants; corporate binding is future w
 
 ## Asset identity and locator
 
-Canonical assets represent surveyed or otherwise validated equipment/components.
+Canonical asset identity is the stable scoped registry reference; its physical
+assignment may remain unverified until reviewed evidence exists.
 Imported equipment codes and alarm text can suggest candidates; they do not
 prove that a physical asset exists or identify it uniquely. Track validation
 status and evidence; unresolved mappings remain visible for review.
@@ -65,8 +70,9 @@ Retain the historical locator design: versioned map images, asset markers with
 coordinates in [0, 1], and search by canonical code or scoped source alias. Define
 coordinate origin/orientation before implementation. Placements refer to a map
 version so replacing an image cannot silently reinterpret coordinates. A lookup
-should show ambiguous, unvalidated or unmapped results honestly. Storage format,
-map renderer and deep-link contract remain undecided.
+should show ambiguous, unvalidated or unmapped results honestly. IOP-206 implements private PNG references, revisioned JSON scenes/placements and
+an isolated Three.js rendering adapter under ADR-0037. Whole-plant metric
+registration remains pending physical input.
 
 ## Event normalization and analytical integrity
 
@@ -370,9 +376,14 @@ The digital-record timeline combines source-owned read results with stable
 date/recorded-instant/source/identity pagination and explicit source coverage.
 Analytical reporting labels remain date-only daily aggregates with frequency,
 accumulated seconds and original import/line references. Alias changes never
-rewrite RAW facts. Full physical composition, controller relationships, map
-placement and automatic ingestion resolution remain deferred. See
-[Maintenance/Assets](../product/maintenance-assets.md).
+rewrite RAW facts. The later IOP-209 local increment adds versioned type/containment/
+controller/review sidecars and explicit source-mapping decisions; OIP stores their
+derived canonical aggregate links/history on the same publication/review transaction.
+IOP-206 separately adds revisioned provisional scenes/placements. Original RAW and
+source facts remain unchanged. Automatic physical identity inference, actual plant
+composition/survey and precise registered coordinates remain absent or pending.
+See [Maintenance/Assets](../product/maintenance-assets.md),
+[Asset domain](../product/asset-domain.md) and [Locator](../development/asset-locator.md).
 
 
 ### Linked repair scopes
@@ -401,7 +412,7 @@ supply recipient notification instants and assigned-resolution monthly counts; n
 new table or migration is introduced. Workforce derives current-actor schedule
 statistics from complete bounded records and returns server-owned summary totals.
 
-## Future audit records
+## Audit records
 
 Accepted [ADR-0017](adr/ADR-0017-audit-model.md) defines versioned records with
 stable event identity, explicit scope, actor/initiator, subject, outcome, safe
@@ -410,11 +421,13 @@ Organization, site and restricted platform-security records remain distinct.
 Ordinary runtime writes append; corrections link new records and subject deletion
 does not cascade into audit history. No RAW payloads or secrets are copied.
 
-Future retention defaults are 365 days for material changes/maintenance and
-90 days for security events, measured from recording time. Online expiry/purge
-does not promise simultaneous backup erasure. These are conceptual requirements
-for later implementation: the owner explicitly excluded Audit infrastructure and
-its retention obligations from the pilot. No physical schema is selected.
+Site Audit retention is 365 days for material changes/maintenance and
+the pending platform-security contract specifies 90 days, measured from recording
+time. Online expiry/purge does not promise simultaneous backup erasure. IOP-208
+implements forced scoped `audit.site_events`, trusted operator-target authority
+and narrow inspection/purge functions under ADR-0038. Ordinary runtime has four
+deduplication SELECT columns and append-only safe-event INSERT columns; product
+profiles receive no Audit browsing. Organization/security capture remains pending.
 
 IOP-199 extends existing Handover snapshots with inclusive Information display dates,
 exact Success source/ID/revision references and server-produced completed-record

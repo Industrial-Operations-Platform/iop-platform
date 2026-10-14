@@ -1,3 +1,4 @@
+import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixture";
 import { emptyWorkforce } from "./workforce-fixture";
 import { expect, test, type Locator } from "@playwright/test";
 
@@ -77,6 +78,7 @@ for (const width of [1440, 820, 375]) {
     const selections: Record<string, unknown>[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
+      if (path === "/api/v1/overview/context") return fulfillOverviewContext(route,overviewContextFixture({locations:[{id:"hall-a",label:"Halle A T1",parentId:"",role:"department"},{id:"area-a",label:"ATK",parentId:"hall-a",role:"area"}],timeZone:"Europe/Zurich",today:"2026-10-06",coverage:{handover:"available"}}));
       if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });
       if (path.endsWith("/workforce/summary")) return route.fulfill({ json: {
         actorId: emptyWorkforce.actorId, today: "2026-10-06", currentFrom: "2026-10-01", previousFrom: "2026-09-01", previousTo: "2026-09-30",

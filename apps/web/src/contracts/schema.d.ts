@@ -24,6 +24,518 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/integrations/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConnectionsController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConnectionsController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConnectionsController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/records/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormalHandoverController_context"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/records/shifts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormalHandoverController_shifts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/records/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormalHandoverController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/records/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormalHandoverController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/records/transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormalHandoverController_transition"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/records/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormalHandoverController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/records/previous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormalHandoverController_previous"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/handover/records/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormalHandoverController_candidates"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_catalog"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_issues"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/add-evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_addEvidence"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_evidence"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/compare": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_compare"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/save-comparison": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_saveComparison"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/improvements/comparisons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ImprovementController_comparisons"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_context"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_query"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_search"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/bootstrap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_bootstrap"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/references/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["LocatorController_reference"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OverviewController_context"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OverviewController_search"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/area": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OverviewController_area"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/maintenance/catalog": {
         parameters: {
             query?: never;
@@ -242,6 +754,198 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["AssetsController_timeline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_catalog"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/configure": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_configure"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/references": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_references"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/mapping-query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_mappingQuery"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/mapping-source": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_mappingSource"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/save-mapping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_saveMapping"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/mapping-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_mappingHistory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_candidates"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/pareto": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_pareto"];
         delete?: never;
         options?: never;
         head?: never;
@@ -776,6 +1480,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/handover/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HandoverController_assets"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/handover/equipment": {
         parameters: {
             query?: never;
@@ -908,6 +1628,782 @@ export interface components {
              * @enum {string}
              */
             status: "ok";
+        };
+        ConnectionConfigurationDto: {
+            /** @enum {string} */
+            kind: "wincc" | "ultimo" | "entra";
+            label: string;
+            enabled: boolean;
+            /** @description HTTPS endpoint without credentials, query or fragment. */
+            endpoint: string;
+            contractVersion: string;
+            /** @description Logical reference only; never a secret value. */
+            credentialReference: string;
+            tenantId: string;
+            clientId: string;
+        };
+        ConnectionReadinessDto: {
+            configuration: components["schemas"]["ConnectionConfigurationDto"];
+            revision: number;
+            updatedAt: string;
+            updatedBy: string;
+            /** @enum {string} */
+            status: "disabled" | "configuration-pending" | "transport-pending";
+            /** @enum {string} */
+            adapter: "contract-ready";
+            missingInputs: string[];
+            lastSuccessfulConnection: string | null;
+        };
+        ConnectionsDto: {
+            connections: components["schemas"]["ConnectionReadinessDto"][];
+        };
+        ConnectionSaveDto: {
+            expectedRevision: number;
+            configuration: components["schemas"]["ConnectionConfigurationDto"];
+        };
+        ConnectionHistoryRequestDto: {
+            /** @enum {string} */
+            kind: "wincc" | "ultimo" | "entra";
+        };
+        ConnectionDto: {
+            configuration: components["schemas"]["ConnectionConfigurationDto"];
+            revision: number;
+            updatedAt: string;
+            updatedBy: string;
+        };
+        ConnectionHistoryDto: {
+            revisions: components["schemas"]["ConnectionDto"][];
+        };
+        HandoverLocationDto: {
+            id: string;
+            label: string;
+            parentId: string;
+            sectorKey: string;
+            /** @enum {string} */
+            role: "department" | "area" | "location";
+        };
+        FormalHandoverContextDto: {
+            actorId: string;
+            canManageRecords: boolean;
+            locations: components["schemas"]["HandoverLocationDto"][];
+            timeZone: string;
+        };
+        FormalHandoverSelectionDto: {
+            from: string;
+            to: string;
+            departmentId: string;
+            areaId: string;
+            cursor: string;
+        };
+        FormalHandoverAssignmentDto: {
+            id: string;
+            revision: number;
+        };
+        FormalHandoverShiftDto: {
+            id: string;
+            date: string;
+            shiftTypeId: string;
+            label: string;
+            targetId: string;
+            targetLabel: string;
+            startsAt: string;
+            endsAt: string;
+            assignments: components["schemas"]["FormalHandoverAssignmentDto"][];
+        };
+        FormalHandoverShiftsDto: {
+            shifts: components["schemas"]["FormalHandoverShiftDto"][];
+            /** @enum {string} */
+            coverage: "planned-assignments";
+        };
+        FormalHandoverContentDto: {
+            shiftId: string;
+            shiftDate: string;
+            departmentId: string;
+            areaId: string;
+            title: string;
+            summary: string;
+            entryIds: string[];
+        };
+        HandoverResolutionDto: {
+            /** @enum {string} */
+            source: "handover" | "maintenance";
+            id: string;
+            expectedRevision: number;
+        };
+        HandoverImageDto: {
+            name: string;
+            dataUrl: string;
+        };
+        HandoverContentDto: {
+            assetId?: string;
+            displayUntil?: string;
+            resolutions?: components["schemas"]["HandoverResolutionDto"][];
+            mentionIds?: string[];
+            images?: components["schemas"]["HandoverImageDto"][];
+            date: string;
+            categoryId: string;
+            summary: string;
+            details: string;
+            departmentId: string;
+            areaId: string;
+            equipmentCode: string;
+            equipmentNamespace: string;
+            /** @enum {string} */
+            condition: "" | "damaged" | "inspection-needed" | "blocked" | "repaired" | "restored";
+            externalReference: string;
+            challenge: string;
+            cause: string;
+            measure: string;
+            dueDate: string;
+            feedbackDueDate: string;
+            discuss: boolean;
+        };
+        HandoverAssetReferenceDto: {
+            id: string;
+            code: string;
+            name: string;
+            locationId: string;
+            /** @enum {string} */
+            status: "unverified" | "validated" | "retired";
+        };
+        FormalHandoverEvidenceDto: {
+            id: string;
+            revision: number;
+            authorId: string;
+            authorName: string;
+            createdAt: string;
+            content: components["schemas"]["HandoverContentDto"];
+            departmentLabel: string;
+            areaLabel: string;
+            categoryLabel: string;
+            responsibleId: string;
+            responsibleName: string;
+            /** @enum {string} */
+            issueState: "none" | "open" | "in-progress" | "resolved";
+            assetReference?: components["schemas"]["HandoverAssetReferenceDto"];
+        };
+        FormalHandoverAcknowledgementDto: {
+            actorId: string;
+            actorName: string;
+            at: string;
+            note: string;
+        };
+        FormalHandoverRecordDto: {
+            id: string;
+            revision: number;
+            /** @enum {string} */
+            state: "draft" | "open" | "closed";
+            authorId: string;
+            authorName: string;
+            createdAt: string;
+            updatedAt: string;
+            shift: components["schemas"]["FormalHandoverShiftDto"];
+            departmentLabel: string;
+            areaLabel: string;
+            content: components["schemas"]["FormalHandoverContentDto"];
+            closedBy: string;
+            closedByName: string;
+            closedAt: string;
+            outcome: string;
+            entries: components["schemas"]["FormalHandoverEvidenceDto"][];
+            pending: components["schemas"]["FormalHandoverEvidenceDto"][];
+            acknowledgements: components["schemas"]["FormalHandoverAcknowledgementDto"][];
+        };
+        FormalHandoverPageDto: {
+            records: components["schemas"]["FormalHandoverRecordDto"][];
+            total: number;
+            nextCursor: string;
+        };
+        FormalHandoverSaveDto: {
+            key: string;
+            id: string;
+            expectedRevision: number;
+            content: components["schemas"]["FormalHandoverContentDto"];
+            note: string;
+        };
+        FormalHandoverTransitionDto: {
+            id: string;
+            expectedRevision: number;
+            /** @enum {string} */
+            action: "publish" | "close" | "acknowledge";
+            note: string;
+        };
+        FormalHandoverHistoryRequestDto: {
+            id: string;
+            before: number;
+        };
+        FormalHandoverRevisionDto: {
+            record: components["schemas"]["FormalHandoverRecordDto"];
+            actorId: string;
+            actorName: string;
+            at: string;
+            /** @enum {string} */
+            action: "created" | "corrected" | "published" | "closed" | "acknowledged";
+            note: string;
+        };
+        FormalHandoverHistoryDto: {
+            record: components["schemas"]["FormalHandoverRecordDto"];
+            revisions: components["schemas"]["FormalHandoverRevisionDto"][];
+            nextBefore: number;
+        };
+        FormalHandoverPreviousRequestDto: {
+            id: string;
+        };
+        FormalHandoverPreviousDto: {
+            shift: components["schemas"]["FormalHandoverShiftDto"] | null;
+            record: components["schemas"]["FormalHandoverRecordDto"] | null;
+            overlaps: boolean;
+            pending: components["schemas"]["FormalHandoverEvidenceDto"][];
+            pendingTotal: number;
+        };
+        FormalHandoverCandidatesRequestDto: {
+            departmentId: string;
+            areaId: string;
+            through: string;
+        };
+        FormalHandoverCandidatesDto: {
+            entries: components["schemas"]["FormalHandoverEvidenceDto"][];
+            total: number;
+        };
+        ImprovementPersonDto: {
+            id: string;
+            name: string;
+        };
+        ImprovementLocationDto: {
+            id: string;
+            label: string;
+            parentId: string;
+        };
+        ImprovementAssetDto: {
+            id: string;
+            name: string;
+            code: string;
+            status: string;
+        };
+        ImprovementCatalogDto: {
+            actorId: string;
+            canContribute: boolean;
+            canCoordinate: boolean;
+            people: components["schemas"]["ImprovementPersonDto"][];
+            locations: components["schemas"]["ImprovementLocationDto"][];
+            assets: components["schemas"]["ImprovementAssetDto"][];
+        };
+        ImprovementIssueQueryDto: {
+            search?: string;
+            cursor?: string;
+        };
+        ImprovementIssueDto: {
+            id: string;
+            title: string;
+            state: string;
+            revision: number;
+            equipmentCode: string;
+            area: string;
+        };
+        ImprovementIssuePageDto: {
+            issues: components["schemas"]["ImprovementIssueDto"][];
+            nextCursor: string;
+        };
+        ImprovementSelectionDto: {
+            /** @enum {string} */
+            status?: "" | "planned" | "in-progress" | "blocked" | "implemented" | "evaluated" | "cancelled";
+            ownerId?: string;
+            locationId?: string;
+            assetId?: string;
+            search?: string;
+            cursor?: string;
+            /** @default 20 */
+            limit: number;
+        };
+        ImprovementTargetDto: {
+            objective: string;
+            /** @enum {string} */
+            metric: "frequency" | "alarm-seconds";
+            reductionPercent: number | null;
+        };
+        ImprovementDataDto: {
+            title: string;
+            hypothesis: string;
+            locationId: string;
+            assetId: string;
+            issueId: string;
+            ownerId: string;
+            /** @description Optional site calendar date, or empty string. */
+            dueDate: string;
+            /** @enum {string} */
+            status: "planned" | "in-progress" | "blocked" | "implemented" | "evaluated" | "cancelled";
+            /** @description Required for implemented/evaluated; site calendar date. */
+            implementedDate: string;
+            target: components["schemas"]["ImprovementTargetDto"];
+            result: string;
+            blockedReason: string;
+            cancellationReason: string;
+        };
+        ImprovementViewDto: {
+            id: string;
+            revision: number;
+            data: components["schemas"]["ImprovementDataDto"];
+            authorId: string;
+            authorName: string;
+            ownerName: string;
+            assetName: string;
+            issueTitle: string;
+            locationLabel: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            evidenceCount: number;
+            comparisonCount: number;
+            canEdit: boolean;
+            canCoordinate: boolean;
+        };
+        ImprovementCountsDto: {
+            planned: number;
+            "in-progress": number;
+            blocked: number;
+            implemented: number;
+            evaluated: number;
+            cancelled: number;
+        };
+        ImprovementPageDto: {
+            actions: components["schemas"]["ImprovementViewDto"][];
+            total: number;
+            nextCursor: string;
+            statusCounts: components["schemas"]["ImprovementCountsDto"];
+        };
+        ImprovementSaveDto: {
+            id: string;
+            expectedRevision: number;
+            reason: string;
+            data: components["schemas"]["ImprovementDataDto"];
+        };
+        ImprovementHistoryRequestDto: {
+            id: string;
+            before?: number;
+            limit?: number;
+        };
+        ImprovementActionDto: {
+            id: string;
+            revision: number;
+            data: components["schemas"]["ImprovementDataDto"];
+            authorId: string;
+            authorName: string;
+            ownerName: string;
+            assetName: string;
+            issueTitle: string;
+            locationLabel: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            evidenceCount: number;
+            comparisonCount: number;
+        };
+        ImprovementRevisionDto: {
+            action: components["schemas"]["ImprovementActionDto"];
+            actorId: string;
+            actorName: string;
+            /** Format: date-time */
+            at: string;
+            /** @enum {string} */
+            change: "created" | "updated" | "status-changed" | "evidence-added" | "comparison-saved";
+            reason: string;
+            referenceId: string;
+        };
+        ImprovementHistoryDto: {
+            action: components["schemas"]["ImprovementViewDto"];
+            revisions: components["schemas"]["ImprovementRevisionDto"][];
+            nextBefore: number;
+        };
+        ImprovementEvidenceRequestDto: {
+            id: string;
+            actionId: string;
+            expectedRevision: number;
+            /** @enum {string} */
+            kind: "note" | "result";
+            note: string;
+            externalReference: string;
+            supersedesId: string;
+        };
+        ImprovementEvidenceDto: {
+            id: string;
+            actionId: string;
+            actionRevision: number;
+            /** @enum {string} */
+            kind: "note" | "result";
+            note: string;
+            externalReference: string;
+            supersedesId: string;
+            actorId: string;
+            actorName: string;
+            /** Format: date-time */
+            at: string;
+        };
+        ImprovementEvidenceSavedDto: {
+            action: components["schemas"]["ImprovementViewDto"];
+            evidence: components["schemas"]["ImprovementEvidenceDto"];
+        };
+        ImprovementCollectionRequestDto: {
+            id: string;
+            cursor?: string;
+            limit?: number;
+        };
+        ImprovementEvidencePageDto: {
+            evidence: components["schemas"]["ImprovementEvidenceDto"][];
+            nextCursor: string;
+        };
+        ImprovementPeriodDto: {
+            /** Format: date */
+            from: string;
+            /**
+             * Format: date
+             * @description Exclusive calendar-date boundary.
+             */
+            toExclusive: string;
+        };
+        ImprovementFiltersDto: {
+            sector: string;
+            area: string;
+            equipment: string;
+            message: string;
+        };
+        ImprovementComparisonSelectionDto: {
+            before: components["schemas"]["ImprovementPeriodDto"];
+            after: components["schemas"]["ImprovementPeriodDto"];
+            /** @enum {string} */
+            scope: "asset" | "selection";
+            filters: components["schemas"]["ImprovementFiltersDto"];
+        };
+        ImprovementCompareDto: {
+            actionId: string;
+            expectedRevision: number;
+            selection: components["schemas"]["ImprovementComparisonSelectionDto"];
+        };
+        ImprovementAliasDto: {
+            code: string;
+            sector: string;
+            area: string;
+        };
+        ImprovementMeasureDto: {
+            /** Format: date */
+            from: string;
+            /**
+             * Format: date
+             * @description Exclusive calendar-date boundary.
+             */
+            toExclusive: string;
+            eligibleDates: string[];
+            admittedDates: string[];
+            missingDates: string[];
+            excludedDates: string[];
+            frequency: number;
+            alarmSeconds: number;
+            records: number;
+        };
+        ImprovementObservedChangeDto: {
+            before: number | null;
+            after: number | null;
+            change: number | null;
+            reductionPercent: number | null;
+        };
+        ImprovementComparisonDto: {
+            sourceId: string;
+            siteTimeZone: string;
+            publicationRevision: string;
+            profileVersion: string;
+            selection: components["schemas"]["ImprovementComparisonSelectionDto"];
+            aliases: components["schemas"]["ImprovementAliasDto"][];
+            before: components["schemas"]["ImprovementMeasureDto"];
+            after: components["schemas"]["ImprovementMeasureDto"];
+            mapped: boolean;
+            warnings: string[];
+            frequencyPerObservedDate: components["schemas"]["ImprovementObservedChangeDto"];
+            alarmSecondsPerObservedDate: components["schemas"]["ImprovementObservedChangeDto"];
+            target: components["schemas"]["ImprovementTargetDto"];
+            /** @enum {string} */
+            observedTarget: "not-assessable" | "met" | "not-met" | "not-quantified";
+            attribution: string;
+        };
+        ImprovementSaveComparisonDto: {
+            actionId: string;
+            expectedRevision: number;
+            selection: components["schemas"]["ImprovementComparisonSelectionDto"];
+            id: string;
+            note: string;
+        };
+        ImprovementSavedComparisonDto: {
+            id: string;
+            actionId: string;
+            actionRevision: number;
+            actorId: string;
+            actorName: string;
+            /** Format: date-time */
+            at: string;
+            note: string;
+            comparison: components["schemas"]["ImprovementComparisonDto"];
+        };
+        ImprovementComparisonSavedDto: {
+            action: components["schemas"]["ImprovementViewDto"];
+            saved: components["schemas"]["ImprovementSavedComparisonDto"];
+        };
+        ImprovementComparisonPageDto: {
+            comparisons: components["schemas"]["ImprovementSavedComparisonDto"][];
+            nextCursor: string;
+        };
+        LocatorEmptyDto: Record<string, never>;
+        LocatorReferenceDto: {
+            id: string;
+            name: string;
+            group: string;
+            sourcePath: string;
+            sha256: string;
+            width: number;
+            height: number;
+            bytes: number;
+            importedAt: string;
+            /** @enum {string} */
+            kind: "schematic" | "legend";
+        };
+        LocatorLocationDto: {
+            id: string;
+            label: string;
+            parentId: string;
+        };
+        LocatorTemplateDto: {
+            /** @enum {string} */
+            kind: "conveyor" | "curve" | "junction" | "lift" | "sensor" | "scanner" | "scale" | "cabinet";
+            width: number;
+            depth: number;
+            height: number;
+        };
+        LocatorContextDto: {
+            canManage: boolean;
+            references: components["schemas"]["LocatorReferenceDto"][];
+            locations: components["schemas"]["LocatorLocationDto"][];
+            componentCatalog: components["schemas"]["LocatorTemplateDto"][];
+            coordinateSystem: string;
+            /** @enum {string} */
+            globalCalibration: "pending";
+        };
+        LocatorQueryDto: {
+            search: string;
+            group: string;
+        };
+        LocatorComponentDto: {
+            id: string;
+            /** @enum {string} */
+            kind: "conveyor" | "curve" | "junction" | "lift" | "sensor" | "scanner" | "scale" | "cabinet";
+            label: string;
+            x: number;
+            y: number;
+            /** @description Unknown until surveyed; normalized elevation, never metric height. */
+            elevation: number | null;
+            rotation: number;
+            width: number;
+            depth: number;
+            height: number;
+            assetId: string;
+            /** @enum {string} */
+            verification: "provisional" | "surveyed";
+            note: string;
+        };
+        LocatorContentDto: {
+            name: string;
+            group: string;
+            locationId: string;
+            referenceId: string;
+            description: string;
+            /** @enum {string} */
+            calibration: "pending" | "surveyed";
+            surveyNote: string;
+            components: components["schemas"]["LocatorComponentDto"][];
+        };
+        LocatorSceneDto: {
+            id: string;
+            revision: number;
+            authorId: string;
+            createdAt: string;
+            updatedAt: string;
+            content: components["schemas"]["LocatorContentDto"];
+        };
+        LocatorPageDto: {
+            scenes: components["schemas"]["LocatorSceneDto"][];
+            total: number;
+        };
+        LocatorIdDto: {
+            id: string;
+        };
+        LocatorAssetDto: {
+            id: string;
+            code: string;
+            name: string;
+            locationId: string;
+            status: string;
+        };
+        LocatorProblemDto: {
+            assetId: string;
+            /** @enum {string} */
+            kind: "handover" | "maintenance";
+            id: string;
+            title: string;
+            status: string;
+            recordedAt: string;
+        };
+        LocatorCoverageDto: {
+            /** @enum {string} */
+            kind: "handover" | "maintenance";
+            /** @enum {string} */
+            status: "available" | "not-authorized" | "unavailable";
+        };
+        LocatorProblemsDto: {
+            items: components["schemas"]["LocatorProblemDto"][];
+            coverage: components["schemas"]["LocatorCoverageDto"][];
+        };
+        LocatorDetailDto: {
+            scene: components["schemas"]["LocatorSceneDto"];
+            assets: components["schemas"]["LocatorAssetDto"][];
+            problems: components["schemas"]["LocatorProblemsDto"];
+        };
+        LocatorSaveDto: {
+            id: string;
+            expectedRevision: number;
+            note: string;
+            content: components["schemas"]["LocatorContentDto"];
+        };
+        LocatorHistoryRequestDto: {
+            id: string;
+            before: number;
+        };
+        LocatorRevisionDto: {
+            scene: components["schemas"]["LocatorSceneDto"];
+            actorId: string;
+            note: string;
+            at: string;
+        };
+        LocatorHistoryDto: {
+            revisions: components["schemas"]["LocatorRevisionDto"][];
+            nextBefore: number;
+        };
+        LocatorSearchDto: {
+            search: string;
+            unplacedOnly: boolean;
+        };
+        LocatorPlacementDto: {
+            sceneId: string;
+            sceneName: string;
+            componentId: string;
+            label: string;
+            /** @enum {string} */
+            verification: "provisional" | "surveyed";
+        };
+        LocatorSearchResultDto: {
+            asset: components["schemas"]["LocatorAssetDto"];
+            placements: components["schemas"]["LocatorPlacementDto"][];
+        };
+        LocatorSearchResultsDto: {
+            results: components["schemas"]["LocatorSearchResultDto"][];
+            problems: components["schemas"]["LocatorProblemsDto"];
+            total: number;
+            limit: number;
+        };
+        LocatorBootstrapDto: {
+            created: number;
+            referenceCount: number;
+        };
+        OverviewEmptyDto: Record<string, never>;
+        OverviewLocationDto: {
+            id: string;
+            label: string;
+            parentId: string;
+            role: string;
+        };
+        OverviewCoverageDto: {
+            /** @enum {string} */
+            source: "areas" | "assets" | "handover" | "maintenance" | "analytics" | "shifts";
+            /** @enum {string} */
+            coverage: "available" | "not-authorized" | "unavailable" | "not-configured" | "unmapped";
+        };
+        OverviewContextDto: {
+            locations: components["schemas"]["OverviewLocationDto"][];
+            timeZone: string;
+            today: string;
+            sources: components["schemas"]["OverviewCoverageDto"][];
+        };
+        OverviewCursorsDto: {
+            assets: string;
+            handover: string;
+            maintenance: string;
+        };
+        OverviewSearchDto: {
+            query: string;
+            locationId: string;
+            cursors: components["schemas"]["OverviewCursorsDto"];
+        };
+        OverviewCardDto: {
+            /** @enum {string} */
+            source: "assets" | "handover" | "maintenance" | "area" | "analytics" | "shift";
+            id: string;
+            title: string;
+            summary: string;
+            locationId: string;
+            locationLabel: string;
+            status: string;
+            date: string;
+            assetId: string;
+        };
+        OverviewGroupDto: {
+            /** @enum {string} */
+            source: "areas" | "assets" | "handover" | "maintenance" | "analytics" | "shifts";
+            /** @enum {string} */
+            coverage: "available" | "not-authorized" | "unavailable" | "not-configured" | "unmapped";
+            view: string;
+            items: components["schemas"]["OverviewCardDto"][];
+            total: number;
+            nextCursor: string;
+            limit: number;
+        };
+        OverviewSearchResultDto: {
+            query: string;
+            locationId: string;
+            groups: components["schemas"]["OverviewGroupDto"][];
+        };
+        OverviewAreaRequestDto: {
+            locationId: string;
+            date: string;
+            /** @description Explicit current formal record selection; empty means no record selected. */
+            recordId: string;
+            /** @description Source-owned formal record page cursor. */
+            recordCursor?: string;
+        };
+        OverviewAnalyticsDto: {
+            /** @enum {string} */
+            coverage: "available" | "not-authorized" | "unavailable" | "not-configured" | "unmapped";
+            from: string;
+            toExclusive: string;
+            frequency: number | null;
+            seconds: number | null;
+            records: number | null;
+            importDates: string[];
+            note: string;
+        };
+        OverviewShiftsDto: {
+            /** @enum {string} */
+            coverage: "available" | "not-authorized" | "unavailable" | "not-configured" | "unmapped";
+            options: components["schemas"]["OverviewCardDto"][];
+            current: components["schemas"]["OverviewCardDto"] | null;
+            previous: components["schemas"]["OverviewCardDto"] | null;
+            note: string;
+            total: number;
+            nextCursor: string;
+        };
+        OverviewAreaDto: {
+            selection: components["schemas"]["OverviewAreaRequestDto"];
+            location: components["schemas"]["OverviewLocationDto"];
+            groups: components["schemas"]["OverviewGroupDto"][];
+            analytics: components["schemas"]["OverviewAnalyticsDto"];
+            shifts: components["schemas"]["OverviewShiftsDto"];
+            timeZone: string;
         };
         MaintenancePriorityDto: {
             id: string;
@@ -1125,40 +2621,8 @@ export interface components {
             actorName: string;
             at: string;
         };
-        HandoverResolutionDto: {
-            /** @enum {string} */
-            source: "handover" | "maintenance";
-            id: string;
-            expectedRevision: number;
-        };
-        HandoverImageDto: {
-            name: string;
-            dataUrl: string;
-        };
-        HandoverContentDto: {
-            displayUntil?: string;
-            resolutions?: components["schemas"]["HandoverResolutionDto"][];
-            mentionIds?: string[];
-            images?: components["schemas"]["HandoverImageDto"][];
-            date: string;
-            categoryId: string;
-            summary: string;
-            details: string;
-            departmentId: string;
-            areaId: string;
-            equipmentCode: string;
-            equipmentNamespace: string;
-            /** @enum {string} */
-            condition: "" | "damaged" | "inspection-needed" | "blocked" | "repaired" | "restored";
-            externalReference: string;
-            challenge: string;
-            cause: string;
-            measure: string;
-            dueDate: string;
-            feedbackDueDate: string;
-            discuss: boolean;
-        };
         HandoverEntryDto: {
+            assetReference?: components["schemas"]["HandoverAssetReferenceDto"];
             completedReferences?: components["schemas"]["HandoverCompletedReferenceDto"][];
             notificationAt?: string;
             mentionedPeople?: components["schemas"]["HandoverPersonDto"][];
@@ -1207,14 +2671,6 @@ export interface components {
             events: components["schemas"]["MaintenanceAssignmentEventDto"][];
         };
         AssetsContextRequestDto: Record<string, never>;
-        HandoverLocationDto: {
-            id: string;
-            label: string;
-            parentId: string;
-            sectorKey: string;
-            /** @enum {string} */
-            role: "department" | "area" | "location";
-        };
         AssetsContextDto: {
             actorId: string;
             canManage: boolean;
@@ -1372,6 +2828,230 @@ export interface components {
             /** @description Full matching count across currently authorized and available sources. */
             total: number;
             nextCursor: string;
+        };
+        AssetMetadataFieldDto: {
+            key: string;
+            label: string;
+            /** @enum {string} */
+            kind: "text" | "number" | "boolean" | "date";
+            required: boolean;
+            unit: string;
+        };
+        AssetModelTypeDto: {
+            id: string;
+            label: string;
+            active: boolean;
+            canContain: boolean;
+            isController: boolean;
+            fields: components["schemas"]["AssetMetadataFieldDto"][];
+        };
+        AssetTypeCatalogDto: {
+            revision: number;
+            types: components["schemas"]["AssetModelTypeDto"][];
+        };
+        AssetDomainCatalogDto: {
+            canManage: boolean;
+            sourceId: string;
+            catalog: components["schemas"]["AssetTypeCatalogDto"];
+        };
+        AssetDomainConfigureDto: {
+            expectedRevision: number;
+            types: components["schemas"]["AssetModelTypeDto"][];
+        };
+        AssetDomainIdDto: {
+            assetId: string;
+        };
+        AssetDomainReferenceDto: {
+            id: string;
+            code: string;
+            name: string;
+            /** @enum {string} */
+            status: "unverified" | "validated" | "retired";
+        };
+        AssetControllerRelationDto: {
+            /** @enum {string} */
+            kind: "controlled-by";
+            targetId: string;
+            channel: string;
+        };
+        AssetSurveyDto: {
+            /** @enum {string} */
+            status: "pending" | "validated" | "rejected";
+            note: string;
+            evidenceReference: string;
+        };
+        AssetEnrichmentDataDto: {
+            typeId: string;
+            parentId: string;
+            controllers: components["schemas"]["AssetControllerRelationDto"][];
+            manufacturer: string;
+            model: string;
+            serial: string;
+            metadata: {
+                [key: string]: string | number | boolean;
+            };
+            survey: components["schemas"]["AssetSurveyDto"];
+        };
+        AssetEnrichmentDto: {
+            assetId: string;
+            revision: number;
+            data: components["schemas"]["AssetEnrichmentDataDto"];
+            actorId: string;
+            actorName: string;
+            updatedAt: string;
+            surveyReviewerId: string;
+            surveyReviewerName: string;
+            surveyReviewedAt: string;
+        };
+        AssetDomainDetailDto: {
+            asset: components["schemas"]["AssetDomainReferenceDto"];
+            enrichment: components["schemas"]["AssetEnrichmentDto"] | null;
+            related: components["schemas"]["AssetDomainReferenceDto"][];
+            canManage: boolean;
+        };
+        AssetDomainSaveDto: {
+            assetId: string;
+            expectedRevision: number;
+            reason: string;
+            data: components["schemas"]["AssetEnrichmentDataDto"];
+        };
+        AssetDomainHistoryRequestDto: {
+            assetId: string;
+            before?: number;
+        };
+        AssetEnrichmentRevisionDto: {
+            enrichment: components["schemas"]["AssetEnrichmentDto"];
+            reason: string;
+            actorId: string;
+            actorName: string;
+            at: string;
+        };
+        AssetDomainHistoryDto: {
+            revisions: components["schemas"]["AssetEnrichmentRevisionDto"][];
+            nextBefore: number;
+        };
+        AssetDomainQueryDto: {
+            search?: string;
+            cursor?: string;
+            limit?: number;
+        };
+        AssetEnrichmentSummaryDto: {
+            assetId: string;
+            revision: number;
+            typeId: string;
+            parentId: string;
+            /** @enum {string} */
+            surveyStatus: "pending" | "validated" | "rejected";
+        };
+        AssetDomainReferencePageDto: {
+            assets: components["schemas"]["AssetDomainReferenceDto"][];
+            enrichments: components["schemas"]["AssetEnrichmentSummaryDto"][];
+            total: number;
+            nextCursor: string;
+        };
+        AssetSourceTupleDto: {
+            sourceId: string;
+            /** @enum {string} */
+            namespace: "source-equipment";
+            area: string;
+            code: string;
+        };
+        AssetMappingDataDto: {
+            source: components["schemas"]["AssetSourceTupleDto"];
+            /** @enum {string} */
+            status: "pending" | "approved" | "rejected";
+            candidateIds: string[];
+            note: string;
+        };
+        AssetSourceMappingDto: {
+            id: string;
+            revision: number;
+            data: components["schemas"]["AssetMappingDataDto"];
+            actorId: string;
+            actorName: string;
+            updatedAt: string;
+        };
+        AssetMappingPageDto: {
+            mappings: components["schemas"]["AssetSourceMappingDto"][];
+            total: number;
+            nextCursor: string;
+        };
+        AssetMappingLookupDto: {
+            mapping: components["schemas"]["AssetSourceMappingDto"] | null;
+        };
+        AssetMappingSaveDto: {
+            id: string;
+            expectedRevision: number;
+            reason: string;
+            data: components["schemas"]["AssetMappingDataDto"];
+        };
+        AssetMappingHistoryRequestDto: {
+            id: string;
+            before?: number;
+        };
+        AssetMappingRevisionDto: {
+            mapping: components["schemas"]["AssetSourceMappingDto"];
+            reason: string;
+            actorId: string;
+            actorName: string;
+            at: string;
+        };
+        AssetMappingHistoryDto: {
+            revisions: components["schemas"]["AssetMappingRevisionDto"][];
+            nextBefore: number;
+        };
+        AssetSourceQueryDto: {
+            search?: string;
+            cursor?: string;
+        };
+        AssetSourceCandidateDto: {
+            sourceId: string;
+            /** @enum {string} */
+            namespace: "source-equipment";
+            area: string;
+            code: string;
+            records: number;
+        };
+        AssetSourceCandidatePageDto: {
+            candidates: components["schemas"]["AssetSourceCandidateDto"][];
+            nextCursor: string;
+        };
+        CanonicalParetoSelectionDto: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            toExclusive: string;
+            /** @enum {string} */
+            metric: "frequency" | "alarm-seconds";
+            limit?: number;
+        };
+        CanonicalAssetGroupDto: {
+            frequency: number;
+            alarmSeconds: number;
+            records: number;
+            assetId: string;
+            assetCode?: string;
+            cumulativePercent: number | null;
+        };
+        CanonicalAssetMeasuresDto: {
+            frequency: number;
+            alarmSeconds: number;
+            records: number;
+        };
+        CanonicalAssetParetoDto: {
+            selection: components["schemas"]["CanonicalParetoSelectionDto"];
+            groups: components["schemas"]["CanonicalAssetGroupDto"][];
+            groupCount: number;
+            totals: components["schemas"]["CanonicalAssetMeasuresDto"];
+            mapped: components["schemas"]["CanonicalAssetMeasuresDto"];
+            unresolved: components["schemas"]["CanonicalAssetMeasuresDto"];
+            states: {
+                [key: string]: number;
+            };
+            missingDates: string[];
+            admittedDates: string[];
+            projectionRevision: string;
+            limitations: string;
         };
         WorkforcePersonalShiftDto: {
             id: string;
@@ -1915,6 +3595,7 @@ export interface components {
             label: string;
         };
         HandoverContextDto: {
+            canLinkAssets?: boolean;
             canDelete: boolean;
             locations: components["schemas"]["HandoverLocationDto"][];
             categories: components["schemas"]["HandoverChoiceDto"][];
@@ -1949,6 +3630,12 @@ export interface components {
             targets: components["schemas"]["HandoverCompletionTargetDto"][];
             nextCursor: string;
             total: number;
+        };
+        HandoverAssetsRequestDto: {
+            search: string;
+        };
+        HandoverAssetsPageDto: {
+            assets: components["schemas"]["HandoverAssetReferenceDto"][];
         };
         HandoverEquipmentRequestDto: {
             departmentId: string;
@@ -2106,6 +3793,729 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ConnectionsController_query: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectionsDto"];
+                };
+            };
+        };
+    };
+    ConnectionsController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConnectionSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectionReadinessDto"];
+                };
+            };
+        };
+    };
+    ConnectionsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConnectionHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConnectionHistoryDto"];
+                };
+            };
+        };
+    };
+    FormalHandoverController_context: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormalHandoverContextDto"];
+                };
+            };
+        };
+    };
+    FormalHandoverController_shifts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormalHandoverSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormalHandoverShiftsDto"];
+                };
+            };
+        };
+    };
+    FormalHandoverController_query: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormalHandoverSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormalHandoverPageDto"];
+                };
+            };
+        };
+    };
+    FormalHandoverController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormalHandoverSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormalHandoverRecordDto"];
+                };
+            };
+        };
+    };
+    FormalHandoverController_transition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormalHandoverTransitionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormalHandoverRecordDto"];
+                };
+            };
+        };
+    };
+    FormalHandoverController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormalHandoverHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormalHandoverHistoryDto"];
+                };
+            };
+        };
+    };
+    FormalHandoverController_previous: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormalHandoverPreviousRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormalHandoverPreviousDto"];
+                };
+            };
+        };
+    };
+    FormalHandoverController_candidates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormalHandoverCandidatesRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormalHandoverCandidatesDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_catalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementCatalogDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_issues: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementIssueQueryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementIssuePageDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_query: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementPageDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementViewDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementHistoryDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_addEvidence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementEvidenceRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementEvidenceSavedDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_evidence: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementCollectionRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementEvidencePageDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_compare: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementCompareDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementComparisonDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_saveComparison: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementSaveComparisonDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementComparisonSavedDto"];
+                };
+            };
+        };
+    };
+    ImprovementController_comparisons: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImprovementCollectionRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImprovementComparisonPageDto"];
+                };
+            };
+        };
+    };
+    LocatorController_context: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorEmptyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorContextDto"];
+                };
+            };
+        };
+    };
+    LocatorController_query: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorQueryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorPageDto"];
+                };
+            };
+        };
+    };
+    LocatorController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorIdDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorDetailDto"];
+                };
+            };
+        };
+    };
+    LocatorController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorSceneDto"];
+                };
+            };
+        };
+    };
+    LocatorController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorHistoryDto"];
+                };
+            };
+        };
+    };
+    LocatorController_search: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorSearchDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorSearchResultsDto"];
+                };
+            };
+        };
+    };
+    LocatorController_bootstrap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorEmptyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorBootstrapDto"];
+                };
+            };
+        };
+    };
+    LocatorController_reference: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authorized original private PNG; never included in the public bundle. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/png": string;
+                };
+            };
+        };
+    };
+    OverviewController_context: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OverviewEmptyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverviewContextDto"];
+                };
+            };
+        };
+    };
+    OverviewController_search: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OverviewSearchDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverviewSearchResultDto"];
+                };
+            };
+        };
+    };
+    OverviewController_area: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OverviewAreaRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverviewAreaDto"];
                 };
             };
         };
@@ -2424,6 +4834,278 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssetTimelinePageDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_catalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDomainCatalogDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_configure: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainConfigureDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetTypeCatalogDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainIdDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDomainDetailDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetEnrichmentDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDomainHistoryDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_references: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainQueryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDomainReferencePageDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_mappingQuery: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainQueryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetMappingPageDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_mappingSource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetSourceTupleDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetMappingLookupDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_saveMapping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetMappingSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetSourceMappingDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_mappingHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetMappingHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetMappingHistoryDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_candidates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetSourceQueryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetSourceCandidatePageDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_pareto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CanonicalParetoSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CanonicalAssetParetoDto"];
                 };
             };
         };
@@ -3965,6 +6647,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HandoverCompletionPageDto"];
+                };
+            };
+        };
+    };
+    HandoverController_assets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HandoverAssetsRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HandoverAssetsPageDto"];
                 };
             };
         };

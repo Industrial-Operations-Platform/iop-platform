@@ -1,7 +1,8 @@
 # IOP roadmap
 
-Reviewed on **2026-10-06** against develop at `c0fc3ff` under
-[IOP-195](docs/planning/items/IOP-195-development-status.md).
+Updated locally on **2026-10-14** on `feature/IOP-203-platform-completion`, from
+develop `24b6269`, under [IOP-203](docs/planning/items/IOP-203-platform-completion.md).
+The review branch remains separate from remote publication.
 IOP-197 subsequently reconciles the retained Audit design and IOP-196 operational
 refinements while integrating all retained branches.
 The local analytical POC has expanded into an operational platform. This inventory
@@ -24,6 +25,10 @@ permanent story's status; the [delivery map](docs/planning/poc-delivery.md) link
   board/search, immutable outcomes and atomic resolution of included Handover issues.
 - M10 Digital Asset Record: stable registry, exact scoped aliases, validation/
   retirement, search, manual within-area metadata and source-authorized timeline.
+- Formal shift Handover and Improvement Tracking for the three advanced profiles.
+- Reusable provisional 3D Locator with private schematics, revisioned placements and source problem evidence.
+- Configurable Asset types/composition/controllers/metadata, survey workflow and reviewed canonical mapping/Pareto.
+- Global search/area source context, integration readiness, scoped jobs/Audit and encrypted isolated restore.
 - Explicit synthetic analytical, Handover, Workforce and Maintenance exercises.
 - IOP-196 personal Start summaries, focused Maintenance status/completion and
   historical daily categories with current pending topics, images and person notices.
@@ -39,17 +44,13 @@ survey remain pending; Git integration is not final product acceptance.
 | Area | Remaining outcome | Stories |
 | --- | --- | --- |
 | Shared-use identity/core | Corporate/provider authentication and complete organization/site/user/membership lifecycle beyond the local installation | IOP-007, 025–027, 029–030, 106 |
-| Assets | Configurable composition hierarchy/types, parent-cycle rules, controller links, extensible metadata, survey workflow and ingestion-time event mapping | IOP-032–033, 035–036, 038–039, 044; synthetic structure IOP-124 |
-| Formal Handover | Shift-bound record, canonical asset references, closure/acknowledgement and previous-shift view; Workforce-prefilled location remains separate integration | IOP-060, 063, 066–067 |
-| Asset Locator | Versioned maps, upload, normalized coordinates, placements and ambiguous/unmapped lookup; explicitly Deferred by the owner | IOP-076–083 |
-| Analytical extension | Full canonical Asset/Area/Event Pareto coverage beyond the delivered source-group charts | IOP-093 |
-| Improvement Tracking | Decide ownership/inclusion; action, owner/target, evidence and action-linked before/after impact | IOP-098–101 |
-| External integrations | Registry, read-only WinCC/Ultimo contracts, Entra connection and source health; corporate roster connection remains outside manual Workforce import | IOP-102, 104–107 |
-| Delivery infrastructure | Automatic CI; background job design and worker/retry infrastructure | IOP-021; Deferred IOP-010 and Proposed IOP-024 |
-| Audit/security | General Audit storage/collection/retention under Accepted ADR-0017 and consolidated authorization/critical-action verification | IOP-023, 108, 111, 131 |
-| Operations | Full-platform backup/verified restore, performance baseline/targets and broader job/import recovery | IOP-112–115, 133 |
-| UX | Unified area overview and one global asset/area/issue search | IOP-118–119 |
-| Release | Consolidated pilot measurements, authorized deployment/admin procedures, final architecture review and version/tag/release notes | IOP-130, 134–135, 137–138 |
+| Plant assets and location | Real type/relationship/metadata configuration, physical inspection, identity mapping, measured plant registration/elevations and exact sensor placement; software workflows are delivered | IOP-039, 079, 081; IOP-206/209 inputs |
+| External integrations | Real WinCC/Ultimo/Entra transports and approved schemas/access, current connection evidence; registry/adapters/readiness contracts are delivered | IOP-104–107; IOP-207 |
+| Delivery infrastructure | Authorized remote CI execution and registered real business/provider job handlers; local checks/leases/retries are delivered | IOP-021/024; IOP-208 |
+| Audit/security | General organization RBAC and platform-security capture/authority; site append/inspection/retention infrastructure is delivered | IOP-023, 108–111; IOP-208 |
+| Operations | Representative workload/threshold acceptance, real provider recovery and operational monitoring; full encrypted backup/isolated restore and measurement tooling are delivered | IOP-112–115, 133 |
+| Release | Consolidated pilot measurements, shared hosting, owner functional/architecture review and version/tag/release decision | IOP-130, 134–135, 137–138 |
+
 
 The original local outcomes of login/admin, asset lifecycle/aliases/search,
 Handover categories/entries/issues/summary, role-aware Start and Workforce/Maintenance

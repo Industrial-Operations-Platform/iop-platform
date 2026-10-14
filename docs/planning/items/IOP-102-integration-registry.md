@@ -2,11 +2,11 @@
 
 ## Status
 
-Proposed
+Completed — scoped configurable-source registry delivered through IOP-207.
 
 ## Milestone
 
-M13 — External Integrations. Proposed delivery slice.
+M13 — External Integrations. Readiness delivered under IOP-207; real connections remain separate.
 
 ## Goal
 
@@ -14,7 +14,7 @@ Integration registry. Expected outcome: Configurable sources
 
 ## User / business value
 
-Administradores necesitan conectar fuentes sin acoplar el producto a un proveedor.
+Administrators need to connect sources without coupling the product to a provider.
 
 ## Context
 
@@ -24,9 +24,7 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Manual CSV sources/configuration and import histories exist. Remaining: a general
-integration registry with source lifecycle/configuration contracts beyond the
-single-source local path.
+The scoped registry stores nonsecret WinCC/Ultimo/Entra configuration, logical private credential references and immutable revisions. Current Administrator access can edit metadata; Administrator, Team Leader and Task Force can inspect readiness/history. Configuration is separate from a connected provider and does not enable outbound transport or corporate sign-in.
 
 ## Desired state
 
@@ -39,9 +37,9 @@ Configurable sources
 
 ## Acceptance criteria
 
-- [ ] Configurable sources
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Configurable sources
+- [x] The plan documents scenarios and necessary decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
@@ -68,8 +66,8 @@ Separate secrets, mapping, provenance and scope; preserve existing flows during 
 
 ## API considerations
 
-Interfaces documentadas y autorizadas; fuentes industriales solo lectura. Contratos no
-prometen conectividad real.
+Documented and authorized interfaces; industrial sources remain read-only. Contracts
+do not promise real connectivity.
 
 ## UI considerations
 
@@ -98,16 +96,14 @@ actual results, not fictional tests.
 Update this item, its status in the [backlog](../backlog.md) and the execution plan.
 Update contracts, models, guides or ADRs only if this task changes their content.
 
-## Open questions
+## Delivered readiness and remaining provider work — 2026-10-14
 
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
+The owner's [IOP-203](IOP-203-platform-completion.md) request authorized the
+prepared adapter/registry increment. [IOP-207](IOP-207-integration-readiness.md),
+its [completed execution](../completed/IOP-207-integration-readiness-plan.md) and
+the [readiness contract](../../product/integration-readiness.md) record scope,
+current role enforcement and executed API/web/real PostgreSQL evidence. Actual
+desktop/390px review shows three disabled providers and explicit missing-input
+semantics; no existing provider configuration or account passwords changed.
 
-## Current coverage and remaining work — 2026-10-06
-
-Manual CSV sources/configuration and import histories exist. Remaining: a general
-integration registry with source lifecycle/configuration contracts beyond the
-single-source local path.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+Registry configurable-source acceptance is complete. Each provider still requires its actual reviewed transport, source contract and authorized connection evidence; those remain with IOP-104–107.

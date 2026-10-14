@@ -1,3 +1,9 @@
+import {AssetDomainController} from "./asset-domain-controller";
+import {OverviewController} from "./overview-controller";
+import {FormalHandoverController} from "./formal-handover-controller";
+import {ImprovementController} from "./improvement-controller";
+import {LocatorController} from "./locator-controller";
+import {ConnectionsController} from "./connections-controller";
 import { WorkforceController } from "./workforce-controller";
 import { MaintenanceController } from "./maintenance-controller";
 import { AssetsController } from "./assets-controller";
@@ -441,8 +447,14 @@ export class PlatformModule {
     return {
       module: PlatformModule,
       controllers: [
+        ConnectionsController,
+        FormalHandoverController,
+        ImprovementController,
+        LocatorController,
+        OverviewController,
         MaintenanceController,
         AssetsController,
+        AssetDomainController,
         WorkforceController,
         PlatformController,
         AccessController,

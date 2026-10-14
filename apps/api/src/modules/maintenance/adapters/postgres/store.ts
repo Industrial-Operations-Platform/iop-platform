@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
 import {
   runSiteOperation,
@@ -26,6 +27,7 @@ export interface Scope {
   siteId: string;
 }
 export interface Directory {
+  audit?: SiteMaterialAudit;
   allowed(
     tx: SiteTransaction,
     actor: string,
@@ -182,6 +184,7 @@ class PgMaintenanceTransaction implements Transaction {
     return (result.rows[0]?.snapshot as Settings | undefined) ?? null;
   }
   async saveSettings(settings: Settings, actor: string, at: string) {
+    const before = this.directory.audit ? await this.settings() : null;
     await this.tx.query(
       `INSERT INTO maintenance.settings(organization_id,site_id,revision,snapshot) VALUES($1,$2,$3,$4)
       ON CONFLICT(organization_id,site_id) DO UPDATE SET revision=EXCLUDED.revision,snapshot=EXCLUDED.snapshot`,
@@ -197,6 +200,7 @@ class PgMaintenanceTransaction implements Transaction {
         JSON.stringify(settings),
       ],
     );
+    await this.directory.audit?.(this.tx,{subjectType:"maintenance-settings",id:"settings",action:settings.revision===1?"created":"changed",revision:settings.revision,beforeRevision:before?.revision??0,state:"configured",beforeState:before?"configured":"",occurredAt:at});
   }
   async priorityUsed(ids: string[]) {
     const result = await this.tx.query(
@@ -229,6 +233,7 @@ class PgMaintenanceTransaction implements Transaction {
     return (result.rows[0]?.snapshot as Revision | undefined) ?? null;
   }
   async save(record: MaintenanceRecord, revision: Revision) {
+    const before = this.directory.audit ? await this.get(record.id) : null;
     const d = record.data;
     await this.tx.query(
       `INSERT INTO maintenance.records(organization_id,site_id,id,revision,status,priority_id,location_id,asset_id,assignee_id,team_id,due_date,updated_at,snapshot,author_id,completed_at)
@@ -263,6 +268,7 @@ class PgMaintenanceTransaction implements Transaction {
         JSON.stringify(revision),
       ],
     );
+    await this.directory.audit?.(this.tx,{subjectType:"maintenance-record",id:record.id,action:record.revision===1?"created":d.status==="done"&&before?.data.status!=="done"?"completed":"changed",revision:record.revision,beforeRevision:before?.revision??0,state:d.status,beforeState:before?.data.status??"",occurredAt:revision.at});
   }
   async query(input: Selection, locationIds: string[]): Promise<Page> {
     const values: unknown[] = [...this.selectors];

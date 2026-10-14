@@ -1,114 +1,41 @@
 # IOP-124 — Synthetic asset structure
 
-## Status
+## Status and goal
 
-Proposed
+Completed. Opt-in clearly fictional asset composition, controller, metadata and survey exercises.
 
-## Milestone
+## Delivered scope — 2026-10-14
 
-M16 — Demo / Pilot Dataset. Proposed delivery slice.
+The reusable local fixture creates four fresh labelled synthetic identities under an existing configured scoped location, adds dedicated synthetic types and parent/controller links, and exercises all survey decisions plus Pending ambiguous mapping. Frozen local manifest supports repeat safety; user edits are preserved. No existing registry identity is approved and no RAW event is fabricated.
 
-## Goal
+The owner explicitly authorized this implementation in
+[IOP-209](IOP-209-asset-domain-completion.md) under the
+[IOP-203](IOP-203-platform-completion.md) delegated completion request.
+[ADR-0039](../../architecture/adr/ADR-0039-asset-domain-enrichment.md) is Accepted
+under that authorization. Historical Proposed decisions are not accepted by inference.
 
-Synthetic asset structure. Expected outcome: Realistic hall/area/assets
+## Acceptance and evidence
 
-## User / business value
+- [x] Opt-in clearly fictional asset composition, controller, metadata and survey exercises.
+- [x] Planned scenarios, scoped contracts, decisions and working UI/API are documented.
+- [x] Domain/HTTP, frontend and disposable PostgreSQL evidence is recorded in the
+  [completed IOP-209 plan](../completed/IOP-209-asset-domain-completion-plan.md).
 
-The team needs to demonstrate IOP without enterprise infrastructure or information.
-
-## Context
-
-Scope: Synthetic demo and pilot fixtures. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
-
-## Current state
-
-IOP-194 supplies explicit fictional asset identities/exercises and configured
-locations. The broader synthetic physical hierarchy/survey dataset is not delivered.
-
-## Desired state
-
-Realistic hall/area/assets
-
-## Requirements
-
-- Deliver only the outcome described for IOP-124.
-- Use fictional organizations, names, assets and relationships; fixtures do not define rigid domain levels.
-
-## Acceptance criteria
-
-- [ ] Realistic hall/area/assets
-- [ ] The plan documents scenarios and required decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
-
-## Domain considerations
-
-Use fictional organizations, names, assets and relationships; fixtures do not define
-rigid domain levels.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope for relevant operations and references.
-Do not include secrets, blueprints or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Use reproducible data with explicit scope and provenance; include useful
-invalid/ambiguous cases without secrets.
-
-## API considerations
-
-Use agreed loading mechanisms; prevent demo reset from affecting production.
-
-## UI considerations
-
-The user must distinguish demo data from real data; scope does not include designing new screens.
+The PostgreSQL cases include 1,506 scoped identities, pagination/refinement,
+current-role denial, scope/RLS, concurrency, cycle/controller invariants,
+immutable mapping history, unchanged RAW/facts and atomic rollback. Synthetic
+cases establish software behavior rather than plant acceptance.
 
 ## Dependencies
 
 [IOP-123](IOP-123-demo-organization.md), [IOP-039](IOP-039-asset-survey.md)
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+## Remaining external inputs and boundaries
 
-## Non-goals
+This fixture supports the configured hall/area location context. It does not represent actual plant geometry, a physical survey or production sensor associations.
 
-Implementing adjacent tasks, inferring acceptance of open decisions or extending
-delivery to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must define executable commands and scenarios for the acceptance criteria using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictitious tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, model, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-activating implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-IOP-194 supplies fictional stable assets and exercises with configured locations and
-retained aliases; later reconciliation retires training identities. Remaining: the
-proposed realistic synthetic asset structure and survey/hierarchy cases; source-code
-inventory is not a surveyed physical hierarchy.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+Administrator, Team Leader and Task Force use current Assets permissions; source
+analytics authorization is checked independently. Customer vocabulary remains
+configuration; physical placement is Locator-owned. See the
+[Asset domain guide](../../product/asset-domain.md) and
+[composition contract](../../architecture/asset-domain-integration.md).

@@ -4,6 +4,7 @@ import type {
   Selection,
   CreateEntry,
   ChangeEntry,
+  CanonicalAssetReference,
 } from "../../domain/models";
 import type { components } from "../../../../contracts/schema";
 type Schema = components["schemas"];
@@ -41,6 +42,7 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   return data;
 }
 export class HttpHandoverGateway implements Gateway {
+  assets(search: string) { return request<{ assets: CanonicalAssetReference[] }>("assets", { search }); }
   defaultDepartment(date: string) { return request<Schema["HandoverDefaultLocationDto"]>("default-location", { date }); }
   targets(input: { source: "handover" | "maintenance"; search: string; cursor: string }) {
     return request<Schema["HandoverCompletionPageDto"]>("completion-targets", input);

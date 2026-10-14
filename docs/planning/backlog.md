@@ -4,7 +4,37 @@ This index records existing work; permanent contexts own scope and status.
 Execution plans live in `active/`, and completed evidence in `completed/`.
 See the [workflow](workflow.md).
 
-## Current delivery — 2026-10-06
+## Owner-authorized independent completion — 2026-10-14
+
+The owner delegates development decisions and reopens the 3D Asset Locator under
+IOP-203. Child increments retain explicit missing-input states and separate review
+branches. This authorization does not publish or promote the resulting changes.
+
+| Task context | Status |
+| --- | --- |
+| [IOP-203 — Independent platform completion](items/IOP-203-platform-completion.md) | Completed |
+| [IOP-204 — Formal Handover completion](items/IOP-204-formal-handover.md) | Completed |
+| [IOP-205 — Improvement Tracking](items/IOP-205-improvement-tracking.md) | Completed |
+| [IOP-206 — Reusable 3D Asset Locator](items/IOP-206-3d-asset-locator.md) | Completed |
+| [IOP-207 — External integration readiness](items/IOP-207-integration-readiness.md) | Completed |
+| [IOP-208 — Local operating infrastructure](items/IOP-208-local-delivery-infrastructure.md) | Completed |
+| [IOP-209 — Independent Asset domain completion](items/IOP-209-asset-domain-completion.md) | Completed |
+| [IOP-210 — Global search and area overview](items/IOP-210-operational-search-overview.md) | Completed |
+
+## Infrastructure reconciliation — 2026-10-14
+
+IOP-010's accepted background design and IOP-024's executable local test-job
+software criteria are Completed through IOP-208. Tracked CI, site-material Audit,
+full private backup/isolated restore and repeatable measurement are implemented
+and locally tested. IOP-021 stays In progress for remote execution; IOP-023 stays
+In progress for organization/platform-security capture. IOP-112/113 local software
+criteria are Completed with actual encrypted backup/isolated restore: 170 files,
+62 tables and 154,341 rows reconcile; the new container remains stopped with no
+activation or active overwrite. IOP-114/115/134/135/137 retain agreed performance/operating/deployment/
+review scope; IOP-138 release authority and human gates are not inferred.
+See the individual permanent contexts and IOP-203/208 evidence for exact boundaries.
+
+## Historical delivery snapshot — 2026-10-06
 
 The original local CSV → analysis → presentation POC is delivered. Later
 owner-authorized increments add local login/four-profile administration, Shift
@@ -21,11 +51,12 @@ from whole-platform release (IOP-138).
 
 IOP-001–006 and IOP-008 are Completed design. Deferred IOP-025–027/029–030 have
 delivered local slices but retain broader lifecycle scope. IOP-028/031 local
-login/admin are Completed through later delivery. General Audit, corporate
-identity, workers, full asset hierarchy/survey, formal shift closure, external
-connections and operating/release controls remain open. M9 is explicitly Deferred.
+login/admin were Completed through later delivery. At that review, general Audit,
+corporate identity, workers, full asset hierarchy/survey, formal shift closure,
+external connections and operating/release controls remained open. M9 was Deferred.
 IOP-197 integrates IOP-009's previously accepted future-design decision; general
-Audit implementation remains future work.
+Audit implementation was future work at that review; the dated reconciliation
+above records later selected implementation without rewriting the snapshot.
 
 The [legacy map](legacy-backlog-map.md) preserves the original task numbering.
 IDs are never reused. Completing a POC slice does not close unfinished parent work.
@@ -53,7 +84,7 @@ stories** retain their specific scope. IOP-196 is included in develop and origin
 | [IOP-007 — Design authentication for later shared use](items/IOP-007-authentication-model.md) | Deferred |
 | [IOP-008 — Define the time and time-zone model](items/IOP-008-time-and-timezone-model.md) | Completed |
 | [IOP-009 — Retain future audit design](items/IOP-009-audit-model.md) | Completed |
-| [IOP-010 — Design background jobs for later delivery](items/IOP-010-background-job-model.md) | Deferred |
+| [IOP-010 — Design background jobs for later delivery](items/IOP-010-background-job-model.md) | Completed |
 | [IOP-011 — Define CSV preservation for the POC](items/IOP-011-file-storage-model.md) | Completed |
 | [IOP-012 — Define the CSV source contract](items/IOP-012-source-integration-contract.md) | Completed |
 | [IOP-013 — Define local health and diagnostic logging](items/IOP-013-observability-baseline.md) | Completed |
@@ -69,10 +100,10 @@ stories** retain their specific scope. IOP-196 is included in develop and origin
 | [IOP-018 — Local configuration and environments](items/IOP-018-configuration-management.md) | Completed |
 | [IOP-019 — PostgreSQL + migrations](items/IOP-019-database-bootstrap.md) | Completed |
 | [IOP-020 — Testing foundation](items/IOP-020-testing-foundation.md) | Completed |
-| [IOP-021 — CI baseline](items/IOP-021-ci-baseline.md) | Proposed |
+| [IOP-021 — CI baseline](items/IOP-021-ci-baseline.md) | In progress |
 | [IOP-022 — API error model](items/IOP-022-api-error-model.md) | Completed |
-| [IOP-023 — Audit infrastructure](items/IOP-023-audit-infrastructure.md) | Proposed |
-| [IOP-024 — Worker infrastructure](items/IOP-024-worker-infrastructure.md) | Proposed |
+| [IOP-023 — Audit infrastructure](items/IOP-023-audit-infrastructure.md) | In progress |
+| [IOP-024 — Worker infrastructure](items/IOP-024-worker-infrastructure.md) | Completed |
 
 ## M3 — Platform Core
 
@@ -88,20 +119,20 @@ stories** retain their specific scope. IOP-196 is included in develop and origin
 
 ## M4 — Asset Domain
 
-IOP-194 completes lifecycle, exact aliases and registry search. Type/component text
-and manual within-area grouping provide partial coverage; they do not implement
-full composition, managed type catalogs, controller relations or physical surveys.
+IOP-194 supplies lifecycle, exact aliases and registry search. IOP-209 adds managed
+type catalogs, cycle-checked composition, controller relations, typed metadata and
+attributed survey review. Actual inspection and plant configuration remain inputs.
 
 | Task context | Status |
 | --- | --- |
-| [IOP-032 — Asset hierarchy model](items/IOP-032-asset-hierarchy.md) | Proposed |
-| [IOP-033 — Asset type model](items/IOP-033-asset-types.md) | Proposed |
+| [IOP-032 — Asset hierarchy model](items/IOP-032-asset-hierarchy.md) | Completed |
+| [IOP-033 — Asset type model](items/IOP-033-asset-types.md) | Completed |
 | [IOP-034 — Asset lifecycle](items/IOP-034-asset-lifecycle.md) | Completed |
-| [IOP-035 — Asset parent relationships](items/IOP-035-asset-parent-relations.md) | Proposed |
-| [IOP-036 — Controller relationships](items/IOP-036-controller-relations.md) | Proposed |
+| [IOP-035 — Asset parent relationships](items/IOP-035-asset-parent-relations.md) | Completed |
+| [IOP-036 — Controller relationships](items/IOP-036-controller-relations.md) | Completed |
 | [IOP-037 — Asset aliases](items/IOP-037-asset-aliases.md) | Completed |
-| [IOP-038 — Asset metadata](items/IOP-038-asset-metadata.md) | Proposed |
-| [IOP-039 — Asset survey workflow](items/IOP-039-asset-survey.md) | Proposed |
+| [IOP-038 — Asset metadata](items/IOP-038-asset-metadata.md) | Completed |
+| [IOP-039 — Asset survey workflow](items/IOP-039-asset-survey.md) | In progress |
 | [IOP-040 — Asset search](items/IOP-040-asset-search.md) | Completed |
 
 ## M5 — Industrial Data Foundation
@@ -111,7 +142,7 @@ full composition, managed type catalogs, controller relations or physical survey
 | [IOP-041 — RAW ingestion model](items/IOP-041-raw-ingestion-model.md) | Completed |
 | [IOP-042 — Import batch model](items/IOP-042-import-batches.md) | Completed |
 | [IOP-043 — Event canonical model](items/IOP-043-canonical-event-model.md) | Completed |
-| [IOP-044 — Event-to-asset mapping](items/IOP-044-event-asset-mapping.md) | Proposed |
+| [IOP-044 — Event-to-asset mapping](items/IOP-044-event-asset-mapping.md) | Completed |
 | [IOP-045 — CSV source adapter](items/IOP-045-csv-adapter.md) | Completed |
 | [IOP-046 — Data validation](items/IOP-046-import-validation.md) | Completed |
 | [IOP-047 — Deduplication/idempotency](items/IOP-047-import-idempotency.md) | Completed |
@@ -135,21 +166,21 @@ full composition, managed type catalogs, controller relations or physical survey
 
 ## M7 — Shift Handover
 
-IOP-168/169 and later refinements complete configured categories, entries,
-carry-forward issues and meeting summaries. Shift-bound records/previous-shift
-selection, formal closure and explicit canonical entry-to-asset references remain
-open. IOP-194 adds source-alias history reads and reviewed repair issue resolution.
+IOP-168/169 and later refinements supply categories, entries, carry-forward issues
+and meeting summaries. IOP-204 completes exact Workforce shift records, previous
+actual shift selection, formal closure/acknowledgement and canonical entry-to-asset
+references. Real assignments and operational transfers remain owner-provided data.
 
 | Task context | Status |
 | --- | --- |
-| [IOP-060 — Handover record](items/IOP-060-handover-record.md) | Proposed |
+| [IOP-060 — Handover record](items/IOP-060-handover-record.md) | Completed |
 | [IOP-061 — Handover categories](items/IOP-061-handover-categories.md) | Completed |
 | [IOP-062 — Handover entries](items/IOP-062-handover-entry.md) | Completed |
-| [IOP-063 — Asset-linked handover](items/IOP-063-handover-asset-link.md) | Proposed |
+| [IOP-063 — Asset-linked handover](items/IOP-063-handover-asset-link.md) | Completed |
 | [IOP-064 — Open issues](items/IOP-064-open-issues.md) | Completed |
 | [IOP-065 — Handover summary](items/IOP-065-handover-summary.md) | Completed |
-| [IOP-066 — Handover closure](items/IOP-066-handover-closure.md) | Proposed |
-| [IOP-067 — Previous-shift view](items/IOP-067-previous-shift-overview.md) | Proposed |
+| [IOP-066 — Handover closure](items/IOP-066-handover-closure.md) | Completed |
+| [IOP-067 — Previous-shift view](items/IOP-067-previous-shift-overview.md) | Completed |
 
 ## M8 — Maintenance Management
 
@@ -166,19 +197,21 @@ open. IOP-194 adds source-alias history reads and reviewed repair issue resoluti
 
 ## M9 — Asset Locator
 
-Explicitly Deferred by the owner, confirmed on 2026-10-06. Catalog/manual grouping
-work under IOP-194 does not implement maps or spatial placements.
+The owner reopened Locator on 2026-10-14 under IOP-203. IOP-206 delivers private
+versioned references, provisional reusable 3D scenes, placement editing and exact
+identity lookup. Whole-plant registration and surveyed sensor placement remain
+pending; source image colors do not establish live equipment health.
 
 | Task context | Status |
 | --- | --- |
-| [IOP-076 — Map model](items/IOP-076-map-model.md) | Deferred |
-| [IOP-077 — Map upload](items/IOP-077-map-upload.md) | Deferred |
-| [IOP-078 — Normalized coordinates](items/IOP-078-normalized-map-coordinates.md) | Deferred |
-| [IOP-079 — Asset placement](items/IOP-079-asset-placement.md) | Deferred |
-| [IOP-080 — Locator UI](items/IOP-080-asset-locator-ui.md) | Deferred |
-| [IOP-081 — Locator search](items/IOP-081-locator-search.md) | Deferred |
-| [IOP-082 — Ambiguous aliases](items/IOP-082-ambiguous-assets.md) | Deferred |
-| [IOP-083 — Unmapped assets](items/IOP-083-unmapped-assets.md) | Deferred |
+| [IOP-076 — Map model](items/IOP-076-map-model.md) | Completed |
+| [IOP-077 — Map upload](items/IOP-077-map-upload.md) | Completed |
+| [IOP-078 — Normalized coordinates](items/IOP-078-normalized-map-coordinates.md) | Completed |
+| [IOP-079 — Asset placement](items/IOP-079-asset-placement.md) | In progress |
+| [IOP-080 — Locator UI](items/IOP-080-asset-locator-ui.md) | Completed |
+| [IOP-081 — Locator search](items/IOP-081-locator-search.md) | In progress |
+| [IOP-082 — Ambiguous aliases](items/IOP-082-ambiguous-assets.md) | Completed |
+| [IOP-083 — Unmapped assets](items/IOP-083-unmapped-assets.md) | Completed |
 
 ## M10 — Asset History / Digital Asset Record
 
@@ -198,7 +231,7 @@ work under IOP-194 does not implement maps or spatial placements.
 | [IOP-090 — Event frequency KPI](items/IOP-090-event-frequency.md) | Completed |
 | [IOP-091 — Accumulated alarm duration (POC)](items/IOP-091-downtime.md) | Completed |
 | [IOP-092 — Trend analysis](items/IOP-092-event-trends.md) | Completed |
-| [IOP-093 — Pareto analysis](items/IOP-093-pareto.md) | Proposed |
+| [IOP-093 — Pareto analysis](items/IOP-093-pareto.md) | Completed |
 | [IOP-094 — Source equipment analytics (POC)](items/IOP-094-asset-analytics.md) | Completed |
 | [IOP-095 — Area analytics](items/IOP-095-area-analytics.md) | Completed |
 | [IOP-096 — Analytical drill-down (connected POC delivered)](items/IOP-096-analytics-drilldown.md) | Completed |
@@ -208,21 +241,21 @@ work under IOP-194 does not implement maps or spatial placements.
 
 | Task context | Status |
 | --- | --- |
-| [IOP-098 — Improvement action](items/IOP-098-improvement-action.md) | Proposed |
-| [IOP-099 — Owner/target](items/IOP-099-improvement-target.md) | Proposed |
-| [IOP-100 — Evidence](items/IOP-100-improvement-evidence.md) | Proposed |
-| [IOP-101 — Before/after comparison](items/IOP-101-before-after-analysis.md) | Proposed |
+| [IOP-098 — Improvement action](items/IOP-098-improvement-action.md) | Completed |
+| [IOP-099 — Owner/target](items/IOP-099-improvement-target.md) | Completed |
+| [IOP-100 — Evidence](items/IOP-100-improvement-evidence.md) | Completed |
+| [IOP-101 — Before/after comparison](items/IOP-101-before-after-analysis.md) | Completed |
 
 ## M13 — External Integrations
 
 | Task context | Status |
 | --- | --- |
-| [IOP-102 — Integration registry](items/IOP-102-integration-registry.md) | Proposed |
+| [IOP-102 — Integration registry](items/IOP-102-integration-registry.md) | Completed |
 | [IOP-103 — Manual CSV delivery validation](items/IOP-103-csv-integration.md) | Completed |
-| [IOP-104 — WinCC adapter contract](items/IOP-104-wincc-adapter.md) | Proposed |
-| [IOP-105 — Ultimo adapter contract](items/IOP-105-ultimo-adapter.md) | Proposed |
-| [IOP-106 — Entra identity adapter](items/IOP-106-entra-adapter.md) | Proposed |
-| [IOP-107 — Integration health](items/IOP-107-integration-health.md) | Proposed |
+| [IOP-104 — WinCC adapter contract](items/IOP-104-wincc-adapter.md) | In progress |
+| [IOP-105 — Ultimo adapter contract](items/IOP-105-ultimo-adapter.md) | In progress |
+| [IOP-106 — Entra identity adapter](items/IOP-106-entra-adapter.md) | In progress |
+| [IOP-107 — Integration health](items/IOP-107-integration-health.md) | In progress |
 
 ## M14 — Security & Reliability
 
@@ -232,10 +265,10 @@ work under IOP-194 does not implement maps or spatial placements.
 | [IOP-109 — Secrets handling](items/IOP-109-secret-management.md) | Completed |
 | [IOP-110 — Input validation](items/IOP-110-input-validation.md) | Completed |
 | [IOP-111 — Audit verification](items/IOP-111-audit-verification.md) | Proposed |
-| [IOP-112 — Backup process](items/IOP-112-backup.md) | Proposed |
-| [IOP-113 — Restore process](items/IOP-113-restore.md) | Proposed |
-| [IOP-114 — Performance baseline](items/IOP-114-performance-baseline.md) | Proposed |
-| [IOP-115 — Failure handling](items/IOP-115-failure-recovery.md) | Proposed |
+| [IOP-112 — Backup process](items/IOP-112-backup.md) | Completed |
+| [IOP-113 — Restore process](items/IOP-113-restore.md) | Completed |
+| [IOP-114 — Performance baseline](items/IOP-114-performance-baseline.md) | In progress |
+| [IOP-115 — Failure handling](items/IOP-115-failure-recovery.md) | In progress |
 
 ## M15 — UX & Operational Experience
 
@@ -243,8 +276,8 @@ work under IOP-194 does not implement maps or spatial placements.
 | --- | --- |
 | [IOP-116 — App navigation](items/IOP-116-navigation.md) | Completed |
 | [IOP-117 — Role-aware home](items/IOP-117-role-home.md) | Completed |
-| [IOP-118 — Area overview](items/IOP-118-area-overview.md) | Proposed |
-| [IOP-119 — Global search](items/IOP-119-global-search.md) | Proposed |
+| [IOP-118 — Area overview](items/IOP-118-area-overview.md) | Completed |
+| [IOP-119 — Global search](items/IOP-119-global-search.md) | Completed |
 | [IOP-120 — Empty/error/loading states](items/IOP-120-ui-states.md) | Completed |
 | [IOP-121 — Responsive baseline](items/IOP-121-responsive-ui.md) | Completed |
 | [IOP-122 — Accessibility baseline](items/IOP-122-accessibility.md) | Completed |
@@ -254,7 +287,7 @@ work under IOP-194 does not implement maps or spatial placements.
 | Task context | Status |
 | --- | --- |
 | [IOP-123 — Synthetic organization](items/IOP-123-demo-organization.md) | Completed |
-| [IOP-124 — Synthetic asset structure](items/IOP-124-demo-assets.md) | Proposed |
+| [IOP-124 — Synthetic asset structure](items/IOP-124-demo-assets.md) | Completed |
 | [IOP-125 — Synthetic analytical CSV fixtures](items/IOP-125-demo-events.md) | Completed |
 | [IOP-126 — Synthetic workforce](items/IOP-126-demo-workforce.md) | Completed |
 | [IOP-127 — Synthetic maintenance](items/IOP-127-demo-maintenance.md) | Completed |
@@ -269,10 +302,10 @@ work under IOP-194 does not implement maps or spatial placements.
 | [IOP-131 — Permission validation](items/IOP-131-permission-validation.md) | Proposed |
 | [IOP-132 — Data reconciliation](items/IOP-132-final-reconciliation.md) | Completed |
 | [IOP-133 — Performance acceptance](items/IOP-133-performance-acceptance.md) | Proposed |
-| [IOP-134 — Deployment documentation](items/IOP-134-deployment-guide.md) | Proposed |
-| [IOP-135 — Admin documentation](items/IOP-135-admin-guide.md) | Proposed |
+| [IOP-134 — Deployment documentation](items/IOP-134-deployment-guide.md) | In progress |
+| [IOP-135 — Admin documentation](items/IOP-135-admin-guide.md) | In progress |
 | [IOP-136 — User documentation](items/IOP-136-user-guide.md) | Completed |
-| [IOP-137 — Architecture review](items/IOP-137-architecture-review.md) | Proposed |
+| [IOP-137 — Architecture review](items/IOP-137-architecture-review.md) | In progress |
 | [IOP-138 — v1 release](items/IOP-138-v1-release.md) | Proposed |
 
 ## Repository governance

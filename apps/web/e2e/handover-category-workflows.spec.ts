@@ -1,3 +1,4 @@
+import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixture";
 import { expect, test } from "@playwright/test";
 import { emptyWorkforce } from "./workforce-fixture";
 import type { Entry, Content } from "../src/features/shift-handover/domain/models";
@@ -45,6 +46,7 @@ for (const width of [1440, 375]) {
     const workforceQueries: { from: string; to: string }[] = [];
     await page.route("**/api/v1/**", async (route) => {
       const path = new URL(route.request().url()).pathname;
+      if (path === "/api/v1/overview/context") return fulfillOverviewContext(route,overviewContextFixture({locations,timeZone:"UTC",today:"2026-10-07",coverage:{assets:"available",handover:"available",maintenance:"available",shifts:"not-configured"}}));
       if (path.endsWith("/session/context")) return route.fulfill({ json: { enabled: true, authentication: "password", canImport: false, canAdminister: false, canReadAnalytics: false,
         user: { id: "leader", name: "Lee Leader", profile: "team-leader" }, users: [], scope: { organizationId: "org", siteId: "site", siteTimeZone: "UTC" } } });
       if (path.endsWith("/maintenance/assignments")) return route.fulfill({ json: { records: [], events: [] } });

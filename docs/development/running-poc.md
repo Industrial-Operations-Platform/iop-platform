@@ -160,7 +160,10 @@ rankings/scatter up to 100 groups and comparison/heatmap series up to 10 groups.
 Executive KPIs use the full filtered data, independently of ranking and row limits.
 Investigation views include selected-month frequency/duration top-10 Pareto charts,
 full-total cumulative percentages and an 80% reference. There is no separate Pareto
-tab; IOP-093 retains broader canonical asset coverage.
+tab in the source-group reports. IOP-209 separately provides reviewed canonical
+Asset Pareto with full/mapped/unresolved totals; see the
+[Asset domain contract](../product/asset-domain.md). Mapping review and actual
+physical coverage remain explicit rather than inferred from source wording.
 Only admitted coverage appears; missing days are gaps rather than zero activity.
 Source frequency is an integer. Duration is summed as exact seconds and divided by
 60 before display rounding; it is **not plant downtime**. Filename dates do not
@@ -440,4 +443,10 @@ migrations extend storage and permissions without removing retained data. Follow
 normal setup/migration before running that branch; startup alone never migrates
 and branch creation does not publish or activate a deployment. See
 [Maintenance/Asset operation](maintenance-assets.md) for registration, priorities,
-work transitions, exact aliases and source coverage. M9 maps are deferred.
+work transitions, exact aliases and source coverage. The later 2026-10-14 IOP-203
+request supersedes the earlier M9 deferral: IOP-206 adds provisional 3D scenes,
+reusable components, linked placements and reported-problem evidence. IOP-209 adds
+reviewed Asset models/controller relationships and canonical mappings. See the
+[Locator guide](asset-locator.md), [Asset domain contract](../product/asset-domain.md)
+and [current platform guide](platform-completion.md). Exact physical surveying,
+floor registration and real provider connections remain pending.

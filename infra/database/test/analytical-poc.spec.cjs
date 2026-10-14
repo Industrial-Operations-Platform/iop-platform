@@ -70,12 +70,28 @@ async function operationalSnapshot() {
     "shift_handover.equipment_references",
     "shift_handover.revisions",
     "users_rbac.profiles",
+    "assets.model_catalog", "assets.model_catalog_revisions", "assets.enrichments",
+    "assets.enrichment_revisions", "assets.controller_links", "assets.source_mappings",
+    "assets.source_mapping_revisions", "shift_handover.records", "shift_handover.record_revisions",
+    "improvement.actions", "improvement.revisions", "improvement.evidence", "improvement.comparisons",
+    "asset_locator.scenes", "asset_locator.revisions", "asset_locator.placements",
+    "integrations.connections", "integrations.connection_revisions", "jobs.records", "jobs.local_effects",
+    "audit.site_events",
   ]) {
     const rows = await admin(
       `SELECT to_jsonb(record) AS data FROM ${table} record WHERE organization_id=$1 AND site_id=$2 ORDER BY to_jsonb(record)::text`,
       [scope.organizationId, scope.siteId],
     );
     result[table] = rows.rows;
+  }
+  return result;
+}
+async function canonicalSnapshot(sourceId) {
+  const result = {};
+  for (const table of ["oip.canonical_asset_links", "oip.canonical_asset_link_history"]) {
+    result[table] = (await admin(`SELECT to_jsonb(record) AS data FROM ${table} record
+      WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 ORDER BY to_jsonb(record)::text`,
+      [scope.organizationId,scope.siteId,sourceId])).rows;
   }
   return result;
 }
@@ -619,7 +635,7 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
   await expect(demoMaintenance(env, "reset")).rejects.toThrow(
     "Stop the demo host",
   );
-  const operationalBefore = await retainOperationalResetEvidence();
+  await retainOperationalResetEvidence();
   // A different configured source shares the local installation but is not the reset target.
   const foreignSource = { ...runtimeConfig.local.source, id: "other-source" };
   const foreignConfig = {
@@ -641,6 +657,14 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
       "SELECT row_to_json(b) AS data FROM integrations.import_batches b WHERE source_id='other-source'",
     )
   ).rows;
+  const operationalBefore = await operationalSnapshot();
+  const canonicalBefore = await canonicalSnapshot(scope.sourceId), foreignCanonicalBefore = await canonicalSnapshot("other-source");
+  expect(canonicalBefore["oip.canonical_asset_links"].length).toBeGreaterThan(0);
+  expect(canonicalBefore["oip.canonical_asset_link_history"].length).toBeGreaterThan(0);
+  expect(foreignCanonicalBefore["oip.canonical_asset_links"].length).toBeGreaterThan(0);
+  expect(operationalBefore["audit.site_events"].length).toBeGreaterThan(0);
+  await expect(runtime.pool.query("DELETE FROM oip.canonical_asset_links")).rejects.toMatchObject({code:"42501"});
+  await expect(runtime.pool.query("DELETE FROM oip.canonical_asset_link_history")).rejects.toMatchObject({code:"42501"});
   await app.close();
   app = null;
   await runtime.close();
@@ -654,6 +678,22 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
     await expect(
       demoMaintenance({ ...env, ...wrong }, "reset"),
     ).rejects.toThrow();
+  // Migration acceptance remains explicit: an unknown installed revision must refuse without changes.
+  await admin("INSERT INTO iop_migrations.history(name,run_on) VALUES('20991231000000-unknown-reset-probe',clock_timestamp())");
+  try {
+    await expect(demoMaintenance(env,"reset")).rejects.toThrow("Unsupported migration version");
+    expect(await canonicalSnapshot(scope.sourceId)).toEqual(canonicalBefore);
+    expect(await operationalSnapshot()).toEqual(operationalBefore);
+  } finally { await admin("DELETE FROM iop_migrations.history WHERE name='20991231000000-unknown-reset-probe'"); }
+  const scopedMigrator = new Client(configs.migrator);
+  try {
+    await scopedMigrator.connect();
+    expect((await scopedMigrator.query("SELECT count(*)::integer AS n FROM oip.canonical_asset_links")).rows[0].n).toBe(0);
+    await scopedMigrator.query("BEGIN");
+    await scopedMigrator.query("SELECT set_config('iop.reset_organization_id',$1,true),set_config('iop.reset_site_id',$2,true),set_config('iop.reset_source_id',$3,true)",[scope.organizationId,scope.siteId,"other-source"]);
+    expect((await scopedMigrator.query("SELECT count(*)::integer AS n FROM oip.canonical_asset_links")).rows[0].n).toBe(foreignCanonicalBefore["oip.canonical_asset_links"].length);
+    await scopedMigrator.query("ROLLBACK");
+  } finally { await scopedMigrator.end(); }
   const holder = new Client(configs.migrator);
   try {
     await holder.connect();
@@ -694,6 +734,7 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
     `CREATE FUNCTION public.test_reset_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic reset failure'; END $$`,
   );
   for (const table of [
+    "oip.canonical_asset_link_history", "oip.canonical_asset_links",
     "analytics.fact_hitliste", "analytics.betriebsmittel", "analytics.bereich", "analytics.sektor",
     "analytics.meldetext", "analytics.meldung_typ", "analytics.meldegruppe",
     "oip.facts",
@@ -713,6 +754,9 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
         (await admin("SELECT count(*)::integer AS n FROM oip.facts")).rows[0].n,
       ).toBe(before);
       expect((await admin("SELECT count(*)::integer AS n FROM analytics.fact_hitliste")).rows[0].n).toBe(before);
+      expect(await canonicalSnapshot(scope.sourceId)).toEqual(canonicalBefore);
+      expect(await canonicalSnapshot("other-source")).toEqual(foreignCanonicalBefore);
+      expect(await operationalSnapshot()).toEqual(operationalBefore);
       expect(
         (await admin("SELECT retained_attempts FROM integrations.import_quota"))
           .rows[0].retained_attempts,
@@ -724,6 +768,8 @@ test("offline reset refuses active hosts, mismatched targets and drift; rollback
   await admin("DROP FUNCTION public.test_reset_failure()");
   const result = await demoMaintenance(env, "reset");
   expect(await operationalSnapshot()).toEqual(operationalBefore);
+  expect(await canonicalSnapshot(scope.sourceId)).toEqual({"oip.canonical_asset_links":[],"oip.canonical_asset_link_history":[]});
+  expect(await canonicalSnapshot("other-source")).toEqual(foreignCanonicalBefore);
   expect(result.attempts).toBe(7);
   expect(
     (

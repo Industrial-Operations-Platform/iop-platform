@@ -18,5 +18,7 @@ COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/infra/database/dist ./infra/database/dist
 COPY infra/database/migrations ./infra/database/migrations
 COPY scripts/local/initialize.cjs scripts/local/bootstrap-access.cjs scripts/local/workforce-demo.cjs scripts/local/
+COPY scripts/local/jobs.cjs scripts/local/asset-domain-demo-runner.cjs scripts/local/
+COPY infra/operations/audit-operator.cjs infra/operations/
 USER node
 CMD ["node", "scripts/local/initialize.cjs"]

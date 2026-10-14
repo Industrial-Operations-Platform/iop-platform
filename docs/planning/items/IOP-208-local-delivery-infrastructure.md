@@ -1,0 +1,97 @@
+# IOP-208 — Local delivery and operating infrastructure
+
+## Status and goal
+
+Completed local infrastructure and site-material Audit slice under the owner's [IOP-203](IOP-203-platform-completion.md) delegated
+development authorization. Advance CI, reproducible backup/verified isolated
+restore, scoped worker infrastructure, general Audit plumbing and measurement
+tooling without requiring plant-specific inputs.
+
+## Scope and acceptance
+
+- [x] CI configures established build/type/contract/architecture/design/secret and
+  unit/database/browser checks; remote execution remains unverified until publication.
+- [x] Local full-platform backup includes database and private configuration/
+  references with integrity metadata; restoration targets an isolated installation
+  and verifies actual data without deleting the current installation.
+- [x] Worker execution has durable jobs, scoped authority, bounded retry/leases,
+  idempotency and explicit missing-handler/source states.
+- [x] Audit owns bounded append/inspection/retention contracts under ADR-0017;
+  implemented capture coverage and remaining emitter gaps are explicit.
+- [x] Repeatable performance/readiness tooling and operator guides distinguish
+  measurements from unagreed plant targets and whole-platform release.
+- [x] Relevant real tests, safe failures and local commits; original parents remain
+  open wherever full original criteria or external acceptance remain unmet.
+
+## Evidence and remaining work
+
+Plan before code on `feature/IOP-208-local-delivery-infrastructure`, from develop
+`24b6269`; see the [completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[operating guide](../../development/local-operations.md) and
+[Accepted ADR-0038](../../architecture/adr/ADR-0038-local-operating-infrastructure.md).
+
+Owning validation: full API 31 suites/423 tests; focused updated domain tests three;
+scripts four suites/23 tests; actual PostgreSQL jobs/Audit plus full private restore
+two suites/seven tests; final full restore also reconciles exact RLS policies. API
+typecheck and secret hygiene pass. The full synthetic source includes nonempty
+Handover revisions, local job effects and Audit; ciphertext/private-file and scoped
+operator failures are tested. One observed full typecheck sample passed in 42.524 s;
+the report explicitly leaves workload targets and release acceptance unagreed.
+
+Root IOP-203 assembles the Administrator `jobs.manage` catalog/backfill, exact
+provisioning allowlists, setup-image CLI packaging and mandatory owner Audit
+composition. Temporary dependency copies used during child development were
+restored before its commits; final integration is validated on the root review branch.
+
+Remote CI, provider handlers, file activation Audit, organization RBAC Audit,
+90-day platform-security collection, plant performance thresholds and whole-platform
+release acceptance remain pending. Reconciled original criteria now complete
+[IOP-010 design](IOP-010-background-job-model.md),
+[IOP-024 executable local jobs](IOP-024-worker-infrastructure.md),
+[IOP-112 reproducible local backup](IOP-112-backup.md) and
+[IOP-113 verified isolated restore](IOP-113-restore.md).
+[IOP-021 remote CI](IOP-021-ci-baseline.md) and
+[IOP-023 broader Audit](IOP-023-audit-infrastructure.md) remain In progress;
+the [reconciled backlog](../backlog.md) preserves separate operating, deployment,
+performance, human and release criteria. No remote deployment, active-installation
+overwrite or release publication was performed.
+
+
+2026-10-14 authorized increment: implement explicit pinned owner emitters for
+site-material operations across completed local modules, with safe allowlisted
+fields, atomic rollback and retry/idempotency evidence. Organization RBAC and
+platform-security collection retain their separate pending contracts.
+
+
+Site-material increment evidence: current mandatory host composition/API typecheck
+and build pass; full API 32 suites/428 tests pass. The actual PostgreSQL suite
+covers ten material cases, six worker/operator cases and complete private restore
+(17 tests total). It verifies
+real Audit INSERT denial and post-append exceptions roll back both Handover and
+Assets, safe first-wave events, AssetDomain sidecars, delegated Maintenance journal
+resolution, report configuration, exact event catalog and idempotent recovery.
+The published Audit port and mandatory owner/host integration patch are reviewed
+under parent IOP-203; no dependency copies enter this story's commits. See the
+[site capture contract](../../development/site-audit-integration.md) for all owner
+seams and precise remaining organization/platform-security/file-provider scope.
+
+
+## Actual installation gate — 2026-10-14
+
+Root encrypted full backup and independently isolated restore pass: 170 files,
+62 tables and 154,341 rows reconcile with exact catalog/data/RLS/role and schema,
+table, column and function ACL metadata. The newly created network-none restore
+container remains stopped; the private review directory is mode 0700 and the
+separate key stays outside archive/private inputs. No activation or active-data
+overwrite occurred. Actual API/web restarted healthy after capture.
+
+Full root PostgreSQL validation passes 30 suites/316 tests. The native-demo
+compatibility correction keeps an explicit migration inventory and exact scoped
+canonical cleanup, preserving business/Audit history. IOP-112/113 reproducible
+local software criteria now close against actual evidence; remote CI, deployment,
+operator/human/physical/performance acceptance and general organization/platform
+security capture retain their distinct remaining scope. Final root validation
+passes API 509, web 192, PostgreSQL 319 and all 57 browser checks after exact fixture
+and current/history-selector corrections. No production behavior was relaxed.
+See the [completed parent evidence](../completed/IOP-203-platform-completion-plan.md).
+No remote publication.

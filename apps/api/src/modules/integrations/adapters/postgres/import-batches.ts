@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import { createHash, randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import { runSiteOperation, SiteAccessDeniedError, AuthorizationUnavailableError,
@@ -56,7 +57,7 @@ function inspect(input: Inspection, success: boolean): Inspection {
 
 export class ImportBatches {
   private readonly source: ImportSource;
-  constructor(private readonly pool: Pick<Pool, 'connect'>, source: ImportSource) {
+  constructor(private readonly pool: Pick<Pool, 'connect'>, source: ImportSource, private readonly audit?: SiteMaterialAudit) {
     if (!source || ![source.organizationId, source.siteId, source.sourceId, source.adapterRevision,
       source.profileRevision, source.mappingRevision].every(id) ||
       typeof source.siteTimeZone !== 'string' || source.siteTimeZone.length > 100 ||
@@ -121,6 +122,7 @@ export class ImportBatches {
       [...this.values(importId), randomUUID(), filename, date, original, original.length,
         createHash('sha256').update(original).digest('hex'), actor, this.source.adapterRevision,
         this.source.profileRevision, this.source.mappingRevision, this.source.siteTimeZone]);
+      await this.audit?.(tx,{subjectType:"import-batch",id:importId,action:"received",revision:1,beforeRevision:0,state:"received",beforeState:""});
       return importId;
     });
   }
@@ -165,6 +167,7 @@ export class ImportBatches {
       outcome === 'succeeded' ? counts.dataRecordCount : 0, outcome === 'succeeded' ? 0 : counts.dataRecordCount,
       counts.inspectedValidCount, counts.inspectedInvalidCount, counts.inspectionComplete,
       counts.unclassifiedCount, counts.repeatedCount, JSON.stringify(counts.diagnostics), counts.diagnosticsTruncated]);
+    await this.audit?.(tx,{subjectType:"import-batch",id:batch.importId,action:outcome==="succeeded"?"completed":outcome==="rejected"?"rejected":"failed",revision:2,beforeRevision:1,state:outcome,beforeState:"received",reason:reason===null?"none":reason==="invalid-input"?"invalid-input":reason==="duplicate-date"?"duplicate-date":reason==="processing-failed"?"processing-failed":"interrupted"});
   }
   async reject(actor: string, importId: string, inspection: Inspection): Promise<void> {
     return this.finalizeFailure(actor, importId, inspection, 'rejected', 'invalid-input');

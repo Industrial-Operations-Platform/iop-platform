@@ -1,115 +1,41 @@
 # IOP-098 — Improvement action
 
-## Status
+## Status and authorization
 
-Proposed
+Completed — local implementation through [IOP-205](IOP-205-improvement-tracking.md).
+The owner's explicit 2026-10-14 request authorizes Improvement Tracking delivery
+and delegates development decisions under [IOP-203](IOP-203-platform-completion.md).
+This supersedes the earlier proposed-only extension and undecided module ownership.
+M12 is owned by the distinct Improvement Tracking module under Accepted
+[ADR-0037](../../architecture/adr/ADR-0037-operational-completion.md).
 
-## Milestone
+## Delivered behavior
 
-M12 — Improvement Tracking. Proposed delivery slice.
+Expected outcome: An action can be linked to an issue/asset.
 
-## Goal
+Actions use explicit scoped registered-asset and Handover-issue references validated by owning-module ports. Linking never changes source records.
 
-Improvement action. Expected outcome: An action can be linked to an issue/asset
+Administrator, Team Leader and Task Force receive scoped access; current profile
+and grants are both required. Technician access is denied. The
+[product contract](../../product/improvement-tracking.md) owns lifecycle, evidence
+and comparison semantics; the [operation guide](../../development/improvement-tracking.md)
+owns storage, routes and verification.
 
-## User / business value
+## Acceptance and evidence
 
-Owners want to assess improvement actions with before/after evidence.
+- [x] An action can be linked to an issue/asset.
+- [x] Ownership, authorized profiles and local module inclusion are explicit.
+- [x] Scoped permissions, conflicts, revision/evidence atomicity and relevant
+  analytical limitations are verified and documented.
 
-## Context
+The [IOP-205 execution record](../completed/IOP-205-improvement-tracking-plan.md)
+contains actual validation. Root host activation and shared delivery documents are
+coordinated under IOP-203; this does not claim owner product review or plant results.
 
-Scope: Improvement tracking — proposed extension. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+## Dependencies and limits
 
-## Current state
+[IOP-068](IOP-068-maintenance-record.md), [IOP-089](IOP-089-analytics-query-layer.md).
 
-No Improvement Tracking module is delivered. Remaining: decide module ownership/v1
-inclusion and implement an action linked to an issue/asset; Maintenance work is a
-separate record type.
-
-## Desired state
-
-An action can be linked to an issue/asset
-
-## Requirements
-
-- Deliver only the outcome described for IOP-098.
-- Ownership of improvement actions and their inclusion in v1 are undecided; document them before implementation.
-
-## Acceptance criteria
-
-- [ ] An action can be linked to an issue/asset
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
-
-## Domain considerations
-
-Ownership of improvement actions and their inclusion in v1 are undecided; document them
-before implementation.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Preserve authorship, targets, evidence and comparable periods; do not attribute
-causality without justification.
-
-## API considerations
-
-Define contracts with Maintenance/OIP without duplicating their domains; do not assume a
-new service.
-
-## UI considerations
-
-Distinguish targets, observed results and hypotheses; review pilot inclusion with IOP-001.
-
-## Dependencies
-
-[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md), [IOP-068](IOP-068-maintenance-record.md), [IOP-089](IOP-089-analytics-query-layer.md)
-
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
-
-## Non-goals
-
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
-
-## Validation
-
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation. Confirm v1 inclusion and the owning module before writing code.
-
-## Current coverage and remaining work — 2026-10-06
-
-No Improvement Tracking module is delivered. Remaining: decide module ownership/v1
-inclusion and implement an action linked to an issue/asset; Maintenance work is a
-separate record type.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+Accepted ADR-0014, ADR-0016 and ADR-0032 remain in force. Maintenance/Handover/OIP
+retain their own records and semantics. Plant intervention dates, verified physical
+identity, production/exposure data and causal attribution are not fabricated.

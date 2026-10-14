@@ -7,6 +7,15 @@ manual CSV → verified analysis → presentation, with login and external integ
 deferred. Its [delivery map](../planning/poc-delivery.md) is the immediate planning
 baseline. The requirements below describe later shared use, not POC prerequisites.
 
+The implementation snapshot below is superseded locally by the separately
+authorized 2026-10-14 IOP-203–210 increments: formal Handover, Tracking, provisional
+3D Locator, Asset models/mappings, scoped jobs/site Audit and verified private
+backup/isolated restore are delivered on the local review branch. See the
+[current delivery map](../planning/poc-delivery.md) and
+[platform guide](../development/platform-completion.md). Earlier pilot exclusions
+remain historical scope decisions, not claims that these local functions are
+absent; corporate/provider, physical survey and shared-use release limits remain.
+
 ## Shared-use v1 boundary
 
 **CSV events → preparation and normalization → analysis → presentation.**

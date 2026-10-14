@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import { lockHitliste, projectHitliste } from "./hitliste-projection";
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
@@ -23,6 +24,7 @@ export class PgReportingProfiles implements ReportingProfileRepository {
     private readonly pool: Pick<Pool, "connect">,
     readonly source: ImportSource,
     profile: ReportingProfile,
+    private readonly audit?: SiteMaterialAudit,
   ) {
     this.initial = compileProfile(profile);
     this.initialVersion = "default." + digest(this.initial);
@@ -124,6 +126,7 @@ export class PgReportingProfiles implements ReportingProfileRepository {
       if (result.rows.length !== 1)
         throw new AnalyticsError("analytics_revision_changed");
       await projectHitliste(tx, this.source, profile, version);
+      await this.audit?.(tx,{subjectType:"reporting-profile",id:this.source.sourceId+":"+version,action:expected===this.initialVersion?"created":"changed",revision:1,beforeRevision:0,state:"configured",beforeState:expected===this.initialVersion?"":"configured"});
       return { version, profile: this.clean(profile) };
     });
   }

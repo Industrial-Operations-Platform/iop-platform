@@ -2,11 +2,11 @@
 
 ## Status
 
-Deferred — M9 explicitly postponed by the owner, confirmed on 2026-10-06.
+Completed — interactive 3D Locator delivered through IOP-206.
 
 ## Milestone
 
-M9 — Asset Locator. Proposed delivery slice.
+M9 — Asset Locator. Local software delivery under IOP-206.
 
 ## Goal
 
@@ -24,8 +24,7 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-M9 maps, spatial placement and locator search are not implemented. IOP-194
-provides a non-spatial asset registry, exact aliases and manual within-area metadata.
+The composed Locator renders true 3D reusable conveyor/sensor primitives and private area references with orbit/pan/zoom, keyboard camera controls, selection, tracing and editable versioned scenes. A no-WebGL accessible list remains available. Whole-plant tiles are visibly uncalibrated navigation, not asserted physical alignment.
 
 ## Desired state
 
@@ -38,9 +37,9 @@ Interactive map
 
 ## Acceptance criteria
 
-- [ ] Interactive map
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Interactive map
+- [x] The plan documents scenarios and necessary decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
@@ -63,8 +62,9 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Coordinates in [0,1] are bound to a map version; define origin and orientation before
-implementation.
+Image-local coordinates in [0,1] are bound to a scene revision. The origin is
+top-left, X points right and Y points down. Surveyed scale, elevation and global
+alignment remain separate explicit input; scene extrusions do not prove height.
 
 ## API considerations
 
@@ -98,14 +98,17 @@ actual results, not fictional tests.
 Update this item, its status in the [backlog](../backlog.md) and the execution plan.
 Update contracts, models, guides or ADRs only if this task changes their content.
 
-## Open questions
+## Authorized delivery and remaining inputs — 2026-10-14
 
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
+The owner's [IOP-203](IOP-203-platform-completion.md) request explicitly reopened
+M9 and superseded the 2026-10-06 deferral. [IOP-206](IOP-206-3d-asset-locator.md),
+its [completed execution](../completed/IOP-206-3d-asset-locator-plan.md) and the
+[operator guide](../../development/asset-locator.md) record the implemented scope
+and executed API/web/real PostgreSQL evidence. Accepted
+[ADR-0037](../../architecture/adr/ADR-0037-operational-completion.md) records the
+owner-delegated decisions.
 
-## Remaining work — 2026-10-06
-
-The original locator outcome and its acceptance criteria remain unfulfilled.
-The owner explicitly deferred M9 while allowing IOP-194 catalog/manual grouping
-work; see [IOP-194](IOP-194-maintenance-asset-history.md). Existing assets and
-source-alias search do not implement versioned maps, coordinates or placement.
+The completed plan records actual WebGL2, private supplied-source tracing, both
+themes and 390px review alongside module/storage tests. Exact plant dimensions,
+elevations, global alignment, canonical identities and surveyed sensor positions
+remain pending input. These limits do not imply live equipment health.

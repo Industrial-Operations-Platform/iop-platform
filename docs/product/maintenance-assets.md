@@ -4,7 +4,11 @@
 owner-requested M8 and M10 increment, integrated into develop and published to
 origin on 2026-10-06. Further owner product testing and physical verification remain
 pending; integration does not imply final product acceptance.
-M9 maps and placements remain deferred. See the [operator guide](../development/maintenance-assets.md).
+The owner later reopened M9 on 2026-10-14 under IOP-203; IOP-206 now delivers
+provisional versioned 3D scenes/placements on the local review branch. Physical
+registration, dimensions and exact sensor survey remain pending. See the
+[operator guide](../development/maintenance-assets.md) and
+[Locator guide](../development/asset-locator.md).
 
 ## Maintenance
 
@@ -89,7 +93,11 @@ known identifiers through the normal application. Imports and API startup do not
 silently register assets. Unverified registration is distinct from validated physical
 identity. Validation requires evidence. Retirement retains
 history and identity and prevents new work from selecting a retired asset.
-This support does not complete M4 composition/controller/survey capabilities.
+That initial registry support did not complete M4 composition/controller/survey.
+IOP-209 now adds reusable types, containment/controller relationships, metadata,
+attributed survey decisions and reviewed source mappings as independent versioned
+software. Real inspection evidence and physical validation remain inputs; see the
+[Asset domain contract](asset-domain.md).
 
 Explicit aliases match source namespace, code and configured location context;
 analytical aliases also identify their source. Exact comparisons preserve case and
@@ -118,6 +126,9 @@ The current registry supports up to 10,000 assets, reporting capacity explicitly
 Timeline windows span at most 366 calendar dates; pages contain up to 25 records,
 with stable ordering for equal dates.
 Source actions navigate to work records, journal entries or analytical evidence.
+IOP-204 adds explicit canonical Handover links independently of aliases. IOP-209
+adds reviewed canonical mappings to aggregate facts without changing original
+source identifiers; unresolved mapping/coverage remains explicit.
 
 Maintenance/Handover creation and update instants are server metadata. Handover
 occurrence dates and analytical reporting labels remain calendar dates. Analytical
@@ -144,7 +155,7 @@ Forced RLS, scoped predicates and atomic projection/revision writes reuse the
 accepted transaction patterns. Industrial connections remain read-only.
 
 
-## Complementary evidence and deferred locator
+## Complementary evidence and local Locator
 
 Data Analysis owns measured source aggregates. Shift Handover owns reported
 problems and follow-up. Maintenance owns the chosen intervention, assignment,
@@ -154,6 +165,13 @@ is not automatically a member of a repair. At completion every included pending
 report is resolved atomically; explicit exclusions remain outside the repair.
 A later source correction/reopening retains its own attributed history.
 
-M09 Asset Locator remains deferred by the owner's confirmation on 2026-10-06.
-A catalog location and manually written buffer/component group do not constitute
-a map, placement, spatial radius, controller hierarchy or physical survey.
+The owner's M9 deferral on 2026-10-06 was superseded by the separate 2026-10-14
+request. Current provisional scenes reuse conveyor/sensor components, retain scoped
+reference-image provenance and locate explicitly linked assets with Handover/
+Maintenance problem evidence. A catalog location, manual group or provisional
+placement does not prove physical coordinates, floor registration or live health.
+Survey/calibration and real connections remain pending; current software and exact
+limits are in the [Locator guide](../development/asset-locator.md).
+Maintenance/Assets material revisions and delegated report resolution now append
+safe same-transaction [site Audit](../development/site-audit-integration.md) under
+IOP-208 without copying source narratives into Audit.

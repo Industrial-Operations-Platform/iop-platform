@@ -1,0 +1,22 @@
+.locator-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, 25rem); gap: var(--iop-sectionGap); align-items: start; }
+.locator-canvas { width: 100%; height: clamp(20rem, 45vw, 38rem); border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); overflow: hidden; background: var(--iop-canvas); }
+.locator-canvas:focus-visible { outline: 2px solid var(--iop-focus); outline-offset: 2px; }
+.locator-canvas canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.locator-viewer { min-width: 0; display: grid; gap: 10px; }
+.locator-fields { display: grid; gap: 12px; min-width: 0; border: 0; padding: 0; margin: 0; }
+.locator-fields legend { font-weight: var(--iop-headingWeight); margin-bottom: 12px; }
+.locator-muted { color: var(--iop-muted); font-size: var(--iop-captionSize); margin: 0; }
+.locator-list { display: grid; gap: 6px; padding: 0; list-style: none; max-height: 22rem; overflow: auto; }
+.locator-component-row { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.locator-component-row button { text-align: left; flex: 1; }
+.locator-reference { max-width: 100%; max-height: 28rem; object-fit: contain; }
+.locator-scene-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,18rem),1fr)); gap: 12px; }
+.locator-scene-card { display: grid; gap: 8px; text-align: left; min-width: 0; padding: var(--iop-panelPadding); border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); background: var(--iop-surface); color: var(--iop-ink); cursor: pointer; }
+.locator-scene-card:hover, .locator-scene-card:focus-visible { border-color: var(--iop-primary); background: var(--iop-activeSurface); }
+.locator-scene-card img { width: 100%; aspect-ratio: 1.8; object-fit: contain; }
+.locator-scene-name { color: var(--iop-link); font-weight: var(--iop-labelWeight); }
+.locator-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.locator-readiness { padding: 12px; border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); background: var(--iop-warningSurface); color: var(--iop-warningInk); }
+.locator-problems { display: grid; gap: 6px; }
+.locator-problem { border-left: 3px solid var(--iop-errorInk); padding-left: 8px; }
+@media (max-width: 1000px) { .locator-layout { grid-template-columns: minmax(0,1fr); } }

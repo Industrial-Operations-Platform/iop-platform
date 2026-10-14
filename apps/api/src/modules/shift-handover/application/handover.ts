@@ -21,6 +21,7 @@ import {
   type IssueState,
   type CompletionPage,
   type ResolutionReference,
+  type CanonicalAssetReference,
 } from "../domain/handover";
 export interface MatrixScope {
   date: string;
@@ -29,6 +30,9 @@ export interface MatrixScope {
   dailyCategoryIds: string[];
 }
 export interface Transaction {
+  canLinkAssets?: boolean;
+  assetReference?(id: string): Promise<CanonicalAssetReference | null>;
+  assetReferences?(search: string): Promise<CanonicalAssetReference[]>;
   publisherProfile?: string;
   assignmentTarget?(day: string): Promise<string>;
   maintenanceTargets?(search: string, cursor: string): Promise<CompletionPage>;
@@ -127,9 +131,33 @@ export class Handover {
         (!category.coordinatorOnly || tx.coordinator) && (!category.publisherProfiles || category.publisherProfiles.includes(tx.publisherProfile ?? "")) })),
       people: await tx.people(),
       canCoordinate: tx.coordinator,
+      canLinkAssets: !!tx.canLinkAssets,
       canDelete: !!tx.canDelete,
       actorId: actor,
     }));
+  }
+  assets(actor: string, input: { search: string }) {
+    exact(input, ["search"]);
+    const search = text(input.search, 200);
+    return this.store.run(actor, "handover.read", async (tx) => {
+      if (!tx.assetReferences) throw new HandoverError("handover_denied");
+      const assets = await tx.assetReferences(search);
+      if (assets.length > 10000) throw new HandoverError("handover_capacity");
+      return { assets };
+    });
+  }
+  private async canonicalAsset(tx: Transaction, content: Content, prior?: Entry) {
+    if (!content.assetId) return undefined;
+    if (prior?.content.assetId === content.assetId && prior.assetReference &&
+      prior.content.departmentId === content.departmentId && prior.content.areaId === content.areaId) return prior.assetReference;
+    if (!tx.assetReference) throw new HandoverError("handover_denied");
+    const asset = await tx.assetReference(content.assetId);
+    if (!asset || asset.status === "retired") throw new HandoverError("invalid_handover");
+    if (content.departmentId && asset.locationId && !withinLocation(asset.locationId, content.departmentId, this.catalog.locations))
+      throw new HandoverError("invalid_handover");
+    if (content.areaId && asset.locationId && asset.locationId !== content.departmentId &&
+      !withinLocation(asset.locationId, content.areaId, this.catalog.locations)) throw new HandoverError("invalid_handover");
+    return asset;
   }
   async equipmentChoices(
     actor: string,
@@ -305,7 +333,9 @@ export class Handover {
         this.person(people, id),
       );
       await this.requireEquipment(tx, actor, content);
+      const assetReference = await this.canonicalAsset(tx, content);
       const entry: Entry = {
+        ...(assetReference ? { assetReference } : {}),
         id: this.ids(),
         authorId: actor,
         authorName: author.name,
@@ -428,6 +458,9 @@ export class Handover {
         if (!tx.coordinator && content.date !== entry.content.date)
           throw new HandoverError("handover_today_only");
         await this.requireEquipment(tx, actor, content, entry.content);
+        const assetReference = await this.canonicalAsset(tx, content, entry);
+        if (assetReference) entry.assetReference = assetReference;
+        else delete entry.assetReference;
         entry.content = content;
         Object.assign(entry, this.labels(entry.content));
         entry.equipmentReferenceId = await tx.reference(entry.content);

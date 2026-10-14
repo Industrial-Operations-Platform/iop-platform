@@ -1,9 +1,11 @@
 # Local platform delivery status
 
-Reviewed on 2026-10-06 under [IOP-195](items/IOP-195-development-status.md).
+Updated locally on 2026-10-14 under [IOP-203](items/IOP-203-platform-completion.md),
+from develop `24b6269` on `feature/IOP-203-platform-completion`. This review branch
+is not yet promoted or published.
 The [2026-10-09 quality review](reviews/IOP-202-platform-quality-review.md) checks
 completed-story traceability and current regressions; the IOP-202 appearance/quality
-increment remains on its separate story branch pending owner review.
+increment is part of the develop baseline.
 The local platform includes Data Analysis, authentication/administration, Shift
 Handover, Workforce, Maintenance and Digital Asset Record through IOP-194. Start with
 `npm run local:up`; the [operator guide](../development/running-poc.md) owns execution
@@ -14,6 +16,8 @@ product requirements. This page records delivery and outstanding acceptance.
 
 | Capability | Implementation evidence |
 | --- | --- |
+| Formal shift transfer, Improvement Tracking, provisional 3D Locator and provider readiness | [Completion guide](../development/platform-completion.md), IOP-204–207 |
+| Configurable Asset domain/canonical mapping, global search/area context and local operating infrastructure | IOP-208–210; [Asset domain](../product/asset-domain.md), [local operations](../development/local-operations.md), [Overview](../development/operational-overview.md) |
 | Persistent CSV import, original-file review, duplicate/error handling, exact analytical measures and scoped access | [IOP-147](completed/IOP-147-working-analytical-poc-plan.md) |
 | Historical preparation, sector mapping, report templates and frontend/backend hexagonal boundaries | [IOP-148 workspace](completed/IOP-148-analytical-workspace-plan.md) |
 | Local administrator account, executive-only KPIs and fixed visual identity; original Pareto deferral superseded by IOP-163 below | [IOP-148 refinement](completed/IOP-148-executive-overview-plan.md) |
@@ -67,13 +71,15 @@ promotion implied by implementation or publication.
 
 The [roadmap](../../ROADMAP.md#remaining-development-and-validation) consolidates
 the remaining outcomes and IDs; the [backlog](backlog.md) owns mirrored statuses.
-Full asset hierarchy/types/metadata/survey, ingestion-time canonical mapping,
-formal shift-bound Handover/closure, broader canonical Pareto, Improvement Tracking,
-external integrations, CI/workers, general Audit, backup/restore/performance,
-global search/unified area overview and shared-use release controls remain open.
-M9 maps/placements are explicitly Deferred. Local login/admin, asset lifecycle/
-aliases/search, journal categories/entries/issues/meeting summaries, role-aware
-Start and synthetic Workforce/Maintenance exercises are already delivered.
+The independent software now supplies configurable hierarchy/types/metadata, survey
+workflow, reviewed exact source mapping/canonical Pareto, formal Handover, Tracking,
+provisional Locator, source search/area context and local CI/worker/backup/Audit tools.
+Actual plant identities, type/configuration data, physical inspection, measured
+registration and exact sensor positions remain inputs. Real transports, remote CI
+execution, organization/platform-security Audit, representative performance targets,
+pilot acceptance and publication/release remain open. See the precise
+[remaining-input register](../development/platform-completion.md#remaining-input-register).
+
 
 ## Historical evidence
 

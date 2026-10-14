@@ -42,7 +42,9 @@ The user's shared installation is not a test database.
    the original context. Follow subsequent pages to inspect all matching history.
 
 No analytics imports still permits registered assets and technical work.
-No alias means no inferred Handover/analytical history. Technicians open assigned
+No alias means no inferred Handover/analytical history; explicit canonical journal
+links and reviewed source mappings now provide independent evidence under IOP-204/209.
+Neither path infers physical identity from names or source text. Technicians open assigned
 Maintenance from Start or the activity bell and use the Handover workspace;
 their sidebar has no Maintenance entry. Digital asset records require
 Administrator, Team Leader or Task Force. Missing source grants appear as denied coverage.
@@ -199,9 +201,13 @@ or revisions and reported unchanged protected data. These are delivery-time coun
 later operational edits can change them.
 
 The catalog supports 10,000 identities and paginated source choices. It does not
-infer component type, physical hierarchy or placement. M09 remains deferred by the
-owner; source evidence, Handover problems and Maintenance interventions complement
-one another through source links rather than copied report narratives.
+infer component type, physical hierarchy or placement. The owner's M9 deferral
+on 2026-10-06 was superseded by the separate 2026-10-14 request: IOP-206 delivers
+provisional 3D scenes/placements, and IOP-209 delivers reviewed type/hierarchy/
+controller/mapping software. See the [Locator guide](asset-locator.md) and
+[Asset domain contract](../product/asset-domain.md). Actual survey and precise
+positions remain inputs; source evidence, Handover problems and Maintenance
+interventions still complement one another through source links.
 
 ## Implementation boundaries
 

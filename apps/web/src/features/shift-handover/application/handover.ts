@@ -10,8 +10,10 @@ import {
   type Selection,
   type CreateEntry,
   type ChangeEntry,
+  type CanonicalAssetReference,
 } from "../domain/models";
 export interface Gateway {
+  assets?(search: string): Promise<{ assets: CanonicalAssetReference[] }>;
   defaultDepartment?(date: string): Promise<{ departmentId: string }>;
   targets?(input: { source: "handover" | "maintenance"; search: string; cursor: string }): Promise<CompletionPage>;
   equipment(selection: EquipmentSelection): Promise<EquipmentPage>;
@@ -37,6 +39,10 @@ export class HandoverApplication {
   targets(source: "handover" | "maintenance", search = "", cursor = "") {
     if (!this.gateway.targets) return Promise.reject(new Error("Completion references are unavailable."));
     return this.gateway.targets({ source, search, cursor });
+  }
+  assets(search = "") {
+    if (!this.gateway.assets) return Promise.reject(new Error("Canonical asset selection is unavailable."));
+    return this.gateway.assets(search);
   }
   equipment(selection: EquipmentSelection) {
     return this.gateway.equipment(selection);

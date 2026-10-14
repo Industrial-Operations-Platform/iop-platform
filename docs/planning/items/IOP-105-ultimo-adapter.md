@@ -2,11 +2,11 @@
 
 ## Status
 
-Proposed
+In progress — generic Maintenance/read-only adapter prepared; actual Ultimo transport and verification pending.
 
 ## Milestone
 
-M13 — External Integrations. Proposed delivery slice.
+M13 — External Integrations. Readiness delivered under IOP-207; real connections remain separate.
 
 ## Goal
 
@@ -14,7 +14,7 @@ Ultimo adapter contract. Expected outcome: The internal model does not depend on
 
 ## User / business value
 
-Administradores necesitan conectar fuentes sin acoplar el producto a un proveedor.
+Administrators need to connect sources without coupling the product to a provider.
 
 ## Context
 
@@ -24,9 +24,7 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Maintenance owns a generic internal model and may retain an external work-order
-reference. Remaining: an Ultimo adapter contract/translation and separately authorized
-compatibility testing; no external CMMS connection is delivered.
+Maintenance remains a generic internal model. IOP-207 adds an injected read-only work-order transport contract, bounded normalization, opaque external references and configurable vendor-state mapping; an unknown vendor state remains unknown. Local adapter fixtures are independent of any real CMMS connection.
 
 ## Desired state
 
@@ -40,9 +38,11 @@ The internal model does not depend on Ultimo
 
 ## Acceptance criteria
 
-- [ ] The internal model does not depend on Ultimo
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] The internal model does not depend on Ultimo
+- [x] The plan documents scenarios and necessary decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
+
+- [ ] Authorized real transport/schema/access and compatibility evidence complete the provider outcome.
 
 ## Domain considerations
 
@@ -69,8 +69,8 @@ Separate secrets, mapping, provenance and scope; preserve existing flows during 
 
 ## API considerations
 
-Interfaces documentadas y autorizadas; fuentes industriales solo lectura. Contratos no
-prometen conectividad real.
+Documented and authorized interfaces; industrial sources remain read-only. Contracts
+do not promise real connectivity.
 
 ## UI considerations
 
@@ -99,16 +99,14 @@ actual results, not fictional tests.
 Update this item, its status in the [backlog](../backlog.md) and the execution plan.
 Update contracts, models, guides or ADRs only if this task changes their content.
 
-## Open questions
+## Delivered readiness and remaining provider work — 2026-10-14
 
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
+The owner's [IOP-203](IOP-203-platform-completion.md) request authorized the
+prepared adapter/registry increment. [IOP-207](IOP-207-integration-readiness.md),
+its [completed execution](../completed/IOP-207-integration-readiness-plan.md) and
+the [readiness contract](../../product/integration-readiness.md) record scope,
+current role enforcement and executed API/web/real PostgreSQL evidence. Actual
+desktop/390px review shows three disabled providers and explicit missing-input
+semantics; no existing provider configuration or account passwords changed.
 
-## Current coverage and remaining work — 2026-10-06
-
-Maintenance owns a generic internal model and may retain an external work-order
-reference. Remaining: an Ultimo adapter contract/translation and separately authorized
-compatibility testing; no external CMMS connection is delivered.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+Supply the authorized Ultimo endpoint, reviewed API/schema version, external identity/equipment mapping and state translation, private credentials and read-only scope. Implement the actual transport and source-owned receiving translation without writing to Ultimo or replacing local work history; verify real compatibility and provenance. No connected CMMS or observed successful read is claimed.

@@ -44,7 +44,11 @@ export interface CompletionPage {
   nextCursor: string;
   total: number;
 }
+export interface CanonicalAssetReference {
+  id: string; code: string; name: string; locationId: string; status: "unverified" | "validated" | "retired";
+}
 export interface Content {
+  assetId?: string;
   displayUntil?: string;
   resolutions?: ResolutionReference[];
   mentionIds?: string[];
@@ -80,6 +84,7 @@ export interface CompletedReference {
   location: string;
 }
 export interface Entry {
+  assetReference?: CanonicalAssetReference;
   completedReferences?: CompletedReference[];
   notificationAt?: string;
   mentionedPeople?: Person[];
@@ -166,6 +171,7 @@ export const emptySelection: Selection = {
 };
 
 export interface Context extends Catalog {
+  canLinkAssets?: boolean;
   people: Person[];
   actorId: string;
   canCoordinate: boolean;

@@ -34,7 +34,6 @@ export async function handoverAssetTimeline(
   const aliases = asset.aliases.filter(
     (alias) => alias.namespace === "site-equipment",
   );
-  if (!aliases.length) return { records: [], total: 0, unmapped: true };
   const cursor = query.cursor;
   const result = await tx.query(
     `WITH matching AS MATERIALIZED (
@@ -46,11 +45,11 @@ export async function handoverAssetTimeline(
         'Entry date: '||(snapshot->'entry'->'content'->>'date')) AS summary
     FROM shift_handover.revisions r WHERE organization_id=$1 AND site_id=$2
       AND (recorded_at AT TIME ZONE $6)::date BETWEEN $3::date AND $4::date
-      AND EXISTS (SELECT 1 FROM jsonb_array_elements($5::jsonb) alias
+      AND (snapshot->'entry'->'content'->>'assetId'=$12 OR EXISTS (SELECT 1 FROM jsonb_array_elements($5::jsonb) alias
         WHERE snapshot->'entry'->'content'->>'equipmentNamespace'=alias->>'namespace'
         AND snapshot->'entry'->'content'->>'equipmentCode'=alias->>'code'
         AND snapshot->'entry'->'content'->>'departmentId'=alias->>'departmentId'
-        AND snapshot->'entry'->'content'->>'areaId'=alias->>'areaId')
+        AND snapshot->'entry'->'content'->>'areaId'=alias->>'areaId'))
     ), page AS (SELECT * FROM matching WHERE $7='' OR
       (date COLLATE "C",recorded_at COLLATE "C",'handover' COLLATE "C",id COLLATE "C")<($7 COLLATE "C",$8 COLLATE "C",$9 COLLATE "C",$10 COLLATE "C")
       ORDER BY date COLLATE "C" DESC,recorded_at COLLATE "C" DESC,id COLLATE "C" DESC LIMIT $11)
@@ -70,10 +69,12 @@ export async function handoverAssetTimeline(
       cursor?.kind ?? "",
       cursor?.id ?? "",
       query.limit,
+      asset.id,
     ],
   );
   return {
     records: result.rows[0].records as SourceResult["records"],
     total: Number(result.rows[0].total),
+    ...(!aliases.length && Number(result.rows[0].total) === 0 ? { unmapped: true } : {}),
   };
 }

@@ -2,111 +2,61 @@
 
 ## Status
 
-Proposed
+In progress
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M14 — Security & Reliability. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M14 — Security & Reliability. Measurement tooling delivered; agreed targets pending.
 
-Performance baseline. Expected outcome: Measured targets
-
-## User / business value
-
-Customers and operators need verifiable isolation and reproducible recovery.
-
-## Context
-
-Scope: Security and operational reliability. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+Measured targets for an agreed workload and environment.
 
 ## Current state
 
-Plans record bounded import/query budgets and some local observations. Remaining: agreed
-workload/environment, repeatable baseline measurements and explicit performance targets.
+[IOP-208](IOP-208-local-delivery-infrastructure.md) under [IOP-203](IOP-203-platform-completion.md) delivers repeatable allowlisted validation
+measurement with one to ten samples, wall-time distributions, host/Node facts,
+exit results and private new-file reports. One observed complete typecheck sample
+passed in 42.524 seconds. Reports explicitly retain `target: unagreed` and pending
+release acceptance; this is synthetic repository validation, not a plant SLA.
 
-## Desired state
+## Requirements and delivery boundary
 
-Measured targets
-
-## Requirements
-
-- Deliver only the outcome described for IOP-114.
-- Apply controls in each vertical slice; this milestone verifies and hardens them rather than postponing security until the end.
+Measurement invokes only existing typecheck/unit/database/browser/build commands;
+it accepts no arbitrary shell text, does not copy command logs into its report and
+refuses an existing output. A single sample establishes an observation, not
+statistical confidence, operational sizing or maximum recovery time.
 
 ## Acceptance criteria
 
-- [ ] Measured targets
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Provide repeatable measurement tooling and record actual synthetic observations.
+- [ ] Agree workload, environment, concurrency/data scale and measurable performance targets.
+- [ ] Measure the agreed workload and compare results against those targets with independent evidence.
 
-## Domain considerations
+## Validation and evidence
 
-Apply controls in each vertical slice; this milestone verifies and hardens them rather
-than postponing security until the end.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Retention, restoration and sensitive data follow agreed decisions; do not copy
-production data into the repository.
-
-## API considerations
-
-Test the authorization, input, error and recovery boundaries relevant to the task.
-
-## UI considerations
-
-Where a UI exists, check useful errors without sensitive data and with correct scope context.
+The measurement guard tests pass and the recorded full-typecheck sample is actual.
+See [local operating guide](../../development/local-operations.md) and [IOP-208 evidence](IOP-208-local-delivery-infrastructure.md).
+Bounded import/query budgets remain controls, not agreed performance acceptance.
 
 ## Dependencies
 
-[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md), [IOP-013](IOP-013-observability-baseline.md), [IOP-089](IOP-089-analytics-query-layer.md)
+[IOP-001](IOP-001-v1-personas-and-pilot-workflow.md), [IOP-013](IOP-013-observability-baseline.md), [IOP-089](IOP-089-analytics-query-layer.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+Plant workload and thresholds, observed user concurrency, query/import/restore
+objectives and human performance acceptance remain pending. No physical system
+capacity or release pass is inferred from local validation timing.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-Plans record bounded import/query budgets and some local observations. Remaining: agreed
-workload/environment, repeatable baseline measurements and explicit performance targets.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).
