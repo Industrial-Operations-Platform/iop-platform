@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+In progress — module implementation delivered through IOP-210; assembled host review pending.
 
 ## Milestone
 
@@ -64,7 +64,7 @@ industrial integrations read-only; record material changes where applicable.
 
 ## Data considerations
 
-Las vistas consumen contratos autorizados y no crean copias divergentes de entidades.
+Views consume authorized contracts and do not create divergent copies of entities.
 
 ## API considerations
 
@@ -111,3 +111,12 @@ across these sources with explicit role/coverage semantics.
 
 See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
 This update does not authorize the remaining work or accept a Proposed decision.
+
+## Authorized implementation — 2026-10-14
+
+The owner's IOP-203 request explicitly authorized the remaining outcome.
+[IOP-210](IOP-210-operational-search-overview.md) delivers reusable source-owned
+API/web composition, current source permissions and exact site scope, bounded
+pages and explicit source coverage. See its completed plan for executed evidence.
+Root host registration/navigation and assembled desktop/narrow review remain
+pending; the original parent stays open until that evidence exists.

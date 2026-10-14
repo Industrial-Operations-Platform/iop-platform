@@ -2,22 +2,33 @@
 
 ## Status and goal
 
-In progress under the owner's [IOP-203](IOP-203-platform-completion.md) delegated
+Implemented module delivery; root host composition and assembled review pending under the owner's [IOP-203](IOP-203-platform-completion.md) delegated
 development authorization. Deliver IOP-119 global authorized asset/area/issue search
 and IOP-118's unified area context using existing source-owned read boundaries.
 
 ## Scope and acceptance
 
-- [ ] One bounded global search with grouped results and navigation to source detail;
+- [x] One bounded global search with grouped results and navigation to source detail;
   missing/revoked source access remains explicit and supplies no data.
-- [ ] Unified configured-area overview of Handover/Maintenance/Assets and optional
+- [x] Unified configured-area overview of Handover/Maintenance/Assets and optional
   authorized analytical context, with date/coverage and role semantics.
-- [ ] Current backend permissions and exact source ownership; no search index that
+- [x] Current backend permissions and exact source ownership; no search index that
   leaks another site's records or stale cached permissions.
-- [ ] Reusable shared identity, keyboard/narrow layouts and actual behavioral tests.
+- [x] Reusable shared identity, keyboard/narrow layouts and actual behavioral tests.
 
 ## Evidence and remaining work
 
-Plan before code on `feature/IOP-210-operational-search-overview`, from develop.
-Formal-shift context may be composed through the new Handover contract after it is
-integrated; date-based context must not pretend to be previous-shift evidence.
+Branch `feature/IOP-210-operational-search-overview`, from develop `24b6269`.
+See the [completed plan](../completed/IOP-210-operational-search-overview-plan.md)
+and [operator/integration guide](../../development/operational-overview.md).
+
+The reusable controller, root-ready factory and web components are delivered.
+Formal context queries actual saved records with producer pagination and invokes
+actual previous-shift lookup only after explicit record selection. OIP consumes only
+explicit department sector mappings. Source-unknown areas remain unmapped; no live
+health, plant identity or historical state is inferred.
+
+Remaining host work belongs to the assembling IOP-203 branch: register controller,
+instantiate factory, compose navigation/German dictionary, generate public schemas
+and verify assembled desktop/narrow browser behavior. This item does not claim those
+shared files were changed in this isolated delivery.
