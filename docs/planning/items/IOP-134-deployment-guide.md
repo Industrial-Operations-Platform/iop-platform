@@ -69,8 +69,8 @@ Reconcile evidence and test recovery with authorized or synthetic data.
 
 ## API considerations
 
-Validar contratos publicados y compatibilidad documentada; no introducir features
-durante cierre de release.
+Validate published contracts and documented compatibility; do not introduce features
+during release closure.
 
 ## UI considerations
 
