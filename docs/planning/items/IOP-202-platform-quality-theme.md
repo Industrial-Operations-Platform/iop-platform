@@ -27,8 +27,13 @@ Existing [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-bounda
 and [visual identity](../../design/visual-identity.md) govern implementation. Theme
 is browser presentation, not business policy or a new backend preference service.
 This request does not accept Proposed ADRs or close pending product/release work.
-No merge, push, deployment, destructive cleanup or dependency upgrade is authorized.
+The initial request excluded merge, push, deployment, destructive cleanup and
+dependency upgrades. The owner's follow-up on 2026-10-14 explicitly authorizes
+integrating all outstanding commits into `develop`. Remote publication and
+deployment require separate authorization.
 
 ## Evidence and remaining work
 
 [Execution plan](../completed/IOP-202-platform-quality-theme-plan.md).
+[Integration plan](../active/IOP-202-develop-integration-plan.md) records the
+2026-10-14 follow-up, retained-branch inventory and combined-tree verification.
