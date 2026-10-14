@@ -1,0 +1,9 @@
+.iop-improvement-details p,
+.iop-improvement-comparison p {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.iop-improvement-title {
+  text-align: left;
+}
