@@ -18,8 +18,8 @@ instead of adding disconnected literal colors to components or chart options.
 | Role | Value |
 | --- | --- |
 | Canvas / surfaces | `#f3f6f9` / `#ffffff` |
-| Primary text / secondary text | `#172b43` / `#64758b` |
-| Borders / primary action | `#dce5ed` / `#087bd5` |
+| Primary text / secondary text | `#172b43` / `#5e6e83` |
+| Borders / primary action | `#dce5ed` / `#0876ca` |
 | Active navigation surface / text | `#e8f3fc` / `#096faf` |
 | Frequency / duration charts | `#138df4` / `#164f84` |
 | Comparison sequence | `#138df4`, `#2424a5`, `#f3773d`, `#147e8a`, `#a755ad` |
@@ -27,7 +27,7 @@ instead of adding disconnected literal colors to components or chart options.
 | Better comparison ink / surface / border | `#18734a` / `#eef8f2` / `#b9dec8` |
 | Worse comparison | Existing error ink / surface / border tokens |
 | Warning metadata ink / surface | `#805500` / `#fff5d6` |
-| Keyboard focus | `#edaa30` |
+| Keyboard focus | `#ad6e00` (light) / `#ffd074` (dark) |
 | Divided disclosure headings (preserved baseline) | `#174e69` |
 
 Use Inter with system-ui/sans-serif fallback. Keep white, lightly bordered cards,
@@ -35,6 +35,41 @@ navy figures, muted labels, restrained blue actions, flat backgrounds and no gra
 the subtle shared shadow introduced in IOP-192. Report cards use 8px corners; metric cards use 7px corners, 19px
 padding, 29px figures at weight 650 and 14px gaps. Existing narrow-screen reductions
 remain in the shared [component stylesheet](../../apps/web/src/design/components/components.css).
+
+## Selectable appearance and balanced layout — IOP-202
+
+The owner requested platform-wide dark mode and visual/code consistency on
+2026-10-09. The table above is the light palette; `darkIdentity` supplies the same
+semantic roles on a `#101a28` canvas with `#1a293c` surfaces, `#e3edf7` text and
+`#a4b5c9` supporting text. Existing white-surface rules describe light appearance;
+workspace surfaces, native controls, popovers and dialogs use the selected semantic
+surface in either mode. Do not invert screens or add feature palettes.
+Primary buttons use independent `onPrimary` ink; notification counters use
+`onAttention`. Modal backdrops/shadows use independent `overlay` ink, so a dark
+dialog dims its context rather than whitening it. Muted and primary light tokens were adjusted for readable normal
+text on their intended surfaces. Semantic text contrast is checked at 4.5:1 in
+both modes; color continues to accompany explicit labels.
+
+The account menu places Appearance beside Language, above sign-out. Light/Dark
+overrides are explicit; System follows the device, including live changes.
+The browser stores `iop.appearance`, restores it before mounting the application
+and synchronizes other tabs. When storage is unavailable the current session
+remains usable. This is a browser preference, not a remotely stored account field.
+`IdentityRoot` and chart adapters subscribe to the same appearance. Axes, legend,
+tooltip, heatmap and zoom colors use the selected identity; analytical values and
+permissions remain independent of appearance.
+
+The approved public introduction keeps dedicated stable illustration tokens;
+its Sign in/About dialogs follow the selected appearance. Workspace content is
+centered within a shared 1600px bound on large screens. Metric labels/figures and
+captions center; section headings, form labels and narrative prose retain their
+reading hierarchy. Supporting page descriptions use a 72-character reading bound.
+Shared tables center headings/metadata and use `TableText` for content-aware
+justification. Avoid global text centering/justification. Controls reuse shared
+hover, placeholder, disabled and keyboard-focus treatments in both modes.
+
+See [IOP-202](../planning/items/IOP-202-platform-quality-theme.md) for desktop/narrow
+rendering, preference and regression evidence.
 
 ## Typography and hierarchy
 
@@ -47,7 +82,7 @@ layered vector depth and gently animated background geometry. The shared `introT
 and `introTitleLineHeight` tokens provide the larger presentation heading; the
 existing font remains unchanged. This scoped refinement permits these effects
 on the public introduction while workspace cards, headings and controls retain
-the flat identity above. Shared white dialogs contain sign-in and About content.
+the flat identity above. Shared appearance-aware dialogs contain sign-in and About content.
 
 The first view has concise copy and three selectable visual modules: Data Analysis,
 Maintenance and Workforce. Detailed module/workflow prose belongs in About.

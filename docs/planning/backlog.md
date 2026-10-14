@@ -357,3 +357,4 @@ work under IOP-194 does not implement maps or spatial placements.
 | [IOP-199 — Handover category workflows](items/IOP-199-handover-category-workflows.md) | Completed |
 | [IOP-200 — Project state and native development travel guide](items/IOP-200-native-development-guide.md) | Completed |
 | [IOP-201 — Minimal presentation home and existing sign-in](items/IOP-201-platform-landing.md) | Completed |
+| [IOP-202 — Platform quality review and selectable appearance](items/IOP-202-platform-quality-theme.md) | Completed |

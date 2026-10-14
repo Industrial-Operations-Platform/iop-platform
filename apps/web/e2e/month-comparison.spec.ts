@@ -132,6 +132,22 @@ for (const width of [1440, 375]) {
     await expect(
       page.locator(".analysis-plot").first().locator("svg"),
     ).toBeVisible();
+    const reportRequests = requests.length;
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect(page.locator(".analysis-plot").first().locator("svg text").first())
+      .toHaveAttribute("fill", "#b6c8dc");
+    expect(requests).toHaveLength(reportRequests);
+    await page.screenshot({ path: `test-results/IOP-202-analysis-dark-${width}.png`, fullPage: true });
+    const plot = page.locator(".analysis-plot").first();
+    const bounds = (await plot.boundingBox())!;
+    for (const label of await plot.locator("svg text").all()) {
+      const box = await label.boundingBox();
+      if (box) {
+        expect(box.x).toBeGreaterThanOrEqual(bounds.x - 1);
+        expect(box.x + box.width).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
+      }
+    }
+    await plot.screenshot({ path: `test-results/IOP-202-comparison-dark-${width}.png` });
     for (const title of [
       "Top 10 by frequency · Pareto",
       "Top 10 by duration · Pareto",

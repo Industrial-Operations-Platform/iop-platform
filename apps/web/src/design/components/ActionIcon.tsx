@@ -21,11 +21,12 @@ const shapes: Record<string, ReactNode> = {
     </>
   ),
   arrow: <path d="M5 12h14m-5-5 5 5-5 5" />,
+  appearance: <path d="M20.6 13.2A9 9 0 0 1 10.8 3.4 9 9 0 1 0 20.6 13.2Z" />,
 };
 export function ActionIcon({
   name,
 }: {
-  name: "user" | "logout" | "chevron" | "bell" | "search" | "arrow";
+  name: "user" | "logout" | "chevron" | "bell" | "search" | "arrow" | "appearance";
 }) {
   return (
     <svg

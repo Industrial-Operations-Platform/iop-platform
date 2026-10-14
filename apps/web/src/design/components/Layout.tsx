@@ -1,17 +1,20 @@
 import { t } from "../../localization/i18n";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
-import { identityVariables } from "../identity";
+import { appearanceIdentity, variablesForIdentity } from "../identity";
+import { useAppearance } from "../useAppearance";
 import "./components.css";
 
 export function IdentityRoot({
   className = "",
   ...props
 }: Omit<ComponentProps<"div">, "style">) {
+  const { resolved } = useAppearance();
   return (
     <div
       {...props}
       className={`iop-ui ${className}`}
-      style={identityVariables as CSSProperties}
+      data-appearance={resolved}
+      style={variablesForIdentity(appearanceIdentity(resolved)) as CSSProperties}
     />
   );
 }
@@ -56,7 +59,7 @@ export function AppShell({
         {navigation}
       </aside>
       <main id={mainId} className="iop-main">
-        {children}
+        <div className="iop-content">{children}</div>
       </main>
     </IdentityRoot>
   );

@@ -1,14 +1,17 @@
 /** IOP identity v1. Preserve these tokens unless the owner explicitly requests a visual change. */
 export const identity = {
   ink: "#172b43",
-  muted: "#64758b",
+  muted: "#5e6e83",
   line: "#dce5ed",
-  primary: "#087bd5",
+  primary: "#0876ca",
+  onPrimary: "#ffffff",
+  primaryHover: "#076bb5",
   canvas: "#f3f6f9",
   surface: "#ffffff",
   popoverShadow: "0 12px 32px #172b431a",
+  overlay: "#172b43",
   inputBorder: "#cbd7e2",
-  focus: "#edaa30",
+  focus: "#ad6e00",
   link: "#076bb5",
   disclosureInk: "#174e69",
   activeSurface: "#e8f3fc",
@@ -21,6 +24,11 @@ export const identity = {
   errorSurface: "#fff1f0",
   errorBorder: "#efb8b3",
   errorInk: "#9c2424",
+  onAttention: "#ffffff",
+  introCanvas: "#172b43",
+  introForeground: "#ffffff",
+  introAccent: "#087bd5",
+  introHighlight: "#138df4",
   chartFrequency: "#138df4",
   chartComparison: "#2424a5",
   chartAccent: "#f3773d",
@@ -28,6 +36,7 @@ export const identity = {
   chartPurple: "#a755ad",
   chartDuration: "#164f84",
   chartText: "#576779",
+  chartCategoricalLightness: "42%",
   heatmapLow: "#e8f4ff",
   heatmapHigh: "#0875cc",
   font: "Inter, system-ui, sans-serif",
@@ -68,15 +77,69 @@ export const identity = {
   metricWeight: "650",
   metricPadding: "19px",
   metricGap: "14px",
+  contentWidth: "1600px",
+  readingWidth: "72ch",
 } as const;
 
-export const identityVariables = Object.fromEntries(
-  Object.entries(identity).map(([name, value]) => [`--iop-${name}`, value]),
-);
-export const chartPalette = [
-  identity.chartFrequency,
-  identity.chartComparison,
-  identity.chartAccent,
-  identity.chartTeal,
-  identity.chartPurple,
-];
+export type Appearance = "light" | "dark";
+export type Identity = { readonly [Key in keyof typeof identity]: string };
+
+/** Equal semantic roles in both modes; illustration/typography tokens stay stable. */
+export const darkIdentity: Identity = {
+  ...identity,
+  ink: "#e3edf7",
+  muted: "#a4b5c9",
+  line: "#34465d",
+  primary: "#0876ca",
+  primaryHover: "#096faf",
+  canvas: "#101a28",
+  surface: "#1a293c",
+  popoverShadow: "0 12px 32px #00000066",
+  overlay: "#050c16",
+  inputBorder: "#536983",
+  focus: "#ffd074",
+  link: "#78c4ff",
+  disclosureInk: "#a6d9f0",
+  activeSurface: "#213e58",
+  activeInk: "#8acbff",
+  successInk: "#86dbb0",
+  successSurface: "#18392e",
+  successBorder: "#366e55",
+  warningInk: "#f1ce79",
+  warningSurface: "#403521",
+  errorSurface: "#422a31",
+  errorBorder: "#975b67",
+  errorInk: "#ffaca5",
+  onAttention: "#422a31",
+  chartFrequency: "#58b5ff",
+  chartComparison: "#aaa6ff",
+  chartAccent: "#ffad7d",
+  chartTeal: "#67d5de",
+  chartPurple: "#d49ee5",
+  chartDuration: "#87b9e8",
+  chartText: "#b6c8dc",
+  chartCategoricalLightness: "65%",
+  heatmapLow: "#213e58",
+  heatmapHigh: "#58b5ff",
+};
+
+export function appearanceIdentity(appearance: Appearance): Identity {
+  return appearance === "dark" ? darkIdentity : identity;
+}
+
+export function variablesForIdentity(tokens: Identity) {
+  return Object.fromEntries(
+    Object.entries(tokens).map(([name, value]) => [`--iop-${name}`, value]),
+  );
+}
+export const identityVariables = variablesForIdentity(identity);
+
+export function paletteForIdentity(tokens: Identity) {
+  return [
+    tokens.chartFrequency,
+    tokens.chartComparison,
+    tokens.chartAccent,
+    tokens.chartTeal,
+    tokens.chartPurple,
+  ];
+}

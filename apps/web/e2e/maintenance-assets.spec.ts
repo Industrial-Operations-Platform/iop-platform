@@ -138,7 +138,7 @@ for (const viewport of [
       .getByRole("button", { name: "Bearing inspection", exact: false })
       .click();
     await expect(
-      page.getByText("Awaiting inspection tooling.", { exact: true }),
+      page.locator(".maintenance-narrative").getByText("Awaiting inspection tooling.", { exact: true }),
     ).toBeVisible();
     expect(
       requests.some(

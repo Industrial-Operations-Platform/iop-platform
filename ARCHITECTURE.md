@@ -50,6 +50,11 @@ React feature adapters compose the [shared component library](apps/web/src/desig
 It has no feature, transport, chart or business-policy dependencies. CSS and ECharts
 share [identity tokens](docs/design/visual-identity.md). The browser controls selection
 and presentation; the server owns full-history totals and authorization.
+Browser appearance lives in `apps/web/src/design/appearance.ts`, with a React
+subscription adapter and shared semantic light/dark tokens. The host composes its
+account selector; IdentityRoot and ECharts consume the selected identity. Local
+preference storage, system changes and cross-tab synchronization remain presentation
+adapters under ADR-0032; no domain, authorization, API or database preference is added.
 
 ## Data flow and persistence
 

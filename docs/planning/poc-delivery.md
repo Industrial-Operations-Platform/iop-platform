@@ -1,6 +1,9 @@
 # Local platform delivery status
 
 Reviewed on 2026-10-06 under [IOP-195](items/IOP-195-development-status.md).
+The [2026-10-09 quality review](reviews/IOP-202-platform-quality-review.md) checks
+completed-story traceability and current regressions; the IOP-202 appearance/quality
+increment remains on its separate story branch pending owner review.
 The local platform includes Data Analysis, authentication/administration, Shift
 Handover, Workforce, Maintenance and Digital Asset Record through IOP-194. Start with
 `npm run local:up`; the [operator guide](../development/running-poc.md) owns execution

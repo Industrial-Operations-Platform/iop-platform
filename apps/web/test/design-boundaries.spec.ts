@@ -11,6 +11,7 @@ test("the shared presentation library has no feature, transport or business depe
       expect(
         dependency === "react" ||
           dependency === "../identity" ||
+          dependency === "../useAppearance" ||
           dependency === "../../localization/i18n" ||
           dependency.startsWith("./"),
       ).toBe(true);
@@ -46,6 +47,17 @@ test("platform styles use canonical typography and palette tokens", () => {
         token,
         defined: Object.hasOwn(identityVariables, token),
       }).toEqual({ file, token, defined: true });
+    }
+  }
+});
+
+test("appearance adapters stay independent of feature and transport policy", () => {
+  const root = resolve(__dirname, "../src/design");
+  for (const file of ["appearance.ts", "useAppearance.ts"]) {
+    const source = readFileSync(resolve(root, file), "utf8");
+    expect(source).not.toMatch(/\bfetch\b|features\/|\/api\//);
+    for (const [, dependency] of source.matchAll(/from\s+["']([^"']+)["']/g)) {
+      expect(["react", "./identity", "./appearance"]).toContain(dependency);
     }
   }
 });

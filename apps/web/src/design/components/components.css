@@ -15,7 +15,7 @@
 }
 .iop-ui .iop-button {
   background: var(--iop-primary);
-  color: var(--iop-surface);
+  color: var(--iop-onPrimary);
   border: 1px solid var(--iop-primary);
   border-radius: var(--iop-controlRadius);
   padding: 9px 13px;
@@ -32,6 +32,14 @@
 .iop-ui .iop-button:disabled {
   opacity: 0.5;
   cursor: default;
+}
+.iop-ui .iop-button--primary:not(:disabled):hover {
+  background: var(--iop-primaryHover);
+  border-color: var(--iop-primaryHover);
+}
+.iop-ui .iop-button--secondary:not(:disabled):hover {
+  background: var(--iop-activeSurface);
+  border-color: var(--iop-inputBorder);
 }
 .iop-ui .iop-button--secondary {
   background: var(--iop-surface);
@@ -52,6 +60,18 @@
   background: var(--iop-surface);
   color: var(--iop-ink);
   padding: 8px;
+}
+.iop-ui :is(.iop-input, .iop-select):not(:disabled):hover {
+  border-color: var(--iop-activeInk);
+}
+.iop-ui .iop-input::placeholder {
+  color: var(--iop-muted);
+  opacity: 1;
+}
+.iop-ui :is(.iop-input, .iop-select):disabled {
+  color: var(--iop-muted);
+  background: var(--iop-canvas);
+  cursor: not-allowed;
 }
 .iop-ui :focus-visible {
   outline: 3px solid var(--iop-focus);
@@ -158,6 +178,7 @@
 .iop-ui .iop-panel--metric {
   border-radius: var(--iop-metricRadius);
   padding: var(--iop-metricPadding);
+  text-align: center;
 }
 .iop-ui .iop-metric-grid {
   display: grid;
@@ -321,7 +342,11 @@
 .iop-ui .iop-main {
   margin-left: 195px;
   padding: 28px 30px 90px;
-  max-width: 2000px;
+  min-width: 0;
+}
+.iop-ui .iop-content {
+  max-width: var(--iop-contentWidth);
+  margin-inline: auto;
   min-width: 0;
 }
 .iop-ui .iop-page-heading {
@@ -334,6 +359,8 @@
 .iop-ui .iop-page-heading p {
   margin: 0;
   color: var(--iop-muted);
+  max-width: var(--iop-readingWidth);
+  text-wrap: pretty;
 }
 .iop-ui .iop-eyebrow {
   text-transform: uppercase;
@@ -556,10 +583,10 @@
   border-radius: var(--iop-cardRadius);
   background: var(--iop-surface);
   color: var(--iop-ink);
-  box-shadow: 0 16px 60px color-mix(in srgb, var(--iop-ink) 25%, transparent);
+  box-shadow: 0 16px 60px color-mix(in srgb, var(--iop-overlay) 25%, transparent);
 }
 .iop-dialog::backdrop {
-  background: color-mix(in srgb, var(--iop-ink) 45%, transparent);
+  background: color-mix(in srgb, var(--iop-overlay) 45%, transparent);
 }
 .iop-dialog-heading {
   display: flex;
@@ -1233,6 +1260,9 @@
   color: var(--iop-ink);
   font-weight: var(--iop-mediumWeight);
 }
+.iop-ui :is(.iop-language-expanded, .iop-account-select-row):hover {
+  background: var(--iop-canvas);
+}
 .iop-ui :is(.iop-language-expanded, .iop-account-select-row) .iop-select {
   margin-left: auto;
   width: auto;
@@ -1349,7 +1379,7 @@
   border: 2px solid var(--iop-surface);
   border-radius: 12px;
   background: var(--iop-errorInk);
-  color: var(--iop-surface);
+  color: var(--iop-onAttention);
   font-size: var(--iop-smallSize);
   font-weight: var(--iop-labelWeight);
 }

@@ -8,10 +8,15 @@ blue action accents in every module and detail view. `AppShell` accepts an optio
 `brandAction` with an accessible label and caller-owned click handler; without it,
 the brand remains static. Components contain no feature models,
 HTTP requests, permissions, report calculations or chart-library dependencies.
+`IdentityRoot` follows the shared appearance subscription; all descendants inherit
+its semantic variables. The account's `design/AppearanceControl` composes native
+controls outside the library to keep browser storage/device handling in its adapter.
+Use `onPrimary` for filled action text and `onAttention` for notification counters;
+surface tokens represent backgrounds. Keep charts on the same selected identity.
 
 | Components | Responsibility |
 | --- | --- |
-| `IdentityRoot`, `AppShell` | Identity variables, typography, header, rail, main content and skip link |
+| `IdentityRoot`, `AppShell` | Selected light/dark identity, typography, header, rail, centered bounded content and skip link |
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
 | `RefreshButton`, `CollectionAction` | Labelled reload with busy/reduced-motion behavior; collection link with count and direction |
 | `Badge` | Neutral/info/attention/success/warning semantic metadata; caller supplies meaningful text |
@@ -27,7 +32,7 @@ HTTP requests, permissions, report calculations or chart-library dependencies.
 | `MonthMultiPicker` | Checkbox selection of nonconsecutive calendar months |
 | `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
 | `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
-| `MetricGrid`, `MetricCard` | Responsive shared metric appearance; `layout="paired"` centers two cards; `tone` adds neutral/info/attention emphasis; use `iop-metric-description` for supporting text |
+| `MetricGrid`, `MetricCard` | Responsive centered labels/figures/captions; `layout="paired"` centers two cards; `tone` adds neutral/info/attention emphasis; use `iop-metric-description` for supporting text |
 | `Table`, `TableViewport` | Common bordered viewport, muted sticky headers, row hover/focus and keyboard-accessible bounded scrolling |
 | `TableText` | Prose that inherits cell alignment up to two rendered lines and justifies longer text, remeasuring on content/size changes |
 | `Alert` | Error announcement and consistent error surface |

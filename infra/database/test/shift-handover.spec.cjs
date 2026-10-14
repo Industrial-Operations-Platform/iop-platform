@@ -1,3 +1,4 @@
+const { openWorkspaceAccess, workspaceSignIn } = require("./browser-access.cjs");
 const { PostgreSqlContainer } = require("@testcontainers/postgresql");
 const { Client, Pool } = require("pg");
 const { randomUUID } = require("node:crypto");
@@ -667,11 +668,11 @@ test("owner maintenance collaboration rechecks current Handover authority", asyn
 
 test("exhaustive completion review reports capacity instead of silently closing a partial issue page", async () => {
   const f = maintenanceFixture();
-  const reports = await Promise.all(
-    Array.from({ length: 201 }, (_, index) =>
-      f.publish("Capacity report " + index),
-    ),
-  );
+  // This scenario checks bounded review completeness, not connection saturation.
+  const reports = [];
+  for (let index = 0; index < 201; index++) {
+    reports.push(await f.publish("Capacity report " + index));
+  }
   await expect(
     maintenanceOperation((tx) =>
       pendingHandoverMaintenanceIssues(tx, scope, f.issueScope),
@@ -1048,9 +1049,10 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     const button = (name) => page.getByRole("button", { name, exact: true });
     const login = async (id) => {
       await page.goto(origin);
+      await openWorkspaceAccess(page);
       await page.getByLabel("Username", { exact: true }).fill(id);
       await page.getByLabel("Password", { exact: true }).fill(password);
-      await button("Sign in").click();
+      await workspaceSignIn(page).click();
       await pw(
         page.getByRole("region", {
           name: id === "admin-a" ? "Administration overview" : "Start page",
@@ -1325,7 +1327,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
     await button("User menu").click();
     await button("Sign out").click();
     await pw(
-      page.getByRole("heading", { name: "Sign in to IOP" }),
+      page.getByRole("heading", { name: "Bring operations into focus." }),
     ).toBeVisible();
     await login("lead-a");
     await button("Notifications").click();
@@ -1509,7 +1511,7 @@ test("browser board, dialogs, equipment, matrix, meeting and follow-up work for 
       await button("User menu").click();
       await button("Sign out").click();
       await pw(
-        page.getByRole("heading", { name: "Sign in to IOP" }),
+        page.getByRole("heading", { name: "Bring operations into focus." }),
       ).toBeVisible();
       await login(id);
       await button("Shift Handover").click();

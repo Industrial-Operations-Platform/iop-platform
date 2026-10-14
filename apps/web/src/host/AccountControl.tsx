@@ -3,6 +3,7 @@ import { LanguageControl } from "../localization/LanguageControl";
 import { t } from "../localization/i18n";
 import { profileLabels, type Profile } from "../features/access/domain/access";
 import { ProfileViewControl } from "./ProfileViewControl";
+import { AppearanceControl } from "../design/AppearanceControl";
 
 export function AccountControl({
   name,
@@ -61,6 +62,7 @@ export function AccountControl({
               </Button>
             )}
             <LanguageControl expanded />
+            <AppearanceControl />
             {preview && (
               <div className="iop-account-preview">
                 <ProfileViewControl
