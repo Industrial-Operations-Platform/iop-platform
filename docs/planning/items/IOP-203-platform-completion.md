@@ -37,10 +37,11 @@ architecture/design/secrets and actual encrypted full backup/isolated restore.
 The completed plan distinguishes final phase evidence from the earlier pipeline
 process that found a test selector issue. No remote CI or release is claimed.
 
-## Publication authorization — 2026-10-14
+## Approved publication — 2026-10-14
 
 The owner explicitly approved merging `feature/IOP-203-platform-completion` into
-`develop` and pushing both branches to `origin`. The
-[publication execution](../active/IOP-203-publication-plan.md) records the bounded
-sequence and actual outcomes. Stage/master promotion, branch deletion, deployment
+`develop` and pushing both branches to `origin`. Integration and atomic publication
+completed; the [publication execution](../completed/IOP-203-publication-plan.md)
+records actual merge, remote parity and the documentation-only evidence promotion.
+Remote CI remains unverified. Stage/master promotion, branch deletion, deployment
 and release are outside this approval.
