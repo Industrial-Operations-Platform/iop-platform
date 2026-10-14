@@ -58,9 +58,9 @@ export async function canonicalSourceCandidates(tx: SiteTransaction, source: Imp
       assert(false);
     }
   }
-  const r = await tx.query(`SELECT payload->>'sourceArea' AS area,payload->>'sourceEquipmentReference' AS code,count(*)::text AS records FROM oip.facts
+  const r = await tx.query(`WITH grouped AS (SELECT payload->>'sourceArea' AS area,payload->>'sourceEquipmentReference' AS code,count(*)::text AS records FROM oip.facts
  WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ($4='' OR strpos(lower(concat_ws(' ',payload->>'sourceArea',payload->>'sourceEquipmentReference')),lower($4))>0)
- AND ($5='' AND $6='' OR (payload->>'sourceArea' COLLATE "C",payload->>'sourceEquipmentReference' COLLATE "C")>($5 COLLATE "C",$6 COLLATE "C")) GROUP BY 1,2 ORDER BY area COLLATE "C",code COLLATE "C" LIMIT 31`, [...scopeTuple(source), search, area, code]);
+ AND ($5='' AND $6='' OR (payload->>'sourceArea' COLLATE "C",payload->>'sourceEquipmentReference' COLLATE "C")>($5 COLLATE "C",$6 COLLATE "C")) GROUP BY 1,2) SELECT area,code,records FROM grouped ORDER BY area COLLATE "C",code COLLATE "C" LIMIT 31`, [...scopeTuple(source), search, area, code]);
   const candidates: SourceCandidate[] = r.rows.slice(0, 30).map(r => ({
       sourceId: source.sourceId,
       namespace: "source-equipment",

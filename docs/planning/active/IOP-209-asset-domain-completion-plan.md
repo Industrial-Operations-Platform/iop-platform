@@ -155,3 +155,25 @@ Limit the change to Workspace/tab selection and one deferred regression.
 The initial-load tab regression passes with all 13 Asset domain feature tests.
 Current tab selection restarts configuration loading when the initial combined
 request has not completed; late initial pages remain ignored.
+
+## Actual source candidate failure — planned before adapter edits
+
+Read-only actual QA confirms inventory/refinement, model/survey drafts, digital
+record navigation and type configuration, but POST asset-domain/candidates returns
+503. Reproduce the source-owned candidate query with real PostgreSQL, inspect its
+computed alias/collation/grouping behavior and fix only the owned canonical adapter.
+Add full original-tuple lookup/refinement/pagination coverage, source permissions
+and current role denial as meaningful acceptance. Validate the API/PG regression
+before committing; root rebuilds before final actual UI recheck. No actual mapping
+review/type/survey or registry record may be changed for QA.
+
+Actual candidate failure reproduced before the fix: six prior PostgreSQL cases
+passed and the new candidate lookup failed with authorization-unavailable caused
+by the source SQL. Ordering a grouped derived relation resolves the computed
+alias/collation failure without changing source tuples or scope.
+
+After correction: all seven PostgreSQL cases pass, including original tuple/count
+lookup, 32-source stable pages/refinement, mapping-source/history reads, full
+unmapped Pareto and current analytics revocation. Full API re-run 427/427 passes
+and API build passes. Real installation remains untouched; root rebuild is needed
+for the actual source/mapping/Pareto recheck.

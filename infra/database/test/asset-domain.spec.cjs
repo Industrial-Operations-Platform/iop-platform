@@ -57,7 +57,8 @@ const {
     createImportWorkflow
   } = require("../../../apps/api/dist/host/adapters/import-gateway"),
   {
-    SiteAccessDeniedError, runSiteOperation
+    SiteAccessDeniedError,
+    runSiteOperation
   } = require("../../../apps/api/dist/persistence/site-operation");
 let container,
   configs,
@@ -145,7 +146,7 @@ beforeAll(async () => {
     IOP_SEED_SITE_ID: scope.siteId,
     IOP_SEED_USER_ID: "native-importer"
   });
-  await admin("DELETE FROM users_rbac.site_role_assignments WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer'",[scope.organizationId,scope.siteId]);
+  await admin("DELETE FROM users_rbac.site_role_assignments WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer'", [scope.organizationId, scope.siteId]);
   for (const role of ["site-operator", "analytics-reader"]) await admin("INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,$2,$3,$4,true)", [scope.organizationId, "native-importer", scope.siteId, role]);
   pool = new Pool({
     ...configs.runtime,
@@ -508,8 +509,81 @@ test("native importers prepare reviewed canonical links without registry-read gr
     original_code: "UNKNOWN-SOURCE"
   }]);
   await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer' AND role_id='site-operator'", [scope.organizationId, scope.siteId]);
-  const publication = await admin("SELECT import_id FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND reporting_date='2026-10-09'",[scope.organizationId,scope.siteId]);
-  await expect(runSiteOperation(pool,{...scope,userId:"native-importer",permissions:["analytics.read"]},tx=>composition.published(tx,publication.rows[0].import_id))).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  const publication = await admin("SELECT import_id FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND reporting_date='2026-10-09'", [scope.organizationId, scope.siteId]);
+  await expect(runSiteOperation(pool, {
+    ...scope,
+    userId: "native-importer",
+    permissions: ["analytics.read"]
+  }, tx => composition.published(tx, publication.rows[0].import_id))).rejects.toBeInstanceOf(SiteAccessDeniedError);
   await expect(publish("20261008", "native-importer")).rejects.toBeInstanceOf(SiteAccessDeniedError);
   expect((await admin("SELECT 1 FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND reporting_date='2026-10-08'", [scope.organizationId, scope.siteId])).rowCount).toBe(0);
+});
+test("source candidate lookup uses original tuples with full counts, bounded pages and current source permissions", async () => {
+  const original = await app.candidates("leader", {
+    search: "SOURCE-S1"
+  });
+  expect(original.candidates).toEqual([{
+    sourceId: "model-source",
+    namespace: "source-equipment",
+    area: "Demo area",
+    code: "SOURCE-S1",
+    records: 3
+  }]);
+  const reviewed = await app.mappingForSource("leader", {
+    sourceId: "model-source",
+    namespace: "source-equipment",
+    area: "Demo area",
+    code: "SOURCE-S1"
+  });
+  expect(reviewed.data.status).toBe("approved");
+  expect(reviewed.data.candidateIds).toEqual([assets.sensor.id]);
+  const history = await app.mappingHistory("leader", reviewed.id);
+  expect(history.revisions.map(r => r.mapping.data.status)).toEqual(["approved", "pending"]);
+  expect(history.nextBefore).toBe(0);
+  const header = '"Häufigkeit";"Dauer";"Bereich";"Betriebsmittelkennzeichen";"Meldetext";"Typ";"Meldegruppe"\r\n';
+  const csv = header + Array.from({
+    length: 32
+  }, (_, i) => '1;0 0:00:01;Demo area;LOOKUP-' + String(i + 1).padStart(3, '0') + ';Synthetic lookup;01;007').join('\r\n') + '\r\n';
+  expect((await imports.submit("admin", "Hitliste-20261007.csv", Buffer.from("\ufeff" + csv, "utf16le"))).outcome).toBe("succeeded");
+  const unmapped = await app.pareto("leader", {
+    from: "2026-10-07",
+    toExclusive: "2026-10-08",
+    metric: "frequency"
+  });
+  expect(unmapped.totals.frequency).toBe(32);
+  expect(unmapped.mapped.frequency).toBe(0);
+  expect(unmapped.unresolved.frequency).toBe(32);
+  expect(unmapped.states).toEqual({
+    unmapped: 32
+  });
+  expect(unmapped.groups).toEqual([]);
+  const first = await app.candidates("leader", {
+    search: "LOOKUP-"
+  });
+  expect(first.candidates).toHaveLength(30);
+  expect(first.nextCursor).not.toBe("");
+  const second = await app.candidates("leader", {
+    search: "LOOKUP-",
+    cursor: first.nextCursor
+  });
+  expect(second.candidates).toHaveLength(2);
+  expect(second.nextCursor).toBe("");
+  expect(second.candidates.every(c => !first.candidates.some(p => p.code === c.code))).toBe(true);
+  expect((await app.candidates("leader", {
+    search: "LOOKUP-032"
+  })).candidates).toEqual([{
+    sourceId: "model-source",
+    namespace: "source-equipment",
+    area: "Demo area",
+    code: "LOOKUP-032",
+    records: 1
+  }]);
+  await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='task' AND role_id='analytics-reader'");
+  try {
+    await expect(app.candidates("task", {
+      search: "LOOKUP-"
+    })).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  } finally {
+    await admin("UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='task' AND role_id='analytics-reader'");
+  }
 });
