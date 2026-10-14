@@ -2,7 +2,8 @@
 
 Updated locally on 2026-10-14 under [IOP-203](items/IOP-203-platform-completion.md),
 from develop `24b6269` on `feature/IOP-203-platform-completion`. This review branch
-is not yet promoted or published.
+was integrated into develop and both refs were published to origin with explicit
+owner approval on 2026-10-14. See the [publication evidence](completed/IOP-203-publication-plan.md).
 The [2026-10-09 quality review](reviews/IOP-202-platform-quality-review.md) checks
 completed-story traceability and current regressions; the IOP-202 appearance/quality
 increment is part of the develop baseline.

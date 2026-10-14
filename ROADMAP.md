@@ -2,7 +2,9 @@
 
 Updated locally on **2026-10-14** on `feature/IOP-203-platform-completion`, from
 develop `24b6269`, under [IOP-203](docs/planning/items/IOP-203-platform-completion.md).
-The review branch remains separate from remote publication.
+The owner subsequently approved integration into develop and publication of both
+refs to origin, completed on 2026-10-14. The story branch remains available; see the
+[publication execution](docs/planning/completed/IOP-203-publication-plan.md).
 IOP-197 subsequently reconciles the retained Audit design and IOP-196 operational
 refinements while integrating all retained branches.
 The local analytical POC has expanded into an operational platform. This inventory

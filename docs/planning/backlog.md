@@ -8,7 +8,10 @@ See the [workflow](workflow.md).
 
 The owner delegates development decisions and reopens the 3D Asset Locator under
 IOP-203. Child increments retain explicit missing-input states and separate review
-branches. This authorization does not publish or promote the resulting changes.
+branches. Development authorization excluded publication. The owner subsequently
+approved the story's integration into develop and publication of both refs to
+origin; this completed under the [publication execution](completed/IOP-203-publication-plan.md).
+Stage/master promotion, deployment and release remain separate.
 
 | Task context | Status |
 | --- | --- |

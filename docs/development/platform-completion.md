@@ -2,6 +2,8 @@
 
 [IOP-203](../planning/items/IOP-203-platform-completion.md) coordinates the
 owner-authorized development increment on `feature/IOP-203-platform-completion`.
+The owner approved its integration into develop and publication of both refs to
+origin on 2026-10-14; see the [publication evidence](../planning/completed/IOP-203-publication-plan.md).
 Run `npm run local:up` to build and migrate the local installation. Existing
 records and private references are preserved; the command does not publish code.
 
@@ -47,7 +49,7 @@ for commands, evidence and the final test-only browser correction.
 | Intervention dates, owners, targets and production exposure | Evaluate real improvement actions. Imported-date comparisons do not establish causality or plant downtime. |
 | Representative workloads, agreed performance thresholds and pilot measurements | Accept operational performance and release criteria. Local measurements alone are insufficient. |
 | Organization and platform security Audit operating contract | Finish organization capture and the separate security authority, collection and retention paths. Site material events are already captured. |
-| Owner review and remote publication decision | Promote the review branch and publish; stage/master promotion and hosted deployment remain separate. |
+| Owner operating/release review and hosting decision | Accept operation and release scope; stage/master promotion and hosted deployment require separate authorization. The approved develop integration/publication is complete. |
 
 Keep incomplete inputs visible in each owning workspace. Do not replace them with
 apparently measured coordinates, successful connections or zero-failure metrics.
