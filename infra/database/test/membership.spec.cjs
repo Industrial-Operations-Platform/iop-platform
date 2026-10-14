@@ -69,9 +69,16 @@ test('atomic fixed-pair creation, unchanged rerun, ownership and forced RLS surv
     const metadata = await query('bootstrap', `SELECT relrowsecurity, relforcerowsecurity,
       pg_get_userbyid(relowner) AS owner FROM pg_class WHERE oid = $1::regclass`, [`users_rbac.${table}`]);
     expect(metadata.rows[0]).toEqual({ relrowsecurity: true, relforcerowsecurity: true, owner: 'iop_migrator' });
-    const policies = await query('bootstrap', `SELECT cmd, roles FROM pg_policies
-      WHERE schemaname = 'users_rbac' AND tablename = $1 ORDER BY cmd, roles::text`, [table]);
-    expect(policies.rows).toEqual([{ cmd: 'ALL', roles: '{iop_migrator,iop_runtime}' }, { cmd: 'INSERT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_migrator}' }, { cmd: 'SELECT', roles: '{iop_runtime}' }, ...(table === 'organization_memberships' ? [{ cmd: 'SELECT', roles: '{iop_runtime}' }] : [])]);
+    const policies = await query('bootstrap', `SELECT policyname, cmd, roles FROM pg_policies
+      WHERE schemaname = 'users_rbac' AND tablename = $1 ORDER BY cmd, roles::text, policyname`, [table]);
+    const membership = table === 'organization_memberships';
+    expect(policies.rows).toEqual([
+      { policyname: membership ? 'access_membership' : 'access_site_roles', cmd: 'ALL', roles: '{iop_migrator,iop_runtime}' },
+      { policyname: membership ? 'membership_seed_insert' : 'site_role_seed_insert', cmd: 'INSERT', roles: '{iop_migrator}' },
+      { policyname: membership ? 'membership_seed_read' : 'site_role_seed_read', cmd: 'SELECT', roles: '{iop_migrator}' },
+      { policyname: 'authorization_lookup_read', cmd: 'SELECT', roles: '{iop_runtime}' },
+      { policyname: membership ? 'handover_memberships' : 'improvement_responsibility_read', cmd: 'SELECT', roles: '{iop_runtime}' },
+    ]);
   }
 });
 

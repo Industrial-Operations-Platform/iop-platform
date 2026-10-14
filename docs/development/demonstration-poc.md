@@ -50,6 +50,15 @@ fit application output.
 Recreation follows [ADR-0029](../architecture/adr/ADR-0029-scoped-demo-reset.md).
 Reset and reload are separate phases: failed reload is an incomplete demonstration,
 not a rolled-back reset. No volume removal or broad database cleanup is part of it.
+The explicitly supported installed migration inventory includes the supplementary
+canonical reset policies. Reset removes only the exact registered source's
+canonical analytical links/history before its facts; the same derivations for
+other targets survive. Asset registry/models/mappings, operational records,
+configuration, user grants and append-only Audit evidence are preserved. Runtime
+has no canonical deletion authority; only the verified offline migrator command
+with the complete target and dataset identity can reset a native fixture dataset.
+Unknown migration revisions continue to refuse before any cleanup. This procedure
+must never be pointed at the primary `.local-platform` data.
 
 ## Execution record and closure
 

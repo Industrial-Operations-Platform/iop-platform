@@ -26,6 +26,16 @@ const names = [
   "20261005030000-operational-record-permissions",
   "20261005040000-maintenance-scope-access",
   "20261006000000-admin-operational-access",
+  "20261014000000-platform-completion-permissions",
+  "20261014010000-formal-handover",
+  "20261014020000-improvement-tracking",
+  "20261014030000-asset-locator",
+  "20261014040000-integration-registry",
+  "20261014045000-jobs-permissions",
+  "20261014050000-operating-infrastructure",
+  "20261014060000-asset-domain",
+  "20261014070000-site-material-audit",
+  "20261014080000-canonical-demo-reset",
 ];
 function target(env: NodeJS.ProcessEnv) {
   if (env.IOP_EXECUTION_MODE !== "local-demo" || env.NODE_ENV === "production")
@@ -100,7 +110,7 @@ export async function demoMaintenance(
     )
       throw new DatabaseError("The configured demo site does not exist.");
     await client.query(
-      "LOCK TABLE analytics.fact_hitliste,analytics.betriebsmittel,analytics.bereich,analytics.sektor,analytics.meldetext,analytics.meldung_typ,analytics.meldegruppe,iop_demo.installation,oip.facts,oip.publications,integrations.import_date_claims,integrations.import_batches,integrations.import_quota IN EXCLUSIVE MODE",
+      "LOCK TABLE oip.canonical_asset_link_history,oip.canonical_asset_links,analytics.fact_hitliste,analytics.betriebsmittel,analytics.bereich,analytics.sektor,analytics.meldetext,analytics.meldung_typ,analytics.meldegruppe,iop_demo.installation,oip.facts,oip.publications,integrations.import_date_claims,integrations.import_batches,integrations.import_quota IN EXCLUSIVE MODE",
     );
     const marker = await client.query(
       "SELECT * FROM iop_demo.installation WHERE singleton FOR UPDATE",
@@ -154,7 +164,10 @@ export async function demoMaintenance(
       FROM integrations.import_batches WHERE organization_id=$1 AND site_id=$2 AND source_id=$3`,
       scope,
     );
+    // Canonical source derivations reference facts; business models/mappings and Audit survive.
     for (const table of [
+      "oip.canonical_asset_link_history",
+      "oip.canonical_asset_links",
       "analytics.fact_hitliste",
       "analytics.betriebsmittel",
       "analytics.bereich",
