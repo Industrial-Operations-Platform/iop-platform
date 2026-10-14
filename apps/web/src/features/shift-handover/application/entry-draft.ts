@@ -7,6 +7,7 @@ export function selectDraftCategory(content: Content, categoryId: string, catego
     ...content,
     categoryId,
     equipmentCode: "",
+    ...(content.assetId !== undefined ? { assetId: "" } : {}),
     condition: "",
     resolutions: [],
     displayUntil: category?.workflow === "information" ? content.date : undefined,

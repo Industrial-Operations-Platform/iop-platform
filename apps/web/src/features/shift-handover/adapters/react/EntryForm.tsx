@@ -1,6 +1,7 @@
 import { t } from "../../../../localization/i18n";
 import type { HandoverApplication } from "../../application/handover";
 import { EntryMediaFields } from "./EntryMediaFields";
+import { CanonicalAssetPicker } from "./CanonicalAssetPicker";
 import { EquipmentPicker } from "./EquipmentPicker";
 import { withinLocation } from "../../domain/models";
 import { selectDraftCategory, selectDraftCondition } from "../../application/entry-draft";
@@ -148,6 +149,9 @@ export function EntryForm({
               onChange={(e) => field("summary", e.target.value)}
             />
           </Field>
+          {context.canLinkAssets && workflow !== "safety" && <CanonicalAssetPicker application={application} context={context}
+            departmentId={value.departmentId} areaId={value.areaId} value={value.assetId ?? ""}
+            retained={entry?.assetReference} onChange={(id) => field("assetId", id)} />}
           {assignmentNotice && <p role="status">{t(assignmentNotice)}</p>}
           {workflow === "information" && <DateField label={t("Display through")} required min={value.date}
             value={value.displayUntil || value.date} onChange={(e) => field("displayUntil", e.target.value)} />}
@@ -164,6 +168,7 @@ export function EntryForm({
                     departmentId: e.target.value,
                     areaId: "",
                     equipmentCode: "",
+                    assetId: "",
                     condition: "",
                   }));
                 }}
@@ -190,6 +195,7 @@ export function EntryForm({
                     ...v,
                     areaId: e.target.value,
                     equipmentCode: "",
+                    assetId: "",
                     condition: "",
                   }));
                 }}

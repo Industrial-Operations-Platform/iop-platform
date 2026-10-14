@@ -40,6 +40,7 @@ export function EntryDetailBody({ entry, onReference }: { entry: Entry; onRefere
           {entry.highlighted && <Badge>{t("Highlighted")}</Badge>}
           {c.discuss && <Badge>{t("Discuss in meeting")}</Badge>}
         </div>
+        {entry.assetReference && <p><strong>{t("Registered asset")}: </strong>{entry.assetReference.code} · {entry.assetReference.name} ({entry.assetReference.status})</p>}
         {c.equipmentCode && (
           <p className="handover-detail-reference">
             <span className="handover-card-equipment">{c.equipmentCode}</span>
