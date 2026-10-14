@@ -35,5 +35,6 @@ deployment require separate authorization.
 ## Evidence and remaining work
 
 [Execution plan](../completed/IOP-202-platform-quality-theme-plan.md).
-[Integration plan](../active/IOP-202-develop-integration-plan.md) records the
-2026-10-14 follow-up, retained-branch inventory and combined-tree verification.
+[Completed integration plan](../completed/IOP-202-develop-integration-plan.md)
+records the 2026-10-14 follow-up. All retained commits are integrated locally into
+`develop`; remote publication awaits separate owner authorization.
