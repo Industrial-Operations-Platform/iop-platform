@@ -38,7 +38,7 @@ export class LocatorController {
   @ApiCreatedResponse({ type: C.LocatorContextDto })
   context(
   @Req()
-  req: IncomingMessage, 
+  req: IncomingMessage,
   @Body()
   body: C.LocatorEmptyDto) { return this.operation(req, (locator, actor) => { exact(body, []); return locator.context(actor); }); }
   @Post('query')
@@ -46,7 +46,7 @@ export class LocatorController {
   @ApiCreatedResponse({ type: C.LocatorPageDto })
   query(
   @Req()
-  req: IncomingMessage, 
+  req: IncomingMessage,
   @Body()
   body: C.LocatorQueryDto) { return this.operation(req, (locator, actor) => locator.query(actor, body)); }
   @Post('detail')
@@ -54,7 +54,7 @@ export class LocatorController {
   @ApiCreatedResponse({ type: C.LocatorDetailDto })
   detail(
   @Req()
-  req: IncomingMessage, 
+  req: IncomingMessage,
   @Body()
   body: C.LocatorIdDto) { return this.operation(req, (locator, actor) => { exact(body, ['id']); return locator.detail(actor, body.id); }); }
   @Post('save')
@@ -62,7 +62,7 @@ export class LocatorController {
   @ApiCreatedResponse({ type: C.LocatorSceneDto })
   save(
   @Req()
-  req: IncomingMessage, 
+  req: IncomingMessage,
   @Body()
   body: C.LocatorSaveDto) { return this.operation(req, (locator, actor) => locator.save(actor, body)); }
   @Post('history')
@@ -70,7 +70,7 @@ export class LocatorController {
   @ApiCreatedResponse({ type: C.LocatorHistoryDto })
   history(
   @Req()
-  req: IncomingMessage, 
+  req: IncomingMessage,
   @Body()
   body: C.LocatorHistoryRequestDto) { return this.operation(req, (locator, actor) => { exact(body, ['id', 'before']); return locator.history(actor, body.id, body.before); }); }
   @Post('search')
@@ -78,7 +78,7 @@ export class LocatorController {
   @ApiCreatedResponse({ type: C.LocatorSearchResultsDto })
   search(
   @Req()
-  req: IncomingMessage, 
+  req: IncomingMessage,
   @Body()
   body: C.LocatorSearchDto) { return this.operation(req, (locator, actor) => locator.search(actor, body)); }
   @Post('bootstrap')
@@ -86,7 +86,7 @@ export class LocatorController {
   @ApiCreatedResponse({ type: C.LocatorBootstrapDto })
   bootstrap(
   @Req()
-  req: IncomingMessage, 
+  req: IncomingMessage,
   @Body()
   body: C.LocatorEmptyDto) { return this.operation(req, (locator, actor) => { exact(body, []); return locator.bootstrap(actor); }); }
   @Get('references/:id')
@@ -94,9 +94,9 @@ export class LocatorController {
   @ApiOkResponse({ description: 'Authorized original private PNG; never included in the public bundle.', schema: { type: 'string', format: 'binary' } })
   async reference(
   @Req()
-  req: IncomingMessage, 
+  req: IncomingMessage,
   @Param('id')
-  id: string, 
+  id: string,
   @Res()
   res: ServerResponse) { const bytes = await this.operation(req, (locator, actor) => locator.reference(actor, id)); res.setHeader('Content-Type', 'image/png'); res.setHeader('Cache-Control', 'private, no-store'); res.setHeader('X-Content-Type-Options', 'nosniff'); res.setHeader('Content-Disposition', 'inline; filename="locator-reference.png"'); res.end(Buffer.from(bytes)); }
 }
