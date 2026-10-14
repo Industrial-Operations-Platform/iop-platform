@@ -4,6 +4,20 @@ This index records existing work; permanent contexts own scope and status.
 Execution plans live in `active/`, and completed evidence in `completed/`.
 See the [workflow](workflow.md).
 
+## Owner-authorized independent completion — 2026-10-14
+
+The owner delegates development decisions and reopens the 3D Asset Locator under
+IOP-203. Child increments retain explicit missing-input states and separate review
+branches. This authorization does not publish or promote the resulting changes.
+
+| Task context | Status |
+| --- | --- |
+| [IOP-203 — Independent platform completion](items/IOP-203-platform-completion.md) | In progress |
+| [IOP-204 — Formal Handover completion](items/IOP-204-formal-handover.md) | In progress |
+| [IOP-205 — Improvement Tracking](items/IOP-205-improvement-tracking.md) | In progress |
+| [IOP-206 — Reusable 3D Asset Locator](items/IOP-206-3d-asset-locator.md) | In progress |
+| [IOP-207 — External integration readiness](items/IOP-207-integration-readiness.md) | In progress |
+
 ## Current delivery — 2026-10-06
 
 The original local CSV → analysis → presentation POC is delivered. Later
