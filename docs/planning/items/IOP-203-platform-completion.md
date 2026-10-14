@@ -35,4 +35,12 @@ security Audit beyond the delivered site material capture. Validation passes API
 509, web 192, PostgreSQL 319 and final browser 57 checks, plus type/build/contracts,
 architecture/design/secrets and actual encrypted full backup/isolated restore.
 The completed plan distinguishes final phase evidence from the earlier pipeline
-process that found a test selector issue. No remote CI, merge, push or release is claimed.
+process that found a test selector issue. No remote CI or release is claimed.
+
+## Publication authorization — 2026-10-14
+
+The owner explicitly approved merging `feature/IOP-203-platform-completion` into
+`develop` and pushing both branches to `origin`. The
+[publication execution](../active/IOP-203-publication-plan.md) records the bounded
+sequence and actual outcomes. Stage/master promotion, branch deletion, deployment
+and release are outside this approval.
