@@ -2,7 +2,7 @@
 
 ## Scope and branch
 
-Completed local module scope on `feature/IOP-209-asset-domain-completion` from develop `24b6269`,
+In progress: asynchronous view safety follow-up on `feature/IOP-209-asset-domain-completion` from develop `24b6269`,
 worktree `/private/tmp/iop-209`. Implements the [item](../items/IOP-209-asset-domain-completion.md)
 and [ADR-0039](../../architecture/adr/ADR-0039-asset-domain-enrichment.md).
 Original IOP-032/033/035/036/038/039/044/093/124 and relevant dependencies were read
@@ -117,3 +117,32 @@ No native importer receives a registry directory/public Asset response.
 The final callback revocation assertion passed; all six disposable PostgreSQL
 cases passed after the receiving-owned publication fix. Full API re-run passed
 427/427. Implementation and documentation are complete for this local scope.
+
+## Async view safety follow-up — planned before edits
+
+Root review identified late responses in the new workspace and mapping lists,
+selection/history, pagination and mutation callbacks. The picker guards initial
+search responses but not Load more. Audit all new React loaders and add scoped
+request generations invalidated on navigation, search replacement, application
+change and unmount. Detail/history must publish one coherent current selection;
+late failures must not replace the current error/pending state. Mutation completion
+after cancel/navigation must not reopen its prior editor. No backend/shared files.
+
+Affected files: AssetDomainWorkspace, AssetReferencePicker, MappingReview,
+CanonicalPareto and meaningful deferred/reversed-response React regressions.
+Validate latest search, selected asset/history, mapping source, pagination and
+unmount behavior; run web suite/typecheck/design checks. Root rebuilds for read-only
+actual UI QA; actual registry/source/plant data must remain unchanged.
+
+Async implementation validated: 12 feature tests and the complete web suite
+(170 tests / 31 suites) pass, including eight new reversed/deferred-response
+regressions. Web typecheck/build and four shared design-boundary checks pass.
+The only temporary dependency was the documented German dictionary spread,
+restored before commit. API/persistence are unchanged by this follow-up.
+
+Detail/history now publish together for the current request generation. Search
+replacement/navigation/application change/unmount invalidate late data, errors
+and pending completion. Pagination uses the loaded search/cursor and cannot mix
+results with a newer search. Cancelled/unmounted mapping saves cannot close another
+source's editor. Pareto application replacement ignores obsolete results.
+Root rebuild and actual read-only browser QA remain the next evidence step.

@@ -49,3 +49,8 @@ current imports.submit without Assets grants or a public registry response.
 Native site-operator/analytics-reader admission succeeds; interactive Asset access
 and the publication callback after imports permission revocation fail. ADR0039
 records this boundary and the six real PostgreSQL cases pass.
+
+Async view follow-up: full web 170/170 and 12 feature tests pass. Eight deferred
+regressions cover reversed asset/history and search/source responses, stale pages,
+unmount, cancelled mapping save and Pareto application replacement. No backend or
+actual plant records change; root rebuild precedes read-only integrated browser QA.

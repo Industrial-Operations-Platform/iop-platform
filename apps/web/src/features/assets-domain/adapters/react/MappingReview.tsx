@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Actions, Alert, Button, Disclosure, Field, FieldRow, Input, Panel, Select, Table, TableText, TableViewport, Textarea } from "../../../../design/components";
 import { t } from "../../../../localization/i18n";
 import type { AssetDomainApplication } from "../../application/domain";
@@ -29,60 +29,150 @@ export function MappingReview({
     [source, setSource] = useState<SourceCandidate | null>(null),
     [history, setHistory] = useState<MappingHistory | null>(null),
     [error, setError] = useState("");
+  const requestEpoch = useRef(0);
+  const [busy, setBusy] = useState(false),
+    [loadedSearch, setLoadedSearch] = useState(""),
+    [loadedSourceSearch, setLoadedSourceSearch] = useState("");
+  function invalidate() {
+    requestEpoch.current += 1;
+    setBusy(false);
+  }
   async function refresh() {
+    const current = ++requestEpoch.current;
+    setBusy(true);
+    setError("");
     try {
-      setPage(await application.mappingQuery({
+      await Promise.all([application.mappingQuery({
         search,
         limit: 30
-      }));
-      setSources(await application.candidates(sourceSearch));
-      setError("");
+      }).then(results => {
+        if (requestEpoch.current === current) {
+          setPage(results);
+          setLoadedSearch(search);
+        }
+      }), application.candidates(sourceSearch).then(results => {
+        if (requestEpoch.current === current) {
+          setSources(results);
+          setLoadedSourceSearch(sourceSearch);
+        }
+      })]);
     } catch (e) {
-      setError((e as Error).message);
+      if (requestEpoch.current === current) setError((e as Error).message);
+    } finally {
+      if (requestEpoch.current === current) setBusy(false);
     }
   }
   useEffect(() => {
+    setSelected(null);
+    setSource(null);
+    setHistory(null);
+    return () => {
+      requestEpoch.current += 1;
+    };
+  }, [application]);
+  useEffect(() => {
     void refresh();
+    return () => {
+      requestEpoch.current += 1;
+    };
   }, [application, search, sourceSearch]);
-  return <>{error && <Alert>{error}</Alert>}{selected || source ? <><MappingEditor key={selected?.id ?? JSON.stringify(source)} application={application} mapping={selected ?? undefined} source={source ?? undefined} canManage={context.canManage} onSaved={() => {
-        setSelected(null);
-        setSource(null);
+  async function selectSource(candidate: SourceCandidate) {
+    const current = ++requestEpoch.current;
+    setBusy(true);
+    setError("");
+    try {
+      const existing = await application.mappingForSource({
+        sourceId: candidate.sourceId,
+        namespace: candidate.namespace,
+        area: candidate.area,
+        code: candidate.code
+      });
+      if (requestEpoch.current === current) {
+        setSelected(existing);
+        setSource(candidate);
         setHistory(null);
+      }
+    } catch (e) {
+      if (requestEpoch.current === current) setError((e as Error).message);
+    } finally {
+      if (requestEpoch.current === current) setBusy(false);
+    }
+  }
+  async function loadHistory(older = false) {
+    if (!selected) return;
+    const current = ++requestEpoch.current;
+    setBusy(true);
+    setError("");
+    try {
+      const next = await application.mappingHistory(selected.id, older ? history?.nextBefore : undefined);
+      if (requestEpoch.current === current) setHistory(h => older && h ? {
+        ...next,
+        revisions: [...h.revisions, ...next.revisions]
+      } : next);
+    } catch (e) {
+      if (requestEpoch.current === current) setError((e as Error).message);
+    } finally {
+      if (requestEpoch.current === current) setBusy(false);
+    }
+  }
+  async function loadMore(kind: "mapping" | "source") {
+    const current = ++requestEpoch.current;
+    setBusy(true);
+    setError("");
+    try {
+      if (kind === "mapping") {
+        const next = await application.mappingQuery({
+          search: loadedSearch,
+          cursor: page.nextCursor,
+          limit: 30
+        });
+        if (requestEpoch.current === current) setPage(p => ({
+          ...next,
+          mappings: [...p.mappings, ...next.mappings]
+        }));
+      } else {
+        const next = await application.candidates(loadedSourceSearch, sources.nextCursor);
+        if (requestEpoch.current === current) setSources(p => ({
+          ...next,
+          candidates: [...p.candidates, ...next.candidates]
+        }));
+      }
+    } catch (e) {
+      if (requestEpoch.current === current) setError((e as Error).message);
+    } finally {
+      if (requestEpoch.current === current) setBusy(false);
+    }
+  }
+  function cancel() {
+    invalidate();
+    setSelected(null);
+    setSource(null);
+    setHistory(null);
+    setError("");
+  }
+  return <>{error && <Alert>{error}</Alert>}{selected || source ? <><MappingEditor key={selected ? selected.id + ":" + selected.revision : JSON.stringify(source)} application={application} mapping={selected ?? undefined} source={source ?? undefined} canManage={context.canManage} onSaved={() => {
+        cancel();
         void refresh();
       }} onCancel={() => {
-        setSelected(null);
-        setSource(null);
-      }} />{selected && <Disclosure summary={t("Mapping revision history")}><Button onClick={() => application.mappingHistory(selected.id).then(setHistory).catch(e => setError(e.message))}>{t("Load mapping history")}</Button>{history?.revisions.map(r => <Panel key={r.mapping.revision}><p>{r.actorName} · {r.at} · {t("Revision")}: {r.mapping.revision}</p><p>{r.mapping.data.status} · {r.mapping.data.note}</p><p>{r.reason}</p></Panel>)}{history && history.nextBefore > 0 && <Button onClick={() => application.mappingHistory(selected.id, history.nextBefore).then(next => setHistory(h => h ? {
-          ...next,
-          revisions: [...h.revisions, ...next.revisions]
-        } : next))}>{t("Load older revisions")}</Button>}</Disclosure>}</> : <>
-  <Panel><Field>{t("Find reviewed source mappings")}<Input value={search} maxLength={200} onChange={e => setSearch(e.target.value)} /></Field><TableViewport><Table aria-label={t("Reviewed canonical mappings")}><thead><tr><th>{t("Source tuple")}</th><th>{t("Mapping state")}</th><th>{t("Candidate count")}</th><th>{t("Revision")}</th></tr></thead><tbody>{page.mappings.map(m => <tr key={m.id}><td><Button variant="text" onClick={() => {
+        cancel();
+        void refresh();
+      }} />{selected && <Disclosure summary={t("Mapping revision history")}><Button disabled={busy} onClick={() => void loadHistory()}>{t("Load mapping history")}</Button>{history?.revisions.map(r => <Panel key={r.mapping.revision}><p>{r.actorName} · {r.at} · {t("Revision")}: {r.mapping.revision}</p><p>{r.mapping.data.status} · {r.mapping.data.note}</p><p>{r.reason}</p></Panel>)}{history && history.nextBefore > 0 && <Button disabled={busy} onClick={() => void loadHistory(true)}>{t("Load older revisions")}</Button>}</Disclosure>}</> : <>
+  <Panel><Field>{t("Find reviewed source mappings")}<Input value={search} maxLength={200} onChange={e => {
+            invalidate();
+            setSearch(e.target.value);
+          }} /></Field><TableViewport><Table aria-label={t("Reviewed canonical mappings")}><thead><tr><th>{t("Source tuple")}</th><th>{t("Mapping state")}</th><th>{t("Candidate count")}</th><th>{t("Revision")}</th></tr></thead><tbody>{page.mappings.map(m => <tr key={m.id}><td><Button variant="text" onClick={() => {
+                    invalidate();
+                    setError("");
                     setSelected(m);
                     setSource(null);
                     setHistory(null);
-                  }}>{m.data.source.area} / {m.data.source.code}</Button><TableText>{m.data.note}</TableText></td><td>{mappingState(m)}</td><td>{m.data.candidateIds.length}</td><td>{m.revision}</td></tr>)}</tbody></Table></TableViewport><p>{page.mappings.length} / {page.total} {t("reviewed mappings")}</p>{page.nextCursor && <Button onClick={() => application.mappingQuery({
-          search,
-          cursor: page.nextCursor,
-          limit: 30
-        }).then(next => setPage(p => ({
-          ...next,
-          mappings: [...p.mappings, ...next.mappings]
-        })))}>{t("Load more mappings")}</Button>}</Panel>
-  <Panel><Field>{t("Find imported source identifiers")}<Input value={sourceSearch} maxLength={200} onChange={e => setSourceSearch(e.target.value)} /></Field><p>{t("An imported identifier is evidence, not proof of a physical asset. Select a tuple to review explicit candidates.")}</p><TableViewport><Table aria-label={t("Imported source identifiers")}><thead><tr><th>{t("Source tuple")}</th><th>{t("Source records")}</th></tr></thead><tbody>{sources.candidates.map((c, i) => <tr key={i}><td><Button variant="text" onClick={() => {
-                    void application.mappingForSource({
-                      sourceId: c.sourceId,
-                      namespace: c.namespace,
-                      area: c.area,
-                      code: c.code
-                    }).then(existing => {
-                      setSelected(existing);
-                      setSource(c);
-                      setHistory(null);
-                    }).catch(e => setError(e.message));
-                  }}>{c.area} / {c.code}</Button></td><td>{c.records}</td></tr>)}</tbody></Table></TableViewport>{sources.nextCursor && <Button onClick={() => application.candidates(sourceSearch, sources.nextCursor).then(next => setSources(p => ({
-          ...next,
-          candidates: [...p.candidates, ...next.candidates]
-        })))}>{t("Load more source identifiers")}</Button>}</Panel>
+                  }}>{m.data.source.area} / {m.data.source.code}</Button><TableText>{m.data.note}</TableText></td><td>{mappingState(m)}</td><td>{m.data.candidateIds.length}</td><td>{m.revision}</td></tr>)}</tbody></Table></TableViewport><p>{page.mappings.length} / {page.total} {t("reviewed mappings")}</p>{page.nextCursor && <Button disabled={busy || search !== loadedSearch} onClick={() => void loadMore("mapping")}>{t("Load more mappings")}</Button>}</Panel>
+  <Panel><Field>{t("Find imported source identifiers")}<Input value={sourceSearch} maxLength={200} onChange={e => {
+            invalidate();
+            setSourceSearch(e.target.value);
+          }} /></Field><p>{t("An imported identifier is evidence, not proof of a physical asset. Select a tuple to review explicit candidates.")}</p><TableViewport><Table aria-label={t("Imported source identifiers")}><thead><tr><th>{t("Source tuple")}</th><th>{t("Source records")}</th></tr></thead><tbody>{sources.candidates.map((c, i) => <tr key={i}><td><Button variant="text" onClick={() => {
+                    void selectSource(c);
+                  }}>{c.area} / {c.code}</Button></td><td>{c.records}</td></tr>)}</tbody></Table></TableViewport>{sources.nextCursor && <Button disabled={busy || sourceSearch !== loadedSourceSearch} onClick={() => void loadMore("source")}>{t("Load more source identifiers")}</Button>}</Panel>
  </>}</>;
 }
 function MappingEditor({
@@ -117,6 +207,10 @@ function MappingEditor({
     [names, setNames] = useState<Record<string, string>>({}),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
+  const saveEpoch = useRef(0);
+  useEffect(() => () => {
+    saveEpoch.current += 1;
+  }, [application]);
   useEffect(() => {
     let active = true;
     for (const target of data.candidateIds) application.detail(target).then(d => {
@@ -131,6 +225,7 @@ function MappingEditor({
   }, [application, mapping]);
   return <Panel><form onSubmit={async e => {
       e.preventDefault();
+      const current = ++saveEpoch.current;
       setBusy(true);
       setError("");
       try {
@@ -140,11 +235,11 @@ function MappingEditor({
           reason,
           data
         });
-        onSaved();
+        if (saveEpoch.current === current) onSaved();
       } catch (e) {
-        setError((e as Error).message);
+        if (saveEpoch.current === current) setError((e as Error).message);
       } finally {
-        setBusy(false);
+        if (saveEpoch.current === current) setBusy(false);
       }
     }}>
   <h2>{data.source.area} / {data.source.code}</h2><p>{t("Source namespace")}: {data.source.namespace} · {data.source.sourceId}</p><p>{t("Approved mappings require exactly one validated registry identity. Multiple pending candidates remain ambiguous. Source facts are never rewritten.")}</p>
@@ -172,6 +267,9 @@ function MappingEditor({
   <Field>{t("Mapping review notes")}<Textarea disabled={!canManage || busy} required maxLength={4000} value={data.note} onChange={e => setData(d => ({
           ...d,
           note: e.target.value
-        }))} /></Field><Field>{t("Change reason")}<Textarea disabled={!canManage || busy} required maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} /></Field><Actions className="iop-form-actions"><Button onClick={onCancel}>{t("Back")}</Button>{canManage && <Button type="submit" disabled={busy}>{t("Save mapping review")}</Button>}</Actions>
+        }))} /></Field><Field>{t("Change reason")}<Textarea disabled={!canManage || busy} required maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} /></Field><Actions className="iop-form-actions"><Button onClick={() => {
+          saveEpoch.current += 1;
+          onCancel();
+        }}>{t("Back")}</Button>{canManage && <Button type="submit" disabled={busy}>{t("Save mapping review")}</Button>}</Actions>
  </form></Panel>;
 }
