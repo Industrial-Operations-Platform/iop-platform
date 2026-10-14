@@ -52,3 +52,14 @@ needed, are explicitly restored before commits. Root mirrors backlog/shared docs
 Original context updates close delivered software criteria, keep IOP-039 physical
 inspection open and record operating-team inputs. Root synchronizes shared backlog,
 composition and browser acceptance; no plant acceptance is inferred.
+
+## Validated web increment
+
+- Full frontend suite: 162 tests / 31 suites passed after temporarily spreading
+  the dedicated German resource into the root-owned dictionary. That test-only
+  shared-file edit was restored; root must include the documented spread.
+- Four new React journeys cover large catalog pagination/refinement, structured
+  metadata/survey edits, reusable field configuration and exact tuple review.
+- Complete build/typecheck and reviewed contract check passed; no generated schema
+  was edited in this isolated worktree. Root registers the controller and regenerates
+  the assembled contract. Parent performs integrated browser acceptance.

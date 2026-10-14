@@ -15,7 +15,7 @@ infrastructure while retaining actual physical validation as pending.
   Pending/Validated/Rejected survey decisions with retained evidence.
 - [x] Explicit reviewed source-to-canonical mapping contract/projection, unresolved
   and ambiguous states, no inferred physical identity or RAW/history rewriting.
-- [ ] Working administration/editor UI with current permissions and shared identity;
+- [x] Working administration/editor UI with current permissions and shared identity;
   synthetic verification does not represent a completed physical plant survey.
 - [ ] Tests and documentation identifying full delivered criteria and remaining
   actual plant verification; design decisions recorded under delegated authority.

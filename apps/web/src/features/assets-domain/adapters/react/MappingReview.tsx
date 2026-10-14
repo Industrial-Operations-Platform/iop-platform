@@ -1,0 +1,177 @@
+import { useEffect, useState } from "react";
+import { Actions, Alert, Button, Disclosure, Field, FieldRow, Input, Panel, Select, Table, TableText, TableViewport, Textarea } from "../../../../design/components";
+import { t } from "../../../../localization/i18n";
+import type { AssetDomainApplication } from "../../application/domain";
+import { mappingState, type Context, type Mapping, type MappingData, type MappingPage, type MappingHistory, type RegistryReference, type SourceCandidate } from "../../domain/models";
+import { AssetReferencePicker } from "./AssetReferencePicker";
+export function MappingReview({
+  application,
+  context
+}: {
+  application: AssetDomainApplication;
+  context: Context;
+}) {
+  const [page, setPage] = useState<MappingPage>({
+      mappings: [],
+      total: 0,
+      nextCursor: ""
+    }),
+    [search, setSearch] = useState(""),
+    [sourceSearch, setSourceSearch] = useState(""),
+    [sources, setSources] = useState<{
+      candidates: SourceCandidate[];
+      nextCursor: string;
+    }>({
+      candidates: [],
+      nextCursor: ""
+    }),
+    [selected, setSelected] = useState<Mapping | null>(null),
+    [source, setSource] = useState<SourceCandidate | null>(null),
+    [history, setHistory] = useState<MappingHistory | null>(null),
+    [error, setError] = useState("");
+  async function refresh() {
+    try {
+      setPage(await application.mappingQuery({
+        search,
+        limit: 30
+      }));
+      setSources(await application.candidates(sourceSearch));
+      setError("");
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+  useEffect(() => {
+    void refresh();
+  }, [application, search, sourceSearch]);
+  return <>{error && <Alert>{error}</Alert>}{selected || source ? <><MappingEditor key={selected?.id ?? JSON.stringify(source)} application={application} mapping={selected ?? undefined} source={source ?? undefined} canManage={context.canManage} onSaved={() => {
+        setSelected(null);
+        setSource(null);
+        setHistory(null);
+        void refresh();
+      }} onCancel={() => {
+        setSelected(null);
+        setSource(null);
+      }} />{selected && <Disclosure summary={t("Mapping revision history")}><Button onClick={() => application.mappingHistory(selected.id).then(setHistory).catch(e => setError(e.message))}>{t("Load mapping history")}</Button>{history?.revisions.map(r => <Panel key={r.mapping.revision}><p>{r.actorName} · {r.at} · {t("Revision")}: {r.mapping.revision}</p><p>{r.mapping.data.status} · {r.mapping.data.note}</p><p>{r.reason}</p></Panel>)}{history && history.nextBefore > 0 && <Button onClick={() => application.mappingHistory(selected.id, history.nextBefore).then(next => setHistory(h => h ? {
+          ...next,
+          revisions: [...h.revisions, ...next.revisions]
+        } : next))}>{t("Load older revisions")}</Button>}</Disclosure>}</> : <>
+  <Panel><Field>{t("Find reviewed source mappings")}<Input value={search} maxLength={200} onChange={e => setSearch(e.target.value)} /></Field><TableViewport><Table aria-label={t("Reviewed canonical mappings")}><thead><tr><th>{t("Source tuple")}</th><th>{t("Mapping state")}</th><th>{t("Candidate count")}</th><th>{t("Revision")}</th></tr></thead><tbody>{page.mappings.map(m => <tr key={m.id}><td><Button variant="text" onClick={() => {
+                    setSelected(m);
+                    setSource(null);
+                    setHistory(null);
+                  }}>{m.data.source.area} / {m.data.source.code}</Button><TableText>{m.data.note}</TableText></td><td>{mappingState(m)}</td><td>{m.data.candidateIds.length}</td><td>{m.revision}</td></tr>)}</tbody></Table></TableViewport><p>{page.mappings.length} / {page.total} {t("reviewed mappings")}</p>{page.nextCursor && <Button onClick={() => application.mappingQuery({
+          search,
+          cursor: page.nextCursor,
+          limit: 30
+        }).then(next => setPage(p => ({
+          ...next,
+          mappings: [...p.mappings, ...next.mappings]
+        })))}>{t("Load more mappings")}</Button>}</Panel>
+  <Panel><Field>{t("Find imported source identifiers")}<Input value={sourceSearch} maxLength={200} onChange={e => setSourceSearch(e.target.value)} /></Field><p>{t("An imported identifier is evidence, not proof of a physical asset. Select a tuple to review explicit candidates.")}</p><TableViewport><Table aria-label={t("Imported source identifiers")}><thead><tr><th>{t("Source tuple")}</th><th>{t("Source records")}</th></tr></thead><tbody>{sources.candidates.map((c, i) => <tr key={i}><td><Button variant="text" onClick={() => {
+                    void application.mappingForSource({
+                      sourceId: c.sourceId,
+                      namespace: c.namespace,
+                      area: c.area,
+                      code: c.code
+                    }).then(existing => {
+                      setSelected(existing);
+                      setSource(c);
+                      setHistory(null);
+                    }).catch(e => setError(e.message));
+                  }}>{c.area} / {c.code}</Button></td><td>{c.records}</td></tr>)}</tbody></Table></TableViewport>{sources.nextCursor && <Button onClick={() => application.candidates(sourceSearch, sources.nextCursor).then(next => setSources(p => ({
+          ...next,
+          candidates: [...p.candidates, ...next.candidates]
+        })))}>{t("Load more source identifiers")}</Button>}</Panel>
+ </>}</>;
+}
+function MappingEditor({
+  application,
+  mapping,
+  source,
+  canManage,
+  onSaved,
+  onCancel
+}: {
+  application: AssetDomainApplication;
+  mapping?: Mapping;
+  source?: SourceCandidate;
+  canManage: boolean;
+  onSaved: () => void;
+  onCancel: () => void;
+}) {
+  const [id] = useState(() => mapping?.id ?? application.newId()),
+    [data, setData] = useState<MappingData>(() => mapping?.data ?? {
+      source: {
+        sourceId: source!.sourceId,
+        namespace: source!.namespace,
+        area: source!.area,
+        code: source!.code
+      },
+      status: "pending",
+      candidateIds: [],
+      note: ""
+    }),
+    [reason, setReason] = useState(""),
+    [candidate, setCandidate] = useState<RegistryReference | null>(null),
+    [names, setNames] = useState<Record<string, string>>({}),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  useEffect(() => {
+    let active = true;
+    for (const target of data.candidateIds) application.detail(target).then(d => {
+      if (active) setNames(n => ({
+        ...n,
+        [target]: d.asset.code
+      }));
+    }).catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [application, mapping]);
+  return <Panel><form onSubmit={async e => {
+      e.preventDefault();
+      setBusy(true);
+      setError("");
+      try {
+        await application.saveMapping({
+          id,
+          expectedRevision: mapping?.revision ?? 0,
+          reason,
+          data
+        });
+        onSaved();
+      } catch (e) {
+        setError((e as Error).message);
+      } finally {
+        setBusy(false);
+      }
+    }}>
+  <h2>{data.source.area} / {data.source.code}</h2><p>{t("Source namespace")}: {data.source.namespace} · {data.source.sourceId}</p><p>{t("Approved mappings require exactly one validated registry identity. Multiple pending candidates remain ambiguous. Source facts are never rewritten.")}</p>
+  {error && <Alert>{error}</Alert>}<Field>{t("Mapping review decision")}<Select disabled={!canManage || busy} value={data.status} onChange={e => setData(d => ({
+          ...d,
+          status: e.target.value as MappingData["status"]
+        }))}><option value="pending">{t("Pending")}</option><option value="approved">{t("Approved")}</option><option value="rejected">{t("Rejected")}</option></Select></Field>
+  <AssetReferencePicker application={application} label={t("Canonical asset candidate")} value={candidate?.id ?? ""} currentLabel={candidate?.code} disabled={!canManage || busy} onChange={setCandidate} /><Button disabled={!canManage || busy || !candidate || data.candidateIds.includes(candidate.id)} onClick={() => {
+        if (candidate) {
+          setData(d => ({
+            ...d,
+            candidateIds: [...d.candidateIds, candidate.id]
+          }));
+          setNames(n => ({
+            ...n,
+            [candidate.id]: candidate.code
+          }));
+          setCandidate(null);
+        }
+      }}>{t("Add canonical candidate")}</Button>
+  {data.candidateIds.map(target => <p key={target}>{names[target] || t("Loading candidate")} <Button disabled={!canManage || busy} variant="text" onClick={() => setData(d => ({
+          ...d,
+          candidateIds: d.candidateIds.filter(id => id !== target)
+        }))}>{t("Remove candidate")}</Button></p>)}
+  <Field>{t("Mapping review notes")}<Textarea disabled={!canManage || busy} required maxLength={4000} value={data.note} onChange={e => setData(d => ({
+          ...d,
+          note: e.target.value
+        }))} /></Field><Field>{t("Change reason")}<Textarea disabled={!canManage || busy} required maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} /></Field><Actions className="iop-form-actions"><Button onClick={onCancel}>{t("Back")}</Button>{canManage && <Button type="submit" disabled={busy}>{t("Save mapping review")}</Button>}</Actions>
+ </form></Panel>;
+}
