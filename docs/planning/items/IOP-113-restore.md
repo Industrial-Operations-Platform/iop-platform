@@ -2,113 +2,73 @@
 
 ## Status
 
-Proposed
+Completed
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M14 — Security & Reliability. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M14 — Security & Reliability. Verified reproducible local software slice completed.
 
-Restore process. Expected outcome: Verified restore
-
-## User / business value
-
-Customers and operators need verifiable isolation and reproducible recovery.
-
-## Context
-
-Scope: Security and operational reliability. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+Verified full local platform restore into an isolated installation.
 
 ## Current state
 
-Analytics-only backup seeding and isolated fixture recreation are delivered. Remaining:
-tested full-platform restore covering credentials/grants and operational history, with
-integrity/recovery evidence.
+[IOP-208](IOP-208-local-delivery-infrastructure.md) under [IOP-203](IOP-203-platform-completion.md) implements authenticated extraction and a
+fresh network-isolated PostgreSQL restore. Independent full table counts/digests,
+application role properties, effective grants and exact RLS policies reconcile
+before the new container is retained stopped. Private configuration/credentials,
+PNG references and traces are restored without overwriting active data. The actual
+root installation archive has also passed isolated restore verification.
 
-## Desired state
+## Requirements and delivery boundary
 
-Verified restore
-
-## Requirements
-
-- Deliver only the outcome described for IOP-113.
-- Apply controls in each vertical slice; this milestone verifies and hardens them rather than postponing security until the end.
+Restore refuses an existing destination and uses no network or published ports.
+Failures remove only its newly created database; no archived SQL executes against
+the running installation. A verified stopped container and private report retain
+the result. Activation requires separate review of copied credentials, origins,
+paths/scope and expired Audit purge through its distinct retention authority.
 
 ## Acceptance criteria
 
-- [ ] Verified restore
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Authenticate and recover the full declared private bundle to a new directory/database only.
+- [x] Verify disposable data/history/roles/grants/RLS and preserve existing targets on failure.
+- [x] Verify an actual local-installation archive in a fresh isolated target under root IOP-203.
+- [x] Document the verified result and remaining activation/security review without activating it.
 
-## Domain considerations
+## Validation and evidence
 
-Apply controls in each vertical slice; this milestone verifies and hardens them rather
-than postponing security until the end.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Retention, restoration and sensitive data follow agreed decisions; do not copy
-production data into the repository.
-
-## API considerations
-
-Test the authorization, input, error and recovery boundaries relevant to the task.
-
-## UI considerations
-
-Where a UI exists, check useful errors without sensitive data and with correct scope context.
+Real PostgreSQL full-source roundtrips include nonempty Handover revisions and
+job/Audit effects, independently matched role/grant/RLS metadata and exact reference
+file hashes. Crypto/overwrite failures are tested. See [local operating guide](../../development/local-operations.md),
+[Accepted ADR-0038](../../architecture/adr/ADR-0038-local-operating-infrastructure.md) and the [IOP-208 plan](../completed/IOP-208-local-delivery-infrastructure-plan.md).
+Root actual-installation verification passes: 170 files, 62 tables and 154,341 rows
+reconcile with exact catalog/data/RLS/role and schema/table/column/function ACL
+metadata. The fresh network-none container remains stopped; its mode 0700 private
+review directory retains verification. No activation or active overwrite occurred,
+and actual API/web restarted healthy. Root complete PostgreSQL validation passes
+30 suites/316 tests.
 
 ## Dependencies
 
-[IOP-112](IOP-112-backup.md)
+[IOP-112](IOP-112-backup.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+The reproducible local software restore criterion is completed. Recovery-time
+acceptance, another authorized deployment environment, operator exercise, copied
+credential/origin/scope review, expired-Audit purge and activation remain separate
+gates. No live replacement, production readiness or physical verification follows
+from the stopped verified artifact.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-Analytics-only backup seeding and isolated fixture recreation are delivered. Remaining:
-tested full-platform restore covering credentials/grants and operational history, with
-integrity/recovery evidence.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).

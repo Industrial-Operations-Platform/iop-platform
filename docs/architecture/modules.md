@@ -9,7 +9,7 @@ scope and data invariants in delivered paths. The local selector is implemented
 under ADR-0018/0030/0034. [IOP-165](../planning/items/IOP-165-operational-home.md)
 implements temporary authenticated access and user administration under accepted
 [ADR-0035](adr/ADR-0035-transitional-authentication.md). Shift Handover supplies operational entries and selected Start highlights under
-ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); Maintenance and supporting stable Assets/Digital Asset Record are delivered under IOP-194, integrated into develop and published to origin on 2026-10-06; owner product review remains pending. M9 Asset Locator and full M4 capabilities remain deferred. Existing identity, authorization and RLS requirements still apply.
+ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); Maintenance and supporting stable Assets/Digital Asset Record are delivered under IOP-194, integrated into develop and published to origin on 2026-10-06; owner product review remains pending. IOP-203–210 extend the local review branch with formal Handover, Improvement Tracking, provisional 3D Locator, Asset domain enrichment, search and local operating infrastructure. Real providers, physical survey inputs and shared-use identity remain pending. Existing identity, authorization and RLS requirements still apply.
 
 [IOP-168](../planning/items/IOP-168-shift-handover.md) captures the requested first
 Shift Handover increment. [ADR-0036](adr/ADR-0036-shift-handover.md) defines its accepted
@@ -27,6 +27,9 @@ See [architecture](../../ARCHITECTURE.md) and the [glossary](../product/glossary
 | Shift Handover | Handover notes, open issues, acknowledgements | Shifts, users, asset and maintenance references |
 | Maintenance Management | Categorized work, manual repair scopes, include/exclude decisions, assignments, status and outcomes | Assets/users/team directories; Handover-owned related-entry and scoped resolution contracts |
 | Asset Management | Canonical assets, types, hierarchy, controller relationships, validation and alias mappings | Core site context; source identifiers from Integrations |
+| Improvement Tracking | Actions, ownership, targets, evidence and immutable comparative snapshots | Asset/Handover references and OIP-owned measurement ports |
+| Operational Overview | Source-group search and area read composition, without duplicating source records | Current source-owned Assets/Handover/Maintenance/OIP/formal read contracts |
+| Jobs | Scoped requests, leases, retries and current initiator authority | Registered owner handlers on the authorized pinned transaction |
 | Asset Locator | Versioned maps, placements and location search views | Asset and site contracts; no duplicate asset registry |
 | Data Analysis (OIP) | Canonical event occurrences/aggregates, message definitions, asset/message associations and analytical projections | Normalized input contracts, assets, shifts and maintenance context |
 | Integrations | Source adapters, import runs, RAW provenance, source mapping and validation | Receiving modules' ingestion contracts |
@@ -48,8 +51,9 @@ context and must not become a dependency required to perform core workflows.
 `packages/contracts` is for deliberate boundary contracts, not exported internal
 entities. `packages/shared` is for small domain-neutral utilities, not a second
 core. ADR-0026 defines the first API-local Users/RBAC/Platform Core placement and pinned
-site-operation handoff. Broader module placement, invocation and reliable
-audit/event delivery still need design; a broker or
+site-operation handoff. ADR-0032 defines current local owner boundaries; ADR-0038
+implements scoped durable jobs and pinned site Audit through published ports.
+Broader remote/distributed delivery remains separate design; a broker or
 microservices are not implied.
 
 
@@ -65,7 +69,7 @@ Nest DTO classes, persistence entities or server internals. Transport validation
 checks untrusted input; each receiving module still enforces domain invariants and
 scoped references. Source adapters continue to translate vendor data into
 receiver-owned ingestion contracts. ADR-0026 implements the first bounded API-local authorization contracts and
-transaction handoff; broader placement and delivery mechanisms remain undecided.
+transaction handoff; the local worker and Audit pattern follows ADR-0038; broader remote delivery remains separate.
 
 
 ## Scope ownership
@@ -124,7 +128,9 @@ Access changes require organization-scoped delegation checks, traceable mutation
 and concurrency protection for authority revocation and last-admin removal.
 Local identity bootstrap/recovery, scoped transaction coordination and profile
 administration are implemented under ADR-0026/0027/0035. Corporate provider binding
-and general Audit delivery remain future contracts.
+and organization/platform-security Audit remain pending contracts. Current site
+material Audit is delivered through owner-defined pinned ports; see the
+[site capture contract](../development/site-audit-integration.md).
 
 
 ## Temporal responsibilities
@@ -182,14 +188,18 @@ another module's private tables or writes its evidence. Access is current and
 source-specific. See the [product contract](../product/maintenance-assets.md) and
 [implementation guide](../development/maintenance-assets.md).
 
-## Future audit responsibilities
+## Audit responsibilities
 
 Accepted [ADR-0017](adr/ADR-0017-audit-model.md) assigns record validation,
 persistence and disposal to Audit; emitting modules own event meaning and safe
-change fields. When implemented, material changes and their records share one
-scoped transaction/connection through explicit contracts. Security observations
-have separate outage behavior; Audit never coordinates business workflows.
+change fields. Delivered site material changes and their records share one
+authorized scoped transaction/connection through explicit published contracts.
+Pending security-observation contracts have separate outage behavior; Audit never
+coordinates business workflows.
 
-The owner deferred this capability beyond the pilot. Its absence is not a pilot
-mutation or release blocker. Audit inspection adds no implicit permission to
-current roles. General job delivery and authentication remain separate decisions.
+IOP-208 delivers append-only site Audit, separate scoped inspection/retention
+functions and job capture under ADR-0038. Explicit site material emitters use the
+same authorized business transaction. Organization RBAC and platform-security
+capture remain separate pending contracts. Audit inspection adds no implicit
+permission to product profiles. See [local operations](../development/local-operations.md)
+and the [owner capture/remaining contracts](../development/site-audit-integration.md).

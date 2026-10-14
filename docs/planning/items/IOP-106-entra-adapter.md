@@ -2,11 +2,11 @@
 
 ## Status
 
-Proposed
+In progress — verified identity boundary/readiness prepared; actual Entra corporate login pending.
 
 ## Milestone
 
-M13 — External Integrations. Proposed delivery slice.
+M13 — External Integrations. Readiness delivered under IOP-207; real connections remain separate.
 
 ## Goal
 
@@ -14,7 +14,7 @@ Entra identity adapter. Expected outcome: Replaceable provider
 
 ## User / business value
 
-Administradores necesitan conectar fuentes sin acoplar el producto a un proveedor.
+Administrators need to connect sources without coupling the product to a provider.
 
 ## Context
 
@@ -24,9 +24,7 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Authentication has a replaceable local adapter under ADR-0035; Users/RBAC owns
-permissions. Remaining: actual Entra identity mapping, provider configuration and
-authorized compatibility verification.
+The existing local Authentication adapter remains active and Users/RBAC owns platform permissions. IOP-207 prepares an Entra candidate behind an injected verifying transport with explicit approved tenant/issuer checks. A local verified-claims fixture is not corporate sign-in, token signature verification or a platform-principal binding.
 
 ## Desired state
 
@@ -41,8 +39,10 @@ Replaceable provider
 ## Acceptance criteria
 
 - [ ] Replaceable provider
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] The plan documents scenarios and necessary decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
+
+- [ ] Authorized real transport/schema/access and compatibility evidence complete the provider outcome.
 
 ## Domain considerations
 
@@ -69,8 +69,8 @@ Separate secrets, mapping, provenance and scope; preserve existing flows during 
 
 ## API considerations
 
-Interfaces documentadas y autorizadas; fuentes industriales solo lectura. Contratos no
-prometen conectividad real.
+Documented and authorized interfaces; industrial sources remain read-only. Contracts
+do not promise real connectivity.
 
 ## UI considerations
 
@@ -99,16 +99,14 @@ actual results, not fictional tests.
 Update this item, its status in the [backlog](../backlog.md) and the execution plan.
 Update contracts, models, guides or ADRs only if this task changes their content.
 
-## Open questions
+## Delivered readiness and remaining provider work — 2026-10-14
 
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
+The owner's [IOP-203](IOP-203-platform-completion.md) request authorized the
+prepared adapter/registry increment. [IOP-207](IOP-207-integration-readiness.md),
+its [completed execution](../completed/IOP-207-integration-readiness-plan.md) and
+the [readiness contract](../../product/integration-readiness.md) record scope,
+current role enforcement and executed API/web/real PostgreSQL evidence. Actual
+desktop/390px review shows three disabled providers and explicit missing-input
+semantics; no existing provider configuration or account passwords changed.
 
-## Current coverage and remaining work — 2026-10-06
-
-Authentication has a replaceable local adapter under ADR-0035; Users/RBAC owns
-permissions. Remaining: actual Entra identity mapping, provider configuration and
-authorized compatibility verification.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+Supply the approved tenant/issuer, application registration/client ID, audience and consent policy, private credential binding and corporate-to-platform principal mapping. Implement the real verifying transport with signature/audience/expiry validation and the Authentication-owned login/session adapter; verify authorized compatibility and recovery behavior. Actual corporate login remains pending; prepared metadata cannot replace local authentication.

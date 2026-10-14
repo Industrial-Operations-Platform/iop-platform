@@ -1,6 +1,6 @@
 # IOP-203 — Platform completion execution
 
-Status: In progress. Owner-authorized on 2026-10-14. Branch:
+Status: Completed local software increment. Owner-authorized on 2026-10-14. Branch:
 `feature/IOP-203-platform-completion`, from `develop` at `24b6269`.
 [Permanent request](../items/IOP-203-platform-completion.md).
 
@@ -143,6 +143,46 @@ no completion is inferred from disposable roundtrips alone. No unrelated stories
 translation, code, distribution build or commit belongs to this documentation pass.
 Root reviews and commits the reconciled contexts with final integrated evidence.
 
+Reconciliation outcome: IOP-010 design and IOP-024 executable local test-job
+criteria are Completed; IOP-021 remote CI and IOP-023 broader organization/platform
+security Audit stay In progress. Actual root encrypted backup/isolated restore
+passes: 170 files, 62 tables and 154,341 rows with exact catalog/data/RLS/role/ACL evidence,
+a fresh stopped network-none target and no activation/active overwrite; API/web
+restarted healthy. IOP-112/113 reproducible local software criteria are Completed.
+IOP-114/115/134/135/137 retain agreed external operating/performance/deployment/
+review criteria, and IOP-138 stays Proposed for release authority/human gates.
+Initial corrected PostgreSQL validation passed 30 suites/316 tests. The final
+expanded database run and browser evidence are recorded in Closure below.
+Targeted backlog row edits preserve concurrent IOP-210/118/119 reconciliation.
+
+## Canonical product/module claim reconciliation — 2026-10-14
+
+Before edits, read the complete current `docs/product/shift-handover.md`,
+`docs/product/maintenance-assets.md`, `docs/product/scope-poc.md` and
+`docs/architecture/modules.md`. Correct only stale current-implementation claims
+about formal shift binding/canonical links, Improvement Tracking and general site
+Audit; link delivered local guides and retain historical dates, original pilot
+scope and release/physical/external limits. `scope-v1.md` remains the future umbrella;
+add only a concise superseding local-increment pointer if needed for current truth.
+No unrelated scope, architectural pattern, code, build or commit is selected.
+Root coordinates concurrent reviewer findings and owns final review/commit.
+
+The read-only reviewer additionally identifies current claims in
+`docs/development/maintenance-assets.md`, `docs/development/running-poc.md` and
+`docs/architecture/data-model.md`. Add these exact paths before edits, read each
+complete file and reconcile only M9/controller/map/reviewed-ingestion software
+claims with explicit IOP-206/209 supersession. Automatic physical identity inference,
+actual survey/evidence and external/remote/release limits remain absent or pending.
+
+Executed reconciliation: product/operation/model claims now reference delivered
+formal shift/canonical links, provisional IOP-206 scenes and IOP-209 reviewed
+controller/ingestion mappings. Historical IOP-194/2026-10-06 dates remain intact;
+2026-10-14 supersession is explicit. Scope-v1 received only a concise current-local
+increment pointer, preserving its historical pilot/shared-use umbrella. Current
+site Audit uses the published pinned contract; organization/platform-security and
+external/file/release scope remain pending. All 9 named documents have valid local
+link targets and diff checks pass; no code, build, scope-v1 rewrite or commit.
+
 ## Closure
 
 Assembled material Audit composition is mandatory in all thirteen owner adapters
@@ -151,8 +191,35 @@ bodies or adding runtime inspection/delete authority. The combined validation
 passes typecheck, architecture/design and generated contracts, secrets 25, API
 509, web 192 and database configuration 77. After the narrowly scoped reset and
 exact membership-policy corrections, the complete database command passes all
-30 suites/316 tests in 252.697 seconds. Final browser and actual isolated recovery
-checks remain in progress; remote CI execution remains unverified.
+30 suites/316 tests in 252.697 seconds. The final expanded run passes 31 suites/319
+tests in 503.79 seconds, including actual 501-component Locator evidence and the
+1,000-identity boundary. Actual encrypted recovery captures 170 files,
+62 tables and 154,341 rows, then independently reconciles data, roles, owners,
+RLS policies and schema/table/column/function grants in a fresh network-isolated
+container. The review container remains stopped; no archive was activated or run
+against the current installation. API/web restarted healthy after the exclusive
+backup interval. Private review artifacts and separate key are under the private
+`/private/tmp/iop-203-recovery-review-N94gX3` directory, outside Git.
+
+Actual assembled Asset management review passes 20 checks with no attempted writes,
+HTTP failures, console/page errors or narrow-layout overflow. The final `test:poc`
+run passes all type/build/contract/design/architecture, secret, API, web and database
+phases. Its initial browser phase passes 56/57 and identifies an ambiguous current/
+history selector. The test-only correction retains all prior assertions and waits
+for actual history before checking the current detail. Ten repeated desktop/narrow
+cases pass, followed by the complete `npm run test:e2e --workspace=@iop/web`:
+57/57 pass in 1.7 minutes, with no production or build changes between phases.
+The [fixture plan](IOP-203-e2e-fixture-compatibility-plan.md) records both corrections;
+unknown routes remain rejected. This is phase-by-phase evidence, not a claim that
+the earlier single `test:poc` process exited successfully. Remote CI remains unverified.
+
+Final local Docker build is healthy at `http://127.0.0.1:8080`, preserving all 78
+reporting dates and 42,220 source rows with zero reimports. Markdown links, anchors,
+selected story IDs/status mirrors, secret checks and whitespace pass. Child plans
+are completed; original plant/provider/operating/release criteria remain open where
+their real inputs or acceptance are missing. The completion guide owns the exact
+remaining-input register. Validated local commits are retained on the story branch;
+the owner still controls publication/promotion.
 
 Record actual commands/results and unresolved input per child, retain review
 branches and commit validated increments. No push, develop/stage/master promotion,

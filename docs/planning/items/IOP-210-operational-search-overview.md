@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Implemented module delivery; root host composition and assembled review pending under the owner's [IOP-203](IOP-203-platform-completion.md) delegated
+Completed local software delivery under the owner's [IOP-203](IOP-203-platform-completion.md) delegated
 development authorization. Deliver IOP-119 global authorized asset/area/issue search
 and IOP-118's unified area context using existing source-owned read boundaries.
 
@@ -28,10 +28,11 @@ actual previous-shift lookup only after explicit record selection. OIP consumes 
 explicit department sector mappings. Source-unknown areas remain unmapped; no live
 health, plant identity or historical state is inferred.
 
-Remaining host work belongs to the assembling IOP-203 branch: register controller,
-instantiate factory, compose navigation/German dictionary, generate public schemas
-and verify assembled desktop/narrow browser behavior. This item does not claim those
-shared files were changed in this isolated delivery.
+IOP-203 integrates the controller/factory, navigation, shared German dictionary
+and generated contracts. Actual local browser review validates exact source
+navigation and area counts/coverage at desktop and 390px in English/light and
+German/dark. Source-unknown analytical area mappings stay explicitly unmapped
+input rather than inferred from customer labels.
 
 Profile bootstrap uses only the finite existing source-read catalog; revoking
 Workforce alone leaves other independently authorized source reads available.

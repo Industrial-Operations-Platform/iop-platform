@@ -1,6 +1,6 @@
 # IOP-204 — Formal Handover execution plan
 
-Status: In progress. Owner authorization: [IOP-203](../items/IOP-203-platform-completion.md), 2026-10-14. Story branch: `feature/IOP-204-formal-handover`, based on `develop` at `24b6269`. Scope: [IOP-204](../items/IOP-204-formal-handover.md); decisions: [ADR-0037](../../architecture/adr/ADR-0037-operational-completion.md).
+Status: Completed local software increment. Owner authorization: [IOP-203](../items/IOP-203-platform-completion.md), 2026-10-14. Story branch: `feature/IOP-204-formal-handover`, based on `develop` at `24b6269`. Scope: [IOP-204](../items/IOP-204-formal-handover.md); decisions: [ADR-0037](../../architecture/adr/ADR-0037-operational-completion.md).
 
 ## Changes and steps
 
@@ -35,4 +35,27 @@ Formal records require `handover.records.manage`, current advanced profile and c
 
 Localized formal/canonical controls and statuses passed the German dictionary guard and a German UI test, retaining customer titles. Shared German catalog integration is parent-owned. The [operator guide](../../development/formal-handover.md) records the delivered lifecycle and bounds.
 
-The parent integrates `composeFormalHandover`, registers `FormalHandoverController`, injects authorized canonical Assets ports, applies its permission/provisioning catalog, regenerates OpenAPI/browser bindings and exposes `FormalHandoverWorkspace`. Item and plan stay In progress until that shared integration is validated; no plant data blocks this slice.
+The parent integrates `composeFormalHandover`, registers `FormalHandoverController`, injects authorized canonical Assets ports, applies its permission/provisioning catalog, regenerates OpenAPI/browser bindings and exposes `FormalHandoverWorkspace`. Shared integration is now validated; no plant coordinates or provider credentials block this slice.
+
+## Actual host integration evidence — 2026-10-14
+
+IOP-203 registers the formal controller/factory, canonical Assets ports, advanced
+current-profile permission bundles, narrow database provisioning and browser
+workspace/German resources. Generated OpenAPI/browser bindings build. The first
+integrated full suite passed API 472, web 173 and database configuration 77 tests;
+the formal disposable PostgreSQL lifecycle suite passed 8 checks independently.
+
+Isolated Playwright reviewed the actual running local installation at 1440px and
+390px: scoped formal context returned 200, composed controls and explicit department
+selection were present, no page errors or horizontal overflow occurred. The
+source-owned query found 10 planned shifts across 5 configured departments for the
+selected day. Private screenshots were inspected. This read-only review did not
+modify existing records or change any account password; the full synthetic
+create/publish/close/receive workflow remains covered by the prior web/PG evidence.
+
+Additional actual unsaved-form review selected two real planned shifts and six
+relevant reports, accepted a temporary draft and canceled without saving. The
+390px creation form initially exposed overflow from long actual shift labels.
+The scoped parent fix constrains the field grid/controls and wraps report labels.
+Rechecking the actual rebuilt form confirms no horizontal overflow or page errors;
+the temporary draft and integration metadata form were canceled without saving.

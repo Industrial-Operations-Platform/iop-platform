@@ -2,112 +2,65 @@
 
 ## Status
 
-Proposed
+In progress
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M17 — v1 Validation & Release. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M17 — v1 Validation & Release. Local administrator procedures delivered; shared-use review pending.
 
-Admin documentation. Expected outcome: An administrator can configure the system
-
-## User / business value
-
-Users and administrators need a demonstrable, operable and documented version.
-
-## Context
-
-Scope: Validation and release readiness. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+An administrator can configure the agreed system.
 
 ## Current state
 
-Local account administration, CSV preparation/KPIs, Workforce and Maintenance settings
-are documented in the operator/module guides. Remaining: the complete agreed shared-use
-administrator procedures, including recovery/deployment controls when delivered.
+Guides document local accounts/roles, CSV preparation/KPIs, Workforce/Maintenance,
+formal Handover, Tracking, provisional Locator, reusable Asset models/mappings and
+integration readiness. IOP-208 adds trusted job operation, separate Audit operators,
+private backup/key/restore and measurement procedures. Real providers and shared-use
+operating/human acceptance remain distinct.
 
-## Desired state
+## Requirements and delivery boundary
 
-An administrator can configure the system
-
-## Requirements
-
-- Deliver only the outcome described for IOP-135.
-- Verify the agreed v1 scope without requiring every future backlog idea.
+Product roles configure only their currently granted module functions. Job
+operation requires current Administrator authority; Audit inspection/purge uses
+separate restricted database operator credentials and grants no product browsing.
+Plant survey and credentials/provider contracts remain actual input, not fixtures
+or fabricated completion. Preserve English source text and explicit localization.
 
 ## Acceptance criteria
 
-- [ ] An administrator can configure the system
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Document current local administration/module configuration and recovery boundaries.
+- [ ] Review the complete agreed shared-use administrator procedure with its operators.
+- [ ] Verify another deployment/recovery environment and remaining provider/security controls when authorized.
 
-## Domain considerations
+## Validation and evidence
 
-Verify the agreed v1 scope without requiring every future backlog idea.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Reconcile evidence and test recovery with authorized or synthetic data.
-
-## API considerations
-
-Validate published contracts and documented compatibility; do not introduce features
-during release closure.
-
-## UI considerations
-
-Validate the agreed workflow and documentation for each persona; record known limitations.
+Use the [platform guide](../../development/platform-completion.md), [local operating guide](../../development/local-operations.md),
+[formal Handover](../../development/formal-handover.md),
+[Tracking](../../development/improvement-tracking.md) and
+[Locator guide](../../development/asset-locator.md). Software/permission tests
+support those procedures; independent operator review, complete shared-use security
+remain pending; actual local backup/isolated restore evidence passes under IOP-112/113.
 
 ## Dependencies
 
-[IOP-031](IOP-031-administration-foundation.md), [IOP-109](IOP-109-secret-management.md)
+[IOP-031](IOP-031-administration-foundation.md), [IOP-109](IOP-109-secret-management.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+Complete agreed operator/shared-use review, organization/platform security Audit,
+provider credential/connection procedures and additional-environment recovery.
+Current guides do not substitute for human or whole-platform release acceptance.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-Local account administration, CSV preparation/KPIs, Workforce and Maintenance settings
-are documented in the operator/module guides. Remaining: the complete agreed shared-use
-administrator procedures, including recovery/deployment controls when delivered.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).

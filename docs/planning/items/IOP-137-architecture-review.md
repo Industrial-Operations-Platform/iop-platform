@@ -2,114 +2,67 @@
 
 ## Status
 
-Proposed
+In progress
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M17 — v1 Validation & Release. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M17 — v1 Validation & Release. Implementation reconciliation ongoing; release review pending.
 
-Architecture review. Expected outcome: ADRs/documentation match the implementation
-
-## User / business value
-
-Users and administrators need a demonstrable, operable and documented version.
-
-## Context
-
-Scope: Validation and release readiness. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+ADRs/documentation match the implementation for the agreed release scope.
 
 ## Current state
 
-ADR-0032 boundaries, executable guards and per-story architectural review are delivered;
-IOP-195 reconciles current documentation. Remaining: the agreed v1 architecture review
-against final release/deployment scope; this documentation audit is not release
-sign-off.
+Accepted ADR-0032 boundaries and executable guards are delivered; IOP-195/197
+record earlier architecture/governance reconciliation. Accepted ADR-0037/0038 and
+IOP-203 now document delegated operational completion, private infrastructure,
+published pinned Audit ports and exact remaining contracts. Current software gates
+pass; final agreed release/deployment review is still separate.
 
-## Desired state
+## Requirements and delivery boundary
 
-ADRs/documentation match the implementation
-
-## Requirements
-
-- Deliver only the outcome described for IOP-137.
-- Verify the agreed v1 scope without requiring every future backlog idea.
+Explicit module owners retain domain/application boundaries and safe integration
+ports. Audit uses same pinned owner transactions; optional compatibility ports are
+mandatory in actual host composition. Forced RLS/exact grants remain enforced.
+Proposed ADRs are not accepted by inference. Future organization/security Audit,
+external file activation and provider transport remain documented exclusions.
 
 ## Acceptance criteria
 
-- [ ] ADRs/documentation match the implementation
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Record accepted decisions and reconcile delivered local owner/module boundaries and evidence.
+- [ ] Review final agreed v1 scope, deployment/security contracts and remaining exclusions against implementation.
+- [ ] Record architecture/release review acceptance without treating local tests as owner sign-off.
 
-## Domain considerations
+## Validation and evidence
 
-Verify the agreed v1 scope without requiring every future backlog idea.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Reconcile evidence and test recovery with authorized or synthetic data.
-
-## API considerations
-
-Validate published contracts and documented compatibility; do not introduce features
-during release closure.
-
-## UI considerations
-
-Validate the agreed workflow and documentation for each persona; record known limitations.
+Root local checks pass 509 API, 192 web, 25 secret/tooling and 77 database
+configuration tests, including architecture/design/contract guards. Complete
+PostgreSQL validation passes 30 suites/316 tests; actual isolated restore reconciles
+170 files, 62 tables and 154,341 rows. Final combined browser fixture correction
+and full pipeline recheck remain explicit root gates. Evidence is recorded in the
+execution plan.
+See [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md),
+[Accepted ADR-0038](../../architecture/adr/ADR-0038-local-operating-infrastructure.md) and [IOP-203 evidence](../completed/IOP-203-platform-completion-plan.md).
 
 ## Dependencies
 
-[IOP-129](IOP-129-end-to-end-scenario.md), [IOP-134](IOP-134-deployment-guide.md)
+[IOP-129](IOP-129-end-to-end-scenario.md), [IOP-134](IOP-134-deployment-guide.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+Finish the release-scoped documentation/implementation review after deployment,
+security, human/physical and performance boundaries are agreed. A documentation
+reconciliation or passing guard is not whole-platform release sign-off.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-ADR-0032 boundaries, executable guards and per-story architectural review are delivered;
-IOP-195 reconciles current documentation. Remaining: the agreed v1 architecture review
-against final release/deployment scope; this documentation audit is not release
-sign-off.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).

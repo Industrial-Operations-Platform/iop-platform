@@ -10,7 +10,8 @@ outcome; [IOP-118](../planning/items/IOP-118-area-overview.md) owns area context
 The shared header search finds configured areas, current registered assets (including
 source aliases/metadata), Handover reports across journal history and Maintenance
 work. Results are grouped by source with full matching source totals and finite
-pages: 25 areas/assets, 50 reports and 50 work records. Each source keeps its own
+pages: 25 areas/assets, currently 20 source-owned Handover reports and up to 50
+work records. The receiving Handover budget remains at most 50 records. Each source keeps its own
 cursor; changing search/location resets pagination. Multiple asset/alias matches
 remain separate choices. Configured areas beyond the first 25 can be found by
 refining the query or selecting location scope.

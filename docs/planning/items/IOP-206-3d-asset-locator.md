@@ -2,8 +2,9 @@
 
 ## Status
 
-In progress — module implementation validated; shared host integration and actual
-browser verification remain with the IOP-203 completion increment.
+Completed local software increment — shared host integration and actual browser
+verification passed. Exact plant calibration and sensor identity/position inputs
+remain open under the original operational placement outcomes.
 
 ## Scope
 
@@ -46,6 +47,9 @@ Web Locator/identity/localization: 11 tests passed. Real PostgreSQL Locator suit
 4 tests passed. API/web type checks passed. See the
 [completed module execution](../completed/IOP-206-3d-asset-locator-plan.md) and
 [operator guide](../../development/asset-locator.md).
-Shared host navigation/composition, permission migration, dependency manifests,
-German dictionary composition, generated contract bindings and actual integrated
-desktop/narrow rendering are owned by IOP-203. Exact plant surveying remains open.
+IOP-203 integrates shared host navigation/composition, current permission migration,
+dependency manifests, German resources, generated contract bindings and private
+read-only reference storage. Actual local WebGL2 renders the supplied BV tracing
+in light/dark appearance; 390px shows no horizontal overflow or page errors.
+See the completed plan for exact integration evidence. Exact plant surveying and
+canonical source-to-sensor identification remain open under IOP-079/081.

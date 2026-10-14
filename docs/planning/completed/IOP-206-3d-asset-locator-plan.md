@@ -72,6 +72,22 @@ raycast selection/placement, two-endpoint conveyor tracing, accessible controls
 and list fallback, explicit asset links, current-source evidence, bounded searches
 and unplaced states are implemented. Scenes use optimistic revisions; private
 files are scope/hash validated and never served publicly. Version changes cannot
-silently reuse old geometry on another reference. The item remains In progress
-until shared host integration and actual browser verification finish; parent
-plant survey work remains open after that implementation increment.
+silently reuse old geometry on another reference. Shared host integration and actual browser verification are now complete;
+parent plant survey/identity work remains open after this software increment.
+
+## Actual host integration evidence — 2026-10-14
+
+IOP-203 integrates Three.js, scoped runtime/controller, current advanced profile
+and grants, German dictionary, generated HTTP contracts, navigation and private
+read-only reference storage. Safe local initialization created 72 scenes: 71 private
+equipment schematics plus one explicitly synthetic reusable example. The private
+legend remains reference data; no customer bitmap or trace geometry entered Git.
+
+Isolated Playwright on the actual local installation confirmed WebGL2 rendering,
+the BV private reference with 27 provisional traced components, and visible
+calibration/source-health limitations. Both light and dark desktop screenshots
+and the 390px view were inspected: no page errors, failing browser API requests or
+horizontal overflow. The versioned editor exposes reusable components/camera and
+placement controls. This review did not change any existing scene placement or
+assign inferred sensor identities. Actual metric scale, surveyed elevations,
+plant-wide alignment and exact canonical sensor placement remain pending inputs.

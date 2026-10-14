@@ -1,7 +1,8 @@
 # Industrial Operations Platform (IOP)
 
 IOP is a modular industrial operations platform with Data Analysis (OIP), Shift
-Handover, Workforce, Maintenance Management and a Digital Asset Record. The local
+Handover, Workforce, Maintenance Management, Improvement Tracking, Asset Locator
+and a Digital Asset Record. The local
 application uses individual accounts with Administrator, Team Leader, Task Force
 and Technician profiles; corporate login and shared hosting remain pending.
 
@@ -26,6 +27,8 @@ previews are optional development paths, not the primary installation.
 
 | Need | Source of truth |
 | --- | --- |
+| New operational workflows and missing plant inputs | [Platform completion guide](docs/development/platform-completion.md) |
+| Local backup, jobs, Audit and readiness | [Local operations](docs/development/local-operations.md) |
 | Current product behavior and limits | [POC scope](docs/product/scope-poc.md) |
 | Delivered work and remaining acceptance | [Delivery status](docs/planning/poc-delivery.md) |
 | Remaining development and deferred capabilities | [Roadmap](ROADMAP.md), [story statuses](docs/planning/backlog.md) |

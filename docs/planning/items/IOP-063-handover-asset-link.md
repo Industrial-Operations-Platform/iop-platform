@@ -2,11 +2,11 @@
 
 ## Status
 
-Proposed
+Completed — delivered and locally integrated through IOP-204 on 2026-10-14.
 
 ## Milestone
 
-M7 — Shift Handover. Proposed delivery slice.
+M7 — Shift Handover. Local software delivery completed.
 
 ## Goal
 
@@ -24,9 +24,7 @@ outline requested by the owner; inclusion in the backlog does not authorize impl
 
 ## Current state
 
-IOP-194 Digital Asset Records find Handover evidence through exact source aliases.
-Remaining: an explicit canonical asset reference on the Handover entry and its
-validation/editing contract; existing equipment references remain unverified.
+Journal entries support an optional explicit canonical asset reference through the Assets-owned scoped lookup. New links reject missing, foreign or retired references; historical unverified equipment text remains intact and is never automatically promoted to a canonical identity.
 
 ## Desired state
 
@@ -39,9 +37,9 @@ A note can be linked to an asset
 
 ## Acceptance criteria
 
-- [ ] A note can be linked to an asset
-- [ ] The plan documents required scenarios and decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] A note can be linked to an asset
+- [x] The plan documents required scenarios and decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
@@ -99,16 +97,18 @@ actual results, not fictional tests.
 Update this item, its status in the [backlog](../backlog.md) and the execution plan.
 Update contracts, models, guides or ADRs only if this task changes their content.
 
-## Open questions
+## Delivery evidence — 2026-10-14
 
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
+The owner's [IOP-203](IOP-203-platform-completion.md) request authorized the
+remaining outcome. [IOP-204](IOP-204-formal-handover.md), its
+[completed execution](../completed/IOP-204-formal-handover-plan.md) and the
+[operator contract](../../development/formal-handover.md) record implementation,
+permissions, actual boundaries and executed tests. The host now registers the
+controller/workspace and builds generated API/browser contracts. Formal workflows
+are available to Administrator, Team Leader and Task Force; Technician journal
+permissions remain separate.
 
-## Current coverage and remaining work — 2026-10-06
-
-IOP-194 Digital Asset Records find Handover evidence through exact source aliases.
-Remaining: an explicit canonical asset reference on the Handover entry and its
-validation/editing contract; existing equipment references remain unverified.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+The completed plan records API/web lifecycle, real PostgreSQL current role/grant
+and scope checks, generated contract builds and actual local desktop/390px review.
+Actual planned assignments remain operator-owned input; missing planning stays
+explicitly unavailable rather than becoming an inferred shift.

@@ -1,6 +1,6 @@
 # IOP-210 — Global search and unified area overview
 
-Status: Completed module increment; assembled host registration/review belongs to IOP-203. Branch `feature/IOP-210-operational-search-overview`, isolated
+Status: Completed module and assembled local software delivery. Branch `feature/IOP-210-operational-search-overview`, isolated
 worktree `/private/tmp/iop-210`, from develop `24b6269`.
 [Permanent context](../items/IOP-210-operational-search-overview.md).
 Owner-delegated architecture uses Accepted ADR-0032 and root ADR-0037; source-owned
@@ -57,7 +57,28 @@ Root integration owns generated contract checks and actual desktop/narrow UI rev
   by root and absent only from this story base. Secret hygiene and staged whitespace
   checks passed before commit.
 
-Root still owns runtime/controller registration, public generated schemas, shared
-German composition and assembled desktop/narrow review. Area-specific analytical
-source identities remain explicit input work; plant health is never inferred.
-The original IOP-118/119 parents remain open until assembled delivery evidence.
+IOP-203 now integrates runtime/controller registration, public generated schemas,
+shared German composition, header search and original-source navigation. The
+original IOP-118/119 software outcomes are complete with the evidence below;
+source-unknown analytical area identities remain explicit pending input.
+
+## Actual assembled browser evidence — 2026-10-14
+
+Private isolated Playwright on the actual local installation verified global
+Assets, Handover, Maintenance and configured-area result navigation to their exact
+source details. Source-owned totals and bounded pages remain intact; Handover
+currently returns 20 records per source page within the receiver's 50-record ceiling.
+
+Area UI counts match independently queried source results: current pending issues
+6, selected-day journal 0, work statuses 4/1/2 and registry 565 with 25 shown. These
+are query/fixture coverage evidence, never a live plant-condition claim. An
+authorized analytical department with no selected-day admitted import correctly
+shows null/absent measures. Formal coverage uses the actual record contract and
+does not invent a previous record when no saved option exists.
+
+Desktop/light and 390px English views plus German/dark search/area and formal
+controls were inspected. No page errors, failing browser API requests or horizontal
+overflow occurred. Drafts were canceled without saving, provider metadata/account
+passwords were unchanged, and customer text remained source data. Private
+screenshots stay outside Git. Root's finite-profile-bootstrap correction and
+Workforce-only revocation regression are recorded in the linked completed plan.

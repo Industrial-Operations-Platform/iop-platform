@@ -2,11 +2,11 @@
 
 ## Status
 
-In progress — module implementation delivered through IOP-210; assembled host review pending.
+Completed — local source-owned composition and actual browser review delivered through IOP-210.
 
 ## Milestone
 
-M15 — UX & Operational Experience. Proposed delivery slice.
+M15 — UX & Operational Experience. Local software delivery completed.
 
 ## Goal
 
@@ -24,9 +24,7 @@ outline requested by the owner; backlog inclusion does not authorize implementat
 
 ## Current state
 
-Assets, Handover, Maintenance, Workforce and analytical views have module-specific
-search/filters. Remaining: one authorized global search across assets/areas/issues;
-independent search boxes are not the global feature.
+The shared global search groups configured areas, canonical Assets, Handover reports and Maintenance work with finite source-owned pages, full totals and exact source navigation. Current profile/grants and exact site scope are checked independently; denied or unavailable sources supply no records.
 
 ## Desired state
 
@@ -39,9 +37,9 @@ Searchable assets/areas/issues
 
 ## Acceptance criteria
 
-- [ ] Searchable assets/areas/issues
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Searchable assets/areas/issues
+- [x] The plan documents scenarios and necessary decisions without expanding scope.
+- [x] Validation evidence and synchronized documentation exist.
 
 ## Domain considerations
 
@@ -98,25 +96,20 @@ actual results, not fictional tests.
 Update this item, its status in the [backlog](../backlog.md) and the execution plan.
 Update contracts, models, guides or ADRs only if this task changes their content.
 
-## Open questions
+## Completed local delivery — 2026-10-14
 
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
+The owner's [IOP-203](IOP-203-platform-completion.md) request authorized this
+outcome. [IOP-210](IOP-210-operational-search-overview.md), its
+[completed execution](../completed/IOP-210-operational-search-overview-plan.md)
+and [operator guide](../../development/operational-overview.md) record source
+ownership, exact permission/role/scoping behavior, executed API/web/PostgreSQL
+checks and actual local browser evidence.
 
-## Current coverage and remaining work — 2026-10-06
-
-Assets, Handover, Maintenance, Workforce and analytical views have module-specific
-search/filters. Remaining: one authorized global search across assets/areas/issues;
-independent search boxes are not the global feature.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
-
-## Authorized implementation — 2026-10-14
-
-The owner's IOP-203 request explicitly authorized the remaining outcome.
-[IOP-210](IOP-210-operational-search-overview.md) delivers reusable source-owned
-API/web composition, current source permissions and exact site scope, bounded
-pages and explicit source coverage. See its completed plan for executed evidence.
-Root host registration/navigation and assembled desktop/narrow review remain
-pending; the original parent stays open until that evidence exists.
+The host registers the factory/controller, generated API/browser contracts, shared
+German dictionary, header search and source navigation. Actual local desktop and
+390px review confirms exact Assets/Handover/Maintenance/area navigation, overview
+counts matching source queries, both themes and German controls, without page
+errors or horizontal overflow. No saved operational records, provider metadata or
+account passwords changed during review. Optional source-unknown analytical area
+mappings remain explicitly unmapped input; they do not fabricate metrics or block
+the delivered generic search/overview.

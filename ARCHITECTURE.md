@@ -24,12 +24,19 @@ SQL drivers, transport schemas or presentation adapters.
 | `apps/api/src/modules/integrations/` | Import lifecycle, CSV adapter, RAW retention, source-date admission and mapping snapshots |
 | `apps/api/src/modules/maintenance/` | Technical work, status rules, scoped responsibility, priority configuration and immutable revisions |
 | `apps/api/src/modules/assets/` | Stable registered identities, exact scoped aliases and source-authorized digital-record use cases |
+| `apps/api/src/modules/improvement-tracking/` | Improvement actions, ownership, immutable evidence and OIP-owned comparative snapshots |
+| `apps/api/src/modules/asset-locator/` | Scoped reference scenes, provisional 3D components, canonical placements and immutable scene history |
+| `apps/api/src/modules/operational-overview/` | Authorized source-owned search and area context without a copied search index |
+| `apps/api/src/modules/jobs/` | Scoped durable local jobs, current initiating-user authority and atomic idempotent effects |
+| `apps/api/src/modules/audit/` | Safe site material events and separately authorized inspection/retention |
 | `apps/web/src/features/maintenance/` | Framework-free work use cases with HTTP/React board, forms and history |
 | `apps/web/src/features/assets/` | Framework-free registry/digital-record use cases with HTTP/React adapters |
+| `apps/web/src/features/improvement-tracking/` | Action board, evidence and comparative review through HTTP/React adapters |
+| `apps/web/src/features/asset-locator/` | Framework-free scene editing/search with HTTP, React and replaceable Three.js adapters |
 | `apps/api/src/modules/workforce/` | Personal schedules, scoped planning, teams, assignments and retained revisions |
 | `apps/web/src/features/workforce/` | Framework-free planning use cases with HTTP/React role views |
 | `apps/web/src/localization/` | Shared English/German presentation resources and locale selection |
-| `apps/api/src/modules/shift-handover/` | Operational entries, issue follow-up, immutable revisions and PostgreSQL storage under ADR-0036 |
+| `apps/api/src/modules/shift-handover/` | Operational entries, issue follow-up and exact Workforce-bound formal transfers with immutable closure evidence |
 | `apps/api/src/modules/oip/` | Exact facts, analytical domain/use cases and outbound PostgreSQL reporting adapters |
 | `apps/web/src/features/analysis/` | Framework-free selection/use cases with HTTP, React and ECharts adapters |
 | `apps/web/src/features/access/` | Framework-free access use cases with HTTP and React login/administration adapters |
@@ -45,6 +52,20 @@ there is no artificial empty domain/application layer. The retained atomic impor
 and compatibility query adapters still coordinate SQL transactions under ADR-0026/0027;
 this cleanup does not claim every persistence algorithm is a separate use case.
 Customer labels and source schemas remain in integration adapters/configuration.
+
+The [IOP-203 local completion increment](docs/development/platform-completion.md)
+implements formal transfers, Improvement Tracking, Asset Locator and integration
+readiness under [ADR-0037](docs/architecture/adr/ADR-0037-operational-completion.md).
+Advanced operations require both a current Administrator, Team Leader or Task Force
+profile and the owning module grants. Integration configuration management remains
+Administrator-only. Read-only WinCC, Ultimo and Entra provider ports are prepared;
+the real transports and external access remain pending.
+
+Locator stores private reference provenance outside Git and browser public assets.
+Coordinates belong to one immutable scene revision and image reference. Schematics,
+unmeasured heights and placement evidence remain provisional until surveyed. Source
+problem reads are owned by Handover and Maintenance and have independent coverage
+and authorization; a marker is reported evidence, not live equipment health.
 
 React feature adapters compose the [shared component library](apps/web/src/design/components/README.md).
 It has no feature, transport, chart or business-policy dependencies. CSS and ECharts
@@ -124,8 +145,10 @@ sanitized Problem Details. Internal ports are independent of transport/provider.
 Public `/health` proves process response only. Use the [API guide](apps/api/README.md)
 and [testing guide](docs/development/testing-poc.md) for executable checks.
 
-Shared authentication, administration, external connections, workers, full asset hierarchy/locator capabilities,
-remaining operational modules and production operating controls remain separately scoped.
+Shared authentication/administration, real external connections, surveyed plant
+registration and production operating acceptance remain separately scoped.
+Local jobs, configurable Asset composition and provisional Locator are delivered
+on the IOP-203 review branch.
 Industrial integrations are read-only; no plant control commands are included.
 See the [module map](docs/architecture/modules.md),
 [conceptual model](docs/architecture/data-model.md), [ADRs](docs/architecture/adr/)
@@ -134,9 +157,10 @@ and [roadmap](ROADMAP.md). Proposed decisions are not accepted implementations.
 Shift Handover follows [ADR-0036](docs/architecture/adr/ADR-0036-shift-handover.md):
 operator-configured locations, explicit unverified equipment references and durable
 revision history, independent of analytics. [Setup and workflow](docs/development/shift-handover.md)
-document permissions and current journal behavior. Formal shift binding and explicit canonical entry-to-asset references remain separate
-integration work; Workforce location defaults use a receiving-owned dated lookup under
-IOP-199; IOP-194 supplies alias-based history and repair resolution.
+document permissions and journal behavior. IOP-204 adds exact Workforce shift
+binding, canonical entry-to-asset references, retained formal closure and incoming
+acknowledgement. Workforce location defaults use a receiving-owned dated lookup
+under IOP-199; IOP-194 supplies alias-based history and repair resolution.
 
 Workforce is delivered under [IOP-184](docs/planning/items/IOP-184-m6-workforce.md).
 It reuses accepted scoped authorization and revision patterns. Personal availability
@@ -152,31 +176,35 @@ revision patterns. Assets orchestrates explicit source read ports; Maintenance,
 Handover and OIP retain their records/joins and enforce source permissions. Stable
 asset registration is deliberate; aliases never infer physical identity from
 analytics. [Product scope](docs/product/maintenance-assets.md) and
-[operation](docs/development/maintenance-assets.md) describe the boundaries. M9
-Asset Locator, full M4 hierarchy/controller/survey work and general Audit remain
-deferred. This delivery does not constitute owner product acceptance.
+[operation](docs/development/maintenance-assets.md) describe the boundaries.
+IOP-206/209 extend these contracts with provisional Locator and managed Asset
+types, composition/controllers, metadata and survey review. Actual physical
+inspection remains input. Implementation does not constitute product acceptance.
 
 
 The owner-requested IOP-194 follow-up links reviewed Maintenance repair scopes to
 Handover issues through narrow owner-defined reads and resolution writes. It reuses
 ADR-0027's coordinated pinned transaction; each module retains its own history.
 Exact equipment codes provisionally represent parts while physical verification
-and 3D/radius selection remain deferred. See the [contract](docs/product/maintenance-assets.md)
+and radius-based repair selection remain separate work. Locator supplies reusable
+3D scene navigation under IOP-206. See the [contract](docs/product/maintenance-assets.md)
 and [ADR-0036 refinement](docs/architecture/adr/ADR-0036-shift-handover.md).
 
-## Accepted audit design — deferred beyond the pilot
+## Audit delivery and remaining authority
 
 [ADR-0017](docs/architecture/adr/ADR-0017-audit-model.md) defines explicit
 module-emitted, Audit-owned PostgreSQL records committed atomically with material
 changes, separately handled security observations and restricted operator
-inspection. Future retention defaults are 365 days for changes/maintenance and
-90 days for security events, with scoped expiry and separately bounded backups.
+inspection. IOP-208 implements 365-day site material retention, safe explicit owner
+emitters, atomic append and separately authorized scoped inspection/purge under
+[ADR-0038](docs/architecture/adr/ADR-0038-local-operating-infrastructure.md).
+The separate platform security design specifies 90-day retention.
 
-The owner accepted this as a future design and explicitly excluded implementation
-from the pilot. Audit storage, capture, inspection and retention infrastructure
-are not pilot release gates; absent Audit infrastructure does not block pilot
-operations. IOP-009 is complete as design. IOP-023 remains future work, and existing
-source provenance, authorization and scope requirements retain their own owners.
+The earlier pilot excluded implementation; the owner selected local infrastructure
+on 2026-10-14. Site storage/capture/inspection/retention now have executable evidence.
+Organization RBAC capture and the separate platform security authority/collector
+remain open in IOP-023. See the [site capture contract](docs/development/site-audit-integration.md)
+for exact coverage. Source provenance, authorization and scope retain their owners.
 
 IOP-199 reuses these patterns for category workflows: configured Safety/technical
 rules, dated Workforce defaults, Team Leader Information publication and display

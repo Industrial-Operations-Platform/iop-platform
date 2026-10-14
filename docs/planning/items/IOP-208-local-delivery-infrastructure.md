@@ -38,16 +38,23 @@ Handover revisions, local job effects and Audit; ciphertext/private-file and sco
 operator failures are tested. One observed full typecheck sample passed in 42.524 s;
 the report explicitly leaves workload targets and release acceptance unagreed.
 
-Root-owned integration prerequisites are the Administrator `jobs.manage` catalog/
-backfill, exact provisioning allowlists and setup-image CLI packaging. Real database
-tests used temporary copies of those shared changes, restored before this story's
-commits. Integrated installation validation remains the parent IOP-203 gate.
+Root IOP-203 assembles the Administrator `jobs.manage` catalog/backfill, exact
+provisioning allowlists, setup-image CLI packaging and mandatory owner Audit
+composition. Temporary dependency copies used during child development were
+restored before its commits; final integration is validated on the root review branch.
 
 Remote CI, provider handlers, file activation Audit, organization RBAC Audit,
 90-day platform-security collection, plant performance thresholds and whole-platform
-release acceptance remain pending. IOP-010/021/023/024/112–115/134–135/137–138 keep
-their original status wherever their broader acceptance is unmet. No remote
-deployment, active-installation overwrite or release publication was performed.
+release acceptance remain pending. Reconciled original criteria now complete
+[IOP-010 design](IOP-010-background-job-model.md),
+[IOP-024 executable local jobs](IOP-024-worker-infrastructure.md),
+[IOP-112 reproducible local backup](IOP-112-backup.md) and
+[IOP-113 verified isolated restore](IOP-113-restore.md).
+[IOP-021 remote CI](IOP-021-ci-baseline.md) and
+[IOP-023 broader Audit](IOP-023-audit-infrastructure.md) remain In progress;
+the [reconciled backlog](../backlog.md) preserves separate operating, deployment,
+performance, human and release criteria. No remote deployment, active-installation
+overwrite or release publication was performed.
 
 
 2026-10-14 authorized increment: implement explicit pinned owner emitters for
@@ -57,9 +64,9 @@ platform-security collection retain their separate pending contracts.
 
 
 Site-material increment evidence: current mandatory host composition/API typecheck
-and build pass; full API32 suites/428 tests pass. The actual PostgreSQL suite
-covers ten material cases, alongside
-six worker/operator cases and complete private restore (17 tests total). It verifies
+and build pass; full API 32 suites/428 tests pass. The actual PostgreSQL suite
+covers ten material cases, six worker/operator cases and complete private restore
+(17 tests total). It verifies
 real Audit INSERT denial and post-append exceptions roll back both Handover and
 Assets, safe first-wave events, AssetDomain sidecars, delegated Maintenance journal
 resolution, report configuration, exact event catalog and idempotent recovery.
@@ -67,3 +74,24 @@ The published Audit port and mandatory owner/host integration patch are reviewed
 under parent IOP-203; no dependency copies enter this story's commits. See the
 [site capture contract](../../development/site-audit-integration.md) for all owner
 seams and precise remaining organization/platform-security/file-provider scope.
+
+
+## Actual installation gate — 2026-10-14
+
+Root encrypted full backup and independently isolated restore pass: 170 files,
+62 tables and 154,341 rows reconcile with exact catalog/data/RLS/role and schema,
+table, column and function ACL metadata. The newly created network-none restore
+container remains stopped; the private review directory is mode 0700 and the
+separate key stays outside archive/private inputs. No activation or active-data
+overwrite occurred. Actual API/web restarted healthy after capture.
+
+Full root PostgreSQL validation passes 30 suites/316 tests. The native-demo
+compatibility correction keeps an explicit migration inventory and exact scoped
+canonical cleanup, preserving business/Audit history. IOP-112/113 reproducible
+local software criteria now close against actual evidence; remote CI, deployment,
+operator/human/physical/performance acceptance and general organization/platform
+security capture retain their distinct remaining scope. Final root validation
+passes API 509, web 192, PostgreSQL 319 and all 57 browser checks after exact fixture
+and current/history-selector corrections. No production behavior was relaxed.
+See the [completed parent evidence](../completed/IOP-203-platform-completion-plan.md).
+No remote publication.

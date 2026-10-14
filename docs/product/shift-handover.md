@@ -4,6 +4,11 @@ Owner requirements captured on 2026-09-29 under
 [IOP-168](../planning/items/IOP-168-shift-handover.md).
 This specifies the implemented first operational increment. Technical decisions
 and permission/lifecycle defaults are accepted in [ADR-0036](../architecture/adr/ADR-0036-shift-handover.md).
+Later [IOP-204](../planning/items/IOP-204-formal-handover.md) extends this journal
+with actual Workforce shift records and explicit canonical asset links on the
+local review branch. Administrator, Team Leader and Task Force use those advanced
+functions with current grants; the ordinary Technician journal remains available.
+See the [formal Handover guide](../development/formal-handover.md).
 
 ## Purpose and daily workflow
 
@@ -66,7 +71,7 @@ this increment does not introduce private personnel records.
 
 ## Views and presentation
 
-Tabs appear in this order: Meeting preparation, Journal, Department matrix.
+The journal tabs appear in this order: Meeting preparation, Journal, Department matrix.
 Journal replaces the separate My entries destination.
 Opening Handover defaults to Meeting preparation (Daily overview for Team Leader).
 
@@ -136,20 +141,28 @@ meeting composition in the feature adapter. Reuse identity tokens and native
 semantics, clear keyboard focus, narrow layouts and visible state labels.
 See the [component library](../../apps/web/src/design/components/README.md).
 
-## Future module integration
+## Current module integration
 
 M6 supplies the author's actual zone assignment for the entry day through a narrow
 receiving-owned lookup. New entries default to its configured department, with manual
 override. Floating/maintenance support, unassigned days, ambiguous assignments and
 leaders without a zone have no default. A home department or browsed department is
-not an assignment. Schedule changes never rewrite published work locations. Formal
-shift binding remains future scope; Workforce continues to own assignment planning.
+not an assignment. Schedule changes never rewrite published work locations.
+Formal **Shift records** bind to actual Workforce date/type/target and resolved
+UTC interval references. Draft review, publication, closure, incoming-manager
+acknowledgement and previous-shift views are delivered under IOP-204; missing or
+overlapping planning remains explicit. Workforce still owns assignment planning.
 
-Asset Management will validate equipment identities and aliases; a reviewed link
-will connect existing reference history to a canonical asset without destroying
-the original reference. Repairs and damage reports recorded here are handover
+Authorized asset readers can now retain an explicit registered identity alongside
+the original unverified equipment tuple. Current scope/location/reference checks
+apply; a retained historical identity is not erased by later retirement. The
+digital record finds explicit links even without aliases. Asset Management owns
+validation and aliases; selecting an identity does not prove a surveyed sensor
+position. Repairs and damage reports recorded here are handover
 evidence, not material movements, maintenance work orders or control commands.
-Ultimo remains an external reference until an integration is separately requested.
+Journal Ultimo codes remain independent manual references. The read-only Ultimo
+adapter contract is prepared; real provider transport and operating access remain
+pending.
 
 ## Review examples
 
@@ -161,7 +174,7 @@ Ultimo remains an external reference until an integration is separately requeste
   available for discussion; a coordinator may highlight it on Start.
 - An issue has different completion and feedback deadlines, receives a follow-up,
   remains visible the next day and resolves with a retained outcome.
-- A worker supporting another area chooses the actual location; future assignment
+- A worker supporting another area chooses the actual location; assignment
   defaults do not prevent that override.
 - All profiles can navigate/read with their site grants; forged authors, foreign
   references, revoked access and unauthorized highlight management are denied.
@@ -180,10 +193,15 @@ Locations/categories are operator configuration, loaded at startup and scoped to
 one organization/site. Intermediate location nodes are supported; selecting an area
 requires it to belong to the selected department. Stable IDs must not be reassigned
 to another physical place. Existing snapshots preserve historical labels. See
-[setup and use](../development/shift-handover.md). Formal shift closure,
-explicit canonical entry-to-asset references and formal shift binding remain future
-integration. Workforce defaults are delivered under IOP-199. IOP-194 supplies alias-based digital
-history and reviewed Maintenance issue resolution through Handover-owned ports.
+[setup and use](../development/shift-handover.md). IOP-204 delivers formal shift
+binding/closure/acknowledgement and canonical entry-to-asset references; closed
+records retain frozen report evidence without resolving current journal issues.
+Workforce defaults are delivered under IOP-199. IOP-194 supplies alias-based digital
+history and reviewed Maintenance issue resolution through Handover-owned ports;
+later explicit links extend that history independently. Site material changes and
+delegated resolutions now share the pinned [Audit capture](../development/site-audit-integration.md)
+transaction under IOP-208. Actual plant survey and external Ultimo transport remain
+separate inputs.
 
 ## Board workflow refinement
 

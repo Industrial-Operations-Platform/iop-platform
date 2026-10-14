@@ -6,6 +6,11 @@ The owner-confirmed workflow is **CSV → preparation → persistent history →
 This is the historical analytical slice; local authentication/administration,
 Shift Handover, [M6 Workforce](workforce.md), [M8 Maintenance and M10 Digital Asset
 Record](maintenance-assets.md) are separately implemented through IOP-194.
+Later separately authorized IOP-203–210 increments add formal Handover, Tracking,
+provisional 3D Locator, reviewed canonical Asset mappings and local operating
+infrastructure. They extend the local review branch without changing the original
+analytical pilot's acceptance boundary; see the
+[platform guide](../development/platform-completion.md).
 The current shell opens Administration for administrators and Start for operators;
 Data Analysis remains an independent workspace.
 The [operator guide](../development/running-poc.md) owns execution instructions.
@@ -96,8 +101,10 @@ outside the bounded suggestions remain supported when they match. Plain and
 sortable headings align.
 IOP-163 delivers frequency/duration top-10 source-group Pareto charts with cumulative
 percentages against complete matching totals and an 80% reference. They appear in
-investigation views without a separate Pareto tab; broader canonical asset coverage
-remains with IOP-093.
+investigation views without a separate Pareto tab. These remain source-group
+charts; IOP-209 separately delivers reviewed canonical Asset Pareto with full,
+mapped and unresolved source totals. See the [Asset domain contract](asset-domain.md).
+Actual mapping review and surveyed physical coverage remain explicit inputs.
 Screenshot targets and improvement formulas are not invented metrics.
 
 Executive Overview shows a frequency-ranked area chart, an area/day matrix ordered
@@ -141,14 +148,19 @@ consolidating the five measures and actual human timing/dataset observations.
 Synthetic native fixtures retain a guarded
 reset/reload path; the main Docker installation preserves historical data on restart.
 
-## Deferred scope
+## Later local increments and remaining scope
 
-Shared-use identity-provider choice, live industrial integrations, a general
-integration registry, workers and platform-wide audit,
-production retention/backup/restore, exports, shared hosting, full physical asset
-hierarchy/maps/surveys and improvement tracking remain separately scoped. Local
-account administration, Shift Handover, M6 Workforce, M8 Maintenance and M10 Digital
-Asset Record have delivered contracts; M9 is explicitly Deferred.
+The original analytical pilot deferred operational/infrastructure modules. Later
+owner requests separately deliver a local integration registry/readiness contract,
+durable scoped test jobs, site material Audit/retention operators, verified full
+private backup/isolated restore, reusable Asset models, formal Handover, Improvement
+Tracking and provisional 3D maps/placements. See
+[local operations](../development/local-operations.md),
+[Tracking](../development/improvement-tracking.md) and
+[Locator](../development/asset-locator.md).
+Shared-use identity-provider choice, real industrial transports, organization/
+platform-security Audit, production operating acceptance, exports, shared hosting
+and actual physical hierarchy/survey/sensor precision remain separately scoped.
 Basic validation, safe configuration, explicit authorization, useful errors and tests
 remain part of every delivered slice. POC completion does not complete those future
 parents or certify shared-use v1.

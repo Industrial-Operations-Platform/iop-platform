@@ -41,3 +41,7 @@ only their three backlog rows now match successful actual local source navigatio
 area counts/coverage, both themes/German and 390px QA. Analytical area identities
 remain explicit input. Scoped documentation links and whitespace checks passed.
 The root owner commits this coherent correction; no branch publication occurs here.
+
+Focused API Locator/architecture regression: 40 checks in 4 suites passed.
+The isolated PostgreSQL checks ran only the new owning suite; no complete database
+run or shared-output rebuild occurred. Parent E2E validation retained its own output.

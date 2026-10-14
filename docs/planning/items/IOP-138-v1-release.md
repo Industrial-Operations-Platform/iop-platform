@@ -4,113 +4,61 @@
 
 Proposed
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M17 — v1 Validation & Release. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M17 — v1 Validation & Release. Release execution/publication not selected.
 
-v1 release. Expected outcome: Tag/release notes/version
-
-## User / business value
-
-Users and administrators need a demonstrable, operable and documented release.
-
-## Context
-
-Scope: Validation and release readiness. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-owner-requested outline; backlog inclusion does not authorize implementation.
+Approved version, tag and release notes for the agreed v1 scope.
 
 ## Current state
 
-Data Analysis v1 component acceptance is recorded; IOP-194 is integrated into develop
-and published to origin. Remaining: the release gates IOP-130/131/133/134/135/137 and
-explicit authorization for version/tag/release notes; product review remains distinct
-from Git publication.
+Data Analysis v1 component acceptance and IOP-194 integration/publication are
+historical evidence. IOP-203 adds locally validated operational modules and
+infrastructure on review branches; current local build/type/unit/contract checks pass. Component
+acceptance and local software completion do not authorize a platform release,
+remote publication or physical/survey acceptance.
 
-## Desired state
+## Requirements and delivery boundary
 
-Tag/release notes/version
-
-## Requirements
-
-- Deliver only the outcome described for IOP-138.
-- Verify the agreed v1 scope without requiring every future backlog idea.
-- Create a tag/release only when execution of this task is authorized and its gates are approved. Record the version, notes, limitations and evidence; the backlog does not authorize publication now.
+Preserve the agreed release scope and explicit external inputs. The owner's
+delegated development decisions authorize this local implementation, not tag,
+remote deployment or whole-platform release. The original release gates retain
+their own criteria; completing workers/backup software does not waive them.
 
 ## Acceptance criteria
 
-- [ ] Tag/release notes/version
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation are available.
+- [ ] Approve the agreed release gates, version, notes, limitations and evidence.
+- [ ] Authorize and create the version/tag/release under the reviewed publication scope.
+- [ ] Record release results without conflating source publication, product/human acceptance and verified plant facts.
 
-## Domain considerations
+## Validation and evidence
 
-Verify the agreed v1 scope without requiring every future backlog idea.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to adopt a decision.
-
-## Security considerations
-
-Verify permission and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes when applicable.
-
-## Data considerations
-
-Reconcile evidence and test recovery with authorized or synthetic data.
-
-## API considerations
-
-Validate published contracts and documented compatibility; do not introduce features
-during release closure.
-
-## UI considerations
-
-Validate the agreed workflow and documentation by persona; record known limitations.
+Current local build/contract/architecture/design/unit/PostgreSQL/browser evidence
+is recorded in [IOP-203](IOP-203-platform-completion.md) and its plan.
+Remote CI, deployment/operator review, plant measurements/survey
+and human release gates remain explicit where unmet. No version/tag/release notes
+publication or remote promotion occurred in this increment.
 
 ## Dependencies
 
-[IOP-130](IOP-130-pilot-metrics.md), [IOP-131](IOP-131-permission-validation.md), [IOP-132](IOP-132-final-reconciliation.md), [IOP-133](IOP-133-performance-acceptance.md), [IOP-134](IOP-134-deployment-guide.md), [IOP-135](IOP-135-admin-guide.md), [IOP-136](IOP-136-user-guide.md), [IOP-137](IOP-137-architecture-review.md)
+[IOP-130](IOP-130-pilot-metrics.md), [IOP-131](IOP-131-permission-validation.md), [IOP-132](IOP-132-final-reconciliation.md), [IOP-133](IOP-133-performance-acceptance.md), [IOP-134](IOP-134-deployment-guide.md), [IOP-135](IOP-135-admin-guide.md), [IOP-136](IOP-136-user-guide.md), [IOP-137](IOP-137-architecture-review.md).
 
-Dependencies identify required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, inferring acceptance of open decisions or expanding
-delivery to the whole milestone. Do not introduce customer names into the core.
+Await completion/approval of the agreed release gates and explicit release/
+publication authority. Local software evidence does not establish the remaining
+physical, human, deployment or performance acceptance.
 
-## Validation
+## Documentation traceability
 
-The plan must specify executable commands and scenarios for the criteria using accepted
-tooling. Include the expected path, errors and relevant access denial; record actual
-results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, model, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-activating implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-Data Analysis v1 component acceptance is recorded; IOP-194 is integrated into develop
-and published to origin. Remaining: the release gates IOP-130/131/133/134/135/137 and
-explicit authorization for version/tag/release notes; product review remains distinct
-from Git publication.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).

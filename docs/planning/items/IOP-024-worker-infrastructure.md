@@ -2,109 +2,67 @@
 
 ## Status
 
-Proposed
+Completed
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M2 — Development Platform Foundation. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M2 — Development Platform Foundation. Executable local software slice completed.
 
-Worker infrastructure. Expected outcome: Executable test job with verifiable retry and idempotency
-
-## User / business value
-
-Developers need a reproducible environment and executable validation.
-
-## Context
-
-Scope: Development infrastructure and application hosts. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+Executable test job with verifiable retry and idempotency.
 
 ## Current state
 
-The local setup service is a finite installation process, not a background worker.
-Remaining: an executable job host with scoped authority, retry and idempotency evidence.
+[IOP-208](IOP-208-local-delivery-infrastructure.md) under [IOP-203](IOP-203-platform-completion.md) delivers durable scoped jobs, a reusable
+`composeJobs` factory and trusted local submit/get/tick tooling. The built-in
+`local-check` handler has one persisted idempotent effect and controlled transient
+failure, providing a real executable retry/rollback exercise. Setup is still a
+finite installation process; it is not used as an implicit global worker.
 
-## Desired state
+## Requirements and delivery boundary
 
-Executable test job with verifiable retry and idempotency
-
-## Requirements
-
-- Deliver only the outcome described for IOP-024.
-- Apply only the accepted stack and contracts; hosts are not business microservices.
+Jobs require the current Administrator profile and `jobs.manage`; handlers declare
+additional current business permissions, exact payload keys and validation.
+Leases last 60 seconds, attempts are bounded at five, transient backoff is bounded,
+and waiting for a handler/configuration does not consume attempts. Effects, final
+state and Audit share the existing authorized transaction. No RLS-bypass polling,
+provider send, plant command or arbitrary shell handler exists.
 
 ## Acceptance criteria
 
-- [ ] Executable test job with verifiable retry and idempotency
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Execute a local persisted test job with bounded retries, lease recovery and idempotent admission/effects.
+- [x] Recheck the current initiating-user profile/grants at submit, retrieval and execution; preserve exact site scope.
+- [x] Verify effect rollback, exhausted attempts and retained missing-handler/configuration states with real PostgreSQL.
+- [x] Record operating commands, accepted decisions and exact external limits.
 
-## Domain considerations
+## Validation and evidence
 
-Apply only the accepted stack and contracts; hosts are not business microservices.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-PostgreSQL is the reference; keep test configuration and synthetic data separate.
-
-## API considerations
-
-Apply accepted health/error contracts without adding business functionality.
-
-## UI considerations
-
-Only what is needed to verify the host or environment; do not create business screens.
+Six owning real PostgreSQL worker/operator cases verify transient rollback then
+single effect, idempotent requests/conflicts, own-initiator access, current revocation,
+expired lease recovery/exhaustion and missing configuration/handler states.
+The executable CLI is packaged for trusted local operations; see [local operating guide](../../development/local-operations.md),
+[Accepted ADR-0038](../../architecture/adr/ADR-0038-local-operating-infrastructure.md) and the
+[completed IOP-208 plan](../completed/IOP-208-local-delivery-infrastructure-plan.md).
 
 ## Dependencies
 
-[IOP-010](IOP-010-background-job-model.md), [IOP-016](IOP-016-backend-bootstrap.md), [IOP-018](IOP-018-configuration-management.md)
+[IOP-010](IOP-010-background-job-model.md), [IOP-016](IOP-016-backend-bootstrap.md), [IOP-018](IOP-018-configuration-management.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+Real business/provider handlers, an unattended scheduler/operating service,
+distributed/chunk orchestration and provider recovery remain separate scope.
+Completing this executable test-job criterion does not close those broader stories.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-The local setup service is a finite installation process, not a background worker.
-Remaining: an executable job host with scoped authority, retry and idempotency evidence.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).

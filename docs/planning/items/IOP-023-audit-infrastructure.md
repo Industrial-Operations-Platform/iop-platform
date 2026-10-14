@@ -2,118 +2,71 @@
 
 ## Status
 
-Proposed
+In progress
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M2 — Development Platform Foundation. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M2 — Development Platform Foundation. Site material infrastructure delivered.
 
-Audit infrastructure. Expected outcome: Material changes generate audit records
-
-## User / business value
-
-Developers need a reproducible environment and executable validation.
-
-## Context
-
-Scope: Development infrastructure and application hosts. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; inclusion in the backlog does not authorize implementation.
+Material changes generate scoped Audit records.
 
 ## Current state
 
-Users/RBAC access-change audit plus Handover, Workforce, Maintenance and Asset revisions
-are implemented. Remaining: a general module-independent Audit
-collection/storage/retention mechanism under Accepted ADR-0017's future design.
+The owner activated selected implementation beyond the previously excluded pilot
+under [IOP-208](IOP-208-local-delivery-infrastructure.md) under [IOP-203](IOP-203-platform-completion.md). Audit now has a public pinned site-material port,
+registered version-one event catalog, append/dedupe storage, 365-day site retention,
+scoped operator inspection and bounded purge. Runtime cannot browse event payloads,
+update or delete Audit; operators have separately restricted function authority.
 
-## Desired state
+## Requirements and delivery boundary
 
-Material changes generate audit records
-
-## Requirements
-
-- Deliver only the outcome described for IOP-023.
-- Apply only the accepted stack and contracts; hosts are not business microservices.
+Current mandatory host capture covers journal/formal Handover and delegated
+Maintenance resolution; Maintenance/settings; Assets registry plus independent
+catalog/enrichment/review/mapping sidecars; Workforce; Tracking evidence/comparison;
+Locator; integration registry/import receipt/terminal/recovery; OIP publication
+and applied reporting configuration. Events retain safe IDs/revisions/states/codes,
+not names, free text, credentials or RAW/source snapshots. Workforce absence/health
+content is excluded. Existing Users/RBAC access audit remains a separate record.
 
 ## Acceptance criteria
 
-- [ ] Material changes generate audit records
-- [ ] The plan documents required scenarios and decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Capture current site material database operations atomically using owner-defined safe events.
+- [x] Verify append failure rollback, idempotency, secret exclusion, forced RLS and separate inspection/retention authority.
+- [ ] Deliver separate organization RBAC and bounded platform-security capture/storage/operator contracts under ADR-0017.
+- [ ] Complete agreed scheduling/alerts, retention-operation and broader release acceptance.
 
-## Domain considerations
+## Validation and evidence
 
-Apply only the accepted stack and contracts; hosts are not business microservices.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope for relevant operations and references.
-Do not include secrets, drawings or production data in the repository. Keep industrial
-integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-PostgreSQL is the reference; keep test configuration and synthetic data separate.
-
-## API considerations
-
-Apply accepted health/error contracts without adding business functionality.
-
-## UI considerations
-
-Only what is needed to verify the host or environment; do not create business screens.
+See [Accepted ADR-0017](../../architecture/adr/ADR-0017-audit-model.md), [Accepted ADR-0038](../../architecture/adr/ADR-0038-local-operating-infrastructure.md)
+and the [site capture contract](../../development/site-audit-integration.md).
+Ten real PostgreSQL material cases verify capture, actual Audit INSERT denial and
+post-append rollback for Handover/Assets, idempotent recovery and sensitive-field
+exclusion; six worker/operator cases verify retention/inspection and current grants.
+The combined material/jobs/full-restore suite passes 17 checks.
 
 ## Dependencies
 
-[IOP-009](IOP-009-audit-model.md), [IOP-019](IOP-019-database-bootstrap.md)
+[IOP-009](IOP-009-audit-model.md), [IOP-019](IOP-019-database-bootstrap.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+Organization membership/role Audit needs its organization envelope/storage/target.
+Authentication/session/denial collection needs separate platform authority, bounded
+admission/suppression/outage evidence and 90-day retention. File activation lacks
+a shared PostgreSQL commit boundary. Scheduled purge alerts, operator rotation,
+real providers and whole-platform acceptance remain pending; no lossless security
+collection or immutable evidence against privileged owners is claimed.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-Users/RBAC access-change audit plus Handover, Workforce, Maintenance and Asset revisions
-are implemented. Remaining: a general module-independent Audit
-collection/storage/retention mechanism under Accepted ADR-0017's future design.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
-
-## Delivery boundary after IOP-009 acceptance
-
-The owner accepted [ADR-0017](../../architecture/adr/ADR-0017-audit-model.md) as a
-future design and explicitly excluded audit implementation from the pilot.
-This item remains Proposed future work, not a pilot prerequisite. Activate it only
-through a separate request; recheck retention and operating assumptions then.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).

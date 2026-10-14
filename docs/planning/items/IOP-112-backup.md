@@ -2,113 +2,72 @@
 
 ## Status
 
-Proposed
+Completed
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M14 — Security & Reliability. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M14 — Security & Reliability. Reproducible local software slice completed.
 
-Backup process. Expected outcome: Reproducible backup
-
-## User / business value
-
-Customers and operators need verifiable isolation and reproducible recovery.
-
-## Context
-
-Scope: Security and operational reliability. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+Reproducible full local platform backup.
 
 ## Current state
 
-Persistent Docker volumes and source provenance survive restart. Remaining: reproducible
-full-platform backup, authority/secret handling and documented verification; importing
-an analytics backup is not platform backup.
+[IOP-208](IOP-208-local-delivery-infrastructure.md) under [IOP-203](IOP-203-platform-completion.md) implements an authenticated encrypted full
+application-database/private-configuration/reference backup. It includes operational
+history, credentials/application roles/grants, locator PNGs/traces and explicit
+additional private roots. Previous archives are excluded; this is independent of
+the earlier analytics-only seed path. Disposable roundtrips and actual-installation encrypted backup/isolated restore pass.
 
-## Desired state
+## Requirements and delivery boundary
 
-Reproducible backup
-
-## Requirements
-
-- Deliver only the outcome described for IOP-112.
-- Apply controls in each vertical slice; this milestone verifies and hardens them rather than postponing security until the end.
+The operator stops API/web/workers while PostgreSQL stays running, then holds an
+exclusive maintenance lease and exported snapshot. AES-256-GCM uses a separate
+random 32-byte mode-0600 key; SHA-256 manifests and independent database fingerprints
+verify contents. Bounds are 2 GiB uncompressed/20,000 files. Archives expire after 30
+elapsed days; explicit bounded pruning authenticates archives and never touches
+the source installation. Custom role memberships and omitted external roots fail
+or stay outside the declared contract.
 
 ## Acceptance criteria
 
-- [ ] Reproducible backup
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Deliver private consistent database/file capture, integrity metadata, overwrite protection and finite archive retention.
+- [x] Verify safe wrong-key/tamper/path/symlink/changed-source failures and complete disposable roundtrips.
+- [x] Record reproducible backup evidence from the actual local installation under root IOP-203.
+- [x] Reconcile scope/status against that evidence without claiming deployment or agreed recovery targets.
 
-## Domain considerations
+## Validation and evidence
 
-Apply controls in each vertical slice; this milestone verifies and hardens them rather
-than postponing security until the end.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Retention, restoration and sensitive data follow agreed decisions; do not copy
-production data into the repository.
-
-## API considerations
-
-Test the authorization, input, error and recovery boundaries relevant to the task.
-
-## UI considerations
-
-Where a UI exists, check useful errors without sensitive data and with correct scope context.
+Private-file crypto tests and real PostgreSQL full restore verify data, operational
+revisions, job/Audit effects, application roles/grants and exact RLS policies.
+See [local operating guide](../../development/local-operations.md), [Accepted ADR-0038](../../architecture/adr/ADR-0038-local-operating-infrastructure.md) and
+[IOP-208 evidence](IOP-208-local-delivery-infrastructure.md). Root IOP-203 actual encrypted backup and isolated verified restore
+pass: 170 files, 62 tables and 154,341 rows reconcile with exact catalog/data,
+RLS, role and schema/table/column/function ACL evidence. The independent key stays
+outside archive/private inputs; the review directory is mode 0700. API/web restarted
+healthy after capture. Neither Docker persistence nor analytics seeding substitutes
+for this executed full-platform gate.
 
 ## Dependencies
 
-[IOP-019](IOP-019-database-bootstrap.md), [IOP-011](IOP-011-file-storage-model.md), [IOP-014](IOP-014-security-baseline.md)
+[IOP-019](IOP-019-database-bootstrap.md), [IOP-011](IOP-011-file-storage-model.md), [IOP-014](IOP-014-security-baseline.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+The reproducible local software criterion is completed. Remote/offsite storage,
+customer recovery-time objectives, independent key-custody/rotation procedures,
+scheduled operation and production operating/human acceptance remain separate
+scope; no activation, deployment or recovery SLA is inferred.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-Persistent Docker volumes and source provenance survive restart. Remaining: reproducible
-full-platform backup, authority/secret handling and documented verification; importing
-an analytics backup is not platform backup.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).

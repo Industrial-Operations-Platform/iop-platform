@@ -2,113 +2,67 @@
 
 ## Status
 
-Proposed
+In progress
 
-## Milestone
+Reconciled on 2026-10-14 under the owner's delegated [IOP-203](IOP-203-platform-completion.md)
+request and delivered [IOP-208](IOP-208-local-delivery-infrastructure.md).
+The permanent context owns this story's remaining acceptance; software completion
+is distinct from remote, operating, human and whole-platform release evidence.
 
-M14 — Security & Reliability. Proposed delivery slice.
+## Milestone and goal
 
-## Goal
+M14 — Security & Reliability. Local recovery paths delivered; broader operating scope pending.
 
-Failure handling. Expected outcome: Recoverable jobs/imports
-
-## User / business value
-
-Customers and operators need verifiable isolation and reproducible recovery.
-
-## Context
-
-Scope: Security and operational reliability. See [modules](../../architecture/modules.md) and
-[planning workflow](../workflow.md). This initial context comes from the
-outline requested by the owner; backlog inclusion does not authorize implementation.
+Recoverable jobs/imports with explicit outcomes and safe recovery.
 
 ## Current state
 
-Imports have duplicate protection, atomic rollback and inspection of uncertain outcomes.
-Remaining: the broader job/import recovery procedure, fault coverage and operator
-evidence; automatic replay of uncertain publication is not authorized.
+Local imports retain duplicate-date protection, atomic publication, terminal
+outcomes and inspection/reconciliation of uncertain acknowledgements. IOP-208 adds
+durable job claims, current authority checks, savepoint effect rollback, bounded
+retry/exhaustion and expired-lease recovery. Operator procedures distinguish
+unconfigured handlers/transports from successful delivery.
 
-## Desired state
+## Requirements and delivery boundary
 
-Recoverable jobs/imports
-
-## Requirements
-
-- Deliver only the outcome described for IOP-115.
-- Apply controls in each vertical slice; this milestone verifies and hardens them rather than postponing security until the end.
+A job crash leaves its durable lease for recovery; an unknown database failure
+rolls back effect/outcome and retains the prior claim. Missing handlers/configuration
+wait without consuming attempts. Revocation prevents later execution/retrieval.
+Import reconciliation resolves stored truth before another action; no automatic
+replay of an uncertain publication is introduced. Audit failure rolls back material
+business writes rather than reporting success.
 
 ## Acceptance criteria
 
-- [ ] Recoverable jobs/imports
-- [ ] The plan documents scenarios and necessary decisions without expanding scope.
-- [ ] Validation evidence and synchronized documentation exist.
+- [x] Verify local bounded job retry/lease recovery and import reconciliation/idempotency without uncertain automatic replay.
+- [x] Retain explicit failure/pending states and documented trusted operator procedures.
+- [ ] Define and verify remaining provider/distributed failure paths, operating alerts and recovery exercises for the agreed deployment.
 
-## Domain considerations
+## Validation and evidence
 
-Apply controls in each vertical slice; this milestone verifies and hardens them rather
-than postponing security until the end.
-
-## Architecture constraints
-
-[ADR-0001](../../architecture/adr/ADR-0001-modular-monolith.md),
-[ADR-0003](../../architecture/adr/ADR-0003-postgresql.md),
-[ADR-0004](../../architecture/adr/ADR-0004-authentication-abstraction.md),
-[ADR-0005](../../architecture/adr/ADR-0005-customer-isolation.md) and
-[ADR-0007](../../architecture/adr/ADR-0007-planned-workflow.md).
-Proposed ADRs are proposals, not permission to make the decision.
-
-## Security considerations
-
-Verify permissions and customer/site scope in relevant operations and references.
-Do not include secrets, floor plans or production data in the repository. Keep
-industrial integrations read-only; record material changes where applicable.
-
-## Data considerations
-
-Retention, restoration and sensitive data follow agreed decisions; do not copy
-production data into the repository.
-
-## API considerations
-
-Test the authorization, input, error and recovery boundaries relevant to the task.
-
-## UI considerations
-
-Where a UI exists, check useful errors without sensitive data and with correct scope context.
+Real PostgreSQL jobs/operator and site-material Audit suites verify transient
+rollback, exact-once local effect, expired/exhausted claims, current permissions,
+import recovery and real Audit failure rollback. Guarded native analytical reset
+also preserves canonical/business/Audit data on every injected cleanup failure.
+See [local operating guide](../../development/local-operations.md), [site capture](../../development/site-audit-integration.md)
+and [IOP-203 evidence](../completed/IOP-203-platform-completion-plan.md).
 
 ## Dependencies
 
-[IOP-024](IOP-024-worker-infrastructure.md), [IOP-047](IOP-047-import-idempotency.md), [IOP-107](IOP-107-integration-health.md)
+[IOP-024](IOP-024-worker-infrastructure.md), [IOP-047](IOP-047-import-idempotency.md), [IOP-107](IOP-107-integration-health.md).
 
-Dependencies indicate required contracts/capabilities, not numerical implementation
-order. Refine them in the plan before changing code.
+Dependencies identify required contracts/capabilities, not numerical delivery order.
+Their broader criteria are not closed by this bounded increment.
 
-## Non-goals
+## Remaining work
 
-Implementing adjacent tasks, accepting open decisions by inference or extending delivery
-to the entire milestone. Do not introduce customer names into the core.
+Real provider transport/partial effects, distributed/chunk execution,
+unattended scheduling/alerts and operator recovery exercises remain pending.
+Reproducible local fault evidence does not establish broader service continuity
+or lossless security-event collection.
 
-## Validation
+## Documentation traceability
 
-The plan must define executable commands and scenarios for the criteria below using
-accepted tooling. Include the expected path, errors and relevant access denial; record
-actual results, not fictional tests.
-
-## Documentation impact
-
-Update this item, its status in the [backlog](../backlog.md) and the execution plan.
-Update contracts, models, guides or ADRs only if this task changes their content.
-
-## Open questions
-
-Confirm the approved contract, edge cases and exact evidence for this slice before
-starting implementation.
-
-## Current coverage and remaining work — 2026-10-06
-
-Imports have duplicate protection, atomic rollback and inspection of uncertain outcomes.
-Remaining: the broader job/import recovery procedure, fault coverage and operator
-evidence; automatic replay of uncertain publication is not authorized.
-
-See the [delivery map](../poc-delivery.md) for implemented slices and evidence.
-This update does not authorize the remaining work or accept a Proposed decision.
+[IOP-208 completed plan](../completed/IOP-208-local-delivery-infrastructure-plan.md),
+[IOP-203 execution](../completed/IOP-203-platform-completion-plan.md),
+[backlog](../backlog.md) and [delivery map](../poc-delivery.md).
