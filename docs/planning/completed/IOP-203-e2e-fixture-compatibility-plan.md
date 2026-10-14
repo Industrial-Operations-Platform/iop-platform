@@ -27,6 +27,28 @@ Actual local application UI QA passes; these failures concern test contract cove
 
 ## Evidence and handoff
 
+### Follow-up scope recorded before edits
+
+Root's complete final gate passed API (509 tests), web (192 tests) and all 31
+PostgreSQL suites (319 tests). Browser tests passed 56 of 57; the 390px Maintenance
+navigation test at `maintenance-assets.spec.ts:142` selected the same blocked reason
+both in the current detail and retained revision history. The initial focused run
+passed because asynchronous history completion had not always preceded that check.
+
+Root assigns a narrow test-only correction: inspect the current detail's existing
+semantic boundary and scope the same exact text assertion there. Preserve all text,
+history and assertions; no positional first/nth match or application/build edits.
+The only added code scope is `apps/web/e2e/maintenance-assets.spec.ts`. Validate the
+affected navigation repeatedly and then all 57 E2E tests against the existing build
+without concurrent servers. Root owns final documentation/commit. Actual plant data
+remains unchanged.
+
+The current snapshot is directly inside `section.iop-panel`; retained snapshots are
+nested inside native revision `<details>` elements. Use that existing boundary.
+Also await and assert the retained revision's exact blocked-reason text so the
+regression always checks the current detail while its duplicate history exists,
+rather than depending on which response finishes first.
+
 Added the typed `apps/web/e2e/overview-fixture.ts` helper and exact context branches
 in administration-workforce-ui, administrator-workspace, daily-handover,
 handover-category-workflows, handover-navigation, maintenance-assets-fixture,
@@ -47,7 +69,25 @@ route failures and assertions are retained. No application data was changed.
 - The focused runner exited successfully and released its API and preview servers;
   no listeners remained on ports 3000 or 4173 before root's complete `test:poc` run.
 
-Root owns the full final gate and commit. No root files were committed by this
+The follow-up changes only the final persisted blocked-reason check in
+`maintenance-assets.spec.ts`: it first verifies one retained history paragraph with
+the original exact text, then verifies the same text in the current detail's direct
+panel content. Historical and current content coexist before the assertion, making
+the former strict-mode failure deterministic and proving the corrected boundary.
+Every existing assertion and text remains; no production or fixture response changed.
+
+- `npm run test:e2e --workspace=@iop/web -- maintenance-assets.spec.ts --grep 'Maintenance and digital asset record navigation' --repeat-each=5`:
+  **10 passed**, 34.3 seconds, for the final history-present regression (five 1440px
+  and five 390px executions).
+- `npm run test:e2e --workspace=@iop/web`: **all 57 passed**, 1.7 minutes, exit zero,
+  against the existing build. This includes the previously failing 390px case and
+  all historical appearance, Handover, Maintenance, Asset, analysis, landing and
+  workspace-startup cases.
+- Final `git diff --check`: passed. The API and database final phases were not rerun;
+  root's previously passing API/web/PostgreSQL evidence remains applicable because
+  this correction changes only a browser-test selector and assertion.
+
+Root owns delivery documentation and commit. No root files were committed by this
 subtask; all unrelated root changes are preserved. This evidence closes the bounded
-fixture compatibility increment, while the parent IOP-203 remains open until its
-complete validation and delivery documentation finish.
+fixture compatibility increment and completes the remaining browser validation for
+root's full final gate. Parent IOP-203 closure remains root-owned.

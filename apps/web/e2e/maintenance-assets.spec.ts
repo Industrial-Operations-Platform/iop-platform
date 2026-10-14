@@ -138,7 +138,14 @@ for (const viewport of [
       .getByRole("button", { name: "Bearing inspection", exact: false })
       .click();
     await expect(
-      page.locator(".maintenance-narrative").getByText("Awaiting inspection tooling.", { exact: true }),
+      page
+        .locator("details .maintenance-narrative")
+        .getByText("Awaiting inspection tooling.", { exact: true }),
+    ).toHaveCount(1);
+    await expect(
+      page
+        .locator("section.iop-panel > .maintenance-detail-layout > .maintenance-narrative")
+        .getByText("Awaiting inspection tooling.", { exact: true }),
     ).toBeVisible();
     expect(
       requests.some(
