@@ -76,11 +76,22 @@ Set bootstrap database environment from the private installation configuration i
 | --- | --- | --- |
 | Jobs | Creation, durable claim, retries, waiting, completion, exhaustion/failure | Real business/provider handlers |
 | Audit operator | Successful inspection and nonzero bounded purge | Operator credential rotation and scheduling |
-| Other material modules | Reusable safe `appendAudit` contract, atomic failure verified | Each owning module's explicit emitters and integrated coverage tests |
+| Journal/formal Handover | Entry revisions/resolution/removal; record correction/publication/closure/acknowledgement; delegated Maintenance resolution | None within those pinned database paths after mandatory host composition |
+| Maintenance | Records/completion and priority configuration | External maintenance provider handlers |
+| Assets | Canonical registry revisions; model catalog, enrichment/review and source-mapping sidecars | Plant verification and external provider handlers |
+| Workforce | Settings, workers, schedules and assignment revisions/removal, with safe active/removed state only | External roster providers |
+| Improvement Tracking | Action revisions, evidence/corrections and saved comparisons | External result providers |
+| Locator | Scene/calibration revisions and their atomic placements | Offline reference-file import and actual survey evidence |
+| Integrations/OIP | Registry configuration, import receipt/terminal/recovery, publication and applied reporting-profile configuration | Provider transport, distributed/chunk orchestration and file configuration activation |
 | Organization RBAC | Existing module-specific access audit remains separate | General organization Audit envelope/capture |
 | Platform security | No new security sink claimed | Distinct platform authority, allowlisted 90-day events and bounded denial/session capture |
 
-Original full Audit acceptance in IOP-023/IOP-109 remains open. Existing module revision tables are not counted as new general Audit capture. Product profiles receive no Audit browsing permission. Backend/database credentials remain trusted authorities.
+The [site capture contract](site-audit-integration.md) lists explicit owner ports,
+mandatory host composition and behavioral evidence. Original full Audit acceptance
+in IOP-023/IOP-109 remains open for organization/security capture and external
+operating criteria. Events reference safe owner revisions/version identities; Audit
+does not copy their revision bodies. Product profiles receive no Audit browsing
+permission. Backend/database credentials remain trusted authorities.
 
 ## CI, measurement and readiness
 

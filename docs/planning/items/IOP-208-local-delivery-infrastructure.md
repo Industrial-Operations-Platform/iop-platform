@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed local infrastructure slice under the owner's [IOP-203](IOP-203-platform-completion.md) delegated
+Completed local infrastructure and site-material Audit slice under the owner's [IOP-203](IOP-203-platform-completion.md) delegated
 development authorization. Advance CI, reproducible backup/verified isolated
 restore, scoped worker infrastructure, general Audit plumbing and measurement
 tooling without requiring plant-specific inputs.
@@ -43,8 +43,27 @@ backfill, exact provisioning allowlists and setup-image CLI packaging. Real data
 tests used temporary copies of those shared changes, restored before this story's
 commits. Integrated installation validation remains the parent IOP-203 gate.
 
-Remote CI, provider handlers, broad module Audit emitters, organization RBAC Audit,
+Remote CI, provider handlers, file activation Audit, organization RBAC Audit,
 90-day platform-security collection, plant performance thresholds and whole-platform
 release acceptance remain pending. IOP-010/021/023/024/112–115/134–135/137–138 keep
 their original status wherever their broader acceptance is unmet. No remote
 deployment, active-installation overwrite or release publication was performed.
+
+
+2026-10-14 authorized increment: implement explicit pinned owner emitters for
+site-material operations across completed local modules, with safe allowlisted
+fields, atomic rollback and retry/idempotency evidence. Organization RBAC and
+platform-security collection retain their separate pending contracts.
+
+
+Site-material increment evidence: current mandatory host composition/API typecheck
+and build pass; full API32 suites/428 tests pass. The actual PostgreSQL suite
+covers ten material cases, alongside
+six worker/operator cases and complete private restore (17 tests total). It verifies
+real Audit INSERT denial and post-append exceptions roll back both Handover and
+Assets, safe first-wave events, AssetDomain sidecars, delegated Maintenance journal
+resolution, report configuration, exact event catalog and idempotent recovery.
+The published Audit port and mandatory owner/host integration patch are reviewed
+under parent IOP-203; no dependency copies enter this story's commits. See the
+[site capture contract](../../development/site-audit-integration.md) for all owner
+seams and precise remaining organization/platform-security/file-provider scope.

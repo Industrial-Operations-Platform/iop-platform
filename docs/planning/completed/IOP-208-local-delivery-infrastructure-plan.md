@@ -1,6 +1,6 @@
 # IOP-208 — Local operating infrastructure execution plan
 
-Status: Completed local infrastructure slice. Owner delegation: 2026-10-14, [IOP-203](../items/IOP-203-platform-completion.md). Item: [IOP-208](../items/IOP-208-local-delivery-infrastructure.md). Branch: `feature/IOP-208-local-delivery-infrastructure`, from `develop` at `24b6269`.
+Status: Completed local infrastructure and site-material Audit slice. Owner delegation: 2026-10-14, [IOP-203](../items/IOP-203-platform-completion.md). Item: [IOP-208](../items/IOP-208-local-delivery-infrastructure.md). Branch: `feature/IOP-208-local-delivery-infrastructure`, from `develop` at `24b6269`.
 
 ## Scope and steps
 
@@ -48,3 +48,52 @@ Operating guide records API/web/worker stop, database-preserving backup and serv
 restart after success or failure; lease errors explain that prerequisite. CI remote
 execution, general RBAC/security Audit and other owners' capture/provider handlers
 remain explicit external or parent gaps. No push, merge, activation or remote action.
+
+## Authorized site-material Audit increment (2026-10-14)
+
+Owner delegation under IOP-203 extends the completed infrastructure slice with
+explicit owner-defined atomic events for existing site material operations. Reuse
+Accepted ADR-0017/0038 and pinned append. Cover journal/formal Handover,
+Maintenance, Assets, Workforce, Improvement Tracking, Locator, integration
+registry and OIP publication wherever the owner already has a site transaction.
+No plant input, generic SQL logging/triggers, new UI or expanded runtime grants.
+Organization RBAC and platform-security contracts remain pending.
+
+Files: module-owned PostgreSQL store/repository adapters and small optional emit
+ports where composition is required; owning behavioral tests; the Audit envelope
+module/event allowlist; operating guide and this item/plan. Root owns shared host
+composition, schema generation, permissions and provisioning. Temporarily copied
+child module dependencies are restored before commits; only this increment's
+changes are retained. Verify real first-wave events, atomic failure rollback for
+Handover/Assets, idempotent recovery and absence of free text/names/payload/secrets.
+
+Additional existing pinned seams discovered during owner inspection: delegated
+Maintenance resolution writes journal entries without PgHandover.save, and OIP
+reporting profile configuration has its own validated atomic write/project path.
+Instrument both explicitly; derived per-fact projections stay under their enclosing
+publication/mapping/configuration event rather than generating alarm-row records.
+Supplemental catalog migration uses 20261014070000-site-material-audit.sql, leaving
+root-owned IOP-209 asset-domain timestamp60000 intact.
+
+## Site-material increment outcome
+
+- Published `Audit` index exposes pinned `SiteMaterialAudit`/`SiteMaterialEvent`
+  types; owner adapters reference that public port. Implementation remains
+  host-composed. Exact per-module/action catalog is independently matched to SQL.
+- Thirteen owner adapters and six mandatory host composition files are delivered
+  as a reviewed integration patch for IOP-203 assembly. It applies cleanly against
+  current root, preserves all prior contracts/projections and includes independent
+  AssetDomain catalog/enrichment/mapping and delegated Maintenance resolution.
+- Actual PostgreSQL material suite: ten tests pass. Combined with worker/operator
+  and encrypted full-restore suites: three suites/17 tests pass. Real INSERT
+  privilege denial and after-append exceptions roll back Handover/Assets records,
+  retained revisions and events; source content/names/credentials are excluded.
+- Current patched mandatory host typecheck/build pass. Full API32 suites/428
+  tests pass, including schema/privacy owning checks; parent runs combined installation gates.
+- All temporary module/host/RBAC/provisioning/migration dependency copies are
+  restored before commit. Parent applies owner/host hunks under its current plan;
+  this branch commits only the new public port/adapter, catalog, tests and docs.
+- Organization RBAC, platform-security90-day capture, file activation boundaries,
+  real provider transports/distributed chunk phases, operator rotation/scheduled
+  alerts and external acceptance remain explicit gaps. No extra grants/UI,
+  generic SQL logging/triggers, remote action or publication.
