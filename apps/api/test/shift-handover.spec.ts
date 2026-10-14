@@ -663,3 +663,23 @@ test("raster attachments and mentions are bounded snapshot content with no execu
   for (const selected of [{ resolvedFrom: "2026-09-01" }, { resolvedFrom: "2026-09-30", resolvedTo: "2026-09-01" }, { excludeAttention: "yes" }])
     expect(() => validSelection({ ...emptySelection, ...selected } as never)).toThrow("invalid_handover");
 });
+
+test("canonical links preserve exact source evidence, validate scoped current assets and retain unchanged retired identity", async () => {
+  const f = fixture();
+  const asset = { id: "registered", code: "AS-001", name: "Guard sensor", locationId: "area", status: "validated" as const };
+  f.tx.assetReference = jest.fn(async (id) => id === asset.id ? asset : null);
+  const linked = await f.app.create("author", { ...input, content: { ...input.content, assetId: asset.id } });
+  expect(linked.assetReference).toEqual(asset);
+  expect(linked.content.equipmentCode).toBe("0001"); expect(linked.equipmentReferenceId).toBe("reference");
+  f.tx.assetReference = jest.fn(async () => ({ ...asset, status: "retired" as const }));
+  const corrected = await f.app.change("author", { id: linked.id, expectedRevision: 1, action: "correct", note: "Correct details",
+    content: { ...linked.content, details: "The original link remains retained." } });
+  expect(corrected.assetReference?.status).toBe("validated"); expect(f.tx.assetReference).not.toHaveBeenCalled();
+  expect(f.revisions[0].entry.content.equipmentCode).toBe("0001");
+  const clean = fixture(); clean.tx.assetReference = async () => ({ ...asset, status: "retired" });
+  await expect(clean.app.create("author", { ...input, content: { ...input.content, assetId: asset.id } })).rejects.toThrow("invalid_handover");
+  clean.tx.assetReference = async () => null;
+  await expect(clean.app.create("author", { ...input, content: { ...input.content, assetId: "foreign" } })).rejects.toThrow("invalid_handover");
+  clean.tx.assetReference = async () => ({ ...asset, locationId: "foreign" });
+  await expect(clean.app.create("author", { ...input, content: { ...input.content, assetId: asset.id } })).rejects.toThrow("invalid_handover");
+});

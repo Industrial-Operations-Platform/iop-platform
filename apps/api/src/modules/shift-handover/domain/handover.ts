@@ -6,7 +6,9 @@ export class HandoverError extends Error {
       | "handover_missing"
       | "handover_conflict"
       | "handover_today_only"
-      | "handover_equipment_unavailable",
+      | "handover_equipment_unavailable"
+      | "handover_shift_unavailable"
+      | "handover_capacity",
   ) {
     super(code);
   }
@@ -57,7 +59,11 @@ export interface CompletionPage {
   nextCursor: string;
   total: number;
 }
+export interface CanonicalAssetReference {
+  id: string; code: string; name: string; locationId: string; status: "unverified" | "validated" | "retired";
+}
 export interface Content {
+  assetId?: string;
   displayUntil?: string;
   resolutions?: ResolutionReference[];
   mentionIds?: string[];
@@ -93,6 +99,7 @@ export interface CompletedReference {
   location: string;
 }
 export interface Entry {
+  assetReference?: CanonicalAssetReference;
   completedReferences?: CompletedReference[];
   notificationAt?: string;
   mentionedPeople?: Person[];
@@ -260,7 +267,7 @@ export function validResolutions(input: unknown): ResolutionReference[] {
 }
 export function validContent(input: Content, catalog: Catalog): Content {
   exact(input, [
-    ...["displayUntil", "resolutions", "mentionIds", "images"].filter((key) =>
+    ...["assetId", "displayUntil", "resolutions", "mentionIds", "images"].filter((key) =>
       Object.hasOwn(input ?? {}, key),
     ),
     "date",
@@ -281,6 +288,7 @@ export function validContent(input: Content, catalog: Catalog): Content {
     "discuss",
   ]);
   const value: Content = {
+    ...(input.assetId !== undefined ? { assetId: text(input.assetId, 64) } : {}),
     ...(input.displayUntil !== undefined ? { displayUntil: date(input.displayUntil, true) } : {}),
     ...(input.resolutions !== undefined ? { resolutions: validResolutions(input.resolutions) } : {}),
     date: date(input.date, true),
@@ -335,7 +343,7 @@ export function validContent(input: Content, catalog: Catalog): Content {
     invalid();
   if ((value.equipmentCode || value.condition) && !department) invalid();
   const workflow = catalog.categories.find((c) => c.id === value.categoryId)?.workflow;
-  if (workflow === "safety" && (value.equipmentCode || value.condition)) invalid();
+  if (workflow === "safety" && (value.equipmentCode || value.condition || value.assetId)) invalid();
   if (value.condition && !value.equipmentCode && !workflow?.startsWith("technical-")) invalid();
   if (workflow?.startsWith("technical-")) {
     const classification = catalog.categories.find((c) => c.workflow === (value.condition === "blocked" ? "technical-blocked" : "technical-problem"));

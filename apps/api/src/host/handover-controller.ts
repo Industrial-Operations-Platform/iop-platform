@@ -87,6 +87,12 @@ export class HandoverController {
   completionTargets(@Req() req: IncomingMessage, @Body() body: C.HandoverTargetRequestDto) {
     return this.operation(req, (r, a) => r.handover.targets(a, body));
   }
+  @Post("assets")
+  @ApiBody({ type: C.HandoverAssetsRequestDto })
+  @ApiCreatedResponse({ type: C.HandoverAssetsPageDto })
+  assets(@Req() req: IncomingMessage, @Body() body: C.HandoverAssetsRequestDto) {
+    return this.operation(req, (r, a) => r.handover.assets(a, body));
+  }
   @Post("equipment")
   @ApiBody({ type: C.HandoverEquipmentRequestDto })
   @ApiCreatedResponse({ type: C.HandoverEquipmentPageDto })

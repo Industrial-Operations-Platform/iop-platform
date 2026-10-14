@@ -25,6 +25,8 @@ export interface Scope {
   siteId: string;
 }
 export interface AccessLookup {
+  assetReference?(tx: SiteTransaction, actor: string, id: string): ReturnType<NonNullable<Transaction["assetReference"]>>;
+  assetReferences?(tx: SiteTransaction, actor: string, search: string): ReturnType<NonNullable<Transaction["assetReferences"]>>;
   profile?(tx: SiteTransaction, actor: string): Promise<string>;
   broadcastCategoryIds?: string[];
   technicalCategoryIds?: string[];
@@ -87,6 +89,7 @@ export class PgHandover implements Store {
             (ids) => this.lookup.names(tx, ids),
             this.lookup,
             await this.lookup.profile?.(tx, actor),
+            await this.lookup.allowed(tx, actor, "assets.read"),
           ),
         );
       },
@@ -105,7 +108,16 @@ class PgTransaction implements Transaction {
     readonly names: (userIds: string[]) => Promise<Map<string, string>>,
     private readonly lookup: AccessLookup,
     readonly publisherProfile?: string,
+    readonly canLinkAssets = false,
   ) {}
+  assetReference(id: string) {
+    if (!this.lookup.assetReference) throw new SiteAccessDeniedError();
+    return this.lookup.assetReference(this.tx, this.actor, id);
+  }
+  assetReferences(search: string) {
+    if (!this.lookup.assetReferences) throw new SiteAccessDeniedError();
+    return this.lookup.assetReferences(this.tx, this.actor, search);
+  }
   assignmentTarget(day: string) { return this.lookup.assignmentTarget?.(this.tx, this.actor, day) ?? Promise.resolve(""); }
   maintenanceTargets(search: string, cursor: string) {
     if (!this.lookup.maintenanceTargets) throw new SiteAccessDeniedError();

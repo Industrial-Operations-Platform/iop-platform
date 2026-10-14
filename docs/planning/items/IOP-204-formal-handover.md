@@ -7,17 +7,17 @@ Deliver IOP-060/063/066/067 using existing Workforce, Assets and Handover bounda
 
 ## Scope and acceptance
 
-- [ ] Bounded Workforce-owned shift context and durable Handover record snapshots.
-- [ ] Open/closed record lifecycle, attributed acknowledgement, preserved issues,
+- [x] Bounded Workforce-owned shift context and durable Handover record snapshots.
+- [x] Open/closed record lifecycle, attributed acknowledgement, preserved issues,
   optimistic conflicts and immutable history.
-- [ ] Previous-shift context and explicit canonical asset links without changing
+- [x] Previous-shift context and explicit canonical asset links without changing
   historical unverified equipment evidence.
-- [ ] Advanced records for Administrator/Team Leader/Task Force; preserve existing
+- [x] Advanced records for Administrator/Team Leader/Task Force; preserve existing
   Technician journal permissions. Verify real storage and role denial.
 - [ ] Working browser views using shared identity and generated HTTP contracts.
 
 ## Evidence and remaining work
 
-Execution plan is created on `feature/IOP-204-formal-handover` before implementation.
+Implementation is committed on `feature/IOP-204-formal-handover`; the [active execution record](../active/IOP-204-formal-handover-plan.md) records validated API, browser and real PostgreSQL evidence. Shared host composition and generated contracts remain parent-owned final checks.
 Physical asset surveying remains external; formal records use actual configured
 Workforce shifts, never inferred alarm windows.

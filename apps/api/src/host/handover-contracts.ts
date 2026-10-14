@@ -25,7 +25,17 @@ export class HandoverTargetRequestDto {
 }
 export class HandoverDefaultRequestDto { @ApiProperty() date!: string; }
 export class HandoverDefaultLocationDto { @ApiProperty() departmentId!: string; }
+export class HandoverAssetReferenceDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() code!: string;
+  @ApiProperty() name!: string;
+  @ApiProperty() locationId!: string;
+  @ApiProperty({ enum: ["unverified", "validated", "retired"] }) status!: "unverified" | "validated" | "retired";
+}
+export class HandoverAssetsRequestDto { @ApiProperty() search!: string; }
+export class HandoverAssetsPageDto { @ApiProperty({ type: [HandoverAssetReferenceDto] }) assets!: HandoverAssetReferenceDto[]; }
 export class HandoverContentDto {
+  @ApiPropertyOptional() assetId?: string;
   @ApiPropertyOptional() displayUntil?: string;
   @ApiPropertyOptional({ type: [HandoverResolutionDto], maxItems: 20 }) resolutions?: HandoverResolutionDto[];
   @ApiPropertyOptional({ type: [String], maxItems: 20 }) mentionIds?: string[];
@@ -87,6 +97,7 @@ export class HandoverPersonDto {
   @ApiProperty() name!: string;
 }
 export class HandoverContextDto {
+  @ApiPropertyOptional() canLinkAssets?: boolean;
   @ApiProperty() canDelete!: boolean;
   @ApiProperty({ type: [HandoverLocationDto] })
   locations!: HandoverLocationDto[];
@@ -109,6 +120,7 @@ export class HandoverCompletedReferenceDto {
   @ApiProperty() location!: string;
 }
 export class HandoverEntryDto {
+  @ApiPropertyOptional({ type: HandoverAssetReferenceDto }) assetReference?: HandoverAssetReferenceDto;
   @ApiPropertyOptional({ type: [HandoverCompletedReferenceDto] }) completedReferences?: HandoverCompletedReferenceDto[];
   @ApiPropertyOptional() notificationAt?: string;
   @ApiPropertyOptional({ type: [HandoverPersonDto] }) mentionedPeople?: HandoverPersonDto[];
