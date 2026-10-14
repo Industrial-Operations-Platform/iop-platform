@@ -1,3 +1,4 @@
+import {composeAssetDomain} from "./asset-domain-composition";
 import {composePlatformOverview} from "./overview-composition";
 import {resolve} from "node:path";
 import {composeFormalHandover} from "./formal-handover-composition";
@@ -243,6 +244,7 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly assetDomain: ReturnType<typeof composeAssetDomain>["domain"];
   readonly overview: ReturnType<typeof composePlatformOverview>;
   readonly formalHandover: FormalHandover;
   readonly improvements: Improvements;
@@ -493,9 +495,12 @@ export class PlatformRuntime {
     );
     this.profileRepository = profileRepository;
     this.improvements = composeImprovements(pool, this.source, catalog.locations, profileRepository.initialVersion, hitlisteAnalysisCalendar);
-    this.receiver = new OipReceiver(this.source, (tx, id) =>
-      profileRepository.project(tx, id),
-    );
+    const assetDomainComposition = composeAssetDomain(pool,this.source,hitlisteAnalysisCalendar);
+    this.assetDomain = assetDomainComposition.domain;
+    this.receiver = new OipReceiver(this.source, async (tx,id) => {
+      await profileRepository.project(tx,id);
+      await assetDomainComposition.published(tx,id);
+    });
     this.imports = createImportWorkflow(
       this.batches,
       this.receiver,

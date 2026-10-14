@@ -41,7 +41,7 @@ Regenerate the combined reviewed OpenAPI schema after controller registration.
 ## Browser composition
 
 ```tsx
-const application = new AssetDomainApplication(new HttpAssetDomainGateway());
+const application = new AssetDomainApplication(new HttpAssetDomainGateway(), () => crypto.randomUUID());
 <AssetDomainWorkspace
   application={application}
   timeZone={timeZone}

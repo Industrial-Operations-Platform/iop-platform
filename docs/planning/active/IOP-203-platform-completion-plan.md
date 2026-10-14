@@ -79,6 +79,29 @@ global search, area navigation and formal-record deep links. Department analytic
 uses only explicit configured source identities; unconfigured areas stay unmapped.
 Focused integrated web checks36 and real PostgreSQL Overview checks6 pass.
 
+## Asset and operations composition — 2026-10-14
+
+IOP-208/209 are assembled with exact installed-migration privilege allowlists;
+table-level runtime grants, unexpected functions, broad Audit reads and delete
+authority remain rejected. Setup images include the trusted job/Audit tools and
+opt-in synthetic Asset fixture runner. Runtime composes AssetDomain and invokes
+its receiving-owned canonical preparation after the existing profile projection
+on the same publication transaction. Native importers retain their original
+import authority without receiving general Assets read permissions.
+
+Generated Asset transport DTOs and shared browser resources typecheck. Integrated
+real PostgreSQL AssetDomain/jobs/Audit/full-restore checks13 pass; lifecycle and
+independent migration inventory checks8 pass. Historical fixed migration counts
+now use a test-owned SQL inventory, while staged1/12 and idempotent0 checks stay
+explicit. A discovered long-label390px formal creation overflow has a scoped
+layout fix and awaits actual browser recheck.
+
+Supplemental IOP-208 adds explicit material Audit emitters on site owner
+transactions; IOP-209 hardens asynchronous editor/source selection and IOP-210
+preserves independent source access after Workforce-only revocation. Each agent
+updated its story plan before these focused corrections; final assembly/tests
+remain parent-owned.
+
 ## Closure
 
 Record actual commands/results and unresolved input per child, retain review

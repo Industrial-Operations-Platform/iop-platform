@@ -41,12 +41,14 @@ export function AssetsWorkspace({
   homeVisit = 0,
   initialAssetId = "",
   onOpenSource,
+  onManageModel,
 }: {
   application: AssetsApplication;
   profile?: string;
   timeZone: string;
   homeVisit?: number;
   initialAssetId?: string;
+  onManageModel?: (id:string)=>void;
   onOpenSource?: (kind: SourceKind, id: string) => void;
 }) {
   const today = new Intl.DateTimeFormat("en-CA", {
@@ -353,7 +355,8 @@ export function AssetsWorkspace({
         ) : selected ? (
           <>
             <Panel>
-              <AssetDetails
+              {onManageModel && selected && <Button variant="secondary" onClick={()=>onManageModel(selected.id)}>{t("Model and survey")}</Button>}
+        <AssetDetails
                 asset={selected}
                 context={context}
                 timeZone={timeZone}

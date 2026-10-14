@@ -1,3 +1,4 @@
+import {AssetDomainController} from "./asset-domain-controller";
 import {OverviewController} from "./overview-controller";
 import {FormalHandoverController} from "./formal-handover-controller";
 import {ImprovementController} from "./improvement-controller";
@@ -453,6 +454,7 @@ export class PlatformModule {
         OverviewController,
         MaintenanceController,
         AssetsController,
+        AssetDomainController,
         WorkforceController,
         PlatformController,
         AccessController,

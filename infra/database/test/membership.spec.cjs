@@ -1,3 +1,4 @@
+const { migrationCount } = require('./migration-catalog.cjs');
 const { PostgreSqlContainer } = require('@testcontainers/postgresql');
 const { Client } = require('pg');
 const { spawnSync } = require('node:child_process');
@@ -40,7 +41,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(22);
+  expect(await migrate(configs.migrator)).toBe(migrationCount());
   for (const org of ['org-a', 'org-b']) {
     await seedOrganization({ ...env, IOP_SEED_ORGANIZATION_ID: org, IOP_SEED_ORGANIZATION_NAME: 'Fictional Organization' });
   }
@@ -247,7 +248,7 @@ test('native CLI reproduces the complete seed on a second empty disposable datab
   } finally { await admin.end(); }
   const values = { ...input(), IOP_SEED_ORGANIZATION_NAME: 'Fictional Organization',
     IOP_SEED_SITE_NAME: 'Fictional Site', IOP_SEED_SITE_TIME_ZONE: 'UTC' };
-  for (const [command, output] of [['provision', 'provisioned'], ['migrate', '22 applied'],
+  for (const [command, output] of [['provision', 'provisioned'], ['migrate', `${migrationCount()} applied`],
     ['seed-organization', 'created'], ['seed-site', 'created'], ['seed-user', 'created'],
     ['seed-membership', 'created'], ['seed-membership', 'unchanged'], ['provision', 'provisioned'], ['migrate', '0 applied']]) {
     const result = cli(command, values);

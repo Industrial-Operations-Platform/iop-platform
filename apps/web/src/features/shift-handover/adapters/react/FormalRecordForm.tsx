@@ -23,7 +23,7 @@ export function FormalRecordForm({ application, shifts, departmentId, areaId, re
   }, [application, content.departmentId, content.areaId, content.shiftDate]);
   const toggle = (id: string) => setContent((value) => ({ ...value,
     entryIds: value.entryIds.includes(id) ? value.entryIds.filter((key) => key !== id) : [...value.entryIds, id] }));
-  return <form aria-label={t(record ? "Edit shift record" : "New shift record")} onSubmit={(event) => { event.preventDefault(); void onSave(content, note); }}>
+  return <form className="handover-formal-record-form" aria-label={t(record ? "Edit shift record" : "New shift record")} onSubmit={(event) => { event.preventDefault(); void onSave(content, note); }}>
     <fieldset className="handover-fields" disabled={busy}>
       <Field>{t("Planned Workforce shift")}<Select aria-label={t("Planned Workforce shift")} required disabled={!!record} value={content.shiftId} onChange={(e) => {
         const shift = shifts.find((s) => s.id === e.target.value);

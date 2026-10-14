@@ -1,5 +1,7 @@
+import type {components} from "../../../../contracts/schema";
 import type { Gateway } from "../../application/domain";
-import type { SourceTuple, Context, Detail, DomainQuery, ReferencePage, MappingPage, AssetType, TypeCatalog, SaveEnrichment, Enrichment, ModelHistory, SaveMapping, Mapping, MappingHistory, SourceCandidate, ParetoSelection, CanonicalPareto } from "../../domain/models";
+import type { SourceTuple, DomainQuery, AssetType, SaveEnrichment, SaveMapping, ParetoSelection } from "../../domain/models";
+type Schema = components["schemas"];
 const errors: Record<string, string> = {
   invalid_asset_domain: "Check the asset model fields, reference capabilities and metadata types.",
   asset_domain_denied: "Asset management requires current Administrator, Team Leader or Task Force access.",
@@ -25,58 +27,53 @@ async function request<T>(path: string, body: unknown): Promise<T> {
 }
 export class HttpAssetDomainGateway implements Gateway {
   catalog() {
-    return request<Context>("catalog", {});
+    return request<Schema["AssetDomainCatalogDto"]>("catalog", {});
   }
   references(query: DomainQuery) {
-    return request<ReferencePage>("references", query);
+    return request<Schema["AssetDomainReferencePageDto"]>("references", query);
   }
   configure(expectedRevision: number, types: AssetType[]) {
-    return request<TypeCatalog>("configure", {
+    return request<Schema["AssetTypeCatalogDto"]>("configure", {
       expectedRevision,
       types
     });
   }
   detail(assetId: string) {
-    return request<Detail>("detail", {
+    return request<Schema["AssetDomainDetailDto"]>("detail", {
       assetId
     });
   }
   save(input: SaveEnrichment) {
-    return request<Enrichment>("save", input);
+    return request<Schema["AssetEnrichmentDto"]>("save", input);
   }
   history(assetId: string, before = 0) {
-    return request<ModelHistory>("history", {
+    return request<Schema["AssetDomainHistoryDto"]>("history", {
       assetId,
       before
     });
   }
   async mappingForSource(source: SourceTuple) {
-    return (await request<{
-      mapping: Mapping | null;
-    }>("mapping-source", source)).mapping;
+    return (await request<Schema["AssetMappingLookupDto"]>("mapping-source", source)).mapping;
   }
   mappingQuery(query: DomainQuery) {
-    return request<MappingPage>("mapping-query", query);
+    return request<Schema["AssetMappingPageDto"]>("mapping-query", query);
   }
   saveMapping(input: SaveMapping) {
-    return request<Mapping>("save-mapping", input);
+    return request<Schema["AssetSourceMappingDto"]>("save-mapping", input);
   }
   mappingHistory(id: string, before = 0) {
-    return request<MappingHistory>("mapping-history", {
+    return request<Schema["AssetMappingHistoryDto"]>("mapping-history", {
       id,
       before
     });
   }
   candidates(search: string, cursor = "") {
-    return request<{
-      candidates: SourceCandidate[];
-      nextCursor: string;
-    }>("candidates", {
+    return request<Schema["AssetSourceCandidatePageDto"]>("candidates", {
       search,
       cursor
     });
   }
   pareto(selection: ParetoSelection) {
-    return request<CanonicalPareto>("pareto", selection);
+    return request<Schema["CanonicalAssetParetoDto"]>("pareto", selection);
   }
 }

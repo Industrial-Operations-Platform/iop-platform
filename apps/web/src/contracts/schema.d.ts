@@ -760,6 +760,198 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/asset-domain/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_catalog"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/configure": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_configure"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_save"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_history"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/references": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_references"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/mapping-query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_mappingQuery"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/mapping-source": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_mappingSource"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/save-mapping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_saveMapping"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/mapping-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_mappingHistory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_candidates"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-domain/pareto": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AssetDomainController_pareto"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workforce/summary": {
         parameters: {
             query?: never;
@@ -2637,6 +2829,230 @@ export interface components {
             total: number;
             nextCursor: string;
         };
+        AssetMetadataFieldDto: {
+            key: string;
+            label: string;
+            /** @enum {string} */
+            kind: "text" | "number" | "boolean" | "date";
+            required: boolean;
+            unit: string;
+        };
+        AssetModelTypeDto: {
+            id: string;
+            label: string;
+            active: boolean;
+            canContain: boolean;
+            isController: boolean;
+            fields: components["schemas"]["AssetMetadataFieldDto"][];
+        };
+        AssetTypeCatalogDto: {
+            revision: number;
+            types: components["schemas"]["AssetModelTypeDto"][];
+        };
+        AssetDomainCatalogDto: {
+            canManage: boolean;
+            sourceId: string;
+            catalog: components["schemas"]["AssetTypeCatalogDto"];
+        };
+        AssetDomainConfigureDto: {
+            expectedRevision: number;
+            types: components["schemas"]["AssetModelTypeDto"][];
+        };
+        AssetDomainIdDto: {
+            assetId: string;
+        };
+        AssetDomainReferenceDto: {
+            id: string;
+            code: string;
+            name: string;
+            /** @enum {string} */
+            status: "unverified" | "validated" | "retired";
+        };
+        AssetControllerRelationDto: {
+            /** @enum {string} */
+            kind: "controlled-by";
+            targetId: string;
+            channel: string;
+        };
+        AssetSurveyDto: {
+            /** @enum {string} */
+            status: "pending" | "validated" | "rejected";
+            note: string;
+            evidenceReference: string;
+        };
+        AssetEnrichmentDataDto: {
+            typeId: string;
+            parentId: string;
+            controllers: components["schemas"]["AssetControllerRelationDto"][];
+            manufacturer: string;
+            model: string;
+            serial: string;
+            metadata: {
+                [key: string]: string | number | boolean;
+            };
+            survey: components["schemas"]["AssetSurveyDto"];
+        };
+        AssetEnrichmentDto: {
+            assetId: string;
+            revision: number;
+            data: components["schemas"]["AssetEnrichmentDataDto"];
+            actorId: string;
+            actorName: string;
+            updatedAt: string;
+            surveyReviewerId: string;
+            surveyReviewerName: string;
+            surveyReviewedAt: string;
+        };
+        AssetDomainDetailDto: {
+            asset: components["schemas"]["AssetDomainReferenceDto"];
+            enrichment: components["schemas"]["AssetEnrichmentDto"] | null;
+            related: components["schemas"]["AssetDomainReferenceDto"][];
+            canManage: boolean;
+        };
+        AssetDomainSaveDto: {
+            assetId: string;
+            expectedRevision: number;
+            reason: string;
+            data: components["schemas"]["AssetEnrichmentDataDto"];
+        };
+        AssetDomainHistoryRequestDto: {
+            assetId: string;
+            before?: number;
+        };
+        AssetEnrichmentRevisionDto: {
+            enrichment: components["schemas"]["AssetEnrichmentDto"];
+            reason: string;
+            actorId: string;
+            actorName: string;
+            at: string;
+        };
+        AssetDomainHistoryDto: {
+            revisions: components["schemas"]["AssetEnrichmentRevisionDto"][];
+            nextBefore: number;
+        };
+        AssetDomainQueryDto: {
+            search?: string;
+            cursor?: string;
+            limit?: number;
+        };
+        AssetEnrichmentSummaryDto: {
+            assetId: string;
+            revision: number;
+            typeId: string;
+            parentId: string;
+            /** @enum {string} */
+            surveyStatus: "pending" | "validated" | "rejected";
+        };
+        AssetDomainReferencePageDto: {
+            assets: components["schemas"]["AssetDomainReferenceDto"][];
+            enrichments: components["schemas"]["AssetEnrichmentSummaryDto"][];
+            total: number;
+            nextCursor: string;
+        };
+        AssetSourceTupleDto: {
+            sourceId: string;
+            /** @enum {string} */
+            namespace: "source-equipment";
+            area: string;
+            code: string;
+        };
+        AssetMappingDataDto: {
+            source: components["schemas"]["AssetSourceTupleDto"];
+            /** @enum {string} */
+            status: "pending" | "approved" | "rejected";
+            candidateIds: string[];
+            note: string;
+        };
+        AssetSourceMappingDto: {
+            id: string;
+            revision: number;
+            data: components["schemas"]["AssetMappingDataDto"];
+            actorId: string;
+            actorName: string;
+            updatedAt: string;
+        };
+        AssetMappingPageDto: {
+            mappings: components["schemas"]["AssetSourceMappingDto"][];
+            total: number;
+            nextCursor: string;
+        };
+        AssetMappingLookupDto: {
+            mapping: components["schemas"]["AssetSourceMappingDto"] | null;
+        };
+        AssetMappingSaveDto: {
+            id: string;
+            expectedRevision: number;
+            reason: string;
+            data: components["schemas"]["AssetMappingDataDto"];
+        };
+        AssetMappingHistoryRequestDto: {
+            id: string;
+            before?: number;
+        };
+        AssetMappingRevisionDto: {
+            mapping: components["schemas"]["AssetSourceMappingDto"];
+            reason: string;
+            actorId: string;
+            actorName: string;
+            at: string;
+        };
+        AssetMappingHistoryDto: {
+            revisions: components["schemas"]["AssetMappingRevisionDto"][];
+            nextBefore: number;
+        };
+        AssetSourceQueryDto: {
+            search?: string;
+            cursor?: string;
+        };
+        AssetSourceCandidateDto: {
+            sourceId: string;
+            /** @enum {string} */
+            namespace: "source-equipment";
+            area: string;
+            code: string;
+            records: number;
+        };
+        AssetSourceCandidatePageDto: {
+            candidates: components["schemas"]["AssetSourceCandidateDto"][];
+            nextCursor: string;
+        };
+        CanonicalParetoSelectionDto: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            toExclusive: string;
+            /** @enum {string} */
+            metric: "frequency" | "alarm-seconds";
+            limit?: number;
+        };
+        CanonicalAssetGroupDto: {
+            frequency: number;
+            alarmSeconds: number;
+            records: number;
+            assetId: string;
+            assetCode?: string;
+            cumulativePercent: number | null;
+        };
+        CanonicalAssetMeasuresDto: {
+            frequency: number;
+            alarmSeconds: number;
+            records: number;
+        };
+        CanonicalAssetParetoDto: {
+            selection: components["schemas"]["CanonicalParetoSelectionDto"];
+            groups: components["schemas"]["CanonicalAssetGroupDto"][];
+            groupCount: number;
+            totals: components["schemas"]["CanonicalAssetMeasuresDto"];
+            mapped: components["schemas"]["CanonicalAssetMeasuresDto"];
+            unresolved: components["schemas"]["CanonicalAssetMeasuresDto"];
+            states: {
+                [key: string]: number;
+            };
+            missingDates: string[];
+            admittedDates: string[];
+            projectionRevision: string;
+            limitations: string;
+        };
         WorkforcePersonalShiftDto: {
             id: string;
             label: string;
@@ -4418,6 +4834,278 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssetTimelinePageDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_catalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDomainCatalogDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_configure: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainConfigureDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetTypeCatalogDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainIdDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDomainDetailDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetEnrichmentDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDomainHistoryDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_references: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainQueryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetDomainReferencePageDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_mappingQuery: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetDomainQueryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetMappingPageDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_mappingSource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetSourceTupleDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetMappingLookupDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_saveMapping: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetMappingSaveDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetSourceMappingDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_mappingHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetMappingHistoryRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetMappingHistoryDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_candidates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetSourceQueryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetSourceCandidatePageDto"];
+                };
+            };
+        };
+    };
+    AssetDomainController_pareto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CanonicalParetoSelectionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CanonicalAssetParetoDto"];
                 };
             };
         };

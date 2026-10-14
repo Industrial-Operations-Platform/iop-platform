@@ -1,3 +1,4 @@
+const { migrationCount } = require('./migration-catalog.cjs');
 const { openWorkspaceAccess, workspaceSignIn } = require("./browser-access.cjs");
 const { PostgreSqlContainer } = require("@testcontainers/postgresql");
 const { Client, Pool } = require("pg");
@@ -49,7 +50,7 @@ beforeAll(async () => {
   };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(22);
+  expect(await migrate(configs.migrator)).toBe(migrationCount());
   await provision(configs);
   const hash = await new NodePasswords().hash(initial);
   for (const suffix of ["a", "b"]) {

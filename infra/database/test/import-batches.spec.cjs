@@ -1,3 +1,4 @@
+const { migrationCount } = require('./migration-catalog.cjs');
 const { PostgreSqlContainer } = require('@testcontainers/postgresql');
 const { Client, Pool } = require('pg');
 const { randomUUID } = require('node:crypto');
@@ -68,7 +69,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(22);
+  expect(await migrate(configs.migrator)).toBe(migrationCount());
   await provision(configs);
   await seedUser({ ...env, IOP_SEED_USER_ID: 'user' });
   for (const org of ['org-a', 'org-b']) {

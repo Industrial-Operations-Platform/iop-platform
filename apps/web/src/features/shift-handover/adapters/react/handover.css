@@ -517,3 +517,9 @@
   font-size: var(--iop-sectionTitleSize);
   font-weight: var(--iop-headingWeight);
 }
+
+.handover-formal-record-form { min-width: 0; max-width: 100%; }
+.handover-formal-record-form .handover-fields { grid-template-columns: minmax(0, 1fr); }
+.handover-formal-record-form .iop-field { min-width: 0; max-width: 100%; }
+.handover-formal-record-form :is(.iop-input, .iop-select, .iop-textarea) { min-width: 0; max-width: 100%; }
+.handover-formal-record-form .iop-field--inline > span { min-width: 0; overflow-wrap: anywhere; }

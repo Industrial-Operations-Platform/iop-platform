@@ -1,3 +1,5 @@
+import {AssetDomainApplication} from "../features/assets-domain/application/domain";
+import {HttpAssetDomainGateway} from "../features/assets-domain/adapters/http/gateway";
 import {createOperationalOverviewApplication} from "../features/operational-overview/adapters/http/gateway";
 import {FormalHandoverApplication} from "../features/shift-handover/application/formal-records";
 import {HttpFormalHandoverGateway} from "../features/shift-handover/adapters/http/formal-gateway";
@@ -25,6 +27,7 @@ const improvements = new ImprovementApplication(new HttpImprovementGateway(), ()
   const page = await assets.query({search,cursor,status:'current',locationId:''});
   return {assets:page.assets.map(asset=>({id:asset.id,code:asset.content.code,name:asset.content.name,status:asset.content.status})),nextCursor:page.nextCursor,total:page.total};
 });
+const assetDomain = new AssetDomainApplication(new HttpAssetDomainGateway(),()=>crypto.randomUUID());
 const overview = createOperationalOverviewApplication();
 const locator = createLocatorApplication();
 const connections = new ConnectionsApplication(new HttpConnectionsGateway());
@@ -57,6 +60,7 @@ export function AnalyticalApp() {
       improvements={improvements}
       locator={locator}
       overview={overview}
+      assetDomain={assetDomain}
     />
   );
 }

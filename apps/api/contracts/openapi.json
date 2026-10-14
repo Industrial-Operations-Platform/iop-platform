@@ -1450,6 +1450,368 @@
         ]
       }
     },
+    "/api/v1/asset-domain/catalog": {
+      "post": {
+        "operationId": "AssetDomainController_catalog",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDomainCatalogDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/configure": {
+      "post": {
+        "operationId": "AssetDomainController_configure",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetDomainConfigureDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetTypeCatalogDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/detail": {
+      "post": {
+        "operationId": "AssetDomainController_detail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetDomainIdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDomainDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/save": {
+      "post": {
+        "operationId": "AssetDomainController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetDomainSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetEnrichmentDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/history": {
+      "post": {
+        "operationId": "AssetDomainController_history",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetDomainHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDomainHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/references": {
+      "post": {
+        "operationId": "AssetDomainController_references",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetDomainQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDomainReferencePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/mapping-query": {
+      "post": {
+        "operationId": "AssetDomainController_mappingQuery",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetDomainQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetMappingPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/mapping-source": {
+      "post": {
+        "operationId": "AssetDomainController_mappingSource",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetSourceTupleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetMappingLookupDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/save-mapping": {
+      "post": {
+        "operationId": "AssetDomainController_saveMapping",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetMappingSaveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetSourceMappingDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/mapping-history": {
+      "post": {
+        "operationId": "AssetDomainController_mappingHistory",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetMappingHistoryRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetMappingHistoryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/candidates": {
+      "post": {
+        "operationId": "AssetDomainController_candidates",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetSourceQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetSourceCandidatePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
+    "/api/v1/asset-domain/pareto": {
+      "post": {
+        "operationId": "AssetDomainController_pareto",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CanonicalParetoSelectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CanonicalAssetParetoDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset domain"
+        ]
+      }
+    },
     "/api/v1/workforce/summary": {
       "post": {
         "operationId": "WorkforceController_summary",
@@ -8131,6 +8493,922 @@
           "sources",
           "total",
           "nextCursor"
+        ]
+      },
+      "AssetMetadataFieldDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "text",
+              "number",
+              "boolean",
+              "date"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "unit": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "kind",
+          "required",
+          "unit"
+        ]
+      },
+      "AssetModelTypeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "canContain": {
+            "type": "boolean"
+          },
+          "isController": {
+            "type": "boolean"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetMetadataFieldDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "active",
+          "canContain",
+          "isController",
+          "fields"
+        ]
+      },
+      "AssetTypeCatalogDto": {
+        "type": "object",
+        "properties": {
+          "revision": {
+            "type": "number"
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetModelTypeDto"
+            }
+          }
+        },
+        "required": [
+          "revision",
+          "types"
+        ]
+      },
+      "AssetDomainCatalogDto": {
+        "type": "object",
+        "properties": {
+          "canManage": {
+            "type": "boolean"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "catalog": {
+            "$ref": "#/components/schemas/AssetTypeCatalogDto"
+          }
+        },
+        "required": [
+          "canManage",
+          "sourceId",
+          "catalog"
+        ]
+      },
+      "AssetDomainConfigureDto": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetModelTypeDto"
+            }
+          }
+        },
+        "required": [
+          "expectedRevision",
+          "types"
+        ]
+      },
+      "AssetDomainIdDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetId"
+        ]
+      },
+      "AssetDomainReferenceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unverified",
+              "validated",
+              "retired"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "status"
+        ]
+      },
+      "AssetControllerRelationDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "controlled-by"
+            ]
+          },
+          "targetId": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "targetId",
+          "channel"
+        ]
+      },
+      "AssetSurveyDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "validated",
+              "rejected"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "evidenceReference": {
+            "type": "string",
+            "maxLength": 400
+          }
+        },
+        "required": [
+          "status",
+          "note",
+          "evidenceReference"
+        ]
+      },
+      "AssetEnrichmentDataDto": {
+        "type": "object",
+        "properties": {
+          "typeId": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "controllers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetControllerRelationDto"
+            }
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "serial": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "survey": {
+            "$ref": "#/components/schemas/AssetSurveyDto"
+          }
+        },
+        "required": [
+          "typeId",
+          "parentId",
+          "controllers",
+          "manufacturer",
+          "model",
+          "serial",
+          "metadata",
+          "survey"
+        ]
+      },
+      "AssetEnrichmentDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AssetEnrichmentDataDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "surveyReviewerId": {
+            "type": "string"
+          },
+          "surveyReviewerName": {
+            "type": "string"
+          },
+          "surveyReviewedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetId",
+          "revision",
+          "data",
+          "actorId",
+          "actorName",
+          "updatedAt",
+          "surveyReviewerId",
+          "surveyReviewerName",
+          "surveyReviewedAt"
+        ]
+      },
+      "AssetDomainDetailDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/AssetDomainReferenceDto"
+          },
+          "enrichment": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssetEnrichmentDto"
+              }
+            ]
+          },
+          "related": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetDomainReferenceDto"
+            }
+          },
+          "canManage": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "asset",
+          "enrichment",
+          "related",
+          "canManage"
+        ]
+      },
+      "AssetDomainSaveDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "data": {
+            "$ref": "#/components/schemas/AssetEnrichmentDataDto"
+          }
+        },
+        "required": [
+          "assetId",
+          "expectedRevision",
+          "reason",
+          "data"
+        ]
+      },
+      "AssetDomainHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "before": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "assetId"
+        ]
+      },
+      "AssetEnrichmentRevisionDto": {
+        "type": "object",
+        "properties": {
+          "enrichment": {
+            "$ref": "#/components/schemas/AssetEnrichmentDto"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "enrichment",
+          "reason",
+          "actorId",
+          "actorName",
+          "at"
+        ]
+      },
+      "AssetDomainHistoryDto": {
+        "type": "object",
+        "properties": {
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetEnrichmentRevisionDto"
+            }
+          },
+          "nextBefore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "revisions",
+          "nextBefore"
+        ]
+      },
+      "AssetDomainQueryDto": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "AssetEnrichmentSummaryDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "typeId": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "surveyStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "validated",
+              "rejected"
+            ]
+          }
+        },
+        "required": [
+          "assetId",
+          "revision",
+          "typeId",
+          "parentId",
+          "surveyStatus"
+        ]
+      },
+      "AssetDomainReferencePageDto": {
+        "type": "object",
+        "properties": {
+          "assets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetDomainReferenceDto"
+            }
+          },
+          "enrichments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetEnrichmentSummaryDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assets",
+          "enrichments",
+          "total",
+          "nextCursor"
+        ]
+      },
+      "AssetSourceTupleDto": {
+        "type": "object",
+        "properties": {
+          "sourceId": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string",
+            "enum": [
+              "source-equipment"
+            ]
+          },
+          "area": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sourceId",
+          "namespace",
+          "area",
+          "code"
+        ]
+      },
+      "AssetMappingDataDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/AssetSourceTupleDto"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected"
+            ]
+          },
+          "candidateIds": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "status",
+          "candidateIds",
+          "note"
+        ]
+      },
+      "AssetSourceMappingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AssetMappingDataDto"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "data",
+          "actorId",
+          "actorName",
+          "updatedAt"
+        ]
+      },
+      "AssetMappingPageDto": {
+        "type": "object",
+        "properties": {
+          "mappings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetSourceMappingDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "mappings",
+          "total",
+          "nextCursor"
+        ]
+      },
+      "AssetMappingLookupDto": {
+        "type": "object",
+        "properties": {
+          "mapping": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssetSourceMappingDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "mapping"
+        ]
+      },
+      "AssetMappingSaveDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AssetMappingDataDto"
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision",
+          "reason",
+          "data"
+        ]
+      },
+      "AssetMappingHistoryRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "before": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "AssetMappingRevisionDto": {
+        "type": "object",
+        "properties": {
+          "mapping": {
+            "$ref": "#/components/schemas/AssetSourceMappingDto"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "mapping",
+          "reason",
+          "actorId",
+          "actorName",
+          "at"
+        ]
+      },
+      "AssetMappingHistoryDto": {
+        "type": "object",
+        "properties": {
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetMappingRevisionDto"
+            }
+          },
+          "nextBefore": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "revisions",
+          "nextBefore"
+        ]
+      },
+      "AssetSourceQueryDto": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        }
+      },
+      "AssetSourceCandidateDto": {
+        "type": "object",
+        "properties": {
+          "sourceId": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string",
+            "enum": [
+              "source-equipment"
+            ]
+          },
+          "area": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "records": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "sourceId",
+          "namespace",
+          "area",
+          "code",
+          "records"
+        ]
+      },
+      "AssetSourceCandidatePageDto": {
+        "type": "object",
+        "properties": {
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssetSourceCandidateDto"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidates",
+          "nextCursor"
+        ]
+      },
+      "CanonicalParetoSelectionDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "toExclusive": {
+            "type": "string",
+            "format": "date"
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "frequency",
+              "alarm-seconds"
+            ]
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "from",
+          "toExclusive",
+          "metric"
+        ]
+      },
+      "CanonicalAssetGroupDto": {
+        "type": "object",
+        "properties": {
+          "frequency": {
+            "type": "number"
+          },
+          "alarmSeconds": {
+            "type": "number"
+          },
+          "records": {
+            "type": "number"
+          },
+          "assetId": {
+            "type": "string"
+          },
+          "assetCode": {
+            "type": "string"
+          },
+          "cumulativePercent": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "frequency",
+          "alarmSeconds",
+          "records",
+          "assetId",
+          "cumulativePercent"
+        ]
+      },
+      "CanonicalAssetMeasuresDto": {
+        "type": "object",
+        "properties": {
+          "frequency": {
+            "type": "number"
+          },
+          "alarmSeconds": {
+            "type": "number"
+          },
+          "records": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "frequency",
+          "alarmSeconds",
+          "records"
+        ]
+      },
+      "CanonicalAssetParetoDto": {
+        "type": "object",
+        "properties": {
+          "selection": {
+            "$ref": "#/components/schemas/CanonicalParetoSelectionDto"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CanonicalAssetGroupDto"
+            }
+          },
+          "groupCount": {
+            "type": "number"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/CanonicalAssetMeasuresDto"
+          },
+          "mapped": {
+            "$ref": "#/components/schemas/CanonicalAssetMeasuresDto"
+          },
+          "unresolved": {
+            "$ref": "#/components/schemas/CanonicalAssetMeasuresDto"
+          },
+          "states": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "missingDates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "admittedDates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "projectionRevision": {
+            "type": "string"
+          },
+          "limitations": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "selection",
+          "groups",
+          "groupCount",
+          "totals",
+          "mapped",
+          "unresolved",
+          "states",
+          "missingDates",
+          "admittedDates",
+          "projectionRevision",
+          "limitations"
         ]
       },
       "WorkforcePersonalShiftDto": {

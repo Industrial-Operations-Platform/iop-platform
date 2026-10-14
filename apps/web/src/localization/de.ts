@@ -1,9 +1,12 @@
+import {assetDomainGerman} from "./asset-domain-de";
 import {operationalOverviewGerman} from "./operational-overview-de";
 import {formalHandoverGerman} from "./formal-handover-de";
 import {improvementGerman} from "./improvement-de";
 import {locatorGerman} from "./locator-de";
 import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
+  ...assetDomainGerman,
+  "Model and survey": "Modell und Erhebung",
   ...operationalOverviewGerman,
   ...integrationGerman,
   ...formalHandoverGerman,

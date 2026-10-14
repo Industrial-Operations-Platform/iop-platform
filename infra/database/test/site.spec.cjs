@@ -1,3 +1,4 @@
+const { migrationCount } = require('./migration-catalog.cjs');
 const { PostgreSqlContainer } = require('@testcontainers/postgresql');
 const { Client } = require('pg');
 const { spawnSync } = require('node:child_process');
@@ -27,7 +28,7 @@ beforeAll(async () => {
     IOP_RUNTIME_PASSWORD: 'synthetic-runtime-password' };
   configs = provisioningConfiguration(env);
   await provision(configs);
-  expect(await migrate(configs.migrator)).toBe(22);
+  expect(await migrate(configs.migrator)).toBe(migrationCount());
   await seedOrganization(input());
   await seedOrganization(input('org-b', 'Fictional B'));
 });
@@ -173,7 +174,7 @@ test('second empty database reproduces organization and site through native CLI'
     await admin.query('DROP DATABASE iop_local');
     await admin.query('CREATE DATABASE iop_local OWNER iop_bootstrap');
   } finally { await admin.end(); }
-  for (const [command, values, output] of [['provision', env, 'provisioned'], ['migrate', env, '22 applied'],
+  for (const [command, values, output] of [['provision', env, 'provisioned'], ['migrate', env, `${migrationCount()} applied`],
     ['seed-organization', input(), 'created'], ['seed-site', site(), 'created'],
     ['seed-site', site(), 'unchanged'], ['provision', env, 'provisioned'], ['migrate', env, '0 applied']]) {
     const result = spawnSync(process.execPath, [resolve(__dirname, '../dist/cli.js'), command], {

@@ -1,5 +1,7 @@
 /** English source keys remain stable; external operational text remains data. */
 export const operationalOverviewGerman: Readonly<Record<string, string>> = {
+    'draft': 'Entwurf',
+    'closed': 'Geschlossen',
     'Global search': 'Globale Suche',
     'Global search results': 'Ergebnisse der globalen Suche',
     'Search assets, areas, reports and work': 'Anlagen, Bereiche, Meldungen und Arbeiten suchen',
