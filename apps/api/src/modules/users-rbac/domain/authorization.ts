@@ -14,6 +14,15 @@ export type AuthorizationDecision =
     };
 
 const roles: Readonly<Record<string, readonly string[]>> = Object.freeze({
+  "handover-record-manager": Object.freeze(["handover.records.manage"]),
+  "improvement-contributor": Object.freeze([
+    "improvement.read", "improvement.contribute",
+  ]),
+  "improvement-coordinator": Object.freeze(["improvement.coordinate"]),
+  "locator-reader": Object.freeze(["locator.read"]),
+  "locator-manager": Object.freeze(["locator.manage"]),
+  "integration-reader": Object.freeze(["integrations.read"]),
+  "integration-manager": Object.freeze(["integrations.manage"]),
   "maintenance-contributor": Object.freeze([
     "maintenance.read",
     "maintenance.contribute",
