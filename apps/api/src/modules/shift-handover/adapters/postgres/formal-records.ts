@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
 import { runSiteOperation, SiteAccessDeniedError, type SiteTransaction } from "../../../../persistence/site-operation";
 import { HandoverError, type Entry } from "../../domain/handover";
@@ -6,6 +7,7 @@ import type { FormalRecord, FormalRevision, ShiftReference, RecordSelection, Rec
 
 export interface FormalScope { organizationId: string; siteId: string }
 export interface FormalLookup {
+  audit?: SiteMaterialAudit;
   allowed(tx: SiteTransaction, actor: string, permission: string): Promise<boolean>;
   profile(tx: SiteTransaction, actor: string): Promise<string>;
   name(tx: SiteTransaction, actor: string): Promise<string>;
@@ -45,6 +47,7 @@ class PgFormalTransaction implements FormalTransaction {
     return result.rows[0] ? { record: result.rows[0].snapshot as FormalRecord, fingerprint: String(result.rows[0].fingerprint) } : null;
   }
   async save(record: FormalRecord, event: FormalRevision, request?: { key: string; fingerprint: string }) {
+    const before = this.lookup.audit && !request ? await this.get(record.id) : null;
     const snapshot = JSON.stringify(record), evidence = JSON.stringify(event);
     if (Buffer.byteLength(snapshot) > 2097152 || Buffer.byteLength(evidence) > 2162688) throw new HandoverError("handover_capacity");
     if (request) {
@@ -57,6 +60,7 @@ class PgFormalTransaction implements FormalTransaction {
     }
     await this.tx.query(`INSERT INTO shift_handover.record_revisions(organization_id,site_id,record_id,revision,actor_id,recorded_at,snapshot)
       VALUES($1,$2,$3,$4,$5,$6,$7)`, [...this.scopeValues, record.id, record.revision, event.actorId, event.at, evidence]);
+    await this.lookup.audit?.(this.tx,{subjectType:"handover-record",id:record.id,action:event.action,revision:record.revision,beforeRevision:before?.revision??0,state:record.state,beforeState:before?.state??"",occurredAt:event.at});
   }
   async records(input: RecordSelection): Promise<RecordPage> {
     const [instant = "", id = ""] = input.cursor.split("|");

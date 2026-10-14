@@ -1,3 +1,4 @@
+import { siteMaterialAudit } from "../modules/audit/adapters/postgres/site-material";
 import type { Pool } from "pg";
 import type { ImportSource } from "../modules/integrations";
 import { evaluateSiteAccess } from "../modules/users-rbac";
@@ -17,6 +18,7 @@ export function composeImprovements(pool: Pool, source: ImportSource, locations:
     siteId
   } = source;
   return new Improvements(new PgImprovements(pool, source, {
+    audit: siteMaterialAudit,
     allowed: (tx, actor, permission) => evaluateSiteAccess(tx, {
       ...source,
       userId: actor,

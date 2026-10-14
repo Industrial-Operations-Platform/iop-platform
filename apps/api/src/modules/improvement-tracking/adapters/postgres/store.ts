@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
 import { runSiteOperation, SiteAccessDeniedError, type SiteTransaction } from "../../../../persistence/site-operation";
 import type { Store, Transaction } from "../../application/improvement";
@@ -7,6 +8,7 @@ export interface Scope {
   siteId: string;
 }
 export interface Directory {
+  audit?: SiteMaterialAudit;
   allowed(tx: SiteTransaction, actor: string, permission: string): Promise<boolean>;
   profile(tx: SiteTransaction, actor: string): Promise<string>;
   people(tx: SiteTransaction): Promise<Person[]>;
@@ -81,10 +83,12 @@ class PgImprovementTransaction implements Transaction {
     return r.rows[0]?.snapshot as Revision | undefined ?? null;
   }
   async save(action: Action, revision: Revision) {
+    const before = this.directory.audit ? await this.get(action.id) : null;
     await this.tx.query(`INSERT INTO improvement.actions(organization_id,site_id,id,revision,status,location_id,asset_id,owner_id,author_id,updated_at,snapshot)
       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
       ON CONFLICT(organization_id,site_id,id) DO UPDATE SET revision=EXCLUDED.revision,status=EXCLUDED.status,location_id=EXCLUDED.location_id,asset_id=EXCLUDED.asset_id,owner_id=EXCLUDED.owner_id,updated_at=EXCLUDED.updated_at,snapshot=EXCLUDED.snapshot`, [...this.selectors, action.id, action.revision, action.data.status, action.data.locationId, action.data.assetId || null, action.data.ownerId || null, action.authorId, action.updatedAt, JSON.stringify(action)]);
     await this.tx.query("INSERT INTO improvement.revisions(organization_id,site_id,action_id,revision,actor_id,at,snapshot) VALUES($1,$2,$3,$4,$5,$6,$7)", [...this.selectors, action.id, action.revision, revision.actorId, revision.at, JSON.stringify(revision)]);
+    await this.directory.audit?.(this.tx,{subjectType:"improvement-action",id:action.id,action:action.revision===1?"created":revision.change==="evidence-added"?"evidence-added":revision.change==="comparison-saved"?"comparison-saved":"changed",revision:action.revision,beforeRevision:before?.revision??0,state:action.data.status,beforeState:before?.data.status??"",occurredAt:revision.at});
   }
   async query(input: Selection, locations: string[]) {
     const values: unknown[] = [...this.selectors];
@@ -131,9 +135,11 @@ class PgImprovementTransaction implements Transaction {
   }
   async addEvidence(e: Evidence) {
     await this.tx.query("INSERT INTO improvement.evidence(organization_id,site_id,id,action_id,action_revision,actor_id,at,supersedes_id,snapshot) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)", [...this.selectors, e.id, e.actionId, e.actionRevision, e.actorId, e.at, e.supersedesId || null, JSON.stringify(e)]);
+    await this.directory.audit?.(this.tx,{subjectType:"improvement-evidence",id:e.id,action:e.supersedesId?"corrected":"created",revision:1,beforeRevision:0,state:e.supersedesId?"corrected":"retained",beforeState:"",occurredAt:e.at});
   }
   async addComparison(c: SavedComparison) {
     await this.tx.query("INSERT INTO improvement.comparisons(organization_id,site_id,id,action_id,action_revision,actor_id,at,snapshot) VALUES($1,$2,$3,$4,$5,$6,$7,$8)", [...this.selectors, c.id, c.actionId, c.actionRevision, c.actorId, c.at, JSON.stringify(c)]);
+    await this.directory.audit?.(this.tx,{subjectType:"improvement-comparison",id:c.id,action:"created",revision:1,beforeRevision:0,state:"retained",beforeState:"",occurredAt:c.at});
   }
   private async collection<T extends {
     id: string;

@@ -1,3 +1,4 @@
+import { siteMaterialAudit } from "../modules/audit/adapters/postgres/site-material";
 import type {Pool} from 'pg';
 import {composeLocator} from '../modules/asset-locator/adapters/composition';
 import {locatorAsset,locatorAssets} from '../modules/assets/adapters/postgres/locator-read';
@@ -16,6 +17,7 @@ export function composePlatformLocator(pool:Pool,scope:{organizationId:string;si
     if(!await allowed(tx,tx.context.userId,'assets.read'))throw new SiteAccessDeniedError();
   };
   return composeLocator({pool,scope,locations,referenceRoot,lookups:{
+    audit: siteMaterialAudit,
     allowed,profile:(tx,actor)=>sitePersonProfile(tx,scope.organizationId,scope.siteId,actor),
     asset:async(tx,id)=>{await requireAssets(tx);return locatorAsset(tx,id);},
     assets:async(tx,search)=>{await requireAssets(tx);return locatorAssets(tx,search);},

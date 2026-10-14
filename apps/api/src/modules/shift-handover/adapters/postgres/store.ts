@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
 import {
@@ -25,6 +26,7 @@ export interface Scope {
   siteId: string;
 }
 export interface AccessLookup {
+  audit?: SiteMaterialAudit;
   assetReference?(tx: SiteTransaction, actor: string, id: string): ReturnType<NonNullable<Transaction["assetReference"]>>;
   assetReferences?(tx: SiteTransaction, actor: string, search: string): ReturnType<NonNullable<Transaction["assetReferences"]>>;
   profile?(tx: SiteTransaction, actor: string): Promise<string>;
@@ -195,6 +197,7 @@ class PgTransaction implements Transaction {
     revision: Revision,
     request?: { key: string; fingerprint: string },
   ) {
+    const before = this.lookup.audit && !request ? await this.get(entry.id) : null;
     const values = [
       ...this.selectors,
       entry.id,
@@ -232,6 +235,8 @@ class PgTransaction implements Transaction {
         JSON.stringify(revision),
       ],
     );
+    await this.lookup.audit?.(this.tx,{subjectType:"handover-entry",id:entry.id,action:entry.revision===1?"created":entry.deleted?"removed":entry.issueState==="resolved"&&before?.issueState!=="resolved"?"resolved":"changed",
+      revision:entry.revision,beforeRevision:before?.revision??0,state:entry.deleted?"removed":entry.issueState,beforeState:before?(before.deleted?"removed":before.issueState):"",occurredAt:revision.at});
   }
   async list(s: Selection, matrix?: MatrixScope): Promise<Page> {
     const [cursorDate, cursorId] = s.cursor.split("|");

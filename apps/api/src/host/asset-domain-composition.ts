@@ -1,3 +1,4 @@
+import { siteMaterialAudit } from "../modules/audit/adapters/postgres/site-material";
 import type { Pool } from "pg";
 import type { ImportSource } from "../modules/integrations";
 import { AssetDomain } from "../modules/assets/application/enrichment";
@@ -7,6 +8,7 @@ import { projectCanonicalAssetLinks, publishCanonicalAssetLinks, canonicalSource
 import type { SiteTransaction } from "../persistence/site-operation";
 export function composeAssetDomain(pool: Pool, source: ImportSource, calendar = new AnalysisCalendar(), now = () => new Date().toISOString()) {
   const domain = new AssetDomain(new PgAssetDomain(pool, source, {
+    audit: siteMaterialAudit,
     materialize: (tx, decisions) => projectCanonicalAssetLinks(tx, source, decisions),
     candidates: (tx, search, cursor) => canonicalSourceCandidates(tx, source, search, cursor),
     pareto: (tx, selection) => canonicalAssetPareto(tx, source, selection, calendar)

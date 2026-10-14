@@ -1,3 +1,4 @@
+import { siteMaterialAudit } from "../modules/audit/adapters/postgres/site-material";
 import {composeAssetDomain} from "./asset-domain-composition";
 import {composePlatformOverview} from "./overview-composition";
 import {resolve} from "node:path";
@@ -292,6 +293,7 @@ export class PlatformRuntime {
     this.formalHandover = composeFormalHandover(pool, this.source, catalog.locations, this.source.siteTimeZone);
     this.locator = composePlatformLocator(pool, this.source, catalog.locations, config.locatorReferenceRoot ?? resolve(__dirname, "../../../../.local-platform/locator"));
     const operationalDirectory = {
+      audit: siteMaterialAudit,
       allowed: async (
         tx: import("../persistence/site-operation").SiteTransaction,
         actor: string,
@@ -376,6 +378,7 @@ export class PlatformRuntime {
             this.source,
             resolutions,
             evidence,
+            siteMaterialAudit,
           ),
       });
     this.maintenance = new Maintenance(
@@ -387,6 +390,7 @@ export class PlatformRuntime {
     );
     this.workforce = new Workforce(
       new PgWorkforce(pool, this.source, {
+        audit: siteMaterialAudit,
         allowed: async (tx, actor, permission) =>
           (
             await evaluateSiteAccess(tx, {
@@ -413,6 +417,7 @@ export class PlatformRuntime {
     );
     this.handover = new Handover(
       new PgHandover(pool, this.source, {
+        audit: siteMaterialAudit,
         assetReference: async (tx, actor, id) => {
           if (!(await operationalDirectory.allowed(tx, actor, "assets.read"))) throw new SiteAccessDeniedError();
           return assetReference(tx, this.source, id);
@@ -487,11 +492,12 @@ export class PlatformRuntime {
     this.access = config.passwordAuthentication
       ? composeAccess(pool, this.source)
       : null;
-    this.batches = new ImportBatches(pool, this.source);
+    this.batches = new ImportBatches(pool, this.source, siteMaterialAudit);
     const profileRepository = new PgReportingProfiles(
       pool,
       this.source,
       hitlisteReportingProfile(mappings.configuration),
+      siteMaterialAudit,
     );
     this.profileRepository = profileRepository;
     this.improvements = composeImprovements(pool, this.source, catalog.locations, profileRepository.initialVersion, hitlisteAnalysisCalendar);
@@ -500,7 +506,7 @@ export class PlatformRuntime {
     this.receiver = new OipReceiver(this.source, async (tx,id) => {
       await profileRepository.project(tx,id);
       await assetDomainComposition.published(tx,id);
-    });
+    }, siteMaterialAudit);
     this.imports = createImportWorkflow(
       this.batches,
       this.receiver,

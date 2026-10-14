@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
 import { runSiteOperation, type SiteTransaction } from "../../../../persistence/site-operation";
 import type { ConnectionStore, ConnectionTransaction } from "../../application/connections";
@@ -7,6 +8,7 @@ export interface ConnectionScope {
     siteId: string;
 }
 export interface ConnectionAccess {
+    audit?: SiteMaterialAudit;
     profile(tx: SiteTransaction, actor: string): Promise<string>;
     allowed(tx: SiteTransaction, actor: string, permission: string): Promise<boolean>;
 }
@@ -29,9 +31,11 @@ export class PgConnections implements ConnectionStore {
                     return result.rows[0]?.snapshot as Connection | undefined ?? null;
                 },
                 save: async (connection) => {
+                    const before = this.access.audit ? (await tx.query("SELECT snapshot FROM integrations.connections WHERE organization_id=$1 AND site_id=$2 AND kind=$3",[...parameters,connection.configuration.kind])).rows[0]?.snapshot as Connection | undefined : undefined;
                     const values = [...parameters, connection.configuration.kind, connection.revision, JSON.stringify(connection)];
                     await tx.query("INSERT INTO integrations.connections(organization_id,site_id,kind,revision,snapshot) VALUES($1,$2,$3,$4,$5::jsonb) ON CONFLICT(organization_id,site_id,kind) DO UPDATE SET revision=EXCLUDED.revision,snapshot=EXCLUDED.snapshot", values);
                     await tx.query("INSERT INTO integrations.connection_revisions(organization_id,site_id,kind,revision,snapshot) VALUES($1,$2,$3,$4,$5::jsonb)", values);
+                    await this.access.audit?.(tx,{subjectType:"integration-connection",id:connection.configuration.kind,action:connection.revision===1?"created":"changed",revision:connection.revision,beforeRevision:before?.revision??0,state:connection.configuration.enabled?"enabled":"disabled",beforeState:before?(before.configuration.enabled?"enabled":"disabled"):"",occurredAt:connection.updatedAt});
                 },
                 history: async (kind: IntegrationKind) => {
                     const result = await tx.query("SELECT snapshot FROM integrations.connection_revisions WHERE organization_id=$1 AND site_id=$2 AND kind=$3 ORDER BY revision DESC LIMIT 25", [...parameters, kind]);

@@ -1,3 +1,4 @@
+import { siteMaterialAudit } from "../modules/audit/adapters/postgres/site-material";
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
 import { FormalHandover } from "../modules/shift-handover/application/formal-records";
@@ -9,6 +10,7 @@ import { sitePersonNames, sitePersonProfile } from "../modules/users-rbac/adapte
 
 export function composeFormalHandover(pool: Pool, scope: FormalScope, locations: Location[], timeZone: string) {
   return new FormalHandover(new PgFormalHandover(pool, scope, {
+    audit: siteMaterialAudit,
     allowed: async (tx, actor, permission) => (await evaluateSiteAccess(tx, { ...scope, userId: actor, permissions: [permission] })).allowed,
     profile: (tx, actor) => sitePersonProfile(tx, scope.organizationId, scope.siteId, actor),
     name: async (tx, actor) => (await sitePersonNames(tx, scope.organizationId, scope.siteId, [actor])).get(actor) ?? actor,

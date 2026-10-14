@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
 import { createHash } from "node:crypto";
 import { runSiteOperation, SiteAccessDeniedError, type SiteTransaction } from "../../../../persistence/site-operation";
@@ -11,6 +12,7 @@ export interface DomainScope {
   siteId: string;
 }
 export interface SourceDomainPorts {
+  audit?: SiteMaterialAudit;
   materialize(tx: SiteTransaction, decisions: MappingDecision[]): Promise<void>;
   candidates(tx: SiteTransaction, search: string, cursor: string): Promise<{
     candidates: SourceCandidate[];
@@ -116,6 +118,7 @@ class PgDomainTransaction implements DomainTransaction {
     return r.rows[0]?.snapshot as TypeCatalog ?? null;
   }
   async saveCatalog(c: TypeCatalog, actor: string, name: string, at: string) {
+    const before = this.source.audit ? await this.catalog() : null;
     await this.tx.query("INSERT INTO assets.model_catalog(organization_id,site_id,revision,snapshot) VALUES($1,$2,$3,$4) ON CONFLICT(organization_id,site_id) DO UPDATE SET revision=EXCLUDED.revision,snapshot=EXCLUDED.snapshot", [...this.selectors, c.revision, JSON.stringify(c)]);
     await this.tx.query("INSERT INTO assets.model_catalog_revisions(organization_id,site_id,revision,actor_id,at,snapshot) VALUES($1,$2,$3,$4,$5,$6)", [...this.selectors, c.revision, actor, at, JSON.stringify({
       catalog: c,
@@ -123,6 +126,7 @@ class PgDomainTransaction implements DomainTransaction {
       actorName: name,
       at
     })]);
+    await this.source.audit?.(this.tx,{subjectType:"asset-model-catalog",id:"catalog",action:c.revision===1?"created":"changed",revision:c.revision,beforeRevision:before?.revision??0,state:"configured",beforeState:before?"configured":"",occurredAt:at});
   }
   async enrichments() {
     const r = await this.tx.query("SELECT snapshot FROM assets.enrichments WHERE organization_id=$1 AND site_id=$2 ORDER BY asset_id LIMIT 10001", this.selectors);
@@ -134,10 +138,12 @@ class PgDomainTransaction implements DomainTransaction {
     return r.rows[0]?.snapshot as Enrichment ?? null;
   }
   async save(e: Enrichment, r: EnrichmentRevision) {
+    const before = this.source.audit ? await this.get(e.assetId) : null;
     await this.tx.query("INSERT INTO assets.enrichments(organization_id,site_id,asset_id,revision,type_id,parent_id,survey_status,snapshot) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(organization_id,site_id,asset_id) DO UPDATE SET revision=EXCLUDED.revision,type_id=EXCLUDED.type_id,parent_id=EXCLUDED.parent_id,survey_status=EXCLUDED.survey_status,snapshot=EXCLUDED.snapshot", [...this.selectors, e.assetId, e.revision, e.data.typeId, e.data.parentId || null, e.data.survey.status, JSON.stringify(e)]);
     await this.tx.query("UPDATE assets.controller_links SET is_active=false WHERE organization_id=$1 AND site_id=$2 AND asset_id=$3", [...this.selectors, e.assetId]);
     for (const relation of e.data.controllers) await this.tx.query("INSERT INTO assets.controller_links(organization_id,site_id,asset_id,target_id,kind,channel,is_active) VALUES($1,$2,$3,$4,$5,$6,true) ON CONFLICT(organization_id,site_id,asset_id,target_id,channel) DO UPDATE SET is_active=true", [...this.selectors, e.assetId, relation.targetId, relation.kind, relation.channel]);
     await this.tx.query("INSERT INTO assets.enrichment_revisions(organization_id,site_id,asset_id,revision,actor_id,at,snapshot) VALUES($1,$2,$3,$4,$5,$6,$7)", [...this.selectors, e.assetId, e.revision, r.actorId, r.at, JSON.stringify(r)]);
+    await this.source.audit?.(this.tx,{subjectType:"asset-enrichment",id:e.assetId,action:e.revision===1?"created":"changed",revision:e.revision,beforeRevision:before?.revision??0,state:e.data.survey.status,beforeState:before?.data.survey.status??"",occurredAt:r.at});
   }
   async history(assetId: string, before: number) {
     const r = await this.tx.query("SELECT snapshot FROM assets.enrichment_revisions WHERE organization_id=$1 AND site_id=$2 AND asset_id=$3 AND ($4::integer=0 OR revision<$4) ORDER BY revision DESC LIMIT 31", [...this.selectors, assetId, before]);
@@ -161,8 +167,10 @@ class PgDomainTransaction implements DomainTransaction {
     return mapping;
   }
   async saveMapping(m: Mapping, r: MappingRevision) {
+    const before = this.source.audit ? await this.mapping(m.id) : null;
     await this.tx.query("INSERT INTO assets.source_mappings(organization_id,site_id,id,revision,source_key,snapshot) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(organization_id,site_id,id) DO UPDATE SET revision=EXCLUDED.revision,snapshot=EXCLUDED.snapshot", [...this.selectors, m.id, m.revision, digest(sourceKey(m.data.source)), JSON.stringify(m)]);
     await this.tx.query("INSERT INTO assets.source_mapping_revisions(organization_id,site_id,mapping_id,revision,actor_id,at,snapshot) VALUES($1,$2,$3,$4,$5,$6,$7)", [...this.selectors, m.id, m.revision, r.actorId, r.at, JSON.stringify(r)]);
+    await this.source.audit?.(this.tx,{subjectType:"asset-source-mapping",id:m.id,action:m.revision===1?"created":"changed",revision:m.revision,beforeRevision:before?.revision??0,state:m.data.status,beforeState:before?.data.status??"",occurredAt:r.at});
   }
   async mappingHistory(id: string, before: number) {
     const r = await this.tx.query("SELECT snapshot FROM assets.source_mapping_revisions WHERE organization_id=$1 AND site_id=$2 AND mapping_id=$3 AND ($4::integer=0 OR revision<$4) ORDER BY revision DESC LIMIT 31", [...this.selectors, id, before]);

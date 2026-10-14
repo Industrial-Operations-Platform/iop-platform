@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { SiteTransaction } from "../../../../persistence/site-operation";
 import type {
   ImportPublication,
@@ -21,6 +22,7 @@ export class OipReceiver implements ImportPublication<PublicationInput> {
       tx: SiteTransaction,
       importId: string,
     ) => Promise<void>,
+    private readonly audit?: SiteMaterialAudit,
   ) {}
   async publish(
     tx: SiteTransaction,
@@ -165,6 +167,7 @@ export class OipReceiver implements ImportPublication<PublicationInput> {
       [...values, JSON.stringify(rows)],
     );
     if (this.project) await this.project(tx, batch.importId);
+    await this.audit?.(tx,{subjectType:"oip-publication",id:batch.importId,action:"published",revision:1,beforeRevision:0,state:"published",beforeState:""});
     return rows.length;
   }
   async inspect(

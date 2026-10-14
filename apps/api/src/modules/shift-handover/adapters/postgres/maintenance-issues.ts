@@ -1,3 +1,4 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import {
   SiteAccessDeniedError,
   type SiteTransaction,
@@ -238,6 +239,7 @@ export async function resolveHandoverMaintenanceIssues(
   scope: Scope,
   resolutions: IssueResolution[],
   context: MaintenanceResolution,
+  audit?: SiteMaterialAudit,
 ): Promise<Entry[]> {
   const request = structuredClone(resolutions);
   const resolution = structuredClone(context);
@@ -249,6 +251,7 @@ export async function resolveHandoverMaintenanceIssues(
   ]);
   const actorName = names.get(actorId);
   if (!actorName) throw new MaintenanceIssuesError("denied");
+  const before = new Map<string,Entry>();
   const updated = await resolveMaintenanceIssues(
     {
       actorId,
@@ -258,7 +261,9 @@ export async function resolveHandoverMaintenanceIssues(
           "SELECT snapshot FROM shift_handover.entries WHERE organization_id=$1 AND site_id=$2 AND id=$3 FOR UPDATE",
           [scope.organizationId, scope.siteId, id],
         );
-        return (result.rows[0]?.snapshot as Entry) ?? null;
+        const entry = (result.rows[0]?.snapshot as Entry) ?? null;
+        if(entry)before.set(id,structuredClone(entry));
+        return entry;
       },
       save: async (entry, revision) => {
         await tx.query(
@@ -283,6 +288,7 @@ export async function resolveHandoverMaintenanceIssues(
             JSON.stringify(revision),
           ],
         );
+        await audit?.(tx,{subjectType:"handover-entry",id:entry.id,action:"resolved",revision:entry.revision,beforeRevision:before.get(entry.id)?.revision??0,state:entry.issueState,beforeState:before.get(entry.id)?.issueState??"",occurredAt:revision.at});
       },
     },
     request,

@@ -1,8 +1,10 @@
+import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from 'pg';
 import { runSiteOperation, SiteAccessDeniedError, type SiteTransaction } from '../../../../persistence/site-operation';
 import { LocatorError, type Scene, type Revision, type Asset, type Problems } from '../../domain/locator';
 import type { Store, Transaction } from '../../application/locator';
 export interface LocatorLookups {
+  audit?: SiteMaterialAudit;
   allowed(tx: SiteTransaction, actor: string, permission: string): Promise<boolean>;
   profile(tx: SiteTransaction, actor: string): Promise<string>;
   asset(tx: SiteTransaction, id: string): Promise<Asset | null>;
@@ -45,6 +47,7 @@ class PgLocatorTransaction implements Transaction {
     await this.tx.query('UPDATE asset_locator.placements SET current=false WHERE organization_id=$1 AND site_id=$2 AND scene_id=$3 AND current', [...this.scope, scene.id]);
     for (const component of scene.content.components.filter(c => c.assetId))
       await this.tx.query('INSERT INTO asset_locator.placements(organization_id,site_id,scene_id,revision,component_id,asset_id,current) VALUES($1,$2,$3,$4,$5,$6,true)', [...this.scope, scene.id, scene.revision, component.id, component.assetId]);
+    await this.lookups.audit?.(this.tx,{subjectType:"locator-scene",id:scene.id,action:scene.revision===1?"created":"changed",revision:scene.revision,beforeRevision:prior?.revision??0,state:scene.content.calibration,beforeState:prior?.content.calibration??"",occurredAt:revision.at});
   }
   async history(id: string, before: number): Promise<Revision[]> { const result = await this.tx.query('SELECT snapshot FROM asset_locator.revisions WHERE organization_id=$1 AND site_id=$2 AND scene_id=$3 AND revision<$4 ORDER BY revision DESC LIMIT 31', [...this.scope, id, before]); return result.rows.map(r => r.snapshot as Revision); }
   asset(id: string) { return this.lookups.asset(this.tx, id); }
