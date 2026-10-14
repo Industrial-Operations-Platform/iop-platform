@@ -62,6 +62,23 @@ No production behavior was relaxed. Root-owned Locator evidence ports
 match explicit canonical references or exact scoped aliases and retain independent
 Handover/Maintenance permission coverage. Integrated visual checks remain pending.
 
+## Integrated browser and Overview evidence — 2026-10-14
+
+The local Docker rebuild/migration passed; 78 existing reporting dates, 42,220 rows,
+212,411 frequency and 56,391,042 exact seconds were preserved with zero reimports.
+The private reference copy installed74 files and initialization created72 scenes
+(71 equipment references plus an explicitly synthetic component example).
+Isolated Playwright inspection of the actual local installation confirmed WebGL2,
+reusable scene geometry, private traced reference geometry, zero page errors and no
+390px document overflow. Tracking retrieves25 of5,643 current registry identities
+(the table contains5,655 including retired records). QA images stay private under
+`/private/tmp/iop-203-browser`; no operational actions or survey facts were invented.
+
+IOP-210 is assembled with real source-owned query ports, current profile gating,
+global search, area navigation and formal-record deep links. Department analytics
+uses only explicit configured source identities; unconfigured areas stay unmapped.
+Focused integrated web checks36 and real PostgreSQL Overview checks6 pass.
+
 ## Closure
 
 Record actual commands/results and unresolved input per child, retain review

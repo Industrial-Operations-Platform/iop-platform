@@ -11,8 +11,8 @@ import { FormalRecordForm } from "./FormalRecordForm";
 import { today } from "./EntryForm";
 import "./handover.css";
 const emptyPage: RecordPage = { records: [], total: 0, nextCursor: "" };
-export function FormalHandoverWorkspace({ application, departmentId = "", onEntry, onHome }: {
-  application: FormalHandoverApplication; departmentId?: string; onEntry?: (id: string) => void; onHome?: () => void;
+export function FormalHandoverWorkspace({ application, departmentId = "", onEntry, onHome,initialRecordId="",homeVisit=0 }: {
+  application: FormalHandoverApplication; initialRecordId?: string;homeVisit?:number;departmentId?: string; onEntry?: (id: string) => void; onHome?: () => void;
 }) {
   const [context, setContext] = useState<FormalContext | null>(null), [from, setFrom] = useState(""), [to, setTo] = useState(""),
     [department, setDepartment] = useState(departmentId), [area, setArea] = useState(""), [page, setPage] = useState(emptyPage),
@@ -31,6 +31,14 @@ export function FormalHandoverWorkspace({ application, departmentId = "", onEntr
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [application, from, to, department, area, refresh]);
+  useEffect(()=>{
+    let active=true;
+    setHistory(null);setPrevious(null);setEditing(false);setCreating(false);setNote('');
+    if(initialRecordId)void Promise.all([application.history(initialRecordId),application.previous(initialRecordId)]).then(([detail,prior])=>{
+      if(active){setHistory(detail);setPrevious(prior);}
+    }).catch(error=>{if(active)setError(error.message);});
+    return ()=>{active=false;};
+  },[application,initialRecordId,homeVisit]);
   const perform = async (operation: () => Promise<void>) => {
     setBusy(true); setError("");
     try { await operation(); } catch (e) { setError(e instanceof Error ? e.message : "Could not save the shift record."); }

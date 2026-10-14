@@ -933,6 +933,99 @@
         ]
       }
     },
+    "/api/v1/overview/context": {
+      "post": {
+        "operationId": "OverviewController_context",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverviewEmptyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewContextDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Operational Overview"
+        ]
+      }
+    },
+    "/api/v1/overview/search": {
+      "post": {
+        "operationId": "OverviewController_search",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverviewSearchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewSearchResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Operational Overview"
+        ]
+      }
+    },
+    "/api/v1/overview/area": {
+      "post": {
+        "operationId": "OverviewController_area",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverviewAreaRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewAreaDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Operational Overview"
+        ]
+      }
+    },
     "/api/v1/maintenance/catalog": {
       "post": {
         "operationId": "MaintenanceController_catalog",
@@ -6036,6 +6129,424 @@
         "required": [
           "created",
           "referenceCount"
+        ]
+      },
+      "OverviewEmptyDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "OverviewLocationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "parentId",
+          "role"
+        ]
+      },
+      "OverviewCoverageDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "areas",
+              "assets",
+              "handover",
+              "maintenance",
+              "analytics",
+              "shifts"
+            ]
+          },
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "available",
+              "not-authorized",
+              "unavailable",
+              "not-configured",
+              "unmapped"
+            ]
+          }
+        },
+        "required": [
+          "source",
+          "coverage"
+        ]
+      },
+      "OverviewContextDto": {
+        "type": "object",
+        "properties": {
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewLocationDto"
+            }
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "today": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewCoverageDto"
+            }
+          }
+        },
+        "required": [
+          "locations",
+          "timeZone",
+          "today",
+          "sources"
+        ]
+      },
+      "OverviewCursorsDto": {
+        "type": "object",
+        "properties": {
+          "assets": {
+            "type": "string"
+          },
+          "handover": {
+            "type": "string"
+          },
+          "maintenance": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assets",
+          "handover",
+          "maintenance"
+        ]
+      },
+      "OverviewSearchDto": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "cursors": {
+            "$ref": "#/components/schemas/OverviewCursorsDto"
+          }
+        },
+        "required": [
+          "query",
+          "locationId",
+          "cursors"
+        ]
+      },
+      "OverviewCardDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "assets",
+              "handover",
+              "maintenance",
+              "area",
+              "analytics",
+              "shift"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "locationLabel": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "assetId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "id",
+          "title",
+          "summary",
+          "locationId",
+          "locationLabel",
+          "status",
+          "date",
+          "assetId"
+        ]
+      },
+      "OverviewGroupDto": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "areas",
+              "assets",
+              "handover",
+              "maintenance",
+              "analytics",
+              "shifts"
+            ]
+          },
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "available",
+              "not-authorized",
+              "unavailable",
+              "not-configured",
+              "unmapped"
+            ]
+          },
+          "view": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewCardDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "source",
+          "coverage",
+          "view",
+          "items",
+          "total",
+          "nextCursor",
+          "limit"
+        ]
+      },
+      "OverviewSearchResultDto": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewGroupDto"
+            }
+          }
+        },
+        "required": [
+          "query",
+          "locationId",
+          "groups"
+        ]
+      },
+      "OverviewAreaRequestDto": {
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "recordId": {
+            "type": "string",
+            "description": "Explicit current formal record selection; empty means no record selected."
+          },
+          "recordCursor": {
+            "type": "string",
+            "description": "Source-owned formal record page cursor."
+          }
+        },
+        "required": [
+          "locationId",
+          "date",
+          "recordId"
+        ]
+      },
+      "OverviewAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "available",
+              "not-authorized",
+              "unavailable",
+              "not-configured",
+              "unmapped"
+            ]
+          },
+          "from": {
+            "type": "string"
+          },
+          "toExclusive": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "number",
+            "nullable": true
+          },
+          "seconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "records": {
+            "type": "number",
+            "nullable": true
+          },
+          "importDates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "coverage",
+          "from",
+          "toExclusive",
+          "frequency",
+          "seconds",
+          "records",
+          "importDates",
+          "note"
+        ]
+      },
+      "OverviewShiftsDto": {
+        "type": "object",
+        "properties": {
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "available",
+              "not-authorized",
+              "unavailable",
+              "not-configured",
+              "unmapped"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewCardDto"
+            }
+          },
+          "current": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OverviewCardDto"
+              }
+            ]
+          },
+          "previous": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OverviewCardDto"
+              }
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "coverage",
+          "options",
+          "current",
+          "previous",
+          "note",
+          "total",
+          "nextCursor"
+        ]
+      },
+      "OverviewAreaDto": {
+        "type": "object",
+        "properties": {
+          "selection": {
+            "$ref": "#/components/schemas/OverviewAreaRequestDto"
+          },
+          "location": {
+            "$ref": "#/components/schemas/OverviewLocationDto"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OverviewGroupDto"
+            }
+          },
+          "analytics": {
+            "$ref": "#/components/schemas/OverviewAnalyticsDto"
+          },
+          "shifts": {
+            "$ref": "#/components/schemas/OverviewShiftsDto"
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "selection",
+          "location",
+          "groups",
+          "analytics",
+          "shifts",
+          "timeZone"
         ]
       },
       "MaintenancePriorityDto": {

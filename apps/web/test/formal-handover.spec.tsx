@@ -89,3 +89,15 @@ test("German formal controls/statuses use localized resources and preserve retai
     expect(screen.getByLabelText("Veröffentlichungshinweis")).toBeInTheDocument();
   } finally { setLanguage("en"); }
 });
+
+test("area navigation opens the requested formal record and a home visit clears it", async () => {
+  const f=fixture();
+  await f.application.save({id:"",expectedRevision:0,note:"",content:{shiftId:shift.id,shiftDate:shift.date,departmentId:"department",areaId:"",title:"Selected transfer",summary:"Retained context",entryIds:[]}});
+  const view=render(<FormalHandoverWorkspace application={f.application} initialRecordId="record"/>);
+  await screen.findByRole("button",{name:"Publish record"});
+  expect(f.gateway.history).toHaveBeenCalledWith("record",0);
+  expect(f.gateway.previous).toHaveBeenCalledWith("record");
+  view.rerender(<FormalHandoverWorkspace application={f.application} homeVisit={1}/>);
+  await screen.findByRole("button",{name:"New shift record"});
+  expect(screen.queryByRole("button",{name:"Publish record"})).not.toBeInTheDocument();
+});

@@ -1,8 +1,10 @@
+import {operationalOverviewGerman} from "./operational-overview-de";
 import {formalHandoverGerman} from "./formal-handover-de";
 import {improvementGerman} from "./improvement-de";
 import {locatorGerman} from "./locator-de";
 import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
+  ...operationalOverviewGerman,
   ...integrationGerman,
   ...formalHandoverGerman,
   ...improvementGerman,

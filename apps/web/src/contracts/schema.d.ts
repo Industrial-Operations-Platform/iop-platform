@@ -488,6 +488,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/overview/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OverviewController_context"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OverviewController_search"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/overview/area": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OverviewController_area"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/maintenance/catalog": {
         parameters: {
             query?: never;
@@ -2070,6 +2118,100 @@ export interface components {
         LocatorBootstrapDto: {
             created: number;
             referenceCount: number;
+        };
+        OverviewEmptyDto: Record<string, never>;
+        OverviewLocationDto: {
+            id: string;
+            label: string;
+            parentId: string;
+            role: string;
+        };
+        OverviewCoverageDto: {
+            /** @enum {string} */
+            source: "areas" | "assets" | "handover" | "maintenance" | "analytics" | "shifts";
+            /** @enum {string} */
+            coverage: "available" | "not-authorized" | "unavailable" | "not-configured" | "unmapped";
+        };
+        OverviewContextDto: {
+            locations: components["schemas"]["OverviewLocationDto"][];
+            timeZone: string;
+            today: string;
+            sources: components["schemas"]["OverviewCoverageDto"][];
+        };
+        OverviewCursorsDto: {
+            assets: string;
+            handover: string;
+            maintenance: string;
+        };
+        OverviewSearchDto: {
+            query: string;
+            locationId: string;
+            cursors: components["schemas"]["OverviewCursorsDto"];
+        };
+        OverviewCardDto: {
+            /** @enum {string} */
+            source: "assets" | "handover" | "maintenance" | "area" | "analytics" | "shift";
+            id: string;
+            title: string;
+            summary: string;
+            locationId: string;
+            locationLabel: string;
+            status: string;
+            date: string;
+            assetId: string;
+        };
+        OverviewGroupDto: {
+            /** @enum {string} */
+            source: "areas" | "assets" | "handover" | "maintenance" | "analytics" | "shifts";
+            /** @enum {string} */
+            coverage: "available" | "not-authorized" | "unavailable" | "not-configured" | "unmapped";
+            view: string;
+            items: components["schemas"]["OverviewCardDto"][];
+            total: number;
+            nextCursor: string;
+            limit: number;
+        };
+        OverviewSearchResultDto: {
+            query: string;
+            locationId: string;
+            groups: components["schemas"]["OverviewGroupDto"][];
+        };
+        OverviewAreaRequestDto: {
+            locationId: string;
+            date: string;
+            /** @description Explicit current formal record selection; empty means no record selected. */
+            recordId: string;
+            /** @description Source-owned formal record page cursor. */
+            recordCursor?: string;
+        };
+        OverviewAnalyticsDto: {
+            /** @enum {string} */
+            coverage: "available" | "not-authorized" | "unavailable" | "not-configured" | "unmapped";
+            from: string;
+            toExclusive: string;
+            frequency: number | null;
+            seconds: number | null;
+            records: number | null;
+            importDates: string[];
+            note: string;
+        };
+        OverviewShiftsDto: {
+            /** @enum {string} */
+            coverage: "available" | "not-authorized" | "unavailable" | "not-configured" | "unmapped";
+            options: components["schemas"]["OverviewCardDto"][];
+            current: components["schemas"]["OverviewCardDto"] | null;
+            previous: components["schemas"]["OverviewCardDto"] | null;
+            note: string;
+            total: number;
+            nextCursor: string;
+        };
+        OverviewAreaDto: {
+            selection: components["schemas"]["OverviewAreaRequestDto"];
+            location: components["schemas"]["OverviewLocationDto"];
+            groups: components["schemas"]["OverviewGroupDto"][];
+            analytics: components["schemas"]["OverviewAnalyticsDto"];
+            shifts: components["schemas"]["OverviewShiftsDto"];
+            timeZone: string;
         };
         MaintenancePriorityDto: {
             id: string;
@@ -3889,6 +4031,75 @@ export interface operations {
                 };
                 content: {
                     "image/png": string;
+                };
+            };
+        };
+    };
+    OverviewController_context: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OverviewEmptyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverviewContextDto"];
+                };
+            };
+        };
+    };
+    OverviewController_search: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OverviewSearchDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverviewSearchResultDto"];
+                };
+            };
+        };
+    };
+    OverviewController_area: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OverviewAreaRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverviewAreaDto"];
                 };
             };
         };

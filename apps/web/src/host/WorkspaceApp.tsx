@@ -1,3 +1,7 @@
+import type {OperationalOverviewApplication} from "../features/operational-overview/application/overview";
+import type {Target as OverviewTarget} from "../features/operational-overview/domain/models";
+import {GlobalSearch} from "../features/operational-overview/adapters/react/GlobalSearch";
+import {AreaOverview} from "../features/operational-overview/adapters/react/AreaOverview";
 import type {FormalHandoverApplication} from "../features/shift-handover/application/formal-records";
 import {FormalHandoverWorkspace} from "../features/shift-handover/adapters/react/FormalHandoverWorkspace";
 import type {ImprovementApplication} from "../features/improvement-tracking/application/improvement";
@@ -72,6 +76,7 @@ export function WorkspaceApp({
   formalHandover,
   improvements,
   locator,
+  overview,
 }: {
   application: AnalysisWorkspace;
   access?: AccessApplication;
@@ -83,6 +88,7 @@ export function WorkspaceApp({
   formalHandover?: FormalHandoverApplication;
   improvements?: ImprovementApplication;
   locator?: LocatorApplication;
+  overview?: OperationalOverviewApplication;
 }) {
   const currentLanguage = useSyncExternalStore(subscribeLanguage, language);
   useEffect(() => {
@@ -101,7 +107,12 @@ export function WorkspaceApp({
     | "formal-handover"
     | "improvements"
     | "locator"
+    | "area-overview"
   >("start");
+  const [overviewLocation,setOverviewLocation] = useState("");
+  const [overviewVisit,setOverviewVisit] = useState(0);
+  const [formalRecord,setFormalRecord] = useState("");
+  const [formalVisit,setFormalVisit] = useState(0);
   const [maintenanceVisit, setMaintenanceVisit] = useState(0);
   const [assetVisit, setAssetVisit] = useState(0);
   const [maintenanceRecord, setMaintenanceRecord] = useState("");
@@ -300,6 +311,15 @@ export function WorkspaceApp({
       .catch(setError)
       .finally(() => setPending(false));
   };
+  const navigateOverview = (target:OverviewTarget) => {
+    window.scrollTo(0,0);
+    if(target.source === 'assets'){setAssetRecord(target.id);setAssetVisit(v=>v+1);setPage('assets');}
+    else if(target.source === 'handover')openInformation(target.id);
+    else if(target.source === 'maintenance')openMaintenance(target.id);
+    else if(target.source === 'shift'){setFormalRecord(target.id);setFormalVisit(v=>v+1);setPage('formal-handover');}
+    else if(target.source === 'analytics'){setAnalyticalSource('');setPage('analysis');}
+    else {setOverviewLocation(target.locationId||target.id);setOverviewVisit(v=>v+1);setPage('area-overview');}
+  };
   if (access && !signedIn) {
     const accessError = !!error && (
       <Alert>
@@ -398,6 +418,7 @@ export function WorkspaceApp({
       skipLabel={t("Skip to workspace")}
       header={
         <>
+          {overview && signedIn && <GlobalSearch application={overview} onNavigate={navigateOverview} sessionKey={`${context.user?.id}:${effectiveProfile}`}/>}
           {(notifications || maintenanceNotifications) && (
             <ActivityNotifications
               key={`${context?.scope?.organizationId}:${context?.scope?.siteId}:${context?.user?.id}`}
@@ -489,6 +510,8 @@ export function WorkspaceApp({
                 setMaintenanceRecord("");
                 setMaintenanceVisit((v) => v + 1);
               }
+              if (next === "formal-handover") {setFormalRecord("");setFormalVisit(v=>v+1);}
+              if (next === "area-overview") {setOverviewLocation("");setOverviewVisit(v=>v+1);}
               if (next === "assets") {
                 setAssetRecord("");
                 setAssetVisit((v) => v + 1);
@@ -521,6 +544,9 @@ export function WorkspaceApp({
               : []),
             ...(maintenance && signedIn && effectiveProfile !== "technician"
               ? [{ id: "maintenance" as const, label: t("Maintenance") }]
+              : []),
+            ...(overview && signedIn
+              ? [{id: "area-overview" as const,label:t("Area overview")}]
               : []),
             ...(assets && canReadAssets
               ? [{ id: "assets" as const, label: t("Assets") }]
@@ -576,8 +602,10 @@ export function WorkspaceApp({
           </Button>
         </Panel>
       )}
-      {page === "formal-handover" && formalHandover && canReadAssets ? (
-        <FormalHandoverWorkspace application={formalHandover} departmentId={departmentId} onEntry={openInformation}/>
+      {page === "area-overview" && overview && signedIn ? (
+        <AreaOverview application={overview} onNavigate={navigateOverview} initialLocationId={overviewLocation} homeVisit={overviewVisit}/>
+      ) : page === "formal-handover" && formalHandover && canReadAssets ? (
+        <FormalHandoverWorkspace application={formalHandover} departmentId={departmentId} initialRecordId={formalRecord} homeVisit={formalVisit} onEntry={openInformation}/>
       ) : page === "improvements" && improvements && canReadAssets ? (
         <ImprovementWorkspace application={improvements} timeZone={context.scope?.siteTimeZone ?? "UTC"}
           onOpenAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}} onOpenIssue={openInformation}/>

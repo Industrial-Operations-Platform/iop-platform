@@ -1,3 +1,4 @@
+import {OverviewController} from "./overview-controller";
 import {FormalHandoverController} from "./formal-handover-controller";
 import {ImprovementController} from "./improvement-controller";
 import {LocatorController} from "./locator-controller";
@@ -449,6 +450,7 @@ export class PlatformModule {
         FormalHandoverController,
         ImprovementController,
         LocatorController,
+        OverviewController,
         MaintenanceController,
         AssetsController,
         WorkforceController,

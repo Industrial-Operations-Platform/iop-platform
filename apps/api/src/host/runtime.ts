@@ -1,3 +1,4 @@
+import {composePlatformOverview} from "./overview-composition";
 import {resolve} from "node:path";
 import {composeFormalHandover} from "./formal-handover-composition";
 import type {FormalHandover} from "../modules/shift-handover/application/formal-records";
@@ -242,6 +243,7 @@ export class LocalPrincipals implements PrincipalResolver {
   }
 }
 export class PlatformRuntime {
+  readonly overview: ReturnType<typeof composePlatformOverview>;
   readonly formalHandover: FormalHandover;
   readonly improvements: Improvements;
   readonly locator: Locator;
@@ -507,6 +509,7 @@ export class PlatformRuntime {
     this.reports = new OipReports(
       new PgReportRepository(profileRepository, hitlisteAnalysisCalendar),
     );
+    this.overview = composePlatformOverview(pool,this.source,catalog.locations,{assets:this.assets,handover:this.handover,maintenance:this.maintenance,formalHandover:this.formalHandover,reports:this.reports});
   }
   async start(): Promise<void> {
     const client = await this.pool.connect();

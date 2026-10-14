@@ -1,3 +1,4 @@
+import {createOperationalOverviewApplication} from "../features/operational-overview/adapters/http/gateway";
 import {FormalHandoverApplication} from "../features/shift-handover/application/formal-records";
 import {HttpFormalHandoverGateway} from "../features/shift-handover/adapters/http/formal-gateway";
 import {ImprovementApplication} from "../features/improvement-tracking/application/improvement";
@@ -24,6 +25,7 @@ const improvements = new ImprovementApplication(new HttpImprovementGateway(), ()
   const page = await assets.query({search,cursor,status:'current',locationId:''});
   return {assets:page.assets.map(asset=>({id:asset.id,code:asset.content.code,name:asset.content.name,status:asset.content.status})),nextCursor:page.nextCursor,total:page.total};
 });
+const overview = createOperationalOverviewApplication();
 const locator = createLocatorApplication();
 const connections = new ConnectionsApplication(new HttpConnectionsGateway());
 const workforce = new WorkforceApplication(new HttpWorkforceGateway(), () =>
@@ -54,6 +56,7 @@ export function AnalyticalApp() {
       formalHandover={formalHandover}
       improvements={improvements}
       locator={locator}
+      overview={overview}
     />
   );
 }
