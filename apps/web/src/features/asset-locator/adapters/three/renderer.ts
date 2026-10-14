@@ -1,0 +1,186 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import type { Component, Scene } from '../../domain/models';
+import type { Identity } from '../../../../design/identity';
+export interface CameraControls {
+  snapshot(): {
+    position: number[];
+    target: number[];
+  };
+  reset(): void;
+  top(): void;
+  zoom(factor: number): void;
+  rotate(delta: number): void;
+  focus(id: string): void;
+  dispose(): void;
+}
+const SCALE = 100;
+/** Reusable geometry templates render normalized schematic units, never plant meters. */
+export function componentGeometry(component: Component, palette: Identity, attention: boolean, selected: boolean, depthScale = 60): THREE.Group {
+  const group = new THREE.Group();
+  group.userData.componentId = component.id;
+  const color = selected ? palette.focus : attention ? palette.errorInk : component.kind === 'sensor' || component.kind === 'scanner' ? palette.primary : palette.chartDuration;
+  const material = new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.12 });
+  const frame = new THREE.MeshStandardMaterial({ color: palette.muted, roughness: 0.85 });
+  const w = component.width * SCALE, d = component.depth * depthScale, h = component.height * 30;
+  const box = (width: number, height: number, depth: number, x = 0, y = 0, z = 0, mat = material) => { const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat); mesh.position.set(x, y, z); group.add(mesh); return mesh; };
+  if (component.kind === 'curve') {
+    const outer = Math.max(w, d) / 2, inner = Math.max(outer - Math.min(w, d) * 0.25, outer * 0.3), shape = new THREE.Shape();
+    shape.absarc(0, 0, outer, 0, Math.PI / 2, false);
+    shape.lineTo(0, inner);
+    shape.absarc(0, 0, inner, Math.PI / 2, 0, true);
+    shape.closePath();
+    const mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false, curveSegments: 20 }), material);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.y = -h / 2;
+    group.add(mesh);
+  }
+  else if (component.kind === 'sensor' || component.kind === 'scanner') {
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2, h, 12), material);
+    group.add(body);
+    const lens = new THREE.Mesh(new THREE.SphereGeometry(w * 0.27, 12, 8), new THREE.MeshStandardMaterial({ color: palette.onPrimary }));
+    lens.position.set(0, h / 2, w * 0.3);
+    group.add(lens);
+  }
+  else if (component.kind === 'junction') {
+    box(w, h, d);
+    box(d, h, w);
+  }
+  else {
+    box(w, h, d);
+    if (component.kind === 'conveyor') {
+      box(w, h * 0.28, 0.7, 0, h * 0.65, -d / 2, frame);
+      box(w, h * 0.28, 0.7, 0, h * 0.65, d / 2, frame);
+      for (const x of [-w * 0.35, w * 0.35])
+        for (const z of [-d * 0.35, d * 0.35])
+          box(0.7, 2, 0.7, x, -h / 2 - 1, z, frame);
+      const arrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-w * 0.2, h / 2 + 0.15, 0), w * 0.4, palette.onPrimary, Math.min(2, w * 0.12), Math.min(1, w * 0.08));
+      group.add(arrow);
+    }
+    if (component.kind === 'lift') {
+      box(w * 0.8, 0.8, d * 0.8, 0, h * 0.32, 0, frame);
+      box(w * 0.8, 0.8, d * 0.8, 0, -h * 0.32, 0, frame);
+    }
+  }
+  group.position.set((component.x - 0.5) * SCALE, (component.elevation ?? 0) * 30 + h / 2 + 1, (component.y - 0.5) * depthScale);
+  group.rotation.y = -component.rotation * Math.PI / 180;
+  group.traverse(object => { object.userData.componentId = component.id; });
+  return group;
+}
+export function createSceneRenderer(container: HTMLElement, input: {
+  scene: Scene;
+  aspect: number;
+  referenceUrl?: string;
+  palette: Identity;
+  selectedId: string;
+  problemAssetIds: Set<string>;
+  onSelect: (id: string) => void;
+  onPlace?: (point: {
+    x: number;
+    y: number;
+  }) => void;
+  onReferenceError?: () => void;
+  cameraState?: {
+    position: number[];
+    target: number[];
+  };
+  tiles?: {
+    scene: Scene;
+    referenceUrl?: string;
+    aspect: number;
+  }[];
+}): CameraControls {
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(input.palette.canvas);
+  container.appendChild(renderer.domElement);
+  renderer.domElement.setAttribute('aria-hidden', 'true');
+  const scene = new THREE.Scene(), depth = SCALE / Math.max(0.5, input.aspect);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1500);
+  camera.position.set(80, 95, 105);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 0, 0);
+  controls.enableDamping = false;
+  controls.minDistance = 8;
+  controls.maxDistance = 500;
+  controls.maxPolarAngle = Math.PI / 2 - 0.01;
+  if (input.cameraState) {
+    camera.position.fromArray(input.cameraState.position);
+    controls.target.fromArray(input.cameraState.target);
+    controls.update();
+  }
+  scene.add(new THREE.HemisphereLight(input.palette.onPrimary, input.palette.muted, 2));
+  const light = new THREE.DirectionalLight(input.palette.onPrimary, 2.5);
+  light.position.set(30, 90, 40);
+  scene.add(light);
+  let disposed = false;
+  const render = () => { if (!disposed)
+    renderer.render(scene, camera); };
+  const objects = input.scene.content.components.map((c, index) => {
+    const tile = input.tiles?.[index];
+    if (!tile)
+      return componentGeometry(c, input.palette, !!c.assetId && input.problemAssetIds.has(c.assetId), c.id === input.selectedId, depth);
+    const group = new THREE.Group();
+    group.position.set((c.x - 0.5) * SCALE, 0, (c.y - 0.5) * depth);
+    const tileWidth = c.width * SCALE, tileDepth = c.depth * depth;
+    const material = new THREE.MeshBasicMaterial({ color: input.palette.surface, side: THREE.DoubleSide });
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(tileWidth, tileDepth), material);
+    plane.rotation.x = -Math.PI / 2;
+    group.add(plane);
+    const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(tileWidth, 0.25, tileDepth)), new THREE.LineBasicMaterial({ color: input.palette.line }));
+    group.add(edge);
+    const sourceDepth = SCALE / tile.aspect;
+    for (const part of tile.scene.content.components) {
+      const child = componentGeometry(part, input.palette, false, false, sourceDepth);
+      child.position.x *= tileWidth / SCALE;
+      child.position.z *= tileDepth / sourceDepth;
+      child.position.y *= Math.min(tileWidth / SCALE, tileDepth / sourceDepth);
+      child.scale.set(tileWidth / SCALE, Math.min(tileWidth / SCALE, tileDepth / sourceDepth), tileDepth / sourceDepth);
+      group.add(child);
+    }
+    group.traverse(o => { o.userData.componentId = tile.scene.id; });
+    if (tile.referenceUrl)
+      new THREE.TextureLoader().load(tile.referenceUrl, texture => { if (disposed) {
+        texture.dispose();
+        return;
+      } texture.colorSpace = THREE.SRGBColorSpace; material.map = texture; material.color.set(input.palette.onPrimary); material.needsUpdate = true; render(); }, undefined, () => { if (!disposed)
+        input.onReferenceError?.(); });
+    return group;
+  });
+  objects.forEach(o => scene.add(o));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(SCALE, depth), new THREE.MeshStandardMaterial({ color: input.palette.surface, side: THREE.DoubleSide }));
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -0.15;
+  scene.add(floor);
+  const grid = new THREE.GridHelper(SCALE, 20, input.palette.line, input.palette.line);
+  grid.position.y = -0.1;
+  scene.add(grid);
+  if (input.referenceUrl)
+    new THREE.TextureLoader().load(input.referenceUrl, texture => { if (disposed) {
+      texture.dispose();
+      return;
+    } texture.colorSpace = THREE.SRGBColorSpace; const mat = floor.material as THREE.MeshStandardMaterial; mat.map = texture; mat.color.set(input.palette.onPrimary); mat.needsUpdate = true; grid.visible = false; render(); }, undefined, () => { if (!disposed)
+      input.onReferenceError?.(); });
+  const resize = () => { const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1); camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); render(); };
+  const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
+  observer?.observe(container);
+  window.addEventListener('resize', resize);
+  controls.addEventListener('change', render);
+  const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
+  let down = { x: 0, y: 0 };
+  const press = (event: PointerEvent) => { down = { x: event.clientX, y: event.clientY }; };
+  const select = (event: PointerEvent) => { if (Math.hypot(event.clientX - down.x, event.clientY - down.y) > 5)
+    return; const bounds = renderer.domElement.getBoundingClientRect(); pointer.set((event.clientX - bounds.left) / bounds.width * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1); raycaster.setFromCamera(pointer, camera); const hit = raycaster.intersectObjects(objects, true)[0]; if (hit) {
+    input.onSelect(hit.object.userData.componentId as string);
+    return;
+  } const point = raycaster.intersectObject(floor)[0]?.point; if (point && input.onPlace)
+    input.onPlace({ x: Math.max(0, Math.min(1, point.x / SCALE + 0.5)), y: Math.max(0, Math.min(1, point.z / depth + 0.5)) }); };
+  renderer.domElement.addEventListener('pointerdown', press);
+  renderer.domElement.addEventListener('pointerup', select);
+  resize();
+  const result: CameraControls = { snapshot() { return { position: camera.position.toArray(), target: controls.target.toArray() }; }, reset() { camera.position.set(80, 95, 105); controls.target.set(0, 0, 0); controls.update(); render(); }, top() { camera.position.set(0, 140, 0.01); controls.target.set(0, 0, 0); controls.update(); render(); }, zoom(factor) { camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target); controls.update(); render(); }, rotate(delta) { const offset = camera.position.clone().sub(controls.target); offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), delta); camera.position.copy(controls.target).add(offset); controls.update(); render(); }, focus(id) { const object = objects.find(o => o.userData.componentId === id); if (!object)
+      return; const offset = camera.position.clone().sub(controls.target).normalize().multiplyScalar(45); controls.target.copy(object.position); camera.position.copy(object.position).add(offset); controls.update(); render(); }, dispose() { disposed = true; observer?.disconnect(); window.removeEventListener('resize', resize); controls.removeEventListener('change', render); renderer.domElement.removeEventListener('pointerdown', press); renderer.domElement.removeEventListener('pointerup', select); controls.dispose(); const materials = new Set<THREE.Material>(), geometries = new Set<THREE.BufferGeometry>(); scene.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.geometry)
+      geometries.add(mesh.geometry); if (mesh.material)
+      (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach(m => materials.add(m)); }); geometries.forEach(g => g.dispose()); materials.forEach(m => { const material = m as THREE.MeshStandardMaterial; material.map?.dispose(); m.dispose(); }); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); } };
+  return result;
+}

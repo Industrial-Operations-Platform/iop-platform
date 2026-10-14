@@ -1,25 +1,51 @@
 # IOP-206 — Reusable 3D Asset Locator
 
-## Status and goal
+## Status
 
-In progress under the owner's [IOP-203](IOP-203-platform-completion.md) authorization,
-superseding M9's earlier deferral for this explicitly requested development.
+In progress — module implementation validated; shared host integration and actual
+browser verification remain with the IOP-203 completion increment.
 
-## Scope and acceptance
+## Scope
 
-- [ ] Integrated reusable 3D plant scene with editable conveyor and sensor objects,
-  selected-area references, camera controls and accessible object lists.
-- [ ] Versioned scoped layouts/placements, explicit registration and verification
-  states, stable asset links and source-authorized reported-problem context.
-- [ ] Privately import every supplied PNG and retain names/provenance. Missing
-  views, scales/elevations and exact sensor coordinates stay visibly pending.
-- [ ] Application identity, reusable components, safe image contracts, revision
-  conflicts, actual persistence and current server-side role permissions.
-- [ ] Tests and desktop/narrow visual verification; no claim of live equipment
-  health or surveyed geometric precision from a diagram.
+Deliver a usable scoped 3D locator with reusable conveyor/sensor components,
+versioned editable scenes, explicit canonical asset links, authorized reported
+problem references, private source diagrams, search and unplaced results.
+The owner delegates architectural decisions under [ADR-0037](../../architecture/adr/ADR-0037-operational-completion.md).
+Administrator, Team Leader and Task Force have explicit Locator access; current
+profile and grants are checked independently. Synthetic demonstration geometry
+and schematic source geometry remain visibly provisional.
 
-## Evidence and remaining work
+## Acceptance
 
-Execution plan is created on `feature/IOP-206-3d-asset-locator` before edits.
-Actual plant calibration, sensor surveying and real-time source connections remain
-last-stage work. Supplied images stay outside versioned/public browser assets.
+- [x] Durable scenes and revisions support conflict-safe component editing.
+- [x] Real 3D rendering supports camera controls, selection and an accessible list fallback.
+- [x] Private PNG references are imported with scope/provenance and require current authorization.
+- [x] Canonical links, source-authorized problem references, search and unplaced states are explicit.
+- [x] Reusable generic components and source schematic readiness remain distinct from surveyed positions.
+- [x] Tests and operational instructions record actual evidence.
+
+## Pending plant information
+
+Metric dimensions, floor/elevation references, global alignment, canonical identity
+mapping and exact surveyed sensor positions remain pending. WinCC screenshots
+are historical reference schematics and cannot establish current equipment health.
+The 71 equipment diagrams and legend are private data, never repository assets.
+
+## Dependencies
+
+[IOP-194](IOP-194-maintenance-asset-history.md), [IOP-076](IOP-076-map-model.md),
+[IOP-077](IOP-077-map-upload.md), [IOP-078](IOP-078-normalized-map-coordinates.md),
+[IOP-079](IOP-079-asset-placement.md), [IOP-080](IOP-080-asset-locator-ui.md),
+[IOP-081](IOP-081-locator-search.md), [IOP-082](IOP-082-ambiguous-assets.md),
+[IOP-083](IOP-083-unmapped-assets.md).
+
+## Validation and remaining integration
+
+API suite: 434 tests passed. Focused Locator/architecture: 32 tests passed.
+Web Locator/identity/localization: 11 tests passed. Real PostgreSQL Locator suite:
+4 tests passed. API/web type checks passed. See the
+[completed module execution](../completed/IOP-206-3d-asset-locator-plan.md) and
+[operator guide](../../development/asset-locator.md).
+Shared host navigation/composition, permission migration, dependency manifests,
+German dictionary composition, generated contract bindings and actual integrated
+desktop/narrow rendering are owned by IOP-203. Exact plant surveying remains open.
