@@ -32,3 +32,8 @@ Remaining host work belongs to the assembling IOP-203 branch: register controlle
 instantiate factory, compose navigation/German dictionary, generate public schemas
 and verify assembled desktop/narrow browser behavior. This item does not claim those
 shared files were changed in this isolated delivery.
+
+Profile bootstrap uses only the finite existing source-read catalog; revoking
+Workforce alone leaves other independently authorized source reads available.
+Infrastructure failures propagate rather than falling through another source.
+See the [bootstrap regression](../completed/IOP-210-profile-bootstrap-plan.md).

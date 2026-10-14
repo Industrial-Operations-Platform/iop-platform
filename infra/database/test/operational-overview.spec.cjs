@@ -35,3 +35,15 @@ test.each(['view-admin','view-lead','view-task'])('real %s source reads return o
 test('technician gets journal sources while broader stale grants cannot override its current profile',async()=>{await admin(c=>c.query("INSERT INTO users_rbac.site_role_assignments(organization_id,site_id,user_id,role_id,is_active) VALUES('overview-org','overview-site','view-tech','assets-reader',true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true"));const result=await app.search('view-tech',query);expect(result.groups.find(g=>g.source==='assets')).toMatchObject({coverage:'not-authorized',items:[]});expect(result.groups.find(g=>g.source==='maintenance')).toMatchObject({coverage:'not-authorized',items:[]});expect(result.groups.find(g=>g.source==='handover').items).toHaveLength(1);});
 test('current grant revocation and foreign membership stop new results',async()=>{await admin(c=>c.query("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id='overview-org' AND site_id='overview-site' AND user_id='view-task' AND role_id='assets-reader'"));expect((await app.search('view-task',query)).groups.find(g=>g.source==='assets')).toMatchObject({coverage:'not-authorized',items:[]});await expect(app.context('other-admin')).rejects.toMatchObject({code:'overview_denied'});});
 test('area context uses actual authorized source totals and explicit unconfigured optional sources',async()=>{const result=await app.area('view-admin',{locationId:'area',date:'2026-10-14',recordId:''});expect(result.groups.find(g=>g.view==='pending').total).toBe(1);expect(result.groups.find(g=>g.view==='daily').total).toBe(1);expect(result.groups.find(g=>g.source==='maintenance'&&g.view==='open').total).toBe(1);expect(result.groups.find(g=>g.source==='maintenance'&&g.view==='blocked').total).toBe(0);expect(result.analytics).toMatchObject({coverage:'not-configured',frequency:null});expect(result.shifts.previous).toBeNull();});
+
+test('revoking only Workforce access leaves independently authorized source reads available',async()=>{
+ await admin(c=>c.query("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id='overview-org' AND site_id='overview-site' AND user_id='view-lead' AND role_id IN ('workforce-reader','workforce-planner','workforce-administrator')"));
+ expect(await can('view-lead','workforce.read')).toBe(false);
+ const result=await app.search('view-lead',query);
+ for(const source of ['assets','handover','maintenance'])expect(result.groups.find(g=>g.source===source)).toMatchObject({coverage:'available',total:1});
+ const area=await app.area('view-lead',{locationId:'area',date:'2026-10-14',recordId:''});
+ expect(area.groups.find(g=>g.view==='pending')).toMatchObject({coverage:'available',total:1});
+ expect(area.groups.find(g=>g.view==='registry')).toMatchObject({coverage:'available',total:1});
+ await admin(c=>c.query("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id='overview-org' AND site_id='overview-site' AND user_id='view-lead'"));
+ await expect(app.context('view-lead')).rejects.toMatchObject({code:'overview_denied'});
+});

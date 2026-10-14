@@ -99,8 +99,22 @@ export function formalOverviewReader(formal: OverviewFormalPort, locations: read
             note: prior?.overlaps ? 'The actual previous shift overlaps the selected interval.' : selected ? 'Previous context uses the actual preceding Workforce shift interval.' : 'Select an actual formal record to resolve its previous shift.' };
     };
 }
+/** Any existing authorized source can establish identity; no source grants another. */
+export function overviewProfileReader(pool: Pool, source: OverviewScope) {
+    const permissions = ['workforce.read', 'handover.read', 'assets.read', 'maintenance.read', 'analytics.read', 'handover.records.manage'] as const;
+    return async (actor: string): Promise<string> => {
+        for (const permission of permissions) {
+            try {
+                return await runSiteOperation(pool, { ...source, userId: actor, permissions: [permission] }, transaction => sitePersonProfile(transaction, source.organizationId, source.siteId, actor));
+            } catch (error) {
+                if (!(error instanceof SiteAccessDeniedError)) throw error;
+            }
+        }
+        throw new SiteAccessDeniedError();
+    };
+}
 export function composePlatformOverview(pool: Pool, source: OverviewScope, locations: readonly OverviewCatalogLocation[], modules: OverviewModules) {
-    const profile = (actor: string) => runSiteOperation(pool, { ...source, userId: actor, permissions: ['workforce.read'] }, transaction => sitePersonProfile(transaction, source.organizationId, source.siteId, actor));
+    const profile = overviewProfileReader(pool, source);
     const allowed = async (actor: string, permission: string) => {
         try {
             return await runSiteOperation(pool, { ...source, userId: actor, permissions: [permission] }, async (transaction) => (await evaluateSiteAccess(transaction, { ...source, userId: actor, permissions: [permission] })).allowed);
