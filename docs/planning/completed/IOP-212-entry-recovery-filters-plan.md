@@ -113,3 +113,12 @@ All requested local UI changes, Docker verification/activation and branch audit
 are complete. The audit explicitly identifies missing story ancestry. No merge or
 push is included in this delivery. IOP-212 is ready for owner review/publication;
 retained IOP-204–211 integration remains a separately authorized follow-up.
+
+
+## Approved publication follow-up
+
+The owner's 2026-10-15 yes authorized merging IOP-212 into develop and pushing both
+refs to origin. That publication succeeded; the separate
+[publication record](IOP-212-publication-plan.md) preserves exact initial remote
+hashes and documentation closure. The earlier audit/closure describes the state
+before that approval. IOP-204–211 integration remains outside this approval.
