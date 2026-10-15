@@ -2,7 +2,7 @@ import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixtu
 import { expect, test, type Page } from "@playwright/test";
 import { emptyWorkforce } from "./workforce-fixture";
 
-async function accessFixture(page: Page, options: { signedIn?: boolean; initial?: boolean; unavailable?: boolean; nativeDemo?: boolean } = {}) {
+async function accessFixture(page: Page, options: { signedIn?: boolean; initial?: boolean; unavailable?: boolean | "html" | "network"; nativeDemo?: boolean } = {}) {
   let signedIn = options.signedIn ?? false;
   let initial = options.initial ?? false;
   let unavailable = options.unavailable ?? false;
@@ -25,6 +25,8 @@ async function accessFixture(page: Page, options: { signedIn?: boolean; initial?
       case "/api/v1/overview/context":
         return fulfillOverviewContext(route,overviewContextFixture({locations:[],timeZone:"UTC",today:"2026-10-09",coverage:{handover:"available"}}));
       case "/api/v1/session/context":
+        if (unavailable === "network") return route.abort("connectionrefused");
+        if (unavailable === "html") return route.fulfill({ status: 502, contentType: "text/html", body: "<html><h1>Bad Gateway</h1></html>" });
         return route.fulfill({
           status: unavailable ? 503 : 200,
           json: unavailable ? { code: "service_unavailable" } : session(),
@@ -244,13 +246,18 @@ test("native demo mode enters through its existing configured selector", async (
   expect(fixture.logins).toEqual([]);
 });
 
-test("the platform remains readable during connection failure and recovery", async ({ page }) => {
-  const fixture = await accessFixture(page, { unavailable: true });
+for (const failure of [true, "html", "network"] as const) test(`the platform recovers cleanly from ${failure} connection failure`, async ({ page }) => {
+  if (failure === "html") await page.setViewportSize({ width: 375, height: 900 });
+  const fixture = await accessFixture(page, { unavailable: failure });
   await page.goto("/");
   await minimalHome(page);
   await expect(page.getByRole("alert")).toHaveCount(0);
   const access = await openAccess(page);
-  await expect(access.getByRole("alert")).toBeVisible();
+  await expect(access.getByRole("alert")).toHaveCount(0);
+  await expect(access.getByRole("status")).toHaveText("Connection unavailable. Reconnect to the local API and try again.");
+  await expect(access).not.toContainText(/Unexpected token|Bad Gateway|valid JSON|Failed to fetch/);
+  await noOverflow(page);
+  await page.screenshot({ path: `/tmp/iop-212-reconnect-${failure}.png`, fullPage: true });
   await expect(access.getByLabel("Username", { exact: true })).toHaveCount(0);
   fixture.recover();
   await access.getByRole("button", { name: "Retry connection" }).click();
@@ -330,7 +337,7 @@ test("presentation dialogs contain focus, dismiss with Escape and restore their 
   }
 });
 
-test("main module selection and animation controls support keyboard interaction", async ({ page }) => {
+test("main module selection supports keyboard interaction while decoration keeps running", async ({ page }) => {
   await accessFixture(page);
   await page.goto("/");
   const modules = page.getByRole("navigation", { name: "Explore main modules" });
@@ -353,16 +360,12 @@ test("main module selection and animation controls support keyboard interaction"
   expect(bounds).not.toBeNull();
   await page.mouse.move(bounds!.x + bounds!.width * 0.8, bounds!.y + bounds!.height * 0.3);
   await expect.poll(() => scene.getAttribute("style")).not.toBe(before);
-  await page.getByRole("button", { name: "Pause animation", exact: true }).click();
-  await expect(page.locator(".landing")).toHaveAttribute("data-motion", "paused");
-  await expect(page.getByRole("button", { name: "Resume animation", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Pause animation|Resume animation/ })).toHaveCount(0);
   const decorations = page.locator(".intro-scene-float, .intro-background-orbit");
   expect(await decorations.count()).toBeGreaterThan(0);
   expect(await decorations.evaluateAll((nodes) =>
-    nodes.every((node) => getComputedStyle(node).animationPlayState.split(",").every((state) => state.trim() === "paused")),
+    nodes.every((node) => getComputedStyle(node).animationPlayState.split(",").every((state) => state.trim() === "running")),
   )).toBe(true);
-  await page.getByRole("button", { name: "Resume animation", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Pause animation", exact: true })).toBeVisible();
 });
 
 test("reduced motion removes decorative animation and pointer parallax", async ({ page }) => {
@@ -381,4 +384,48 @@ test("reduced motion removes decorative animation and pointer parallax", async (
   await page.mouse.move(bounds!.x + bounds!.width * 0.8, bounds!.y + bounds!.height * 0.3);
   expect(await scene.getAttribute("style")).toBe(before);
   await noOverflow(page);
+});
+
+
+for (const width of [1440, 375]) test(`area controls share inline filters and retain selection at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 1000 });
+  await accessFixture(page, { signedIn: true });
+  const locations = [
+    { id: "department", label: "Halle A T3", parentId: "", role: "department" },
+    { id: "area", label: "Conveyor area", parentId: "department", role: "area" },
+  ];
+  await page.route("**/api/v1/overview/context", route => fulfillOverviewContext(route,
+    overviewContextFixture({ locations, timeZone: "Europe/Zurich", today: "2026-10-15", coverage: { handover: "available" } })));
+  const selections: Record<string, string>[] = [];
+  await page.route("**/api/v1/overview/area", route => {
+    const selection = route.request().postDataJSON();
+    selections.push(selection);
+    return route.fulfill({ json: {
+      selection, location: locations.find(location => location.id === selection.locationId), groups: [], timeZone: "Europe/Zurich",
+      shifts: { coverage: "not-configured", options: [], current: null, previous: null, note: "Select an actual formal record." },
+      analytics: { coverage: "not-configured", from: selection.date, toExclusive: "2026-10-16", frequency: null, seconds: null, records: null, importDates: [], note: "No analytical data is supplied for this source coverage." },
+    } });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Area overview", exact: true }).click();
+  const area = page.getByRole("combobox", { name: "Selected area", exact: true });
+  await expect(area).toBeVisible();
+  await expect(area).toHaveValue("");
+  const controls = page.locator(".overview-workspace .iop-scope-toolbar .iop-context-field");
+  await expect(controls).toHaveCount(3);
+  for (const control of await controls.all()) {
+    const caption = await control.locator(":scope > span").boundingBox();
+    const value = await control.locator("select, input").boundingBox();
+    expect(caption).not.toBeNull(); expect(value).not.toBeNull();
+    expect(Math.abs((caption!.y + caption!.height / 2) - (value!.y + value!.height / 2))).toBeLessThan(2);
+    expect(caption!.x + caption!.width).toBeLessThanOrEqual(value!.x);
+  }
+  await noOverflow(page);
+  await page.screenshot({ path: `/tmp/iop-212-area-${width}.png`, fullPage: true });
+  await area.selectOption("area");
+  await expect.poll(() => selections.at(-1)?.locationId).toBe("area");
+  await page.getByLabel("Journal date", { exact: true }).fill("2026-10-14");
+  await expect.poll(() => selections.at(-1)?.date).toBe("2026-10-14");
+  await area.selectOption("");
+  await expect.poll(() => selections.at(-1)?.locationId).toBe("department");
 });

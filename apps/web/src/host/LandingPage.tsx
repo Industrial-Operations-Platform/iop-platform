@@ -17,11 +17,10 @@ const mainModules = [
 export function LandingPage({ children, busy = false }: { children: ReactNode; busy?: boolean }) {
   const [view, setView] = useState<"access" | "about" | null>(null);
   const [selected, setSelected] = useState<IntroModule>("analysis");
-  const [paused, setPaused] = useState(false);
   const activeModule = mainModules.find((module) => module.id === selected)!;
 
   return (
-    <IdentityRoot className="landing" data-motion={paused ? "paused" : "running"}>
+    <IdentityRoot className="landing">
       <div className="intro-background" aria-hidden="true">
         <div className="intro-background-light" />
         <div className="intro-background-orbit intro-background-orbit--one" />
@@ -51,7 +50,7 @@ export function LandingPage({ children, busy = false }: { children: ReactNode; b
             <p className="intro-description">{t("A shared space for analytical insight, technical work and the people behind every shift.")}</p>
             <span className="intro-copy-rule" aria-hidden="true" />
           </div>
-          <IntroScene active={selected} paused={paused} />
+          <IntroScene active={selected} />
         </div>
 
         <div className="intro-explore">
@@ -71,13 +70,6 @@ export function LandingPage({ children, busy = false }: { children: ReactNode; b
 
       <footer className="intro-footer intro-container">
         <span>{t("One platform. A clearer perspective.")}</span>
-        <Button variant="text" className="intro-motion" onClick={() => setPaused((value) => !value)}
-          aria-pressed={paused}>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-            {paused ? <path d="m8 5 11 7-11 7Z" /> : <path d="M8 5v14M16 5v14" />}
-          </svg>
-          {paused ? t("Resume animation") : t("Pause animation")}
-        </Button>
       </footer>
 
       {view === "about" && (

@@ -33,8 +33,6 @@ export const german: Readonly<Record<string, string>> = {
   "Bring the work into view. Follow it through.": "Aufgaben sichtbar machen. Bis zum Abschluss verfolgen.",
   "People, shifts and responsibilities. In perspective.": "Menschen, Schichten und Zuständigkeiten. Im Überblick.",
   "One platform. A clearer perspective.": "Eine Plattform. Ein klarerer Blick.",
-  "Pause animation": "Animation pausieren",
-  "Resume animation": "Animation fortsetzen",
   "Skip to platform overview": "Zur Plattformübersicht springen",
   "IOP platform overview": "IOP-Plattformübersicht",
   "Platform navigation": "Plattformnavigation",
@@ -60,7 +58,7 @@ export const german: Readonly<Record<string, string>> = {
   "Workspace access": "Zugang zum Arbeitsbereich",
   "Your profile determines which tools are available. Contact your administrator if you need access.":
     "Dein Profil bestimmt, welche Werkzeuge verfügbar sind. Wende dich an deinen Administrator, wenn du Zugang benötigst.",
-  "Connect the local API to open your workspace.": "Verbinde die lokale API, um deinen Arbeitsbereich zu öffnen.",
+  "Connection unavailable. Reconnect to the local API and try again.": "Verbindung nicht verfügbar. Stelle die Verbindung zur lokalen API wieder her und versuche es erneut.",
   "Open the demo workspace": "Demo-Arbeitsbereich öffnen",
   "Use the configured demo user selector.": "Verwende die konfigurierte Demo-Benutzerauswahl.",
   "The tools behind your daily operations": "Die Werkzeuge für deinen täglichen Betrieb",

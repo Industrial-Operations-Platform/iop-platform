@@ -27,8 +27,9 @@ two nested rounded-square loops with white strokes and a blue lower/right segmen
   selector in explicitly configured native demo mode.
 - [x] Desktop and narrow layouts use the refreshed shared mark and preserve font and palette,
   controls and accessible keyboard navigation, with English/German presentation.
-- [x] Reduced-motion preferences and an explicit animation pause control provide
-  a static presentation; pointer interaction is optional.
+- [x] System reduced-motion preferences provide a static presentation; pointer
+  interaction is optional. The manual pause control was superseded by the owner
+  request in [IOP-212](IOP-212-entry-recovery-filters.md).
 - [x] Relevant web tests, identity/architecture guards and production build pass;
   actual desktop/narrow browser rendering is inspected.
 - [x] The shared application mark matches the owner's selected Unified Record

@@ -137,7 +137,9 @@ forms. It preserves native `YYYY-MM-DD` values, labels, refs and input constrain
 callers own date/time-zone policy. Labels remain to the left of values. Compose it
 beside `DepartmentScope` in `iop-scope-toolbar`: compact content-sized fields, bounded
 values, equal gaps and no full-width enclosing panel. Wrap whole controls on narrow
-screens; standalone department fields remain bounded too.
+screens; standalone department fields remain bounded too. `DepartmentScope` accepts
+optional `caption` and `emptyLabel` for configured area/location context while
+preserving the same native selection surface.
 
 `AddButton` and `RefreshButton` use the same shared `IconButton` treatment as search:
 neutral navy line icons, white bordered surfaces and equally sized keyboard targets.

@@ -87,9 +87,10 @@ the flat identity above. Shared appearance-aware dialogs contain sign-in and Abo
 The first view has concise copy and three selectable visual modules: Data Analysis,
 Maintenance and Workforce. Detailed module/workflow prose belongs in About.
 Only an explicit Sign in action reveals existing access controls. Decorative
-illustrations never claim live operational data. Respect reduced motion, provide
-a pause control and make module selection available through labelled keyboard
-buttons. See [IOP-201](../planning/items/IOP-201-platform-landing.md).
+illustrations never claim live operational data. Respect system reduced motion and
+make module selection available through labelled keyboard buttons. The owner
+removed the manual pause/resume control in [IOP-212](../planning/items/IOP-212-entry-recovery-filters.md);
+normal decorative animation continues automatically. See [IOP-201](../planning/items/IOP-201-platform-landing.md).
 
 The owner's foreground-only refinement replaces the cube and tilted labelled cards
 with six upright, unnamed capability glyphs around the platform mark. Signals,
