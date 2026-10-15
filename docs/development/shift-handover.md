@@ -125,6 +125,15 @@ The calendar is beside the daily section heading and changes every daily categor
 Start uses the current-day Workforce assignment or home department; explicit
 other-department browsing remains available.
 
+Administrator, Team Leader and Task Force also open **Shift records** from the same
+Handover view navigation. The sidebar keeps one **Shift Handover** entry; ordinary
+Technician journal views and permissions remain unchanged. Journal reports and open
+issues show current state. Closed shift records preserve transfer snapshots and
+receiving acknowledgements independently; closing a transfer never resolves those
+issues. See the [formal workflow](formal-handover.md). Exact links to a formal record
+activate Shift records, and its source action opens the original current journal
+report rather than replacing retained evidence.
+
 Entry detail prioritizes the current report, latest follow-up and immutable history.
 The heading always names the current tab, for example **Shift Handover / Department
 matrix**. Opening a report adds **Details** to that path. Select the preceding tab

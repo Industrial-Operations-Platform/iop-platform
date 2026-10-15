@@ -21,7 +21,7 @@ UI. Preserve the existing PostgreSQL volume; ordinary start/stop does not erase
 history. Running a new database schema is independent from merging the branch.
 The user's shared installation is not a test database.
 
-1. Sign in as Administrator, Team Leader or Task Force and open Assets. Register an equipment
+1. Sign in as Administrator and open Assets. Register an equipment
    reference with its exact Betriebsmittelkennzeichen,
    name equal to its code and configured location. Keep it unverified until validation evidence exists.
 2. Add deliberate exact source aliases when imported or handover codes are known
@@ -37,7 +37,7 @@ The user's shared installation is not a test database.
    Administrators and Team Leaders assign/reassign site work; contributors update authored/assigned work.
 5. Open a work record to inspect its attributed revisions. On a stale-save
    conflict reload the current record and review the newer changes before retrying.
-6. Open the asset's digital record, choose dates/source filters and inspect
+6. As Administrator, open the asset's digital record, choose dates/source filters and inspect
    Maintenance, Handover and authorized analytical evidence. Source actions open
    the original context. Follow subsequent pages to inspect all matching history.
 
@@ -47,7 +47,10 @@ links and reviewed source mappings now provide independent evidence under IOP-20
 Neither path infers physical identity from names or source text. Technicians open assigned
 Maintenance from Start or the activity bell and use the Handover workspace;
 their sidebar has no Maintenance entry. Digital asset records require
-Administrator, Team Leader or Task Force. Missing source grants appear as denied coverage.
+Administrator. Team Leader and Task Force instead use **Locate asset** from operational
+work and exact asset results in search/Area overview to open read-only Locator.
+Multiple placements remain choices; an unplaced identity remains pending. Missing
+source grants appear as denied coverage.
 Retired assets retain their digital record; historical references survive catalog
 and profile changes.
 
@@ -83,9 +86,13 @@ an aborted database transaction as a complete timeline.
 The board shows all unfinished work and previous/current-week completions by
 site-local calendar dates. Historical search lets you select other completed-work
 windows. Selecting one status hides the other columns and expands its result cards.
-Asset access is available to Administrator, Team Leader and Task Force.
-Administrator also retains user/priority administration and maintenance coordination. A narrow equipment reference in Maintenance is not an Asset
-module permission grant.
+Standalone Assets/Asset management and registry/model/placement changes are
+Administrator-only under [IOP-211](../planning/items/IOP-211-locator-models-and-access.md).
+The server checks the current profile as well as grants, including direct reads and
+stale writer permissions. Team Leader and Task Force retain read-only Locator and
+compact identity references in their existing operational workflows. Administrator
+also retains user/priority administration and maintenance coordination. A narrow
+equipment reference in Maintenance does not authorize the standalone Asset module.
 
 ## Local placeholder data
 
@@ -141,8 +148,11 @@ Run `npm run local:linked-maintenance-demo -- --preview`, then `--apply` and
 `--inspect`, against the running local Docker stack. This separate fixture keeps
 its frozen identities in `.local-platform/linked-maintenance-demo.json`. Preserve
 that ignored manifest: retries resume incomplete histories and retain later owner
-changes. It uses existing active Team Leader and Technician accounts without
-changing credentials or grants.
+changes. Fresh manifests use an existing eligible Administrator only for registry
+creation (`assetActor`); the Team Leader remains the journal/work actor and the
+Technician remains the assigned worker. Credentials and grants are unchanged.
+Historical manifests without `assetActor` remain inspectable, but apply refuses
+them explicitly rather than rewriting authors or assigning new registry authority.
 
 Search `[DEMO LINKED]` in Maintenance and Handover, or `DEMO-LINKED-194-` in Assets.
 Select **Retired** or **All states** to find the archived Asset examples.

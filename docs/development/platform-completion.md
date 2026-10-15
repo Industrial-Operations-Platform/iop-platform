@@ -8,8 +8,13 @@ Run `npm run local:up` to build and migrate the local installation. Existing
 records and private references are preserved; the command does not publish code.
 
 Administrator, Team Leader and Task Force use the advanced workspaces. The current
-profile and module grants are both required on the server. Administrator alone
-manages integration configuration and local operating jobs. Technician journal
+profile and module grants are both required on the server. The later
+[IOP-211 refinement](../planning/items/IOP-211-locator-models-and-access.md) reserves
+standalone Assets/Asset management and registry/model/Locator editing for
+Administrator; Team Leader and Task Force use read-only Locator and compact
+operational identity references. Administrator alone manages integration
+configuration and local operating jobs. Formal records are reached through Shift
+records within Shift Handover, retaining exact source links. Technician journal
 and daily planning remain governed by their existing permissions.
 
 | Capability | Workflow and operating contract |
@@ -24,15 +29,23 @@ and daily planning remain governed by their existing permissions.
 | Site material Audit | [Atomic owner capture, safe envelopes and explicit remaining coverage](site-audit-integration.md) |
 
 The installation contains 71 private equipment schematics and a legend. Initial
-geometry traces are available for three views; the other reference scenes are
-editable placeholders. The independent diagrams have no measured common origin.
+geometry traces covered three views. IOP-211 now prepares all 71 source scenes
+with 10,678 provisional components: 5,532 motor symbols, 2,817 photoelectric-bar
+candidates, 2,324 conveyor/curve components and 5 retained scanner references.
+Seventy scenes gained an attributed revision and one already matched its prepared
+model. The separate synthetic example remains unchanged. The independent diagrams have no measured common origin.
 The 3D area overview therefore provides navigation tiles, while each scene uses
 coordinates relative to its own reference. It does not claim a registered 3D
 floorplan. Screenshot colors are historical; problem markers come from separately
 authorized, dated operational records.
 
-Validated local delivery includes API 509, frontend 192, PostgreSQL 319 and final
-browser 57 passing checks. Actual encrypted recovery reconciles 170 private files,
+The IOP-203 delivery validated API 509, frontend 192, PostgreSQL 319 and browser 57
+checks. The IOP-211 refinement validates API 529, frontend 213, PostgreSQL 327 plus the final seven-test Locator capacity gate,
+browser 57, script 32 and database-configuration 77 checks. Alarm classification was
+also verified read-only against 10 actual registry assets and 38 retained source
+messages; six supplied the owner-provided photoelectric hint. No registry identities
+or physical links were changed automatically. The earlier IOP-203 encrypted recovery
+reconciled 170 private files,
 62 tables and 154,341 rows, with exact data, role, RLS and privilege metadata. Its
 restored database remains isolated and stopped; the active installation is preserved.
 See the [completed execution](../planning/completed/IOP-203-platform-completion-plan.md)

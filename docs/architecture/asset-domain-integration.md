@@ -51,8 +51,11 @@ const application = new AssetDomainApplication(new HttpAssetDomainGateway(), () 
 />
 ```
 
-Expose the workspace to current Administrator/Team Leader/Task Force profiles
-only, alongside the Digital Asset Record. The independent server checks remain
+Under IOP-211 expose this workspace and standalone Digital Asset Record only to
+the current Administrator profile. Team Leader/Task Force operational identity
+links route to read-only Locator, with `initialAssetId` and a new `homeVisit` token;
+do not pass its standalone asset-record or creation callbacks to readers. The
+independent server checks remain
 authoritative. Spread `assetDomainGerman` from `localization/asset-domain-de.ts`
 into the shared German dictionary; English is the default source. Legacy asset
 components/fixtures need no enrichment fields.

@@ -9,7 +9,12 @@ scope and data invariants in delivered paths. The local selector is implemented
 under ADR-0018/0030/0034. [IOP-165](../planning/items/IOP-165-operational-home.md)
 implements temporary authenticated access and user administration under accepted
 [ADR-0035](adr/ADR-0035-transitional-authentication.md). Shift Handover supplies operational entries and selected Start highlights under
-ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); Maintenance and supporting stable Assets/Digital Asset Record are delivered under IOP-194, integrated into develop and published to origin on 2026-10-06; owner product review remains pending. IOP-203–210 extend the local review branch with formal Handover, Improvement Tracking, provisional 3D Locator, Asset domain enrichment, search and local operating infrastructure. Real providers, physical survey inputs and shared-use identity remain pending. Existing identity, authorization and RLS requirements still apply.
+ADR-0036. Workforce is implemented under [IOP-184](../planning/items/IOP-184-m6-workforce.md); Maintenance and supporting stable Assets/Digital Asset Record are delivered under IOP-194, integrated into develop and published to origin on 2026-10-06; owner product review remains pending. IOP-203–210 extend the platform with formal Handover, Improvement Tracking, provisional 3D Locator, Asset domain enrichment, search and local operating infrastructure. Real providers, physical survey inputs and shared-use identity remain pending. Existing identity, authorization and RLS requirements still apply.
+[IOP-211](../planning/items/IOP-211-locator-models-and-access.md) restricts standalone
+Assets/Asset management and Locator editing to Administrator. Team Leader/Task
+Force use read-only Locator with narrow independently authorized operational
+identity ports. Formal records retain Handover ownership within its navigation;
+source-derived motor/photoelectric geometry remains provisional.
 
 [IOP-168](../planning/items/IOP-168-shift-handover.md) captures the requested first
 Shift Handover increment. [ADR-0036](adr/ADR-0036-shift-handover.md) defines its accepted

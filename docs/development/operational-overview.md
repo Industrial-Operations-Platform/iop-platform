@@ -7,8 +7,8 @@ outcome; [IOP-118](../planning/items/IOP-118-area-overview.md) owns area context
 
 ## Global search
 
-The shared header search finds configured areas, current registered assets (including
-source aliases/metadata), Handover reports across journal history and Maintenance
+The shared header search finds configured areas, current registered asset codes/names,
+Handover reports across journal history and Maintenance
 work. Results are grouped by source with full matching source totals and finite
 pages: 25 areas/assets, currently 20 source-owned Handover reports and up to 50
 work records. The receiving Handover budget remains at most 50 records. Each source keeps its own
@@ -19,12 +19,17 @@ refining the query or selecting location scope.
 The shared SearchControl focuses its disclosed input. Tab reaches native scope
 controls and record buttons. Escape clears results and restores the search trigger;
 outside selection dismisses the anchored result panel. Narrow layouts use a bounded
-single-column viewport. Source actions navigate to their original details, retaining
-the record's identity and location. Browser visibility never grants API access.
+single-column viewport. Source actions retain the exact record identity and location.
+Administrator asset results open Digital Asset Record; Team Leader and Task Force
+asset results open read-only Locator with that exact asset ID. No inferred placement
+or forbidden standalone registry navigation is substituted. Browser visibility never
+grants API access.
 
 ## Area context
 
 Choose a configured department/area and journal date using shared controls.
+Area/location and Department/Halle use the same compact, labelled native selector
+surface and keyboard behavior. Date remains a shared DateField beside them.
 The overview keeps these distinct:
 
 - Current unresolved Handover issues, including older records.
@@ -49,6 +54,11 @@ source navigation identity are displayed without an actionable detail button.
 ## Authorization and integration
 
 Administrator, Team Leader and Task Force retain independently checked source grants.
+Assets-owned bounded identity pages expose only ID, code, name, location and status
+for operational search/Area cards. They require current advanced profile and source
+read/Locator grants, without opening registry/model/timeline APIs. Standalone Assets
+and Asset management remain Administrator-only. Exact formal-record links activate
+Shift records inside Shift Handover rather than a separate sidebar module.
 The current Technician profile exposes configured areas/Handover here; broader
 obsolete grants cannot override that view boundary. Workforce read can authorize
 configured context, but does not grant Assets, Maintenance or analytics.

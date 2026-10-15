@@ -142,14 +142,21 @@ These responsibilities extend the existing explicit site-bundle mechanism:
 
 | Profile | Maintenance | Assets | Analytical timeline evidence |
 | --- | --- | --- | --- |
-| Technician | Read, propose unassigned work, update authored/assigned work | No access | Requires a separate analytical grant; absent in the fixed profile |
-| Task Force | Read, propose unassigned work, update authored/assigned work | Register/read/edit equipment references | Current `analytics.read` required |
-| Team Leader | Contributor plus site assignment/coordination | Register/read/edit equipment references | Current `analytics.read` required |
+| Technician | Read, propose unassigned work, update authored/assigned work | No standalone access | No Asset timeline or analytics access in the fixed profile |
+| Task Force | Read, propose unassigned work, update authored/assigned work | Compact operational references and read-only Locator; no standalone registry/model access | Data Analysis remains separately authorized; no standalone Asset timeline |
+| Team Leader | Contributor plus site assignment/coordination | Compact operational references and read-only Locator; no standalone registry/model access | Data Analysis remains separately authorized; no standalone Asset timeline |
 | Administrator | Contributor, assignment/coordination and priority configuration | Register/read/edit equipment references | Current `analytics.read` required |
 
 The server checks current membership/grants and exact site on every operation,
 including source reads. Browser profile previews change presentation only.
 Asset read permission never substitutes for Maintenance/Handover/Analysis access.
+Under [IOP-211](../planning/items/IOP-211-locator-models-and-access.md), standalone
+Assets/Digital Asset Record and Asset management require the current Administrator
+profile, including reads. Administrator alone registers equipment, reviews models/
+source mappings and edits Locator scenes/placements. Obsolete or forged writer
+grants do not bypass these profile checks. Team Leader and Task Force retain only
+the compact identity authority needed by receiving operational workflows; source
+links open exact Locator placements rather than a forbidden standalone record.
 Revocation, logical user removal and later name changes preserve attributed history.
 Forced RLS, scoped predicates and atomic projection/revision writes reuse the
 accepted transaction patterns. Industrial connections remain read-only.

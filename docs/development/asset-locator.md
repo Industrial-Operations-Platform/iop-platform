@@ -3,9 +3,12 @@
 [IOP-206](../planning/items/IOP-206-3d-asset-locator.md) delivers editable 3D schematic
 scenes under [ADR-0037](../architecture/adr/ADR-0037-operational-completion.md).
 Locator owns scene/placement revisions; Assets owns canonical identities and aliases.
-Administrator, Team Leader and Task Force require current scoped `locator.read` /
-`locator.manage` grants and their current permitted profile. Technician access remains
-denied even if an obsolete Locator assignment survives.
+Administrator, Team Leader and Task Force require current scoped `locator.read`
+and a permitted current profile for navigation. Only Administrator can edit and
+must additionally hold `locator.manage`. Current-profile checks deny stale writer
+grants. Technician access remains denied even if an obsolete Locator assignment
+survives. Standalone Assets and Asset management are Administrator-only; compact
+operational identity ports independently authorize reader navigation.
 
 ## Private reference import
 
@@ -48,13 +51,16 @@ traces must have empty `assetId`, `verification: "provisional"` and
 `elevation: null`; the adapter rejects automatic identity assignment or claimed
 surveyed heights. Missing traces are valid and produce empty editable reference
 scenes. The owner-supplied reference installation has 72 PNGs (71 equipment views
-and a legend), with 80 hand-traced provisional components across three views.
+and a legend). The original bootstrap supplied 80 hand-traced provisional components
+across three views. [IOP-211 model preparation](locator-schematic-modelling.md)
+advances the safely interpretable area views while preserving that original baseline.
 Source-specific trace data is private and not reproducible from repository fixtures.
 
 ## Editing and evidence
 
 Area scenes render a private image on a 3D reference plane. Use reusable Conveyor,
-Curve, Junction, Lift, Sensor, Scanner, Scale and Cabinet templates; add at the center
+Curve, Junction, Lift, Motor, Photoelectric sensor, generic Sensor, Scanner, Scale
+and Cabinet templates; add at the center
 or choose **Place on reference**. **Trace conveyor** takes two image-local endpoints.
 Select a component in 3D or the accessible list, edit its fields, duplicate it or move
 it through labelled controls. Duplication deliberately clears the canonical asset
@@ -76,7 +82,38 @@ image y down. Rendering maps image y to depth and optional elevation to the vert
 axis. Unit sizes are schematic, not meters. A surveyed placement needs an explicit
 registered asset, elevation and evidence; scene calibration needs its own evidence.
 Exact heights, scale, sensor positions and whole-plant alignment remain plant input.
-The overview arranges 3D area tiles for navigation, not physical adjacency.
+The overview arranges 3D area tiles for navigation, not physical adjacency. It uses
+simplified instanced solids and source textures bounded to 512 pixels; opening an
+area shows the full reusable component geometry. Motor cylinders and photoelectric
+emitter/receiver templates have separate stable selectable identities. Their display
+colors follow the application identity and never infer live health.
+
+Administrator can review **Prepared area models**, inspect per-area counts/status,
+and apply ready models. Each scene uses its expected revision and records an
+attributed immutable revision. Entire prior components, including labels and notes,
+are compared; operator-modified, linked, surveyed or deliberately cleared later
+revisions are preserved. Missing candidates and manual-review states remain visible.
+The private source candidate file has a separate 32 MiB limit; the old traces budget
+and public upload/body limits are unchanged. Oversized individual proposals require
+manual review; the authoritative save rejects a projected site total above 16 MiB
+before writing scenes, revisions, placements or Audit records.
+
+Reader source links request an exact registered asset ID rather than fuzzy search.
+A single explicit placement opens and focuses its component; multiple placements
+remain choices and an unplaced asset remains pending. Team Leader and Task Force
+see component identity, verification, source evidence and camera controls without
+registry/editor/creation controls. Administrator can **Register a new asset**, then
+return, search its exact registered code and explicitly link the selected component.
+
+For an explicitly linked asset, Administrator may **Check imported alarm evidence**.
+Assets supplies exact source aliases or approved single-candidate mappings and OIP
+supplies original messages with import, physical record and reporting-date provenance.
+Both require their own current scoped grants; missing source coverage is explicit.
+A bounded sample recognizes the owner-provided `Lichtschranke zu lange belegt`
+message and proposes Photoelectric sensor. The alarm may concern a child of the
+registered equipment. Applying it changes only the selected draft kind and requires
+the usual revision save; it creates no registry identity or physical placement and
+never overwrites an existing classification automatically.
 
 The renderer uses Three.js behind an adapter, including
 [OrbitControls](https://threejs.org/docs/pages/OrbitControls.html). Drag to orbit,

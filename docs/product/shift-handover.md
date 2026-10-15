@@ -9,6 +9,9 @@ with actual Workforce shift records and explicit canonical asset links on the
 local review branch. Administrator, Team Leader and Task Force use those advanced
 functions with current grants; the ordinary Technician journal remains available.
 See the [formal Handover guide](../development/formal-handover.md).
+[IOP-211](../planning/items/IOP-211-locator-models-and-access.md) presents formal
+records within the same Shift Handover entry point, retaining their independent
+use cases, immutable evidence and exact record/report navigation.
 
 ## Purpose and daily workflow
 
@@ -72,6 +75,11 @@ this increment does not introduce private personnel records.
 ## Views and presentation
 
 The journal tabs appear in this order: Meeting preparation, Journal, Department matrix.
+Authorized Administrator, Team Leader and Task Force users also have **Shift records**
+in this navigation; no separate Formal Handover sidebar item is required. Technician
+retains the ordinary three journal views. Journal issues show current state; closed
+shift records preserve immutable transfer evidence and incoming acknowledgements.
+Closing a transfer does not resolve the journal issues it carries.
 Journal replaces the separate My entries destination.
 Opening Handover defaults to Meeting preparation (Daily overview for Team Leader).
 

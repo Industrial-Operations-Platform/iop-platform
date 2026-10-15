@@ -1,6 +1,11 @@
 # Local platform delivery status
 
-Updated locally on 2026-10-14 under [IOP-203](items/IOP-203-platform-completion.md),
+IOP-211 refines the local review branch with all 71 provisional source models,
+Administrator-only Assets/editing, exact reader Locator navigation and integrated
+shift records. See the [211 execution](completed/IOP-211-locator-models-and-access-plan.md);
+its publication remains pending owner approval.
+
+The preceding increment was updated on 2026-10-14 under [IOP-203](items/IOP-203-platform-completion.md),
 from develop `24b6269` on `feature/IOP-203-platform-completion`. This review branch
 was integrated into develop and both refs were published to origin with explicit
 owner approval on 2026-10-14. See the [publication evidence](completed/IOP-203-publication-plan.md).
@@ -17,6 +22,7 @@ product requirements. This page records delivery and outstanding acceptance.
 
 | Capability | Implementation evidence |
 | --- | --- |
+| Broader area models, Administrator-owned editing, exact read-only Locator and integrated Shift records | [IOP-211](items/IOP-211-locator-models-and-access.md), [Locator model preparation](../development/locator-schematic-modelling.md) |
 | Formal shift transfer, Improvement Tracking, provisional 3D Locator and provider readiness | [Completion guide](../development/platform-completion.md), IOP-204–207 |
 | Configurable Asset domain/canonical mapping, global search/area context and local operating infrastructure | IOP-208–210; [Asset domain](../product/asset-domain.md), [local operations](../development/local-operations.md), [Overview](../development/operational-overview.md) |
 | Persistent CSV import, original-file review, duplicate/error handling, exact analytical measures and scoped access | [IOP-147](completed/IOP-147-working-analytical-poc-plan.md) |
