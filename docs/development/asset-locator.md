@@ -58,11 +58,18 @@ Source-specific trace data is private and not reproducible from repository fixtu
 
 ## Editing and evidence
 
-Area scenes render a private image on a 3D reference plane. Use reusable Conveyor,
+Normal navigation renders geometry only: overview tiles, area cards, scene view,
+read-only details and no-WebGL fallback do not request or display guide images.
+Administrator chooses **Edit model** to reveal authoring controls; **Show guide
+image** then controls the original private reference plane and reference preview.
+**Finish editing** returns to geometry-only navigation. Save or discard changes
+before finishing. Reader profiles have no authoring/guide controls.
+
+Use reusable Conveyor,
 Curve, Junction, Lift, Motor, Photoelectric sensor, generic Sensor, Scanner, Scale
 and Cabinet templates; add at the center
 or choose **Place on reference**. **Trace conveyor** takes two image-local endpoints.
-Select a component in 3D or the accessible list, edit its fields, duplicate it or move
+In model editing, select a component in 3D or the accessible list, edit its fields, duplicate it or move
 it through labelled controls. Duplication deliberately clears the canonical asset
 link and survey evidence. Save requires a revision note; stale edits conflict rather
 than overwriting another user's revision. Revisions and former placements remain
@@ -83,10 +90,20 @@ axis. Unit sizes are schematic, not meters. A surveyed placement needs an explic
 registered asset, elevation and evidence; scene calibration needs its own evidence.
 Exact heights, scale, sensor positions and whole-plant alignment remain plant input.
 The overview arranges 3D area tiles for navigation, not physical adjacency. It uses
-simplified instanced solids and source textures bounded to 512 pixels; opening an
-area shows the full reusable component geometry. Motor cylinders and photoelectric
+simplified instanced solids without source textures; opening an area shows the
+full reusable component geometry. Motor cylinders and photoelectric
 emitter/receiver templates have separate stable selectable identities. Their display
-colors follow the application identity and never infer live health.
+colors follow the application identity and never infer live health. Photoelectric
+components use the shared teal accent in scenes and overview tiles, with a labelled
+legend. Selected/reported-problem emphasis retains its separate meaning. Conveyor
+rails and supports stay proportional to the belt footprint, including narrow traces.
+
+Camera orientation and zoom carry between overview and areas. Each new context
+recenters its own origin while retaining the latest viewing offset; ordinary
+component selection, edits, filters and appearance redraws retain the complete
+current camera, including pan. **Focus selected component** and explicit registered
+placement entry deliberately center the target. Camera preferences live only in
+the current browser workspace; scene data and calibration are not changed.
 
 Administrator can review **Prepared area models**, inspect per-area counts/status,
 and apply ready models. Each scene uses its expected revision and records an
@@ -102,7 +119,7 @@ Reader source links request an exact registered asset ID rather than fuzzy searc
 A single explicit placement opens and focuses its component; multiple placements
 remain choices and an unplaced asset remains pending. Team Leader and Task Force
 see component identity, verification, source evidence and camera controls without
-registry/editor/creation controls. Administrator can **Register a new asset**, then
+registry/editor/creation controls. In model editing, Administrator can **Register a new asset**, then
 return, search its exact registered code and explicitly link the selected component.
 
 For an explicitly linked asset, Administrator may **Check imported alarm evidence**.

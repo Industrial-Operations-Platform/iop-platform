@@ -2,9 +2,9 @@
 
 ## Status and request
 
-In progress for an explicit visual/navigation review follow-up; the initial local
-increment is complete. Owner publication approval remains pending. The owner requests broader provisional 3D modelling from the supplied
-private Bereich schematics, correct motor/photoelectric-sensor identities, stricter
+Completed locally, including the explicit visual/navigation review follow-up.
+Owner publication approval remains pending. The owner requests broader provisional
+3D modelling from the supplied private Bereich schematics, correct motor/photoelectric-sensor identities, stricter
 administrator-owned Assets/editing, reader-only operational navigation, aligned
 area controls and a clear integrated Handover entry point. This supersedes the
 broader editing grants delivered by IOP-203/206/209, without changing their history.
@@ -56,14 +56,14 @@ normal Locator navigation with guide images confined to Administrator model edit
 a distinct photoelectric component color; camera/top-view/zoom continuity when
 entering an area or selecting a component; and thinner conveyor lateral geometry.
 
-- [ ] Actions filters use the shared compact visual control without query regressions.
-- [ ] Normal Locator navigation contains no guide images; only explicit Administrator
+- [x] Actions filters use the shared compact visual control without query regressions.
+- [x] Normal Locator navigation contains no guide images; only explicit Administrator
   model editing can show them, including no-WebGL and source-details paths.
-- [ ] Photoelectric geometry has a distinct application accent in both appearances.
-- [ ] Overview/area navigation preserves orientation and zoom; normal component
+- [x] Photoelectric geometry has a distinct application accent in both appearances.
+- [x] Overview/area navigation preserves orientation and zoom; normal component
   selection preserves the view. Explicit focus and source-placement entry still work.
-- [ ] Conveyor laterals stay proportionate, including narrow source-derived bands.
-- [ ] Meaningful lifecycle/geometry/filter tests and actual installed desktop/mobile
+- [x] Conveyor laterals stay proportionate, including narrow source-derived bands.
+- [x] Meaningful lifecycle/geometry/filter tests and actual installed desktop/mobile
   visual verification pass, with all original data and permissions preserved.
 
-[Follow-up execution](../active/IOP-211-locator-visual-refinements-plan.md).
+[Follow-up execution](../completed/IOP-211-locator-visual-refinements-plan.md).

@@ -8,7 +8,7 @@ See the [workflow](workflow.md).
 
 | Task context | Status |
 | --- | --- |
-| [IOP-211 — Locator equipment models and administrator-owned editing](items/IOP-211-locator-models-and-access.md) | In progress |
+| [IOP-211 — Locator equipment models and administrator-owned editing](items/IOP-211-locator-models-and-access.md) | Completed locally; publication pending |
 
 ## Owner-authorized independent completion — 2026-10-14
 

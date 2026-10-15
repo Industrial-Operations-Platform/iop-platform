@@ -39,8 +39,14 @@ coordinates relative to its own reference. It does not claim a registered 3D
 floorplan. Screenshot colors are historical; problem markers come from separately
 authorized, dated operational records.
 
+The [IOP-211 visual follow-up](../planning/completed/IOP-211-locator-visual-refinements-plan.md)
+adds compact Actions filters, geometry-only Locator navigation, explicit Administrator
+model editing with optional guides, distinct photoelectric accents, proportionate
+conveyor rails and camera continuity. It validates 231 frontend tests, 61 browser
+tests and 30 installed Locator checks, including actual WebGL camera comparisons.
+
 The IOP-203 delivery validated API 509, frontend 192, PostgreSQL 319 and browser 57
-checks. The IOP-211 refinement validates API 529, frontend 213, PostgreSQL 327 plus the final seven-test Locator capacity gate,
+checks. The initial IOP-211 increment validated API 529, frontend 213, PostgreSQL 327 plus the final seven-test Locator capacity gate,
 browser 57, script 32 and database-configuration 77 checks. Alarm classification was
 also verified read-only against 10 actual registry assets and 38 retained source
 messages; six supplied the owner-provided photoelectric hint. No registry identities
