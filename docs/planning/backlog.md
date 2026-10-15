@@ -395,3 +395,4 @@ pending; source image colors do not establish live equipment health.
 | [IOP-201 — Minimal presentation home and existing sign-in](items/IOP-201-platform-landing.md) | Completed |
 | [IOP-202 — Platform quality review and selectable appearance](items/IOP-202-platform-quality-theme.md) | Completed |
 | [IOP-212 — Landing motion, connection recovery and area filters](items/IOP-212-entry-recovery-filters.md) | Completed |
+| [IOP-213 — Restore platform validation secret hygiene](items/IOP-213-validation-fixture.md) | Completed locally; publication pending |
