@@ -24,6 +24,8 @@ MUTED = colors.HexColor("#61738B")
 BORDER = colors.HexColor("#D9E4ED")
 PALE = colors.HexColor("#F1F6FA")
 WIDTH = A4[0] - 84
+GUIDE_DATE = "15 October 2026"
+SNAPSHOT = "develop e9bd49d + IOP-211 b3a4a01 (review)"
 
 
 class NumberedCanvas(canvas.Canvas):
@@ -43,7 +45,7 @@ class NumberedCanvas(canvas.Canvas):
             self.line(42, 36, A4[0] - 42, 36)
             self.setFillColor(MUTED)
             self.setFont("Helvetica", 7.4)
-            self.drawString(42, 23, "IOP  |  Native development  |  09 October 2026")
+            self.drawString(42, 23, f"IOP  |  Native development  |  {GUIDE_DATE}")
             self.drawRightString(A4[0] - 42, 23, f"{self._pageNumber} / {total}")
             super().showPage()
         super().save()
@@ -56,7 +58,7 @@ def header(pdf_canvas, document):
     pdf_canvas.drawString(42, A4[1] - 29, "IOP / DEVELOPER FIELD GUIDE")
     pdf_canvas.setFillColor(MUTED)
     pdf_canvas.setFont("Helvetica", 7.5)
-    pdf_canvas.drawRightString(A4[0] - 42, A4[1] - 29, "Code snapshot: develop 9fb1da9")
+    pdf_canvas.drawRightString(A4[0] - 42, A4[1] - 29, SNAPSHOT)
     pdf_canvas.setStrokeColor(BORDER)
     pdf_canvas.line(42, A4[1] - 37, A4[0] - 42, A4[1] - 37)
     pdf_canvas.restoreState()
@@ -141,7 +143,10 @@ def flowables(source):
                 ("TOPPADDING", (0, 0), (-1, -1), 6),
                 ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
             ]))
-            output.extend([table, Spacer(1, 11)])
+            output.append(table)
+            following = next((value for value in lines[index:] if value.strip()), "")
+            if following and following != "<!-- page -->":
+                output.append(Spacer(1, 11))
             continue
         if re.match(r"^\d+\. ", line):
             paragraph = line
@@ -165,7 +170,7 @@ def build(source, destination):
     document = SimpleDocTemplate(
         str(destination), pagesize=A4, rightMargin=42, leftMargin=42,
         topMargin=54, bottomMargin=48, title="IOP Project State and Native Development Guide",
-        author="Industrial Operations Platform", subject="Offline developer guide, 2026-10-09",
+        author="Industrial Operations Platform", subject="Offline developer guide, 2026-10-15",
         pageCompression=1,
     )
     document.build(flowables(source.read_text()), onFirstPage=header, onLaterPages=header,
