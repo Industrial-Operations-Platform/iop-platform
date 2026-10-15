@@ -1,6 +1,7 @@
 # IOP-213 — Restore platform validation secret hygiene
 
-Status: Completed locally on 2026-10-15; remote publication pending.
+Status: Completed; owner-approved integration into develop and publication of
+both branches to origin completed on 2026-10-15.
 
 Owner request of 2026-10-15: investigate and fix the failed Platform validation
 notification for `docs/IOP-200-guide-modules-refresh` at `2ef014d`.
@@ -14,3 +15,5 @@ notification for `docs/IOP-200-guide-modules-refresh` at `2ef014d`.
 
 Keep scanner rules intact; no allowlist, production behavior, runtime, database or
 guide artifact changes. Execution: [plan](../completed/IOP-213-validation-fixture-plan.md).
+
+Publication: [approved execution](../completed/IOP-213-publication-plan.md).
