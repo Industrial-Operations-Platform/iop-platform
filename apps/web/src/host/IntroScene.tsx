@@ -41,19 +41,19 @@ function resetParallax(element: HTMLDivElement) {
 }
 
 /** Decorative capability associations; module buttons provide accessible selection. */
-export function IntroScene({ active, paused }: { active: IntroModule; paused: boolean }) {
+export function IntroScene({ active }: { active: IntroModule }) {
   const scene = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const preference = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     const reset = () => {
       if (scene.current) resetParallax(scene.current);
     };
-    if (paused || preference?.matches) reset();
+    if (preference?.matches) reset();
     preference?.addEventListener("change", reset);
     return () => preference?.removeEventListener("change", reset);
-  }, [paused]);
+  }, []);
   const parallax = (event: PointerEvent<HTMLDivElement>) => {
-    if (paused || event.pointerType !== "mouse" ||
+    if (event.pointerType !== "mouse" ||
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - bounds.left) / bounds.width - 0.5;

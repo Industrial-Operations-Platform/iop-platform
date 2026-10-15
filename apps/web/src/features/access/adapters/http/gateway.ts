@@ -20,6 +20,8 @@ const messages: Record<string, string> = {
   invalid_user: "Check the name, username and profile.",
   user_limit: "The local user limit has been reached.",
 };
+const connectionMessage = "Connection unavailable. Reconnect to the local API and try again.";
+
 async function request<T>(path: string, body?: unknown): Promise<T> {
   const response = await fetch("/api/v1" + path, {
     method: body === undefined ? "GET" : "POST",
@@ -29,8 +31,14 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
         ? {}
         : { "Content-Type": "application/json", "X-IOP-Demo": "1" },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  }).catch(() => {
+    throw new Error(connectionMessage);
   });
-  const data = await response.json();
+  const data = await response.json().catch(() => {
+    throw new Error(connectionMessage);
+  });
+  if (!data || typeof data !== "object" || response.status >= 500)
+    throw new Error(connectionMessage);
   if (!response.ok)
     throw new Error(
       messages[data.code] ?? "The operation could not be completed. Try again.",

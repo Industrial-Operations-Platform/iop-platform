@@ -375,7 +375,7 @@ export function WorkspaceApp({
     }
     return (
       <LandingPage busy={accessPending}>
-        {accessError}
+        {context && accessError}
         {context?.authentication === "password" ? (
           <LoginPanel
             application={access}
@@ -406,7 +406,7 @@ export function WorkspaceApp({
         ) : (
           <Panel className="access-login" aria-busy={pending}>
             <h2>{t("Sign in to IOP")}</h2>
-            <p role="status">{t("Connect the local API to open your workspace.")}</p>
+            <p role="status">{t("Connection unavailable. Reconnect to the local API and try again.")}</p>
             <Button
               disabled={pending}
               onClick={() => setConnectionAttempt((n) => n + 1)}

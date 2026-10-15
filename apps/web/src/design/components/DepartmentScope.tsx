@@ -6,24 +6,28 @@ export function DepartmentScope({
   onChange,
   choices,
   label = "Selected department",
+  caption = "Department / Halle",
+  emptyLabel = "All departments",
   disabled = false,
 }: {
   value: string;
   onChange: (id: string) => void;
   choices: { id: string; label: string }[];
   label?: string;
+  caption?: string;
+  emptyLabel?: string;
   disabled?: boolean;
 }) {
   return (
     <Field layout="inline" className="iop-context-field iop-department-scope">
-      <span>{t("Department / Halle")}</span>
+      <span>{t(caption)}</span>
       <Select
         aria-label={t(label)}
         value={value}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
       >
-        <option value="">{t("All departments")}</option>
+        <option value="">{t(emptyLabel)}</option>
         {choices.map((choice) => (
           <option key={choice.id} value={choice.id}>
             {choice.label}
