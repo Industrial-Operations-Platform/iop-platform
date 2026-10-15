@@ -1,6 +1,6 @@
 # IOP-200 - Approved guide refresh publication
 
-Status: In progress. Owner approval: 2026-10-15.
+Status: Completed approved integration/publication. Owner approval: 2026-10-15.
 Branch: `docs/IOP-200-guide-modules-refresh`, based on develop `e9bd49d`.
 The owner answered yes to integrating this branch into develop and pushing both
 refs to origin under the repository publication convention.
@@ -42,3 +42,27 @@ artifact changes. The PDF is 50,661 bytes; SHA-256 is
 `f73824b7504726b08703e94b8c4211edd1df9dd50c401367e17963ea9a72e0be`.
 The prior whole-index secrets scan's unchanged test-fixture finding remains
 documented; publication edits receive their own targeted hygiene check.
+
+## Executed integration and publication
+
+- Approval/plan commit `37be2d0` was created on the approved story. The merge into
+  develop completed without conflicts as `41cdda1`; its tree exactly matched the
+  story and preserved the reviewed PDF blob above.
+- One atomic normal push published the two approved refs. Independent
+  `git ls-remote --heads` confirmed origin/develop at
+  `41cdda13003af29c945405a968b17db85d20a664` and the story at
+  `37be2d059a76e1db26d967f585182973956142c2`. Both ahead/behind checks were zero.
+- Approval records passed 225 relative-link checks, whitespace and targeted
+  hygiene for all three staged files, with no findings. The independent review
+  confirms no application/private data change and unchanged source validation.
+- This completion record, current item/backlog and guide execution status are the
+  final documentation-only increment. Commit it on the same story and merge/push
+  through the already approved sequence. Final local/remote tips, exact tree/PDF
+  preservation, clean develop and unchanged stage/master/IOP-211 refs are verified
+  after that push; no self-referential final hash is predicted here.
+
+The PDF was not regenerated. No application, private configuration, database or
+Docker action occurred. Remote CI execution is unverified; Git publication is not
+application deployment or a provider/survey/release acceptance. IOP-211 remains
+unmerged and unpublished under its own pending approval. No stage/master promotion,
+force push, history rewrite or branch deletion was performed.

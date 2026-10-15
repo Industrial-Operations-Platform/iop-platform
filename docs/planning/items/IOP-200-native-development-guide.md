@@ -1,8 +1,8 @@
 # IOP-200 - Project state and native development travel guide
 
-Status: Completed locally for the owner's 2026-10-15 guide refresh. The owner
-approved refresh integration/publication on 2026-10-15; execution is in progress.
-Original delivery/publication remain completed.
+Status: Completed. Owner-approved refresh integration into develop and publication
+of both branches to origin completed on 2026-10-15. Original delivery/publication
+remain completed.
 
 Owner request of 2026-10-09: an offline PDF explaining the current project, key
 files, modular-monolith layout and step-by-step development with automatic browser
@@ -67,4 +67,4 @@ This is documentation and reversible recipe validation, not external integration
 implementation or approval to merge/push IOP-211. Follow-up execution:
 [completed plan](../completed/IOP-200-guide-modules-refresh-plan.md).
 Approved refresh publication:
-[execution](../active/IOP-200-guide-refresh-publication-plan.md).
+[evidence](../completed/IOP-200-guide-refresh-publication-plan.md).
