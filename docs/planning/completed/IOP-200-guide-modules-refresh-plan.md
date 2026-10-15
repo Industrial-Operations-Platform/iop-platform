@@ -1,7 +1,8 @@
 # IOP-200 - Current modules and shared-database guide refresh
 
-Status: Completed locally. Owner request/completion: 2026-10-15.
-Guide refresh publication remains pending.
+Status: Completed. Owner request/completion: 2026-10-15.
+Owner-approved refresh integration/publication completed on 2026-10-15; see
+[publication evidence](IOP-200-guide-refresh-publication-plan.md).
 Branch: `docs/IOP-200-guide-modules-refresh`, created from clean develop `e9bd49d`.
 Scope: [IOP-200 refresh](../items/IOP-200-native-development-guide.md).
 Preserve the separate unmerged IOP-211 branch at `b3a4a01`; publication was not
@@ -107,5 +108,7 @@ resolution and a Node-fetch Host probe; each restored original images/data befor
 retry. Seven read-only Maintenance assignment requests in the final browser HMR
 exercise were blocked by a conservative QA allowlist. This limits full native UI
 journey evidence, not the successful direct module reads or compiler/HMR checks.
-No live external provider or fresh-laptop install was tested. No review branch was
-merged, pushed, rebased or deleted, and no Docker application image was rebuilt.
+No live external provider or fresh-laptop install was tested. During recipe
+verification no review branch was merged, pushed, rebased or deleted, and no Docker
+application image was rebuilt. Subsequent guide publication has the separate
+owner approval and evidence linked above.

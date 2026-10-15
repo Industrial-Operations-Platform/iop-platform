@@ -391,6 +391,6 @@ pending; source image colors do not establish live equipment health.
 | [IOP-196 — Personal Start and operational workflows](items/IOP-196-personal-operational-workflows.md) | Completed |
 | [IOP-198 — Start assignment layout and operational presentation](items/IOP-198-start-assignment-layout.md) | Completed |
 | [IOP-199 — Handover category workflows](items/IOP-199-handover-category-workflows.md) | Completed |
-| [IOP-200 — Project state and native development travel guide](items/IOP-200-native-development-guide.md) | Completed locally; approved refresh publication in progress |
+| [IOP-200 — Project state and native development travel guide](items/IOP-200-native-development-guide.md) | Completed; refresh published |
 | [IOP-201 — Minimal presentation home and existing sign-in](items/IOP-201-platform-landing.md) | Completed |
 | [IOP-202 — Platform quality review and selectable appearance](items/IOP-202-platform-quality-theme.md) | Completed |
