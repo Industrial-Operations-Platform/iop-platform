@@ -11,7 +11,7 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    const { requests } = await installMaintenanceAssetsFixture(page);
+    const { requests } = await installMaintenanceAssetsFixture(page, "administrator");
     await page.goto("/");
     const navigation = page.getByRole("navigation", {
       name: "Main navigation",
@@ -173,6 +173,10 @@ for (const profile of [
   test(`${profile} operational navigation uses source-specific permissions`, async ({
     page,
   }) => {
+    if (["team-leader", "task-force"].includes(profile)) {
+      await page.setViewportSize(profile === "task-force" ? { width: 390, height: 844 } : { width: 1440, height: 1000 });
+      await page.addInitScript((appearance) => localStorage.setItem("iop.appearance", appearance), profile === "task-force" ? "dark" : "light");
+    }
     await page.clock.setFixedTime(new Date("2026-10-06T08:00:00Z"));
     await installMaintenanceAssetsFixture(page, profile);
     await page.goto("/");
@@ -194,7 +198,50 @@ for (const profile of [
     await expect(
       page.getByRole("button", { name: "New maintenance", exact: true }),
     ).toHaveCount(profile === "executive" ? 0 : 1);
-    if (!["administrator", "team-leader", "task-force"].includes(profile)) {
+    if (["team-leader", "task-force"].includes(profile)) {
+      await expect(navigation.getByRole("button", { name: "Assets", exact: true })).toHaveCount(0);
+      await expect(navigation.getByRole("button", { name: "Asset management", exact: true })).toHaveCount(0);
+      await expect(navigation.getByRole("button", { name: "Asset Locator", exact: true })).toHaveCount(1);
+      await page.getByRole("button", { name: "Bearing inspection", exact: false }).click();
+      await page.getByRole("button", { name: "Locate asset", exact: true }).click();
+      await expect(page.getByRole("button", { name: "Explicitly linked test motor — motor", exact: true })).toHaveAttribute("aria-pressed", "true");
+      for (const action of ["Save scene revision", "Create scene", "Open asset record", "Register asset"])
+        await expect(page.getByRole("button", { name: action, exact: true })).toHaveCount(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: `test-results/IOP-211-reader-locator-${profile}.png`, fullPage: true });
+      await page.getByRole("button", { name: "Vibration reported", exact: true }).click();
+      await expect(page.getByRole("heading", { name: "Vibration reported", exact: true })).toBeVisible();
+      await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("button", { name: "Shift Handover", exact: true }).click();
+      const views = page.getByRole("navigation", { name: "Handover views" });
+      await views.getByRole("button", { name: "Shift records", exact: true }).click();
+      await expect(views.getByRole("button", { name: "Shift records", exact: true })).toHaveAttribute("aria-pressed", "true");
+      await expect(navigation.getByRole("button", { name: "Shift Handover", exact: true })).toHaveAttribute("aria-current", "page");
+      await expect(navigation.getByRole("button", { name: "Formal Handover", exact: true })).toHaveCount(0);
+      await expect(page.getByText(/Journal tracks current reports and unresolved issues/)).toBeVisible();
+      await page.getByRole("combobox", { name: "Selected department", exact: true }).selectOption("assembly");
+      await expect(page.getByText(/No planned Workforce shift exists in this period/)).toBeVisible();
+      await expect(page.getByRole("button", { name: "New shift record", exact: true })).toBeDisabled();
+      const selectedRecords = views.getByRole("button", { name: "Shift records", exact: true });
+      await selectedRecords.hover();
+      const navigationColors = await selectedRecords.evaluate(element => {
+        const reference = document.createElement("span");
+        reference.style.backgroundColor = "var(--iop-activeSurface)";
+        reference.style.color = "var(--iop-ink)";
+        (element.closest(".iop-ui") ?? document.body).append(reference);
+        const expected = getComputedStyle(reference), actual = getComputedStyle(element);
+        const colors = { background: actual.backgroundColor, ink: actual.color, activeSurface: expected.backgroundColor, selectedInk: expected.color };
+        reference.remove();
+        return colors;
+      });
+      expect(navigationColors.background).toBe(navigationColors.activeSurface);
+      expect(navigationColors.ink).toBe(navigationColors.selectedInk);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: `test-results/IOP-211-integrated-handover-${profile}.png`, fullPage: true });
+      await views.getByRole("button", { name: "Journal", exact: true }).click();
+      await expect(views.getByRole("button", { name: "Journal", exact: true })).toHaveAttribute("aria-pressed", "true");
+      return;
+    }
+    if (!["administrator"].includes(profile)) {
       await expect(
         navigation.getByRole("button", { name: "Assets", exact: true }),
       ).toHaveCount(0);

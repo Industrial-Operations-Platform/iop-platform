@@ -101,3 +101,29 @@ test("area navigation opens the requested formal record and a home visit clears 
   await screen.findByRole("button",{name:"New shift record"});
   expect(screen.queryByRole("button",{name:"Publish record"})).not.toBeInTheDocument();
 });
+
+test("formal deep links retain one Handover view navigation and return to the requested journal view", async () => {
+  const f = fixture(), openJournal = jest.fn();
+  await f.application.save({ id: "", expectedRevision: 0, note: "", content: { shiftId: shift.id, shiftDate: shift.date,
+    departmentId: "department", areaId: "", title: "Exact linked transfer", summary: "Immutable evidence remains independent", entryIds: [] } });
+  render(<FormalHandoverWorkspace application={f.application} initialRecordId="record" onJournalView={openJournal} dailyOverview />);
+  await screen.findByRole("button", { name: "Publish record" });
+  const navigation = screen.getByRole("navigation", { name: "Handover views" });
+  expect(within(navigation).getByRole("button", { name: "Shift records" })).toHaveAttribute("aria-pressed", "true");
+  expect(within(navigation).getByRole("button", { name: "Daily overview" })).toBeVisible();
+  expect(screen.getByText(/Journal tracks current reports and unresolved issues/)).toBeVisible();
+  expect(f.gateway.history).toHaveBeenCalledWith("record", 0);
+  fireEvent.click(within(navigation).getByRole("button", { name: "Journal" }));
+  expect(openJournal).toHaveBeenCalledWith("journal");
+});
+
+test("the integrated Handover guidance also has an explicit German resource", async () => {
+  const { setLanguage, t } = await import("../src/localization/i18n");
+  setLanguage("de");
+  try {
+    render(<FormalHandoverWorkspace application={fixture().application} onJournalView={() => {}} />);
+    expect(await screen.findByText(/Das Journal zeigt aktuelle Meldungen und offene Probleme/)).toBeVisible();
+    const navigation = screen.getByRole("navigation", { name: t("Handover views") });
+    expect(within(navigation).getByRole("button", { name: "Schichtprotokolle" })).toHaveAttribute("aria-pressed", "true");
+  } finally { setLanguage("en"); }
+});

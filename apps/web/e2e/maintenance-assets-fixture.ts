@@ -1,5 +1,5 @@
 import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixture";
-import type { Page as BrowserPage } from "@playwright/test";
+import { expect, type Page as BrowserPage } from "@playwright/test";
 import { emptyWorkforce } from "./workforce-fixture";
 import {
   emptyRecord,
@@ -180,6 +180,16 @@ export async function installMaintenanceAssetsFixture(
       discuss: false,
     },
   };
+  const locatorScene = {
+    id: "fixture-locator-scene", revision: 1, authorId: "admin", createdAt: "2026-10-14T08:00:00Z", updatedAt: "2026-10-14T08:00:00Z",
+    content: { name: "Synthetic Assembly locator", group: "Synthetic browser fixture", locationId: "assembly", referenceId: "",
+      description: "Explicit test placement; no surveyed plant geometry.", calibration: "pending", surveyNote: "",
+      components: [{ id: "fixture-linked-motor", kind: "motor", label: "Explicitly linked test motor", x: .4, y: .5, elevation: null, rotation: 0,
+        width: .04, depth: .04, height: .035, assetId, verification: "provisional", note: "Synthetic browser fixture only." }] },
+  };
+  const locatorAsset = () => ({ id: assetId, code: assets[0].content.code, name: assets[0].content.name, locationId: assets[0].content.locationId, status: assets[0].content.status });
+  const locatorProblems = () => ({ items: [{ assetId, kind: "handover", id: handoverId, title: handover.content.summary, status: handover.issueState, recordedAt: handover.updatedAt }],
+    coverage: [{ kind: "handover", status: "available" }, { kind: "maintenance", status: "available" }] });
   await page.route("**/api/v1/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === "/api/v1/overview/context") return fulfillOverviewContext(route,overviewContextFixture({locations,timeZone:"UTC",today:"2026-10-06",coverage:{handover:"available",...(["administrator","team-leader","task-force"].includes(profile)?{assets:"available" as const,maintenance:"available" as const,analytics:"available" as const,shifts:"not-configured" as const}:{})}}));
@@ -187,6 +197,49 @@ export async function installMaintenanceAssetsFixture(
       route.request().method() === "POST" ? route.request().postDataJSON() : {};
     requests.push({ path, data });
     const json = (value: unknown) => route.fulfill({ json: value });
+    if (path === "/api/v1/handover/records/context") {
+      expect(["administrator", "team-leader", "task-force"]).toContain(profile);
+      expect(route.request().method()).toBe("GET"); expect(route.request().postData()).toBeNull();
+      return json({ actorId: "admin", canManageRecords: true, locations, timeZone: "UTC" });
+    }
+    if (["/api/v1/handover/records/query", "/api/v1/handover/records/shifts"].includes(path)) {
+      expect(["administrator", "team-leader", "task-force"]).toContain(profile);
+      expect(route.request().method()).toBe("POST");
+      expect(data).toEqual({ from: "2026-10-06", to: "2026-10-06", departmentId: expect.any(String), areaId: "", cursor: "" });
+      return json(path.endsWith("/query") ? { records: [], total: 0, nextCursor: "" } : { shifts: [], coverage: "planned-assignments" });
+    }
+    if (path.startsWith("/api/v1/locator/")) {
+      expect(["administrator", "team-leader", "task-force"]).toContain(profile);
+      expect(route.request().method()).toBe("POST");
+      if (path === "/api/v1/locator/context") {
+        expect(data).toEqual({});
+        return json({ canManage: profile === "administrator", references: [], locations,
+          componentCatalog: [{ kind: "motor", width: .04, depth: .04, height: .035 }], coordinateSystem: "Image-local normalized", globalCalibration: "pending" });
+      }
+      if (path === "/api/v1/locator/query") {
+        expect(data).toEqual({ search: "", group: "" });
+        return json({ scenes: [locatorScene], total: 1 });
+      }
+      if (path === "/api/v1/locator/locate") {
+        expect(data).toEqual({ assetId });
+        return json({ results: [{ asset: locatorAsset(), placements: [{ sceneId: locatorScene.id, sceneName: locatorScene.content.name,
+          componentId: "fixture-linked-motor", label: "Explicitly linked test motor", verification: "provisional" }] }], problems: locatorProblems(), total: 1, limit: 1 });
+      }
+      if (path === "/api/v1/locator/detail") {
+        expect(data).toEqual({ id: locatorScene.id });
+        return json({ scene: locatorScene, assets: [locatorAsset()], problems: locatorProblems() });
+      }
+      if (path === "/api/v1/locator/search") {
+        expect(Object.keys(data).sort()).toEqual(["search", "unplacedOnly"]);
+        expect(typeof data.search).toBe("string"); expect(typeof data.unplacedOnly).toBe("boolean");
+        return json({ results: [{ asset: locatorAsset(), placements: [] }], problems: locatorProblems(), total: 1, limit: 200 });
+      }
+      if (path === "/api/v1/locator/model-preview") {
+        expect(profile).toBe("administrator"); expect(data).toEqual({});
+        return json({ models: [] });
+      }
+      throw new Error(`Unexpected Locator request: ${path}`);
+    }
     if (path.endsWith("/users"))
       return json([
         {

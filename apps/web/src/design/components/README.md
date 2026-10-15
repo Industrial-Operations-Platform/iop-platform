@@ -110,6 +110,9 @@ library from importing features or transport adapters.
 
 `ViewNavigation` keeps the selected button visible inside its horizontal viewport
 on selection and window resize, without moving keyboard focus.
+Its optional `buttonVariant="text"` keeps navigation hover on the shared active
+surface; Handover uses this for journal and shift-record views. Omitted values
+preserve existing consumer defaults.
 
 `Dialog` uses the native modal element for focus containment and an inert background.
 It provides a labelled heading, Escape/close handling and focus restoration. Callers
@@ -121,6 +124,8 @@ callbacks for detail navigation. Sidebar selection must return to the section vi
 even when that same section is already active. Use `RefreshButton` for icon-only
 reload actions and `DepartmentScope` for the shared white department/Halle context.
 Preserve accessible names and keyboard focus when using compact icon controls.
+`DepartmentScope` also accepts `caption`, `label` and `emptyLabel` for nested
+Area/location selection, preserving the same native compact field treatment.
 
 `FilterButton` is a compact labelled funnel action. Its pressed state marks active
 criteria; callers own the filter dialog and matching policy. Center it with the

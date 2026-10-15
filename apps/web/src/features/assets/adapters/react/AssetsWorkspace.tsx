@@ -215,8 +215,7 @@ export function AssetsWorkspace({
   }, [application, selectedId, from, to, source, version]);
   const canManage =
     context?.canManage &&
-    (!profile ||
-      ["administrator", "team-leader", "task-force"].includes(profile));
+    (!profile || profile === "administrator");
   const refresh = () => setVersion((current) => current + 1);
   const save = async (input: SaveInput) => {
     const epoch = detailEpoch.current;

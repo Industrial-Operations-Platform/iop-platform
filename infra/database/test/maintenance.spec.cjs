@@ -324,7 +324,7 @@ beforeAll(async () => {
   pool = new Pool({ ...configs.runtime, max: 5 });
   app = service();
   access = composeAccess(pool, scope);
-  asset = await assetService().save("lead-a", {
+  asset = await assetService().save("admin-a", {
     key: "fixture-asset",
     id: "",
     expectedRevision: 0,
@@ -371,17 +371,19 @@ test("safe migration grants operational profiles, preserves disabled/revoked acc
   expect(await migrate(configs.migrator)).toBe(0);
   await provision(configs);
 });
-test("Asset access includes Administrator, Team Leader and Task Force and migration preserves explicit revocation", async () => {
+test("standalone Asset access is Administrator-only and migration preserves compact readers and explicit revocation", async () => {
   for (const actor of [
     "tech-a",
     "asset-revoked-a",
     "disabled-admin-a",
     "revoked-admin-a",
+    "lead-a",
+    "task-a",
   ])
     await expect(assetService().context(actor)).rejects.toThrow(
       "not permitted",
     );
-  for (const actor of ["admin-a", "lead-a", "task-a"])
+  for (const actor of ["admin-a"])
     expect((await assetService().context(actor)).canManage).toBe(true);
   expect(
     (
@@ -591,7 +593,7 @@ test("RLS and narrow grants deny unscoped/delete/revision mutations; composite r
   const other = await assetService({
     organizationId: "org-b",
     siteId: "site-b",
-  }).save("lead-b", {
+  }).save("admin-b", {
     key: "foreign-asset",
     id: "",
     expectedRevision: 0,

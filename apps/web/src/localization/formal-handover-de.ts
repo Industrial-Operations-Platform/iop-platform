@@ -1,5 +1,6 @@
 /** English source keys for formal transfer and explicit registered-asset references. */
 export const formalHandoverGerman: Readonly<Record<string, string>> = {
+  "Journal tracks current reports and unresolved issues. Closed shift records retain immutable transfer evidence and receiving acknowledgements; closing a transfer does not resolve journal issues.": "Das Journal zeigt aktuelle Meldungen und offene Probleme. Abgeschlossene Schichtprotokolle bewahren unveränderliche Übergabenachweise und Empfangsbestätigungen; der Abschluss einer Übergabe erledigt keine Probleme im Journal.",
   "Formal shift Handover": "Formelle Schichtübergabe",
   "Shift records": "Schichtprotokolle",
   "New record": "Neues Protokoll",

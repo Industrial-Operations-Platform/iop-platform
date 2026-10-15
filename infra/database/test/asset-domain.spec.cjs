@@ -111,7 +111,7 @@ beforeAll(async () => {
   configs = provisioningConfiguration(seedEnv);
   await provision(configs);
   await migrate(configs.migrator);
-  for (const [organizationId, siteId, users] of [[scope.organizationId, scope.siteId, [["admin", "administrator"], ["leader", "team-leader"], ["task", "task-force"], ["tech", "technician"]]], ["other-org", "other-site", [["foreign", "team-leader"]]]]) {
+  for (const [organizationId, siteId, users] of [[scope.organizationId, scope.siteId, [["admin", "administrator"], ["leader", "team-leader"], ["task", "task-force"], ["tech", "technician"]]], ["other-org", "other-site", [["foreign", "administrator"]]]]) {
     const seed = {
       ...seedEnv,
       IOP_SEED_ORGANIZATION_ID: organizationId,
@@ -216,7 +216,7 @@ beforeAll(async () => {
     await profiles.project(tx, id);
     await composition.published(tx, id);
   }), mappings, runtime.source);
-  for (const [key, code] of [["conveyor", "DEMO-CONVEYOR"], ["sensor", "DEMO-SENSOR"], ["motor", "DEMO-MOTOR"], ["controller", "DEMO-PLC"], ["second", "DEMO-CONVEYOR-2"]]) assets[key] = await runtime.assets.save("leader", {
+  for (const [key, code] of [["conveyor", "DEMO-CONVEYOR"], ["sensor", "DEMO-SENSOR"], ["motor", "DEMO-MOTOR"], ["controller", "DEMO-PLC"], ["second", "DEMO-CONVEYOR-2"]]) assets[key] = await runtime.assets.save("admin", {
     key: randomUUID(),
     id: "",
     expectedRevision: 0,
@@ -238,7 +238,7 @@ afterAll(async () => {
   if (container) await container.stop();
 });
 test("configurable model, cycle/controller rules and survey revisions are durable and scoped", async () => {
-  const context = await app.catalog("leader"),
+  const context = await app.catalog("admin"),
     types = context.catalog.types;
   types.find(t => t.id === "sensor").fields = [{
     key: "voltage",
@@ -247,14 +247,14 @@ test("configurable model, cycle/controller rules and survey revisions are durabl
     required: false,
     unit: "V"
   }];
-  await app.configure("leader", {
+  await app.configure("admin", {
     expectedRevision: 0,
     types
   });
   await app.save("admin", save("conveyor", "conveyor"));
-  await app.save("leader", save("second", "conveyor"));
-  await app.save("task", save("controller", "controller"));
-  const sensor = await app.save("task", save("sensor", "sensor", {
+  await app.save("admin", save("second", "conveyor"));
+  await app.save("admin", save("controller", "controller"));
+  const sensor = await app.save("admin", save("sensor", "sensor", {
     parentId: assets.conveyor.id,
     controllers: [{
       kind: "controlled-by",
@@ -273,15 +273,15 @@ test("configurable model, cycle/controller rules and survey revisions are durabl
       evidenceReference: "Fictional checklist"
     }
   }));
-  expect(sensor.surveyReviewerId).toBe("task");
-  expect((await app.detail("leader", assets.sensor.id)).related).toHaveLength(2);
-  await app.save("leader", {
+  expect(sensor.surveyReviewerId).toBe("admin");
+  expect((await app.detail("admin", assets.sensor.id)).related).toHaveLength(2);
+  await app.save("admin", {
     ...save("conveyor", "conveyor", {
       parentId: assets.second.id
     }),
     expectedRevision: 1
   });
-  await expect(app.save("leader", {
+  await expect(app.save("admin", {
     ...save("second", "conveyor", {
       parentId: assets.conveyor.id
     }),
@@ -289,21 +289,21 @@ test("configurable model, cycle/controller rules and survey revisions are durabl
   })).rejects.toMatchObject({
     code: "asset_domain_cycle"
   });
-  await expect(app.save("leader", {
+  await expect(app.save("admin", {
     ...save("controller", "sensor"),
     expectedRevision: 1
   })).rejects.toMatchObject({
     code: "asset_domain_conflict"
   });
-  const concurrent = await Promise.allSettled([app.save("leader", {
+  const concurrent = await Promise.allSettled([app.save("admin", {
     ...save("sensor", "sensor", sensor.data),
     expectedRevision: 1
-  }), app.save("task", {
+  }), app.save("admin", {
     ...save("sensor", "sensor", sensor.data),
     expectedRevision: 1
   })]);
   expect(concurrent.filter(r => r.status === "fulfilled")).toHaveLength(1);
-  expect((await app.history("leader", assets.sensor.id)).revisions).toHaveLength(2);
+  expect((await app.history("admin", assets.sensor.id)).revisions).toHaveLength(2);
   const foreign = composeAssetDomain(pool, {
     ...runtime.source,
     organizationId: "other-org",
@@ -337,23 +337,35 @@ test("large inventories use complete totals and bounded stable/refined pages ins
     }
   };
   await admin(`INSERT INTO assets.records(organization_id,site_id,id,code,status,location_id,revision,snapshot,author_id,created_at,request_key,fingerprint) SELECT $1,$2,'large-'||n,'ZZ-SYNTH-'||lpad(n::text,5,'0'),'unverified','area',1,jsonb_set(jsonb_set(jsonb_set($3::jsonb,'{id}',to_jsonb('large-'||n)),'{content,code}',to_jsonb('ZZ-SYNTH-'||lpad(n::text,5,'0'))),'{content,name}',to_jsonb('ZZ-SYNTH-'||lpad(n::text,5,'0'))),'leader','2026-10-14T12:00:00Z','large-'||n,'synthetic' FROM generate_series(1,1501) n`, [scope.organizationId, scope.siteId, JSON.stringify(snapshot)]);
-  expect(await app.catalog("leader")).not.toHaveProperty("assets");
-  const first = await app.references("leader", {
+  expect(await app.catalog("admin")).not.toHaveProperty("assets");
+  const first = await app.references("admin", {
     limit: 30
   });
   expect(first.total).toBe(1506);
   expect(first.assets).toHaveLength(30);
-  const second = await app.references("leader", {
+  const second = await app.references("admin", {
     limit: 30,
     cursor: first.nextCursor
   });
   expect(second.total).toBe(first.total);
   expect(second.assets.every(a => !first.assets.some(b => b.id === a.id))).toBe(true);
-  const refined = await app.references("leader", {
+  const refined = await app.references("admin", {
     search: "ZZ-SYNTH-01501"
   });
   expect(refined.total).toBe(1);
   expect(refined.assets[0].id).toBe("large-1501");
+});
+
+test.each(['leader','task','tech'])('current %s cannot enter standalone registry/models despite stale reader and writer grants', async actor => {
+  await admin("INSERT INTO users_rbac.site_role_assignments(organization_id,site_id,user_id,role_id,is_active) VALUES($1,$2,$3,'assets-reader',true),($1,$2,$3,'assets-administrator',true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",[scope.organizationId,scope.siteId,actor]);
+  await expect(runtime.assets.context(actor)).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  await expect(runtime.assets.query(actor,{search:'',status:'current',locationId:'',cursor:''})).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  await expect(runtime.assets.detail(actor,assets.sensor.id)).rejects.toBeInstanceOf(SiteAccessDeniedError);
+  await expect(app.catalog(actor)).rejects.toMatchObject({code:'asset_domain_denied'});
+  await expect(app.references(actor,{})).rejects.toMatchObject({code:'asset_domain_denied'});
+  await expect(app.mappingQuery(actor,{})).rejects.toMatchObject({code:'asset_domain_denied'});
+  await expect(app.detail(actor,assets.sensor.id)).rejects.toMatchObject({code:'asset_domain_denied'});
+  await expect(app.save(actor,save('sensor','sensor'))).rejects.toMatchObject({code:'asset_domain_denied'});
 });
 test("actual publication maps only reviewed identities and preserves RAW/facts while unresolved totals stay explicit", async () => {
   expect((await publish("20260701")).outcome).toBe("succeeded");
@@ -375,15 +387,15 @@ test("actual publication maps only reviewed identities and preserves RAW/facts w
       note: "Two synthetic candidates remain ambiguous."
     }
   };
-  await app.saveMapping("leader", request);
-  let result = await app.pareto("task", {
+  await app.saveMapping("admin", request);
+  let result = await app.pareto("admin", {
     from: "2026-07-01",
     toExclusive: "2026-07-02",
     metric: "frequency"
   });
   expect(result.states.ambiguous).toBe(1);
   expect(result.unresolved.frequency).toBe(40);
-  await app.saveMapping("task", {
+  await app.saveMapping("admin", {
     ...request,
     expectedRevision: 1,
     data: {
@@ -393,7 +405,7 @@ test("actual publication maps only reviewed identities and preserves RAW/facts w
       note: "Explicit synthetic sensor review."
     }
   });
-  result = await app.pareto("leader", {
+  result = await app.pareto("admin", {
     from: "2026-07-01",
     toExclusive: "2026-07-02",
     metric: "frequency"
@@ -407,7 +419,7 @@ test("actual publication maps only reviewed identities and preserves RAW/facts w
   expect(result.unresolved.frequency).toBe(30);
   expect(result.states.unmapped).toBe(1);
   expect((await publish("20260702")).outcome).toBe("succeeded");
-  expect((await app.pareto("leader", {
+  expect((await app.pareto("admin", {
     from: "2026-07-01",
     toExclusive: "2026-07-03",
     metric: "frequency"
@@ -415,25 +427,25 @@ test("actual publication maps only reviewed identities and preserves RAW/facts w
   expect((await admin("SELECT encode(original_bytes,'hex') AS bytes FROM integrations.import_batches WHERE reporting_date='2026-07-01' ORDER BY import_id")).rows).toEqual(rawBefore);
   expect((await admin("SELECT import_id,source_record_number,payload,reported_frequency,accumulated_alarm_seconds FROM oip.facts WHERE reporting_date='2026-07-01' ORDER BY import_id,source_record_number")).rows).toEqual(factsBefore);
   expect((await admin("SELECT state FROM oip.canonical_asset_link_history WHERE source_record_number=2 ORDER BY mapping_revision")).rows.map(r => r.state)).toContain("ambiguous");
-  const missing = await app.pareto("leader", {
+  const missing = await app.pareto("admin", {
     from: "2026-07-01",
     toExclusive: "2026-07-04",
     metric: "frequency"
   });
   expect(missing.missingDates).toEqual(["2026-07-03"]);
-  await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='task' AND role_id='analytics-reader'");
-  await expect(app.pareto("task", {
+  await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='admin' AND role_id='analytics-reader'");
+  await expect(app.pareto("admin", {
     from: "2026-07-01",
     toExclusive: "2026-07-02",
     metric: "frequency"
   })).rejects.toBeInstanceOf(SiteAccessDeniedError);
-  await admin("UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='task' AND role_id='analytics-reader'");
+  await admin("UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='admin' AND role_id='analytics-reader'");
 });
 test("failed projection-history writes roll back mapping decisions and immutable tables have narrow runtime rights", async () => {
-  const existing = (await app.mappingQuery("leader", {})).mappings[0];
+  const existing = (await app.mappingQuery("admin", {})).mappings[0];
   await admin("CREATE FUNCTION oip.synthetic_reject_canonical_history() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic projection fault'; END $$; CREATE TRIGGER synthetic_reject_canonical_history BEFORE INSERT ON oip.canonical_asset_link_history FOR EACH ROW EXECUTE FUNCTION oip.synthetic_reject_canonical_history()");
   try {
-    await expect(app.saveMapping("leader", {
+    await expect(app.saveMapping("admin", {
       id: existing.id,
       expectedRevision: existing.revision,
       reason: "Synthetic fault injection",
@@ -444,7 +456,7 @@ test("failed projection-history writes roll back mapping decisions and immutable
         note: "Rejected in synthetic test."
       }
     })).rejects.toThrow();
-    expect((await app.mappingForSource("leader", existing.data.source)).revision).toBe(existing.revision);
+    expect((await app.mappingForSource("admin", existing.data.source)).revision).toBe(existing.revision);
   } finally {
     await admin("DROP TRIGGER synthetic_reject_canonical_history ON oip.canonical_asset_link_history; DROP FUNCTION oip.synthetic_reject_canonical_history()");
   }
@@ -468,14 +480,14 @@ test("opt-in synthetic fixture is reusable, scoped and preserves later user revi
       locationId: "area"
     },
     before = (await admin("SELECT count(*)::integer AS count FROM oip.facts")).rows[0].count;
-  const first = await seedSyntheticAssetDomain(runtime.assets, app, "leader", options),
-    repeat = await seedSyntheticAssetDomain(runtime.assets, app, "leader", options);
+  const first = await seedSyntheticAssetDomain(runtime.assets, app, "admin", options),
+    repeat = await seedSyntheticAssetDomain(runtime.assets, app, "admin", options);
   expect(first.assets.map(a => a.id)).toEqual(repeat.assets.map(a => a.id));
   expect(first.assets).toHaveLength(4);
   expect(first.mappingState).toBe("ambiguous");
   expect((await admin("SELECT count(*)::integer AS count FROM oip.facts")).rows[0].count).toBe(before);
-  const model = (await app.detail("leader", first.assets[0].id)).enrichment;
-  await app.save("leader", {
+  const model = (await app.detail("admin", first.assets[0].id)).enrichment;
+  await app.save("admin", {
     assetId: model.assetId,
     expectedRevision: model.revision,
     reason: "Operator changed the synthetic model.",
@@ -484,7 +496,7 @@ test("opt-in synthetic fixture is reusable, scoped and preserves later user revi
       manufacturer: "Operator revision"
     }
   });
-  await expect(seedSyntheticAssetDomain(runtime.assets, app, "leader", options)).rejects.toThrow(/user edits are preserved/);
+  await expect(seedSyntheticAssetDomain(runtime.assets, app, "admin", options)).rejects.toThrow(/user edits are preserved/);
 });
 test("native importers prepare reviewed canonical links without registry-read grants", async () => {
   const roles = await admin("SELECT role_id FROM users_rbac.site_role_assignments WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer' AND is_active ORDER BY role_id", [scope.organizationId, scope.siteId]);
@@ -519,7 +531,7 @@ test("native importers prepare reviewed canonical links without registry-read gr
   expect((await admin("SELECT 1 FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND reporting_date='2026-10-08'", [scope.organizationId, scope.siteId])).rowCount).toBe(0);
 });
 test("source candidate lookup uses original tuples with full counts, bounded pages and current source permissions", async () => {
-  const original = await app.candidates("leader", {
+  const original = await app.candidates("admin", {
     search: "SOURCE-S1"
   });
   expect(original.candidates).toEqual([{
@@ -529,7 +541,7 @@ test("source candidate lookup uses original tuples with full counts, bounded pag
     code: "SOURCE-S1",
     records: 3
   }]);
-  const reviewed = await app.mappingForSource("leader", {
+  const reviewed = await app.mappingForSource("admin", {
     sourceId: "model-source",
     namespace: "source-equipment",
     area: "Demo area",
@@ -537,7 +549,7 @@ test("source candidate lookup uses original tuples with full counts, bounded pag
   });
   expect(reviewed.data.status).toBe("approved");
   expect(reviewed.data.candidateIds).toEqual([assets.sensor.id]);
-  const history = await app.mappingHistory("leader", reviewed.id);
+  const history = await app.mappingHistory("admin", reviewed.id);
   expect(history.revisions.map(r => r.mapping.data.status)).toEqual(["approved", "pending"]);
   expect(history.nextBefore).toBe(0);
   const header = '"Häufigkeit";"Dauer";"Bereich";"Betriebsmittelkennzeichen";"Meldetext";"Typ";"Meldegruppe"\r\n';
@@ -545,7 +557,7 @@ test("source candidate lookup uses original tuples with full counts, bounded pag
     length: 32
   }, (_, i) => '1;0 0:00:01;Demo area;LOOKUP-' + String(i + 1).padStart(3, '0') + ';Synthetic lookup;01;007').join('\r\n') + '\r\n';
   expect((await imports.submit("admin", "Hitliste-20261007.csv", Buffer.from("\ufeff" + csv, "utf16le"))).outcome).toBe("succeeded");
-  const unmapped = await app.pareto("leader", {
+  const unmapped = await app.pareto("admin", {
     from: "2026-10-07",
     toExclusive: "2026-10-08",
     metric: "frequency"
@@ -557,19 +569,19 @@ test("source candidate lookup uses original tuples with full counts, bounded pag
     unmapped: 32
   });
   expect(unmapped.groups).toEqual([]);
-  const first = await app.candidates("leader", {
+  const first = await app.candidates("admin", {
     search: "LOOKUP-"
   });
   expect(first.candidates).toHaveLength(30);
   expect(first.nextCursor).not.toBe("");
-  const second = await app.candidates("leader", {
+  const second = await app.candidates("admin", {
     search: "LOOKUP-",
     cursor: first.nextCursor
   });
   expect(second.candidates).toHaveLength(2);
   expect(second.nextCursor).toBe("");
   expect(second.candidates.every(c => !first.candidates.some(p => p.code === c.code))).toBe(true);
-  expect((await app.candidates("leader", {
+  expect((await app.candidates("admin", {
     search: "LOOKUP-032"
   })).candidates).toEqual([{
     sourceId: "model-source",
@@ -578,12 +590,43 @@ test("source candidate lookup uses original tuples with full counts, bounded pag
     code: "LOOKUP-032",
     records: 1
   }]);
-  await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='task' AND role_id='analytics-reader'");
+  await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='admin' AND role_id='analytics-reader'");
   try {
-    await expect(app.candidates("task", {
+    await expect(app.candidates("admin", {
       search: "LOOKUP-"
     })).rejects.toBeInstanceOf(SiteAccessDeniedError);
   } finally {
-    await admin("UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='task' AND role_id='analytics-reader'");
+    await admin("UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='admin' AND role_id='analytics-reader'");
   }
+});
+
+test('Administrator classification evidence uses exact reviewed/alias source tuples with original provenance and explicit bounded coverage',async()=>{
+ const header='"Häufigkeit";"Dauer";"Bereich";"Betriebsmittelkennzeichen";"Meldetext";"Typ";"Meldegruppe"\r\n';
+ const rows=Array.from({length:32},(_,index)=>`1;0 0:00:01;Demo area;EVID-LS-211;${index===0?'Lichtschranke zu lange belegt':'Synthetic observation '+index};01;007`);
+ rows.push('1;0 0:00:01;Other area;EVID-LS-211;Foreign-area observation;01;007','1;0 0:00:01;Demo area;EVID-LS-211-LONG;Prefix-neighbor observation;01;007','1;0 0:00:01;Demo area;EVID-MOTOR-211;Motor running;01;007');
+ const imported=await runtime.imports.submit('admin','Hitliste-20261010.csv',Buffer.from('\ufeff'+header+rows.join('\r\n')+'\r\n','utf16le'));expect(imported.outcome).toBe('succeeded');
+ const registered=await runtime.assets.save('admin',{key:randomUUID(),id:'',expectedRevision:0,note:'',content:{code:'EVID-REGISTERED-211',name:'Registered reference',type:'Operator motor decision',locationId:'area',status:'validated',validationNote:'Synthetic explicit review',description:'Preserve operator classification',aliases:[]}});
+ const mapping={id:randomUUID(),expectedRevision:0,reason:'Explicit synthetic source review',data:{source:{sourceId:'model-source',namespace:'source-equipment',area:'Demo area',code:'EVID-LS-211'},status:'approved',candidateIds:[registered.id],note:'Exact fixture tuple'}};
+ await app.saveMapping('admin',mapping);
+ const before=(await admin('SELECT import_id,source_record_number,payload FROM oip.facts ORDER BY import_id,source_record_number')).rows;
+ const evidence=await runtime.locator.classification('admin',{assetId:registered.id});
+ expect(evidence).toMatchObject({assetId:registered.id,coverage:'limited',totalSources:1});expect(evidence.sources).toHaveLength(1);
+ expect(evidence.sources[0]).toMatchObject({sourceId:'model-source',area:'Demo area',code:'EVID-LS-211',origin:'reviewed-mapping',mappingId:mapping.id,mappingRevision:1,total:32});
+ expect(evidence.sources[0].evidence).toHaveLength(30);expect(evidence.sources[0].evidence[0]).toEqual({importId:imported.importId,sourceRecordNumber:2,reportingDate:'2026-10-10',message:'Lichtschranke zu lange belegt'});
+ expect(JSON.stringify(evidence)).not.toContain('Foreign-area');expect(JSON.stringify(evidence)).not.toContain('Prefix-neighbor');
+ expect((await runtime.assets.detail('admin',registered.id)).content.type).toBe('Operator motor decision');
+ expect((await admin('SELECT import_id,source_record_number,payload FROM oip.facts ORDER BY import_id,source_record_number')).rows).toEqual(before);
+ const candidate=(await runtime.assets.equipmentCatalog('admin',{locationId:'',code:'EVID-MOTOR-211'})).candidates.find(value=>value.area==='Demo area');
+ const aliasAsset=await runtime.assets.save('admin',{key:randomUUID(),id:'',expectedRevision:0,note:'',content:{code:'EVID-MOTOR-211',name:'Explicit alias',type:'Operator choice',locationId:'area',status:'unverified',validationNote:'',description:'',aliases:[{...candidate,departmentId:'',areaId:''}]}});
+ const aliasEvidence=await runtime.locator.classification('admin',{assetId:aliasAsset.id});expect(aliasEvidence).toMatchObject({coverage:'available',totalSources:1});expect(aliasEvidence.sources[0]).toMatchObject({origin:'exact-alias',mappingId:'',mappingRevision:0,total:1});expect(aliasEvidence.sources[0].evidence[0].message).toBe('Motor running');
+ await app.saveMapping('admin',{id:randomUUID(),expectedRevision:0,reason:'Reject the provisional source association',data:{source:{sourceId:'model-source',namespace:'source-equipment',area:'Demo area',code:'EVID-MOTOR-211'},status:'rejected',candidateIds:[],note:'Explicit rejection suppresses alias fallback'}});
+ expect(await runtime.locator.classification('admin',{assetId:aliasAsset.id})).toEqual({assetId:aliasAsset.id,coverage:'unmapped',totalSources:0,sources:[]});
+ for(const actor of ['leader','task','tech'])await expect(runtime.locator.classification(actor,{assetId:registered.id})).rejects.toBeInstanceOf(Error);
+ await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='admin' AND role_id='analytics-reader'");
+ try{await expect(runtime.locator.classification('admin',{assetId:registered.id})).rejects.toBeInstanceOf(SiteAccessDeniedError);}finally{await admin("UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='admin' AND role_id='analytics-reader'");}
+ const {equipmentMessageEvidence}=require('../../../apps/api/dist/modules/oip/adapters/postgres/equipment-message-evidence');
+ await expect(runSiteOperation(pool,{...scope,userId:'admin',permissions:['analytics.read']},tx=>equipmentMessageEvidence(tx,{...runtime.source,sourceId:'other-source'},{area:'Demo area',code:'EVID-LS-211'}))).resolves.toEqual({total:0,evidence:[]});
+ await expect(runSiteOperation(pool,{...scope,userId:'admin',permissions:['analytics.read']},tx=>equipmentMessageEvidence(tx,{...runtime.source,siteId:'other-site'},{area:'Demo area',code:'EVID-LS-211'}))).rejects.toBeInstanceOf(SiteAccessDeniedError);
+ const single=new Pool({...configs.runtime,max:1,connectionTimeoutMillis:2000});
+ try{const {composePlatformLocator}=require('../../../apps/api/dist/host/locator-composition');const locator=composePlatformLocator(single,runtime.source,[], '/private/tmp/iop-211-no-references');expect((await locator.classification('admin',{assetId:registered.id})).sources[0].total).toBe(32);}finally{await single.end();}
 });

@@ -1,7 +1,8 @@
 export class LocatorError extends Error {
   constructor(readonly code: 'invalid_locator' | 'locator_denied' | 'locator_missing' | 'locator_conflict' | 'locator_capacity' | 'locator_reference_unavailable') { super(code); }
 }
-export const componentKinds = ['conveyor', 'curve', 'junction', 'lift', 'sensor', 'scanner', 'scale', 'cabinet'] as const;
+export const locatorLimits = { scenes: 250, sceneBytes: 1048576, siteSceneBytes: 16777216 } as const;
+export const componentKinds = ['conveyor', 'curve', 'junction', 'lift', 'motor', 'photoelectric-sensor', 'sensor', 'scanner', 'scale', 'cabinet'] as const;
 export type ComponentKind = typeof componentKinds[number];
 export interface Component {
   id: string;
@@ -120,7 +121,7 @@ export function validContent(value: unknown): SceneContent {
     throw new LocatorError('invalid_locator');
   return result;
 }
-export const componentCatalog = componentKinds.map(kind => ({ kind, width: kind === 'conveyor' ? 0.25 : kind === 'curve' ? 0.12 : 0.04, depth: kind === 'conveyor' ? 0.035 : kind === 'curve' ? 0.12 : 0.04, height: kind === 'lift' ? 0.24 : kind === 'cabinet' ? 0.09 : 0.025 }));
+export const componentCatalog = componentKinds.map(kind => ({ kind, width: kind === 'conveyor' ? 0.25 : kind === 'curve' ? 0.12 : kind === 'motor' ? 0.025 : kind === 'photoelectric-sensor' ? 0.035 : 0.04, depth: kind === 'conveyor' ? 0.035 : kind === 'curve' ? 0.12 : kind === 'motor' ? 0.025 : kind === 'photoelectric-sensor' ? 0.008 : 0.04, height: kind === 'lift' ? 0.24 : kind === 'cabinet' ? 0.09 : kind === 'motor' ? 0.04 : 0.025 }));
 export function demonstration(): SceneContent {
   const make = (id: string, kind: ComponentKind, label: string, x: number, y: number, rotation = 0): Component => ({ id, kind, label, x, y, rotation, elevation: null, width: kind === 'conveyor' ? 0.34 : kind === 'curve' ? 0.13 : 0.035, depth: kind === 'conveyor' ? 0.045 : kind === 'curve' ? 0.13 : 0.035, height: kind === 'lift' ? 0.2 : 0.035, assetId: '', verification: 'provisional', note: 'Synthetic reusable component example; no plant identity or position.' });
   return { name: 'Component demonstration', group: 'Examples', locationId: '', referenceId: '', description: 'Synthetic scene demonstrating reusable geometry. It does not represent the plant.', calibration: 'pending', surveyNote: '', components: [make('example-belt-1', 'conveyor', 'Example conveyor', 0.35, 0.4), make('example-bend', 'curve', 'Example curve', 0.58, 0.42), make('example-belt-2', 'conveyor', 'Example outgoing conveyor', 0.6, 0.65, 90), make('example-sensor', 'sensor', 'Example sensor', 0.35, 0.45), make('example-scanner', 'scanner', 'Example scanner', 0.6, 0.58), make('example-lift', 'lift', 'Example lift', 0.78, 0.65)] };

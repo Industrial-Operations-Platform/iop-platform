@@ -84,7 +84,7 @@ function fixture(overrides: Partial<Gateway> = {}) {
     application: new AssetsApplication(gateway, () => "stable-key"),
   };
 }
-test.each(["technician", "executive"])(
+test.each(["technician", "executive", "team-leader", "task-force"])(
   "%s preview cannot manage assets even with administrator capabilities",
   async (profile) => {
     const { application } = fixture();
@@ -113,7 +113,7 @@ test("registration retains its key after rejection and alias fields reflect thei
   render(
     <AssetsWorkspace
       application={application}
-      profile="team-leader"
+      profile="administrator"
       timeZone="UTC"
     />,
   );
@@ -335,7 +335,7 @@ test.each(["not-authorized", "unavailable", "unmapped"] as const)(
     expect(screen.queryByText("Showing 0 of 0 records.")).toBeNull();
   },
 );
-test.each(["administrator", "team-leader", "task-force"])(
+test.each(["administrator"])(
   "%s can manage provisionally identified components when authorized",
   async (profile) => {
     const { application } = fixture();

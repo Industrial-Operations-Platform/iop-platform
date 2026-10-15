@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { componentKinds, type ComponentKind } from '../modules/asset-locator/domain/locator';
+import { modelStates, type ModelState } from '../modules/asset-locator/domain/model-preparation';
 export class LocatorComponentDto {
   @ApiProperty()
   id!: string;
@@ -249,4 +250,55 @@ export class LocatorBootstrapDto {
   referenceCount!: number;
 }
 export class LocatorEmptyDto {
+}
+export class LocatorLocateDto {
+  @ApiProperty()
+  assetId!: string;
+}
+export class LocatorModelPreviewDto {
+  @ApiProperty() referenceId!: string;
+  @ApiProperty() referenceName!: string;
+  @ApiProperty() sceneId!: string;
+  @ApiProperty() expectedRevision!: number;
+  @ApiProperty({ enum: modelStates }) status!: ModelState;
+  @ApiProperty() componentCount!: number;
+  @ApiProperty() motors!: number;
+  @ApiProperty() photoelectricSensors!: number;
+  @ApiProperty() conveyors!: number;
+}
+export class LocatorModelsDto {
+  @ApiProperty({ type: [LocatorModelPreviewDto] }) models!: LocatorModelPreviewDto[];
+}
+export class LocatorModelApplyDto {
+  @ApiProperty() id!: string;
+  @ApiProperty({ minimum: 1 }) expectedRevision!: number;
+}
+export class LocatorModelResultDto {
+  @ApiProperty() sceneId!: string;
+  @ApiProperty() revision!: number;
+  @ApiProperty({ enum: [...modelStates, 'applied'] }) status!: ModelState | 'applied';
+}
+export class LocatorMessageEvidenceDto {
+  @ApiProperty() importId!: string;
+  @ApiProperty() sourceRecordNumber!: number;
+  @ApiProperty() reportingDate!: string;
+  @ApiProperty() message!: string;
+}
+export class LocatorClassificationSourceDto {
+  @ApiProperty() sourceId!: string;
+  @ApiProperty() area!: string;
+  @ApiProperty() code!: string;
+  @ApiProperty({ enum: ['reviewed-mapping', 'exact-alias'] }) origin!: 'reviewed-mapping' | 'exact-alias';
+  @ApiProperty() mappingId!: string;
+  @ApiProperty() mappingRevision!: number;
+  @ApiProperty() total!: number;
+  @ApiProperty({ type: [LocatorMessageEvidenceDto] }) evidence!: LocatorMessageEvidenceDto[];
+}
+export class LocatorClassificationDto {
+  @ApiProperty() assetId!: string;
+  @ApiProperty({ enum: ['available', 'unmapped', 'limited'] }) coverage!: 'available' | 'unmapped' | 'limited';
+  @ApiProperty() totalSources!: number;
+  @ApiProperty({ type: [LocatorClassificationSourceDto] }) sources!: LocatorClassificationSourceDto[];
+  @ApiProperty({ enum: ['', 'photoelectric-sensor'] }) suggestedKind!: '' | 'photoelectric-sensor';
+  @ApiProperty() matchedMessages!: number;
 }

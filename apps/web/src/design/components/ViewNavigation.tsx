@@ -10,6 +10,7 @@ export function ViewNavigation<T extends string | number>({
   selected,
   onSelect,
   placement = "bottom",
+  buttonVariant,
 }: {
   label: string;
   items: readonly {
@@ -23,6 +24,7 @@ export function ViewNavigation<T extends string | number>({
   selected: T;
   onSelect: (id: T) => void;
   placement?: "bottom" | "inline" | "summary" | "tabs";
+  buttonVariant?: "text";
 }) {
   const descriptionId = useId();
   const navigation = useRef<HTMLElement>(null);
@@ -52,6 +54,7 @@ export function ViewNavigation<T extends string | number>({
       {items.map((item) => (
         <Button
           key={item.id}
+          variant={buttonVariant}
           disabled={item.disabled}
           data-tone={item.tone ?? "neutral"}
           aria-describedby={

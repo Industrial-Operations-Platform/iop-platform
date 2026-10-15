@@ -40,6 +40,7 @@ import { language, subscribeLanguage, t } from "../localization/i18n";
 import { PlatformMark } from "../design/components/PlatformMark";
 import type { HandoverApplication } from "../features/shift-handover/application/handover";
 import { HandoverWorkspace } from "../features/shift-handover/adapters/react/HandoverWorkspace";
+import type { JournalView } from "../features/shift-handover/adapters/react/HandoverViewNavigation";
 import { HandoverHighlights } from "../features/shift-handover/adapters/react/HandoverHighlights";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
@@ -120,6 +121,9 @@ export function WorkspaceApp({
   const [overviewVisit,setOverviewVisit] = useState(0);
   const [formalRecord,setFormalRecord] = useState("");
   const [formalVisit,setFormalVisit] = useState(0);
+  const [locatorAsset, setLocatorAsset] = useState("");
+  const [locatorVisit, setLocatorVisit] = useState(0);
+  const [handoverInitialView, setHandoverInitialView] = useState<JournalView>("meeting");
   const [maintenanceVisit, setMaintenanceVisit] = useState(0);
   const [assetVisit, setAssetVisit] = useState(0);
   const [maintenanceRecord, setMaintenanceRecord] = useState("");
@@ -264,11 +268,26 @@ export function WorkspaceApp({
       : undefined;
   const administration = canViewProfiles && !previewProfile;
   const effectiveProfile = previewProfile ?? context?.user?.profile;
-  const canReadAssets =
+  const canUseOperations =
     !!signedIn &&
+    ["administrator", "team-leader", "task-force"].includes(context?.user?.profile ?? "") &&
     ["administrator", "team-leader", "task-force"].includes(
       effectiveProfile ?? "",
     );
+  const canManageAssets = !!signedIn && context?.user?.profile === "administrator" && effectiveProfile === "administrator";
+  const canOpenAsset = canManageAssets ? !!assets : canUseOperations && !!locator;
+  const openAsset = (id: string) => {
+    window.scrollTo(0, 0);
+    if (canManageAssets && assets) {
+      setAssetRecord(id);
+      setAssetVisit(v => v + 1);
+      setPage("assets");
+    } else if (canUseOperations && locator) {
+      setLocatorAsset(id);
+      setLocatorVisit(v => v + 1);
+      setPage("locator");
+    }
+  };
   const openMaintenance = (id: string) => {
     setMaintenanceDraft(undefined);
     setMaintenanceRecord(id);
@@ -297,17 +316,26 @@ export function WorkspaceApp({
     setPage("administration");
   };
   const openInformation = (id: string) => {
+    setHandoverInitialView("meeting");
     setHandoverEntry(id); setHandoverVisit((visit) => visit + 1);
     setHandoverHighlights(false); setHandoverPending(false); setHandoverAttention(false);
     setPage("handover");
   };
-  const openHandoverHome = () => {
+  const openHandoverView = (view: JournalView) => {
+    setHandoverInitialView(view);
     setHandoverEntry("");
     setHandoverHighlights(false);
     setHandoverPending(false);
     setHandoverAttention(false);
     setHandoverVisit((visit) => visit + 1);
     setPage("handover");
+  };
+  const openHandoverHome = () => openHandoverView("meeting");
+  const openShiftRecords = () => {
+    if (!canUseOperations || !formalHandover) return;
+    setFormalRecord("");
+    setFormalVisit(v => v + 1);
+    setPage("formal-handover");
   };
   const signOut = () => {
     if (!access) return;
@@ -320,7 +348,7 @@ export function WorkspaceApp({
   };
   const navigateOverview = (target:OverviewTarget) => {
     window.scrollTo(0,0);
-    if(target.source === 'assets'){setAssetRecord(target.id);setAssetVisit(v=>v+1);setPage('assets');}
+    if(target.source === 'assets')openAsset(target.id);
     else if(target.source === 'handover')openInformation(target.id);
     else if(target.source === 'maintenance')openMaintenance(target.id);
     else if(target.source === 'shift'){setFormalRecord(target.id);setFormalVisit(v=>v+1);setPage('formal-handover');}
@@ -506,7 +534,7 @@ export function WorkspaceApp({
       }
       navigation={
         <SideNavigation
-          selected={page}
+          selected={page === "formal-handover" ? "handover" : page}
           onSelect={(next) => {
             if (next === "handover") openHandoverHome();
             else {
@@ -517,7 +545,7 @@ export function WorkspaceApp({
                 setMaintenanceRecord("");
                 setMaintenanceVisit((v) => v + 1);
               }
-              if (next === "formal-handover") {setFormalRecord("");setFormalVisit(v=>v+1);}
+              if (next === "locator") {setLocatorAsset("");setLocatorVisit(v=>v+1);}
               if (next === "area-overview") {setOverviewLocation("");setOverviewVisit(v=>v+1);}
               if (next === "asset-domain") {setDomainAsset("");setDomainVisit(v=>v+1);}
               if (next === "assets") {
@@ -556,22 +584,19 @@ export function WorkspaceApp({
             ...(overview && signedIn
               ? [{id: "area-overview" as const,label:t("Area overview")}]
               : []),
-            ...(assets && canReadAssets
+            ...(assets && canManageAssets
               ? [{ id: "assets" as const, label: t("Assets") }]
               : []),
-            ...(assetDomain && canReadAssets
+            ...(assetDomain && canManageAssets
               ? [{id:"asset-domain" as const,label:t("Asset management")}]
               : []),
-            ...(formalHandover && canReadAssets
-              ? [{id: "formal-handover" as const, label: t("Formal Handover")}]
-              : []),
-            ...(improvements && canReadAssets
+            ...(improvements && canUseOperations
               ? [{id: "improvements" as const, label: t("Improvements")}]
               : []),
-            ...(locator && canReadAssets
+            ...(locator && canUseOperations
               ? [{id: "locator" as const, label: t("Asset Locator")}]
               : []),
-            ...(connections && canReadAssets
+            ...(connections && canUseOperations
               ? [{id: "integrations" as const, label: t("Integrations")}]
               : []),
             ...(showUserAdministration
@@ -613,20 +638,22 @@ export function WorkspaceApp({
           </Button>
         </Panel>
       )}
-      {page === "asset-domain" && assetDomain && canReadAssets ? (
+      {page === "asset-domain" && assetDomain && canManageAssets ? (
         <AssetDomainWorkspace application={assetDomain} timeZone={context.scope?.siteTimeZone??"UTC"} initialAssetId={domainAsset} homeVisit={domainVisit}
-          onOpenAsset={id=>{setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}}/>
+          onOpenAsset={openAsset}/>
       ) : page === "area-overview" && overview && signedIn ? (
         <AreaOverview application={overview} onNavigate={navigateOverview} initialLocationId={overviewLocation} homeVisit={overviewVisit}/>
-      ) : page === "formal-handover" && formalHandover && canReadAssets ? (
-        <FormalHandoverWorkspace application={formalHandover} departmentId={departmentId} initialRecordId={formalRecord} homeVisit={formalVisit} onEntry={openInformation}/>
-      ) : page === "improvements" && improvements && canReadAssets ? (
+      ) : page === "formal-handover" && formalHandover && canUseOperations ? (
+        <FormalHandoverWorkspace application={formalHandover} departmentId={departmentId} initialRecordId={formalRecord} homeVisit={formalVisit} onEntry={openInformation}
+          onHome={openHandoverHome} onJournalView={handover ? openHandoverView : undefined} dailyOverview={effectiveProfile === "team-leader"}/>
+      ) : page === "improvements" && improvements && canUseOperations ? (
         <ImprovementWorkspace application={improvements} timeZone={context.scope?.siteTimeZone ?? "UTC"}
-          onOpenAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}} onOpenIssue={openInformation}/>
-      ) : page === "locator" && locator && canReadAssets ? (
-        <LocatorWorkspace application={locator} onAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}}
+          onOpenAsset={canOpenAsset ? openAsset : undefined} onOpenIssue={openInformation}/>
+      ) : page === "locator" && locator && canUseOperations ? (
+        <LocatorWorkspace application={locator} initialAssetId={locatorAsset} homeVisit={locatorVisit} readOnly={!canManageAssets}
+          onAsset={canManageAssets ? openAsset : undefined} onCreateAsset={canManageAssets && assets ? () => openAsset("") : undefined}
           onProblem={(kind,id) => kind === "maintenance" ? openMaintenance(id) : openInformation(id)}/>
-      ) : page === "integrations" && connections && canReadAssets ? (
+      ) : page === "integrations" && connections && canUseOperations ? (
         <ConnectionsWorkspace application={connections} canManage={effectiveProfile === "administrator"}/>
       ) : page === "maintenance" && maintenance && signedIn ? (
         <MaintenanceWorkspace
@@ -661,17 +688,11 @@ export function WorkspaceApp({
               : undefined
           }
           onOpenAsset={
-            canReadAssets
-              ? (id) => {
-                  window.scrollTo(0, 0);
-                  setAssetRecord(id);
-                  setAssetVisit((v) => v + 1);
-                  setPage("assets");
-                }
-              : undefined
+            canOpenAsset ? openAsset : undefined
           }
+          assetActionLabel={canManageAssets ? "Open asset record" : "Locate asset"}
         />
-      ) : page === "assets" && assets && canReadAssets ? (
+      ) : page === "assets" && assets && canManageAssets ? (
         <AssetsWorkspace
           key={`${context.user?.id}:${effectiveProfile}`}
           application={assets}
@@ -769,6 +790,8 @@ export function WorkspaceApp({
           application={handover}
           dailyOverview={effectiveProfile === "team-leader"}
           initialEntry={handoverEntry}
+          initialView={handoverInitialView}
+          onShiftRecords={formalHandover && canUseOperations ? openShiftRecords : undefined}
           initialHighlights={handoverHighlights}
           initialPending={handoverPending}
           initialAttention={handoverAttention}

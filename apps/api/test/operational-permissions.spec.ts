@@ -28,9 +28,7 @@ test.each(profiles)(
       ["administrator", "team-leader"].includes(profile),
     );
     expect(allowed("maintenance.administer")).toBe(profile === "administrator");
-    expect(allowed("assets.manage")).toBe(
-      ["administrator", "team-leader", "task-force"].includes(profile),
-    );
+    expect(allowed("assets.manage")).toBe(profile === "administrator");
     expect(allowed("analytics.read")).toBe(profile !== "technician");
   },
 );

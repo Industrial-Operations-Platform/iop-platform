@@ -9,8 +9,8 @@ import { createOpenApiDocument } from "../src/host/openapi";
 import { domainFixture, enrichment, mappingInput } from "./asset-domain-fixture";
 describe("Asset domain transport", () => {
   let app: INestApplication,
-    actor = "leader";
-  const f = domainFixture();
+    actor = "admin";
+  const f = domainFixture(["admin"]);
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       controllers: [AssetDomainController],
@@ -32,7 +32,7 @@ describe("Asset domain transport", () => {
     await app.close();
   });
   afterEach(() => {
-    actor = "leader";
+    actor = "admin";
   });
   test("publishes scoped type/reference/model/mapping and full-total Pareto contracts", async () => {
     await request(app.getHttpServer()).post("/api/v1/asset-domain/save").send(enrichment("sensor", "sensor")).expect(201);
@@ -46,11 +46,13 @@ describe("Asset domain transport", () => {
     expect(source.body.mapping.revision).toBe(1);
     expect(createOpenApiDocument(app).components?.schemas?.CanonicalAssetParetoDto).toBeDefined();
   });
-  test("denies current Technician access and rejects forged attribution/query scope/stale writes", async () => {
-    actor = "tech";
-    const denied = await request(app.getHttpServer()).post("/api/v1/asset-domain/catalog").send({}).expect(403);
-    expect(denied.body.code).toBe("asset_domain_denied");
-    actor = "leader";
+  test("denies non-administrator access and rejects forged attribution/query scope/stale writes", async () => {
+    for (const reader of ["leader", "task", "tech"]) {
+      actor = reader;
+      const denied = await request(app.getHttpServer()).post("/api/v1/asset-domain/catalog").send({}).expect(403);
+      expect(denied.body.code).toBe("asset_domain_denied");
+    }
+    actor = "admin";
     await request(app.getHttpServer()).post("/api/v1/asset-domain/references?site=foreign").send({}).expect(400);
     await request(app.getHttpServer()).post("/api/v1/asset-domain/save").send({
       ...enrichment("sensor"),

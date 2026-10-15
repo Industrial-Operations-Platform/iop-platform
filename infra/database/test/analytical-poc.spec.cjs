@@ -106,8 +106,8 @@ async function retainOperationalResetEvidence() {
       [scope.organizationId, scope.siteId, role],
     );
   }
-  // Operational Assets and work assignment use an eligible Team Leader;
-  // the administrator retains priority and workforce administration.
+  // Asset registration is Administrator-owned; the Team Leader retains
+  // operational work assignment and compact asset references.
   await admin(
     "INSERT INTO users_rbac.profiles(organization_id,user_id,site_id,display_name,profile) VALUES($1,'demo-b',$2,'Demo colleague','team-leader')",
     [scope.organizationId, scope.siteId],
@@ -118,11 +118,11 @@ async function retainOperationalResetEvidence() {
       [scope.organizationId, scope.siteId, role],
     );
   }
-  const knownEquipment = (await runtime.assets.equipmentCatalog("demo-b", {
+  const knownEquipment = (await runtime.assets.equipmentCatalog("demo-a", {
     locationId: "",
   })).candidates.find(candidate => candidate.namespace === "analytics");
   expect(knownEquipment).toBeDefined();
-  const asset = await runtime.assets.save("demo-b", {
+  const asset = await runtime.assets.save("demo-a", {
     key: "reset-evidence-asset",
     id: "",
     expectedRevision: 0,

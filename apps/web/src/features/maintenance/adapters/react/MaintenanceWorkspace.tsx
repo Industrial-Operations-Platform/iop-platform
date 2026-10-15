@@ -44,6 +44,7 @@ export function MaintenanceWorkspace({
   initialRecordId = "",
   initialMyWork = false,
   onOpenAsset,
+  assetActionLabel = "Open asset record",
   lookupEquipment,
   renderReportCards,
   renderReport,
@@ -57,6 +58,7 @@ export function MaintenanceWorkspace({
   initialRecordId?: string;
   initialMyWork?: boolean;
   onOpenAsset?: (id: string) => void;
+  assetActionLabel?: string;
   lookupEquipment?: EquipmentLookup;
   renderReport?: (id: string, back: () => void) => ReactNode;
   initialDraft?: Partial<SaveInput["data"]>;
@@ -483,7 +485,7 @@ export function MaintenanceWorkspace({
                       variant="secondary"
                       onClick={() => onOpenAsset(selected.data.assetId)}
                     >
-                      {t("Open asset record")}
+                      {t(assetActionLabel)}
                     </Button>
                   )}
                 </Actions>

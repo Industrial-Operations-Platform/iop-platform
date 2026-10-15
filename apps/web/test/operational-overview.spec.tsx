@@ -22,3 +22,18 @@ test('formal pages use only source-owned cursors and selected actual record iden
     await waitFor(() => expect(h.gateway.area).toHaveBeenLastCalledWith(expect.objectContaining({ recordCursor: 'formal-page-two', recordId: 'actual-record' })));
     expect(await screen.findByText('Selected actual shift')).toBeInTheDocument();
 });
+
+test('Area/location reuses the department compact control and retains native hierarchical selection', async () => {
+    const h = harness();
+    render(<IdentityRoot><AreaOverview application={h.app} initialLocationId="area" onNavigate={() => { }}/></IdentityRoot>);
+    const area = await screen.findByRole('combobox', { name: 'Selected area' });
+    const department = screen.getByRole('combobox', { name: 'Selected department' });
+    expect(area.closest('label')).toHaveClass('iop-context-field', 'iop-department-scope');
+    expect(department.closest('label')).toHaveClass('iop-context-field', 'iop-department-scope');
+    expect(area).toHaveValue('area');
+    expect(area).toHaveAccessibleName('Selected area');
+    fireEvent.change(area, { target: { value: '' } });
+    await waitFor(() => expect(h.gateway.area).toHaveBeenLastCalledWith(expect.objectContaining({ locationId: 'department' })));
+    fireEvent.change(area, { target: { value: 'area' } });
+    await waitFor(() => expect(h.gateway.area).toHaveBeenLastCalledWith(expect.objectContaining({ locationId: 'area' })));
+});

@@ -21,6 +21,7 @@ export function SceneViewport({ scene, reference, selectedId, problemAssetIds, o
     position: number[];
     target: number[];
   } | undefined>(undefined);
+  const focused = useRef('');
   const [unavailable, setUnavailable] = useState(false), [imageError, setImageError] = useState(false);
   const { resolved } = useAppearance();
   const select = useRef(onSelect), place = useRef(onPlace);
@@ -38,6 +39,9 @@ export function SceneViewport({ scene, reference, selectedId, problemAssetIds, o
       if (!active) return;
       view = createSceneRenderer(host, { scene, aspect: reference ? reference.width / reference.height : 1.65, referenceUrl: reference ? referenceUrl(reference.id) : undefined, palette: resolved === 'dark' ? darkIdentity : identity, selectedId, problemAssetIds, cameraState: camera.current, onSelect: id => select.current(id), onPlace: point => place.current?.(point), onReferenceError: () => {if (active) setImageError(true);} });
       renderer.current = view;
+      const key = scene.id + ':' + selectedId;
+      if (selectedId && focused.current !== key) view.focus(selectedId);
+      focused.current = key;
     }).catch(() => {
       if (!active) return;
       setUnavailable(true);

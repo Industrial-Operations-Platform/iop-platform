@@ -902,6 +902,130 @@
         ]
       }
     },
+    "/api/v1/locator/locate": {
+      "post": {
+        "operationId": "LocatorController_locate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorLocateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorSearchResultsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/model-preview": {
+      "post": {
+        "operationId": "LocatorController_modelPreview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorEmptyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorModelsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/classification": {
+      "post": {
+        "operationId": "LocatorController_classification",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorLocateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorClassificationDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
+    "/api/v1/locator/apply-model": {
+      "post": {
+        "operationId": "LocatorController_applyModel",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocatorModelApplyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocatorModelResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Asset Locator"
+        ]
+      }
+    },
     "/api/v1/locator/references/{id}": {
       "get": {
         "operationId": "LocatorController_reference",
@@ -5913,6 +6037,8 @@
               "curve",
               "junction",
               "lift",
+              "motor",
+              "photoelectric-sensor",
               "sensor",
               "scanner",
               "scale",
@@ -6007,6 +6133,8 @@
               "curve",
               "junction",
               "lift",
+              "motor",
+              "photoelectric-sensor",
               "sensor",
               "scanner",
               "scale",
@@ -6491,6 +6619,236 @@
         "required": [
           "created",
           "referenceCount"
+        ]
+      },
+      "LocatorLocateDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetId"
+        ]
+      },
+      "LocatorModelPreviewDto": {
+        "type": "object",
+        "properties": {
+          "referenceId": {
+            "type": "string"
+          },
+          "referenceName": {
+            "type": "string"
+          },
+          "sceneId": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "current",
+              "manual-edits-preserved",
+              "not-initialized",
+              "manual-review-required"
+            ]
+          },
+          "componentCount": {
+            "type": "number"
+          },
+          "motors": {
+            "type": "number"
+          },
+          "photoelectricSensors": {
+            "type": "number"
+          },
+          "conveyors": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "referenceId",
+          "referenceName",
+          "sceneId",
+          "expectedRevision",
+          "status",
+          "componentCount",
+          "motors",
+          "photoelectricSensors",
+          "conveyors"
+        ]
+      },
+      "LocatorModelsDto": {
+        "type": "object",
+        "properties": {
+          "models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorModelPreviewDto"
+            }
+          }
+        },
+        "required": [
+          "models"
+        ]
+      },
+      "LocatorMessageEvidenceDto": {
+        "type": "object",
+        "properties": {
+          "importId": {
+            "type": "string"
+          },
+          "sourceRecordNumber": {
+            "type": "number"
+          },
+          "reportingDate": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "importId",
+          "sourceRecordNumber",
+          "reportingDate",
+          "message"
+        ]
+      },
+      "LocatorClassificationSourceDto": {
+        "type": "object",
+        "properties": {
+          "sourceId": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "reviewed-mapping",
+              "exact-alias"
+            ]
+          },
+          "mappingId": {
+            "type": "string"
+          },
+          "mappingRevision": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorMessageEvidenceDto"
+            }
+          }
+        },
+        "required": [
+          "sourceId",
+          "area",
+          "code",
+          "origin",
+          "mappingId",
+          "mappingRevision",
+          "total",
+          "evidence"
+        ]
+      },
+      "LocatorClassificationDto": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string"
+          },
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unmapped",
+              "limited"
+            ]
+          },
+          "totalSources": {
+            "type": "number"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorClassificationSourceDto"
+            }
+          },
+          "suggestedKind": {
+            "type": "string",
+            "enum": [
+              "",
+              "photoelectric-sensor"
+            ]
+          },
+          "matchedMessages": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "assetId",
+          "coverage",
+          "totalSources",
+          "sources",
+          "suggestedKind",
+          "matchedMessages"
+        ]
+      },
+      "LocatorModelApplyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision"
+        ]
+      },
+      "LocatorModelResultDto": {
+        "type": "object",
+        "properties": {
+          "sceneId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "current",
+              "manual-edits-preserved",
+              "not-initialized",
+              "manual-review-required",
+              "applied"
+            ]
+          }
+        },
+        "required": [
+          "sceneId",
+          "revision",
+          "status"
         ]
       },
       "OverviewEmptyDto": {

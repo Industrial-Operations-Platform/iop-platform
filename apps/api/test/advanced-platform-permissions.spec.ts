@@ -6,9 +6,11 @@ function allowed(profile:Profile,permission:string,active=true) {
 }
 describe('owner-authorized advanced functions',()=>{
   test.each(['administrator','team-leader','task-force'] as Profile[])('%s receives explicit operational permissions',profile=>{
-    for(const permission of ['handover.records.manage','improvement.read','improvement.contribute','improvement.coordinate','locator.read','locator.manage','integrations.read'])
+    for(const permission of ['handover.records.manage','improvement.read','improvement.contribute','improvement.coordinate','locator.read','integrations.read'])
       expect(allowed(profile,permission)).toEqual({allowed:true});
-    expect(allowed(profile,'integrations.manage').allowed).toBe(profile==='administrator');
+    for (const permission of ['integrations.manage', 'locator.manage', 'assets.manage'])
+      expect(allowed(profile,permission).allowed).toBe(profile==='administrator');
+    expect(allowed(profile,'assets.read').allowed).toBe(true);
   });
   test('Technician retains journal contribution without advanced grants',()=>{
     expect(allowed('technician','handover.contribute')).toEqual({allowed:true});

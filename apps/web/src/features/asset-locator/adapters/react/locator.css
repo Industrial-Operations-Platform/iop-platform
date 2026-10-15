@@ -5,10 +5,18 @@
 .locator-viewer { min-width: 0; display: grid; gap: 10px; }
 .locator-fields { display: grid; gap: 12px; min-width: 0; border: 0; padding: 0; margin: 0; }
 .locator-fields legend { font-weight: var(--iop-headingWeight); margin-bottom: 12px; }
+.locator-component-editor { width: 100%; max-width: 100%; min-inline-size: 0; box-sizing: border-box; }
+.iop-ui .locator-component-editor :is(.iop-field, .iop-input, .iop-select, .iop-textarea) { min-width: 0; max-width: 100%; }
+.iop-ui .locator-component-editor .iop-field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
+.iop-ui .locator-component-editor .iop-field-row .iop-field { min-width: 0; }
 .locator-muted { color: var(--iop-muted); font-size: var(--iop-captionSize); margin: 0; }
 .locator-list { display: grid; gap: 6px; padding: 0; list-style: none; max-height: 22rem; overflow: auto; }
 .locator-component-row { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
 .locator-component-row button { text-align: left; flex: 1; }
+@media (max-width: 600px) {
+  .locator-component-row { flex-wrap: wrap; justify-content: flex-start; }
+  .locator-component-row button { flex-basis: 100%; max-width: 100%; overflow-wrap: anywhere; }
+}
 .locator-reference { max-width: 100%; max-height: 28rem; object-fit: contain; }
 .locator-scene-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,18rem),1fr)); gap: 12px; }
 .locator-scene-card { display: grid; gap: 8px; text-align: left; min-width: 0; padding: var(--iop-panelPadding); border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); background: var(--iop-surface); color: var(--iop-ink); cursor: pointer; }
@@ -20,3 +28,7 @@
 .locator-problems { display: grid; gap: 6px; }
 .locator-problem { border-left: 3px solid var(--iop-errorInk); padding-left: 8px; }
 @media (max-width: 1000px) { .locator-layout { grid-template-columns: minmax(0,1fr); } }
+
+.locator-identity { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: .6rem 1rem; }
+.locator-identity dt { color: var(--iop-muted); }
+.locator-identity dd { margin: 0; overflow-wrap: anywhere; }

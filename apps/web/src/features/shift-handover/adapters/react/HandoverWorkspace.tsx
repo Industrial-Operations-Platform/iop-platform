@@ -14,7 +14,6 @@ import {
   Disclosure,
   DateField,
   Panel,
-  ViewNavigation,
 } from "../../../../design/components";
 import {
   meetingSelection,
@@ -35,9 +34,11 @@ import { EntryForm, today } from "./EntryForm";
 import { HandoverFilters } from "./HandoverFilters";
 
 import { HandoverHeading } from "./HandoverHeading";
+import { HandoverViewNavigation, type JournalView } from "./HandoverViewNavigation";
+import { HandoverGuidance } from "./HandoverGuidance";
 import "./handover.css";
 const blankPage: Page = { entries: [], nextCursor: "", total: 0 };
-type View = "journal" | "matrix" | "meeting";
+type View = JournalView;
 export function HandoverWorkspace({
   application,
   dailyOverview = false,
@@ -53,6 +54,8 @@ export function HandoverWorkspace({
   onPeople,
   onOpenMaintenance,
   renderPeople,
+  initialView = "meeting",
+  onShiftRecords,
 }: {
   application: HandoverApplication;
   dailyOverview?: boolean;
@@ -68,6 +71,8 @@ export function HandoverWorkspace({
   onPeople?: () => void;
   onOpenMaintenance?: (id: string) => void;
   renderPeople?: (date: string) => ReactNode;
+  initialView?: JournalView;
+  onShiftRecords?: () => void;
 }) {
   const [context, setContext] = useState<Context | null>(null),
     [error, setError] = useState("");
@@ -77,7 +82,7 @@ export function HandoverWorkspace({
   const [view, setView] = useState<View>(
     initialHighlights || initialPending || initialAttention
       ? "matrix"
-      : "meeting",
+      : initialView,
   );
   const [day, setDay] = useState("");
   const [selection, setSelection] = useState<Selection>({
@@ -385,17 +390,15 @@ export function HandoverWorkspace({
           {view === "journal" && <p>{t("Your Journal · entries you published")}</p>}
         </div>
       )}
-      <ViewNavigation
-        label={t("Handover views")}
+      {onShiftRecords && <HandoverGuidance />}
+      <HandoverViewNavigation
         selected={view}
-        items={(Object.entries(viewLabels) as [View, string][]).map(
-          ([id, label]) => ({
-            id,
-            label,
-            disabled: busy || !context,
-          }),
-        )}
+        dailyOverview={dailyOverview}
+        includeRecords={!!onShiftRecords}
+        disabled={busy || !context}
+        recordsDisabled={busy}
         onSelect={(next) => {
+          if (next === "records") { if (!busy) onShiftRecords?.(); return; }
           if (busy || !context) return;
           setView(next);
           setMatrixHistory(false);

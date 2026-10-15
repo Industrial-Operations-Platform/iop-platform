@@ -1,4 +1,4 @@
-export const componentKinds = ['conveyor', 'curve', 'junction', 'lift', 'sensor', 'scanner', 'scale', 'cabinet'] as const;
+export const componentKinds = ['conveyor', 'curve', 'junction', 'lift', 'motor', 'photoelectric-sensor', 'sensor', 'scanner', 'scale', 'cabinet'] as const;
 export type ComponentKind = typeof componentKinds[number];
 export interface Component {
   id: string;
@@ -119,6 +119,34 @@ export interface History {
     at: string;
   }[];
   nextBefore: number;
+}
+export interface ModelPreview {
+  referenceId: string;
+  referenceName: string;
+  sceneId: string;
+  expectedRevision: number;
+  status: 'ready' | 'current' | 'manual-edits-preserved' | 'not-initialized' | 'manual-review-required';
+  componentCount: number;
+  motors: number;
+  photoelectricSensors: number;
+  conveyors: number;
+}
+export interface ModelResult {
+  sceneId: string;
+  revision: number;
+  status: ModelPreview['status'] | 'applied';
+}
+export interface Classification {
+  assetId: string;
+  coverage: 'available' | 'unmapped' | 'limited';
+  totalSources: number;
+  suggestedKind: '' | 'photoelectric-sensor';
+  matchedMessages: number;
+  sources: {
+    sourceId: string; area: string; code: string; origin: 'reviewed-mapping' | 'exact-alias';
+    mappingId: string; mappingRevision: number; total: number;
+    evidence: { importId: string; sourceRecordNumber: number; reportingDate: string; message: string }[];
+  }[];
 }
 export function emptyContent(): Content { return { name: 'New scene', group: '', locationId: '', referenceId: '', description: '', calibration: 'pending', surveyNote: '', components: [] }; }
 /** Duplication creates a new provisional identity and does not duplicate a physical asset link. */
