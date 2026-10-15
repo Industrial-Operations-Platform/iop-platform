@@ -1,47 +1,150 @@
-# 01 / Project snapshot
+# 01 / Project snapshot and reading route
 
 IOP - Native development field guide
 
-Prepared for offline use on 2026-10-09. Business-code snapshot: develop at 9fb1da9.
-IOP-199 is integrated, published to origin and activated in the local Docker stack.
-This guide is maintained under IOP-200; it does not declare a whole-platform release.
+Updated for offline use on 2026-10-15. Published code baseline: develop e9bd49d
+(IOP-203). The local Docker installation also contains IOP-211 at b3a4a01 on
+feature/IOP-211-locator-models-and-access. That review branch is not yet merged
+or published. This PDF update does not approve its integration or a platform release.
 
-**Your selected setup:** React/Vite and the NestJS API run on the Mac. PostgreSQL stays
-in its existing Docker container, using the same database, volume, accounts and data.
-Native means the two application processes run outside Docker; Docker Desktop is
-still required for the database.
+**Your selected setup:** React/Vite and the NestJS API run on the Mac. PostgreSQL
+stays in Docker, using the existing iop_local database, platform-data volume,
+accounts and records. Native refers to the two application processes; Docker
+Desktop remains necessary for PostgreSQL. Native edits write to the same database.
 
-| Delivered area | Current behavior |
+| Read next | What you will learn |
 | --- | --- |
-| Data Analysis / OIP | CSV admission, original-file review, preparation, historical reports, trends, comparisons, KPIs and source-component Pareto. |
-| Access | Local password login, four profiles, scoped permissions, profile administration and retained identities. |
-| Shift Handover | Meeting preparation, personal Journal, matrix, durable issues, revisions, notices and IOP-199 category workflows. |
-| Workforce | Teams, schedules, imports, weekly planning, dated assignments, floating duties and history. |
-| Maintenance | Work board, ownership, priorities, status, outcomes and reviewed include/exclude repair scope. |
-| Digital Asset Record | Stable registry, exact aliases, validation, retirement and source-authorized history. |
+| 02-03 / Module workflows | What Maintenance, Handover views, Workforce, Assets, Tracking and Locator do; who uses them. |
+| 04 / Integrations | How external adapters translate source formats into module-owned ports; what is connected and what is still pending. |
+| 05-07 / Code map | Repository, backend owners, browser screens and places to implement changes. |
+| 08-10 / Start native | Prepare private settings once; reuse the existing Docker database; run compiler, API and Vite. |
+| 11-13 / Modify and verify | Follow a change, run checks, handle migrations and return to the existing Docker images. |
+| 14-17 / Operate and continue | Local jobs/backup/Audit, remaining inputs, offline routine and canonical sources. |
 
-**Recent changes:** opening details acknowledges notifications; entry location uses the
-actual dated assignment; Safety omits equipment; a single Technical issue choice
-classifies Problems/Performance; Success closes explicit references; Team Leader
-Information has images/display dates/Start visibility; People reuses Workforce.
+**Choose the source deliberately.** The commands run the code in your checked-out
+branch. Published develop includes the new operational modules. To reproduce the
+currently installed stricter Assets access and latest Locator behavior, use the
+existing IOP-211 review branch after saving your current work:
 
-Read this guide in order: architecture and files (02-04), preparation (05-06),
-daily startup (07), following a change (08), checks and schema work (09),
-troubleshooting (10), remaining scope (11), and offline/review routine (12).
+~~~sh
+git status --short --branch
+git switch feature/IOP-211-locator-models-and-access
+~~~
 
-**Scope of verification:** IOP-199 tests passed. The native startup, compiler watch,
-API restart and Vite proxy recipe was exercised against the existing database.
-Bootstrap installation commands are preparation instructions, not a claim that a
-fresh laptop was provisioned. Health reports process liveness only.
+The recipe was verified on that IOP-211 source to match this installation. Using
+older code against its migrated database is not a rollback.
 
-Editable source: docs/development/native-development-guide.md. Renderer:
-docs/development/pdf/build_native_guide.py. This is a checked runbook, not an automatic setup/reset script.
+Do not merge that branch merely to follow this guide. Its local PDF descriptions
+are explicitly marked IOP-211. Ordinary new stories still start from develop under
+the repository workflow. A code checkout does not roll back database migrations.
+
+Editable source: docs/development/native-development-guide.md. PDF builder:
+docs/development/pdf/build_native_guide.py. Health proves process liveness only.
 
 <!-- page -->
-# 02 / Architecture and repository layout
+
+# 02 / Module guide: daily operations
+
+These are cooperating modules in one platform, not separate applications.
+The current profile and source-specific grants are checked on the server.
+
+| Module / screen | What you do and what it means |
+| --- | --- |
+| Start / Administration | See your recorded schedule and assignment, assigned work, Handover highlights and active Information. Administrator also sees account/import summaries. Planned schedules are not attendance; account summaries are not the general Audit feed. |
+| Data Analysis / OIP | Explore historical Executive, Halle, Bereich, Equipment, Error and daily/monthly reports; compare trends, Pareto and KPIs, then inspect contributing source evidence. Administrator imports/prepares files. Alarm frequency and accumulated seconds are source measures, not incident identities or plant downtime. Missing imports remain gaps. |
+| Shift Handover: working views | Meeting preparation (Daily overview for Team Leader), personal Journal and Department matrix show current reports, discussion/highlight flags, pending issues and revisions. Categories include Safety, technical reports, Information, People and Success. Success closes explicitly selected eligible reports/work atomically; it does not close everything in an area. |
+| Shift Handover: formal records | A draft belongs to an actual Workforce shift, location and UTC interval. Review, publish and close the transfer; retain frozen evidence and a separate incoming-manager acknowledgement. Closing a transfer does not resolve current journal issues. Develop has a Formal Handover entry; IOP-211 puts Shift records inside Shift Handover. |
+| Workforce & shifts | Maintain teams, shift definitions, availability schedules, weekly planning, dated assignments, floating duties and revisions. Team Leader plans; Administrator also imports/configures and manages logical removal. Technician/Task Force read operational plans. Availability and operational assignment are separate; there is no payroll or automatic optimization. |
+| Maintenance | Propose and coordinate work, priorities, ownership, assignment, status and outcomes. Review exactly which Handover issues are included/excluded from a repair. Completion resolves eligible included pending issues and retains both histories. Technician accesses assigned work from Start/activity; Team Leader/Administrator coordinate. Ultimo references are manual until its adapter is connected. |
+
+**Handover viewing is a workflow.** There is no separate Handover Viewer module or
+fifth account profile. Read reports through the named Handover views. Formal records
+require real location-specific assignments; the system does not invent shifts from
+alarms or calendar dates. Notifications are in-app, without external email/push.
+
+Administrator, Team Leader and Task Force use formal records and analytical views.
+All four profiles use ordinary Handover under their grants. Configured Information
+publication defaults to Team Leader; Administrator's View as does not grant that identity.
+
+<!-- page -->
+
+# 03 / Module guide: assets and follow-up
+
+| Module / screen | What you do and what remains explicit |
+| --- | --- |
+| Assets / Digital Asset Record | Register a stable equipment identity, maintain exact aliases, validation and retirement, and inspect its source-authorized Handover/Maintenance/analytical timeline. Asset access does not grant access to every source record. Reuse identifiers instead of registering duplicates from image symbols. |
+| Asset management | Define reusable equipment types and typed metadata; record composition parents, controller/channel relations, manufacturer/model/serial and attributed survey reviews. Review source-to-canonical mapping candidates and canonical Asset Pareto. Software review states do not prove a physical inspection. RAW source facts remain unchanged. |
+| Asset Locator | Navigate schematic 3D area scenes, select reusable components, search explicit registered placements and inspect dated problem evidence. Save attributed model revisions when authorized. Separate drawings have no measured common plant origin; coordinates, heights and sensor identity links remain provisional until surveyed. A problem marker is reported evidence, not live health. |
+| Improvement Tracking / Actions | Own an action, hypothesis, goal and dates; link assets/issues, advance its lifecycle, append evidence/corrections and retain server-computed before/after comparisons. Missing coverage and unequal periods remain visible. An observed change does not establish causality. Binary attachment storage is outside this increment. |
+| Area overview and header search | Find authorized areas, assets, reports and work, or combine selected-day journal context with current pending work and exact analytical/formal context. Each source enforces its own access. Current pending work is not reconstructed as historical state at the selected journal date. |
+| Access administration | Administrator manages local accounts, fixed profiles and scoped grants. Password sessions use the retained database. View as previews layout only: it does not change the actor, authority or authorship. Entra contracts are ready; corporate sign-in is not connected. |
+
+**Published develop versus installed IOP-211:** develop permits the three advanced
+profiles to open Assets/Asset management and edit Locator. IOP-211 restricts those
+registry/model operations to Administrator. Team Leader and Task Force navigate
+read-only Locator and operational identity links; Technician rollout remains pending.
+
+IOP-211 also prepares provisional models for all 71 supplied views, identifies motor
+and photoelectric templates, uses geometry-only navigation with optional editor guides,
+colors photoelectric components teal and retains camera orientation/zoom on area
+entry and the full camera on ordinary selection. Published develop has the earlier
+three traced views and earlier guide/navigation behavior. Neither is a surveyed floorplan.
+
+| Fixed profile | Main responsibility |
+| --- | --- |
+| Administrator | Accounts, imports, configuration, advanced operations and IOP-211 registry/model editing. |
+| Team Leader | Planning, operational coordination, Handover and advanced review under current grants. |
+| Task Force | Operational contributions, advanced evidence/action review and authorized work updates. |
+| Technician | Personal Handover, operational plan and own/assigned technical work. |
+
+<!-- page -->
+
+# 04 / Integrations are external adapters
+
+An integration adapts an external system, component or file format to the contracts
+that an internal module owns. External field names, protocols and customer-specific
+mapping belong in the adapter/configuration, not in generic domain rules.
+The Integrations screen exposes configuration and readiness; it is not proof of a
+working network connection.
+
+~~~text
+External file / provider / identity system
+        -> adapter: decode, validate, translate, retain provenance
+        -> module-owned port and application use case
+        -> scoped domain rules and authorized persistence
+host/runtime.ts composes the chosen adapter with the owning module.
+~~~
+
+| Existing adapter / contract | Actual readiness |
+| --- | --- |
+| Analytical CSV imports | Working file decoding, RAW/original-file retention, mapping snapshots, source-date admission and atomic publication. A browser upload enters the real import workflow. |
+| Workforce schedule decoding | Working manual-source decoding and preview, followed by explicit validated application to Workforce. A decoded schedule is not an approved assignment. |
+| WinCC aggregates | Read-only provider contract and normalization boundary prepared. Real transport, version/schema, endpoint, credentials and operational verification remain pending. No PLC command or plant control write is included. |
+| Ultimo work orders | Read-only contract prepared for external work references. Manual local text references are not synchronization; actual retrieval/translation and access remain pending. |
+| Entra identity | Verified-identity adapter contract prepared. Token/provider validation, approved tenant/application configuration and real corporate sign-in remain pending. Local password login continues to work. |
+
+**To implement a real integration:** inspect the receiving module's application port,
+then add a provider transport and source-schema translation in the owning adapter.
+Validate authentic source data and failures against approved access. Test the port
+contract, provenance, authorization and idempotency; wire it in host/runtime.ts.
+Do not bypass business permissions or write directly into another module's tables.
+
+Configuration stores provider/readiness metadata and history. Secret references are
+not credentials, and configuring a provider does not contact it. A contract-ready
+state, missing last successful connection and pending handler must stay visible.
+Real endpoints, schemas, versions and credentials are still required from the plant.
+
+First files: apps/api/src/modules/integrations/application/provider-contracts.ts,
+adapters/providers/read-only.ts and domain/connections.ts. Working import adapters
+are under adapters/csv/ and adapters/schedule/. See docs/product/integration-readiness.md.
+
+<!-- page -->
+
+# 05 / Architecture and repository layout
 
 IOP is a modular monolith: one API process composes modules with distinct ownership.
-There are no internal HTTP calls between these modules and no deployed worker service.
+There are no internal HTTP calls between these modules. Durable local jobs exist,
+but no continuously deployed worker service is claimed.
 The separate web and database processes do not turn each business module into a service.
 
 ~~~text
@@ -77,76 +180,79 @@ Build output in dist/ is disposable. Database state is in the Docker volume.
 Empty/future package or host placeholders are not delivered features.
 
 <!-- page -->
-# 03 / Backend module map
 
-All paths in this table are below apps/api/src/modules/. M numbers describe product
-areas; directories describe actual code ownership.
+# 06 / Backend ownership map
 
-| Module directory | Responsibility and first files |
+Paths below are relative to apps/api/src/modules/. Domain/application code owns
+rules, use cases and ports; adapters own SQL, files and external protocols.
+
+| Directory | Responsibility / first implementation to read |
 | --- | --- |
-| platform-core/ | Scope and configured locations. adapters/configuration/locations.ts and adapters/postgres/site-ownership.ts validate location structure and site ownership. |
-| users-rbac/ | Current permission decisions, four-profile bundles and administration. domain/profiles.ts, application/authorize-site.ts, application/administration.ts; adapters/postgres/ holds directory and lookup SQL. |
-| authentication/ | Password verification, throttling, sessions and revocation. application/authentication.ts; adapters/node-crypto.ts and adapters/postgres.ts. |
-| integrations/ | CSV/schedule decoding, source mappings, RAW/import receipt and atomic admission. application/import-workflow.ts; adapters/csv/, adapters/schedule/ and adapters/postgres/import-batches.ts. |
-| oip/ | Data Analysis policy and reporting. application/reporting.ts, application/data-explorer.ts and application/ports.ts; domain/ models and adapters/postgres/ reports/projections. |
-| shift-handover/ | Entry validation, issue state, revisions, configured categories and Success. domain/handover.ts; application/handover.ts; adapters/postgres/store.ts. |
-| workforce/ | Availability, teams, shifts, dated assignments and revisions. domain/workforce.ts; application/workforce.ts; adapters/postgres/store.ts and assignment-default.ts. |
-| maintenance/ | Work lifecycle, permissions, priorities, reviewed repair decisions and completion. domain/maintenance.ts; application/maintenance.ts; adapters/postgres/store.ts. |
-| assets/ | Stable asset identities, aliases, lifecycle and source-authorized timeline. domain/assets.ts; application/assets.ts; adapters/postgres/store.ts. |
+| platform-core/ | Site ownership and configured locations. adapters/configuration/locations.ts; adapters/postgres/site-ownership.ts. |
+| users-rbac/ | Current profile/grant decisions and account administration. domain/profiles.ts; application/administration.ts. |
+| authentication/ | Password verification, throttle, sessions and revocation. application/authentication.ts; adapters/postgres.ts. |
+| integrations/ | Import lifecycle/RAW, source decoding and provider readiness. application/import-workflow.ts; application/provider-contracts.ts. |
+| oip/ | Data Analysis policy, exact measures and reports. application/reporting.ts; application/data-explorer.ts; adapters/postgres/. |
+| shift-handover/ | Journal rules and formal shift transfers. application/handover.ts; application/formal-records.ts; domain/handover.ts. |
+| workforce/ | Availability, teams, shifts, assignments and retained revisions. application/workforce.ts; adapters/postgres/store.ts. |
+| maintenance/ | Work lifecycle, permissions and explicit repair review/completion. application/maintenance.ts; adapters/postgres/store.ts. |
+| assets/ | Registered identity, composition/controllers, mapping review and source timeline. application/assets.ts; application/enrichment.ts. |
+| improvement-tracking/ | Owned actions, immutable evidence and source comparisons. application/improvement.ts. |
+| asset-locator/ | Private references, scenes, placement, revisions and source problem ports. application/locator.ts; adapters/postgres/store.ts. |
+| operational-overview/ | Source-authorized search and area composition. application/overview.ts; owner-defined source ports. |
+| jobs/ | Scoped durable leases/retry, idempotent effects and explicit handlers. application/jobs.ts; adapters/postgres/. |
+| audit/ | Safe material event append and separate inspection/retention. index.ts; adapters/postgres/append.ts. |
 
-The entry point for wiring these owners is apps/api/src/host/runtime.ts.
-host/*-controller.ts translates transport calls; host/*-contracts.ts defines DTOs.
-apps/api/contracts/openapi.json is the reviewed generated HTTP contract.
+apps/api/src/host/runtime.ts wires these owners. host/*-controller.ts translates
+HTTP and host/*-contracts.ts defines DTOs. The reviewed generated HTTP contract is
+apps/api/contracts/openapi.json. Start here when an endpoint or dependency is unclear.
 
-**Persistence:** owning stores enforce their own writes and revision rules.
-site-operation.ts pins a connection, checks current grants and installs transaction-local
-organization/site/actor context. Forced row-level security is additional isolation,
-not a substitute for business permission checks. The API uses iop_runtime, not an owner.
-
-**Cross-module example:** Success is validated by Handover. Maintenance completes
-selected work through its own receiving contract on the same transaction, retaining
-repair review. Asset timelines call source-owned readers; asset access does not grant
-access to Handover, Maintenance or Analysis data.
+persistence/site-operation.ts pins one connection, rechecks current grants and sets
+transaction-local organization/site/actor context. Forced RLS adds isolation; it does
+not replace business checks. Runtime uses iop_runtime, without owner/DDL privileges.
+Source-owned cross-module reads preserve independent authorization and history.
 
 <!-- page -->
-# 04 / Frontend layout and component map
 
-apps/web/src/host/AnalyticalApp.tsx constructs application objects and HTTP gateways.
-Despite its historical name, it composes the whole operational application.
-WorkspaceApp.tsx owns session context, profile presentation, navigation and page selection.
+# 07 / Frontend layout and change map
 
-**Shared shell:** desktop sidebar, top account/notification controls, breadcrumb/page
-heading, content surfaces and active workspace controls. Narrow layouts reuse these
-controls. Administrator Start composes administrative summaries; operational Start
-composes personal assignments and authorized report/work summaries. Active Information
-appears on every profile's Start.
+apps/web/src/host/AnalyticalApp.tsx composes the whole application despite its
+historical name. WorkspaceApp.tsx owns session context, profile presentation,
+navigation and workspace selection. Shared shell/account/search controls surround
+the feature views; profile preview never changes the server actor.
 
-| Feature below apps/web/src/features/ | Visible layout and main components |
+| Feature below apps/web/src/features/ | Visible views / components to locate |
 | --- | --- |
-| analysis/ | StartOverview and Workspace: report selector, collapsible filters, charts/KPIs. ImportWorkspace, SourceFiles and ProfileEditor handle administration. adapters/echarts/charts.ts maps server measures into plots. |
-| access/ | LoginPanel; UserAdministration with create/details/profile dialogs. Account/profile preview is shell presentation, not a server identity change. |
-| shift-handover/ | HandoverWorkspace: Meeting preparation/Daily overview, personal Journal, Department matrix. MeetingCanvas contains category panels and pending disclosure. EntryForm, EntryDetail and SuccessReferences own the form/detail views; InformationNotices supplies Start notices. |
-| workforce/ | WorkforceWorkspace: dated/weekly planning, settings and imports. PlanBoard/DailyPlan show assignments; WeeklySchedule, AssignmentForm and RecordDetails handle planning and history. |
-| maintenance/ | MaintenanceWorkspace with board/search, filters and work details. MaintenanceForm handles work; RepairScope handles explicit report inclusion/exclusion; MaintenanceStatusDialog handles focused status changes. |
-| assets/ | AssetsWorkspace: registry/search and selected asset. AssetForm, AssetDetails, AssetAliasFields and AssetTimeline handle identity and authorized source history. |
+| analysis/ | StartOverview, Workspace reports/filters/charts, ImportWorkspace, SourceFiles and preparation/profile editors. adapters/echarts/charts.ts renders server measures. |
+| access/ | LoginPanel and UserAdministration account/profile dialogs. |
+| shift-handover/ | HandoverWorkspace, MeetingCanvas, EntryForm/EntryDetail, SuccessReferences and InformationNotices. Formal transfer views live in the same feature. |
+| workforce/ | WorkforceWorkspace, PlanBoard/DailyPlan, WeeklySchedule, AssignmentForm and RecordDetails. |
+| maintenance/ | MaintenanceWorkspace, MaintenanceForm, RepairScope and MaintenanceStatusDialog. |
+| assets/ | AssetsWorkspace, AssetForm, AssetDetails, AssetAliasFields and AssetTimeline for the registry and source history. |
+| assets-domain/ | AssetDomainWorkspace, TypeCatalogEditor, EnrichmentEditor, MappingReview and CanonicalPareto for model/mapping management. |
+| improvement-tracking/ | ImprovementWorkspace, action details, evidence and retained comparisons. |
+| asset-locator/ | LocatorWorkspace, PlantOverview, SceneViewport and reusable Three.js geometry/renderer. Private source images are authenticated API resources, never public assets. |
+| operational-overview/ | Area context and global source-authorized search views. |
+| integrations/ | ConnectionsWorkspace plus application/connections.ts and the HTTP gateway for provider configuration/readiness. |
 
-Inside each feature: domain/ contains browser values/models; application/ coordinates
-framework-free use cases; adapters/http/gateway.ts calls the API; adapters/react/
-contains components and feature CSS. Read models are not server persistence entities.
+Inside each feature, domain/ contains browser values; application/ has framework-free
+use cases; adapters/http/gateway.ts calls the API; adapters/react/ owns views and
+layout. Locator's adapters/three/ can be replaced without changing scene rules.
+Read models are not server persistence entities.
 
-| Shared file | Purpose |
+| Shared path | Use |
 | --- | --- |
-| apps/web/src/design/components/ | Shared controls; index.ts exports buttons, fields, dialogs, panels and navigation. |
-| apps/web/src/design/identity.ts and base.css | Canonical visual identity and base styles. |
-| apps/web/src/localization/i18n.ts and de.ts | English source/default strings and German resources. |
+| apps/web/src/design/components/ | Reusable fields, compact filters, dates, dialogs, actions and navigation; index.ts exports the public controls. |
+| apps/web/src/design/identity.ts and base.css | Shared semantic light/dark tokens, typography and base surfaces. |
+| apps/web/src/localization/ | English source/default text and German resources. |
 | apps/web/src/contracts/schema.d.ts | Generated OpenAPI bindings; regenerate rather than edit. |
-| apps/web/vite.config.ts | Loopback ports, React plugin and proxy to API port 3000. |
 
-Use shared controls and tokens. Feature CSS arranges a view; it must not invent a new
-font/palette. Read docs/design/visual-identity.md before UI changes.
+apps/web/vite.config.ts fixes loopback ports and the API proxy. Feature CSS arranges
+views; use shared tokens/controls and docs/design/visual-identity.md for UI changes.
 
 <!-- page -->
-# 05 / Prepare once, before the trip
+
+# 08 / Prepare once, before the trip
 
 This recipe assumes the same Mac that already holds .local-platform/ and the database
 volume. A Git clone on another laptop does not contain the database or credentials.
@@ -187,7 +293,7 @@ npm install --global npm@10.9.2
 **Keep locally:** the repository and node_modules, Docker Desktop, the existing
 postgres:17.6-bookworm image and persistent volume, and the complete private
 .local-platform/ installation. Preserve scope.json, users.json, mappings.json,
-handover.json, runtime.env and setup.env. Do not commit or place credentials in Vite.
+handover.json, runtime.env, setup.env and the complete locator/ reference tree. Do not commit or place credentials in Vite.
 
 **What remains unchanged:** organization/site/source IDs, source mappings, locations,
 existing password hashes/accounts and business data. The preparation on the next page
@@ -195,7 +301,8 @@ copies browser-origin settings and reuses the runtime credential; it does not se
 Never use demo:reset/demo:recreate, volume deletion or fixture --apply as startup steps.
 
 <!-- page -->
-# 06 / Prepare private native settings
+
+# 09 / Prepare private native settings
 
 Run this once from the root. Re-run if the repository moves or the runtime credential
 or original identity configuration changes. It writes only ignored private files.
@@ -221,7 +328,8 @@ const files = {
   IOP_CONFIG_FILE: '.local-platform/config/scope.json',
   IOP_LOCAL_IDENTITY_FILE: '.local-platform/native/users.json',
   IOP_MAPPING_CONFIG_FILE: '.local-platform/config/mappings.json',
-  IOP_HANDOVER_CONFIG_FILE: '.local-platform/config/handover.json'
+  IOP_HANDOVER_CONFIG_FILE: '.local-platform/config/handover.json',
+  IOP_LOCATOR_REFERENCE_ROOT: '.local-platform/locator'
 };
 const values = [
   'NODE_ENV=development', 'IOP_EXECUTION_MODE=local-demo',
@@ -237,6 +345,9 @@ fs.writeFileSync(path.join(dir, 'runtime.env'),
 fs.writeFileSync(path.join(dir, 'compose.yaml'),
   'services:\n  database:\n    ports:\n' +
   '      - "127.0.0.1:5442:5432"\n', {mode: 0o600});
+fs.chmodSync(dir, 0o700);
+for (const file of ['users.json', 'runtime.env', 'compose.yaml'])
+  fs.chmodSync(path.join(dir, file), 0o600);
 console.log('Private native settings prepared.');
 NODE
 ~~~
@@ -245,7 +356,8 @@ runtime.env contains the current runtime password plus explicit native settings.
 Node loads it only when --env-file is supplied. JSON file paths are absolute.
 The private users.json preserves configured user IDs and adds the allowed Vite origin.
 The private Compose overlay publishes container port 5432 on host loopback port 5442.
-It keeps the same Compose project and volume; no new database is created.
+It keeps project iop-platform-local and its platform-data volume. Locator reads
+the existing private host tree; it does not regenerate or publicly serve the PNGs.
 
 The mode name local-demo is a historical execution label. With
 IOP_AUTHENTICATION=password it uses existing local login, not demo-user impersonation.
@@ -253,9 +365,10 @@ Existing exported environment variables override env-file values; use a clean te
 if you previously exported incompatible IOP settings.
 
 <!-- page -->
-# 07 / Daily startup: database plus three terminals
 
-Start Docker Desktop. From the root, stop the container applications before exposing
+# 10 / Daily startup: database plus three terminals
+
+Start Docker Desktop. Use compose.platform.yaml, not the separate foundation compose.yaml. From the root, stop the container applications before exposing
 the database. The single-host lease rejects a second API on this database.
 
 ~~~sh
@@ -311,7 +424,8 @@ Health should return status ok. Context should be enabled with password authenti
 user null is normal before login. An enabled context is more informative than health.
 
 <!-- page -->
-# 08 / Follow a change through the code
+
+# 11 / Follow a change through the code
 
 Frontend edits to React/CSS use Vite hot updates. Changes to application state or
 composition may cause a full refresh or require reopening the screen. Unsaved forms
@@ -328,7 +442,7 @@ fix it before evaluating the browser. Use the three terminal logs and browser De
 2. The browser application/handover.ts coordinates the use case;
    adapters/http/gateway.ts sends a same-origin /api/v1/handover request.
 3. API host/handover-controller.ts receives HTTP input; handover-contracts.ts owns
-   transport DTOs. Host/runtime.ts supplies the configured catalog and actor.
+   transport DTOs. host/runtime.ts supplies the configured catalog and actor.
 4. API modules/shift-handover/application/handover.ts orchestrates current permissions,
    revision checks and writes. domain/handover.ts validates the content and classification.
 5. adapters/postgres/store.ts uses persistence/site-operation.ts. Handover stores
@@ -357,7 +471,8 @@ A 400/403/409 usually reflects validation/permission/revision handling; a 5xx tr
 correlates the sanitized server error. Generated bindings must match the API artifact.
 
 <!-- page -->
-# 09 / Checks, contracts and schema commands
+
+# 12 / Checks, contracts and schema commands
 
 **Stop compiler/API watchers before commands that rebuild dist/.** Root npm test,
 build, openapi, database tests and browser tests rebuild output; running them beside
@@ -397,12 +512,13 @@ node --env-file=.local-platform/native/runtime.env \
 
 db:build compiles the database CLI. migrate uses iop_migrator and ordered SQL/history;
 it is a real change to the existing database. The second private env file supplies
-the migration credential to this one-shot tool, not the running API. IOP-199 requires
-no new migration. Do not run db:provision or seed commands merely to start native apps.
+the migration credential to this one-shot tool, not the running API. The original IOP-199 increment required
+no migration; later modules do. Check your current source and migration history. Do not run db:provision or seed commands merely to start native apps.
 Applied migrations stay immutable; append a new reviewed file rather than editing history.
 
 <!-- page -->
-# 10 / Troubleshooting and returning to Docker
+
+# 13 / Troubleshooting and returning to Docker
 
 | Symptom | Check and response |
 | --- | --- |
@@ -414,6 +530,7 @@ Applied migrations stay immutable; append a new reviewed file rather than editin
 | EADDRINUSE or Vite strict-port failure | Another process owns 3000/5173. Stop it; changing ports also requires proxy/origin settings. |
 | Backend change seems invisible | Check compiler errors and Node restart log; repeat the request or refresh the page. Check that the browser is on 5173 rather than Docker 8080. |
 | Config/mapping/location change invisible | Restart Node explicitly; startup reads JSON configuration once. Native users.json is a separate copy of the origin configuration. |
+| Locator guide/reference is unavailable | Check IOP_LOCATOR_REFERENCE_ROOT and the existing private host tree. In IOP-211, normal navigation intentionally hides guides; Administrator enters Edit model to show them. |
 | Maintenance Success reports conflict | Review current work revision and complete include/exclude repair scope. A failed Success closes nothing. |
 | Administrator cannot publish Information | The default publisher profile is Team Leader, with current coordinator grants. Profile preview does not confer that identity. |
 
@@ -425,58 +542,91 @@ docker compose -f compose.platform.yaml \
   -f .local-platform/native/compose.yaml stop database
 ~~~
 
-**Return to the standard container application:** after all native watchers stop:
+**Return to the same installed Docker images:** stop all native terminals, then:
 
 ~~~sh
-npm run local:up
-npm run local:status
+docker compose -f compose.platform.yaml up -d --wait --no-build database api web
+docker compose -f compose.platform.yaml ps
 ~~~
 
-local:up preserves credentials/data, rebuilds web/API/setup, applies pending migrations
-and verifies retained analytics. It restores the standard database service definition
-without the native port overlay. local:status prints service state. Open
-http://127.0.0.1:8080. Keep the private native files for the next development session.
-Do not use compose down --volumes: that removes the retained database.
+Without the overlay or a build, this restores the standard services and removes the
+published database port, while reusing the volume and existing application images.
+Open http://127.0.0.1:8080. This was used for guide validation to retain installed
+IOP-211 while the PDF branch stays based on develop.
+
+**Deliberately rebuild from your current source:** npm run local:up followed by
+npm run local:status also provisions/verifies roles, applies pending migrations,
+reconciles retained seed history and refreshes private references. It is not a
+schema/data rollback. Choose the correct source branch first. Keep the native files;
+never use compose down --volumes to switch execution modes.
 
 <!-- page -->
-# 11 / Verified state and remaining work
 
-As of 2026-10-09, IOP-199 implementation validation passed:
+# 14 / Operating infrastructure and data safety
 
-| Check | Evidence |
+| Capability | What exists and how to use it |
 | --- | --- |
-| npm test | 418 API tests, 149 web tests, 77 database configuration tests and 18 secret-tooling tests; builds, design guard and contract consistency passed. |
-| Typecheck | Both applications and database tooling passed. |
-| Scoped PostgreSQL suites | 42 tests, including atomic selected closure, conflicts and rollback after Maintenance writes. |
-| Selected real-browser scenarios | 12 scenarios across desktop/tablet/narrow layouts; rendered Information, Safety, Success and personal Journal inspected. |
-| Docker activation | API/web/database healthy, enabled password context, IOP-199 code present and retained counts unchanged. |
+| Local containers | Separate web/API/database with persistent data and private Locator references. Only web 8080 is exposed normally. The native overlay temporarily publishes PostgreSQL on loopback 5442; it does not copy the database. |
+| Durable jobs | Scoped queued jobs retain attempts, leases and idempotent outcomes. Administrator initiation and current business grants are rechecked. A finite local tick can be run explicitly; only a diagnostic handler ships. Missing business/provider handlers remain pending, not delivered external work. |
+| Full backup | Operator tooling captures a consistent database snapshot, private configuration and explicitly included references in an authenticated encrypted archive. Keep the separate random encryption key outside captured roots. Stop API/web and other application workers while keeping the database active for the maintenance lease. |
+| Isolated restore verification | Restore into a new network-isolated database and private directory. Compare table data, ownership/grants and RLS metadata. Verification never replaces the active volume; a restore archive is not a startup seed. |
+| Site material Audit | Explicit owners append safe events atomically. Inspection/retention use separate trusted operator credentials, not ordinary product-role browsing. Organization RBAC capture and platform security collection are still separate pending coverage. |
+| CI and measurement | Repository CI definitions and local measurement tools exist. Hosted CI success, representative workloads, agreed thresholds and release acceptance require separate evidence. A local passing test is not a production-readiness claim. |
 
-Retained record counts during activation: Handover 67; Maintenance 34; Workforce
-1,606; Assets 5,655; import attempts 104. These include synthetic exercises and do
-not measure physical equipment health. Seed verification retained 78 dates and
-42,220 source rows; no seed dates were imported during this update.
+Use docs/development/local-operations.md for exact backup/restore/job commands and
+docs/development/site-audit-integration.md for capture coverage. This guide does not
+run those mutating operator commands merely to start development.
 
-**Remaining scope comes from the canonical backlog, not this snapshot's test count:**
+**Shared database means shared effects.** Creating an entry, saving an asset or
+applying a migration from native mode changes what Docker will see next. Keep a
+verified backup before planned data/schema experiments. Synthetic automated tests
+use separate disposable targets; do not point fixtures at this retained installation.
 
-| Area | Remaining outcome |
-| --- | --- |
-| Identity/shared operation | Corporate/provider login and broader multi-organization/site lifecycle. |
-| Assets | Full composition/types/controller links, physical survey and ingestion-time canonical mapping. |
-| Formal Handover | Shift-bound records, formal closure/acknowledgment and complete canonical references. Dated Workforce defaults are already delivered in IOP-199. |
-| Integrations/analysis | External read-only WinCC/Ultimo/Entra contracts and broader canonical Pareto coverage. |
-| Improvement Tracking | Inclusion/ownership decision and action/evidence/impact workflow. |
-| Infrastructure/operations | CI, worker/retry infrastructure, general Audit, verified full backup/restore and performance targets. |
-| UX/release | Unified area/global search, consolidated pilot measurements and shared-use/release controls. |
-| Asset Locator / M9 | Maps and placement are explicitly Deferred. |
-
-Data Analysis charts were accepted as v1; IOP-130 remains open for measurement
-consolidation. Local implementation, Git publication and whole-platform release are
-different states. Stage/master promotion and shared deployment were not performed.
-The optional legacy IOP-173 demo writer needs adaptation to the new category rules;
-do not prepare/apply its old fixtures on this workflow.
+A Git checkout changes code only. It does not undo database rows, migrations,
+private images or saved model revisions. Restore and deployment need their own
+reviewed operating procedure. No external plant control or hosted deployment is
+part of this local workflow.
 
 <!-- page -->
-# 12 / Offline routine, review and sources
+
+# 15 / Delivery evidence and remaining inputs
+
+The following are historical code-delivery gates, not test runs performed by this
+PDF refresh. The refresh separately validates its native recipe and PDF rendering.
+
+| Code snapshot | Recorded evidence |
+| --- | --- |
+| Published develop / IOP-203 | API 509, web 192, PostgreSQL 319 and browser 57 checks passed. Local formal Handover, Tracking, Locator, model management, overview/search and operating infrastructure are delivered. |
+| Local IOP-211 review | API 529, PostgreSQL 327 plus seven final Locator-capacity checks; geometry preparation and access refinements verified. Its visual follow-up passed web 231, browser 61 and 30 installed Locator checks. It is not yet merged/published. |
+| Earlier IOP-200 recipe | Native compiler/watch/proxy and same-database operation were verified on 2026-10-09. This update retests the recipe with the current reviewed source and explicit Locator root; see its completed execution record for exact evidence. |
+
+**2026-10-15 recipe verification:** the reviewed native API and Vite reused the same
+database/volume. Compiler restart, React hot updates, authenticated module reads and
+a private Locator image passed. All 62 tables retained identical counts/content
+fingerprints; the original Docker images returned healthy with no published database port.
+
+IOP-211 prepares 71 source scenes with 10,678 provisional components: 5,532 motor
+symbols, 2,817 photoelectric candidates, 2,324 conveyors/curves and five retained
+scanner references. The separate synthetic example remains. Counts describe
+model/evidence records, not surveyed equipment, live status or accepted identities.
+
+| Remaining input / scope | What is needed to finish |
+| --- | --- |
+| Physical plant registration | Measured common origin/orientation, scale, elevations and surveyed sensor positions. Separate Bereich drawings are not an aligned floorplan. |
+| Canonical equipment links | Administrator reviews actual identities and source aliases, then explicitly links components; unknown candidates remain unverified. |
+| External connections | Approved WinCC/Ultimo/Entra schema/version, endpoint, access and credentials; real transport implementation and contract verification. |
+| Operational records | Real shifts and incoming managers for transfers; real action owners/dates/targets/exposure for meaningful improvement comparison. No operational data is invented. |
+| Jobs and Audit | Real business/provider handlers; organization RBAC capture and separate platform-security authority/collection/retention. |
+| Performance and release | Representative workloads, accepted thresholds and consolidated pilot measurements; hosted/shared-use controls and release decision. |
+
+See docs/development/platform-completion.md, the IOP-211 item/review branch and the
+canonical backlog. Local implementation, Git publication, stage/master promotion
+and shared deployment are distinct states. The optional older IOP-173 fixture writer
+is not a startup command and may not match current category rules.
+
+<!-- page -->
+
+# 16 / Offline routine and review
 
 **Before leaving:** run the native startup once while online, install dependencies,
 open the required screens and verify login. Cache the Docker database image and
@@ -510,7 +660,12 @@ pull refuses divergent history. While offline, use your already synchronized dev
 Run relevant checks; then create logical English commits. Preserve other review branches.
 Promotion remains story -> develop -> stage -> master with explicit owner authorization.
 
-**Canonical reading order / source index**
+<!-- page -->
+
+# 17 / Canonical sources
+
+Use these maintained contracts when a feature, permission or command changes.
+Names following a directory prefix in the same cell share that prefix.
 
 | Source in the repository | Use |
 | --- | --- |
@@ -518,8 +673,11 @@ Promotion remains story -> develop -> stage -> master with explicit owner author
 | docs/architecture/modules.md and data-model.md | Logical modules, contracts and persisted concepts. |
 | docs/architecture/adr/ | Read Accepted decisions relevant to your change; Proposed is not Accepted. |
 | docs/planning/backlog.md and poc-delivery.md | Current story statuses and delivered evidence; older review dates are historical snapshots. |
-| ROADMAP.md | Consolidated remaining work; IOP-199 supersedes its earlier Workforce-default deferral. |
-| docs/product/shift-handover.md | Current operational category/Journal/Success contract. |
+| docs/development/platform-completion.md | Delivered modules, operating contracts and explicit remaining inputs. |
+| docs/product/shift-handover.md; docs/development/formal-handover.md | Journal/Success versus exact shift transfer/closure/acknowledgement. |
+| docs/product/workforce.md; maintenance-assets.md; asset-domain.md | Planning, technical work, registered identity and model ownership. |
+| docs/development/asset-locator.md; improvement-tracking.md; operational-overview.md | Provisional models, action evidence and source-authorized search. |
+| docs/product/integration-readiness.md; docs/development/local-operations.md | External adapter limits, jobs, backup and operator contracts. |
 | docs/development/running-poc.md | Standard Docker operator workflow and seed provenance. |
 | docs/development/local-configuration.md | Scope, origins and explicit environment/configuration rules. |
 | infra/database/README.md | Roles, migrations, RLS and native database-tool contracts. |
