@@ -4,6 +4,12 @@ This index records existing work; permanent contexts own scope and status.
 Execution plans live in `active/`, and completed evidence in `completed/`.
 See the [workflow](workflow.md).
 
+## Owner-requested Locator and access refinement
+
+| Task context | Status |
+| --- | --- |
+| [IOP-211 — Locator equipment models and administrator-owned editing](items/IOP-211-locator-models-and-access.md) | In progress |
+
 ## Owner-authorized independent completion — 2026-10-14
 
 The owner delegates development decisions and reopens the 3D Asset Locator under
