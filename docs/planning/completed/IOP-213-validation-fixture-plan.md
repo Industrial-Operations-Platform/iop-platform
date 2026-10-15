@@ -1,6 +1,7 @@
 # IOP-213 — Validation fixture secret hygiene
 
-Status: Completed locally on 2026-10-15; publication pending. Owner request: investigate and fix the validation failure
+Status: Completed; approved publication completed on 2026-10-15.
+See [publication evidence](IOP-213-publication-plan.md). Owner request: investigate and fix the validation failure
 shown for IOP-200 on 2026-10-15.
 Branch: `fix/IOP-213-validation-fixture`, from develop `25db723`.
 Scope: [item](../items/IOP-213-validation-fixture.md).
