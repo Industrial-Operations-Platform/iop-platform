@@ -2,7 +2,8 @@
 
 ## Status and request
 
-Completed locally. Owner publication approval remains pending. The owner requests broader provisional 3D modelling from the supplied
+In progress for an explicit visual/navigation review follow-up; the initial local
+increment is complete. Owner publication approval remains pending. The owner requests broader provisional 3D modelling from the supplied
 private Bereich schematics, correct motor/photoelectric-sensor identities, stricter
 administrator-owned Assets/editing, reader-only operational navigation, aligned
 area controls and a clear integrated Handover entry point. This supersedes the
@@ -46,3 +47,23 @@ linked; do not create duplicate registry assets from image symbols or alarm word
 explicit access refinement. Source diagrams and derived traces remain private.
 No measured plant registration, live provider feed, technician rollout, production
 reset or remote publication is authorized by this development request.
+
+
+## Explicit owner review follow-up
+
+The owner requests compact Actions filters matching Department/Halle; geometry-only
+normal Locator navigation with guide images confined to Administrator model editing;
+a distinct photoelectric component color; camera/top-view/zoom continuity when
+entering an area or selecting a component; and thinner conveyor lateral geometry.
+
+- [ ] Actions filters use the shared compact visual control without query regressions.
+- [ ] Normal Locator navigation contains no guide images; only explicit Administrator
+  model editing can show them, including no-WebGL and source-details paths.
+- [ ] Photoelectric geometry has a distinct application accent in both appearances.
+- [ ] Overview/area navigation preserves orientation and zoom; normal component
+  selection preserves the view. Explicit focus and source-placement entry still work.
+- [ ] Conveyor laterals stay proportionate, including narrow source-derived bands.
+- [ ] Meaningful lifecycle/geometry/filter tests and actual installed desktop/mobile
+  visual verification pass, with all original data and permissions preserved.
+
+[Follow-up execution](../active/IOP-211-locator-visual-refinements-plan.md).
