@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed local delivery and integration audit. Owner request on 2026-10-15: keep the landing animation running without
+Completed and published to origin. Owner request on 2026-10-15: keep the landing animation running without
 a pause action, show clean reconnection guidance when the backend is unavailable,
 align Area / location with existing compact filters, check local Docker delivery
 against develop, and audit branch integration into develop and origin/develop.
@@ -28,6 +28,8 @@ and [ADR-0034](../../architecture/adr/ADR-0034-local-container-platform.md).
 
 See the [execution plan](../completed/IOP-212-entry-recovery-filters-plan.md).
 
-Local Docker is active with the fixes. Publication of IOP-212 and integration of
-retained IOP-204–211 branch refs require owner authorization; the audit records
+Local Docker is active with the fixes. The owner approved IOP-212 publication on
+2026-10-15; the story was merged into develop and both refs were verified on origin.
+See the [publication record](../completed/IOP-212-publication-plan.md). Integration
+of retained IOP-204–211 branch refs remains outside that approval; the audit records
 those missing merges rather than claiming they are complete.
