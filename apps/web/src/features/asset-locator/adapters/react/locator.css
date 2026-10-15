@@ -32,3 +32,9 @@
 .locator-identity { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: .6rem 1rem; }
 .locator-identity dt { color: var(--iop-muted); }
 .locator-identity dd { margin: 0; overflow-wrap: anywhere; }
+
+.locator-legend { display: flex; gap: 1rem; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; color: var(--iop-muted); font-size: var(--iop-captionSize); }
+.locator-legend li, .locator-guide-control { display: inline-flex; gap: .5rem; align-items: center; }
+.locator-legend span { width: .8rem; height: .8rem; border-radius: var(--iop-inputRadius); flex-shrink: 0; }
+.locator-photoelectric-swatch { background: var(--iop-chartTeal); }
+.locator-equipment-swatch { background: var(--iop-chartDuration); }

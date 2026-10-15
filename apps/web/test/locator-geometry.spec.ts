@@ -1,5 +1,5 @@
-import { componentGeometry, thumbnailMatrix } from '../src/features/asset-locator/adapters/three/renderer';
-import { identity } from '../src/design/identity';
+import { componentColor, componentGeometry, thumbnailMatrix } from '../src/features/asset-locator/adapters/three/renderer';
+import { darkIdentity, identity } from '../src/design/identity';
 import type { Component } from '../src/features/asset-locator/domain/models';
 import * as THREE from 'three';
 jest.mock('three/addons/controls/OrbitControls.js', () => ({ OrbitControls: class {
@@ -12,7 +12,7 @@ test('every reusable primitive renders solid depth without any live-state infere
   expect(bounds.isEmpty()).toBe(false);
   expect(bounds.max.y - bounds.min.y).toBeGreaterThan(0);
   const mesh = object.children.find(c => c instanceof THREE.Mesh) as THREE.Mesh;
-  expect((mesh.material as THREE.MeshStandardMaterial).color.getHexString()).toBe(new THREE.Color(kind === 'sensor' || kind === 'scanner' || kind === 'photoelectric-sensor' ? identity.primary : identity.chartDuration).getHexString());
+  expect((mesh.material as THREE.MeshStandardMaterial).color.getHexString()).toBe(new THREE.Color(kind === 'photoelectric-sensor' ? identity.chartTeal : kind === 'sensor' || kind === 'scanner' ? identity.primary : identity.chartDuration).getHexString());
 } });
 
 test('motor and photoelectric templates have separate solid geometry and selectable identities', () => {
@@ -44,5 +44,39 @@ test('diagonal thumbnail corners follow rotated source geometry before anisotrop
     const expectedZ=((part.y-.5)*sourceDepth+Math.sin(angle)*x+Math.cos(angle)*z)*tileDepth/sourceDepth;
     const expectedY=(part.elevation*30+part.height*15+1+point.y*part.height*30)*Math.min(tileWidth/100,tileDepth/sourceDepth);
     expect(result.x).toBeCloseTo(expectedX,12);expect(result.z).toBeCloseTo(expectedZ,12);expect(result.y).toBeCloseTo(expectedY,12);
+  }
+});
+
+test.each([['light',identity],['dark',darkIdentity]] as const)('photoelectric identity uses the shared teal accent in %s with independent evidence and selection overrides', (_name,palette) => {
+  expect(componentColor('photoelectric-sensor',palette)).toBe(palette.chartTeal);
+  expect(componentColor('sensor',palette)).toBe(palette.primary);
+  expect(componentColor('scanner',palette)).toBe(palette.primary);
+  expect(componentColor('motor',palette)).toBe(palette.chartDuration);
+  expect(palette.chartTeal).not.toBe(palette.primary);
+  expect(palette.chartTeal).not.toBe(palette.errorInk);
+  expect(palette.chartTeal).not.toBe(palette.focus);
+  for(const [attention,selected,expected] of [[false,false,palette.chartTeal],[true,false,palette.errorInk],[false,true,palette.focus],[true,true,palette.focus]] as const) {
+    const object=componentGeometry({...base,kind:'photoelectric-sensor'},palette,attention,selected);
+    const body=object.children.find(child=>child instanceof THREE.Mesh) as THREE.Mesh;
+    expect((body.material as THREE.MeshStandardMaterial).color.getHexString()).toBe(new THREE.Color(expected).getHexString());
+  }
+});
+
+test.each([{width:.4,depth:.001},{width:.001,depth:.2}])('narrow conveyor rails and supports stay proportional inside the belt footprint (%o)', dimensions => {
+  const component={...base,...dimensions,x:.5,y:.5,rotation:0},depthScale=60;
+  const object=componentGeometry(component,identity,false,false,depthScale),w=component.width*100,d=component.depth*depthScale;
+  object.updateMatrixWorld(true);
+  const solids=object.children.filter(child=>child instanceof THREE.Mesh) as THREE.Mesh[];
+  expect(solids).toHaveLength(7);
+  for(const mesh of solids) {
+    const bounds=new THREE.Box3().setFromObject(mesh);
+    expect(bounds.min.x).toBeGreaterThanOrEqual(-w/2-1e-8);expect(bounds.max.x).toBeLessThanOrEqual(w/2+1e-8);
+    expect(bounds.min.z).toBeGreaterThanOrEqual(-d/2-1e-8);expect(bounds.max.z).toBeLessThanOrEqual(d/2+1e-8);
+  }
+  for(const rail of solids.slice(1,3))
+    expect((rail.geometry as THREE.BoxGeometry).parameters.depth).toBeCloseTo(Math.min(w,d)*.06,12);
+  for(const support of solids.slice(3)) {
+    expect((support.geometry as THREE.BoxGeometry).parameters.width).toBeLessThanOrEqual(Math.min(w,d)*.12);
+    expect((support.geometry as THREE.BoxGeometry).parameters.depth).toBeLessThanOrEqual(Math.min(w,d)*.12);
   }
 });

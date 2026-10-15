@@ -1,5 +1,12 @@
 export const locatorRefinementsGerman: Readonly<Record<string, string>> = {
-  'Photoelectric sensor': 'Lichtschranke',
+  'Edit model': 'Modell bearbeiten',
+  'Finish editing': 'Bearbeitung beenden',
+  'Show guide image': 'Vorlagenbild anzeigen',
+  'Component colors': 'Komponentenfarben',
+  'Conveyors and motors': 'Förderstrecken und Motoren',
+  '3D rendering is unavailable on this device. The component list below remains available.': '3D-Darstellung ist auf diesem Gerät nicht verfügbar. Die Komponentenliste darunter bleibt verfügbar.',
+  'Drag to orbit; right-drag to pan; scroll to zoom. Schematic positions remain provisional.': 'Ziehen zum Drehen; rechts ziehen zum Verschieben; Scrollen zum Zoomen. Schematische Positionen bleiben vorläufig.',
+  'Photoelectric sensor' : 'Lichtschranke',
   motor: 'Motor', motors: 'Motoren', 'photoelectric sensors': 'Lichtschranken', conveyors: 'Förderstrecken', components: 'Komponenten',
   'Register a new asset': 'Neues Betriebsmittel registrieren',
   'Reuse the registered equipment identifier and link it to the selected component. Register an identifier only for new equipment.': 'Registrierte Anlagenkennung verwenden und mit der ausgewählten Komponente verknüpfen. Nur für neue Anlagen eine neue Kennung registrieren.',

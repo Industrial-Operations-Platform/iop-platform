@@ -2,11 +2,12 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { Component, Scene } from '../../domain/models';
 import type { Identity } from '../../../../design/identity';
+export interface CameraState {
+  position: number[];
+  target: number[];
+}
 export interface CameraControls {
-  snapshot(): {
-    position: number[];
-    target: number[];
-  };
+  snapshot(): CameraState;
   reset(): void;
   top(): void;
   zoom(factor: number): void;
@@ -15,6 +16,10 @@ export interface CameraControls {
   dispose(): void;
 }
 const SCALE = 100;
+/** Component identity accents are independent of reported evidence and selection. */
+export function componentColor(kind: Component['kind'], palette: Identity, attention = false, selected = false): string {
+  return selected ? palette.focus : attention ? palette.errorInk : kind === 'photoelectric-sensor' ? palette.chartTeal : kind === 'sensor' || kind === 'scanner' ? palette.primary : palette.chartDuration;
+}
 /** Rotate in source coordinates before stretching the complete shape into its tile. */
 export function thumbnailMatrix(component: Component, tileWidth: number, tileDepth: number, sourceAspect: number): THREE.Matrix4 {
   const sourceDepth = SCALE / Math.max(0.5, sourceAspect);
@@ -30,7 +35,7 @@ export function thumbnailMatrix(component: Component, tileWidth: number, tileDep
 export function componentGeometry(component: Component, palette: Identity, attention: boolean, selected: boolean, depthScale = 60): THREE.Group {
   const group = new THREE.Group();
   group.userData.componentId = component.id;
-  const color = selected ? palette.focus : attention ? palette.errorInk : component.kind === 'sensor' || component.kind === 'photoelectric-sensor' || component.kind === 'scanner' ? palette.primary : palette.chartDuration;
+  const color = componentColor(component.kind, palette, attention, selected);
   const material = new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.12 });
   const frame = new THREE.MeshStandardMaterial({ color: palette.muted, roughness: 0.85 });
   const w = component.width * SCALE, d = component.depth * depthScale, h = component.height * 30;
@@ -86,11 +91,12 @@ export function componentGeometry(component: Component, palette: Identity, atten
   else {
     box(w, h, d);
     if (component.kind === 'conveyor') {
-      box(w, h * 0.28, 0.7, 0, h * 0.65, -d / 2, frame);
-      box(w, h * 0.28, 0.7, 0, h * 0.65, d / 2, frame);
+      const railThickness = Math.min(w, d) * 0.06, supportThickness = Math.min(0.7, Math.min(w, d) * 0.12);
+      for (const z of [-(d - railThickness) / 2, (d - railThickness) / 2])
+        box(w, h * 0.28, railThickness, 0, h * 0.65, z, frame);
       for (const x of [-w * 0.35, w * 0.35])
         for (const z of [-d * 0.35, d * 0.35])
-          box(0.7, 2, 0.7, x, -h / 2 - 1, z, frame);
+          box(supportThickness, 2, supportThickness, x, -h / 2 - 1, z, frame);
       const arrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-w * 0.2, h / 2 + 0.15, 0), w * 0.4, palette.onPrimary, Math.min(2, w * 0.12), Math.min(1, w * 0.08));
       group.add(arrow);
     }
@@ -117,10 +123,8 @@ export function createSceneRenderer(container: HTMLElement, input: {
     y: number;
   }) => void;
   onReferenceError?: () => void;
-  cameraState?: {
-    position: number[];
-    target: number[];
-  };
+  cameraState?: CameraState;
+  onCameraChange?: (camera: CameraState) => void;
   tiles?: {
     scene: Scene;
     referenceUrl?: string;
@@ -151,8 +155,11 @@ export function createSceneRenderer(container: HTMLElement, input: {
   light.position.set(30, 90, 40);
   scene.add(light);
   let disposed = false;
-  const render = () => { if (!disposed)
-    renderer.render(scene, camera); };
+  const render = () => {
+    if (disposed) return;
+    renderer.render(scene, camera);
+    input.onCameraChange?.({ position: camera.position.toArray(), target: controls.target.toArray() });
+  };
   const objects = input.scene.content.components.map((c, index) => {
     const tile = input.tiles?.[index];
     if (!tile)
@@ -170,7 +177,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
     for (const kind of new Set(tile.scene.content.components.map(c => c.kind))) {
       const parts = tile.scene.content.components.filter(c => c.kind === kind);
       const geometry = kind === 'motor' ? new THREE.CylinderGeometry(.5, .5, 1, 8).rotateZ(Math.PI / 2) : new THREE.BoxGeometry(1, 1, 1);
-      const color = kind === 'sensor' || kind === 'photoelectric-sensor' || kind === 'scanner' ? input.palette.primary : input.palette.chartDuration;
+      const color = componentColor(kind, input.palette);
       const instances = new THREE.InstancedMesh(geometry, new THREE.MeshStandardMaterial({ color, roughness: .8 }), parts.length);
       parts.forEach((part, i) => {
         instances.setMatrixAt(i, thumbnailMatrix(part, tileWidth, tileDepth, tile.aspect));

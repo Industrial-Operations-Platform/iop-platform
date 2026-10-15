@@ -4,19 +4,22 @@ import { Actions, Alert, Button } from '../../../../design/components';
 import { identity, darkIdentity } from '../../../../design/identity';
 import { useAppearance } from '../../../../design/useAppearance';
 import type { Scene, Reference } from '../../domain/models';
-import type { CameraControls } from '../three/renderer';
-import { referenceUrl } from '../http/gateway';
+import type { CameraControls, CameraState } from '../three/renderer';
 /** Area tiles are navigation cards, explicitly unrelated to physical adjacency. */
-export function PlantOverview({ scenes, references, onScene }: {
+export function PlantOverview({ scenes, references, onScene, cameraState, onCameraChange }: {
   scenes: Scene[];
   references: Reference[];
   onScene: (id: string) => void;
+  cameraState?: CameraState;
+  onCameraChange?: (camera: CameraState) => void;
 }) {
   const element = useRef<HTMLDivElement>(null), controls = useRef<CameraControls | null>(null), choose = useRef(onScene);
   choose.current = onScene;
+  const camera = useRef<CameraState | undefined>(cameraState), cameraChanged = useRef(onCameraChange);
+  cameraChanged.current = onCameraChange;
   const [failed, setFailed] = useState(false);
   const { resolved } = useAppearance();
-  const overview = useMemo(() => { const count = scenes.length, columns = Math.max(1, Math.ceil(Math.sqrt(count * 1.65))), rows = Math.max(1, Math.ceil(count / columns)); const scene: Scene = { id: 'uncalibrated-area-overview', revision: 0, authorId: '', createdAt: '', updatedAt: '', content: { name: 'Uncalibrated area tiles', group: '', locationId: '', referenceId: '', description: 'Tiles provide navigation, not physical plant placement.', calibration: 'pending', surveyNote: '', components: scenes.map((s, i) => ({ id: s.id, kind: 'cabinet', label: s.content.name, x: (i % columns + .5) / columns, y: (Math.floor(i / columns) + .5) / rows, elevation: null, rotation: 0, width: .9 / columns, depth: .9 / rows, height: .01, assetId: '', verification: 'provisional', note: 'Navigation tile; no physical adjacency implied.' })) } }; return { scene, tiles: scenes.map(s => { const ref = references.find(r => r.id === s.content.referenceId); return { scene: s, referenceUrl: ref ? referenceUrl(ref.id) : undefined, aspect: ref ? ref.width / ref.height : 1.65 }; }) }; }, [scenes, references]);
+  const overview = useMemo(() => { const count = scenes.length, columns = Math.max(1, Math.ceil(Math.sqrt(count * 1.65))), rows = Math.max(1, Math.ceil(count / columns)); const scene: Scene = { id: 'uncalibrated-area-overview', revision: 0, authorId: '', createdAt: '', updatedAt: '', content: { name: 'Uncalibrated area tiles', group: '', locationId: '', referenceId: '', description: 'Tiles provide navigation, not physical plant placement.', calibration: 'pending', surveyNote: '', components: scenes.map((s, i) => ({ id: s.id, kind: 'cabinet', label: s.content.name, x: (i % columns + .5) / columns, y: (Math.floor(i / columns) + .5) / rows, elevation: null, rotation: 0, width: .9 / columns, depth: .9 / rows, height: .01, assetId: '', verification: 'provisional', note: 'Navigation tile; no physical adjacency implied.' })) } }; return { scene, tiles: scenes.map(s => { const ref = references.find(r => r.id === s.content.referenceId); return { scene: s, aspect: ref ? ref.width / ref.height : 1.65 }; }) }; }, [scenes, references]);
   useEffect(() => {
     if (!element.current || !scenes.length)
       return;
@@ -26,14 +29,14 @@ export function PlantOverview({ scenes, references, onScene }: {
     const host = element.current;
     void import('../three/renderer').then(({createSceneRenderer}) => {
       if (!active) return;
-      view = createSceneRenderer(host, { ...overview, aspect: 1.65, palette: resolved === 'dark' ? darkIdentity : identity, selectedId: '', problemAssetIds: new Set(), onSelect: id => choose.current(id) });
+      view = createSceneRenderer(host, { ...overview, aspect: 1.65, palette: resolved === 'dark' ? darkIdentity : identity, selectedId: '', problemAssetIds: new Set(), cameraState: camera.current, onCameraChange: value => { if (active) { camera.current = value; cameraChanged.current?.(value); } }, onSelect: id => choose.current(id) });
       controls.current = view;
     }).catch(() => {
       if (!active) return;
       setFailed(true);
       host.replaceChildren();
     });
-    return () => { active = false; view?.dispose(); controls.current = null; };
+    return () => { active = false; if (view) { camera.current = view.snapshot(); cameraChanged.current?.(camera.current); view.dispose(); } controls.current = null; };
   }, [overview, resolved, scenes.length]);
   if (!scenes.length)
     return null;
