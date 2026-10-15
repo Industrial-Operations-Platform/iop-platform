@@ -1,6 +1,6 @@
 import "./improvement.css";
 import { useEffect, useRef, useState } from "react";
-import { Actions, AddButton, Alert, Badge, Button, DepartmentScope, Disclosure, Field, FieldRow, FilterForm, Panel, RefreshButton, SearchControl, SectionHeading, Select, Table, TableText, TableViewport } from "../../../../design/components";
+import { Actions, AddButton, Alert, Badge, Button, CompactSelect, DepartmentScope, Disclosure, FilterForm, Panel, RefreshButton, SearchControl, SectionHeading, Table, TableText, TableViewport } from "../../../../design/components";
 import { locale, t } from "../../../../localization/i18n";
 import type { ImprovementApplication } from "../../application/improvement";
 import { statuses, type Catalog, type History, type EvidencePage, type ComparisonPage, type Page, type Selection, type SaveAction, type AddEvidence } from "../../domain/models";
@@ -151,7 +151,7 @@ export function ImprovementWorkspace({
           revisions: [...current.revisions, ...next.revisions]
         } : next)).catch(e => setError(e.message))}>{t("Load older revisions")}</Button>}</Disclosure>
     </> : <>
-      {catalog && <FilterForm onSubmit={e => {
+      {catalog && <FilterForm variant="plain" onSubmit={e => {
         e.preventDefault();
         const next = {
           ...selection,
@@ -160,7 +160,7 @@ export function ImprovementWorkspace({
         };
         setSelection(next);
         void collection(next);
-      }}><FieldRow><DepartmentScope value={selection.locationId ?? ""} onChange={locationId => {
+      }}><div className="iop-scope-toolbar"><DepartmentScope value={selection.locationId ?? ""} onChange={locationId => {
             const next = {
               ...selection,
               locationId,
@@ -168,23 +168,24 @@ export function ImprovementWorkspace({
             };
             setSelection(next);
             void collection(next);
-          }} choices={catalog.locations} /><Field>{t("Status")}<Select value={selection.status ?? ""} onChange={e => {
+          }} choices={catalog.locations} /><CompactSelect caption="Status" value={selection.status ?? ""} emptyLabel="All statuses"
+            choices={statuses.map(status => ({ id: status, label: `${statusLabel(status)} (${page?.statusCounts[status] ?? 0})` }))} onChange={status => {
               const next = {
                 ...selection,
-                status: e.target.value as Selection["status"],
+                status: status as Selection["status"],
                 cursor: ""
               };
               setSelection(next);
               void collection(next);
-            }}><option value="">{t("All statuses")}</option>{statuses.map(s => <option key={s} value={s}>{statusLabel(s)} ({page?.statusCounts[s] ?? 0})</option>)}</Select></Field><Field>{t("Owner")}<Select value={selection.ownerId ?? ""} onChange={e => {
+            }} /><CompactSelect caption="Owner" value={selection.ownerId ?? ""} emptyLabel="All owners" choices={catalog.people.map(person => ({ id: person.id, label: person.name }))} onChange={ownerId => {
               const next = {
                 ...selection,
-                ownerId: e.target.value,
+                ownerId,
                 cursor: ""
               };
               setSelection(next);
               void collection(next);
-            }}><option value="">{t("All owners")}</option>{catalog.people.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</Select></Field><SearchControl label={t("Search improvements")} placeholder={t("Title, goal or linked equipment")} value={search} onChange={setSearch} /><Button type="submit" disabled={pending}>{t("Apply filters")}</Button></FieldRow></FilterForm>}
+            }} /><SearchControl caption="Search" label={t("Search improvements")} placeholder={t("Title, goal or linked equipment")} value={search} onChange={setSearch} /><Button type="submit" disabled={pending}>{t("Apply filters")}</Button></div></FilterForm>}
       <TableViewport><Table aria-label={t("Improvement actions")}><thead><tr><th>{t("Action")}</th><th>{t("Status")}</th><th>{t("Owner")}</th><th>{t("Target date")}</th><th>{t("Evidence")}</th></tr></thead><tbody>{page?.actions.map(a => <tr key={a.id}><td><Button variant="text" className="iop-improvement-title" onClick={() => void details(a.id)}><TableText>{a.data.title}</TableText></Button><small>{a.locationLabel} · {a.assetName || a.issueTitle}</small></td><td><Badge tone={a.data.status === "blocked" ? "warning" : a.data.status === "evaluated" ? "success" : "neutral"}>{statusLabel(a.data.status)}</Badge></td><td>{a.ownerName || t("Unassigned")}</td><td>{a.data.dueDate || "—"}</td><td>{a.evidenceCount} / {a.comparisonCount}</td></tr>)}{page && !page.actions.length && <tr><td colSpan={5}>{t("No matching improvement actions.")}</td></tr>}</tbody></Table></TableViewport>
       {page && <p>{page.total} {t("matching actions")}</p>}{page?.nextCursor && <Button disabled={pending} onClick={() => {
         setPending(true);

@@ -35,6 +35,7 @@ export { ValueFilter } from "./ValueFilter";
 export { MonthMultiPicker } from "./MonthMultiPicker";
 export { SectionHeading } from "./SectionHeading";
 export { DepartmentScope } from "./DepartmentScope";
+export { CompactSelect } from "./CompactSelect";
 export { Dialog } from "./Dialog";
 export { TableText } from "./TableText";
 export { SearchControl } from "./SearchControl";

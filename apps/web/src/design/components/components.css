@@ -150,6 +150,11 @@
   padding: 16px;
   margin-bottom: 20px;
 }
+.iop-ui .iop-filter-form--plain {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
 .iop-ui .iop-filter-form .iop-disclosure {
   margin: 0;
   padding: 0;
@@ -1080,7 +1085,7 @@
   overflow-wrap: anywhere;
 }
 
-/* Compact context controls: one shared contract for departments and calendar days. */
+/* Compact context controls: one shared contract for filters and calendar days. */
 .iop-ui .iop-field.iop-context-field {
   display: inline-flex;
   flex: 0 1 auto;
@@ -1121,8 +1126,14 @@
   color: var(--iop-ink);
   color-scheme: light;
 }
-.iop-ui .iop-department-scope .iop-select {
+.iop-ui .iop-compact-select .iop-select {
   width: 16rem;
+}
+.iop-search-control--compact[data-expanded="true"] {
+  width: auto;
+}
+.iop-search-control--compact > .iop-context-field[hidden] {
+  display: none;
 }
 .iop-ui .iop-context-field:focus-within {
   border-color: var(--iop-primary);

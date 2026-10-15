@@ -1,5 +1,4 @@
-import { t } from "../../localization/i18n";
-import { Field, Select } from "./Controls";
+import { CompactSelect } from "./CompactSelect";
 /** One department context, shared by Start and operational workspaces. */
 export function DepartmentScope({
   value,
@@ -18,22 +17,6 @@ export function DepartmentScope({
   emptyLabel?: string;
   disabled?: boolean;
 }) {
-  return (
-    <Field layout="inline" className="iop-context-field iop-department-scope">
-      <span>{t(caption)}</span>
-      <Select
-        aria-label={t(label)}
-        value={value}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        <option value="">{t(emptyLabel)}</option>
-        {choices.map((choice) => (
-          <option key={choice.id} value={choice.id}>
-            {choice.label}
-          </option>
-        ))}
-      </Select>
-    </Field>
-  );
+  return <CompactSelect caption={caption} label={label} value={value} onChange={onChange}
+    choices={choices} emptyLabel={emptyLabel} disabled={disabled} className="iop-department-scope" />;
 }

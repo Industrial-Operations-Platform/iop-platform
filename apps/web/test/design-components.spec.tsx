@@ -55,6 +55,8 @@ test("shared form controls preserve native labels, changes, refs, disabled state
       </FilterForm>
     </IdentityRoot>,
   );
+  expect(screen.getByLabelText("Name").closest("form")).toHaveClass("iop-filter-form");
+  expect(screen.getByLabelText("Name").closest("form")).not.toHaveClass("iop-filter-form--plain");
   fireEvent.change(screen.getByLabelText("Name"), {
     target: { value: "Example" },
   });

@@ -1,18 +1,20 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { t } from "../../localization/i18n";
-import { IconButton, Input } from "./Controls";
+import { Field, IconButton, Input } from "./Controls";
 
-/** A disclosed search field; matching remains the caller's responsibility. */
+/** A disclosed search field; an optional caption uses the compact context surface. */
 export function SearchControl({
   label,
   placeholder,
   value,
   onChange,
+  caption,
 }: {
   label: string;
   placeholder: string;
   value: string;
   onChange: (value: string) => void;
+  caption?: string;
 }) {
   const [expanded, setExpanded] = useState(Boolean(value));
   const inputId = useId();
@@ -26,8 +28,26 @@ export function SearchControl({
     setExpanded(false);
     toggle.current?.focus();
   };
+  const searchInput = (
+    <Input
+      ref={input}
+      id={inputId}
+      type="search"
+      hidden={!expanded}
+      aria-label={label}
+      placeholder={placeholder}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          close();
+        }
+      }}
+    />
+  );
   return (
-    <div className="iop-search-control" data-expanded={expanded}>
+    <div className={`iop-search-control${caption ? " iop-search-control--compact" : ""}`} data-expanded={expanded}>
       <IconButton
         ref={toggle}
         label={expanded ? t("Close search") : label}
@@ -54,22 +74,12 @@ export function SearchControl({
           )}
         </svg>
       </IconButton>
-      <Input
-        ref={input}
-        id={inputId}
-        type="search"
-        hidden={!expanded}
-        aria-label={label}
-        placeholder={placeholder}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            event.preventDefault();
-            close();
-          }
-        }}
-      />
+      {caption ? (
+        <Field layout="inline" className="iop-context-field" hidden={!expanded}>
+          <span>{t(caption)}</span>
+          {searchInput}
+        </Field>
+      ) : searchInput}
     </div>
   );
 }

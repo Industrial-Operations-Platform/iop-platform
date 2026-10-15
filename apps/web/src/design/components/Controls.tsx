@@ -226,10 +226,11 @@ export function FieldRow({ className = "", ...props }: ComponentProps<"div">) {
   return <div {...props} className={`iop-field-row ${className}`} />;
 }
 export function FilterForm({
+  variant = "panel",
   className = "",
   ...props
-}: ComponentProps<"form">) {
-  return <form {...props} className={`iop-filter-form ${className}`} />;
+}: ComponentProps<"form"> & { variant?: "panel" | "plain" }) {
+  return <form {...props} className={`iop-filter-form${variant === "plain" ? " iop-filter-form--plain" : ""} ${className}`} />;
 }
 export function Actions({
   children,
