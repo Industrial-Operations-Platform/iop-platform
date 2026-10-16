@@ -15,8 +15,8 @@ test("the built workspace uses the real health/context proxy even with the retir
     .getByRole("button", { name: "Sign in", exact: true }).click();
   const access = page.getByRole("dialog", { name: "Workspace access", exact: true });
   await expect(
-    access.getByText("Connect the local API to open your workspace."),
-  ).toBeVisible();
+    access.getByRole("status"),
+  ).toHaveText("Connection unavailable. Reconnect to the local API and try again.");
   await expect(
     access.getByRole("button", { name: "Retry connection" }),
   ).toBeEnabled();
@@ -53,10 +53,14 @@ for (const width of [1440, 375]) {
     await page.getByRole("navigation", { name: "Platform navigation" })
       .getByRole("button", { name: "Sign in", exact: true }).click();
     const access = page.getByRole("dialog", { name: "Workspace access", exact: true });
-    await expect(access.getByRole("alert")).toBeVisible();
+    await expect(access.getByRole("status")).toHaveText(
+      "Connection unavailable. Reconnect to the local API and try again.",
+    );
+    await expect(access.getByRole("alert")).toHaveCount(0);
     available = true;
     await access.getByRole("button", { name: "Retry connection" }).click();
     await expect(access.getByRole("alert")).toHaveCount(0);
+    await expect(access.getByRole("status")).toHaveCount(0);
     await expect(
       access.getByRole("combobox", { name: "Demo user" }),
     ).toContainText("Reader");

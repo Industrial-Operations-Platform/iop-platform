@@ -59,7 +59,7 @@ export function FormalHandoverWorkspace({ application, departmentId = "", onEntr
   });
   const record = history?.record;
   const evidence = (entries: EntryEvidence[]) => <FormalEvidence entries={entries} onEntry={onEntry} />;
-  return <section aria-label={t("Formal shift Handover")}>
+  return <section className="iop-page-stack" aria-label={t("Formal shift Handover")}>
     <HandoverHeading onHome={onHome ?? back} viewLabel={t("Shift records")} onBack={record || creating ? back : undefined}
       trail={record ? [{ label: t("Shift records"), onSelect: back }, { label: record.content.title }] : creating ? [{ label: t("Shift records"), onSelect: back }, { label: t("New record") }] : undefined}
       actions={<RefreshButton busy={busy || loading} onClick={() => record ? void perform(() => open(record.id)) : setRefresh((v) => v + 1)} />} />
@@ -91,18 +91,18 @@ export function FormalHandoverWorkspace({ application, departmentId = "", onEntr
     {context && (creating || editing) && <Panel><FormalRecordForm application={application} shifts={record ? [record.shift] : shifts}
       departmentId={department} areaId={area} record={editing ? record : undefined} timeZone={context.timeZone} busy={busy} onSave={save}
       onCancel={record ? () => setEditing(false) : back} /></Panel>}
-    {record && !editing && <>
+    {context && record && !editing && <>
       <Panel><h2>{record.content.title}</h2><p>{record.departmentLabel}{record.areaLabel && ` · ${record.areaLabel}`}</p>
         <Badge tone={record.state === "closed" ? "success" : "info"}>{formalState(record.state)}</Badge>
-        <p>{record.shift.date} · {record.shift.label} · {formalInstant(record.shift.startsAt, context!.timeZone)} – {formalInstant(record.shift.endsAt, context!.timeZone)} ({context!.timeZone})</p>
+        <p>{record.shift.date} · {record.shift.label} · {formalInstant(record.shift.startsAt, context.timeZone)} – {formalInstant(record.shift.endsAt, context.timeZone)} ({context.timeZone})</p>
         <p className="handover-prose">{record.content.summary || t("No transfer summary added.")}</p>
         <p>{t("Recorded by {0} · revision {1}", [record.authorName, record.revision])}</p>
         {record.state !== "closed" && <><h3>{t("Reviewed reports ({0})", [record.entries.length])}</h3>{evidence(record.entries)}<p>{t("Changed report revisions require reviewing and saving the record again before publication or closure.")}</p></>}
         {record.state !== "closed" && <Actions><Button variant="secondary" disabled={busy} onClick={() => setEditing(true)}>{t("Edit record")}</Button></Actions>}
-        {record.state === "closed" && <><h3>{t("Closed transfer")}</h3><p className="handover-prose">{record.outcome}</p><p>{t("Closed by {0} at {1}", [record.closedByName, formalInstant(record.closedAt, context!.timeZone)])}</p>
+        {record.state === "closed" && <><h3>{t("Closed transfer")}</h3><p className="handover-prose">{record.outcome}</p><p>{t("Closed by {0} at {1}", [record.closedByName, formalInstant(record.closedAt, context.timeZone)])}</p>
           <h3>{t("Selected report evidence")}</h3>{evidence(record.entries)}{!record.entries.length && <p>{t("No individual reports selected.")}</p>}
           <h3>{t("Pending at closure ({0})", [record.pending.length])}</h3>{evidence(record.pending)}{!record.pending.length && <p>{t("No pending reports were recorded at closure.")}</p>}
-          <h3>{t("Receiving acknowledgements")}</h3>{record.acknowledgements.map((ack) => <p key={ack.actorId}>{ack.actorName} · {formalInstant(ack.at, context!.timeZone)} · {ack.note}</p>)}
+          <h3>{t("Receiving acknowledgements")}</h3>{record.acknowledgements.map((ack) => <p key={ack.actorId}>{ack.actorName} · {formalInstant(ack.at, context.timeZone)} · {ack.note}</p>)}
           {!record.acknowledgements.length && <p>{t("Awaiting acknowledgement by an incoming manager.")}</p>}
         </>}
         {(record.state !== "closed" || (context?.actorId !== record.closedBy && !record.acknowledgements.some((ack) => ack.actorId === context?.actorId))) && <form onSubmit={(e) => {
@@ -113,7 +113,7 @@ export function FormalHandoverWorkspace({ application, departmentId = "", onEntr
       </Panel>
       {previous && <Disclosure variant="panel" summary={t("Previous shift and current pending reports")} open>
         {!previous.shift ? <p>{t("No earlier planned shift was found for this location in the previous 92 days.")}</p> : <>
-          <p>{previous.shift.date} · {previous.shift.label} · {formalInstant(previous.shift.startsAt, context!.timeZone)} – {formalInstant(previous.shift.endsAt, context!.timeZone)}</p>
+          <p>{previous.shift.date} · {previous.shift.label} · {formalInstant(previous.shift.startsAt, context.timeZone)} – {formalInstant(previous.shift.endsAt, context.timeZone)}</p>
           {previous.overlaps && <p>{t("The planned shifts overlap; order follows their start times.")}</p>}
           {previous.record ? <><Badge>{formalState(previous.record.state)}</Badge><p>{previous.record.content.title}</p><p className="handover-prose">{previous.record.outcome || previous.record.content.summary}</p>
             <Button variant="text" onClick={() => void perform(() => open(previous.record!.id))}>{t("Open previous shift record")}</Button></> : <p>{t("The previous planned shift has no formal record.")}</p>}
@@ -123,7 +123,7 @@ export function FormalHandoverWorkspace({ application, departmentId = "", onEntr
       </Disclosure>}
       <Disclosure variant="panel" summary={t("Retained record history")}>
         {history!.revisions.map((event) => <Panel key={event.record.revision}><strong>{t("Revision {0} · {1}", [event.record.revision, formalState(event.action)])}</strong>
-          <p>{event.actorName} · {formalInstant(event.at, context!.timeZone)}</p><p>{event.note}</p><Disclosure summary={t("Recorded content")}><p>{event.record.content.summary}</p><p>{event.record.outcome}</p>
+          <p>{event.actorName} · {formalInstant(event.at, context.timeZone)}</p><p>{event.note}</p><Disclosure summary={t("Recorded content")}><p>{event.record.content.summary}</p><p>{event.record.outcome}</p>
             {event.record.state === "closed" && evidence(event.record.entries)}</Disclosure></Panel>)}
         {!!history!.nextBefore && <Button variant="secondary" disabled={busy} onClick={() => void perform(async () => {
           const next = await application.history(record.id, history!.nextBefore);
