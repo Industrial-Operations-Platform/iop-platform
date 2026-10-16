@@ -1,4 +1,11 @@
 export const integrationGerman: Readonly<Record<string,string>> = {
+  "Adapter": "Adapter",
+  "Connection": "Verbindung",
+  "Required configuration and verification": "Erforderliche Konfiguration und Prüfung",
+  "No integrations are configured.": "Keine Integrationen konfiguriert.",
+  "Loading configuration history…": "Konfigurationsverlauf wird geladen…",
+  "Configuration revisions": "Konfigurationsversionen",
+  "No configuration history recorded yet.": "Noch kein Konfigurationsverlauf erfasst.",
   Integrations: "Integrationen",
   "Loading integration readiness…": "Integrationsbereitschaft wird geladen…",
   "No live provider is connected. Saved configuration does not enable a transport or replace local sign-in.": "Kein Anbieter ist live verbunden. Gespeicherte Konfiguration aktiviert keine Verbindung und ersetzt die lokale Anmeldung nicht.",

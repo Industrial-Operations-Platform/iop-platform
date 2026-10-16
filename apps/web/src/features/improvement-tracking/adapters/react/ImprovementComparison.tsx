@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Actions, Alert, Button, DateField, Disclosure, Field, FieldRow, Input, Panel, Select, Textarea } from "../../../../design/components";
+import { useEffect, useRef, useState } from "react";
+import { Actions, Alert, Button, DateField, Disclosure, Field, FieldRow, Input, PageStack, Panel, Select, Textarea } from "../../../../design/components";
 import { t } from "../../../../localization/i18n";
 import type { ImprovementApplication } from "../../application/improvement";
 import { emptyComparison, type ActionView, type Comparison, type ComparisonSelection } from "../../domain/models";
@@ -24,12 +24,21 @@ export function ImprovementComparison({
   const [preview, setPreview] = useState<Comparison | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const generation = useRef(0);
+  const request = useRef<number | null>(null);
+  useEffect(() => () => { generation.current++; request.current = null; }, [application, action.id, action.revision]);
   const change = (next: ComparisonSelection) => {
+    generation.current++;
+    request.current = null;
+    setBusy(false);
     setSelection(next);
     setPreview(null);
     setError("");
   };
   async function run(save: boolean) {
+    if (request.current !== null || pending) return;
+    const token = ++generation.current;
+    request.current = token;
     setBusy(true);
     setError("");
     try {
@@ -41,22 +50,21 @@ export function ImprovementComparison({
           selection,
           note
         });
-        onSaved();
-      } else setPreview(await application.compare({
-        actionId: action.id,
-        expectedRevision: action.revision,
-        selection
-      }));
+        if (generation.current === token) onSaved();
+      } else {
+        const result = await application.compare({ actionId: action.id, expectedRevision: action.revision, selection });
+        if (generation.current === token) setPreview(result);
+      }
     } catch (e) {
-      setError((e as Error).message);
+      if (generation.current === token) setError((e as Error).message);
     } finally {
-      setBusy(false);
+      if (generation.current === token) { request.current = null; setBusy(false); }
     }
   }
-  return <Disclosure summary={t("Before and after comparison")} variant="panel"><Panel><form onSubmit={e => {
+  return <Disclosure summary={t("Before and after comparison")} variant="panel"><PageStack><form onSubmit={e => {
         e.preventDefault();
         void run(false);
-      }}>
+      }}><fieldset className="iop-improvement-fields" disabled={busy || pending}><PageStack>
     <p>{t("Use non-overlapping periods and the same exact source selection. Date ends are exclusive. Missing imports are never treated as zero.")}</p>
     <FieldRow><DateField label={t("Before from")} required value={selection.before.from} onChange={e => change({
             ...selection,
@@ -107,6 +115,6 @@ export function ImprovementComparison({
                 }
               })} /></Field>)}</FieldRow></>}
     <Actions className="iop-form-actions"><Button type="submit" variant="primary" disabled={busy || pending}>{t("Calculate observed comparison")}</Button></Actions>
-  </form></Panel>{error && <Alert>{error}</Alert>}{preview && <><ComparisonResult comparison={preview} />{action.canEdit && <Panel><Field>{t("Comparison evidence note")}<Textarea maxLength={2000} value={note} onChange={e => setNote(e.target.value)} /></Field><Actions className="iop-form-actions"><Button disabled={busy || pending} onClick={() => void run(true)}>{t("Save comparison evidence")}</Button></Actions><p>{t("Saving recomputes both periods on the server and retains the resulting source revision. Preview values may change if new data is admitted before saving.")}</p></Panel>}</>}
-  </Disclosure>;
+  </PageStack></fieldset></form>{error && <Alert>{error}</Alert>}{preview && <><ComparisonResult comparison={preview} />{action.canEdit && <Panel><PageStack><Field>{t("Comparison evidence note")}<Textarea disabled={busy || pending} maxLength={2000} value={note} onChange={e => setNote(e.target.value)} /></Field><Actions className="iop-form-actions"><Button disabled={busy || pending} onClick={() => void run(true)}>{t("Save comparison evidence")}</Button></Actions><p>{t("Saving recomputes both periods on the server and retains the resulting source revision. Preview values may change if new data is admitted before saving.")}</p></PageStack></Panel>}</>}
+  </PageStack></Disclosure>;
 }

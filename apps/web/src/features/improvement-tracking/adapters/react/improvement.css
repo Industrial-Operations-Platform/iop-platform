@@ -7,3 +7,18 @@
 .iop-improvement-title {
   text-align: left;
 }
+.iop-improvement-collection {
+  min-width: 44rem;
+}
+.iop-improvement-title + small {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--iop-muted);
+  font-weight: var(--iop-regularWeight);
+}
+.iop-improvement-fields {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
