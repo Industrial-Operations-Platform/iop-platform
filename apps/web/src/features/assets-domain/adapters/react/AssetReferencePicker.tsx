@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Field, Input, Select } from "../../../../design/components";
+import { Alert, Button, Field, Input, PageStack, Select } from "../../../../design/components";
 import { t } from "../../../../localization/i18n";
 import type { AssetDomainApplication } from "../../application/domain";
 import type { ReferencePage, RegistryReference } from "../../domain/models";
@@ -57,7 +57,7 @@ export function AssetReferencePicker({
     };
   }, [application, search]);
   const choices = page.assets.filter(a => a.id !== excludeId && (!accept || accept(a.id, page)));
-  return <div><Field>{t("Search")}: {label}<Input aria-label={t("Search") + ": " + label} value={search} maxLength={200} disabled={disabled} onChange={e => {
+  return <PageStack><Field>{t("Search")}: {label}<Input aria-label={t("Search") + ": " + label} value={search} maxLength={200} disabled={disabled} onChange={e => {
         requestEpoch.current += 1;
         setBusy(true);
         setSearch(e.target.value);
@@ -81,5 +81,5 @@ export function AssetReferencePicker({
       } finally {
         if (requestEpoch.current === current) setBusy(false);
       }
-    }}>{t("Load more assets")}</Button>}</div>;
+    }}>{t("Load more assets")}</Button>}</PageStack>;
 }

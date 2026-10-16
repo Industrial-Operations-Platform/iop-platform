@@ -87,3 +87,26 @@ export function PageHeading({
     </div>
   );
 }
+
+export function PageStack({ className = "", ...props }: ComponentProps<"div">) {
+  return <div {...props} className={`iop-page-stack ${className}`} />;
+}
+
+export function DetailFacts({
+  items,
+  className = "",
+  ...props
+}: ComponentProps<"dl"> & {
+  items: readonly { label: ReactNode; value: ReactNode }[];
+}) {
+  return (
+    <dl {...props} className={`iop-detail-facts ${className}`}>
+      {items.map(({ label, value }, index) => (
+        <div key={index}>
+          <dt>{label}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}

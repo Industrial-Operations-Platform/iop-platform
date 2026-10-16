@@ -277,3 +277,17 @@
 .workforce-start-duty { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
 .workforce-start-duty > span { color: var(--iop-muted); font-size: var(--iop-captionSize); }
 .iop-ui .workforce-start-day .workforce-personal-heading { margin-bottom: 8px; }
+
+.workforce-week-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--iop-sectionGap); margin-bottom: var(--iop-sectionGap); }
+.workforce-week-heading > p { margin: 0; }
+.workforce-week-heading .iop-view-navigation { width: max-content; max-width: 100%; }
+.iop-ui .workforce-board--compact { table-layout: fixed; min-width: 58rem; }
+.iop-ui .workforce-board--compact :is(th, td) { min-width: 0; padding: 8px; }
+.iop-ui .workforce-board--compact tr > :first-child { width: 8rem; }
+.iop-ui .workforce-board--compact td { vertical-align: top; }
+.workforce-day-shifts { display: grid; gap: 8px; }
+.workforce-compact-shift { display: grid; gap: 4px; min-width: 0; }
+.workforce-compact-shift + .workforce-compact-shift { border-top: 1px solid var(--iop-line); padding-top: 8px; }
+.workforce-compact-shift-label { color: var(--iop-muted); font-size: var(--iop-compactSize); font-weight: var(--iop-labelWeight); }
+.workforce-compact-shift-label small { font-size: var(--iop-smallSize); font-weight: var(--iop-regularWeight); }
+.workforce-board--compact .workforce-person { font-size: var(--iop-compactSize); padding: 2px; width: 100%; }

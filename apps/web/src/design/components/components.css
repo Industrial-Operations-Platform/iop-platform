@@ -245,6 +245,19 @@
 .iop-ui .iop-table tfoot tr > :first-child {
   text-align: left;
 }
+.iop-ui .iop-table :is(th, td)[data-align="text"] {
+  text-align: left;
+}
+.iop-ui .iop-table :is(th, td)[data-align="number"] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.iop-ui .iop-table :is(th, td)[data-align="status"] {
+  text-align: center;
+}
+.iop-ui .iop-table [data-align="text"] > .iop-actions {
+  justify-content: flex-start;
+}
 .iop-ui .iop-table :is(th, td) .iop-button {
   text-align: inherit;
 }
@@ -260,10 +273,7 @@
   margin: 0;
   line-height: var(--iop-captionLineHeight);
   overflow-wrap: anywhere;
-}
-.iop-table-text[data-justify] {
-  text-align: justify;
-  text-align-last: left;
+  text-align: left;
 }
 .iop-ui .iop-table caption {
   text-align: left;
@@ -304,6 +314,8 @@
   border-right: 1px solid var(--iop-line);
   z-index: 6;
   padding: 25px 15px;
+  display: flex;
+  flex-direction: column;
 }
 .iop-ui .iop-brand {
   font-size: var(--iop-brandSize);
@@ -348,6 +360,41 @@
   max-width: var(--iop-contentWidth);
   margin-inline: auto;
   min-width: 0;
+}
+.iop-page-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--iop-sectionGap);
+  min-width: 0;
+}
+.iop-page-stack > * {
+  min-width: 0;
+}
+.iop-page-stack > :is(p, h1, h2, h3, .iop-detail-facts, .iop-filter-form, .iop-page-heading, .iop-section-heading, .iop-table-viewport) {
+  margin-block: 0;
+}
+.iop-detail-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--iop-sectionGap);
+  margin: var(--iop-sectionGap) 0;
+}
+.iop-detail-facts > div {
+  min-width: 0;
+}
+.iop-detail-facts dt {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+  margin-bottom: 6px;
+}
+.iop-detail-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: var(--iop-labelWeight);
+}
+.iop-prose {
+  max-width: 72ch;
+  overflow-wrap: anywhere;
 }
 .iop-ui .iop-page-heading {
   display: flex;
@@ -432,6 +479,7 @@
     width: auto;
     border-bottom: 1px solid var(--iop-line);
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 20px;
     padding: 12px 15px;
@@ -512,6 +560,17 @@
   gap: 6px;
   padding: 0;
   background: transparent;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  padding: 4px;
+  margin-inline: -4px;
+}
+.iop-ui .iop-sidebar .iop-brand,
+.iop-ui .iop-side-navigation .iop-button {
+  flex-shrink: 0;
 }
 .iop-ui .iop-side-navigation .iop-button {
   text-align: left;
@@ -536,6 +595,9 @@
     flex-wrap: wrap;
     flex: 1;
     min-width: 0;
+    overflow: visible;
+    scrollbar-gutter: auto;
+    margin-inline: 0;
   }
   .iop-ui .iop-side-navigation .iop-button {
     padding: 8px;
@@ -1119,7 +1181,7 @@
   font-size: var(--iop-bodySize);
   font-weight: var(--iop-labelWeight);
   color: var(--iop-ink);
-  color-scheme: light;
+  color-scheme: inherit;
 }
 .iop-ui .iop-department-scope .iop-select {
   width: 16rem;

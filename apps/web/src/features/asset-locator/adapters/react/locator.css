@@ -11,7 +11,7 @@
 .locator-component-row button { text-align: left; flex: 1; }
 .locator-reference { max-width: 100%; max-height: 28rem; object-fit: contain; }
 .locator-scene-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,18rem),1fr)); gap: 12px; }
-.locator-scene-card { display: grid; gap: 8px; text-align: left; min-width: 0; padding: var(--iop-panelPadding); border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); background: var(--iop-surface); color: var(--iop-ink); cursor: pointer; }
+.locator-scene-card { display: grid; gap: 8px; font: inherit; text-align: left; min-width: 0; padding: var(--iop-panelPadding); border: 1px solid var(--iop-line); border-radius: var(--iop-cardRadius); background: var(--iop-surface); color: var(--iop-ink); cursor: pointer; }
 .locator-scene-card:hover, .locator-scene-card:focus-visible { border-color: var(--iop-primary); background: var(--iop-activeSurface); }
 .locator-scene-card img { width: 100%; aspect-ratio: 1.8; object-fit: contain; }
 .locator-scene-name { color: var(--iop-link); font-weight: var(--iop-labelWeight); }

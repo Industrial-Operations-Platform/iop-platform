@@ -25,7 +25,7 @@ export {
   Table,
   TableViewport,
 } from "./Surfaces";
-export { AppShell, IdentityRoot, PageHeading } from "./Layout";
+export { AppShell, IdentityRoot, PageHeading, PageStack, DetailFacts } from "./Layout";
 export { ViewNavigation } from "./ViewNavigation";
 export { ComparisonCard } from "./ComparisonCard";
 export { MonthPicker } from "./MonthPicker";

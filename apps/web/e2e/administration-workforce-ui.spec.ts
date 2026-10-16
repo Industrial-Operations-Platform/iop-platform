@@ -396,6 +396,14 @@ for (const width of [1440, 375]) {
       .click();
     const matrix = page.getByRole("table", { name: "Weekly plan" });
     await expect(matrix).toBeVisible();
+    await expect(matrix).toHaveClass(/workforce-board--compact/);
+    await expect(matrix.locator('th[scope="colgroup"]')).toHaveCount(7);
+    if (width === 1440) {
+      const bounds = await matrix.boundingBox();
+      expect(bounds!.width).toBeLessThan(1440);
+    }
+    await screenshot("weekly-compact");
+    await page.getByRole("button", { name: "Shift columns", exact: true }).click();
     await expect(matrix.locator('th[scope="colgroup"]')).toHaveCount(7);
     expect(
       await matrix

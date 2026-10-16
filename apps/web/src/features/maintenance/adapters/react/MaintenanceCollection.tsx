@@ -122,7 +122,7 @@ export function MaintenanceCollection({
                 "Team",
                 "Due date",
               ].map((label) => (
-                <th key={label} scope="col">
+                <th key={label} scope="col" data-align={["Status", "Priority", "Due date"].includes(label) ? "status" : "text"}>
                   {t(label)}
                 </th>
               ))}
@@ -131,7 +131,7 @@ export function MaintenanceCollection({
           <tbody>
             {page.records.map((record) => (
               <tr key={record.id}>
-                <td>
+                <td data-align="text">
                   <Button
                     variant="text"
                     className="maintenance-title"
@@ -140,17 +140,17 @@ export function MaintenanceCollection({
                     <TableText>{record.data.title}</TableText>
                   </Button>
                 </td>
-                <td>
+                <td data-align="status">
                   <Badge tone={statusTone(record.data.status)}>
                     {statusLabel(record.data.status)}
                   </Badge>
                 </td>
-                <td>{record.priorityLabel}</td>
-                <td>{record.locationLabel || "—"}</td>
-                <td>{record.assetName || "—"}</td>
-                <td>{record.assigneeName || t("Unassigned")}</td>
-                <td>{record.teamLabel || "—"}</td>
-                <td>{record.data.dueDate || "—"}</td>
+                <td data-align="status">{record.priorityLabel}</td>
+                <td data-align="text">{record.locationLabel || "—"}</td>
+                <td data-align="text">{record.assetName || "—"}</td>
+                <td data-align="text">{record.assigneeName || t("Unassigned")}</td>
+                <td data-align="text">{record.teamLabel || "—"}</td>
+                <td data-align="status">{record.data.dueDate || "—"}</td>
               </tr>
             ))}
           </tbody>

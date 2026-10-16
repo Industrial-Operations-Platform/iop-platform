@@ -549,11 +549,11 @@ for (const width of [1440, 820, 375]) {
     ).toBeVisible();
     if (width === 1440) {
       const prose = matrix.getByText(entry.content.details, { exact: true });
-      await expect(prose).toHaveCSS("text-align", "justify");
+      await expect(prose).toHaveCSS("text-align", "left");
       await page.setViewportSize({ width: 3600, height: 1000 });
-      await expect(prose).toHaveCSS("text-align", "center");
+      await expect(prose).toHaveCSS("text-align", "left");
       await page.setViewportSize({ width, height: 1000 });
-      await expect(prose).toHaveCSS("text-align", "justify");
+      await expect(prose).toHaveCSS("text-align", "left");
     }
     await page.screenshot({
       path: `/tmp/iop182-matrix-${width}.png`,

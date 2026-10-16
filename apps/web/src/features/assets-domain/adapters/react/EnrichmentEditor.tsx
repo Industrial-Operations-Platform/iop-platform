@@ -4,6 +4,7 @@ import { t } from "../../../../localization/i18n";
 import { emptyEnrichment, type Context, type Detail, type EnrichmentData, type RegistryReference, type SaveEnrichment } from "../../domain/models";
 import type { AssetDomainApplication } from "../../application/domain";
 import { AssetReferencePicker } from "./AssetReferencePicker";
+import { AssetStateBadge } from "./AssetStateBadge";
 export function EnrichmentEditor({
   application,
   context,
@@ -40,7 +41,7 @@ export function EnrichmentEditor({
       };
     });
   }
-  return <Panel><form onSubmit={e => {
+  return <Panel><form className="iop-asset-domain-form" onSubmit={e => {
       e.preventDefault();
       onSave({
         assetId: detail.asset.id,
@@ -49,7 +50,7 @@ export function EnrichmentEditor({
         data
       });
     }}>
-  <p>{detail.asset.code} · {t("Registry lifecycle")}: {detail.asset.status}</p><Field>{t("Configured asset type")}<Select value={data.typeId} onChange={e => {
+  <p>{detail.asset.code} · {t("Registry lifecycle")}: <AssetStateBadge state={detail.asset.status} /></p><Field>{t("Configured asset type")}<Select value={data.typeId} onChange={e => {
           const next = context.catalog.types.find(t => t.id === e.target.value)!;
           setData(d => ({
             ...d,
@@ -85,6 +86,6 @@ export function EnrichmentEditor({
           ...data.survey,
           evidenceReference: e.target.value
         })} /></Field>
-  <Field>{t("Change reason")}<Textarea required maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} /></Field><Actions className="iop-form-actions"><Button disabled={pending} onClick={onCancel}>{t("Cancel")}</Button><Button type="submit" disabled={pending}>{t("Save asset model")}</Button></Actions>
+  <Field>{t("Change reason")}<Textarea required maxLength={2000} value={reason} onChange={e => setReason(e.target.value)} /></Field><Actions className="iop-form-actions"><Button variant="secondary" disabled={pending} onClick={onCancel}>{t("Cancel")}</Button><Button type="submit" disabled={pending}>{t("Save asset model")}</Button></Actions>
  </form></Panel>;
 }

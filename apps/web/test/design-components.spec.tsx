@@ -14,12 +14,24 @@ import {
   MetricGrid,
   Panel,
   Select,
+  SortableHeader,
   Table,
   TableViewport,
   ViewNavigation,
 } from "../src/design/components";
 
 jest.mock("../src/design/components/components.css", () => ({}));
+
+test("multi-column ordering announces precedence without changing the column action name", () => {
+  render(<Table><thead><tr>
+    <SortableHeader direction="asc" priority={1} onClick={() => {}}>User</SortableHeader>
+    <SortableHeader direction="desc" priority={2} onClick={() => {}}>Profile</SortableHeader>
+  </tr></thead></Table>);
+  expect(screen.getByRole("button", { name: "User" }))
+    .toHaveAccessibleDescription("Sort priority 1");
+  expect(screen.getByRole("button", { name: "Profile" }))
+    .toHaveAccessibleDescription("Sort priority 2");
+});
 
 test("shared form controls preserve native labels, changes, refs, disabled state and explicit submission", () => {
   const submit = jest.fn(),

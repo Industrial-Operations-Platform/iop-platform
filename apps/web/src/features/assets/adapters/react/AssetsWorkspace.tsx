@@ -482,7 +482,7 @@ export function AssetsWorkspace({
                             "Manual group / location within Bereich",
                             "Asset identity status",
                           ].map((label) => (
-                            <th scope="col" key={label}>
+                            <th scope="col" key={label} data-align={label === "Asset identity status" ? "status" : "text"}>
                               {t(label)}
                             </th>
                           ))}
@@ -491,7 +491,7 @@ export function AssetsWorkspace({
                       <tbody>
                         {page.assets.map((asset) => (
                           <tr key={asset.id}>
-                            <td>
+                            <td data-align="text">
                               <Button
                                 variant="text"
                                 className="assets-title"
@@ -503,15 +503,15 @@ export function AssetsWorkspace({
                                 {asset.content.code}
                               </Button>
                             </td>
-                            <td>{asset.content.type || "—"}</td>
-                            <td>
+                            <td data-align="text">{asset.content.type || "—"}</td>
+                            <td data-align="text">
                               {context.locations.find(
                                 (location) =>
                                   location.id === asset.content.locationId,
                               )?.label || "—"}
                             </td>
-                            <td>{asset.content.locationDetails || "—"}</td>
-                            <td>
+                            <td data-align="text">{asset.content.locationDetails || "—"}</td>
+                            <td data-align="status">
                               <Badge
                                 tone={
                                   asset.content.status === "validated"

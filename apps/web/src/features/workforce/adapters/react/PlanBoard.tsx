@@ -1,9 +1,11 @@
+import { useState } from "react";
 import {
   Badge,
   Button,
   Panel,
   Table,
   TableViewport,
+  ViewNavigation,
 } from "../../../../design/components";
 import {
   entries,
@@ -117,6 +119,7 @@ export function PlanBoard({
   dates: string[];
   select: (r: RecordEntry) => void;
 }) {
+  const [layout, setLayout] = useState<"compact" | "columns">("compact");
   const assignments = entries(board, "assignment").sort(
     (a, b) =>
       a.data.startsAt.localeCompare(b.data.startsAt) ||
@@ -150,17 +153,27 @@ export function PlanBoard({
   );
   return (
     <Panel>
+      <div className="workforce-week-heading">
+        <ViewNavigation
+          label={t("Weekly layout")}
+          placement="inline"
+          selected={layout}
+          items={[{ id: "compact", label: t("Compact week") }, { id: "columns", label: t("Shift columns") }]}
+          onSelect={setLayout}
+        />
+        <p className="workforce-empty">{t("Select a person to open assignment details.")}</p>
+      </div>
       <TableViewport aria-label={t("Weekly plan")}>
-        <Table className="workforce-board" aria-label={t("Weekly plan")}>
+        <Table variant="records" className={`workforce-board ${layout === "compact" ? "workforce-board--compact" : ""}`} aria-label={t("Weekly plan")}>
           <thead>
             <tr>
-              <th rowSpan={2} scope="col">
+              <th rowSpan={layout === "compact" ? 1 : 2} scope="col" data-align="text">
                 {t("Zone")}
               </th>
               {dates.map((date) => (
                 <th
                   key={date}
-                  colSpan={Math.max(1, shifts.length)}
+                  colSpan={layout === "compact" ? 1 : Math.max(1, shifts.length)}
                   scope="colgroup"
                   className="workforce-day-heading"
                 >
@@ -173,7 +186,7 @@ export function PlanBoard({
                 </th>
               ))}
             </tr>
-            <tr>
+            {layout === "columns" && <tr>
               {dates.flatMap((date) =>
                 shifts.length
                   ? shifts.map((shift, index) => (
@@ -194,13 +207,26 @@ export function PlanBoard({
                       </th>,
                     ],
               )}
-            </tr>
+            </tr>}
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row.id}>
-                <th scope="row">{row.label}</th>
-                {dates.flatMap((date) =>
+                <th scope="row" data-align="text">{row.label}</th>
+                {layout === "compact" ? dates.map((date) => (
+                  <td key={date} className="workforce-day-start">
+                    <div className="workforce-day-shifts">
+                      {shifts.map((shift) => {
+                        const found = assignments.filter((record) => record.data.date === date && record.data.shiftId === shift.id && row.test(record));
+                        return <section className="workforce-compact-shift" key={shift.id} aria-label={shift.label}>
+                          <span className="workforce-compact-shift-label">{shift.label}<small>{shift.start}–{shift.end}</small></span>
+                          <AssignmentSlot records={found} select={select} />
+                        </section>;
+                      })}
+                      {!shifts.length && <span className="workforce-empty">{t("No shifts configured")}</span>}
+                    </div>
+                  </td>
+                )) : dates.flatMap((date) =>
                   shifts.length
                     ? shifts.map((shift, index) => {
                         const found = assignments.filter(
@@ -373,10 +399,10 @@ export function DailyPlan({
       <Panel>
         <h2>{t("Other zones")}</h2>
         <TableViewport aria-label={t("Other zones")}>
-          <Table className="workforce-board" aria-label={t("Other zones")}>
+          <Table variant="records" className="workforce-board" aria-label={t("Other zones")}>
             <thead>
               <tr>
-                <th scope="col">{t("Zone")}</th>
+                <th scope="col" data-align="text">{t("Zone")}</th>
                 {shifts.map((shift) => (
                   <th key={shift.id} scope="col">
                     {shift.label}
@@ -390,7 +416,7 @@ export function DailyPlan({
             <tbody>
               {visibleTargets(board).map((target) => (
                 <tr key={target.id}>
-                  <th scope="row">{target.label}</th>
+                  <th scope="row" data-align="text">{target.label}</th>
                   {shifts.map((shift) => (
                     <td key={shift.id}>
                       <AssignmentSlot
@@ -446,6 +472,7 @@ export function ScheduleList({
       <h2>{t("Personal schedules")}</h2>
       <TableViewport>
         <Table
+          variant="records"
           className="workforce-schedules"
           aria-label={t("Personal schedules")}
         >
@@ -453,7 +480,7 @@ export function ScheduleList({
             <tr>
               {["Person", "Status", "Start time", "End time", "Source"].map(
                 (l) => (
-                  <th key={l}>{t(l)}</th>
+                  <th key={l} scope="col" data-align={l === "Person" || l === "Source" ? "text" : "status"}>{t(l)}</th>
                 ),
               )}
             </tr>
@@ -464,7 +491,7 @@ export function ScheduleList({
               .sort((a, b) => a.personName.localeCompare(b.personName))
               .map((r) => (
                 <tr key={r.id}>
-                  <td>
+                  <td data-align="text">
                     <Button
                       variant="text"
                       className="workforce-schedule-person"
@@ -473,12 +500,12 @@ export function ScheduleList({
                       {r.personName}
                     </Button>
                   </td>
-                  <td>
+                  <td data-align="status">
                     <Badge>{t(statusLabels[r.data.status])}</Badge>
                   </td>
-                  <td>{r.data.start}</td>
-                  <td>{r.data.end}</td>
-                  <td>{r.data.source}</td>
+                  <td data-align="status">{r.data.start}</td>
+                  <td data-align="status">{r.data.end}</td>
+                  <td data-align="text">{r.data.source}</td>
                 </tr>
               ))}
           </tbody>

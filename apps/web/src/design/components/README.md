@@ -18,6 +18,7 @@ surface tokens represent backgrounds. Keep charts on the same selected identity.
 | --- | --- |
 | `IdentityRoot`, `AppShell` | Selected light/dark identity, typography, header, rail, centered bounded content and skip link |
 | `PageHeading`, `Actions` | Consistent title, context, description and action layout |
+| `PageStack`, `DetailFacts` | Canonical section spacing and responsive labelled metadata; facts accept `items` with `label` and `value` |
 | `RefreshButton`, `CollectionAction` | Labelled reload with busy/reduced-motion behavior; collection link with count and direction |
 | `Badge` | Neutral/info/attention/success/warning semantic metadata; caller supplies meaningful text |
 | `AddButton`, `EditButton` | Compact add/edit icon actions with required accessible label and title |
@@ -34,10 +35,10 @@ surface tokens represent backgrounds. Keep charts on the same selected identity.
 | `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
 | `MetricGrid`, `MetricCard` | Responsive centered labels/figures/captions; `layout="paired"` centers two cards; `tone` adds neutral/info/attention emphasis; use `iop-metric-description` for supporting text |
 | `Table`, `TableViewport` | Common bordered viewport, muted sticky headers, row hover/focus and keyboard-accessible bounded scrolling |
-| `TableText` | Prose that inherits cell alignment up to two rendered lines and justifies longer text, remeasuring on content/size changes |
+| `TableText` | Stable left-aligned prose that wraps without changing alignment on resize |
 | `Alert` | Error announcement and consistent error surface |
 | `SideNavigation` | Controlled page navigation with current-page semantics |
-| `SortableHeader` | Clickable column heading with caller-owned direction/priority and aria-sort; inherits the shared column alignment |
+| `SortableHeader` | Clickable column heading with caller-owned direction/priority, aria-sort and accessible priority description; accepts semantic alignment |
 | `ViewNavigation` | Typed controlled view selector with labelled navigation, pressed buttons, optional counts and bottom/inline/summary/tabs placement; tabs share the full width with compact counts, while summary cards accept descriptions and neutral/info/attention tones |
 
 ```tsx
@@ -77,11 +78,11 @@ Keep column/row headers in the caller's semantic markup. Tables without an
 adjacent section title use a readable section-sized caption; avoid duplicate
 visible titles and retain an accessible name with `aria-label` or `aria-labelledby`.
 Use labelled `EditButton` and `DeleteButton` for explicit compact row actions.
-Every column/group header centers horizontally and vertically, including the first.
-Body cells center vertically; the first column aligns left and remaining columns
-and action groups center horizontally unless explicitly specified otherwise.
-Use `TableText` for potentially long table prose; it justifies more than two rendered
-lines, keeps the last line left aligned and inherits cell alignment for shorter text.
+Use matching `data-align="text"`, `"number"` or `"status"` on headers and cells:
+text aligns left, numbers right with tabular numerals, and states/dates/actions
+center. Unannotated matrix context headings retain their centered alignment.
+Body cells remain vertically centered. Use `TableText` for stable left-aligned prose
+that wraps at every width without conditional justification.
 Give narrative title buttons an explicit left alignment where requested, without
 changing their column heading or supporting metadata.
 Badges use compact 1px vertical and 3px horizontal padding. Clickable summary
