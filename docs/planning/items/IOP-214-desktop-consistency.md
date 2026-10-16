@@ -2,25 +2,25 @@
 
 ## Status and goal
 
-In progress. The owner's 2026-10-15 follow-up authorizes implementing the findings
+Completed locally. The owner's 2026-10-15 follow-up authorizes implementing the findings
 from the platform review autonomously, prioritizing a harmonious desktop experience
 and preserving the existing mobile baseline and platform identity.
 
 ## Scope and acceptance
 
-- [ ] Formal Handover direct navigation tolerates delayed context; Area overview
+- [x] Formal Handover direct navigation tolerates delayed context; Area overview
   retries failed initial loading; Improvement pagination retains applied filters
   and rejects stale/duplicate responses.
-- [ ] All desktop sidebar destinations remain reachable on short laptop displays;
+- [x] All desktop sidebar destinations remain reachable on short laptop displays;
   shared native controls follow the selected appearance.
-- [ ] Operational collections, filters, result states, detail facts and form spacing
+- [x] Operational collections, filters, result states, detail facts and form spacing
   consistently reuse shared presentation components and semantic tokens.
-- [ ] Tables use deliberate text/numeric/status alignment, useful accessible ordering
+- [x] Tables use deliberate text/numeric/status alignment, useful accessible ordering
   where the complete collection or existing query contract supports it, and clear
   filtering/reset and pagination feedback. Workforce supports a compact weekly view.
-- [ ] Asset model states use localized presentation labels; Locator cards inherit
+- [x] Asset model states use localized presentation labels; Locator cards inherit
   platform typography; initial loading avoids eagerly loading analytical rendering.
-- [ ] Validate API/web regressions, identity/architecture/contracts, production build
+- [x] Validate API/web regressions, identity/architecture/contracts, production build
   and actual desktop/narrow browser rendering; update documentation and commit locally.
 
 Follow [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md),
@@ -33,4 +33,5 @@ Never sort a partial server page as if it were the complete matching collection.
 
 ## Evidence and remaining work
 
-[Execution plan](../active/IOP-214-desktop-consistency-plan.md).
+[Execution evidence](../completed/IOP-214-desktop-consistency-plan.md).
+All requested local changes are implemented and validated; publication is not implied.
