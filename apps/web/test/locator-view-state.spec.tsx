@@ -191,6 +191,59 @@ test('geometry-only overview retains its off-center camera across filtering and 
   expect(views.every(value => !(value.controls.reset as jest.Mock).mock.calls.length)).toBe(true);
 });
 
+test('overview hover shows the configured area name without selecting or recreating the renderer', async () => {
+  const onScene = jest.fn();
+  render(<PlantOverview scenes={[scene, second]} references={[reference]} onScene={onScene}/>);
+  const overview = await rendererReady('uncalibrated-area-overview');
+  expect(overview.input.onHover).toEqual(expect.any(Function));
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  act(() => overview.input.onHover?.({ id: scene.id, x: 100, y: 80 }));
+  expect(screen.getByRole('tooltip').textContent).toBe(scene.content.name);
+  act(() => overview.input.onHover?.({ id: second.id, x: 180, y: 80 }));
+  expect(screen.getByRole('tooltip').textContent).toBe(second.content.name);
+  expect(views).toHaveLength(1);
+  expect(onScene).not.toHaveBeenCalled();
+  expect(overview.controls.focus).not.toHaveBeenCalled();
+  expect(overview.controls.select).not.toHaveBeenCalled();
+  act(() => overview.input.onHover?.(null));
+  expect(screen.queryByRole('tooltip')).toBeNull();
+});
+
+test('overview clears hover on camera and overview replacement while ignoring callbacks from old renderers', async () => {
+  const props = { scenes: [scene, second], references: [reference], onScene: jest.fn() };
+  const view = render(<PlantOverview {...props}/>), first = await rendererReady('uncalibrated-area-overview');
+  act(() => first.input.onHover?.({ id: scene.id, x: 100, y: 80 }));
+  expect(screen.getByRole('tooltip').textContent).toBe(scene.content.name);
+  act(() => first.move(camera));
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  act(() => first.input.onHover?.({ id: scene.id, x: 100, y: 80 }));
+  expect(screen.getByRole('tooltip').textContent).toBe(scene.content.name);
+  let count = views.length;
+  view.rerender(<PlantOverview {...props} scenes={[second]}/>);
+  const filtered = await rendererReady('uncalibrated-area-overview', count);
+  expect(first.controls.dispose).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  act(() => first.input.onHover?.({ id: scene.id, x: 100, y: 80 }));
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  act(() => filtered.input.onHover?.({ id: second.id, x: 180, y: 80 }));
+  expect(screen.getByRole('tooltip').textContent).toBe(second.content.name);
+  act(() => first.input.onHover?.(null));
+  expect(screen.getByRole('tooltip').textContent).toBe(second.content.name);
+  count = views.length;
+  act(() => setAppearance('dark'));
+  const dark = await rendererReady('uncalibrated-area-overview', count);
+  expect(filtered.controls.dispose).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  act(() => filtered.input.onHover?.({ id: second.id, x: 180, y: 80 }));
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  act(() => dark.input.onHover?.({ id: second.id, x: 180, y: 80 }));
+  expect(screen.getByRole('tooltip').textContent).toBe(second.content.name);
+  view.unmount();
+  act(() => dark.input.onHover?.({ id: second.id, x: 180, y: 80 }));
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  expect(props.onScene).not.toHaveBeenCalled();
+});
+
 function application() {
   const context: Context = { canManage: false, references: [], referenceDimensions: [{ id: reference.id, width: reference.width, height: reference.height }], locations: [{ id: 'area', label: 'Area', parentId: '' }], componentCatalog: [], coordinateSystem: 'Image-local normalized', globalCalibration: 'pending' };
   const gateway: Gateway = {
