@@ -30,5 +30,7 @@ survey evidence, publication or deployment is implied.
 The updated local installation passed 250 permission assertions across all 25
 active users. It contains six Improvement scenarios, four formal transfers and
 complete seven-day planning for those users. Repeated application makes no changes;
-original data and analytical totals remain unchanged. Local commits are ready for
-review; publication remains subject to the owner's approval.
+original data and analytical totals remain unchanged. The owner subsequently
+authorized integration into develop, publication of both story branches and
+develop to origin, and local Docker image updates.
+[Publication and activation plan](../active/IOP-217-publication-plan.md).
