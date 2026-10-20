@@ -9,7 +9,10 @@ records and private references are preserved; the command does not publish code.
 
 Administrator, Team Leader and Task Force use the advanced workspaces. The current
 profile and module grants are both required on the server. Administrator alone
-manages integration configuration and local operating jobs. Technician journal
+manages all source-of-truth configuration, the Asset management and Integrations
+workspaces, and local operating jobs under IOP-217. Team Leader and Task Force
+retain operational reads and contributions, including Digital Asset Records.
+Technician journal
 and daily planning remain governed by their existing permissions.
 
 | Capability | Workflow and operating contract |
@@ -22,6 +25,7 @@ and daily planning remain governed by their existing permissions.
 | Integrations | [Provider contracts and configuration readiness](../product/integration-readiness.md) |
 | Local operations | [Encrypted full backup, verified isolated restore, scoped jobs, CI and measurements](local-operations.md) |
 | Site material Audit | [Atomic owner capture, safe envelopes and explicit remaining coverage](site-audit-integration.md) |
+| Operational demonstrations | [Synthetic Improvement/Handover workflows and the existing-user weekly roster](operational-demos.md) |
 
 The installation contains 71 private equipment schematics and a legend. Initial
 geometry traces are available for three views; the other reference scenes are

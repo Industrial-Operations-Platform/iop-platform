@@ -399,4 +399,4 @@ pending; source image colors do not establish live equipment health.
 | [IOP-214 — Desktop reliability and visual consistency](items/IOP-214-desktop-consistency.md) | Completed; published |
 | [IOP-215 — Operational usability and loading improvements](items/IOP-215-operational-refinements.md) | Completed; published |
 | [IOP-216 — Balanced workspace header and platform mark](items/IOP-216-shell-branding.md) | Completed; published |
-| [IOP-217 — Administrator configuration and operational demonstrations](items/IOP-217-admin-configuration-demos.md) | In progress |
+| [IOP-217 — Administrator configuration and operational demonstrations](items/IOP-217-admin-configuration-demos.md) | Completed; local review |
