@@ -120,9 +120,8 @@ export function siteRoles(profile: Profile): readonly string[] {
     "improvement-contributor",
     "improvement-coordinator",
     "locator-reader",
-    "locator-manager",
     "integration-reader",
-    ...(profile === "administrator" ? ["integration-manager", "jobs-administrator"] : []),
+    ...(profile === "administrator" ? ["locator-manager", "integration-manager", "jobs-administrator"] : []),
   ];
 }
 

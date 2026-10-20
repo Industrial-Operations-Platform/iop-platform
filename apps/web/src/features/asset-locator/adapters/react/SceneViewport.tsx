@@ -23,7 +23,8 @@ export function SceneViewport({ scene, reference, selectedId, problemAssetIds, o
   } | undefined>(undefined);
   const [unavailable, setUnavailable] = useState(false), [imageError, setImageError] = useState(false);
   const { resolved } = useAppearance();
-  const select = useRef(onSelect), place = useRef(onPlace);
+  const select = useRef(onSelect), place = useRef(onPlace), selection = useRef(selectedId);
+  selection.current = selectedId;
   select.current = onSelect;
   place.current = onPlace;
   useEffect(() => {
@@ -36,8 +37,9 @@ export function SceneViewport({ scene, reference, selectedId, problemAssetIds, o
     const host = element.current;
     void import('../three/renderer').then(({createSceneRenderer}) => {
       if (!active) return;
-      view = createSceneRenderer(host, { scene, aspect: reference ? reference.width / reference.height : 1.65, referenceUrl: reference ? referenceUrl(reference.id) : undefined, palette: resolved === 'dark' ? darkIdentity : identity, selectedId, problemAssetIds, cameraState: camera.current, onSelect: id => select.current(id), onPlace: point => place.current?.(point), onReferenceError: () => {if (active) setImageError(true);} });
+      view = createSceneRenderer(host, { scene, aspect: reference ? reference.width / reference.height : 1.65, referenceUrl: reference ? referenceUrl(reference.id) : undefined, palette: resolved === 'dark' ? darkIdentity : identity, selectedId: selection.current, problemAssetIds, cameraState: camera.current, onSelect: id => select.current(id), onPlace: point => place.current?.(point), onReferenceError: () => {if (active) setImageError(true);}, onContextLost: () => { if (active) { view?.dispose(); renderer.current = null; setUnavailable(true); } } });
       renderer.current = view;
+      view.select(selection.current);
     }).catch(() => {
       if (!active) return;
       setUnavailable(true);
@@ -51,7 +53,8 @@ export function SceneViewport({ scene, reference, selectedId, problemAssetIds, o
       }
       renderer.current = null;
     };
-  }, [scene, reference, selectedId, problemAssetIds, resolved]);
+  }, [scene, reference, problemAssetIds, resolved]);
+  useEffect(() => { renderer.current?.select(selectedId); }, [selectedId]);
   useEffect(() => { camera.current = undefined; renderer.current?.reset(); }, [scene.id]);
   const key = (event: React.KeyboardEvent) => {
     if (!renderer.current)

@@ -1,5 +1,7 @@
 /** German presentation resources; customer diagram names and identifiers remain data. */
 export const locatorGerman: Readonly<Record<string, string>> = {
+  'Configure scenes': 'Szenen konfigurieren',
+  'Exit configuration': 'Konfiguration verlassen',
   'Asset Locator': 'Asset Locator',
   'Plant overview': 'Anlagenübersicht',
   'Asset search': 'Anlagensuche',
