@@ -2,29 +2,29 @@
 
 ## Status and goal
 
-In progress. The owner's 2026-10-20 request authorizes the following Workforce,
+Completed locally. The owner's 2026-10-20 request authorizes the following Workforce,
 Start, operational interface, analytical loading and Locator refinements.
 
 ## Scope and acceptance
 
-- [ ] My day subtly identifies leader availability using the selected shift and
+- [x] My day subtly identifies leader availability using the selected shift and
   actual time. Editable primary leader groups retain shared operational authority.
   Mike's group contains Stefan Bänsch, Todor Ilkov, Marcello Pranjic, Mario Sanchez
   Gallardo, Mithujan Ragunathan, Stefan Mladenovic and Mitko bibiloski; provisional
   remaining membership may be distributed among other leaders, including Burak.
-- [ ] Workforce records distinguish ILO Technical Operator and ILO Maintenance
+- [x] Workforce records distinguish ILO Technical Operator and ILO Maintenance
   Technician independently of access profiles.
-- [ ] Start's weekly assignment view presents a minimal seven-day grid with date,
+- [x] Start's weekly assignment view presents a minimal seven-day grid with date,
   shift and zone, with usable narrow-screen containment.
-- [ ] Authorized technicians can read selected-date Handover journal context in
+- [x] Authorized technicians can read selected-date Handover journal context in
   Area overview. Blue entry titles align to the left of their content.
-- [ ] Analytical repeated loading uses bounded caching with correct scope,
+- [x] Analytical repeated loading uses bounded caching with correct scope,
   selection and invalidation; current authorization and accurate totals remain.
-- [ ] Table filtering affordances are subtle and accessible. Improvement Tracking
+- [x] Table filtering affordances are subtle and accessible. Improvement Tracking
   filters follow the shared inline Department / Halle control pattern.
-- [ ] Maintenance board cards can be dragged between valid states; existing
+- [x] Maintenance board cards can be dragged between valid states; existing
   completion validation, authorization and accessible controls remain effective.
-- [ ] Locator avoids excessive rendering/resource use, handles renderer failure,
+- [x] Locator avoids excessive rendering/resource use, handles renderer failure,
   and separates Administrator configuration/import from operational zone viewing
   for Team Leader and Task Force profiles, enforced by the API as well as the UI.
 
@@ -36,5 +36,16 @@ No publication, deployment or unrelated backlog work is authorized.
 
 ## Evidence and remaining work
 
-[Execution plan](../active/IOP-215-operational-refinements-plan.md).
-The remaining worker roster will be supplied later; provisional groups are editable.
+[Execution evidence](../completed/IOP-215-operational-refinements-plan.md).
+Four editable primary groups and 20 memberships were applied through the existing
+local Workforce application. The owner explicitly excluded absent Stefan Mladenovic
+and Mitko bibiloski on 2026-10-20 and will add them later. Five existing Mike members
+were linked, retaining existing directory names through explicit scoped aliases.
+The remaining roster can be refined later; individual qualifications remain
+unspecified until an administrator selects confirmed levels.
+
+The technician journal denial was not reproduced: all 17 current technicians read
+the selected-date entries, while formal shift context retains its separate access
+rule. Regression coverage records both populated and empty dates. No grant was
+broadened. Implementation is committed locally; merge, push and deployment await
+separate authorization.
