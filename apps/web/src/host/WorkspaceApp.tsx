@@ -263,13 +263,15 @@ export function WorkspaceApp({
   }), [maintenance, maintenanceNotifications]);
 
   const canViewProfiles =
-    !!signedIn && !!(context.canImport || context.canAdminister);
+    !!signedIn && context.user?.profile === "administrator" &&
+    !!(context.canImport || context.canAdminister);
   const previewProfile =
     canViewProfiles && preview?.userId === context?.user?.id
       ? preview?.profile
       : undefined;
   const administration = canViewProfiles && !previewProfile;
   const effectiveProfile = previewProfile ?? context?.user?.profile;
+  const canConfigure = !!signedIn && effectiveProfile === "administrator";
   const canReadAssets =
     !!signedIn &&
     ["administrator", "team-leader", "task-force"].includes(
@@ -567,7 +569,7 @@ export function WorkspaceApp({
             ...(assets && canReadAssets
               ? [{ id: "assets" as const, label: t("Assets") }]
               : []),
-            ...(assetDomain && canReadAssets
+            ...(assetDomain && canConfigure
               ? [{id:"asset-domain" as const,label:t("Asset management")}]
               : []),
             ...(formalHandover && canReadAssets
@@ -579,7 +581,7 @@ export function WorkspaceApp({
             ...(locator && canReadAssets
               ? [{id: "locator" as const, label: t("Asset Locator")}]
               : []),
-            ...(connections && canReadAssets
+            ...(connections && canConfigure
               ? [{id: "integrations" as const, label: t("Integrations")}]
               : []),
             ...(showUserAdministration
@@ -621,7 +623,7 @@ export function WorkspaceApp({
           </Button>
         </Panel>
       )}
-      {page === "asset-domain" && assetDomain && canReadAssets ? (
+      {page === "asset-domain" && assetDomain && canConfigure ? (
         <AssetDomainWorkspace application={assetDomain} timeZone={context.scope?.siteTimeZone??"UTC"} initialAssetId={domainAsset} homeVisit={domainVisit}
           onOpenAsset={id=>{setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}}/>
       ) : page === "area-overview" && overview && signedIn ? (
@@ -632,10 +634,10 @@ export function WorkspaceApp({
         <ImprovementWorkspace application={improvements} timeZone={context.scope?.siteTimeZone ?? "UTC"}
           onOpenAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}} onOpenIssue={openInformation}/>
       ) : page === "locator" && locator && canReadAssets ? (
-        <LocatorWorkspace application={locator} onAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}}
+        <LocatorWorkspace key={`${context.user?.id}:${effectiveProfile}`} application={locator} profile={effectiveProfile} onAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}}
           onProblem={(kind,id) => kind === "maintenance" ? openMaintenance(id) : openInformation(id)}/>
-      ) : page === "integrations" && connections && canReadAssets ? (
-        <ConnectionsWorkspace application={connections} canManage={effectiveProfile === "administrator"} timeZone={context.scope?.siteTimeZone ?? "UTC"}/>
+      ) : page === "integrations" && connections && canConfigure ? (
+        <ConnectionsWorkspace application={connections} canManage={canConfigure} timeZone={context.scope?.siteTimeZone ?? "UTC"}/>
       ) : page === "maintenance" && maintenance && signedIn ? (
         <MaintenanceWorkspace
           key={`${context.user?.id}:${effectiveProfile}`}
@@ -687,7 +689,7 @@ export function WorkspaceApp({
           timeZone={context.scope?.siteTimeZone ?? "UTC"}
           homeVisit={assetVisit}
           initialAssetId={assetRecord}
-          onManageModel={assetDomain ? id=>{setDomainAsset(id);setDomainVisit(v=>v+1);setPage("asset-domain");}:undefined}
+          onManageModel={assetDomain && canConfigure ? id=>{setDomainAsset(id);setDomainVisit(v=>v+1);setPage("asset-domain");}:undefined}
           onOpenSource={(kind, id) => {
             window.scrollTo(0, 0);
             if (kind === "maintenance") {

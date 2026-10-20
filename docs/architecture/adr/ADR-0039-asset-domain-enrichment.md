@@ -41,8 +41,13 @@ Canonical Pareto includes complete source totals and explicit unresolved measure
 the mapped subset cannot masquerade as complete coverage. Frequency/alarm seconds
 retain their original aggregate grain and do not establish downtime or causality.
 
-Administrator, Team Leader and Task Force use existing assets.read/manage grants and
-current-profile checks. Mapping review, source lookup and Pareto independently require
+Administrator, Team Leader and Task Force use existing assets.read grants and
+current-profile checks. Under the owner's IOP-217 restriction, only a current
+Administrator with assets.manage can register identities or change types, models,
+survey reviews, aliases or source mappings. The Asset management configuration
+workspace is Administrator-only; authorized operational reference and Digital Asset
+Record reads remain available to the other advanced profiles.
+Mapping review, source lookup and Pareto independently require
 Assets/source analytics permissions. A separate receiving-owned import publication
 port uses current imports.submit only to consume compact reviewed decisions and
 prepare derived links. It exposes no registry directory or public Asset response;
@@ -50,3 +55,12 @@ native importers need no additional Asset grants.
 Schemas use exact scoped foreign keys, forced RLS and explicit column grants;
 frameworks/SQL/transport remain adapters. Actual types, dimensions, physical surveys,
 canonical review decisions and plant exposure are operating-team inputs.
+
+## Owner-requested configuration restriction — 2026-10-20
+
+[IOP-217](../../planning/items/IOP-217-admin-configuration-demos.md) explicitly
+restricts sources of truth and configuration to Administrator. This supersedes
+the original Team Leader/Task Force management permission. Existing scoped read
+contracts and source-owned operational records retain their permissions. The
+server checks the current profile as well as grants, and a forward migration
+revokes obsolete management assignments for existing non-administrator profiles.

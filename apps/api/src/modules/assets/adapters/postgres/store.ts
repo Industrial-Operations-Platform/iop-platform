@@ -1,5 +1,6 @@
 import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
+import { sitePersonProfile } from "../../../users-rbac/adapters/postgres/site-people";
 import {
   runSiteOperation,
   SiteAccessDeniedError,
@@ -75,6 +76,11 @@ export class PgAssets implements Store {
         );
         if (!(await this.lookup.allowed(tx, actor, permission)))
           throw new SiteAccessDeniedError();
+        const administrator = await sitePersonProfile(
+          tx, this.scope.organizationId, this.scope.siteId, actor,
+        ) === "administrator";
+        if (permission === "assets.manage" && !administrator)
+          throw new SiteAccessDeniedError();
         if (permission === "assets.manage")
           await tx.query(
             "SELECT pg_advisory_xact_lock(hashtext('iop-assets'),hashtext($1))",
@@ -85,7 +91,7 @@ export class PgAssets implements Store {
             tx,
             this.scope,
             actor,
-            await this.lookup.allowed(tx, actor, "assets.manage"),
+            administrator && await this.lookup.allowed(tx, actor, "assets.manage"),
             this.lookup,
           ),
         );

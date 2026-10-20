@@ -14,7 +14,7 @@ describe("Configurable asset model", () => {
       expectedRevision: 0,
       types: schema
     });
-    const record = await f.app.save("task", {
+    const record = await f.app.save("admin", {
       ...enrichment("sensor", "sensor"),
       data: {
         ...enrichment("sensor", "sensor").data,
@@ -32,7 +32,7 @@ describe("Configurable asset model", () => {
       }
     });
     expect(record).toMatchObject({
-      surveyReviewerId: "task",
+      surveyReviewerId: "admin",
       revision: 1,
       data: {
         serial: "000123",
@@ -64,7 +64,7 @@ describe("Configurable asset model", () => {
     await f.app.save("admin", enrichment("conveyor", "conveyor"));
     await f.app.save("admin", enrichment("second", "conveyor"));
     await f.app.save("admin", enrichment("controller", "controller"));
-    await f.app.save("leader", {
+    await f.app.save("admin", {
       ...enrichment("sensor", "sensor"),
       data: {
         ...enrichment("sensor", "sensor").data,
@@ -96,7 +96,7 @@ describe("Configurable asset model", () => {
       ...enrichment("controller", "sensor"),
       expectedRevision: 1
     })).rejects.toThrow("asset_domain_conflict");
-    await expect(f.app.save("leader", {
+    await expect(f.app.save("admin", {
       ...enrichment("sensor", "sensor"),
       expectedRevision: 1,
       data: {
@@ -112,7 +112,7 @@ describe("Configurable asset model", () => {
   test("stale writes, foreign references, forged attribution and Technician access fail", async () => {
     const f = domainFixture();
     await f.app.save("admin", enrichment("sensor"));
-    await expect(f.app.save("leader", enrichment("sensor"))).rejects.toThrow("asset_domain_conflict");
+    await expect(f.app.save("admin", enrichment("sensor"))).rejects.toThrow("asset_domain_conflict");
     await expect(f.app.detail("leader", "foreign")).rejects.toThrow("asset_domain_missing");
     await expect(f.app.catalog("tech")).rejects.toThrow("asset_domain_denied");
     expect(() => f.app.save("admin", {
@@ -124,9 +124,9 @@ describe("Configurable asset model", () => {
 describe("Reviewed source mappings", () => {
   test("ambiguity is explicit; approval requires one validated identity and source tuples cannot move", async () => {
     const f = domainFixture();
-    await f.app.saveMapping("leader", mappingInput);
+    await f.app.saveMapping("admin", mappingInput);
     expect(f.applied[0][0].state).toBe("ambiguous");
-    await f.app.saveMapping("task", {
+    await f.app.saveMapping("admin", {
       ...mappingInput,
       expectedRevision: 1,
       data: {

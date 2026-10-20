@@ -29,7 +29,9 @@ export class PgAssetDomain implements DomainStore {
       permissions: [permission]
     }, async tx => {
       await tx.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [this.scope.organizationId]);
-      assert(["administrator", "team-leader", "task-force"].includes(await sitePersonProfile(tx, this.scope.organizationId, this.scope.siteId, actor)), "asset_domain_denied");
+      const profile = await sitePersonProfile(tx, this.scope.organizationId, this.scope.siteId, actor);
+      assert(["administrator", "team-leader", "task-force"].includes(profile) &&
+        (permission !== "assets.manage" || profile === "administrator"), "asset_domain_denied");
       if (!(await evaluateSiteAccess(tx, {
         ...this.scope,
         userId: actor,
@@ -37,7 +39,7 @@ export class PgAssetDomain implements DomainStore {
       })).allowed) throw new SiteAccessDeniedError();
       await tx.query("SELECT pg_advisory_xact_lock(hashtext('iop-assets'),hashtext($1))", [this.scope.organizationId + ":" + this.scope.siteId]);
       await tx.query("SET LOCAL statement_timeout='30s'");
-      return work(new PgDomainTransaction(tx, this.scope, (await evaluateSiteAccess(tx, {
+      return work(new PgDomainTransaction(tx, this.scope, profile === "administrator" && (await evaluateSiteAccess(tx, {
         ...this.scope,
         userId: actor,
         permissions: ["assets.manage"]

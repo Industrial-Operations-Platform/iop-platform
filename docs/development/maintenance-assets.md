@@ -21,7 +21,7 @@ UI. Preserve the existing PostgreSQL volume; ordinary start/stop does not erase
 history. Running a new database schema is independent from merging the branch.
 The user's shared installation is not a test database.
 
-1. Sign in as Administrator, Team Leader or Task Force and open Assets. Register an equipment
+1. Sign in as Administrator and open Assets. Register an equipment
    reference with its exact Betriebsmittelkennzeichen,
    name equal to its code and configured location. Keep it unverified until validation evidence exists.
 2. Add deliberate exact source aliases when imported or handover codes are known
@@ -84,6 +84,8 @@ The board shows all unfinished work and previous/current-week completions by
 site-local calendar dates. Historical search lets you select other completed-work
 windows. Selecting one status hides the other columns and expands its result cards.
 Asset access is available to Administrator, Team Leader and Task Force.
+Registry creation, aliases and configuration require Administrator under IOP-217;
+Team Leader and Task Force retain read access to Digital Asset Records.
 Administrator also retains user/priority administration and maintenance coordination. A narrow equipment reference in Maintenance is not an Asset
 module permission grant.
 

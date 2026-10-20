@@ -1,8 +1,9 @@
 # Integration readiness
 
 Integrations owns a scoped WinCC/Ultimo/Entra registry with nonsecret configuration
-and immutable revisions. Administrator edits configuration; Administrator, Team
-Leader and Task Force inspect readiness/history. Every operation checks current
+and immutable revisions. Only Administrator can enter the Integrations workspace,
+inspect configuration/readiness/history or edit configuration under IOP-217.
+Every operation checks current
 profile, membership and grants on a pinned scoped transaction.
 
 `contract-ready` means typed adapters and local normalization tests exist. It never

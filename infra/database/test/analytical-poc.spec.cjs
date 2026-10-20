@@ -96,18 +96,14 @@ async function canonicalSnapshot(sourceId) {
   return result;
 }
 async function retainOperationalResetEvidence() {
-  await admin(
-    "INSERT INTO users_rbac.profiles(organization_id,user_id,site_id,display_name,profile) VALUES($1,'demo-a',$2,'Demo operator','administrator')",
-    [scope.organizationId, scope.siteId],
-  );
   for (const role of siteRoles("administrator")) {
     await admin(
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,'demo-a',$2,$3,true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",
       [scope.organizationId, scope.siteId, role],
     );
   }
-  // Operational Assets and work assignment use an eligible Team Leader;
-  // the administrator retains priority and workforce administration.
+  // Team Leader retains operational reads and work assignment;
+  // Administrator owns Asset registration, priorities and workforce configuration.
   await admin(
     "INSERT INTO users_rbac.profiles(organization_id,user_id,site_id,display_name,profile) VALUES($1,'demo-b',$2,'Demo colleague','team-leader')",
     [scope.organizationId, scope.siteId],
@@ -122,7 +118,7 @@ async function retainOperationalResetEvidence() {
     locationId: "",
   })).candidates.find(candidate => candidate.namespace === "analytics");
   expect(knownEquipment).toBeDefined();
-  const asset = await runtime.assets.save("demo-b", {
+  const asset = await runtime.assets.save("demo-a", {
     key: "reset-evidence-asset",
     id: "",
     expectedRevision: 0,
@@ -254,6 +250,7 @@ beforeAll(async () => {
     await seedUser({ ...seed, IOP_SEED_USER_ID: user });
     await seedMembership({ ...seed, IOP_SEED_USER_ID: user });
   }
+  await admin("INSERT INTO users_rbac.profiles(organization_id,user_id,site_id,display_name,profile) VALUES($1,'demo-a',$2,'Demo operator','administrator')", [scope.organizationId, scope.siteId]);
   runtime = new PlatformRuntime(new Pool({ ...configs.runtime, max: 5 }), {
     local: {
       organization: { id: scope.organizationId },
@@ -318,7 +315,8 @@ test("configured local sessions and origin/host checks precede business access",
     .send({ userId: "demo-a" })
     .expect(403);
   await api("get", "/demo/context").set("Host", "evil.example").expect(403);
-  await selectUser();
+  const selected = await selectUser();
+  expect(selected.body.user.profile).toBe("administrator");
   const r = await api("get", "/analytics/availability").expect(200);
   expect(r.body.dates).toEqual([]);
 });
@@ -978,8 +976,9 @@ test("real browser imports, analyzes file and history, reviews failures, switche
     await pw(page.locator('.analysis-plot svg').first()).toBeVisible();
     await button('Executive Overview').click();
     await page.getByLabel('Demo user', { exact: true }).selectOption('demo-b');
-    // Both seeded demo identities retain import grants and open administration.
-    await pw(page.getByRole('region', { name: 'Administration overview' })).toBeVisible();
+    // Team Leader retains analysis and operational access without configuration.
+    await pw(page.getByRole('region', { name: 'Start page' })).toBeVisible();
+    await pw(button('Data administration')).toHaveCount(0);
     await pw(page.getByLabel('Demo user', { exact: true })).toHaveValue('demo-b');
     await button('Data analysis').click();
     await pw(kpi).toHaveText('4.5');

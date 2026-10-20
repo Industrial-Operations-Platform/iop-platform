@@ -1,5 +1,6 @@
 import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
+import { sitePersonProfile } from "../../../users-rbac/adapters/postgres/site-people";
 import {
   runSiteOperation,
   SiteAccessDeniedError,
@@ -84,6 +85,11 @@ export class PgMaintenance implements Store {
     );
     if (!(await this.directory.allowed(tx, actor, permission)))
       throw new SiteAccessDeniedError();
+    const administrator = await sitePersonProfile(
+      tx, this.scope.organizationId, this.scope.siteId, actor,
+    ) === "administrator";
+    if (permission === "maintenance.administer" && !administrator)
+      throw new SiteAccessDeniedError();
     if (permission === "maintenance.contribute")
       await tx.query("SELECT pg_advisory_xact_lock(hashtext('iop-handover-maintenance'),hashtext($1))", [this.scope.organizationId + ":" + this.scope.siteId]);
     // Serializing the site makes optimistic checks and both retained snapshots atomic.
@@ -106,7 +112,7 @@ export class PgMaintenance implements Store {
             actor,
             "maintenance.coordinate",
           ),
-          canAdminister: await this.directory.allowed(
+          canAdminister: administrator && await this.directory.allowed(
             tx,
             actor,
             "maintenance.administer",

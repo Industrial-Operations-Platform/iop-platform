@@ -149,13 +149,16 @@ These responsibilities extend the existing explicit site-bundle mechanism:
 | Profile | Maintenance | Assets | Analytical timeline evidence |
 | --- | --- | --- | --- |
 | Technician | Read, propose unassigned work, update authored/assigned work | No access | Requires a separate analytical grant; absent in the fixed profile |
-| Task Force | Read, propose unassigned work, update authored/assigned work | Register/read/edit equipment references | Current `analytics.read` required |
-| Team Leader | Contributor plus site assignment/coordination | Register/read/edit equipment references | Current `analytics.read` required |
+| Task Force | Read, propose unassigned work, update authored/assigned work | Read Digital Asset Record and operational references | Current `analytics.read` required |
+| Team Leader | Contributor plus site assignment/coordination | Read Digital Asset Record and operational references | Current `analytics.read` required |
 | Administrator | Contributor, assignment/coordination and priority configuration | Register/read/edit equipment references | Current `analytics.read` required |
 
 The server checks current membership/grants and exact site on every operation,
 including source reads. Browser profile previews change presentation only.
 Asset read permission never substitutes for Maintenance/Handover/Analysis access.
+IOP-217 reserves registry, alias, model, type, survey and mapping configuration for
+Administrator; other profiles contribute operational records without changing
+these sources of truth.
 Revocation, logical user removal and later name changes preserve attributed history.
 Forced RLS, scoped predicates and atomic projection/revision writes reuse the
 accepted transaction patterns. Industrial connections remain read-only.

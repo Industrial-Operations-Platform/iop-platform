@@ -216,7 +216,7 @@ beforeAll(async () => {
     await profiles.project(tx, id);
     await composition.published(tx, id);
   }), mappings, runtime.source);
-  for (const [key, code] of [["conveyor", "DEMO-CONVEYOR"], ["sensor", "DEMO-SENSOR"], ["motor", "DEMO-MOTOR"], ["controller", "DEMO-PLC"], ["second", "DEMO-CONVEYOR-2"]]) assets[key] = await runtime.assets.save("leader", {
+  for (const [key, code] of [["conveyor", "DEMO-CONVEYOR"], ["sensor", "DEMO-SENSOR"], ["motor", "DEMO-MOTOR"], ["controller", "DEMO-PLC"], ["second", "DEMO-CONVEYOR-2"]]) assets[key] = await runtime.assets.save("admin", {
     key: randomUUID(),
     id: "",
     expectedRevision: 0,
@@ -247,14 +247,14 @@ test("configurable model, cycle/controller rules and survey revisions are durabl
     required: false,
     unit: "V"
   }];
-  await app.configure("leader", {
+  await app.configure("admin", {
     expectedRevision: 0,
     types
   });
   await app.save("admin", save("conveyor", "conveyor"));
-  await app.save("leader", save("second", "conveyor"));
-  await app.save("task", save("controller", "controller"));
-  const sensor = await app.save("task", save("sensor", "sensor", {
+  await app.save("admin", save("second", "conveyor"));
+  await app.save("admin", save("controller", "controller"));
+  const sensor = await app.save("admin", save("sensor", "sensor", {
     parentId: assets.conveyor.id,
     controllers: [{
       kind: "controlled-by",
@@ -273,15 +273,15 @@ test("configurable model, cycle/controller rules and survey revisions are durabl
       evidenceReference: "Fictional checklist"
     }
   }));
-  expect(sensor.surveyReviewerId).toBe("task");
+  expect(sensor.surveyReviewerId).toBe("admin");
   expect((await app.detail("leader", assets.sensor.id)).related).toHaveLength(2);
-  await app.save("leader", {
+  await app.save("admin", {
     ...save("conveyor", "conveyor", {
       parentId: assets.second.id
     }),
     expectedRevision: 1
   });
-  await expect(app.save("leader", {
+  await expect(app.save("admin", {
     ...save("second", "conveyor", {
       parentId: assets.conveyor.id
     }),
@@ -289,16 +289,16 @@ test("configurable model, cycle/controller rules and survey revisions are durabl
   })).rejects.toMatchObject({
     code: "asset_domain_cycle"
   });
-  await expect(app.save("leader", {
+  await expect(app.save("admin", {
     ...save("controller", "sensor"),
     expectedRevision: 1
   })).rejects.toMatchObject({
     code: "asset_domain_conflict"
   });
-  const concurrent = await Promise.allSettled([app.save("leader", {
+  const concurrent = await Promise.allSettled([app.save("admin", {
     ...save("sensor", "sensor", sensor.data),
     expectedRevision: 1
-  }), app.save("task", {
+  }), app.save("admin", {
     ...save("sensor", "sensor", sensor.data),
     expectedRevision: 1
   })]);
@@ -316,6 +316,16 @@ test("configurable model, cycle/controller rules and survey revisions are durabl
   await expect(app.catalog("tech")).rejects.toMatchObject({
     code: "asset_domain_denied"
   });
+});
+test("obsolete management grants cannot configure models or mappings for operational readers", async () => {
+  for (const actor of ["leader", "task"]) {
+    await admin("INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,$2,$3,'assets-administrator',true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true", [scope.organizationId, actor, scope.siteId]);
+    const context = await app.catalog(actor);
+    expect(context.canManage).toBe(false);
+    await expect(app.configure(actor, { expectedRevision: context.catalog.revision, types: context.catalog.types })).rejects.toMatchObject({ code: "asset_domain_denied" });
+    await expect(app.save(actor, save("motor", "motor"))).rejects.toMatchObject({ code: "asset_domain_denied" });
+    await expect(app.saveMapping(actor, { id: "stale-management", expectedRevision: 0, reason: "Synthetic permission verification.", data: { source: { sourceId: runtime.source.sourceId, namespace: "source-equipment", area: "Demo area", code: "SOURCE-S1" }, status: "pending", candidateIds: [], note: "Synthetic permission verification." } })).rejects.toMatchObject({ code: "asset_domain_denied" });
+  }
 });
 test("large inventories use complete totals and bounded stable/refined pages instead of a fatal catalogue cap", async () => {
   const snapshot = {
@@ -375,7 +385,7 @@ test("actual publication maps only reviewed identities and preserves RAW/facts w
       note: "Two synthetic candidates remain ambiguous."
     }
   };
-  await app.saveMapping("leader", request);
+  await app.saveMapping("admin", request);
   let result = await app.pareto("task", {
     from: "2026-07-01",
     toExclusive: "2026-07-02",
@@ -383,7 +393,7 @@ test("actual publication maps only reviewed identities and preserves RAW/facts w
   });
   expect(result.states.ambiguous).toBe(1);
   expect(result.unresolved.frequency).toBe(40);
-  await app.saveMapping("task", {
+  await app.saveMapping("admin", {
     ...request,
     expectedRevision: 1,
     data: {
@@ -433,7 +443,7 @@ test("failed projection-history writes roll back mapping decisions and immutable
   const existing = (await app.mappingQuery("leader", {})).mappings[0];
   await admin("CREATE FUNCTION oip.synthetic_reject_canonical_history() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic projection fault'; END $$; CREATE TRIGGER synthetic_reject_canonical_history BEFORE INSERT ON oip.canonical_asset_link_history FOR EACH ROW EXECUTE FUNCTION oip.synthetic_reject_canonical_history()");
   try {
-    await expect(app.saveMapping("leader", {
+    await expect(app.saveMapping("admin", {
       id: existing.id,
       expectedRevision: existing.revision,
       reason: "Synthetic fault injection",
@@ -468,14 +478,14 @@ test("opt-in synthetic fixture is reusable, scoped and preserves later user revi
       locationId: "area"
     },
     before = (await admin("SELECT count(*)::integer AS count FROM oip.facts")).rows[0].count;
-  const first = await seedSyntheticAssetDomain(runtime.assets, app, "leader", options),
-    repeat = await seedSyntheticAssetDomain(runtime.assets, app, "leader", options);
+  const first = await seedSyntheticAssetDomain(runtime.assets, app, "admin", options),
+    repeat = await seedSyntheticAssetDomain(runtime.assets, app, "admin", options);
   expect(first.assets.map(a => a.id)).toEqual(repeat.assets.map(a => a.id));
   expect(first.assets).toHaveLength(4);
   expect(first.mappingState).toBe("ambiguous");
   expect((await admin("SELECT count(*)::integer AS count FROM oip.facts")).rows[0].count).toBe(before);
   const model = (await app.detail("leader", first.assets[0].id)).enrichment;
-  await app.save("leader", {
+  await app.save("admin", {
     assetId: model.assetId,
     expectedRevision: model.revision,
     reason: "Operator changed the synthetic model.",
@@ -484,7 +494,7 @@ test("opt-in synthetic fixture is reusable, scoped and preserves later user revi
       manufacturer: "Operator revision"
     }
   });
-  await expect(seedSyntheticAssetDomain(runtime.assets, app, "leader", options)).rejects.toThrow(/user edits are preserved/);
+  await expect(seedSyntheticAssetDomain(runtime.assets, app, "admin", options)).rejects.toThrow(/user edits are preserved/);
 });
 test("native importers prepare reviewed canonical links without registry-read grants", async () => {
   const roles = await admin("SELECT role_id FROM users_rbac.site_role_assignments WHERE organization_id=$1 AND site_id=$2 AND user_id='native-importer' AND is_active ORDER BY role_id", [scope.organizationId, scope.siteId]);

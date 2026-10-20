@@ -51,8 +51,9 @@ const application = new AssetDomainApplication(new HttpAssetDomainGateway(), () 
 />
 ```
 
-Expose the workspace to current Administrator/Team Leader/Task Force profiles
-only, alongside the Digital Asset Record. The independent server checks remain
+Expose the configuration workspace only to current Administrator profiles under
+IOP-217. Keep authorized Digital Asset Record and operational reference reads for
+Team Leader and Task Force. The independent server checks remain
 authoritative. Spread `assetDomainGerman` from `localization/asset-domain-de.ts`
 into the shared German dictionary; English is the default source. Legacy asset
 components/fixtures need no enrichment fields.
@@ -77,7 +78,9 @@ Do not grant table-level SELECT/INSERT/UPDATE or DELETE.
 | oip.canonical_asset_link_history | organization_id, site_id, source_id, import_id, source_record_number, revision_key, asset_id, mapping_id, mapping_revision, state, snapshot | — |
 
 No new schema/permission bundle is introduced. Existing `assets.read/manage` and
-independent OIP grants are checked against current profiles in each transaction.
+independent OIP grants are checked against current profiles in each transaction;
+configuration mutations require Administrator even when an obsolete management
+grant remains.
 The disposable module tests verify runtime RLS, immutable privilege denial and
 foreign-scope rejection; the assembled host must retain its post-migration
 provision validation after extending the allowlists.

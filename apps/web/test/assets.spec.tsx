@@ -84,15 +84,17 @@ function fixture(overrides: Partial<Gateway> = {}) {
     application: new AssetsApplication(gateway, () => "stable-key"),
   };
 }
-test.each(["technician", "executive"])(
+test.each(["technician", "executive", "team-leader", "task-force", undefined])(
   "%s preview cannot manage assets even with administrator capabilities",
   async (profile) => {
     const { application } = fixture();
+    const onManageModel = jest.fn();
     render(
       <AssetsWorkspace
         application={application}
         profile={profile}
         timeZone="UTC"
+        onManageModel={onManageModel}
       />,
     );
     await screen.findByRole("table", { name: "Asset directory" });
@@ -100,6 +102,7 @@ test.each(["technician", "executive"])(
     fireEvent.click(screen.getByRole("button", { name: "AS-001" }));
     await screen.findByLabelText("Asset timeline");
     expect(screen.queryByRole("button", { name: "Edit asset" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Model and survey" })).toBeNull();
   },
 );
 test("registration retains its key after rejection and alias fields reflect their source identity", async () => {
@@ -113,7 +116,7 @@ test("registration retains its key after rejection and alias fields reflect thei
   render(
     <AssetsWorkspace
       application={application}
-      profile="team-leader"
+      profile="administrator"
       timeZone="UTC"
     />,
   );
@@ -335,7 +338,7 @@ test.each(["not-authorized", "unavailable", "unmapped"] as const)(
     expect(screen.queryByText("Showing 0 of 0 records.")).toBeNull();
   },
 );
-test.each(["administrator", "team-leader", "task-force"])(
+test.each(["administrator"])(
   "%s can manage provisionally identified components when authorized",
   async (profile) => {
     const { application } = fixture();

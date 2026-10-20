@@ -36,14 +36,14 @@ export function domainFixture() {
   const applied: MappingDecision[][] = [];
   const store: DomainStore = {
     run: async (actor, permission, work) => {
-      if (!["admin", "leader", "task"].includes(actor)) throw new AssetDomainError("asset_domain_denied");
+      if (!["admin", "leader", "task"].includes(actor) || (permission === "assets.manage" && actor !== "admin")) throw new AssetDomainError("asset_domain_denied");
       const staged = structuredClone(records),
         maps = structuredClone(mappings),
         history: EnrichmentRevision[] = [],
         mapHistory: MappingRevision[] = [];
       let nextCatalog = catalog;
       const tx: DomainTransaction = {
-        canManage: true,
+        canManage: actor === "admin",
         assetNames: async ids => new Map(assets.filter(a => ids.includes(a.id)).map(a => [a.id, a.code])),
         name: async () => actor,
         asset: async id => assets.find(a => a.id === id) ?? null,

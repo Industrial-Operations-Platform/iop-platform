@@ -309,10 +309,10 @@ afterAll(async () => {
 
 test("durable revision-safe assets recover idempotent creates, serialize stale edits and retain history after restart", async () => {
   const input = create("0001"),
-    first = await app.save("lead-a", input);
-  expect(await app.save("lead-a", input)).toEqual(first);
+    first = await app.save("admin-a", input);
+  expect(await app.save("admin-a", input)).toEqual(first);
   await expect(
-    app.save("lead-a", {
+    app.save("admin-a", {
       ...input,
       content: { ...input.content, type: "Different" },
     }),
@@ -329,8 +329,8 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
     },
   };
   const concurrent = await Promise.allSettled([
-    app.save("lead-a", edit),
-    app.save("lead-a", edit),
+    app.save("admin-a", edit),
+    app.save("admin-a", edit),
   ]);
   expect(
     concurrent.filter((result) => result.status === "fulfilled"),
@@ -356,16 +356,18 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
     await restarted.end();
   }
 });
-test("Administrator, Team Leaders and Task Force manage assets; exact aliases conflict atomically and cannot map two assets to one source tuple", async () => {
-  await expect(app.save("tech-a", create())).rejects.toBeInstanceOf(
-    SiteAccessDeniedError,
-  );
+test("Only Administrator manages assets; exact aliases conflict atomically and cannot map two assets to one source tuple", async () => {
+  for (const actor of ["tech-a", "lead-a", "task-a"]) {
+    await db("bootstrap", client => client.query(
+      "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,$2,$3,'assets-administrator',true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",
+      [scope.organizationId, actor, scope.siteId],
+    ));
+    await expect(app.save(actor, create())).rejects.toBeInstanceOf(SiteAccessDeniedError);
+    if (actor !== "tech-a") expect((await app.context(actor)).canManage).toBe(false);
+  }
   expect(
     (await app.save("admin-a", create("administrator-managed"))).content.name,
   ).toBe("administrator-managed");
-  expect((await app.save("task-a", create("task-managed"))).content.code).toBe(
-    "task-managed",
-  );
   const aliasInput = {
     ...create("alias-asset"),
     content: {
@@ -384,9 +386,9 @@ test("Administrator, Team Leaders and Task Force manage assets; exact aliases co
       ],
     },
   };
-  const mapped = await app.save("lead-a", aliasInput);
+  const mapped = await app.save("admin-a", aliasInput);
   await expect(
-    app.save("lead-a", {
+    app.save("admin-a", {
       ...create("duplicate-mapped"),
       content: { ...aliasInput.content, code: "duplicate-mapped" },
     }),
@@ -402,7 +404,7 @@ test("Administrator, Team Leaders and Task Force manage assets; exact aliases co
     ).total,
   ).toBe(0);
   expect((await app.history("lead-a", mapped.id, 0)).revisions).toHaveLength(1);
-  const separate = await app.save("lead-a", {
+  const separate = await app.save("admin-a", {
     ...create("different-area"),
     content: {
       ...content,
@@ -423,7 +425,7 @@ test("Administrator, Team Leaders and Task Force manage assets; exact aliases co
   expect(separate.id).not.toBe(mapped.id);
 });
 test("RLS, scoped foreign keys and current grants protect records and immutable revisions with no ordinary deletes", async () => {
-  const first = await app.save("lead-a", create("protected"));
+  const first = await app.save("admin-a", create("protected"));
   await expect(
     service({ organizationId: "org-b", siteId: "site-b" }).detail(
       "admin-b",
@@ -492,7 +494,7 @@ test("digital record reads owner evidence with exact mapping and denies Technici
     ),
   );
   expect(imported.outcome).toBe("succeeded");
-  const mapped = await app.save("lead-a", create("=EQ-001", true));
+  const mapped = await app.save("admin-a", create("=EQ-001", true));
   const lookup = {
     ...directory(),
     people: (tx) => sitePeople(tx, scope.organizationId, scope.siteId),
@@ -609,7 +611,7 @@ test("digital record reads owner evidence with exact mapping and denies Technici
   expect(onlyAnalytical.records).toHaveLength(2);
 });
 test("history pages never imply complete evidence when aliases are absent or a source read is unavailable", async () => {
-  const unmapped = await app.save("lead-a", create("no-mappings"));
+  const unmapped = await app.save("admin-a", create("no-mappings"));
   const input = {
     id: unmapped.id,
     from: "2026-07-01",
@@ -746,7 +748,7 @@ test("owner read ports enforce their own current source grants and exact pinned 
   }
 });
 test("SQL source faults abort safely and the same pooled connection recovers in a fresh authorized operation", async () => {
-  const subject = await app.save("lead-a", create("sql-recovery"));
+  const subject = await app.save("admin-a", create("sql-recovery"));
   const selection = {
     id: subject.id,
     from: "2026-07-01",
@@ -795,7 +797,7 @@ test("SQL source faults abort safely and the same pooled connection recovers in 
 });
 test("directory and real mixed-source timeline keyset pages retain full counts without dropping equal-day revisions", async () => {
   for (let index = 0; index < 28; index++)
-    await app.save("lead-a", create("paged-" + String(index).padStart(3, "0")));
+    await app.save("admin-a", create("paged-" + String(index).padStart(3, "0")));
   const selection = {
     search: "paged-",
     status: "",
@@ -825,7 +827,7 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
       cursor: firstDirectory.nextCursor,
     }),
   ).rejects.toMatchObject({ code: "invalid_asset" });
-  const mapped = await app.save("lead-a", {
+  const mapped = await app.save("admin-a", {
     ...create("timeline-code"),
     content: {
       ...content,
@@ -910,7 +912,7 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
       cursor: first.nextCursor,
     }),
   ).rejects.toMatchObject({ code: "invalid_asset" });
-  await app.save("lead-a", {
+  await app.save("admin-a", {
     id: mapped.id,
     key: "",
     expectedRevision: mapped.revision,

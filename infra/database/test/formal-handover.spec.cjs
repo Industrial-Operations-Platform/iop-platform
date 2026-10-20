@@ -139,7 +139,7 @@ test('projection/revision rollback is atomic on an invalid actor FK and runtime 
   });
 });
 test('explicit canonical asset history works without aliases and original equipment evidence remains independent', async () => {
-  const asset=await assets.save('task-a',{key:randomUUID(),id:'',expectedRevision:0,note:'',content:{code:'GUARD-SENSOR',name:'Guard sensor',type:'sensor',locationId:'area',status:'unverified',validationNote:'',description:'',aliases:[]}});
+  const asset=await assets.save('admin-a',{key:randomUUID(),id:'',expectedRevision:0,note:'',content:{code:'GUARD-SENSOR',name:'Guard sensor',type:'sensor',locationId:'area',status:'unverified',validationNote:'',description:'',aliases:[]}});
   const report=await journal.create('lead-a',{key:randomUUID(),issue:true,responsibleId:'',content:{...entryContent('2026-10-14','Explicit canonical reference'),assetId:asset.id}});
   const timeline=await runSiteOperation(pool,{...scope,userId:'task-a',permissions:['assets.read']},(tx)=>handoverAssetTimeline(tx,scope,{id:asset.id,aliases:[]},{from:'2026-10-01',to:'2026-10-31',cursor:null,limit:50,timeZone:'UTC'}));
   expect(timeline.total).toBe(1); expect(timeline.records[0].sourceRecordId).toBe(report.id); expect(timeline.unmapped).not.toBe(true);

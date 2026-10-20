@@ -8,8 +8,9 @@ import { SceneViewport } from './SceneViewport';
 import { ComponentEditor } from './ComponentEditor';
 import './locator.css';
 const errorMessage = (error: unknown) => error instanceof Error ? error.message : 'Asset Locator is unavailable.';
-export function LocatorWorkspace({ application, onAsset, onProblem, initialSceneId = '', homeVisit = 0 }: {
+export function LocatorWorkspace({ application, profile, onAsset, onProblem, initialSceneId = '', homeVisit = 0 }: {
   application: LocatorApplication;
+  profile?: string;
   onAsset?: (id: string) => void;
   onProblem?: (kind: 'handover' | 'maintenance', id: string) => void;
   initialSceneId?: string;
@@ -23,7 +24,8 @@ export function LocatorWorkspace({ application, onAsset, onProblem, initialScene
     y: number;
   }>();
   const [configuration, setConfiguration] = useState(false);
-  const canEdit = !!context?.canManage && configuration;
+  const canManage = !!context?.canManage && profile === 'administrator';
+  const canEdit = canManage && configuration;
   const requestNumber = useRef(0), mounted = useRef(true);
   const load = async () => {
     setLoading(true);
@@ -178,7 +180,7 @@ export function LocatorWorkspace({ application, onAsset, onProblem, initialScene
   const visibleScenes = useMemo(() => scenes.filter(s => (!group || s.content.group === group) && (!sceneSearch || [s.content.name, s.content.group].some(v => v.toLowerCase().includes(sceneSearch.toLowerCase())))), [scenes, group, sceneSearch]);
   const preview = useMemo(() => detail && draft ? { ...detail.scene, content: draft } : undefined, [detail?.scene, draft]);
   return <div className="locator-fields">
-  <SectionHeading section="Asset Locator" view={detail ? detail.scene.content.name : tab === 'search' ? 'Asset search' : 'Plant overview'} onHome={home} description="Versioned 3D schematic layouts and explicitly registered asset placements." actions={<Actions><RefreshButton busy={loading || pending} onClick={() => detail ? void open(detail.scene.id, selected) : void load()}/>{context?.canManage && <Button variant="secondary" aria-pressed={configuration} onClick={() => { setConfiguration(!configuration); if (detail) { if (detail.scene.revision === 0) home(); else void open(detail.scene.id, selected); } }} disabled={pending}>{t(configuration ? 'Exit configuration' : 'Configure scenes')}</Button>}{!detail && canEdit && <AddButton label={t("Create scene")} onClick={newScene} disabled={pending}/>}</Actions>}/>
+  <SectionHeading section="Asset Locator" view={detail ? detail.scene.content.name : tab === 'search' ? 'Asset search' : 'Plant overview'} onHome={home} description="Versioned 3D schematic layouts and explicitly registered asset placements." actions={<Actions><RefreshButton busy={loading || pending} onClick={() => detail ? void open(detail.scene.id, selected) : void load()}/>{canManage && <Button variant="secondary" aria-pressed={configuration} onClick={() => { setConfiguration(!configuration); if (detail) { if (detail.scene.revision === 0) home(); else void open(detail.scene.id, selected); } }} disabled={pending}>{t(configuration ? 'Exit configuration' : 'Configure scenes')}</Button>}{!detail && canEdit && <AddButton label={t("Create scene")} onClick={newScene} disabled={pending}/>}</Actions>}/>
   {error && <Alert>{error}</Alert>}{message && <p role="status">{message}</p>}{loading && <p role="status">{t("Loading locator\u2026")}</p>}
   <div className="locator-readiness"><strong>{t("Physical calibration pending.")}</strong>{t(" Area references are WinCC schematics, including independent sections. Whole-plant alignment, dimensions, elevations and exact sensor positions still require survey. Problem markers show reported evidence, never live health.")}</div>
   {!detail && <><ViewNavigation items={[{ id: 'overview', label: 'Plant overview' }, { id: 'search', label: 'Asset search' }]} label={t("Asset Locator views")} selected={tab} onSelect={id => setTab(String(id))}/>

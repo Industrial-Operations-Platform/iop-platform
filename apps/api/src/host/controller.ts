@@ -216,6 +216,7 @@ export class PlatformController {
       }
     }
     let actor: string | undefined;
+    let profile: C.LocalUserDto["profile"];
     try {
       actor = await r.actor(req);
     } catch (e) {
@@ -223,7 +224,7 @@ export class PlatformController {
     }
     if (actor) {
       try {
-        await r.checkUser(actor);
+        profile = await r.checkUser(actor);
       } catch (e) {
         if (e instanceof SiteAccessDeniedError) actor = undefined;
         else await operation(async () => Promise.reject(e));
@@ -236,7 +237,7 @@ export class PlatformController {
         ? await operation(async () => r.canImport(actor!))
         : false,
       users: r.config.users,
-      user: r.config.users.find((u) => u.id === actor) ?? null,
+      user: actor ? { ...r.config.users.find((u) => u.id === actor)!, ...(profile ? { profile } : {}) } : null,
       scope: {
         organizationId: r.source.organizationId,
         siteId: r.source.siteId,
@@ -262,7 +263,7 @@ export class PlatformController {
       typeof body.userId !== "string"
     )
       throw new BadRequestException();
-    await operation(async () => r.checkUser(body.userId));
+    const profile = await operation(async () => r.checkUser(body.userId));
     const token = r.principals.switch(req, body.userId);
     res.setHeader(
       "Set-Cookie",
@@ -273,7 +274,7 @@ export class PlatformController {
       canReadAnalytics: true,
       canImport: await operation(async () => r.canImport(body.userId)),
       users: r.config.users,
-      user: r.config.users.find((u) => u.id === body.userId)!,
+      user: { ...r.config.users.find((u) => u.id === body.userId)!, ...(profile ? { profile } : {}) },
       scope: {
         organizationId: r.source.organizationId,
         siteId: r.source.siteId,
