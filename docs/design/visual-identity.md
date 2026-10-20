@@ -528,6 +528,16 @@ its loading fallback is announced. This changes delivery timing only, not analyt
 selection, totals or permissions. See [IOP-214](../planning/items/IOP-214-desktop-consistency.md)
 for rendering and regression evidence.
 
+## Record title alignment — IOP-220
+
+In Operational Overview source results, formal Shift Handover record cards and
+Improvement Tracking action rows, blue record titles start at the existing padded
+content edge. Inset their supporting descriptions and metadata by 8px to make the
+title/content relationship clear. Title buttons have no additional inline padding
+or inline border width; retain their minimum target height, visible keyboard focus,
+left alignment and wrapping. Other Handover card variants retain their layout.
+See [IOP-220](../planning/items/IOP-220-record-title-alignment.md) for evidence.
+
 ## Workspace header and platform mark — IOP-216
 
 The owner's 2026-10-20 request refines the brand placement, icon and navigation
