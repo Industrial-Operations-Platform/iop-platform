@@ -1,20 +1,28 @@
 # IOP-219 — Compatible model integration
 
-Blocked on owner authorization. Branch: `fix/IOP-219-locator-reference-curves`.
+In progress. The owner's 2026-10-20 instruction to unify the pending work with
+develop authorizes local integration of IOP-211 and IOP-219, including conflict
+resolution and validation. Branch: `fix/IOP-219-locator-reference-curves`.
 [Permanent scope](../items/IOP-219-locator-reference-curves.md) and
 [validated independent increment](../completed/IOP-219-locator-reference-curves-plan.md).
 
 ## Dependency and remaining steps
 
 The running models use Motor/Photoelectric sensor kinds and preparation behavior
-from unmerged `feature/IOP-211-locator-models-and-access`. The owner was asked to
-authorize merging that dependency into the correction branch. The workflow forbids
-silently integrating an unmerged prerequisite. No answer has been received.
+from `feature/IOP-211-locator-models-and-access`. Integration is now authorized.
+The branch audit confirms IOP-204–210 already reached develop through the IOP-203
+composition; retain those historical refs without duplicating their implementation.
+The clean develop worktree is `/private/tmp/iop-220-develop-publication`, initially
+at `f4db019`, including the completed IOP-220 title refinements.
 
-After authorization, integrate the retained branch without rewriting history and
+Merge current develop into the correction branch, then integrate IOP-211 without
+rewriting history and
 resolve overlapping Locator/contract/documentation changes while preserving both
 stories' intended behavior. Revalidate current permissions, camera/view continuity,
-model preparation, source privacy and corrected geometry. Regenerate contracts.
+model preparation, source privacy and corrected geometry. Preserve IOP-220's title
+hierarchy in Formal Handover and regenerate contracts. Commit the reviewed merge,
+then merge the validated correction branch into local develop. Use its existing
+clean worktree; retain all story branches and do not push without separate approval.
 
 Prepare local activation for explicit approval. When authorized and compatible,
 recheck the three private `IOP-219-scene-revisions.json` payloads against current

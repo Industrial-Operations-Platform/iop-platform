@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Blocked on dependency authorization. The independent software increment is validated.
+In progress. Local integration is authorized; the independent increment is validated.
 The owner's 2026-10-20 request restricts WinCC reference images to
 Administrator model editing and improves the curved geometry in existing 3D models.
 
@@ -32,8 +32,8 @@ dimensions, new roles, provider access, publication or deployment are implied.
 [Pending integration](../active/IOP-219-locator-integration-plan.md).
 
 The active installation contains Motor/Photoelectric sensor components from
-`feature/IOP-211-locator-models-and-access`, which is absent from develop. The
-workflow requires authorization for that dependent branch integration. No merge,
-push, service activation or durable scene mutation has been performed. Three
+`feature/IOP-211-locator-models-and-access`. The owner authorized local integration
+of the pending work into develop on 2026-10-20. Push and service activation remain
+outside that request. Three
 conflict-checked revision payloads are retained privately, preserving all 422
 other components in the affected scenes and all 69 other scenes.
