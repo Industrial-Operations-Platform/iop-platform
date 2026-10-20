@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed. Owner request of 2026-10-20: improve the title/content hierarchy shown
+Completed and published to origin. Owner request of 2026-10-20: improve the title/content hierarchy shown
 in Current pending Handover issues, Shift records and Improvement Tracking Actions,
 starting from `develop`. Blue record titles currently appear level with or slightly
 to the right of their supporting content, especially in Improvement Tracking.
@@ -29,5 +29,6 @@ Follow the [visual identity](../../design/visual-identity.md),
 ## Approved publication — 2026-10-20
 
 The owner explicitly approved merging `fix/IOP-220-record-title-alignment` into
-`develop` and pushing both branches to `origin`. Publication is in progress;
-[publication plan](../active/IOP-220-publication-plan.md) records this approved slice.
+`develop` and pushing both branches to `origin`. Both branches are published;
+[publication evidence](../completed/IOP-220-publication-plan.md) records integration
+and remote verification.

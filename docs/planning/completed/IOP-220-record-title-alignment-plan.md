@@ -55,5 +55,5 @@ or deployment was performed.
 All acceptance criteria are complete. Item/backlog statuses and the visual identity
 are synchronized; this plan is archived under `completed/`. The validated increment
 is committed locally on the recorded story branch. The owner approved publication in the
-follow-up; see the [publication plan](../active/IOP-220-publication-plan.md). IOP-219 work was isolated in the original
+follow-up; see the [publication evidence](IOP-220-publication-plan.md). IOP-219 work was isolated in the original
 worktree throughout this increment.
