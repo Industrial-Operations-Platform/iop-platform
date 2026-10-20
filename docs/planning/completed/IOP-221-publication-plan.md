@@ -1,6 +1,6 @@
 # IOP-221 — Approved publication
 
-In progress, 2026-10-20. Story branch: `feature/IOP-221-locator-area-hover`.
+Completed, 2026-10-20. Story branch: `feature/IOP-221-locator-area-hover`.
 [Permanent scope](../items/IOP-221-locator-area-hover.md).
 
 ## Authorization and steps
@@ -24,7 +24,9 @@ The new IOP-221 implementation is `c74e65d`.
 
 Expected files are this plan, `items/IOP-221-locator-area-hover.md`, the IOP-221 row
 in `backlog.md` and `completed/IOP-221-locator-area-hover-plan.md`. No application
-changes are planned. The separate IOP-219 private-model activation stays pending.
+changes are planned. Synchronize only the publication statements for inherited
+IOP-211/219 in their permanent items and backlog rows; their behavior and acceptance
+remain unchanged. The separate IOP-219 private-model activation stays pending.
 
 ## Validation and evidence
 
@@ -36,4 +38,15 @@ exact local/remote branch parity. No new behavior requires repeating the suites.
 
 ## Closure
 
-Pending merge, remote publication and verification.
+Authorization was committed as `39df692`; the story merged without conflicts into
+develop as `fd0cfb2`. The atomic push succeeded. Independent `git ls-remote`
+confirmed develop `fd0cfb2367f33c07133830c59ad7f22c325e0382` and the story
+`39df6925bc3626537fbdc0620ee52488d396588f` on origin. Application-tree comparison
+against `c74e65d`, story ancestry, whitespace and clean-worktree checks passed.
+
+This evidence increment archives the plan and synchronizes the item/backlog,
+implementation evidence and inherited IOP-211/219 publication statements. It follows
+the same approved merge/push sequence; final remote parity and clean status are
+verified afterward, with final hashes reported outside their own commits. No
+service or private-model activation, branch deletion or stage/master promotion
+was performed; the IOP-219 activation plan remains open.

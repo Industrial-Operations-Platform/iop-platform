@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-In progress. Software integration into local develop is validated; applying the
+In progress. Validated software integration is published through develop; applying the
 prepared private model revisions remains pending local activation approval.
 The owner's 2026-10-20 request restricts WinCC reference images to
 Administrator model editing and improves the curved geometry in existing 3D models.
@@ -37,7 +37,9 @@ dimensions, new roles, provider access, publication or deployment are implied.
 
 The active installation contains Motor/Photoelectric sensor components from
 `feature/IOP-211-locator-models-and-access`. The owner authorized local integration
-of the pending work into develop on 2026-10-20; the merged code is validated. Push and service activation remain
-outside that request. Three
+of the pending work into develop on 2026-10-20; the merged code is validated.
+Its later publication through develop was explicitly approved and completed with
+[IOP-221](../completed/IOP-221-publication-plan.md). Service activation remains
+pending. Three
 conflict-checked revision payloads are retained privately, preserving all 422
 other components in the affected scenes and all 69 other scenes.
