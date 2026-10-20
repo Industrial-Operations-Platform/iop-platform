@@ -1,10 +1,11 @@
 import type { Pool } from 'pg';
 import type { Assets } from '../modules/assets/application/assets';
+import { operationalAssets } from '../modules/assets/adapters/postgres/operational-read';
 import type { Handover } from '../modules/shift-handover/application/handover';
 import type { Maintenance } from '../modules/maintenance/application/maintenance';
 import type { OipReports } from '../modules/oip/application/reporting';
 import { composeOperationalOverview, siteToday } from '../modules/operational-overview/adapters/composition';
-import { ancestors, nextDate, OverviewError, type AreaInput, type Card, type Location, type ShiftContext } from '../modules/operational-overview/domain/overview';
+import { ancestors, nextDate, within, OverviewError, type AreaInput, type Card, type Location, type ShiftContext } from '../modules/operational-overview/domain/overview';
 import { evaluateSiteAccess } from '../modules/users-rbac';
 import { sitePersonProfile } from '../modules/users-rbac/adapters/postgres/site-people';
 import { runSiteOperation, SiteAccessDeniedError } from '../persistence/site-operation';
@@ -116,8 +117,9 @@ export function overviewProfileReader(pool: Pool, source: OverviewScope) {
 export function composePlatformOverview(pool: Pool, source: OverviewScope, locations: readonly OverviewCatalogLocation[], modules: OverviewModules) {
     const profile = overviewProfileReader(pool, source);
     const allowed = async (actor: string, permission: string) => {
+        const permissions = permission === 'assets.read' ? ['assets.read', 'locator.read'] : [permission];
         try {
-            return await runSiteOperation(pool, { ...source, userId: actor, permissions: [permission] }, async (transaction) => (await evaluateSiteAccess(transaction, { ...source, userId: actor, permissions: [permission] })).allowed);
+            return await runSiteOperation(pool, { ...source, userId: actor, permissions }, async (transaction) => (await evaluateSiteAccess(transaction, { ...source, userId: actor, permissions })).allowed);
         }
         catch (error) {
             if (error instanceof SiteAccessDeniedError)
@@ -126,7 +128,16 @@ export function composePlatformOverview(pool: Pool, source: OverviewScope, locat
         }
     };
     return composeOperationalOverview({ locations, timeZone: source.siteTimeZone, today: siteToday(source.siteTimeZone), profile, allowed,
-        assets: modules.assets, handover: modules.handover, maintenance: modules.maintenance,
+        assets: async (actor, query) => runSiteOperation(pool,
+            { ...source, userId: actor, permissions: ['assets.read', 'locator.read'] }, async transaction => {
+                await transaction.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [source.organizationId]);
+                const page = await operationalAssets(transaction, { search: query.search, cursor: query.cursor,
+                    locationIds: query.locationId ? locations.filter(location => within(location.id, query.locationId, locations)).map(location => location.id) : [] });
+                return { items: page.assets.map(asset => ({ source: 'assets' as const, id: asset.id, title: asset.code,
+                    summary: asset.name, locationId: asset.locationId, locationLabel: locations.find(location => location.id === asset.locationId)?.label ?? '',
+                    status: asset.status, date: '', assetId: asset.id })), total: page.total, nextCursor: page.nextCursor };
+            }),
+        handover: modules.handover, maintenance: modules.maintenance,
         ...(modules.formalHandover ? { formalShifts: formalOverviewReader(modules.formalHandover, locations) } : {}),
         ...(modules.reports ? { analytics: departmentAnalyticsReader(modules.reports, locations) } : {}),
     });

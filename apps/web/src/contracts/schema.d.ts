@@ -472,6 +472,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/locator/locate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_locate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/model-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_modelPreview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/classification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_classification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locator/apply-model": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LocatorController_applyModel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/locator/references/{id}": {
         parameters: {
             query?: never;
@@ -2177,7 +2241,7 @@ export interface components {
         };
         LocatorTemplateDto: {
             /** @enum {string} */
-            kind: "conveyor" | "curve" | "s-curve" | "junction" | "lift" | "sensor" | "scanner" | "scale" | "cabinet";
+            kind: "conveyor" | "curve" | "s-curve" | "junction" | "lift" | "motor" | "photoelectric-sensor" | "sensor" | "scanner" | "scale" | "cabinet";
             width: number;
             depth: number;
             height: number;
@@ -2199,7 +2263,7 @@ export interface components {
         LocatorComponentDto: {
             id: string;
             /** @enum {string} */
-            kind: "conveyor" | "curve" | "s-curve" | "junction" | "lift" | "sensor" | "scanner" | "scale" | "cabinet";
+            kind: "conveyor" | "curve" | "s-curve" | "junction" | "lift" | "motor" | "photoelectric-sensor" | "sensor" | "scanner" | "scale" | "cabinet";
             label: string;
             x: number;
             y: number;
@@ -2316,6 +2380,61 @@ export interface components {
         LocatorBootstrapDto: {
             created: number;
             referenceCount: number;
+        };
+        LocatorLocateDto: {
+            assetId: string;
+        };
+        LocatorModelPreviewDto: {
+            referenceId: string;
+            referenceName: string;
+            sceneId: string;
+            expectedRevision: number;
+            /** @enum {string} */
+            status: "ready" | "current" | "manual-edits-preserved" | "not-initialized" | "manual-review-required";
+            componentCount: number;
+            motors: number;
+            photoelectricSensors: number;
+            conveyors: number;
+        };
+        LocatorModelsDto: {
+            models: components["schemas"]["LocatorModelPreviewDto"][];
+        };
+        LocatorMessageEvidenceDto: {
+            importId: string;
+            sourceRecordNumber: number;
+            reportingDate: string;
+            message: string;
+        };
+        LocatorClassificationSourceDto: {
+            sourceId: string;
+            area: string;
+            code: string;
+            /** @enum {string} */
+            origin: "reviewed-mapping" | "exact-alias";
+            mappingId: string;
+            mappingRevision: number;
+            total: number;
+            evidence: components["schemas"]["LocatorMessageEvidenceDto"][];
+        };
+        LocatorClassificationDto: {
+            assetId: string;
+            /** @enum {string} */
+            coverage: "available" | "unmapped" | "limited";
+            totalSources: number;
+            sources: components["schemas"]["LocatorClassificationSourceDto"][];
+            /** @enum {string} */
+            suggestedKind: "" | "photoelectric-sensor";
+            matchedMessages: number;
+        };
+        LocatorModelApplyDto: {
+            id: string;
+            expectedRevision: number;
+        };
+        LocatorModelResultDto: {
+            sceneId: string;
+            revision: number;
+            /** @enum {string} */
+            status: "ready" | "current" | "manual-edits-preserved" | "not-initialized" | "manual-review-required" | "applied";
         };
         OverviewEmptyDto: Record<string, never>;
         OverviewLocationDto: {
@@ -4431,6 +4550,98 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LocatorBootstrapDto"];
+                };
+            };
+        };
+    };
+    LocatorController_locate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorLocateDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorSearchResultsDto"];
+                };
+            };
+        };
+    };
+    LocatorController_modelPreview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorEmptyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorModelsDto"];
+                };
+            };
+        };
+    };
+    LocatorController_classification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorLocateDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorClassificationDto"];
+                };
+            };
+        };
+    };
+    LocatorController_applyModel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocatorModelApplyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocatorModelResultDto"];
                 };
             };
         };

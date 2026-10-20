@@ -7,6 +7,7 @@ import { LocatorError, exact } from '../modules/asset-locator/domain/locator';
 import { SiteAccessDeniedError, AuthorizationUnavailableError } from '../persistence/site-operation';
 import { BusinessException } from './problem-details';
 import * as C from './locator-contracts';
+import { localAlarmClassification } from './local-alarm-classification';
 @ApiTags('Asset Locator')
 @Controller('api/v1/locator')
 export class LocatorController {
@@ -89,6 +90,30 @@ export class LocatorController {
   req: IncomingMessage,
   @Body()
   body: C.LocatorEmptyDto) { return this.operation(req, (locator, actor) => { exact(body, []); return locator.bootstrap(actor); }); }
+  @Post('locate')
+  @ApiBody({ type: C.LocatorLocateDto })
+  @ApiCreatedResponse({ type: C.LocatorSearchResultsDto })
+  locate(@Req() req: IncomingMessage, @Body() body: C.LocatorLocateDto) {
+    return this.operation(req, (locator, actor) => { exact(body, ['assetId']); return locator.locate(actor, body.assetId); });
+  }
+  @Post('model-preview')
+  @ApiBody({ type: C.LocatorEmptyDto })
+  @ApiCreatedResponse({ type: C.LocatorModelsDto })
+  modelPreview(@Req() req: IncomingMessage, @Body() body: C.LocatorEmptyDto) {
+    return this.operation(req, (locator, actor) => { exact(body, []); return locator.modelPreview(actor); });
+  }
+  @Post('classification')
+  @ApiBody({ type: C.LocatorLocateDto })
+  @ApiCreatedResponse({ type: C.LocatorClassificationDto })
+  classification(@Req() req: IncomingMessage, @Body() body: C.LocatorLocateDto) {
+    return this.operation(req, async (locator, actor) => localAlarmClassification(await locator.classification(actor, body)));
+  }
+  @Post('apply-model')
+  @ApiBody({ type: C.LocatorModelApplyDto })
+  @ApiCreatedResponse({ type: C.LocatorModelResultDto })
+  applyModel(@Req() req: IncomingMessage, @Body() body: C.LocatorModelApplyDto) {
+    return this.operation(req, (locator, actor) => locator.applyModel(actor, body));
+  }
   @Get('references/:id')
   @ApiProduces('image/png')
   @ApiOkResponse({ description: 'Authorized original private PNG; never included in the public bundle.', schema: { type: 'string', format: 'binary' } })

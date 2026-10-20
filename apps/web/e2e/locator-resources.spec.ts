@@ -39,15 +39,13 @@ test("Locator overview keeps 71 private area references unloaded", async ({ page
   const fixture = await installLocatorFixture(page, true);
   const main = page.getByRole("main");
   await expect(main.locator(".locator-scene-card")).toHaveCount(71);
-  await expect(main.locator("canvas, img")).toHaveCount(0);
+  await expect(main.locator(".locator-canvas canvas")).toHaveCount(1);
+  await expect(main.locator("img")).toHaveCount(0);
   expect(fixture.referenceRequests).toEqual([]);
   expect(fixture.searches).toEqual([]);
-  await expect(main.getByRole("button", { name: "Create scene", exact: true })).toHaveCount(0);
-  await main.getByRole("button", { name: "Configure scenes", exact: true }).click();
   await expect(main.getByRole("button", { name: "Create scene", exact: true })).toBeVisible();
   await expect(main.getByRole("button", { name: "Synchronize imported reference scenes", exact: true })).toBeVisible();
-  await main.getByRole("button", { name: "Exit configuration", exact: true }).click();
-  await expect(main.getByRole("button", { name: "Create scene", exact: true })).toHaveCount(0);
+  await expect(main.getByRole("button", { name: "Edit model", exact: true })).toHaveCount(0);
   await page.screenshot({ path: info.outputPath("locator-lightweight-overview.png"), fullPage: true });
   expect(fixture.unexpectedRequests).toEqual([]);
 });
@@ -72,6 +70,7 @@ for (const viewport of viewports) {
       const fixture = await installLocatorFixture(page, canManage);
       const main = page.getByRole("main");
       await main.locator(".locator-scene-card").first().click();
+      await expect(main.getByRole("button", { name: "Guard sensor — sensor", exact: true })).toBeVisible();
       const canvas = main.locator(".locator-canvas canvas");
       await expect(canvas).toBeVisible();
       await expect(main.locator("img")).toHaveCount(0);
@@ -84,7 +83,7 @@ for (const viewport of viewports) {
       expect(await page.evaluate(() => Number(Reflect.get(window, "locatorWebglContexts")))).toBe(contexts);
       expect(fixture.referenceRequests).toEqual([]);
       expect(fixture.searches).toEqual([]);
-      await expect(main.getByRole("button", { name: "Configure scenes", exact: true })).toHaveCount(canManage ? 1 : 0);
+      await expect(main.getByRole("button", { name: "Edit model", exact: true })).toHaveCount(canManage ? 1 : 0);
       await expect(main.getByLabel("Revision note", { exact: true })).toHaveCount(0);
       await page.evaluate(() => new Promise<void>(resolve => {
         window.scrollTo(0, 0);
@@ -108,10 +107,11 @@ for (const viewport of viewports) {
     const fixture = await installLocatorFixture(page, true);
     const main = page.getByRole("main");
     await main.locator(".locator-scene-card").first().click();
+    await expect(main.getByRole("button", { name: "Guard sensor — sensor", exact: true })).toBeVisible();
     await expect(main.locator(".locator-canvas canvas")).toBeVisible();
     await expect(main.locator("img")).toHaveCount(0);
     expect(fixture.referenceRequests).toEqual([]);
-    await main.getByRole("button", { name: "Configure scenes", exact: true }).click();
+    await main.getByRole("button", { name: "Edit model", exact: true }).click();
     await expect(main.getByLabel("Revision note", { exact: true })).toBeVisible();
     await expect.poll(() => fixture.referenceRequests.length).toBeGreaterThan(0);
     const canvas = main.locator(".locator-canvas canvas");
@@ -120,8 +120,8 @@ for (const viewport of viewports) {
     await canvas.evaluate(element => element.dispatchEvent(new Event("webglcontextlost", { cancelable: true })));
     await expect(main.getByRole("alert")).toContainText("3D rendering is unavailable");
     await expect(main.getByAltText("Private source schematic — historical reference only", { exact: true })).toBeVisible();
-    await main.getByRole("button", { name: "Exit configuration", exact: true }).click();
-    await expect(main.getByRole("button", { name: "Configure scenes", exact: true })).toBeVisible();
+    await main.getByRole("button", { name: "Finish editing", exact: true }).click();
+    await expect(main.getByRole("button", { name: "Edit model", exact: true })).toBeVisible();
     await expect(main.getByLabel("Revision note", { exact: true })).toHaveCount(0);
     await expect(main.locator("img")).toHaveCount(0);
     await expect(main.locator(".locator-canvas canvas")).toBeVisible();

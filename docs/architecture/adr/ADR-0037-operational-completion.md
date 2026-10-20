@@ -39,6 +39,17 @@ and bounded safe status. Local contract fixtures remain identified as fixtures.
 No plant commands, implied real provider connectivity, fake credentials or automatic
 installation of an identity policy are introduced.
 
+## Explicit owner access refinement — IOP-211
+
+The owner now restricts standalone Assets/Asset management and all Locator editing
+to Administrator. Team Leader and Task Force retain read-only Locator navigation
+and currently authorized reported-fault evidence through narrow owner-defined
+identity ports; they gain no general registry/model mutation or directory endpoint.
+Current-profile checks must deny stale writer grants. Maintenance/Technician
+Locator expansion remains outside the request. Formal transfers remain the same
+Handover-owned records, presented within its navigation rather than a separate
+sidebar application. See [IOP-211](../../planning/items/IOP-211-locator-models-and-access.md).
+
 ## Verification
 
 Plans identify owning files and actual behavior. Verify optimistic conflicts,

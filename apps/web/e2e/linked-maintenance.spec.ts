@@ -230,7 +230,7 @@ test("selected status fills a three-card desktop row and hides other statuses", 
 test("a Handover problem can seed a corrective maintenance proposal", async ({
   page,
 }) => {
-  await installMaintenanceAssetsFixture(page, "team-leader");
+  await installMaintenanceAssetsFixture(page, "administrator");
   await page.goto("/");
   await page
     .getByRole("navigation", { name: "Main navigation" })

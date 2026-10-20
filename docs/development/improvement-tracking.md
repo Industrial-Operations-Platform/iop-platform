@@ -6,6 +6,19 @@ initialProfileVersion, analysisCalendar)` in the API host, registers
 the normal local setup/migration path before starting the updated host. Do not
 grant roles manually to bypass current profile restrictions.
 
+## Actions filters
+
+Department/Halle, Status and Owner share the compact caption/divider/native-select
+surface; the expandable search uses the same inline caption treatment. Controls
+wrap to the available width without a second full-width enclosing card. Native
+keyboard selection, search focus, Escape and clear remain available.
+
+Department/status/owner changes retain their current immediate query behavior and
+reset the page cursor. Search text stays a draft until **Apply filters** or Enter;
+clearing also waits for explicit submission. **Load more actions** forwards the
+server's opaque cursor and retains existing rows. Presentation changes do not alter
+permissions, scope, filtering semantics or source evidence.
+
 ## Storage and permissions
 
 `20261014020000-improvement-tracking.sql` creates scoped `improvement.actions`,

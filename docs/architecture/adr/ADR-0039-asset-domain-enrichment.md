@@ -64,3 +64,14 @@ the original Team Leader/Task Force management permission. Existing scoped read
 contracts and source-owned operational records retain their permissions. The
 server checks the current profile as well as grants, and a forward migration
 revokes obsolete management assignments for existing non-administrator profiles.
+
+## Explicit owner access refinement — IOP-211
+
+The owner supersedes the earlier three-profile registry/model policy: only
+Administrator can enter standalone Assets/Asset management or mutate their data.
+Operational consumers may read the minimal explicitly authorized identity context
+needed for work and Locator; those receiving-owned ports do not expose the general
+registry/model endpoints. Team Leader/Task Force Locator is read-only. Alarm text
+may provide a provisional equipment-kind hint; it cannot approve a source/physical
+identity mapping or overwrite an operator decision. See
+[IOP-211](../../planning/items/IOP-211-locator-models-and-access.md).

@@ -56,7 +56,7 @@ statuses and the final diff. Record results and material limits here.
 ## Closure
 
 The software and private source preparation increment is complete. The item and
-backlog remain Blocked for the [pending integration](../active/IOP-219-locator-integration-plan.md).
+backlog remain Blocked for the [subsequent integration](IOP-219-locator-integration-plan.md).
 No dependency merge, remote publication, service activation or durable scene edit
 is implied by this completed increment.
 
@@ -84,3 +84,6 @@ is implied by this completed increment.
   live snapshot; 422 other affected-scene components and 69 other scenes are
   preserved. These payloads have not been applied: IOP-211 supplies component kinds
   absent from develop, and its integration/activation needs owner authorization.
+
+The owner subsequently authorized local develop integration; see the linked
+integration record. The blocking state above describes this increment at its original closure.

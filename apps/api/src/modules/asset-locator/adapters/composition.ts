@@ -3,6 +3,8 @@ import { randomUUID } from 'node:crypto';
 import { Locator } from '../application/locator';
 import { PgLocator, type LocatorLookups } from './postgres/store';
 import { PrivateReferences } from './files/references';
+import { PrivateModelCandidates } from './files/model-candidates';
+import type { ClassificationEvidenceSource } from '../application/classification-evidence';
 export function composeLocator(options: {
   pool: Pool;
   scope: {
@@ -18,6 +20,7 @@ export function composeLocator(options: {
   }[];
   ids?: () => string;
   now?: () => string;
+  classificationEvidence?: ClassificationEvidenceSource;
 }): Locator {
-  return new Locator(new PgLocator(options.pool, options.scope, options.lookups), new PrivateReferences(options.referenceRoot, options.scope), options.locations, options.ids ?? randomUUID, options.now ?? (() => new Date().toISOString()));
+  return new Locator(new PgLocator(options.pool, options.scope, options.lookups), new PrivateReferences(options.referenceRoot, options.scope), options.locations, options.ids ?? randomUUID, options.now ?? (() => new Date().toISOString()), new PrivateModelCandidates(options.referenceRoot, options.scope), options.classificationEvidence);
 }

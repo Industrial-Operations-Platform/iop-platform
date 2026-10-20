@@ -5,15 +5,15 @@ versioned sidecars. Existing registry codes, aliases, lifecycle, locations and
 Maintenance references retain their contracts. The workspace has inventory,
 type-catalog, source-mapping and canonical-Pareto views.
 
-Only Administrator can enter Asset management or configure the registry, types,
-composition, metadata, survey decisions and source mappings, with current
-`assets.read` / `assets.manage` grants. Team Leader and Task Force retain authorized
-Digital Asset Record and operational reference reads under `assets.read`.
-Source candidate lookup and
+Under [IOP-211](../planning/items/IOP-211-locator-models-and-access.md), Administrator
+alone can open this workspace or the standalone Digital Asset Record, with current
+`assets.read` / `assets.manage` grants as appropriate. Team Leader and Task Force
+use read-only Locator and scoped operational identity references; stale asset-writer
+grants do not allow registry/model access. Source candidate lookup and
 Pareto additionally require current `analytics.read`; import publication requires
 `imports.submit` through a receiving-owned internal port and does not require a
-registry grant or return registry data to native importers. A non-administrator
-with stale management grants cannot configure assets.
+registry grant or return registry data to native importers. A Technician with a
+stray asset-reader grant cannot enter this workspace or Locator.
 
 ## Asset model and review
 

@@ -1,5 +1,6 @@
 import { t } from "../../../../localization/i18n";
 import { Actions, Button, DeleteButton, Field, FieldRow, Input, Select, Textarea } from '../../../../design/components';
+import { componentLabel } from './component-label';
 import { componentKinds, type Component, type Asset } from '../../domain/models';
 export function ComponentEditor({ component, assets, pending, change, duplicate, remove }: {
   component: Component;
@@ -10,9 +11,9 @@ export function ComponentEditor({ component, assets, pending, change, duplicate,
   remove: () => void;
 }) {
   const field = <K extends keyof Component>(key: K, value: Component[K]) => change({ ...component, [key]: value, verification: key === 'verification' ? value as Component['verification'] : 'provisional' });
-  return <fieldset disabled={pending} className="locator-fields"><legend>{t("Selected component")}</legend>
+  return <fieldset disabled={pending} className="locator-fields locator-component-editor"><legend>{t("Selected component")}</legend>
   <Field>{t("Label")}<Input value={component.label} maxLength={160} onChange={e => field('label', e.target.value)}/></Field>
-  <Field>{t("Reusable component")}<Select value={component.kind} onChange={e => field('kind', e.target.value as Component['kind'])}>{componentKinds.map(k => <option key={k} value={k}>{t(k)}</option>)}</Select></Field>
+  <Field>{t("Reusable component")}<Select value={component.kind} onChange={e => field('kind', e.target.value as Component['kind'])}>{componentKinds.map(k => <option key={k} value={k}>{componentLabel(k)}</option>)}</Select></Field>
   <FieldRow>{(['x', 'y'] as const).map(k => <Field key={k}>{k.toUpperCase()}{t("(0\u20131)")}<Input type="number" min={0} max={1} step={0.001} value={component[k]} onChange={e => field(k, Number(e.target.value))}/></Field>)}<Field>{t("Elevation (unknown if empty)")}<Input type="number" min={0} max={1} step={0.001} value={component.elevation ?? ''} onChange={e => field('elevation', e.target.value === '' ? null : Number(e.target.value))}/></Field></FieldRow>
   <FieldRow>{(['width', 'depth', 'height'] as const).map(k => <Field key={k}>{t(k)}{t("(schematic units)")}<Input type="number" min={0.001} max={1} step={0.001} value={component[k]} onChange={e => field(k, Number(e.target.value))}/></Field>)}</FieldRow>
   <Field>{t("Rotation (degrees)")}<Input type="number" min={-360} max={360} step={1} value={component.rotation} onChange={e => field('rotation', Number(e.target.value))}/></Field>

@@ -34,7 +34,7 @@ async function capture(page: Page, info: TestInfo, name: string) {
 }
 
 test("short desktop sidebar keeps all destinations reachable by keyboard and defers analysis rendering", async ({ page }, info) => {
-  await page.setViewportSize({ width: 1366, height: 768 });
+  await page.setViewportSize({ width: 1366, height: 640 });
   await configurePresentation(page, "dark");
   const fixture = await installDesktopConsistencyFixture(page);
   const scripts: string[] = [], errors: string[] = [];
@@ -43,9 +43,10 @@ test("short desktop sidebar keeps all destinations reachable by keyboard and def
   await page.goto("/");
   const navigation = page.getByRole("navigation", { name: "Main navigation", exact: true });
   const destinations = navigation.getByRole("button");
-  await expect(destinations).toHaveCount(14);
+  await expect(destinations).toHaveCount(13);
+  await expect(navigation.getByRole("button", { name: "Formal Handover", exact: true })).toHaveCount(0);
   await destinations.first().focus();
-  for (let index = 0; index < 14; index++) {
+  for (let index = 0; index < 13; index++) {
     if (index) await page.keyboard.press("Tab");
     await expect(destinations.nth(index)).toBeFocused();
     const bounds = await destinations.nth(index).evaluate(element => {
@@ -56,7 +57,7 @@ test("short desktop sidebar keeps all destinations reachable by keyboard and def
     expect(bounds.bottom).toBeLessThanOrEqual(Math.min(bounds.navigationBottom, bounds.viewportHeight) + 1);
   }
   expect(await navigation.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
-  await capture(page, info, "sidebar-1366x768-dark");
+  await capture(page, info, "sidebar-1366x640-dark");
   expect(scripts.filter(path => /\/Workspace-[^/]+\.js$/.test(path))).toEqual([]);
 
   await navigation.getByRole("button", { name: "Workforce & shifts", exact: true }).click();
@@ -89,7 +90,7 @@ test("a failed analysis chunk shows recovery without losing operational navigati
   );
   expect(blockedChunks).toBeGreaterThan(0);
   await expect(main.getByRole("button", { name: "Reload workspace", exact: true })).toBeEnabled();
-  await expect(navigation.getByRole("button")).toHaveCount(14);
+  await expect(navigation.getByRole("button")).toHaveCount(13);
   await expect(page.getByRole("button", { name: "User menu", exact: true })).toBeVisible();
   await capture(page, info, "analysis-chunk-recovery-1440");
   await navigation.getByRole("button", { name: "Maintenance", exact: true }).click();

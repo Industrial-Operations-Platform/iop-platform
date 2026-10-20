@@ -2,11 +2,12 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { Component, Scene } from '../../domain/models';
 import type { Identity } from '../../../../design/identity';
+export interface CameraState {
+  position: number[];
+  target: number[];
+}
 export interface CameraControls {
-  snapshot(): {
-    position: number[];
-    target: number[];
-  };
+  snapshot(): CameraState;
   reset(): void;
   top(): void;
   zoom(factor: number): void;
@@ -16,13 +17,28 @@ export interface CameraControls {
   dispose(): void;
 }
 const SCALE = 100;
+/** Component identity accents are independent of reported evidence and selection. */
+export function componentColor(kind: Component['kind'], palette: Identity, attention = false, selected = false): string {
+  return selected ? palette.focus : attention ? palette.errorInk : kind === 'photoelectric-sensor' ? palette.chartTeal : kind === 'sensor' || kind === 'scanner' ? palette.primary : palette.chartDuration;
+}
+/** Rotate in source coordinates before stretching the complete shape into its tile. */
+export function thumbnailMatrix(component: Component, tileWidth: number, tileDepth: number, sourceAspect: number): THREE.Matrix4 {
+  const sourceDepth = SCALE / Math.max(0.5, sourceAspect);
+  const heightScale = Math.min(tileWidth / SCALE, tileDepth / sourceDepth);
+  const source = new THREE.Object3D();
+  source.position.set((component.x - .5) * SCALE, (component.elevation ?? 0) * 30 + component.height * 15 + 1, (component.y - .5) * sourceDepth);
+  source.rotation.y = -component.rotation * Math.PI / 180;
+  source.scale.set(component.width * SCALE, component.height * 30, component.depth * sourceDepth);
+  source.updateMatrix();
+  return new THREE.Matrix4().makeScale(tileWidth / SCALE, heightScale, tileDepth / sourceDepth).multiply(source.matrix);
+}
 /** Reusable geometry templates render normalized schematic units, never plant meters. */
 export function componentGeometry(component: Component, palette: Identity, attention: boolean, selected: boolean, depthScale = 60): THREE.Group {
   const group = new THREE.Group();
   group.userData.componentId = component.id;
-  const color = attention ? palette.errorInk : component.kind === 'sensor' || component.kind === 'scanner' ? palette.primary : palette.chartDuration;
-  const material = new THREE.MeshStandardMaterial({ color: selected ? palette.focus : color, roughness: 0.7, metalness: 0.12 });
-  material.userData.selectionBaseColor = color;
+  const color = componentColor(component.kind, palette, attention, selected);
+  const material = new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.12 });
+  material.userData.selectionBaseColor = componentColor(component.kind, palette, attention);
   const frame = new THREE.MeshStandardMaterial({ color: palette.muted, roughness: 0.85 });
   const w = component.width * SCALE, d = component.depth * depthScale, h = component.height * 30;
   const box = (width: number, height: number, depth: number, x = 0, y = 0, z = 0, mat = material) => { const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat); mesh.position.set(x, y, z); group.add(mesh); return mesh; };
@@ -69,6 +85,32 @@ export function componentGeometry(component: Component, palette: Identity, atten
     mesh.position.y = -h / 2;
     group.add(mesh);
   }
+  else if (component.kind === 'motor') {
+    const radius = Math.max(Math.min(d, h) * 0.45, 0.08);
+    const cylinder = (r: number, length: number, x: number, mat = material) => {
+      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, length, 16), mat);
+      mesh.rotation.z = Math.PI / 2;
+      mesh.position.x = x;
+      group.add(mesh);
+    };
+    cylinder(radius, w * 0.72, 0);
+    for (const fraction of [-0.25, -0.1, 0.05, 0.2])
+      cylinder(radius * 1.12, Math.max(w * 0.04, 0.025), w * fraction, frame);
+    cylinder(radius * 0.3, w * 0.28, w * 0.48, frame);
+    box(w * 0.6, h * 0.16, d, 0, -radius, 0, frame);
+    box(w * 0.3, h * 0.25, d * 0.35, 0, radius, 0);
+  }
+  else if (component.kind === 'photoelectric-sensor') {
+    const post = Math.min(w * 0.15, d);
+    for (const x of [-w * 0.43, w * 0.43]) {
+      box(post, h, d, x);
+      const lens = new THREE.Mesh(new THREE.SphereGeometry(Math.max(post * 0.3, 0.025), 10, 6), new THREE.MeshStandardMaterial({ color: palette.onPrimary }));
+      lens.position.set(x, h * 0.15, 0);
+      group.add(lens);
+    }
+    // An illustrative optical path identifies the component; it is not a live beam state.
+    box(w * 0.72, Math.max(h * 0.08, 0.02), Math.max(d * 0.15, 0.02), 0, h * 0.15);
+  }
   else if (component.kind === 'sensor' || component.kind === 'scanner') {
     const body = new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2, h, 12), material);
     group.add(body);
@@ -83,12 +125,12 @@ export function componentGeometry(component: Component, palette: Identity, atten
   else {
     box(w, h, d);
     if (component.kind === 'conveyor') {
-      const railWidth = Math.min(w, d) * 0.08, supportWidth = Math.min(w, d) * 0.12;
-      box(w, h * 0.28, railWidth, 0, h * 0.65, -d / 2, frame);
-      box(w, h * 0.28, railWidth, 0, h * 0.65, d / 2, frame);
+      const railThickness = Math.min(w, d) * 0.06, supportThickness = Math.min(0.7, Math.min(w, d) * 0.12);
+      for (const z of [-(d - railThickness) / 2, (d - railThickness) / 2])
+        box(w, h * 0.28, railThickness, 0, h * 0.65, z, frame);
       for (const x of [-w * 0.35, w * 0.35])
         for (const z of [-d * 0.35, d * 0.35])
-          box(supportWidth, 2, supportWidth, x, -h / 2 - 1, z, frame);
+          box(supportThickness, 2, supportThickness, x, -h / 2 - 1, z, frame);
       const arrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-w * 0.2, h / 2 + 0.15, 0), w * 0.4, palette.onPrimary, Math.min(2, w * 0.12), Math.min(d * 0.6, 1, w * 0.08));
       group.add(arrow);
     }
@@ -134,10 +176,8 @@ export function createSceneRenderer(container: HTMLElement, input: {
   }) => void;
   onReferenceError?: () => void;
   onContextLost?: () => void;
-  cameraState?: {
-    position: number[];
-    target: number[];
-  };
+  cameraState?: CameraState;
+  onCameraChange?: (camera: CameraState) => void;
   tiles?: {
     scene: Scene;
     referenceUrl?: string;
@@ -170,12 +210,15 @@ export function createSceneRenderer(container: HTMLElement, input: {
   let disposed = false;
   const contextLost = (event: Event) => { event.preventDefault(); if (!disposed) input.onContextLost?.(); };
   renderer.domElement.addEventListener('webglcontextlost', contextLost);
-  const prepareTexture = (texture: THREE.Texture) => {
-    try { boundReferenceTexture(texture, Math.min(2048, renderer.capabilities.maxTextureSize)); return true; }
+  const prepareTexture = (texture: THREE.Texture, maxDimension = 2048) => {
+    try { boundReferenceTexture(texture, Math.min(maxDimension, renderer.capabilities.maxTextureSize)); return true; }
     catch { texture.dispose(); input.onReferenceError?.(); return false; }
   };
-  const render = () => { if (!disposed)
-    renderer.render(scene, camera); };
+  const render = () => {
+    if (disposed) return;
+    renderer.render(scene, camera);
+    input.onCameraChange?.({ position: camera.position.toArray(), target: controls.target.toArray() });
+  };
   const objects = input.scene.content.components.map((c, index) => {
     const tile = input.tiles?.[index];
     if (!tile)
@@ -189,21 +232,24 @@ export function createSceneRenderer(container: HTMLElement, input: {
     group.add(plane);
     const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(tileWidth, 0.25, tileDepth)), new THREE.LineBasicMaterial({ color: input.palette.line }));
     group.add(edge);
-    const sourceDepth = SCALE / tile.aspect;
-    for (const part of tile.scene.content.components) {
-      const child = componentGeometry(part, input.palette, false, false, sourceDepth);
-      child.position.x *= tileWidth / SCALE;
-      child.position.z *= tileDepth / sourceDepth;
-      child.position.y *= Math.min(tileWidth / SCALE, tileDepth / sourceDepth);
-      child.scale.set(tileWidth / SCALE, Math.min(tileWidth / SCALE, tileDepth / sourceDepth), tileDepth / sourceDepth);
-      group.add(child);
+    // Overview thumbnails batch simplified solids. Opening a scene retains the full templates.
+    for (const kind of new Set(tile.scene.content.components.map(c => c.kind))) {
+      const parts = tile.scene.content.components.filter(c => c.kind === kind);
+      const geometry = kind === 'motor' ? new THREE.CylinderGeometry(.5, .5, 1, 8).rotateZ(Math.PI / 2) : new THREE.BoxGeometry(1, 1, 1);
+      const color = componentColor(kind, input.palette);
+      const instances = new THREE.InstancedMesh(geometry, new THREE.MeshStandardMaterial({ color, roughness: .8 }), parts.length);
+      parts.forEach((part, i) => {
+        instances.setMatrixAt(i, thumbnailMatrix(part, tileWidth, tileDepth, tile.aspect));
+      });
+      instances.instanceMatrix.needsUpdate = true;
+      group.add(instances);
     }
     group.traverse(o => { o.userData.componentId = tile.scene.id; });
     if (tile.referenceUrl)
       new THREE.TextureLoader().load(tile.referenceUrl, texture => { if (disposed) {
         texture.dispose();
         return;
-      } if (!prepareTexture(texture)) return; material.map = texture; material.color.set(input.palette.onPrimary); material.needsUpdate = true; render(); }, undefined, () => { if (!disposed)
+      } if (!prepareTexture(texture, 512)) return; material.map = texture; material.color.set(input.palette.onPrimary); material.needsUpdate = true; render(); }, undefined, () => { if (!disposed)
         input.onReferenceError?.(); });
     return group;
   });

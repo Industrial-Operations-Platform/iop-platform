@@ -6,6 +6,7 @@ const createReason = marker + "Create fictional linked maintenance exercise.";
 function build({
   scope,
   actor,
+  assetActor,
   worker,
   today,
   departmentId,
@@ -17,6 +18,7 @@ function build({
 }) {
   if (
     !actor ||
+    !assetActor ||
     !worker ||
     !departmentId ||
     !areaId ||
@@ -153,6 +155,7 @@ function build({
     version: 1,
     scope,
     actor,
+    assetActor,
     worker,
     today,
     departmentId,
@@ -169,7 +172,9 @@ function validate(manifest, scope) {
     !isDeepStrictEqual(manifest.scope, scope) ||
     manifest.assets?.length !== 2 ||
     manifest.issues?.length !== 4 ||
-    manifest.records?.length !== 4
+    manifest.records?.length !== 4 ||
+    (manifest.assetActor !== undefined &&
+      (typeof manifest.assetActor !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(manifest.assetActor)))
   )
     throw new Error("Linked demo manifest does not match this installation.");
   const own = new Set(manifest.issues.map((issue) => issue.id));
@@ -486,6 +491,15 @@ async function run(options) {
       { ...scope, userId: operator, permissions: ["maintenance.read"] },
       (tx) => workforcePeople(tx, scope.organizationId, scope.siteId),
     );
+    const administrators = people.filter(person => person.profile === "administrator").sort((a,b) =>
+      Number(b.id === options.manifest?.assetActor) - Number(a.id === options.manifest?.assetActor));
+    let assetActor;
+    for (const person of administrators) {
+      try {
+        if ((await assets.context(person.id)).canManage) { assetActor = person.id; break; }
+      } catch (error) { if (!(error instanceof SiteAccessDeniedError)) throw error; }
+    }
+    if (!assetActor) throw new Error("Linked demo requires an existing active Administrator with current Asset grants.");
     const leaders = people
       .filter((person) => person.profile === "team-leader")
       .sort(
@@ -496,11 +510,8 @@ async function run(options) {
     let context;
     for (const person of leaders)
       try {
-        const [work, asset] = await Promise.all([
-          maintenance.catalog(person.id),
-          assets.context(person.id),
-        ]);
-        if (work.canCoordinate && asset.canManage) {
+        const work = await maintenance.catalog(person.id);
+        if (work.canCoordinate) {
           actor = person.id;
           context = work;
           break;
@@ -586,6 +597,7 @@ async function run(options) {
       manifest = build({
         scope,
         actor,
+        assetActor,
         worker: worker.id,
         today: siteDate(now(), catalog.timeZone),
         departmentId: department.id,
@@ -608,6 +620,8 @@ async function run(options) {
       throw new Error(
         "Original linked demo author no longer has permissions; inspect retained data without recreating it.",
       );
+    if (options.action === "apply" && (!manifest.assetActor || manifest.assetActor !== assetActor))
+      throw new Error("The retained manifest has no currently authorized Administrator Asset author; inspect retained data without recreating it.");
     const before = await inspect();
     if (options.action === "apply") {
       if (!(await maintenance.catalog(manifest.worker)).canContribute)
@@ -662,7 +676,7 @@ async function run(options) {
       );
       for (const asset of manifest.assets) {
         nextIdentity = asset.id;
-        const created = await assets.save(actor, {
+        const created = await assets.save(assetActor, {
           key: asset.key,
           id: "",
           expectedRevision: 0,

@@ -58,10 +58,10 @@ test.each(["team-leader", "task-force", "technician", ""])(
 );
 
 test.each(["team-leader", "task-force"])(
-  "%s retains operational reads while configuration flags remain false", async (profile) => {
+  "%s retains authorized work reads while standalone Assets and model reads stay denied", async (profile) => {
     (sitePersonProfile as jest.Mock).mockResolvedValue(profile);
-    await expect(assets().run("actor", "assets.read", async work => work.canManage)).resolves.toBe(false);
-    await expect(models().run("actor", "assets.read", async work => work.canManage)).resolves.toBe(false);
+    await expect(assets().run("actor", "assets.read", async work => work.canManage)).rejects.toThrow();
+    await expect(models().run("actor", "assets.read", async work => work.canManage)).rejects.toThrow();
     await expect(workforce().run("actor", "workforce.read", async work => work.canAdminister)).resolves.toBe(false);
     await expect(maintenance().run("actor", "maintenance.read", async work => work.canAdminister)).resolves.toBe(false);
     await expect(maintenance().run("actor", "maintenance.contribute", async work => work.canContribute)).resolves.toBe(true);

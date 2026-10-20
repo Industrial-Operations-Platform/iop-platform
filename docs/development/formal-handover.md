@@ -6,6 +6,14 @@ Team Leader and Task Force require an active `handover.records.manage` grant and
 current advanced profile for every formal read and write. The ordinary Technician
 journal retains its existing permissions.
 
+Open **Shift Handover**, then **Shift records** in the shared Handover view
+navigation. Journal, Meeting preparation/Daily overview and Department matrix stay
+available there; the sidebar has one Shift Handover entry. Exact links from Area
+overview open the selected formal record with Shift records active. **Open current
+journal report** returns to the original report identity. Journal issues reflect
+current state; closed transfers retain immutable evidence and incoming receiving
+acknowledgements. Closing a transfer never resolves its carried journal issues.
+
 ## Transfer workflow
 
 1. Plan actual zone assignments in Workforce. Formal shift choices group exact
@@ -50,12 +58,15 @@ Projection and attributed revision writes share one authorized pinned transactio
 
 ## Explicit canonical assets
 
-Authorized asset readers can optionally select a registered identity while creating
-or correcting a journal entry. The server checks current Assets access and exact
+Authorized operational users can optionally select a compact registered identity
+through a receiving-owned reference port while creating or correcting a journal
+entry. The server checks current reference authority and exact
 scope/location; absent, foreign or newly retired references fail. The entry retains
 a server-produced identity snapshot and its original unverified equipment tuple
 independently. An unchanged historical identity remains retained after retirement.
-Digital Asset Record history finds explicit links even when the asset has no aliases.
+Administrator's Digital Asset Record history finds explicit links even when the
+asset has no aliases. Team Leader and Task Force use these identities in read-only
+Locator; the compact port does not grant standalone registry/model access.
 
 ## Composition
 
@@ -66,3 +77,6 @@ and composes `FormalHandoverApplication`, `HttpFormalHandoverGateway` and
 English remains the source language. Controller registration precedes OpenAPI and
 browser-binding regeneration. The provisioning allowlist must recognize formal
 record tables without widening revision/update privileges.
+The host supplies optional journal-view callbacks to `FormalHandoverWorkspace` and
+an optional Shift records callback to `HandoverWorkspace`. Both compose the shared
+`HandoverViewNavigation`; formal persistence and application contracts are unchanged.

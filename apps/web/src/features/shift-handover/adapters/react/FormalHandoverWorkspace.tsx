@@ -5,14 +5,17 @@ import type { FormalHandoverApplication } from "../../application/formal-records
 import type { FormalContext, FormalRecord, RecordContent, RecordHistory, RecordPage, ShiftReference, PreviousShift, EntryEvidence } from "../../domain/formal-models";
 import { withinLocation } from "../../domain/models";
 import { HandoverHeading } from "./HandoverHeading";
+import { HandoverViewNavigation, type JournalView } from "./HandoverViewNavigation";
+import { HandoverGuidance } from "./HandoverGuidance";
 import { FormalEvidence } from "./FormalEvidence";
 import { formalInstant, formalState } from "./formal-format";
 import { FormalRecordForm } from "./FormalRecordForm";
 import { today } from "./EntryForm";
 import "./handover.css";
 const emptyPage: RecordPage = { records: [], total: 0, nextCursor: "" };
-export function FormalHandoverWorkspace({ application, departmentId = "", onEntry, onHome,initialRecordId="",homeVisit=0 }: {
+export function FormalHandoverWorkspace({ application, departmentId = "", onEntry, onHome,initialRecordId="",homeVisit=0, onJournalView, dailyOverview = false }: {
   application: FormalHandoverApplication; initialRecordId?: string;homeVisit?:number;departmentId?: string; onEntry?: (id: string) => void; onHome?: () => void;
+  onJournalView?: (view: JournalView) => void; dailyOverview?: boolean;
 }) {
   const [context, setContext] = useState<FormalContext | null>(null), [from, setFrom] = useState(""), [to, setTo] = useState(""),
     [department, setDepartment] = useState(departmentId), [area, setArea] = useState(""), [page, setPage] = useState(emptyPage),
@@ -63,6 +66,8 @@ export function FormalHandoverWorkspace({ application, departmentId = "", onEntr
     <HandoverHeading onHome={onHome ?? back} viewLabel={t("Shift records")} onBack={record || creating ? back : undefined}
       trail={record ? [{ label: t("Shift records"), onSelect: back }, { label: record.content.title }] : creating ? [{ label: t("Shift records"), onSelect: back }, { label: t("New record") }] : undefined}
       actions={<RefreshButton busy={busy || loading} onClick={() => record ? void perform(() => open(record.id)) : setRefresh((v) => v + 1)} />} />
+    {onJournalView && <><HandoverGuidance /><HandoverViewNavigation selected="records" dailyOverview={dailyOverview} includeRecords disabled={busy}
+      onSelect={view => { if (view !== "records") onJournalView(view); }} /></>}
     <p>{t("Formal transfer records use planned Workforce intervals. Closing preserves evidence and does not resolve recorded issues.")}</p>
     {error && <Alert>{error}</Alert>}
     {loading && !context && <p role="status">{t("Loading shift records…")}</p>}

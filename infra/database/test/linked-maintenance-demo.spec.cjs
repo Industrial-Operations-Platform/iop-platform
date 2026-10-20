@@ -36,6 +36,7 @@ function manifest() {
   return build({
     scope,
     actor: "leader",
+    assetActor: "administrator",
     worker: "technician",
     today: "2026-10-05",
     departmentId: "department",
@@ -56,6 +57,7 @@ function manifest() {
 test("fictional linked fixtures pass owner validators and never include pre-existing reports", () => {
   const sample = manifest();
   validate(sample, scope);
+  expect(sample).toMatchObject({ actor: "leader", assetActor: "administrator", worker: "technician" });
   for (const asset of sample.assets) {
     validContent(asset.content, locations);
     expect(asset.content.status).toBe("unverified");
@@ -83,6 +85,15 @@ test("fictional linked fixtures pass owner validators and never include pre-exis
   expect(new Set(sample.records.map((record) => record.data.category))).toEqual(
     new Set(["corrective", "preventive", "inspection"]),
   );
+});
+test("retained manifests without a registry Administrator stay inspectable without reassigning their authors", () => {
+  const sample = manifest();
+  delete sample.assetActor;
+  expect(() => validate(sample, scope)).not.toThrow();
+  expect(sample.actor).toBe("leader");
+  const invalid = manifest();
+  invalid.assetActor = "invalid author!";
+  expect(() => validate(invalid, scope)).toThrow("installation");
 });
 test("refuses a fixture manifest that could resolve existing reports or use real equipment codes", () => {
   const sample = manifest();

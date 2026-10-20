@@ -2,7 +2,8 @@
 
 ## Status and goal
 
-In progress. Local integration is authorized; the independent increment is validated.
+In progress. Software integration into local develop is validated; applying the
+prepared private model revisions remains pending local activation approval.
 The owner's 2026-10-20 request restricts WinCC reference images to
 Administrator model editing and improves the curved geometry in existing 3D models.
 
@@ -17,8 +18,10 @@ Administrator model editing and improves the curved geometry in existing 3D mode
   rotation, with smooth bends and verified joins against the supplied private models.
 - [x] Verify API denial, viewer/editor transitions, fallback privacy and geometry;
   record evidence, update the operator guide and commit the bounded increment.
-- [ ] Resolve the unmerged IOP-211 dependency and apply the prepared corrections
-  to compatible durable scene revisions without losing generated components.
+- [x] Resolve the unmerged IOP-211 dependency and integrate the validated code
+  into local develop while preserving IOP-220.
+- [ ] Apply the prepared corrections to compatible durable scene revisions
+  without losing generated components after local activation approval.
 
 Reuse [IOP-206](IOP-206-3d-asset-locator.md), the Administrator restrictions from
 [IOP-215](IOP-215-operational-refinements.md) and
@@ -29,11 +32,12 @@ dimensions, new roles, provider access, publication or deployment are implied.
 ## Evidence
 
 [Validated increment](../completed/IOP-219-locator-reference-curves-plan.md).
-[Pending integration](../active/IOP-219-locator-integration-plan.md).
+[Validated integration](../completed/IOP-219-locator-integration-plan.md).
+[Pending activation](../active/IOP-219-locator-model-activation-plan.md).
 
 The active installation contains Motor/Photoelectric sensor components from
 `feature/IOP-211-locator-models-and-access`. The owner authorized local integration
-of the pending work into develop on 2026-10-20. Push and service activation remain
+of the pending work into develop on 2026-10-20; the merged code is validated. Push and service activation remain
 outside that request. Three
 conflict-checked revision payloads are retained privately, preserving all 422
 other components in the affected scenes and all 69 other scenes.
