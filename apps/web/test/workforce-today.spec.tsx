@@ -55,3 +55,21 @@ test("slow or failed date requests retain the loaded content and obsolete respon
   expect(screen.getByRole("alert")).toHaveTextContent("Assignments unavailable");
   expect(screen.getByText("2026-10-26", { exact: true })).toBeVisible();
 });
+
+test("the weekly grid keeps seven dated days with minimal shift and zone context", async () => {
+  const scheduled: Board = { ...board, settings: { shifts: [{ id: "early", label: "Early", start: "05:00", end: "14:15", days: [0, 1, 2, 3, 4, 5, 6] }], targets: [{ id: "zone", label: "North zone", phone: "" }], teams: [] }, records: [
+    { id: "assignment", kind: "assignment", revision: 1, deleted: false, personName: "Worker", data: { userId: "worker", date: "2026-10-06", shiftId: "early", targetId: "zone", duty: "zone", phone: "", start: "05:00", end: "14:15", startsAt: "2026-10-06T05:00:00Z", endsAt: "2026-10-06T14:15:00Z" } },
+    { id: "schedule", kind: "schedule", revision: 1, deleted: false, personName: "Worker", data: { userId: "worker", date: "2026-10-06", status: "work", start: "05:00", end: "14:15", startsAt: "2026-10-06T05:00:00Z", endsAt: "2026-10-06T14:15:00Z", source: "manual" } },
+  ] };
+  const load = jest.fn(async () => scheduled);
+  const { container } = render(<WorkforceToday application={{ board: load } as unknown as WorkforceApplication} timeZone="UTC" open={jest.fn()} />);
+  await screen.findByText("North zone");
+  fireEvent.click(screen.getByRole("button", { name: "Week" }));
+  const grid = screen.getByLabelText("Weekly assignments");
+  expect(grid.querySelectorAll("section")).toHaveLength(7);
+  expect(grid.querySelectorAll("time")).toHaveLength(7);
+  expect(container.querySelector(".workforce-start-days--week")).toBe(grid);
+  expect(screen.getAllByText("Early")).toHaveLength(1);
+  expect(screen.getByText("North zone")).toBeVisible();
+  expect(load).toHaveBeenCalledTimes(1);
+});

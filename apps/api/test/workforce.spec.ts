@@ -128,6 +128,41 @@ const assignment = {
     endsAt: "",
   },
 };
+test("primary groups do not limit other leaders and configured technical levels retain trusted labels", async () => {
+  const { app, revisions } = setup();
+  const configured = {
+    ...config,
+    teams: [{ id: "primary", label: "Primary team", leaderId: "admin" }],
+    technicalLevels: [{ id: "operator", label: "Technical Operator" }],
+  };
+  await app.save("admin", { kind: "settings", id: "site", expectedRevision: 0, deleted: false, data: configured });
+  const worker = await app.save("admin", { kind: "worker", id: "tech", expectedRevision: 0, deleted: false,
+    data: { userId: "tech", teamId: "primary", homeTargetId: "zone", technicalLevelId: "operator", technicalLevelLabel: "Forged label" } });
+  expect(worker.data).toMatchObject({ technicalLevelId: "operator", technicalLevelLabel: "Technical Operator" });
+  await expect(app.save("admin", { kind: "worker", id: "other", expectedRevision: 0, deleted: false,
+    data: { userId: "other", teamId: "primary", homeTargetId: "zone", technicalLevelId: "unknown" } })).rejects.toMatchObject({ code: "workforce_invalid" });
+  const preview = await app.preview("admin", source);
+  await app.import("admin", source, preview);
+  await expect(app.save("lead", assignment)).resolves.toMatchObject({ kind: "assignment" });
+  await expect(app.save("lead", { kind: "worker", id: "other", expectedRevision: 0, deleted: false,
+    data: { userId: "other", teamId: "primary", homeTargetId: "zone" } })).rejects.toMatchObject({ code: "workforce_denied" });
+  expect(revisions.find((revision) => revision.record.kind === "worker")?.record.data).toMatchObject({ technicalLevelLabel: "Technical Operator" });
+});
+
+test("legacy worker profiles and retired level evidence remain editable without inventing a qualification", async () => {
+  const { app } = setup();
+  await expect(app.save("admin", { kind: "worker", id: "tech", expectedRevision: 0, deleted: false,
+    data: { userId: "tech", teamId: "", homeTargetId: "zone" } })).resolves.toMatchObject({ data: { technicalLevelId: "", technicalLevelLabel: "" } });
+  await app.save("admin", { kind: "settings", id: "site", expectedRevision: 0, deleted: false,
+    data: { ...config, technicalLevels: [{ id: "operator", label: "Operator" }] } });
+  await app.save("admin", { kind: "worker", id: "tech", expectedRevision: 1, deleted: false,
+    data: { userId: "tech", teamId: "", homeTargetId: "zone", technicalLevelId: "operator" } });
+  await app.save("admin", { kind: "settings", id: "site", expectedRevision: 1, deleted: false,
+    data: { ...config, technicalLevels: [] } });
+  await expect(app.save("admin", { kind: "worker", id: "tech", expectedRevision: 2, deleted: false,
+    data: { userId: "tech", teamId: "", homeTargetId: "", technicalLevelId: "operator", technicalLevelLabel: "Forged retired label" } }))
+    .resolves.toMatchObject({ data: { technicalLevelId: "operator", technicalLevelLabel: "Operator", homeTargetId: "" } });
+});
 test("preview has no writes, commit is atomic and identical replay is idempotent", async () => {
   const { app, records, revisions } = setup();
   const preview = await app.preview("admin", source);

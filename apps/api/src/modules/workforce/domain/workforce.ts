@@ -31,6 +31,7 @@ export interface Settings {
   shifts: ShiftType[];
   targets: Target[];
   teams: Team[];
+  technicalLevels?: { id: string; label: string }[];
 }
 export interface Person {
   id: string;
@@ -41,6 +42,8 @@ export interface Worker {
   userId: string;
   teamId: string;
   homeTargetId: string;
+  technicalLevelId?: string;
+  technicalLevelLabel?: string;
 }
 export interface Schedule {
   userId: string;
@@ -201,6 +204,15 @@ export function settings(input: Settings): Settings {
   for (const t of input.teams) {
     assert(typeof t.leaderId === "string");
     if (t.leaderId) identifier(t.leaderId);
+  }
+  if (input.technicalLevels !== undefined) {
+    assert(Array.isArray(input.technicalLevels) && input.technicalLevels.length <= 20);
+    assert(new Set(input.technicalLevels.map((level) => level?.id)).size === input.technicalLevels.length);
+    for (const level of input.technicalLevels) {
+      assert(level && typeof level === "object");
+      identifier(level.id);
+      label(level.label);
+    }
   }
   return structuredClone(input);
 }

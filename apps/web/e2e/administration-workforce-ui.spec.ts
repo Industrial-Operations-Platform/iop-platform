@@ -29,8 +29,8 @@ const shifts = [
     days: [1, 2, 3, 4, 5],
   },
 ];
-function workforce(from: string): Board {
-  const dates = weekDates(from);
+function workforce(weekDate: string): Board {
+  const dates = weekDates(weekDate);
   return {
     actorId: "admin",
     timeZone: "UTC",
@@ -244,7 +244,8 @@ for (const width of [1440, 375]) {
         homeTargetId: "", homeTargetLabel: "", teamLabel: "", scheduledDays: 0, shifts: [], saturdays: 0, sundays: 0,
       } });
       if (path.endsWith("/workforce/board")) {
-        const board = workforce(route.request().postDataJSON().from);
+        // My day includes the preceding date for overnight leaders; the end still identifies the selected week.
+        const board = workforce(route.request().postDataJSON().to);
         const names = new Map(users.map((user) => [user.id, user.name]));
         return route.fulfill({
           json: {

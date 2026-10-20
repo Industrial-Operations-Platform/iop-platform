@@ -31,5 +31,9 @@ export function workforceDefaults(
       .filter((l) => l.role === "department")
       .map((l) => ({ id: l.id, label: l.label, phone: `${l.label} · Handy` })),
     teams: [],
+    technicalLevels: [
+      { id: "technical-operator", label: "ILO Technical Operator" },
+      { id: "maintenance-technician", label: "ILO Maintenance Technician" },
+    ],
   };
 }

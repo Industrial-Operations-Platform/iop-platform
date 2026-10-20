@@ -116,6 +116,32 @@ assignments use opaque IDs. Creation expects revision 0. Site scope and actor co
 from the authenticated host, never from request data. Reviewed OpenAPI describes
 transport envelopes; the domain types define kind-specific payload fields.
 
+Settings additionally support optional `technicalLevels` (`id`, `label`); worker
+snapshots support optional `technicalLevelId` and a server-owned saved label.
+Legacy snapshots without these fields remain valid. Current configured choices
+are validated on save; an unchanged retired choice retains its trusted saved label.
+Primary teams use the existing `teamId`/`leaderId` association and add no permission
+scope. My day requests the preceding date with its week to include overnight leaders.
+
+## Scoped local roster preparation
+
+`node scripts/local/workforce-roster.cjs /private/roster.json --preview` prepares
+an explicit site-scoped grouping; `--apply` saves it through the Workforce
+application with current grants, expected revisions and material audit. The file
+supplies organization/site IDs, teams with exact existing leader/member account
+IDs, optional technical-level choices, `remainderTeamIds` and a retained `seed` for
+provisional distribution. Only explicit invocation writes. Existing home zones,
+qualifications, accounts, schedules and unrelated settings are preserved. Existing
+target-group memberships remain stable on reruns; an immediate repeat is a no-op.
+Each record saves atomically; stale changes stop subsequent writes and require
+inspection/repreview. No bulk transaction or automatic retry is implied.
+
+Customer names and explicit source-name aliases stay in the private input file;
+the tool never fuzzy-matches names, creates login accounts or changes grants.
+For IOP-215 the local private input is `.local-platform/config/workforce-groups.json`.
+People without an existing site account were omitted at the owner's explicit
+2026-10-20 request; the owner will add them later.
+
 ## Localization and identity
 
 The shared `apps/web/src/localization/` dictionary uses English source keys and

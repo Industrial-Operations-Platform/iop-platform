@@ -16,6 +16,7 @@ import {
 } from "../../domain/models";
 import { locale, t } from "../../../../localization/i18n";
 import { dutyLabels, statusLabels } from "./labels";
+import { ShiftLeaders } from "./ShiftLeaders";
 
 function AssignmentSlot({
   records,
@@ -364,38 +365,7 @@ export function DailyPlan({
         </div>
         {!own.length && <p>{t("No assignment yet")}</p>}
       </Panel>
-      <Panel>
-        <h2>{t("Shift leaders")}</h2>
-        <div className="workforce-card-grid">
-          {shifts.map((shift) => {
-            const leaders = assignments.filter(
-              (record) =>
-                record.data.duty === "leader" &&
-                record.data.shiftId === shift.id,
-            );
-            return (
-              <section
-                className="workforce-leader-shift"
-                key={shift.id}
-                aria-label={shift.label}
-              >
-                <h3>{shift.label}</h3>
-                {leaders.length ? (
-                  <AssignmentSlot
-                    records={leaders}
-                    select={select}
-                    showPhone={false}
-                  />
-                ) : (
-                  <p className="workforce-empty">
-                    {t("No shift leader assigned")}
-                  </p>
-                )}
-              </section>
-            );
-          })}
-        </div>
-      </Panel>
+      <ShiftLeaders board={board} date={date} select={select} />
       <Panel>
         <h2>{t("Other zones")}</h2>
         <TableViewport aria-label={t("Other zones")}>

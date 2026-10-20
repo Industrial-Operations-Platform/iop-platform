@@ -206,6 +206,12 @@ Maintenance board cards show a grab cursor only when editable; eligible destinat
 columns receive the shared active tint during a drag. Opening the card retains the
 keyboard-accessible status actions and required transition evidence.
 
+Start's weekly assignment uses seven minimal weekday/date columns with shift and
+zone, contained in a horizontal viewport on narrow screens. My day leader cards
+pair subtle shared success/info accents with explicit availability/shift labels;
+color never supplies availability alone. Primary-group rosters expand in place,
+and configuration reuses shared controls for leader membership and technical levels.
+
 ## Operational hierarchy — IOP-180
 
 The owner requested a more readable Start and Journal on 2026-09-29. Preserve the

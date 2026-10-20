@@ -10,6 +10,7 @@ export interface Settings {
   shifts: ShiftType[];
   targets: { id: string; label: string; phone: string }[];
   teams: { id: string; label: string; leaderId: string }[];
+  technicalLevels?: { id: string; label: string }[];
 }
 export interface Person {
   id: string;
@@ -45,6 +46,8 @@ export interface Worker {
   userId: string;
   teamId: string;
   homeTargetId: string;
+  technicalLevelId?: string;
+  technicalLevelLabel?: string;
 }
 export interface Payloads {
   settings: Settings;
