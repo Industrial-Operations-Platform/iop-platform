@@ -397,5 +397,5 @@ pending; source image colors do not establish live equipment health.
 | [IOP-212 — Landing motion, connection recovery and area filters](items/IOP-212-entry-recovery-filters.md) | Completed |
 | [IOP-213 — Restore platform validation secret hygiene](items/IOP-213-validation-fixture.md) | Completed; published |
 | [IOP-214 — Desktop reliability and visual consistency](items/IOP-214-desktop-consistency.md) | Completed; published |
-| [IOP-215 — Operational usability and loading improvements](items/IOP-215-operational-refinements.md) | Completed; integrated locally |
+| [IOP-215 — Operational usability and loading improvements](items/IOP-215-operational-refinements.md) | Completed; published |
 | [IOP-216 — Balanced workspace header and platform mark](items/IOP-216-shell-branding.md) | Completed; integrated locally |

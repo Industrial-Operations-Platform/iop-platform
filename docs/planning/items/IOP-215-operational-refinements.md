@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed and integrated into local develop. The owner's 2026-10-20 request authorizes the following Workforce,
+Completed and published to origin. The owner's 2026-10-20 request authorizes the following Workforce,
 Start, operational interface, analytical loading and Locator refinements.
 
 ## Scope and acceptance
@@ -47,11 +47,18 @@ unspecified until an administrator selects confirmed levels.
 The technician journal denial was not reproduced: all 17 current technicians read
 the selected-date entries, while formal shift context retains its separate access
 rule. Regression coverage records both populated and empty dates. No grant was
-broadened. Implementation is committed and integrated into local develop; push and deployment
-await separate authorization.
+broadened. Implementation is integrated into develop and published to origin; deployment
+remains separately authorized work.
 
 ## Approved local integration — 2026-10-20
 
 The owner explicitly requested merging all pending IOP-215 and IOP-216 commits
 into local `develop`. Both stories are integrated and validated. [Integration evidence](../completed/IOP-215-develop-integration-plan.md) records execution.
-Remote publication remains a separate approval.
+The owner subsequently approved publication as recorded below.
+
+## Approved publication — 2026-10-20
+
+The owner explicitly approved pushing both retained story branches and `develop`
+to `origin`. The atomic push succeeded and remote hashes were independently
+verified. [Publication evidence](../completed/IOP-215-publication-plan.md) records the result and
+completion checks.
