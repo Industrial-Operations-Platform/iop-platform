@@ -27,3 +27,9 @@ IOP-215 work is independent and must remain untouched.
 ## Evidence and remaining work
 
 [Execution plan](../completed/IOP-216-shell-branding-plan.md).
+
+## Approved local integration — 2026-10-20
+
+The owner explicitly requested merging all pending IOP-215 and IOP-216 commits
+into local `develop`. [Integration plan](../active/IOP-216-develop-integration-plan.md) records execution.
+Remote publication remains a separate approval.
