@@ -398,4 +398,4 @@ pending; source image colors do not establish live equipment health.
 | [IOP-213 — Restore platform validation secret hygiene](items/IOP-213-validation-fixture.md) | Completed; published |
 | [IOP-214 — Desktop reliability and visual consistency](items/IOP-214-desktop-consistency.md) | Completed; published |
 | [IOP-215 — Operational usability and loading improvements](items/IOP-215-operational-refinements.md) | Completed; integrated locally |
-| [IOP-216 — Balanced workspace header and platform mark](items/IOP-216-shell-branding.md) | Completed; local review |
+| [IOP-216 — Balanced workspace header and platform mark](items/IOP-216-shell-branding.md) | Completed; integrated locally |
