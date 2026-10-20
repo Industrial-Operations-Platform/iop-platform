@@ -32,4 +32,6 @@ No new API/schema, account creation, medical fact, merge or publication is impli
 The local My team view is active. Four primary groups with five workers each have
 vacation/sickness examples and additional training/compensation/accident/maintenance
 states. Repeated commands preserve the examples, prior formal records and unrelated
-data. Local commits are ready for review; publication requires owner approval.
+data. The owner subsequently authorized integration into develop, publication of
+both story branches and develop to origin, and local Docker image updates.
+[Publication and activation plan](../active/IOP-218-publication-plan.md).
