@@ -1,3 +1,4 @@
+import { useRef, useState, type DragEvent } from "react";
 import {
   Badge,
   Button,
@@ -11,20 +12,42 @@ import {
   statuses,
   type Page,
   type MaintenanceRecord,
+  type Status,
 } from "../../domain/models";
 import { statusLabel, statusTone } from "./labels";
 function RecordCard({
   record,
   select,
+  draggable,
+  dragging,
+  startDrag,
+  endDrag,
 }: {
   record: MaintenanceRecord;
   select: (record: MaintenanceRecord) => void;
+  draggable: boolean;
+  dragging: boolean;
+  startDrag: (event: DragEvent<HTMLButtonElement>) => void;
+  endDrag: () => void;
 }) {
+  const suppressClick = useRef(false);
   return (
     <button
       type="button"
       className="maintenance-card"
-      onClick={() => select(record)}
+      draggable={draggable}
+      data-dragging={dragging || undefined}
+      onDragStart={(event) => {
+        suppressClick.current = true;
+        startDrag(event);
+      }}
+      onDragEnd={() => {
+        endDrag();
+        window.setTimeout(() => { suppressClick.current = false; }, 0);
+      }}
+      onClick={() => {
+        if (!suppressClick.current) select(record);
+      }}
     >
       <strong>{record.data.title}</strong>
       <span>
@@ -63,12 +86,22 @@ export function MaintenanceCollection({
   board,
   select,
   selectedStatus = "",
+  canMove = () => false,
+  move,
 }: {
   page: Page;
   board: boolean;
   select: (record: MaintenanceRecord) => void;
   selectedStatus?: string;
+  canMove?: (record: MaintenanceRecord) => boolean;
+  move?: (record: MaintenanceRecord, status: Status) => void;
 }) {
+  const [dragged, setDragged] = useState<MaintenanceRecord>();
+  const [over, setOver] = useState<Status>();
+  const endDrag = () => {
+    setDragged(undefined);
+    setOver(undefined);
+  };
   if (board)
     return (
       <div
@@ -78,7 +111,26 @@ export function MaintenanceCollection({
         {statuses
           .filter((status) => !selectedStatus || status === selectedStatus)
           .map((status) => (
-            <Panel key={status} className="maintenance-column">
+            <Panel
+              key={status}
+              className="maintenance-column"
+              aria-label={statusLabel(status)}
+              data-drop-active={over === status || undefined}
+              onDragOver={(event) => {
+                if (!dragged || !canMove(dragged) || dragged.data.status === status) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "move";
+                setOver(status);
+              }}
+              onDragLeave={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOver(undefined);
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                if (dragged && canMove(dragged) && dragged.data.status !== status) move?.(dragged, status);
+                endDrag();
+              }}
+            >
               <h2>
                 {statusLabel(status)}{" "}
                 <Badge tone={statusTone(status)}>
@@ -93,6 +145,18 @@ export function MaintenanceCollection({
                       key={record.id}
                       record={record}
                       select={select}
+                      draggable={!!move && canMove(record)}
+                      dragging={dragged?.id === record.id}
+                      startDrag={(event) => {
+                        if (!move || !canMove(record)) {
+                          event.preventDefault();
+                          return;
+                        }
+                        event.dataTransfer.effectAllowed = "move";
+                        event.dataTransfer.setData("text/plain", record.id);
+                        setDragged(record);
+                      }}
+                      endDrag={endDrag}
                     />
                   ))}
               </div>

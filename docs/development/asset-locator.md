@@ -3,8 +3,10 @@
 [IOP-206](../planning/items/IOP-206-3d-asset-locator.md) delivers editable 3D schematic
 scenes under [ADR-0037](../architecture/adr/ADR-0037-operational-completion.md).
 Locator owns scene/placement revisions; Assets owns canonical identities and aliases.
-Administrator, Team Leader and Task Force require current scoped `locator.read` /
-`locator.manage` grants and their current permitted profile. Technician access remains
+Administrator, Team Leader and Task Force require current scoped `locator.read`
+grants and their current permitted profile. Only a current Administrator with
+`locator.manage` can configure scenes; an obsolete management grant does not give
+Team Leader or Task Force configuration access. Technician access remains
 denied even if an obsolete Locator assignment survives.
 
 ## Private reference import
@@ -30,7 +32,8 @@ private host permissions. PNG routes require current Locator authorization and r
 `private, no-store`; hash/dimension checks reject tampered files and symbolic links.
 The manifest's organization/site must exactly match the configured receiving scope.
 
-Open Asset Locator and use **Initialize reference and example scenes**. Synchronization
+Open Asset Locator, select **Configure scenes**, and use
+**Initialize reference and example scenes**. Synchronization
 creates durable scene metadata for each schematic plus a synthetic component example.
 It is idempotent and never overwrites edited scenes. Legend references stay in the
 private catalog and are not presented as physical area scenes.
@@ -53,7 +56,13 @@ Source-specific trace data is private and not reproducible from repository fixtu
 
 ## Editing and evidence
 
-Area scenes render a private image on a 3D reference plane. Use reusable Conveyor,
+Asset Locator opens in the operational view. Area cards load no image previews or
+whole-plant graphics context; opening an area loads its single private reference
+and 3D components. Administrator configuration is an explicit mode; reference
+synchronization, creation, catalog and editor controls appear only in that mode.
+Team Leader and Task Force inspect areas, linked assets and source evidence.
+
+Area scenes render a private image on a 3D reference plane. In configuration, use reusable Conveyor,
 Curve, Junction, Lift, Sensor, Scanner, Scale and Cabinet templates; add at the center
 or choose **Place on reference**. **Trace conveyor** takes two image-local endpoints.
 Select a component in 3D or the accessible list, edit its fields, duplicate it or move
@@ -85,6 +94,11 @@ keys to rotate, plus/minus to zoom, Home to reset and T for top view. Devices wi
 [WebGL 2](https://threejs.org/docs/pages/WebGLRenderer.html) keep the same accessible
 list/editor workflow. Rendering is on demand; resize and controls trigger updates,
 and unmounting disposes textures, geometry, materials and the graphics context.
+Component selection updates the existing materials without recreating the context.
+Reference textures use at most 2048 pixels per side (also limited by the device),
+no mipmap copies, and a maximum render pixel ratio of 1.5. Context loss activates
+the accessible list and single-image fallback. Original private files retain their
+integrity, dimensions and authorized delivery rules.
 
 ## Verification
 

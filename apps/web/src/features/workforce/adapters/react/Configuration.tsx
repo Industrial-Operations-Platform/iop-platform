@@ -30,8 +30,16 @@ export function Configuration({
     ),
     [userId, setUserId] = useState(""),
     [teamId, setTeamId] = useState(""),
-    [targetId, setTargetId] = useState("");
+    [targetId, setTargetId] = useState(""),
+    [technicalLevelId, setTechnicalLevelId] = useState("");
   const current = entries(board, "settings")[0];
+  const selectWorker = (id: string) => {
+    setUserId(id);
+    const worker = entries(board, "worker").find((record) => record.id === id)?.data;
+    setTeamId(worker?.teamId ?? "");
+    setTargetId(worker?.homeTargetId ?? "");
+    setTechnicalLevelId(worker?.technicalLevelId ?? "");
+  };
   return (
     <>
       <Panel>
@@ -302,6 +310,30 @@ export function Configuration({
                 </FieldRow>
               ))}
             </section>
+            <section className="workforce-config-section">
+              <div className="workforce-config-heading">
+                <h2>{t("Technical levels")}</h2>
+                <Button variant="secondary" onClick={() => setConfig((value) => ({
+                  ...value, technicalLevels: [...(value.technicalLevels ?? []), {
+                    id: "level-" + ((value.technicalLevels?.length ?? 0) + 1), label: "New level",
+                  }],
+                }))}>{t("Add technical level")}</Button>
+              </div>
+              {(config.technicalLevels ?? []).map((level, index) => (
+                <FieldRow className="workforce-config-row" key={index}>
+                  {(["id", "label"] as const).map((key) => (
+                    <Field key={key}>{t(key === "id" ? "ID" : "Name")}
+                      <Input required value={level[key]} onChange={(event) => setConfig((value) => ({
+                        ...value, technicalLevels: value.technicalLevels?.map((item, i) => i === index ? { ...item, [key]: event.target.value } : item),
+                      }))} />
+                    </Field>
+                  ))}
+                  <DeleteButton label={t("Remove {0}", [level.label])} onClick={() => setConfig((value) => ({
+                    ...value, technicalLevels: value.technicalLevels?.filter((_, i) => i !== index),
+                  }))} />
+                </FieldRow>
+              ))}
+            </section>
             <Actions className="iop-form-actions">
               <Button type="submit" disabled={pending}>
                 {t("Save configuration")}
@@ -312,6 +344,7 @@ export function Configuration({
       </Panel>
       <Panel>
         <h2>{t("Worker profiles")}</h2>
+        <p className="workforce-availability">{t("Primary teams organize people. Every authorized Team Leader can still coordinate all workers.")}</p>
         <form
           className="workforce-configuration-form"
           onSubmit={(e) => {
@@ -323,7 +356,7 @@ export function Configuration({
                 entries(board, "worker").find((r) => r.id === userId)
                   ?.revision ?? 0,
               deleted: false,
-              data: { userId, teamId, homeTargetId: targetId },
+              data: { userId, teamId, homeTargetId: targetId, technicalLevelId },
             });
           }}
         >
@@ -334,14 +367,7 @@ export function Configuration({
                 <Select
                   required
                   value={userId}
-                  onChange={(e) => {
-                    setUserId(e.target.value);
-                    const worker = entries(board, "worker").find(
-                      (r) => r.id === e.target.value,
-                    )?.data;
-                    setTeamId(worker?.teamId ?? "");
-                    setTargetId(worker?.homeTargetId ?? "");
-                  }}
+                  onChange={(e) => selectWorker(e.target.value)}
                 >
                   <option value="">{t("Select a person")}</option>
                   {board.people.map((p) => (
@@ -352,7 +378,7 @@ export function Configuration({
                 </Select>
               </Field>
               <Field>
-                {t("Team")}
+                {t("Primary team")}
                 <Select
                   value={teamId}
                   onChange={(e) => setTeamId(e.target.value)}
@@ -363,6 +389,18 @@ export function Configuration({
                       {v.label}
                     </option>
                   ))}
+                </Select>
+              </Field>
+              <Field>
+                {t("Technical level")}
+                <Select value={technicalLevelId} onChange={(event) => setTechnicalLevelId(event.target.value)}>
+                  <option value="">{t("Not specified")}</option>
+                  {(board.settings.technicalLevels ?? []).map((level) => (
+                    <option key={level.id} value={level.id}>{level.label}</option>
+                  ))}
+                  {technicalLevelId && !board.settings.technicalLevels?.some((level) => level.id === technicalLevelId) && (
+                    <option value={technicalLevelId}>{t("Retired technical level")}</option>
+                  )}
                 </Select>
               </Field>
               <Field>
@@ -387,6 +425,22 @@ export function Configuration({
             </Actions>
           </fieldset>
         </form>
+        <div className="workforce-team-rosters">
+          {[...board.settings.teams, { id: "", label: t("No primary team"), leaderId: "" }].map((team) => {
+            const members = board.people.filter((person) => !["administrator", "team-leader"].includes(person.profile) &&
+              (entries(board, "worker").find((record) => record.id === person.id)?.data.teamId ?? "") === team.id);
+            const leader = board.people.find((person) => person.id === team.leaderId);
+            return <section className="workforce-team-roster" key={team.id}>
+              <h3>{team.label}{leader ? ` · ${leader.name}` : ""}</h3>
+              {members.length ? <ul>{members.map((person) => {
+                const worker = entries(board, "worker").find((record) => record.id === person.id)?.data;
+                const level = board.settings.technicalLevels?.find((item) => item.id === worker?.technicalLevelId)?.label ?? worker?.technicalLevelLabel;
+                return <li key={person.id}><Button variant="text" onClick={() => selectWorker(person.id)}>{person.name}</Button>
+                  <small>{level || t("Not specified")}</small></li>;
+              })}</ul> : <p className="workforce-empty">{t("No workers in this team")}</p>}
+            </section>;
+          })}
+        </div>
       </Panel>
     </>
   );

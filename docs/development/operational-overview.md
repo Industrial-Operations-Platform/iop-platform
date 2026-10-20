@@ -57,6 +57,11 @@ queries use independent source transactions; this is not a single synchronized
 snapshot. Revocation, source denial or failures provide no records for that source
 and do not turn unavailable access into a zero count.
 
+The Technician journal uses `handover.read` for both pending issues and entries on
+the selected calendar date. A permitted date without entries is Available with no
+matching records. Formal shift context remains independently restricted through
+`handover.records.manage`; that denial does not deny the calendar-day journal.
+
 `composePlatformOverview(pool, source, locations, modules)` is the root-ready host
 factory. `source` contains organizationId/siteId/siteTimeZone; catalog locations may
 carry their explicit sectorKey. `modules` contains assets/handover/maintenance and

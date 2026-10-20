@@ -58,7 +58,9 @@ implements formal transfers, Improvement Tracking, Asset Locator and integration
 readiness under [ADR-0037](docs/architecture/adr/ADR-0037-operational-completion.md).
 Advanced operations require both a current Administrator, Team Leader or Task Force
 profile and the owning module grants. Integration configuration management remains
-Administrator-only. Read-only WinCC, Ultimo and Entra provider ports are prepared;
+Administrator-only. IOP-215 also restricts Locator configuration/import to a current
+Administrator with its management grant; Team Leader and Task Force use the scoped
+operational viewer. Read-only WinCC, Ultimo and Entra provider ports are prepared;
 the real transports and external access remain pending.
 
 Locator stores private reference provenance outside Git and browser public assets.

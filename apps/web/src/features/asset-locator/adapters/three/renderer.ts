@@ -12,6 +12,7 @@ export interface CameraControls {
   zoom(factor: number): void;
   rotate(delta: number): void;
   focus(id: string): void;
+  select(id: string): void;
   dispose(): void;
 }
 const SCALE = 100;
@@ -19,8 +20,9 @@ const SCALE = 100;
 export function componentGeometry(component: Component, palette: Identity, attention: boolean, selected: boolean, depthScale = 60): THREE.Group {
   const group = new THREE.Group();
   group.userData.componentId = component.id;
-  const color = selected ? palette.focus : attention ? palette.errorInk : component.kind === 'sensor' || component.kind === 'scanner' ? palette.primary : palette.chartDuration;
-  const material = new THREE.MeshStandardMaterial({ color, roughness: 0.7, metalness: 0.12 });
+  const color = attention ? palette.errorInk : component.kind === 'sensor' || component.kind === 'scanner' ? palette.primary : palette.chartDuration;
+  const material = new THREE.MeshStandardMaterial({ color: selected ? palette.focus : color, roughness: 0.7, metalness: 0.12 });
+  material.userData.selectionBaseColor = color;
   const frame = new THREE.MeshStandardMaterial({ color: palette.muted, roughness: 0.85 });
   const w = component.width * SCALE, d = component.depth * depthScale, h = component.height * 30;
   const box = (width: number, height: number, depth: number, x = 0, y = 0, z = 0, mat = material) => { const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat); mesh.position.set(x, y, z); group.add(mesh); return mesh; };
@@ -67,6 +69,24 @@ export function componentGeometry(component: Component, palette: Identity, atten
   group.traverse(object => { object.userData.componentId = component.id; });
   return group;
 }
+/** Bound GPU memory independently from the original private image's dimensions. */
+export function boundReferenceTexture(texture: THREE.Texture, maxDimension: number): void {
+  const image = texture.image as HTMLImageElement;
+  const ratio = Math.min(1, maxDimension / Math.max(image.width, image.height));
+  if (ratio < 1) {
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(image.width * ratio));
+    canvas.height = Math.max(1, Math.round(image.height * ratio));
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('The schematic texture could not be resized.');
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    texture.image = canvas;
+  }
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.generateMipmaps = false;
+  texture.minFilter = THREE.LinearFilter;
+  texture.needsUpdate = true;
+}
 export function createSceneRenderer(container: HTMLElement, input: {
   scene: Scene;
   aspect: number;
@@ -80,6 +100,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
     y: number;
   }) => void;
   onReferenceError?: () => void;
+  onContextLost?: () => void;
   cameraState?: {
     position: number[];
     target: number[];
@@ -91,7 +112,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
   }[];
 }): CameraControls {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(input.palette.canvas);
   container.appendChild(renderer.domElement);
   renderer.domElement.setAttribute('aria-hidden', 'true');
@@ -114,6 +135,12 @@ export function createSceneRenderer(container: HTMLElement, input: {
   light.position.set(30, 90, 40);
   scene.add(light);
   let disposed = false;
+  const contextLost = (event: Event) => { event.preventDefault(); if (!disposed) input.onContextLost?.(); };
+  renderer.domElement.addEventListener('webglcontextlost', contextLost);
+  const prepareTexture = (texture: THREE.Texture) => {
+    try { boundReferenceTexture(texture, Math.min(2048, renderer.capabilities.maxTextureSize)); return true; }
+    catch { texture.dispose(); input.onReferenceError?.(); return false; }
+  };
   const render = () => { if (!disposed)
     renderer.render(scene, camera); };
   const objects = input.scene.content.components.map((c, index) => {
@@ -143,7 +170,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
       new THREE.TextureLoader().load(tile.referenceUrl, texture => { if (disposed) {
         texture.dispose();
         return;
-      } texture.colorSpace = THREE.SRGBColorSpace; material.map = texture; material.color.set(input.palette.onPrimary); material.needsUpdate = true; render(); }, undefined, () => { if (!disposed)
+      } if (!prepareTexture(texture)) return; material.map = texture; material.color.set(input.palette.onPrimary); material.needsUpdate = true; render(); }, undefined, () => { if (!disposed)
         input.onReferenceError?.(); });
     return group;
   });
@@ -159,7 +186,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
     new THREE.TextureLoader().load(input.referenceUrl, texture => { if (disposed) {
       texture.dispose();
       return;
-    } texture.colorSpace = THREE.SRGBColorSpace; const mat = floor.material as THREE.MeshStandardMaterial; mat.map = texture; mat.color.set(input.palette.onPrimary); mat.needsUpdate = true; grid.visible = false; render(); }, undefined, () => { if (!disposed)
+    } if (!prepareTexture(texture)) return; const mat = floor.material as THREE.MeshStandardMaterial; mat.map = texture; mat.color.set(input.palette.onPrimary); mat.needsUpdate = true; grid.visible = false; render(); }, undefined, () => { if (!disposed)
       input.onReferenceError?.(); });
   const resize = () => { const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1); camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.setSize(width, height); render(); };
   const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
@@ -179,7 +206,17 @@ export function createSceneRenderer(container: HTMLElement, input: {
   renderer.domElement.addEventListener('pointerup', select);
   resize();
   const result: CameraControls = { snapshot() { return { position: camera.position.toArray(), target: controls.target.toArray() }; }, reset() { camera.position.set(80, 95, 105); controls.target.set(0, 0, 0); controls.update(); render(); }, top() { camera.position.set(0, 140, 0.01); controls.target.set(0, 0, 0); controls.update(); render(); }, zoom(factor) { camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target); controls.update(); render(); }, rotate(delta) { const offset = camera.position.clone().sub(controls.target); offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), delta); camera.position.copy(controls.target).add(offset); controls.update(); render(); }, focus(id) { const object = objects.find(o => o.userData.componentId === id); if (!object)
-      return; const offset = camera.position.clone().sub(controls.target).normalize().multiplyScalar(45); controls.target.copy(object.position); camera.position.copy(object.position).add(offset); controls.update(); render(); }, dispose() { disposed = true; observer?.disconnect(); window.removeEventListener('resize', resize); controls.removeEventListener('change', render); renderer.domElement.removeEventListener('pointerdown', press); renderer.domElement.removeEventListener('pointerup', select); controls.dispose(); const materials = new Set<THREE.Material>(), geometries = new Set<THREE.BufferGeometry>(); scene.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.geometry)
+      return; const offset = camera.position.clone().sub(controls.target).normalize().multiplyScalar(45); controls.target.copy(object.position); camera.position.copy(object.position).add(offset); controls.update(); render(); }, select(id) {
+    objects.forEach(object => object.traverse(child => {
+      const mesh = child as THREE.Mesh;
+      if (!mesh.material) return;
+      (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach(material => {
+        const base = material.userData.selectionBaseColor;
+        if (typeof base === 'string') (material as THREE.MeshStandardMaterial).color.set(object.userData.componentId === id ? input.palette.focus : base);
+      });
+    }));
+    render();
+  }, dispose() { if (disposed) return; disposed = true; renderer.domElement.removeEventListener('webglcontextlost', contextLost); observer?.disconnect(); window.removeEventListener('resize', resize); controls.removeEventListener('change', render); renderer.domElement.removeEventListener('pointerdown', press); renderer.domElement.removeEventListener('pointerup', select); controls.dispose(); const materials = new Set<THREE.Material>(), geometries = new Set<THREE.BufferGeometry>(); scene.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.geometry)
       geometries.add(mesh.geometry); if (mesh.material)
       (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach(m => materials.add(m)); }); geometries.forEach(g => g.dispose()); materials.forEach(m => { const material = m as THREE.MeshStandardMaterial; material.map?.dispose(); m.dispose(); }); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); } };
   return result;

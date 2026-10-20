@@ -256,7 +256,18 @@
 }
 .workforce-start-days { display: grid; gap: 10px; margin: var(--iop-sectionGap) 0; }
 .workforce-start-days--week {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+.workforce-start-days--week .workforce-start-day { min-width: 0; padding: 10px; }
+.workforce-start-days--week .workforce-personal-heading { display: grid; gap: 6px; }
+.workforce-start-days--week .workforce-start-duty { display: grid; gap: 4px; }
+.workforce-start-days--week :is(.workforce-start-duty, .workforce-personal-hours, .workforce-availability, time) { font-size: var(--iop-smallSize); overflow-wrap: anywhere; }
+.workforce-start-days--week .iop-badge { width: fit-content; max-width: 100%; white-space: normal; font-size: var(--iop-smallSize); }
+.workforce-start-weekday { display: block; color: var(--iop-muted); font-size: var(--iop-captionSize); }
+@media (max-width: 900px) {
+  .workforce-start-content:has(.workforce-start-days--week) { overflow-x: auto; }
+  .workforce-start-days--week { min-width: 56rem; }
 }
 .workforce-start-controls {
   display: flex;
@@ -277,6 +288,20 @@
 .workforce-start-duty { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
 .workforce-start-duty > span { color: var(--iop-muted); font-size: var(--iop-captionSize); }
 .iop-ui .workforce-start-day .workforce-personal-heading { margin-bottom: 8px; }
+.workforce-leader { border-left: 3px solid var(--iop-line); padding: 4px 8px; }
+.workforce-leader[data-availability="now"] { border-left-color: var(--iop-successBorder); }
+.workforce-leader[data-availability="own-shift"] { border-left-color: var(--iop-primary); }
+.iop-ui .workforce-leader-name { justify-content: flex-start; padding: 2px 0; text-align: left; }
+.workforce-leader-context { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--iop-muted); }
+.workforce-primary-team { margin-top: 8px; font-size: var(--iop-smallSize); }
+.workforce-primary-team summary { cursor: pointer; color: var(--iop-muted); }
+.workforce-primary-team ul, .workforce-team-roster ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.workforce-primary-team li, .workforce-team-roster li { display: grid; gap: 2px; }
+.workforce-primary-team small, .workforce-team-roster small { color: var(--iop-muted); }
+.workforce-team-rosters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--iop-sectionGap); margin-top: var(--iop-sectionGap); }
+.workforce-team-roster { min-width: 0; border-top: 1px solid var(--iop-line); padding-top: 10px; }
+.iop-ui .workforce-team-roster h3 { font-size: var(--iop-bodySize); margin: 0; }
+.iop-ui .workforce-team-roster .iop-button { justify-content: flex-start; padding: 0; text-align: left; }
 
 .workforce-week-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--iop-sectionGap); margin-bottom: var(--iop-sectionGap); }
 .workforce-week-heading > p { margin: 0; }

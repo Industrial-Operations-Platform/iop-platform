@@ -28,6 +28,7 @@ import { Configuration } from "./Configuration";
 import { WeeklySchedule } from "./WeeklySchedule";
 import { ManualSchedule } from "./ManualSchedule";
 import { RecordDetails } from "./RecordDetails";
+import { previousDate } from "../../domain/leader-availability";
 import "./workforce.css";
 export function WorkforceWorkspace({
   application,
@@ -91,7 +92,7 @@ export function WorkforceWorkspace({
     setPending(true);
     setError("");
     void application
-      .board(from, to)
+      .board(previousDate(from), to)
       .then((b) => {
         if (active) setBoard(b);
       })

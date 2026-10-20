@@ -101,9 +101,8 @@ export class Workforce {
     });
   }
   private async configuration(tx: Transaction): Promise<Settings> {
-    return (
-      ((await tx.get("settings", "site"))?.data as Settings) ?? this.defaults
-    );
+    const configured = ((await tx.get("settings", "site"))?.data as Settings) ?? this.defaults;
+    return { ...configured, technicalLevels: configured.technicalLevels ?? this.defaults.technicalLevels ?? [] };
   }
   private async write(
     tx: Transaction,
@@ -219,6 +218,14 @@ export class Workforce {
           !worker.homeTargetId ||
             config.targets.some((t) => t.id === worker.homeTargetId),
         );
+        assert(worker.technicalLevelId === undefined || typeof worker.technicalLevelId === "string");
+        const level = config.technicalLevels?.find((item) => item.id === worker.technicalLevelId);
+        const previous = (await tx.get("worker", worker.userId))?.data as Worker | undefined;
+        assert(!worker.technicalLevelId || level || previous?.technicalLevelId === worker.technicalLevelId);
+        input = { ...input, data: {
+          userId: worker.userId, teamId: worker.teamId, homeTargetId: worker.homeTargetId,
+          technicalLevelId: worker.technicalLevelId ?? "", technicalLevelLabel: level?.label ?? (worker.technicalLevelId ? previous?.technicalLevelLabel : "") ?? "",
+        } };
       } else if (input.kind === "schedule") {
         const s = this.schedule(input.data as Schedule, "manual");
         assert(

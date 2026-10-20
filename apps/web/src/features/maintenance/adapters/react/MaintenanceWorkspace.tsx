@@ -103,6 +103,10 @@ export function MaintenanceWorkspace({
   const [history, setHistory] = useState<History>();
   const [form, setForm] = useState(false);
   const [statusDialog, setStatusDialog] = useState<Status>();
+  const [boardTransition, setBoardTransition] = useState<{
+    record: MaintenanceRecord;
+    status: Status;
+  }>();
   const queryEpoch = useRef(0);
   const detailEpoch = useRef(0);
   const pending = catalogLoading || queryLoading || detailLoading || saving;
@@ -115,6 +119,7 @@ export function MaintenanceWorkspace({
     setDetailError("");
     setForm(false);
     setStatusDialog(undefined);
+    setBoardTransition(undefined);
   };
   const goHome = () => {
     leaveDetails();
@@ -212,12 +217,13 @@ export function MaintenanceWorkspace({
   const canCoordinate =
     catalog?.canCoordinate &&
     (!profile || ["administrator", "team-leader"].includes(profile));
-  const canEdit =
-    selected?.canEdit &&
+  const canEditRecord = (record: MaintenanceRecord) =>
+    record.canEdit &&
     canContribute &&
     (canCoordinate ||
-      selected.authorId === catalog?.actorId ||
-      selected.data.assigneeId === catalog?.actorId);
+      record.authorId === catalog?.actorId ||
+      record.data.assigneeId === catalog?.actorId);
+  const canEdit = selected && canEditRecord(selected);
   const view =
     {
       board: "Board",
@@ -250,6 +256,30 @@ export function MaintenanceWorkspace({
       if (detailEpoch.current === epoch) setError((exception as Error).message);
     } finally {
       setSaving(false);
+    }
+  };
+  const saveBoardStatus = async (input: SaveInput) => {
+    if (saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      await application.save(input);
+      setBoardTransition(undefined);
+      setMessage("Maintenance saved.");
+      refresh();
+    } catch (exception) {
+      setError((exception as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+  const moveBoardRecord = (record: MaintenanceRecord, status: Status) => {
+    if (pending || !canEditRecord(record) || record.data.status === status) return;
+    setError("");
+    if (status === "blocked" || status === "done" || record.data.status === "done") {
+      setBoardTransition({ record, status });
+    } else {
+      void saveBoardStatus(statusChange(record, status));
     }
   };
   const saveSettings = async (priorities: Priority[]) => {
@@ -351,7 +381,7 @@ export function MaintenanceWorkspace({
             </Actions>
           }
         />
-        {[statusDialog ? "" : error, catalogError, queryError, detailError]
+        {[statusDialog || boardTransition ? "" : error, catalogError, queryError, detailError]
           .filter(Boolean)
           .map((value, index) => (
             <Alert key={index}>{t(value)}</Alert>
@@ -542,6 +572,8 @@ export function MaintenanceWorkspace({
                       board={tab === "board"}
                       select={select}
                       selectedStatus={selection.status}
+                      canMove={(record) => !pending && !!canEditRecord(record)}
+                      move={moveBoardRecord}
                     />
                     <Actions>
                       <p role="status">
@@ -571,6 +603,22 @@ export function MaintenanceWorkspace({
           </>
         )}
       </div>
+      {boardTransition && (
+        <MaintenanceStatusDialog
+          key={`${boardTransition.record.id}:${boardTransition.status}`}
+          record={boardTransition.record}
+          status={boardTransition.status}
+          suspended={!!reportId}
+          error={error}
+          application={application}
+          pending={saving}
+          save={saveBoardStatus}
+          cancel={() => { setBoardTransition(undefined); setError(""); }}
+          renderReportCards={renderReportCards}
+          openReport={openReport}
+          reportRefresh={reportRefresh}
+        />
+      )}
       {reportId && renderReport?.(reportId, closeReport)}
     </>
   );

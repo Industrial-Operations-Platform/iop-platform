@@ -45,6 +45,12 @@
 .maintenance-column {
   align-content: start;
 }
+.maintenance-column[data-drop-active="true"] {
+  border-color: var(--iop-primary);
+  background: var(--iop-activeSurface);
+}
+.maintenance-card[draggable="true"] { cursor: grab; }
+.maintenance-card[data-dragging="true"] { opacity: 0.5; cursor: grabbing; }
 .maintenance-column h2 {
   display: flex;
   align-items: center;

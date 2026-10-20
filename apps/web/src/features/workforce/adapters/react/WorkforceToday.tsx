@@ -10,7 +10,7 @@ import {
 } from "../../../../design/components";
 import type { WorkforceApplication } from "../../application/workforce";
 import { entries, weekDates, type Board } from "../../domain/models";
-import { t } from "../../../../localization/i18n";
+import { locale, t } from "../../../../localization/i18n";
 import { statusLabels, dutyLabels } from "./labels";
 import "./workforce.css";
 export function WorkforceToday({
@@ -114,7 +114,7 @@ export function WorkforceToday({
         {!board ? (
           busy && <p role="status">{t("Loading…")}</p>
         ) : (
-          <div className={`workforce-start-days workforce-start-days--${view}`}>
+          <div className={`workforce-start-days workforce-start-days--${view}`} aria-label={view === "week" ? t("Weekly assignments") : undefined}>
             {dates.map((day) => {
               const own = entries(board, "assignment").filter(
                 (r) => r.data.userId === board.actorId && r.data.date === day,
@@ -134,14 +134,14 @@ export function WorkforceToday({
                   aria-label={day}
                 >
                   <div className="workforce-personal-heading">
-                    <strong>{day}</strong>
-                    <Badge>
+                    <strong><span className="workforce-start-weekday">{new Intl.DateTimeFormat(locale(), { weekday: "short", timeZone: "UTC" }).format(new Date(day + "T12:00:00Z"))}</span><time dateTime={day}>{day}</time></strong>
+                    {(view === "day" || !schedule || !["work", "training", "maintenance"].includes(schedule.data.status)) && <Badge>
                       {schedule
                         ? t(statusLabels[schedule.data.status])
                         : t("No schedule yet")}
-                    </Badge>
+                    </Badge>}
                   </div>
-                  {schedule?.data.start && (
+                  {schedule?.data.start && (view === "day" || !own.length) && (
                     <p className="workforce-personal-hours">
                       {shift && `${t(shift.label)} · `}
                       {schedule.data.start}–{schedule.data.end}
@@ -161,9 +161,9 @@ export function WorkforceToday({
                           board.settings.shifts.find(
                             (s) => s.id === r.data.shiftId,
                           )?.label}{" "}
-                        · {r.data.start}–{r.data.end}
+                        {view === "day" && <> · {r.data.start}–{r.data.end}</>}
                       </span>
-                      <Badge tone="info">{t(dutyLabels[r.data.duty])}</Badge>
+                      {view === "day" && <Badge tone="info">{t(dutyLabels[r.data.duty])}</Badge>}
                     </div>
                   ))}
                   {!own.length && (

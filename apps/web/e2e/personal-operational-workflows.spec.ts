@@ -386,6 +386,13 @@ for (const width of [1440, 375]) {
     ).toBeVisible();
     await assignment.getByRole("button", { name: "Week", exact: true }).click();
     await expect(assignment.locator(".workforce-start-day")).toHaveCount(7);
+    await expect(assignment.getByLabel("Weekly assignments").locator("time")).toHaveCount(7);
+    expect(await assignment.locator(".workforce-start-day").evaluateAll((days) => {
+      const boxes = days.map((day) => day.getBoundingClientRect());
+      return boxes.every((box, index) => Math.abs(box.top - boxes[0].top) < 1 && (!index || box.left > boxes[index - 1].left));
+    })).toBe(true);
+    if (width < 900) expect(await assignment.locator(".workforce-start-content").evaluate((element) =>
+      element.scrollWidth > element.clientWidth && element.getBoundingClientRect().right <= innerWidth)).toBe(true);
     await screenshot("week");
     const navigation = page.getByRole("navigation", {
       name: "Main navigation",

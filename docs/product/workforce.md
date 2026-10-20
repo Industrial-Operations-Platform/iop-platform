@@ -25,6 +25,19 @@ statuses. An absent source day is unknown, not an invented day off. Assignment
 conflicts are checked across midnight; adjacent non-overlapping assignments permit
 floating workers to move between zones. Leaders have separate duties and rows.
 
+Primary teams associate a worker with a configured leader; they do not limit
+another authorized leader's responsibility or planning access. Administrators can
+edit membership and a person's configured technical level in Worker profiles,
+independently of their access profile. The initial site choices are ILO Technical
+Operator and ILO Maintenance Technician. Missing qualifications remain unspecified;
+retiring a choice preserves its saved label in worker history.
+
+My day indicates a leader's planned availability now and overlap with the viewer's
+own shift, including overnight intervals. Text accompanies subtle semantic colors;
+the indication describes scheduled availability, not online presence or attendance.
+Start's Week view presents Monday–Sunday in one compact dated grid with shift and
+zone context; narrow screens scroll inside the assignment area.
+
 ## Manual weekly entry
 
 Team Leaders and Administrators select a person and a week in **Weekly schedules**.

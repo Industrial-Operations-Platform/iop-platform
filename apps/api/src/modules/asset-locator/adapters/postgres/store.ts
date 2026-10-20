@@ -19,11 +19,14 @@ export class PgLocator implements Store {
   run<T>(actor: string, permission: 'locator.read' | 'locator.manage', work: (tx: Transaction) => Promise<T>): Promise<T> {
     return runSiteOperation(this.pool, { ...this.scope, userId: actor, permissions: [permission] }, async (tx) => {
       await tx.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [this.scope.organizationId]);
-      if (!['administrator', 'team-leader', 'task-force'].includes(await this.lookups.profile(tx, actor)) || !(await this.lookups.allowed(tx, actor, permission)))
+      const profile = await this.lookups.profile(tx, actor);
+      if (!['administrator', 'team-leader', 'task-force'].includes(profile) ||
+        (permission === 'locator.manage' && profile !== 'administrator') ||
+        !(await this.lookups.allowed(tx, actor, permission)))
         throw new SiteAccessDeniedError();
       if (permission === 'locator.manage')
         await tx.query("SELECT pg_advisory_xact_lock(hashtext('iop-locator'),hashtext($1))", [this.scope.organizationId + ':' + this.scope.siteId]);
-      return work(new PgLocatorTransaction(tx, await this.lookups.allowed(tx, actor, 'locator.manage'), this.lookups));
+      return work(new PgLocatorTransaction(tx, profile === 'administrator' && await this.lookups.allowed(tx, actor, 'locator.manage'), this.lookups));
     });
   }
 }

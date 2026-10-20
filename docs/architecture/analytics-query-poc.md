@@ -112,3 +112,21 @@ remains implementation work under ADR-0011.
 Use `npm test` and `npm run test:database` for implementation evidence, plus delivered
 HTTP checks after ADR-0018 activation. Record actual fixture size and timings.
 This document supplies expected outcomes only; it claims no executed query tests.
+
+## Repeated report loading — IOP-215
+
+The existing PostgreSQL report adapter reuses up to 64 serialized report values
+within a 16 MiB, five-minute process-local bound. Cache entries contain neither
+grants nor credentials and are never persisted in the browser or a shared service.
+Keys include actor, complete source scope and the normalized report selection.
+Every hit repeats current authorization and one scoped statement checking all
+publication identities, profile version/configuration fingerprint and projection
+readiness. Imports, profile changes and incomplete/stale projections therefore
+cannot return an obsolete cached report. A miss retains the original complete
+one-statement aggregate; old requested revisions still fail normally.
+
+This owner-requested adapter optimization preserves ADR-0028's response snapshot,
+immutable-source and current-authority contract. It does not hold transactions
+between requests or cache errors. Explicit refresh always validates the current
+source before reusing a value. See [IOP-215](../planning/items/IOP-215-operational-refinements.md)
+for actual fixture timings and the limits of that evidence.
