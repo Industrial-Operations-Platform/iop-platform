@@ -1,4 +1,4 @@
-export const componentKinds = ['conveyor', 'curve', 'junction', 'lift', 'sensor', 'scanner', 'scale', 'cabinet'] as const;
+export const componentKinds = ['conveyor', 'curve', 's-curve', 'junction', 'lift', 'sensor', 'scanner', 'scale', 'cabinet'] as const;
 export type ComponentKind = typeof componentKinds[number];
 export interface Component {
   id: string;
@@ -45,6 +45,7 @@ export interface Reference {
   importedAt: string;
   kind: 'schematic' | 'legend';
 }
+export type ReferenceDimensions = Pick<Reference, 'id' | 'width' | 'height'>;
 export interface Asset {
   id: string;
   code: string;
@@ -70,6 +71,7 @@ export interface Problems {
 export interface Context {
   canManage: boolean;
   references: Reference[];
+  referenceDimensions: ReferenceDimensions[];
   locations: {
     id: string;
     label: string;

@@ -28,7 +28,8 @@ never put them in `apps/web/public`, fixtures or Git.
 
 Native composition sets `referenceRoot` to that private root. Container composition
 uses `IOP_LOCATOR_REFERENCE_ROOT` and a private read-only runtime volume, retaining
-private host permissions. PNG routes require current Locator authorization and return
+private host permissions. PNG routes require a current Administrator with the
+scoped `locator.manage` grant and return
 `private, no-store`; hash/dimension checks reject tampered files and symbolic links.
 The manifest's organization/site must exactly match the configured receiving scope.
 
@@ -51,19 +52,28 @@ traces must have empty `assetId`, `verification: "provisional"` and
 `elevation: null`; the adapter rejects automatic identity assignment or claimed
 surveyed heights. Missing traces are valid and produce empty editable reference
 scenes. The owner-supplied reference installation has 72 PNGs (71 equipment views
-and a legend), with 80 hand-traced provisional components across three views.
+and a legend), with 81 hand-traced provisional components across three views after the IOP-219
+curve correction.
 Source-specific trace data is private and not reproducible from repository fixtures.
 
 ## Editing and evidence
 
 Asset Locator opens in the operational view. Area cards load no image previews or
-whole-plant graphics context; opening an area loads its single private reference
-and 3D components. Administrator configuration is an explicit mode; reference
+whole-plant graphics context; opening an area loads only its 3D components.
+Viewer context includes reference dimensions to preserve the model's proportions,
+without the source catalog's filenames, paths or provenance. Administrator
+configuration is an explicit mode; reference
 synchronization, creation, catalog and editor controls appear only in that mode.
 Team Leader and Task Force inspect areas, linked assets and source evidence.
 
-Area scenes render a private image on a 3D reference plane. In configuration, use reusable Conveyor,
-Curve, Junction, Lift, Sensor, Scanner, Scale and Cabinet templates; add at the center
+Only Administrator configuration renders a private image on the reference plane
+and enables source previews. Leaving configuration removes images and disposes
+their textures. Operational viewing, including Administrator viewing and WebGL
+failure, never requests or displays an image. Current server authorization also
+denies direct image URLs to other profiles or revoked management grants.
+
+In configuration, use reusable Conveyor, Curve, S-curve, Junction, Lift, Sensor,
+Scanner, Scale and Cabinet templates; add at the center
 or choose **Place on reference**. **Trace conveyor** takes two image-local endpoints.
 Select a component in 3D or the accessible list, edit its fields, duplicate it or move
 it through labelled controls. Duplication deliberately clears the canonical asset
@@ -86,6 +96,11 @@ axis. Unit sizes are schematic, not meters. A surveyed placement needs an explic
 registered asset, elevation and evidence; scene calibration needs its own evidence.
 Exact heights, scale, sensor positions and whole-plant alignment remain plant input.
 The overview arranges 3D area tiles for navigation, not physical adjacency.
+Curves use centered, independently sized footprints and smooth continuous surfaces;
+the S-curve template represents opposing bends. Width/depth describe the unrotated
+footprint, and rotation uses the same center as straight components. Existing
+private traces may need position/rotation corrections after visual comparison;
+bootstrap continues to preserve saved scene edits and never replaces them.
 
 The renderer uses Three.js behind an adapter, including
 [OrbitControls](https://threejs.org/docs/pages/OrbitControls.html). Drag to orbit,
@@ -97,7 +112,8 @@ and unmounting disposes textures, geometry, materials and the graphics context.
 Component selection updates the existing materials without recreating the context.
 Reference textures use at most 2048 pixels per side (also limited by the device),
 no mipmap copies, and a maximum render pixel ratio of 1.5. Context loss activates
-the accessible list and single-image fallback. Original private files retain their
+the accessible list; the private-image fallback is available only while editing.
+Original private files retain their
 integrity, dimensions and authorized delivery rules.
 
 ## Verification

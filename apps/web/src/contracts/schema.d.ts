@@ -2165,6 +2165,11 @@ export interface components {
             /** @enum {string} */
             kind: "schematic" | "legend";
         };
+        LocatorReferenceDimensionsDto: {
+            id: string;
+            width: number;
+            height: number;
+        };
         LocatorLocationDto: {
             id: string;
             label: string;
@@ -2172,7 +2177,7 @@ export interface components {
         };
         LocatorTemplateDto: {
             /** @enum {string} */
-            kind: "conveyor" | "curve" | "junction" | "lift" | "sensor" | "scanner" | "scale" | "cabinet";
+            kind: "conveyor" | "curve" | "s-curve" | "junction" | "lift" | "sensor" | "scanner" | "scale" | "cabinet";
             width: number;
             depth: number;
             height: number;
@@ -2180,6 +2185,7 @@ export interface components {
         LocatorContextDto: {
             canManage: boolean;
             references: components["schemas"]["LocatorReferenceDto"][];
+            referenceDimensions: components["schemas"]["LocatorReferenceDimensionsDto"][];
             locations: components["schemas"]["LocatorLocationDto"][];
             componentCatalog: components["schemas"]["LocatorTemplateDto"][];
             coordinateSystem: string;
@@ -2193,7 +2199,7 @@ export interface components {
         LocatorComponentDto: {
             id: string;
             /** @enum {string} */
-            kind: "conveyor" | "curve" | "junction" | "lift" | "sensor" | "scanner" | "scale" | "cabinet";
+            kind: "conveyor" | "curve" | "s-curve" | "junction" | "lift" | "sensor" | "scanner" | "scale" | "cabinet";
             label: string;
             x: number;
             y: number;

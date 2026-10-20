@@ -131,7 +131,7 @@ function configurationModules() {
     references: jest.fn(async () => ({ assets: [], enrichments: [], total: 0, nextCursor: "" })),
   };
   const locatorGateway = {
-    context: jest.fn(async () => ({ canManage: true, references: [], locations: [], componentCatalog: [], coordinateSystem: "Image-local normalized", globalCalibration: "pending" })),
+    context: jest.fn(async () => ({ canManage: true, references: [], referenceDimensions: [], locations: [], componentCatalog: [], coordinateSystem: "Image-local normalized", globalCalibration: "pending" })),
     query: jest.fn(async () => ({ scenes: [], total: 0 })),
   };
   return {

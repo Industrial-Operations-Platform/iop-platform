@@ -27,12 +27,44 @@ export function componentGeometry(component: Component, palette: Identity, atten
   const w = component.width * SCALE, d = component.depth * depthScale, h = component.height * 30;
   const box = (width: number, height: number, depth: number, x = 0, y = 0, z = 0, mat = material) => { const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat); mesh.position.set(x, y, z); group.add(mesh); return mesh; };
   if (component.kind === 'curve') {
-    const outer = Math.max(w, d) / 2, inner = Math.max(outer - Math.min(w, d) * 0.25, outer * 0.3), shape = new THREE.Shape();
-    shape.absarc(0, 0, outer, 0, Math.PI / 2, false);
-    shape.lineTo(0, inner);
-    shape.absarc(0, 0, inner, Math.PI / 2, 0, true);
+    // The footprint is centered like every other template. Independent radii
+    // preserve the traced image's aspect ratio and the full configured extent.
+    const band = Math.min(w, d) * 0.5, shape = new THREE.Shape();
+    const cx = -w / 2, cy = -d / 2;
+    shape.absellipse(cx, cy, w, d, 0, Math.PI / 2, false, 0);
+    shape.lineTo(cx, cy + d - band);
+    shape.absellipse(cx, cy, w - band, d - band, Math.PI / 2, 0, true, 0);
     shape.closePath();
-    const mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false, curveSegments: 20 }), material);
+    const mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false, curveSegments: 64 }), material);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.y = -h / 2;
+    group.add(mesh);
+  }
+  else if (component.kind === 's-curve') {
+    const band = Math.min(w, d) * 0.4;
+    const path = new THREE.CubicBezierCurve(
+      new THREE.Vector2(-w / 2, -(d - band) / 2),
+      new THREE.Vector2(-w / 6, -(d - band) / 2),
+      new THREE.Vector2(w / 6, (d - band) / 2),
+      new THREE.Vector2(w / 2, (d - band) / 2)
+    );
+    const left: THREE.Vector2[] = [], right: THREE.Vector2[] = [];
+    for (let step = 0; step <= 96; step++) {
+      const point = path.getPoint(step / 96), tangent = path.getTangent(step / 96);
+      const normal = new THREE.Vector2(-tangent.y, tangent.x).multiplyScalar(band / 2);
+      left.push(point.clone().add(normal));
+      right.push(point.clone().sub(normal));
+    }
+    const shape = new THREE.Shape([...left, ...right.reverse()]);
+    shape.closePath();
+    const geometry = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
+    // Extreme configurable aspect ratios still keep the declared footprint.
+    geometry.computeBoundingBox();
+    const bounds = geometry.boundingBox!;
+    const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
+    geometry.translate(-center.x, -center.y, 0);
+    geometry.scale(w / size.x, d / size.y, 1);
+    const mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = -h / 2;
     group.add(mesh);
@@ -51,12 +83,13 @@ export function componentGeometry(component: Component, palette: Identity, atten
   else {
     box(w, h, d);
     if (component.kind === 'conveyor') {
-      box(w, h * 0.28, 0.7, 0, h * 0.65, -d / 2, frame);
-      box(w, h * 0.28, 0.7, 0, h * 0.65, d / 2, frame);
+      const railWidth = Math.min(w, d) * 0.08, supportWidth = Math.min(w, d) * 0.12;
+      box(w, h * 0.28, railWidth, 0, h * 0.65, -d / 2, frame);
+      box(w, h * 0.28, railWidth, 0, h * 0.65, d / 2, frame);
       for (const x of [-w * 0.35, w * 0.35])
         for (const z of [-d * 0.35, d * 0.35])
-          box(0.7, 2, 0.7, x, -h / 2 - 1, z, frame);
-      const arrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-w * 0.2, h / 2 + 0.15, 0), w * 0.4, palette.onPrimary, Math.min(2, w * 0.12), Math.min(1, w * 0.08));
+          box(supportWidth, 2, supportWidth, x, -h / 2 - 1, z, frame);
+      const arrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-w * 0.2, h / 2 + 0.15, 0), w * 0.4, palette.onPrimary, Math.min(2, w * 0.12), Math.min(d * 0.6, 1, w * 0.08));
       group.add(arrow);
     }
     if (component.kind === 'lift') {

@@ -23,7 +23,20 @@ export class Locator {
     label: string;
     parentId: string;
   }[], private readonly ids: () => string, private readonly now: () => string) { }
-  context(actor: string) { return this.store.run(actor, 'locator.read', async (tx) => ({ canManage: tx.canManage, references: await this.references.list(), locations: this.locations, componentCatalog, coordinateSystem: 'image-local normalized: origin top-left; x right; y down; elevation unknown until surveyed', globalCalibration: 'pending' as const })); }
+  context(actor: string) {
+    return this.store.run(actor, 'locator.read', async (tx) => {
+      const references = await this.references.list();
+      return {
+        canManage: tx.canManage,
+        references: tx.canManage ? references : [],
+        referenceDimensions: references.filter(reference => reference.kind === 'schematic').map(({ id, width, height }) => ({ id, width, height })),
+        locations: this.locations,
+        componentCatalog,
+        coordinateSystem: 'image-local normalized: origin top-left; x right; y down; elevation unknown until surveyed',
+        globalCalibration: 'pending' as const,
+      };
+    });
+  }
   query(actor: string, input: {
     search: string;
     group: string;
@@ -94,8 +107,16 @@ export class Locator {
       throw new LocatorError('invalid_locator');
     return this.store.run(actor, 'locator.read', async (tx) => { const scenes = await tx.scenes(), assets = await tx.assets(search); const results = assets.map(asset => ({ asset, placements: scenes.flatMap(s => s.content.components.filter(c => c.assetId === asset.id).map(c => ({ sceneId: s.id, sceneName: s.content.name, componentId: c.id, label: c.label, verification: c.verification }))) })).filter(r => !input.unplacedOnly || !r.placements.length); return { results, problems: await tx.problems(results.map(r => r.asset.id)), total: results.length, limit: 200 }; });
   }
-  reference(actor: string, id: string) { identifier(id, true); return this.store.run(actor, 'locator.read', async () => { if (!(await this.references.list()).some(r => r.id === id))
-    throw new LocatorError('locator_missing'); return this.references.bytes(id); }); }
+  reference(actor: string, id: string) {
+    identifier(id, true);
+    return this.store.run(actor, 'locator.manage', async (tx) => {
+      if (!tx.canManage)
+        throw new LocatorError('locator_denied');
+      if (!(await this.references.list()).some(reference => reference.id === id))
+        throw new LocatorError('locator_missing');
+      return this.references.bytes(id);
+    });
+  }
   private async existing(tx: Transaction, id: string) { const scene = await tx.get(id); if (!scene)
     throw new LocatorError('locator_missing'); return scene; }
 }

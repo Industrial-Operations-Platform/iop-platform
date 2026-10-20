@@ -82,6 +82,14 @@ export class LocatorReferenceDto {
   @ApiProperty({ enum: ['schematic', 'legend'] })
   kind!: 'schematic' | 'legend';
 }
+export class LocatorReferenceDimensionsDto {
+  @ApiProperty()
+  id!: string;
+  @ApiProperty()
+  width!: number;
+  @ApiProperty()
+  height!: number;
+}
 export class LocatorLocationDto {
   @ApiProperty()
   id!: string;
@@ -105,6 +113,8 @@ export class LocatorContextDto {
   canManage!: boolean;
   @ApiProperty({ type: [LocatorReferenceDto] })
   references!: LocatorReferenceDto[];
+  @ApiProperty({ type: [LocatorReferenceDimensionsDto] })
+  referenceDimensions!: LocatorReferenceDimensionsDto[];
   @ApiProperty({ type: [LocatorLocationDto] })
   locations!: LocatorLocationDto[];
   @ApiProperty({ type: [LocatorTemplateDto] })

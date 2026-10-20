@@ -5884,6 +5884,25 @@
           "kind"
         ]
       },
+      "LocatorReferenceDimensionsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "width",
+          "height"
+        ]
+      },
       "LocatorLocationDto": {
         "type": "object",
         "properties": {
@@ -5911,6 +5930,7 @@
             "enum": [
               "conveyor",
               "curve",
+              "s-curve",
               "junction",
               "lift",
               "sensor",
@@ -5948,6 +5968,12 @@
               "$ref": "#/components/schemas/LocatorReferenceDto"
             }
           },
+          "referenceDimensions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocatorReferenceDimensionsDto"
+            }
+          },
           "locations": {
             "type": "array",
             "items": {
@@ -5973,6 +5999,7 @@
         "required": [
           "canManage",
           "references",
+          "referenceDimensions",
           "locations",
           "componentCatalog",
           "coordinateSystem",
@@ -6005,6 +6032,7 @@
             "enum": [
               "conveyor",
               "curve",
+              "s-curve",
               "junction",
               "lift",
               "sensor",
