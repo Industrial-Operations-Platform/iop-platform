@@ -286,7 +286,7 @@ by `PlatformMark`, the introduction and the browser favicon. IOP-201 replaces it
 geometry with the owner's selected [Unified Record reference](references/IOP-201-unified-record.png):
 two nested rounded-square loops with rounded white ends and a blue outer segment.
 The SVG removes the preview's surrounding whitespace and uses flat navy/white/blue
-colors from this identity. All branding consumers use the same `unified-record`
+colors from this identity. All branding consumers use the same `unified-record-v2`
 URL revision; the Docker web server revalidates the mark and entry HTML after
 rebuilds. German and English interface text share the presentation
 dictionary; localized text must use the same component hierarchy and tokens.
@@ -516,8 +516,8 @@ footer. Operational collections use `Table variant="records"`; evidence tables
 may remain compact. Text and numeric alignment follow the semantic roles above,
 superseding prior global centering and conditional justification for those cells.
 
-The desktop rail keeps its brand visible and scrolls navigation independently on
-short screens. Native date/select controls inherit selected appearance. Weekly
+The desktop rail scrolls navigation independently on short screens; IOP-216 moves
+its brand into the shared header as described below. Native date/select controls inherit selected appearance. Weekly
 Workforce defaults to seven day columns with labelled shifts stacked within each
 day; Shift columns retains the expanded matrix. Sorting a partial page must never
 imply ordering the complete server collection. Applied filters, clear/reset actions,
@@ -527,3 +527,25 @@ The host defers the analytical workspace and its chart rendering until entered;
 its loading fallback is announced. This changes delivery timing only, not analytical
 selection, totals or permissions. See [IOP-214](../planning/items/IOP-214-desktop-consistency.md)
 for rendering and regression evidence.
+
+## Workspace header and platform mark — IOP-216
+
+The owner's 2026-10-20 request refines the brand placement, icon and navigation
+alignment. The shared desktop header has a 72px minimum height and spans the workspace: the platform mark
+and stacked IOP/name lockup align at the left, while search, notifications and
+account controls share a centered row at the right with the standard toolbar gap.
+Keep the supporting platform name on wide screens; hide it when space is limited.
+The brand remains a labelled action back to Start. The existing Unified Record SVG
+uses centered square loops with equal strokes and the blue lower/right accent;
+the introduction, workspace and favicon all use this one versioned asset.
+
+The desktop rail begins below the header, uses 220px width (200px on compact
+desktops), compact 44px minimum targets and consistently left-aligned labels.
+Active navigation retains the existing blue surface and ink; hover is restrained.
+At narrow widths, keep the brand and actions in the top header and place all module
+destinations in one keyboard-accessible horizontal scrolling row beneath it.
+Expanded search and native demo selectors may occupy another header row; the rail
+follows the measured header height. Search results stay inside the viewport at
+intermediate and narrow widths. Preserve the shared typography,
+palette, focus treatments and anchored account/notification surfaces in both modes.
+See [IOP-216](../planning/items/IOP-216-shell-branding.md) for validation evidence.

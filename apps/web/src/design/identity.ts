@@ -78,6 +78,9 @@ export const identity = {
   metricPadding: "19px",
   metricGap: "14px",
   contentWidth: "1600px",
+  shellHeaderHeight: "72px",
+  shellRailWidth: "220px",
+  shellRailCompactWidth: "200px",
   readingWidth: "72ch",
 } as const;
 

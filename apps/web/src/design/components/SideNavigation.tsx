@@ -18,6 +18,12 @@ export function SideNavigation<T extends string>({
           key={item.id}
           variant="text"
           aria-current={selected === item.id ? "page" : undefined}
+          onFocus={(event) =>
+            event.currentTarget.scrollIntoView?.({
+              block: "nearest",
+              inline: "nearest",
+            })
+          }
           onClick={() => onSelect(item.id)}
         >
           {t(item.label)}
