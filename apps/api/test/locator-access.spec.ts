@@ -10,16 +10,21 @@ beforeEach(() => { jest.clearAllMocks(); (runSiteOperation as jest.Mock).mockImp
 test.each(['administrator', 'team-leader', 'task-force'])('current %s profile and grant permit scoped locator operations', async (profile) => { (lookups.profile as jest.Mock).mockResolvedValue(profile); const store = new PgLocator({} as Pool, { organizationId: 'org', siteId: 'site' }, lookups); await expect(store.run('actor', 'locator.read', work)).resolves.toBe(true); expect(runSiteOperation).toHaveBeenCalledWith(expect.anything(), { organizationId: 'org', siteId: 'site', userId: 'actor', permissions: ['locator.read'] }, expect.any(Function)); });
 test('technician stays denied even if a stale locator grant remains', async () => { (lookups.profile as jest.Mock).mockResolvedValue('technician'); const store = new PgLocator({} as Pool, { organizationId: 'org', siteId: 'site' }, lookups); await expect(store.run('actor', 'locator.read', work)).rejects.toBeInstanceOf(Error); expect(work).not.toHaveBeenCalled(); });
 test('a revoked grant cannot be overridden by a permitted profile', async () => { (lookups.allowed as jest.Mock).mockResolvedValue(false); const store = new PgLocator({} as Pool, { organizationId: 'org', siteId: 'site' }, lookups); await expect(store.run('actor', 'locator.manage', work)).rejects.toBeInstanceOf(Error); expect(work).not.toHaveBeenCalled(); });
-test.each(['team-leader', 'task-force'])('%s cannot configure scenes even with an obsolete management grant', async (profile) => {
+test.each(['team-leader', 'task-force', 'technician'])('%s cannot mutate with stale Locator manager grants', async profile => {
   (lookups.profile as jest.Mock).mockResolvedValue(profile);
   const store = new PgLocator({} as Pool, { organizationId: 'org', siteId: 'site' }, lookups);
-  await expect(store.run('actor', 'locator.read', async tx => tx.canManage)).resolves.toBe(false);
   await expect(store.run('actor', 'locator.manage', work)).rejects.toBeInstanceOf(Error);
   expect(work).not.toHaveBeenCalled();
 });
-test('Administrator needs the management grant to expose configuration', async () => {
+test.each(['administrator', 'team-leader', 'task-force'])('%s capability reflects its current profile as well as the grant', async profile => {
+  (lookups.profile as jest.Mock).mockResolvedValue(profile);
+  const store = new PgLocator({} as Pool, { organizationId: 'org', siteId: 'site' }, lookups);
+  await expect(store.run('actor', 'locator.read', async transaction => transaction.canManage)).resolves.toBe(profile === 'administrator');
+});
+test('Administrator remains read-only when only its current manager grant is revoked', async () => {
   (lookups.allowed as jest.Mock).mockImplementation(async (_tx, _actor, permission) => permission === 'locator.read');
   const store = new PgLocator({} as Pool, { organizationId: 'org', siteId: 'site' }, lookups);
-  await expect(store.run('actor', 'locator.read', async tx => tx.canManage)).resolves.toBe(false);
+  await expect(store.run('actor', 'locator.read', async transaction => transaction.canManage)).resolves.toBe(false);
   await expect(store.run('actor', 'locator.manage', work)).rejects.toBeInstanceOf(Error);
+  expect(work).not.toHaveBeenCalled();
 });

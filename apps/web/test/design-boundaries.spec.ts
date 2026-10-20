@@ -69,7 +69,7 @@ test("calendar-day fields and compact control styles use the mandatory shared co
     if (file.startsWith("design/")) continue;
     if (file.endsWith(".css")) {
       if (
-        /\.iop-(?:context-field|date-field|department-scope|toolbar-icon|toolbar-glyph)\b/.test(
+        /\.iop-(?:context-field|date-field|department-scope|compact-select|search-control|toolbar-icon|toolbar-glyph)\b/.test(
           readFileSync(resolve(root, file), "utf8"),
         )
       )

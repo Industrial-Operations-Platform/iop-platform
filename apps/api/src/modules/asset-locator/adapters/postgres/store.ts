@@ -1,7 +1,7 @@
 import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from 'pg';
 import { runSiteOperation, SiteAccessDeniedError, type SiteTransaction } from '../../../../persistence/site-operation';
-import { LocatorError, type Scene, type Revision, type Asset, type Problems } from '../../domain/locator';
+import { LocatorError, locatorLimits, type Scene, type Revision, type Asset, type Problems } from '../../domain/locator';
 import type { Store, Transaction } from '../../application/locator';
 export interface LocatorLookups {
   audit?: SiteMaterialAudit;
@@ -33,17 +33,19 @@ export class PgLocator implements Store {
 class PgLocatorTransaction implements Transaction {
   constructor(private readonly tx: SiteTransaction, readonly canManage: boolean, private readonly lookups: LocatorLookups) { }
   private get scope() { return [this.tx.context.organizationId, this.tx.context.siteId]; }
-  async scenes(): Promise<Scene[]> { const result = await this.tx.query('SELECT snapshot FROM asset_locator.scenes WHERE organization_id=$1 AND site_id=$2 ORDER BY id LIMIT 251', this.scope); if (result.rows.length > 250 || result.rows.reduce((bytes, row) => bytes + Buffer.byteLength(JSON.stringify(row.snapshot)), 0) > 16777216)
+  async scenes(): Promise<Scene[]> { const result = await this.tx.query('SELECT snapshot FROM asset_locator.scenes WHERE organization_id=$1 AND site_id=$2 ORDER BY id LIMIT $3', [...this.scope, locatorLimits.scenes + 1]); if (result.rows.length > locatorLimits.scenes || result.rows.reduce((bytes, row) => bytes + Buffer.byteLength(JSON.stringify(row.snapshot)), 0) > locatorLimits.siteSceneBytes)
     throw new LocatorError('locator_capacity'); return result.rows.map(r => r.snapshot as Scene); }
   async get(id: string): Promise<Scene | null> { const result = await this.tx.query('SELECT snapshot FROM asset_locator.scenes WHERE organization_id=$1 AND site_id=$2 AND id=$3', [...this.scope, id]); return (result.rows[0]?.snapshot as Scene) ?? null; }
   async save(scene: Scene, revision: Revision): Promise<void> {
-    const prior = await this.get(scene.id);
+    const scenes = await this.scenes(), prior = scenes.find(value => value.id === scene.id);
     if (prior && scene.revision !== prior.revision + 1)
       throw new LocatorError('locator_conflict');
-    if (!prior && (await this.scenes()).length >= 250)
+    if (!prior && scenes.length >= locatorLimits.scenes)
       throw new LocatorError('locator_capacity');
     const snapshot = JSON.stringify(scene);
-    if (Buffer.byteLength(snapshot) > 1048576)
+    const bytes = Buffer.byteLength(snapshot);
+    if (bytes > locatorLimits.sceneBytes || scenes.reduce((total, current) =>
+      total + (current.id === scene.id ? 0 : Buffer.byteLength(JSON.stringify(current))), bytes) > locatorLimits.siteSceneBytes)
       throw new LocatorError('locator_capacity');
     await this.tx.query('INSERT INTO asset_locator.scenes(organization_id,site_id,id,revision,snapshot) VALUES($1,$2,$3,$4,$5::jsonb) ON CONFLICT(organization_id,site_id,id) DO UPDATE SET revision=EXCLUDED.revision,snapshot=EXCLUDED.snapshot', [...this.scope, scene.id, scene.revision, snapshot]);
     await this.tx.query('INSERT INTO asset_locator.revisions(organization_id,site_id,scene_id,revision,snapshot) VALUES($1,$2,$3,$4,$5::jsonb)', [...this.scope, scene.id, scene.revision, JSON.stringify(revision)]);

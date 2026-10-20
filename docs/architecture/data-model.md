@@ -72,7 +72,14 @@ coordinate origin/orientation before implementation. Placements refer to a map
 version so replacing an image cannot silently reinterpret coordinates. A lookup
 should show ambiguous, unvalidated or unmapped results honestly. IOP-206 implements private PNG references, revisioned JSON scenes/placements and
 an isolated Three.js rendering adapter under ADR-0037. Whole-plant metric
-registration remains pending physical input.
+registration remains pending physical input. IOP-211 adds reusable motor and
+photoelectric-sensor identities with private source candidates and Administrator-only
+guarded revision updates. Complete manual component baselines, canonical links and
+survey evidence are preserved. Exact registered-ID navigation uses explicit
+placements; alarm-message type suggestions retain source/import/physical-record/date
+provenance and require an explicit draft edit. Storage remains bounded to 250 scenes,
+1 MiB per snapshot and 16 MiB across current site scenes; projected over-budget
+writes are rejected before any scene, revision, placement or Audit change.
 
 ## Event normalization and analytical integrity
 

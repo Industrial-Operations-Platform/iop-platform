@@ -31,9 +31,10 @@ surface tokens represent backgrounds. Keep charts on the same selected identity.
 | `DeleteButton` | Shared trash icon with required accessible label/title and danger styling |
 | `Button` | `primary`, `secondary`, `text`, `danger`; common sizing, radius, spacing and native disabled/focus behavior |
 | `Field`, `Input`, `Textarea`, `Select`, `FieldRow` | Labelled native controls; stacked/inline fields and wrapping rows |
+| `CompactSelect`, `DepartmentScope` | Inline caption/divider/native value selection; caller-owned choices and filtering, with a compatible department/location wrapper |
 | `ValueFilter` | Editable column value with native suggestions, unique accessible hint IDs and caller-owned matching semantics |
-| `SearchControl` | Labelled search icon that reveals/focuses a controlled input; closing or Escape clears it and restores focus; caller owns matching |
-| `FilterForm`, `Disclosure` | Form surface and native collapsible content; plain/panel/divided variants |
+| `SearchControl` | Labelled search icon that reveals/focuses a controlled input; optional compact caption; closing or Escape clears it and restores focus; caller owns matching |
+| `FilterForm`, `Disclosure` | Form surface with opt-in plain toolbar treatment; native collapsible content with plain/panel/divided variants |
 | `Panel` | Content, chart, empty and metric surface treatments |
 | `MonthMultiPicker` | Checkbox selection of nonconsecutive calendar months |
 | `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
@@ -116,6 +117,9 @@ library from importing features or transport adapters.
 
 `ViewNavigation` keeps the selected button visible inside its horizontal viewport
 on selection and window resize, without moving keyboard focus.
+Its optional `buttonVariant="text"` keeps navigation hover on the shared active
+surface; Handover uses this for journal and shift-record views. Omitted values
+preserve existing consumer defaults.
 
 `Dialog` uses the native modal element for focus containment and an inert background.
 It provides a labelled heading, Escape/close handling and focus restoration. Callers
@@ -127,6 +131,17 @@ callbacks for detail navigation. Sidebar selection must return to the section vi
 even when that same section is already active. Use `RefreshButton` for icon-only
 reload actions and `DepartmentScope` for the shared white department/Halle context.
 Preserve accessible names and keyboard focus when using compact icon controls.
+`DepartmentScope` also accepts `caption`, `label` and `emptyLabel` for nested
+Area/location selection, preserving the same native compact field treatment.
+It wraps `CompactSelect`, which also presents ordinary filter choices with that
+caption/divider/value treatment. Option labels remain caller-supplied data; the
+component translates only its source caption, accessible label and empty choice.
+Use the optional `SearchControl` caption beside these selectors when a disclosed
+search belongs to the same toolbar. It preserves the native search input and
+caller-owned submit/matching behavior; opening, clearing or closing never submits.
+Use `FilterForm variant="plain"` around a compact toolbar without a second enclosing
+card. Omitted variants retain the existing bordered/padded form surface and native
+form props/events.
 
 `FilterButton` is a compact labelled funnel action. Its pressed state marks active
 criteria; callers own the filter dialog and matching policy. Center it with the
@@ -141,7 +156,7 @@ groups continue to share one row. Sign out is last inside the account menu.
 `DateField` is mandatory for calendar-day inputs, including filters and editing
 forms. It preserves native `YYYY-MM-DD` values, labels, refs and input constraints;
 callers own date/time-zone policy. Labels remain to the left of values. Compose it
-beside `DepartmentScope` in `iop-scope-toolbar`: compact content-sized fields, bounded
+beside `DepartmentScope` or `CompactSelect` in `iop-scope-toolbar`: compact content-sized fields, bounded
 values, equal gaps and no full-width enclosing panel. Wrap whole controls on narrow
 screens; standalone department fields remain bounded too. `DepartmentScope` accepts
 optional `caption` and `emptyLabel` for configured area/location context while

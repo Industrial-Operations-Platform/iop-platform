@@ -60,8 +60,9 @@ Advanced operations require both a current Administrator, Team Leader or Task Fo
 profile and the owning module grants. Integration configuration management remains
 Administrator-only. IOP-217 restricts all source-of-truth configuration, Asset
 registration/model/mapping changes, and the Integrations workspace to a current
-Administrator with the owning grants. Team Leader and Task Force retain authorized
-Digital Asset Record reads and operational contributions. IOP-215 also restricts Locator configuration/import to a current
+Administrator with the owning grants. IOP-211 additionally restricts standalone Assets and Digital Asset Record reads
+to Administrator; Team Leader and Task Force retain compact operational identity
+references, authorized Locator viewing and operational contributions. IOP-215 also restricts Locator configuration/import to a current
 Administrator with its management grant; Team Leader and Task Force use the scoped
 operational viewer. Read-only WinCC, Ultimo and Entra provider ports are prepared;
 the real transports and external access remain pending.

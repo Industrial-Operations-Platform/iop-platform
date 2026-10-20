@@ -4,6 +4,12 @@ This index records existing work; permanent contexts own scope and status.
 Execution plans live in `active/`, and completed evidence in `completed/`.
 See the [workflow](workflow.md).
 
+## Owner-requested Locator and access refinement
+
+| Task context | Status |
+| --- | --- |
+| [IOP-211 — Locator equipment models and administrator-owned editing](items/IOP-211-locator-models-and-access.md) | Completed; integrated locally, publication pending |
+
 ## Owner-authorized independent completion — 2026-10-14
 
 The owner delegates development decisions and reopens the 3D Asset Locator under
@@ -401,4 +407,5 @@ pending; source image colors do not establish live equipment health.
 | [IOP-216 — Balanced workspace header and platform mark](items/IOP-216-shell-branding.md) | Completed; published |
 | [IOP-217 — Administrator configuration and operational demonstrations](items/IOP-217-admin-configuration-demos.md) | Completed; published to origin, locally active |
 | [IOP-218 — Team Leader distribution and absence demonstrations](items/IOP-218-team-availability.md) | Completed; published to origin, locally active |
+| [IOP-219 — Private editing references and accurate Locator curves](items/IOP-219-locator-reference-curves.md) | In progress; code integrated locally, private model activation pending |
 | [IOP-220 — Align record titles with their supporting content](items/IOP-220-record-title-alignment.md) | Completed; published |

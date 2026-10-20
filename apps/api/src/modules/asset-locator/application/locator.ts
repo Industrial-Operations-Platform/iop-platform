@@ -1,4 +1,7 @@
 import { LocatorError, exact, identifier, text, validContent, demonstration, componentCatalog, type Scene, type SceneContent, type Revision, type Reference, type Asset, type Problems, type SaveScene, type Component } from '../domain/locator';
+import type { ClassificationEvidenceSource } from './classification-evidence';
+import { modelState, type ModelCandidate, type ModelPreview } from '../domain/model-preparation';
+export interface ModelSource { list(): Promise<ModelCandidate[]>; }
 export interface Transaction {
   canManage: boolean;
   scenes(): Promise<Scene[]>;
@@ -22,8 +25,21 @@ export class Locator {
     id: string;
     label: string;
     parentId: string;
-  }[], private readonly ids: () => string, private readonly now: () => string) { }
-  context(actor: string) { return this.store.run(actor, 'locator.read', async (tx) => ({ canManage: tx.canManage, references: await this.references.list(), locations: this.locations, componentCatalog, coordinateSystem: 'image-local normalized: origin top-left; x right; y down; elevation unknown until surveyed', globalCalibration: 'pending' as const })); }
+  }[], private readonly ids: () => string, private readonly now: () => string, private readonly models?: ModelSource, private readonly classificationEvidence?: ClassificationEvidenceSource) { }
+  context(actor: string) {
+    return this.store.run(actor, 'locator.read', async (tx) => {
+      const references = await this.references.list();
+      return {
+        canManage: tx.canManage,
+        references: tx.canManage ? references : [],
+        referenceDimensions: references.filter(reference => reference.kind === 'schematic').map(({ id, width, height }) => ({ id, width, height })),
+        locations: this.locations,
+        componentCatalog,
+        coordinateSystem: 'image-local normalized: origin top-left; x right; y down; elevation unknown until surveyed',
+        globalCalibration: 'pending' as const,
+      };
+    });
+  }
   query(actor: string, input: {
     search: string;
     group: string;
@@ -94,8 +110,73 @@ export class Locator {
       throw new LocatorError('invalid_locator');
     return this.store.run(actor, 'locator.read', async (tx) => { const scenes = await tx.scenes(), assets = await tx.assets(search); const results = assets.map(asset => ({ asset, placements: scenes.flatMap(s => s.content.components.filter(c => c.assetId === asset.id).map(c => ({ sceneId: s.id, sceneName: s.content.name, componentId: c.id, label: c.label, verification: c.verification }))) })).filter(r => !input.unplacedOnly || !r.placements.length); return { results, problems: await tx.problems(results.map(r => r.asset.id)), total: results.length, limit: 200 }; });
   }
-  reference(actor: string, id: string) { identifier(id, true); return this.store.run(actor, 'locator.read', async () => { if (!(await this.references.list()).some(r => r.id === id))
-    throw new LocatorError('locator_missing'); return this.references.bytes(id); }); }
+  locate(actor: string, assetId: string) {
+    identifier(assetId, true);
+    return this.store.run(actor, 'locator.read', async tx => {
+      const asset = await tx.asset(assetId);
+      if (!asset) throw new LocatorError('locator_missing');
+      const scenes = await tx.scenes();
+      const placements = scenes.flatMap(scene => scene.content.components.filter(c => c.assetId === assetId).map(c => ({
+        sceneId: scene.id, sceneName: scene.content.name, componentId: c.id, label: c.label, verification: c.verification,
+      })));
+      return { results: [{ asset, placements }], problems: await tx.problems([assetId]), total: 1, limit: 1 };
+    });
+  }
+  async classification(actor: string, input: { assetId: string }) {
+    exact(input, ['assetId']); const assetId = identifier(input.assetId, true);
+    await this.store.run(actor, 'locator.manage', async tx => {
+      if (!tx.canManage) throw new LocatorError('locator_denied');
+      if (!await tx.asset(assetId)) throw new LocatorError('locator_missing');
+    });
+    // The contribution rechecks authorization on its own pinned transaction. Do not hold a pooled connection across it.
+    return this.classificationEvidence ? this.classificationEvidence(actor, assetId) : {assetId, coverage: 'unmapped' as const, totalSources: 0, sources: []};
+  }
+  modelPreview(actor: string) {
+    return this.store.run(actor, 'locator.manage', async tx => {
+      if (!tx.canManage) throw new LocatorError('locator_denied');
+      const candidates = await this.models?.list() ?? [], references = await this.references.list(), scenes = await tx.scenes();
+      const models: ModelPreview[] = candidates.map(candidate => {
+        const reference = references.find(r => r.id === candidate.referenceId && r.kind === 'schematic');
+        if (!reference) throw new LocatorError('locator_reference_unavailable');
+        const scene = scenes.find(s => s.id === 'reference-' + candidate.referenceId) ?? null;
+        return { referenceId: candidate.referenceId, referenceName: reference.name, sceneId: scene?.id ?? '', expectedRevision: scene?.revision ?? 0,
+          status: modelState(scene, candidate), componentCount: candidate.components.length,
+          motors: candidate.components.filter(c => c.kind === 'motor').length,
+          photoelectricSensors: candidate.components.filter(c => c.kind === 'photoelectric-sensor').length,
+          conveyors: candidate.components.filter(c => c.kind === 'conveyor' || c.kind === 'curve' || c.kind === 's-curve').length };
+      });
+      return { models };
+    });
+  }
+  applyModel(actor: string, input: { id: string; expectedRevision: number }) {
+    exact(input, ['id', 'expectedRevision']); identifier(input.id, true);
+    if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 1) throw new LocatorError('invalid_locator');
+    return this.store.run(actor, 'locator.manage', async tx => {
+      if (!tx.canManage) throw new LocatorError('locator_denied');
+      const scene = await this.existing(tx, input.id);
+      if (scene.revision !== input.expectedRevision) throw new LocatorError('locator_conflict');
+      const candidate = (await this.models?.list())?.find(m => m.referenceId === scene.content.referenceId);
+      if (!candidate) throw new LocatorError('locator_reference_unavailable');
+      const status = modelState(scene, candidate);
+      if (status !== 'ready') return { sceneId: scene.id, revision: scene.revision, status };
+      // Revalidate original reference integrity before committing any derived geometry.
+      await this.references.bytes(candidate.referenceId);
+      const at = this.now(), updated: Scene = { ...scene, revision: scene.revision + 1, updatedAt: at,
+        content: { ...scene.content, components: structuredClone(candidate.components) } };
+      await tx.save(updated, { scene: updated, actorId: actor, note: 'Prepared provisional equipment geometry from the private schematic; labels, registered identity links and physical survey require review.', at });
+      return { sceneId: updated.id, revision: updated.revision, status: 'applied' as const };
+    });
+  }
+  reference(actor: string, id: string) {
+    identifier(id, true);
+    return this.store.run(actor, 'locator.manage', async (tx) => {
+      if (!tx.canManage)
+        throw new LocatorError('locator_denied');
+      if (!(await this.references.list()).some(reference => reference.id === id))
+        throw new LocatorError('locator_missing');
+      return this.references.bytes(id);
+    });
+  }
   private async existing(tx: Transaction, id: string) { const scene = await tx.get(id); if (!scene)
     throw new LocatorError('locator_missing'); return scene; }
 }

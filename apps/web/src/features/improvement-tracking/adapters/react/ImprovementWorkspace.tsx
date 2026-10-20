@@ -1,9 +1,9 @@
 import "./improvement.css";
 import { useEffect, useRef, useState } from "react";
 import {
-  Actions, AddButton, Alert, Badge, Button, DepartmentScope, DetailFacts,
-  Disclosure, Field, FieldRow, FilterForm, PageStack, Panel, RefreshButton,
-  SearchControl, SectionHeading, Select, Table, TableText, TableViewport,
+  Actions, AddButton, Alert, Badge, Button, CompactSelect, DepartmentScope, DetailFacts,
+  Disclosure, FieldRow, FilterForm, PageStack, Panel, RefreshButton,
+  SearchControl, SectionHeading, Table, TableText, TableViewport,
 } from "../../../../design/components";
 import { locale, t } from "../../../../localization/i18n";
 import type { ImprovementApplication } from "../../application/improvement";
@@ -307,18 +307,18 @@ export function ImprovementWorkspace({
         {history.nextBefore > 0 && <Button variant="secondary" disabled={pending} onClick={() => void loadMore("revisions")}>{t("Load older revisions")}</Button>}
       </Disclosure>
     </> : <Panel><p role="status">{t(loading ? "Loading improvement details…" : "Improvement details are unavailable.")}</p>{!loading && <Button variant="secondary" onClick={() => void details(selectedId)}>{t("Retry")}</Button>}</Panel> : <>
-      {catalog && <FilterForm onSubmit={event => {
+      {catalog && <FilterForm variant="plain" onSubmit={event => {
         event.preventDefault(); apply({ ...selection, search, cursor: "" });
       }}>
         <FieldRow>
           <DepartmentScope value={selection.locationId ?? ""} onChange={locationId => apply({ ...selection, locationId, cursor: "" })} choices={catalog.locations} />
-          <Field layout="inline" className="iop-context-field"><span>{t("Status")}</span><Select value={selection.status ?? ""} onChange={event => apply({ ...selection, status: event.target.value as Selection["status"], cursor: "" })}>
-            <option value="">{t("All statuses")}</option>{statuses.map(status => <option key={status} value={status}>{statusLabel(status)} ({count(page?.statusCounts[status] ?? 0)})</option>)}
-          </Select></Field>
-          <Field layout="inline" className="iop-context-field"><span>{t("Owner")}</span><Select value={selection.ownerId ?? ""} onChange={event => apply({ ...selection, ownerId: event.target.value, cursor: "" })}>
-            <option value="">{t("All owners")}</option>{catalog.people.map(person => <option key={person.id} value={person.id}>{person.name}</option>)}
-          </Select></Field>
-          <SearchControl label={t("Search improvements")} placeholder={t("Title, goal or linked equipment")} value={search} onChange={setSearch} />
+          <CompactSelect caption="Status" value={selection.status ?? ""} emptyLabel="All statuses"
+            choices={statuses.map(status => ({ id: status, label: `${statusLabel(status)} (${count(page?.statusCounts[status] ?? 0)})` }))}
+            onChange={status => apply({ ...selection, status: status as Selection["status"], cursor: "" })} />
+          <CompactSelect caption="Owner" value={selection.ownerId ?? ""} emptyLabel="All owners"
+            choices={catalog.people.map(person => ({ id: person.id, label: person.name }))}
+            onChange={ownerId => apply({ ...selection, ownerId, cursor: "" })} />
+          <SearchControl caption="Search" label={t("Search improvements")} placeholder={t("Title, goal or linked equipment")} value={search} onChange={setSearch} />
           <Button type="submit" disabled={loading}>{t("Apply filters")}</Button>
           <Button variant="secondary" onClick={() => { setSearch(""); apply({}); }}>{t("Clear filters")}</Button>
         </FieldRow>

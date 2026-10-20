@@ -224,8 +224,8 @@ beforeAll(async () => {
         ["task-a", "task-force"],
       ],
     ],
-    ["org-a", "site-a2", [["admin-a2", "team-leader"]]],
-    ["org-b", "site-b", [["admin-b", "team-leader"]]],
+    ["org-a", "site-a2", [["admin-a2", "administrator"]]],
+    ["org-b", "site-b", [["admin-b", "administrator"]]],
   ]) {
     const seed = {
       ...env,
@@ -340,11 +340,11 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
   ).toBe("asset_conflict");
   const restarted = new Pool({ ...configs.runtime, max: 1 });
   try {
-    const saved = await service(scope, restarted).detail("lead-a", first.id);
+    const saved = await service(scope, restarted).detail("admin-a", first.id);
     expect(saved.revision).toBe(2);
     expect(saved.content.code).toBe("0001");
     const history = await service(scope, restarted).history(
-      "lead-a",
+      "admin-a",
       first.id,
       0,
     );
@@ -356,14 +356,14 @@ test("durable revision-safe assets recover idempotent creates, serialize stale e
     await restarted.end();
   }
 });
-test("Only Administrator manages assets; exact aliases conflict atomically and cannot map two assets to one source tuple", async () => {
+test("Only Administrator accesses standalone assets; exact aliases conflict atomically and cannot map two assets to one source tuple", async () => {
   for (const actor of ["tech-a", "lead-a", "task-a"]) {
     await db("bootstrap", client => client.query(
       "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES($1,$2,$3,'assets-administrator',true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",
       [scope.organizationId, actor, scope.siteId],
     ));
     await expect(app.save(actor, create())).rejects.toBeInstanceOf(SiteAccessDeniedError);
-    if (actor !== "tech-a") expect((await app.context(actor)).canManage).toBe(false);
+    await expect(app.context(actor)).rejects.toBeInstanceOf(SiteAccessDeniedError);
   }
   expect(
     (await app.save("admin-a", create("administrator-managed"))).content.name,
@@ -395,7 +395,7 @@ test("Only Administrator manages assets; exact aliases conflict atomically and c
   ).rejects.toMatchObject({ code: "asset_alias_conflict" });
   expect(
     (
-      await app.query("lead-a", {
+      await app.query("admin-a", {
         search: "duplicate-mapped",
         status: "",
         locationId: "",
@@ -403,7 +403,7 @@ test("Only Administrator manages assets; exact aliases conflict atomically and c
       })
     ).total,
   ).toBe(0);
-  expect((await app.history("lead-a", mapped.id, 0)).revisions).toHaveLength(1);
+  expect((await app.history("admin-a", mapped.id, 0)).revisions).toHaveLength(1);
   const separate = await app.save("admin-a", {
     ...create("different-area"),
     content: {
@@ -470,15 +470,15 @@ test("RLS, scoped foreign keys and current grants protect records and immutable 
   ).rejects.toMatchObject({ code: "23503" });
   await db("bootstrap", (client) =>
     client.query(
-      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='lead-a' AND role_id='assets-reader'",
+      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='admin-a' AND role_id='assets-reader'",
     ),
   );
-  await expect(app.detail("lead-a", first.id)).rejects.toBeInstanceOf(
+  await expect(app.detail("admin-a", first.id)).rejects.toBeInstanceOf(
     SiteAccessDeniedError,
   );
   await db("bootstrap", (client) =>
     client.query(
-      "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='lead-a' AND role_id='assets-reader'",
+      "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='admin-a' AND role_id='assets-reader'",
     ),
   );
 });
@@ -572,7 +572,7 @@ test("digital record reads owner evidence with exact mapping and denies Technici
     to: "2026-07-01",
     cursor: "",
   };
-  const all = await app.timeline("lead-a", input);
+  const all = await app.timeline("admin-a", input);
   expect(all.sources.map((source) => source.status)).toEqual([
     "available",
     "available",
@@ -603,7 +603,7 @@ test("digital record reads owner evidence with exact mapping and denies Technici
     SiteAccessDeniedError,
   );
   expect((await app.timeline("admin-a", input)).total).toBe(all.total);
-  const onlyAnalytical = await app.timeline("lead-a", {
+  const onlyAnalytical = await app.timeline("admin-a", {
     ...input,
     kind: "analytics",
   });
@@ -618,7 +618,7 @@ test("history pages never imply complete evidence when aliases are absent or a s
     to: "2026-07-01",
     cursor: "",
   };
-  const empty = await app.timeline("lead-a", input);
+  const empty = await app.timeline("admin-a", input);
   expect(empty.sources.map((source) => source.status)).toEqual([
     "available",
     "unmapped",
@@ -633,7 +633,7 @@ test("history pages never imply complete evidence when aliases are absent or a s
       },
     },
   ]);
-  expect((await fail.timeline("lead-a", input)).sources).toEqual([
+  expect((await fail.timeline("admin-a", input)).sources).toEqual([
     { kind: "handover", status: "unavailable", total: 0 },
   ]);
   const denied = jest.fn(async () => {
@@ -641,17 +641,17 @@ test("history pages never imply complete evidence when aliases are absent or a s
   });
   await db("bootstrap", (client) =>
     client.query(
-      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='task-a' AND role_id='analytics-reader'",
+      "UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='admin-a' AND role_id='analytics-reader'",
     ),
   );
   try {
     await service(scope, pool, [
       { kind: "analytics", permission: "analytics.read", read: denied },
-    ]).timeline("task-a", input);
+    ]).timeline("admin-a", input);
   } finally {
     await db("bootstrap", (client) =>
       client.query(
-        "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='task-a' AND role_id='analytics-reader'",
+        "UPDATE users_rbac.site_role_assignments SET is_active=true WHERE user_id='admin-a' AND role_id='analytics-reader'",
       ),
     );
   }
@@ -769,7 +769,7 @@ test("SQL source faults abort safely and the same pooled connection recovers in 
       },
       { kind: "maintenance", permission: "maintenance.read", read: later },
     ]);
-    await expect(failing.timeline("lead-a", selection)).rejects.toBeInstanceOf(
+    await expect(failing.timeline("admin-a", selection)).rejects.toBeInstanceOf(
       AuthorizationUnavailableError,
     );
     expect(later).not.toHaveBeenCalled();
@@ -787,10 +787,10 @@ test("SQL source faults abort safely and the same pooled connection recovers in 
         },
       },
     ]);
-    expect((await recovered.timeline("lead-a", selection)).sources).toEqual([
+    expect((await recovered.timeline("admin-a", selection)).sources).toEqual([
       { kind: "maintenance", status: "available", total: 0 },
     ]);
-    expect((await recovered.detail("lead-a", subject.id)).id).toBe(subject.id);
+    expect((await recovered.detail("admin-a", subject.id)).id).toBe(subject.id);
   } finally {
     await connection.end();
   }
@@ -804,8 +804,8 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
     locationId: "",
     cursor: "",
   };
-  const firstDirectory = await app.query("lead-a", selection);
-  const secondDirectory = await app.query("lead-a", {
+  const firstDirectory = await app.query("admin-a", selection);
+  const secondDirectory = await app.query("admin-a", {
     ...selection,
     cursor: firstDirectory.nextCursor,
   });
@@ -821,7 +821,7 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
     ).size,
   ).toBe(28);
   await expect(
-    app.query("lead-a", {
+    app.query("admin-a", {
       ...selection,
       status: "validated",
       cursor: firstDirectory.nextCursor,
@@ -887,8 +887,8 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
     cursor: "",
     kind: "handover",
   };
-  const first = await app.timeline("lead-a", window);
-  const second = await app.timeline("lead-a", {
+  const first = await app.timeline("admin-a", window);
+  const second = await app.timeline("admin-a", {
     ...window,
     cursor: first.nextCursor,
   });
@@ -906,7 +906,7 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
       .reverse(),
   );
   await expect(
-    app.timeline("lead-a", {
+    app.timeline("admin-a", {
       ...window,
       kind: "maintenance",
       cursor: first.nextCursor,
@@ -920,7 +920,7 @@ test("directory and real mixed-source timeline keyset pages retain full counts w
     content: { ...mapped.content, name: "Corrected name" },
   });
   await expect(
-    app.timeline("lead-a", { ...window, cursor: first.nextCursor }),
+    app.timeline("admin-a", { ...window, cursor: first.nextCursor }),
   ).rejects.toMatchObject({ code: "asset_conflict" });
 });
 

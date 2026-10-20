@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { ImprovementApplication, type Gateway } from "../src/features/improvement-tracking/application/improvement";
 import { ImprovementWorkspace } from "../src/features/improvement-tracking/adapters/react/ImprovementWorkspace";
 import { ImprovementForm } from "../src/features/improvement-tracking/adapters/react/ImprovementForm";
-import { emptyAction, statuses, type ActionView, type Catalog, type Comparison, type Evidence, type SavedComparison } from "../src/features/improvement-tracking/domain/models";
+import { emptyAction, statuses, type ActionView, type Catalog, type Comparison, type Evidence, type SavedComparison, type Selection } from "../src/features/improvement-tracking/domain/models";
 const catalog: Catalog = {
   actorId: "leader",
   canContribute: true,
@@ -208,6 +208,64 @@ function setup(overrides: Partial<Gateway> = {}) {
     application: new ImprovementApplication(gateway, () => "generated-" + ++serial)
   };
 }
+test("compact action filters preserve immediate native selections, explicit search submission and opaque pagination", async () => {
+  const nextAction: ActionView = { ...initial, id: "next-action", data: { ...initial.data, title: "Inspect return rollers" } };
+  const query = jest.fn(async (input: Selection) => ({
+    actions: [input.cursor ? nextAction : initial],
+    total: 2,
+    nextCursor: input.cursor ? "" : "opaque-server-cursor",
+    statusCounts: Object.fromEntries(statuses.map(status => [status, status === "planned" ? 2 : 0])) as Record<typeof statuses[number], number>,
+  }));
+  const { application } = setup({ query });
+  render(<ImprovementWorkspace application={application} timeZone="UTC" />);
+  await screen.findByRole("button", { name: "Reduce repeated alarms" });
+  const apply = screen.getByRole("button", { name: "Apply filters" });
+  expect(apply.closest("form")).toHaveClass("iop-filter-form--plain");
+  const department = screen.getByRole("combobox", { name: "Selected department" });
+  const status = screen.getByRole("combobox", { name: "Status" });
+  const owner = screen.getByRole("combobox", { name: "Owner" });
+  for (const control of [department, status, owner]) {
+    expect(control.closest("label")).toHaveClass("iop-context-field", "iop-compact-select");
+  }
+  expect(within(status).getByRole("option", { name: "Planned (2)" })).toHaveValue("planned");
+  expect(within(owner).getByRole("option", { name: "Jordan Team Leader" })).toHaveValue("leader");
+  fireEvent.change(department, { target: { value: "area" } });
+  await waitFor(() => expect(apply).not.toBeDisabled());
+  expect(query).toHaveBeenLastCalledWith({ locationId: "area", cursor: "" });
+  fireEvent.change(status, { target: { value: "in-progress" } });
+  await waitFor(() => expect(apply).not.toBeDisabled());
+  expect(query).toHaveBeenLastCalledWith({ locationId: "area", status: "in-progress", cursor: "" });
+  fireEvent.change(owner, { target: { value: "leader" } });
+  await waitFor(() => expect(apply).not.toBeDisabled());
+  const selected = { locationId: "area", status: "in-progress", ownerId: "leader", cursor: "" };
+  expect(query).toHaveBeenLastCalledWith(selected);
+  const selectedCalls = query.mock.calls.length;
+  fireEvent.click(screen.getByRole("button", { name: "Search improvements" }));
+  const search = screen.getByRole("searchbox", { name: "Search improvements" });
+  expect(search.closest("label")).toHaveClass("iop-context-field");
+  expect(search).toHaveFocus();
+  fireEvent.change(search, { target: { value: "repeated alarms" } });
+  expect(query).toHaveBeenCalledTimes(selectedCalls);
+  expect(fireEvent.keyDown(search, { key: "Enter" })).toBe(true);
+  fireEvent.submit(apply.closest("form")!);
+  await waitFor(() => expect(apply).not.toBeDisabled());
+  expect(query).toHaveBeenLastCalledWith({ ...selected, search: "repeated alarms" });
+  fireEvent.click(screen.getByRole("button", { name: "Load more actions" }));
+  await screen.findByRole("button", { name: "Inspect return rollers" });
+  expect(query).toHaveBeenLastCalledWith({ ...selected, search: "repeated alarms", cursor: "opaque-server-cursor" });
+  expect(screen.getByRole("button", { name: "Reduce repeated alarms" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Load more actions" })).not.toBeInTheDocument();
+  const pagedCalls = query.mock.calls.length;
+  fireEvent.click(screen.getByRole("button", { name: "Close search" }));
+  expect(query).toHaveBeenCalledTimes(pagedCalls);
+  fireEvent.click(apply);
+  await waitFor(() => expect(apply).not.toBeDisabled());
+  expect(query).toHaveBeenLastCalledWith({ ...selected, search: "" });
+  expect(screen.queryByRole("button", { name: "Inspect return rollers" })).not.toBeInTheDocument();
+  fireEvent.change(status, { target: { value: "" } });
+  await waitFor(() => expect(apply).not.toBeDisabled());
+  expect(query).toHaveBeenLastCalledWith({ ...selected, status: "", search: "" });
+});
 test("creates linked owner/target actions and retains form identity after an uncertain save", async () => {
   const save = jest.fn().mockRejectedValueOnce(new Error("Save unavailable; retry.")).mockResolvedValue(initial);
   const {

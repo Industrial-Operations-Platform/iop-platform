@@ -371,18 +371,20 @@ test("safe migration grants operational profiles, preserves disabled/revoked acc
   expect(await migrate(configs.migrator)).toBe(0);
   await provision(configs);
 });
-test("Asset reads include advanced operational profiles while only Administrator configures and revocation persists", async () => {
+test("standalone Asset access is Administrator-only and migration preserves compact readers and explicit revocation", async () => {
   for (const actor of [
     "tech-a",
     "asset-revoked-a",
     "disabled-admin-a",
     "revoked-admin-a",
+    "lead-a",
+    "task-a",
   ])
     await expect(assetService().context(actor)).rejects.toThrow(
       "not permitted",
     );
-  for (const actor of ["admin-a", "lead-a", "task-a"])
-    expect((await assetService().context(actor)).canManage).toBe(actor === "admin-a");
+  for (const actor of ["admin-a"])
+    expect((await assetService().context(actor)).canManage).toBe(true);
   expect(
     (
       await db("bootstrap", (client) =>

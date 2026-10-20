@@ -30,8 +30,7 @@ export class PgAssetDomain implements DomainStore {
     }, async tx => {
       await tx.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [this.scope.organizationId]);
       const profile = await sitePersonProfile(tx, this.scope.organizationId, this.scope.siteId, actor);
-      assert(["administrator", "team-leader", "task-force"].includes(profile) &&
-        (permission !== "assets.manage" || profile === "administrator"), "asset_domain_denied");
+      assert(profile === "administrator", "asset_domain_denied");
       if (!(await evaluateSiteAccess(tx, {
         ...this.scope,
         userId: actor,

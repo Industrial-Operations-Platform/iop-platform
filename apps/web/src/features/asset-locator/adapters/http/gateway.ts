@@ -19,6 +19,10 @@ export class HttpLocatorGateway implements Gateway {
     unplacedOnly: boolean;
   }) { return request<Schema["LocatorSearchResultsDto"]>('search', input); }
   bootstrap() { return request<Schema["LocatorBootstrapDto"]>('bootstrap', {}); }
+  classification(assetId: string) { return request<Schema['LocatorClassificationDto']>('classification', { assetId }); }
+  locate(assetId: string) { return request<Schema['LocatorSearchResultsDto']>('locate', { assetId }); }
+  modelPreview() { return request<Schema['LocatorModelsDto']>('model-preview', {}); }
+  applyModel(input: { id: string; expectedRevision: number }) { return request<Schema['LocatorModelResultDto']>('apply-model', input); }
 }
 export function createLocatorApplication() { return new LocatorApplication(new HttpLocatorGateway(), () => crypto.randomUUID()); }
 export const referenceUrl = (id: string) => '/api/v1/locator/references/' + encodeURIComponent(id);

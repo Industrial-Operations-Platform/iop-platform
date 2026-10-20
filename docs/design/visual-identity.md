@@ -306,6 +306,14 @@ reload controls aligned. Account name and role occupy two readable lines inside 
 opened menu. IOP-193 uses an initials-only trigger and compact DE/EN language/profile
 selectors, with logout last in the anchored panel described below.
 
+The generic `CompactSelect` supplies the inline caption, divider and native-select
+surface. `DepartmentScope` wraps it with the existing department defaults; Actions
+Status/Owner use the same surface and SearchControl can opt into a compact caption.
+The wrapping toolbar uses plain FilterForm composition without a second full-width
+panel; other forms retain their default surface. Photoelectric Locator geometry
+uses the existing `chartTeal` accent with a text legend, separate from reported
+problem and selection emphasis. This identifies component kind, never live health.
+
 `DepartmentScope` is the common department/Halle selector for Start and Shift
 Handover. Use its compact white bordered surface, muted inline label and semibold
 value as specified in the IOP-191 control contract below; feature adapters supply

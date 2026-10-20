@@ -108,6 +108,14 @@ without analytical navigation, summaries or API access. Existing Technician anal
 grants are removed at their configured site by the next database migration.
 The API enforces these permissions even when called directly.
 
+[IOP-211](../planning/items/IOP-211-locator-models-and-access.md) reserves **Assets**,
+**Asset management**, registry/model changes and Locator editing for Administrator.
+Team Leader and Task Force use read-only **Asset Locator**; their operational asset
+links go there with an exact registered identity. Current profile checks reject
+obsolete writer grants. Formal transfers are **Shift records** within **Shift
+Handover**, alongside the existing journal views. Technician keeps ordinary journal
+and assignment access without the new advanced destinations.
+
 Each new user receives an initial password shown once at creation. Deliver it to
 that user securely; they must choose a different password of 15–128 characters on
 first sign-in. There is no public registration or default password. Login is bounded

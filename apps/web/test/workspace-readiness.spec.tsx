@@ -131,7 +131,7 @@ function configurationModules() {
     references: jest.fn(async () => ({ assets: [], enrichments: [], total: 0, nextCursor: "" })),
   };
   const locatorGateway = {
-    context: jest.fn(async () => ({ canManage: true, references: [], locations: [], componentCatalog: [], coordinateSystem: "Image-local normalized", globalCalibration: "pending" })),
+    context: jest.fn(async () => ({ canManage: true, references: [], referenceDimensions: [], locations: [], componentCatalog: [], coordinateSystem: "Image-local normalized", globalCalibration: "pending" })),
     query: jest.fn(async () => ({ scenes: [], total: 0 })),
   };
   return {
@@ -146,7 +146,7 @@ function configurationModules() {
 }
 
 test.each(["team-leader", "task-force"])(
-  "%s retains operational asset evidence without configuration even with stale elevated capabilities",
+  "%s retains read-only Locator without standalone Assets or configuration even with stale elevated capabilities",
   async (profile) => {
     const fixture = configurationModules();
     setup(new AccessApplication({
@@ -157,18 +157,19 @@ test.each(["team-leader", "task-force"])(
     }), fixture.modules);
     await screen.findByRole("heading", { name: "Welcome, Worker" });
     const navigation = within(screen.getByRole("navigation", { name: "Main navigation" }));
-    for (const name of ["Asset management", "Integrations", "Data administration", "Users & profiles"])
+    for (const name of ["Assets", "Asset management", "Integrations", "Data administration", "Users & profiles"])
       expect(navigation.queryByRole("button", { name })).not.toBeInTheDocument();
-    fireEvent.click(navigation.getByRole("button", { name: "Assets" }));
-    await screen.findByRole("table", { name: "Asset directory" });
-    expect(screen.queryByRole("button", { name: "Register asset" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "AS-001" }));
-    await screen.findByLabelText("Asset timeline");
-    expect(screen.queryByRole("button", { name: "Edit asset" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Model and survey" })).not.toBeInTheDocument();
     fireEvent.click(navigation.getByRole("button", { name: "Asset Locator" }));
     await screen.findByText(/^No scenes are initialized\./);
-    expect(screen.queryByRole("button", { name: "Configure scenes" })).not.toBeInTheDocument();
+    expect(fixture.locatorGateway.context).toHaveBeenCalledTimes(1);
+    expect(fixture.locatorGateway.query).toHaveBeenCalledTimes(1);
+    for (const name of ["Configure scenes", "New installation", "Edit model", "Show guide image"])
+      expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: "Asset directory" })).not.toBeInTheDocument();
+    expect(fixture.assetsGateway.context).not.toHaveBeenCalled();
+    expect(fixture.assetsGateway.query).not.toHaveBeenCalled();
+    expect(fixture.assetsGateway.detail).not.toHaveBeenCalled();
+    expect(fixture.assetsGateway.history).not.toHaveBeenCalled();
     expect(fixture.connectionsGateway.query).not.toHaveBeenCalled();
     expect(fixture.assetDomainGateway.catalog).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "User menu" }));
@@ -194,23 +195,26 @@ test("Administrator previews suppress configuration routes and restore them on r
     fireEvent.click(screen.getByRole("button", { name: "User menu" }));
     fireEvent.change(screen.getByRole("combobox", { name: "Profile view" }), { target: { value: profile } });
     await screen.findByRole("region", { name: "Profile preview" });
-    for (const name of ["Asset management", "Integrations", "Data administration", "Users & profiles"])
+    for (const name of ["Assets", "Asset management", "Integrations", "Data administration", "Users & profiles"])
       expect(navigation.queryByRole("button", { name })).not.toBeInTheDocument();
     if (profile !== "technician") {
-      fireEvent.click(navigation.getByRole("button", { name: "Assets" }));
-      await screen.findByRole("table", { name: "Asset directory" });
-      expect(screen.queryByRole("button", { name: "Register asset" })).not.toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: "AS-001" }));
-      await screen.findByLabelText("Asset timeline");
-      expect(screen.queryByRole("button", { name: "Edit asset" })).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: "Model and survey" })).not.toBeInTheDocument();
       fireEvent.click(navigation.getByRole("button", { name: "Asset Locator" }));
       await screen.findByText(/^No scenes are initialized\./);
-      expect(screen.queryByRole("button", { name: "Configure scenes" })).not.toBeInTheDocument();
+      for (const name of ["Configure scenes", "New installation", "Edit model", "Show guide image"])
+        expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
+      expect(screen.queryByRole("table", { name: "Asset directory" })).not.toBeInTheDocument();
+    } else {
+      expect(navigation.queryByRole("button", { name: "Asset Locator" })).not.toBeInTheDocument();
     }
   }
   expect(fixture.connectionsGateway.query).toHaveBeenCalledTimes(1);
   expect(fixture.assetDomainGateway.catalog).toHaveBeenCalledTimes(1);
+  expect(fixture.locatorGateway.context).toHaveBeenCalledTimes(2);
+  expect(fixture.locatorGateway.query).toHaveBeenCalledTimes(2);
+  expect(fixture.assetsGateway.context).not.toHaveBeenCalled();
+  expect(fixture.assetsGateway.query).not.toHaveBeenCalled();
+  expect(fixture.assetsGateway.detail).not.toHaveBeenCalled();
+  expect(fixture.assetsGateway.history).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Return to administration" }));
   await screen.findByRole("region", { name: "Administration overview" });
   expect(navigation.getByRole("button", { name: "Asset management" })).toBeVisible();

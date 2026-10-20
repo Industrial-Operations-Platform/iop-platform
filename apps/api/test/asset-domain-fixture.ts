@@ -1,6 +1,6 @@
 import { AssetDomain, type DomainStore, type DomainTransaction, type SaveEnrichment } from "../src/modules/assets/application/enrichment";
 import { AssetDomainError, defaultTypes, emptyEnrichment, sourceKey, type Enrichment, type EnrichmentRevision, type Mapping, type MappingRevision, type TypeCatalog, type MappingDecision, type RegistryReference } from "../src/modules/assets/domain/enrichment";
-export function domainFixture() {
+export function domainFixture(authorizedActors = ["admin", "leader", "task"]) {
   const records = new Map<string, Enrichment>(),
     revisions: EnrichmentRevision[] = [],
     mappings = new Map<string, Mapping>(),
@@ -36,7 +36,7 @@ export function domainFixture() {
   const applied: MappingDecision[][] = [];
   const store: DomainStore = {
     run: async (actor, permission, work) => {
-      if (!["admin", "leader", "task"].includes(actor) || (permission === "assets.manage" && actor !== "admin")) throw new AssetDomainError("asset_domain_denied");
+      if (!authorizedActors.includes(actor) || (permission === "assets.manage" && actor !== "admin")) throw new AssetDomainError("asset_domain_denied");
       const staged = structuredClone(records),
         maps = structuredClone(mappings),
         history: EnrichmentRevision[] = [],

@@ -1,5 +1,7 @@
 /** German presentation resources; customer diagram names and identifiers remain data. */
 export const locatorGerman: Readonly<Record<string, string>> = {
+  '3D rendering is unavailable on this device. Use the component list below to inspect the model.': 'Die 3D-Darstellung ist auf diesem Gerät nicht verfügbar. Verwenden Sie die Komponentenliste unten, um das Modell zu prüfen.',
+  'Drag to orbit; right-drag to pan; scroll to zoom. Coordinates are schematic units.': 'Ziehen zum Drehen; mit der rechten Maustaste ziehen zum Verschieben; scrollen zum Zoomen. Koordinaten sind schematische Einheiten.',
   'Configure scenes': 'Szenen konfigurieren',
   'Exit configuration': 'Konfiguration verlassen',
   'Asset Locator': 'Asset Locator',
@@ -118,7 +120,7 @@ export const locatorGerman: Readonly<Record<string, string>> = {
   'The bounded scene capacity has been reached.': 'Die begrenzte Szenenkapazität wurde erreicht.',
   'The private reference files are unavailable or failed integrity validation.': 'Die privaten Vorlagendateien sind nicht verfügbar oder haben die Integritätsprüfung nicht bestanden.',
   'Asset Locator is unavailable. Sign in again or retry.': 'Asset Locator ist nicht verfügbar. Melden Sie sich erneut an oder versuchen Sie es nochmals.',
-  'conveyor': 'Förderband', 'curve': 'Kurve', 'junction': 'Abzweigung', 'lift': 'Lift', 'sensor': 'Sensor', 'scanner': 'Scanner', 'scale': 'Waage', 'cabinet': 'Schaltschrank',
+  'conveyor': 'Förderband', 'curve': 'Kurve', 's-curve': 'S-Kurve', 'junction': 'Abzweigung', 'lift': 'Lift', 'sensor': 'Sensor', 'scanner': 'Scanner', 'scale': 'Waage', 'cabinet': 'Schaltschrank',
   'width': 'Breite', 'depth': 'Tiefe', 'height': 'Höhe', 'schematic': 'Schema', 'legend': 'Legende', 'provisional': 'Vorläufig', 'surveyed': 'Vermessen',
   'handover': 'Schichtübergabe', 'maintenance': 'Instandhaltung', 'available': 'Verfügbar', 'not-authorized': 'Nicht berechtigt', 'unavailable': 'Nicht verfügbar',
   '(0–1)': '(0–1)', '(schematic units)': '(schematische Einheiten)'

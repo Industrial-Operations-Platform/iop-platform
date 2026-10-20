@@ -2,6 +2,7 @@ import {assetDomainGerman} from "./asset-domain-de";
 import {operationalOverviewGerman} from "./operational-overview-de";
 import {formalHandoverGerman} from "./formal-handover-de";
 import {improvementGerman} from "./improvement-de";
+import {locatorRefinementsGerman} from "./locator-refinements-de";
 import {locatorGerman} from "./locator-de";
 import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
@@ -13,6 +14,7 @@ export const german: Readonly<Record<string, string>> = {
   "Shift columns": "Schichtspalten",
   "Weekly layout": "Wochenansicht",
   "Select a person to open assignment details.": "Eine Person auswählen, um die Einsatzdetails zu öffnen.",
+  Import: "Import",
   ...assetDomainGerman,
   "Model and survey": "Modell und Erhebung",
   ...operationalOverviewGerman,
@@ -20,6 +22,7 @@ export const german: Readonly<Record<string, string>> = {
   ...formalHandoverGerman,
   ...improvementGerman,
   ...locatorGerman,
+  ...locatorRefinementsGerman,
   "Formal Handover": "Formale Schichtübergabe",
   "Improvements": "Verbesserungen",
   "Find registered asset": "Registriertes Betriebsmittel suchen",
@@ -1203,6 +1206,7 @@ export const german: Readonly<Record<string, string>> = {
     "Keine Quellaliase konfiguriert. Instandhaltungsarbeiten können direkt mit dieser Anlage verknüpft werden.",
   "No work details recorded.": "Keine Arbeitsdetails erfasst.",
   "Open asset record": "Anlagendatensatz öffnen",
+  "Locate asset": "Betriebsmittel lokalisieren",
   "Open source record": "Quelldatensatz öffnen",
   Order: "Reihenfolge",
   Priority: "Priorität",

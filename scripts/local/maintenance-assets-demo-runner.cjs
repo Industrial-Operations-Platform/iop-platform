@@ -206,7 +206,7 @@ async function run(options, fixture) {
       },
     );
   try {
-    // Use an existing eligible leader, without creating accounts or changing grants.
+    // Use an existing eligible Administrator, without creating accounts or changing grants.
     const directory = await maintenance.catalog(configuredOperator);
     const candidates = [...directory.people].sort(
       (first, second) =>
@@ -238,7 +238,7 @@ async function run(options, fixture) {
     }
     if (!context)
       throw new Error(
-        "Demo data requires an existing active Team Leader with current Asset and Maintenance grants.",
+        "Demo data requires an existing active Administrator with current Asset and Maintenance grants.",
       );
     if (options.action === "prepare") {
       const baseline = await inspect();
