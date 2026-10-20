@@ -35,3 +35,9 @@ Never sort a partial server page as if it were the complete matching collection.
 
 [Execution evidence](../completed/IOP-214-desktop-consistency-plan.md).
 All requested local changes are implemented and validated; publication is not implied.
+
+## Approved publication — 2026-10-19
+
+The owner explicitly approved merging `fix/IOP-214-desktop-consistency` into
+`develop` and pushing both branches to `origin`.
+[Publication plan](../active/IOP-214-publication-plan.md) records execution and checks.
