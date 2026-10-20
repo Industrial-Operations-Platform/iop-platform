@@ -851,3 +851,54 @@ test("status actions change progress without opening content editing and blockin
   fireEvent.click(screen.getByRole("button", { name: "Save status" }));
   await waitFor(() => expect(gateway.save).toHaveBeenLastCalledWith(expect.objectContaining({ data: expect.objectContaining({ status: "blocked", blockedReason: "Waiting for spare parts." }) })));
 });
+
+function dragCard(card: HTMLElement, destination: HTMLElement) {
+  const dataTransfer = { setData: jest.fn(), effectAllowed: "", dropEffect: "" };
+  fireEvent.dragStart(card, { dataTransfer });
+  fireEvent.dragOver(destination, { dataTransfer });
+  fireEvent.drop(destination, { dataTransfer });
+  fireEvent.dragEnd(card, { dataTransfer });
+}
+
+test("board drag moves editable work with its current revision and stays on the board", async () => {
+  const { gateway, application } = fixture();
+  render(<MaintenanceWorkspace application={application} profile="technician" timeZone="UTC" />);
+  const card = await screen.findByRole("button", { name: /Inspect conveyor/ });
+  expect(card).toHaveAttribute("draggable", "true");
+  dragCard(card, screen.getByRole("region", { name: "In progress" }));
+  fireEvent.click(card);
+  await waitFor(() => expect(gateway.save).toHaveBeenCalledWith(expect.objectContaining({
+    id: record.id, expectedRevision: 1, data: { ...record.data, status: "in-progress" },
+  })));
+  expect(await screen.findByText("Maintenance saved.")).toBeVisible();
+  expect(screen.getByRole("region", { name: "In progress" })).toBeVisible();
+  expect(gateway.history).not.toHaveBeenCalled();
+});
+
+test("board drop requires blocker evidence, allows cancellation and preserves completion review", async () => {
+  const { gateway, application } = fixture();
+  render(<MaintenanceWorkspace application={application} profile="technician" timeZone="UTC" />);
+  const card = await screen.findByRole("button", { name: /Inspect conveyor/ });
+  dragCard(card, screen.getByRole("region", { name: "Blocked" }));
+  const blocked = screen.getByRole("dialog", { name: "Move to Blocked" });
+  expect(within(blocked).getByLabelText("Blocked reason")).toBeRequired();
+  expect(gateway.save).not.toHaveBeenCalled();
+  fireEvent.click(within(blocked).getByRole("button", { name: "Cancel" }));
+  expect(screen.queryByRole("dialog")).toBeNull();
+  dragCard(card, screen.getByRole("region", { name: "Done" }));
+  const completed = screen.getByRole("dialog", { name: "Complete maintenance" });
+  expect(within(completed).getByRole("button", { name: "Mark as done" })).toBeDisabled();
+  expect(within(completed).getByLabelText("Work outcome")).toBeRequired();
+  expect(gateway.save).not.toHaveBeenCalled();
+});
+
+test("board records without edit permission cannot be dragged or changed", async () => {
+  const locked = { ...record, canEdit: false };
+  const { gateway, application } = fixture({ query: jest.fn(async () => ({ ...page, records: [locked] })) });
+  render(<MaintenanceWorkspace application={application} profile="technician" timeZone="UTC" />);
+  const card = await screen.findByRole("button", { name: /Inspect conveyor/ });
+  expect(card).toHaveAttribute("draggable", "false");
+  dragCard(card, screen.getByRole("region", { name: "In progress" }));
+  expect(gateway.save).not.toHaveBeenCalled();
+  expect(screen.queryByRole("dialog")).toBeNull();
+});

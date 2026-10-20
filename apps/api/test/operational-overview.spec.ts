@@ -14,3 +14,21 @@ test('optional source coverage cannot leak data or turn missing imports into zer
 test('invalid date/location/undeclared scope and unknown current profiles fail closed', async () => { const h = harness(); for (const input of [null, [], { locationId: 'foreign', date: '2026-10-14', recordId: '' }, { locationId: 'area', date: '2026-02-30', recordId: '' }, { locationId: 'area', date: '2026-10-14', recordId: '', organizationId: 'foreign' }])
     await expect(h.app.area('actor', input as Parameters<typeof h.app.area>[1])).rejects.toMatchObject({ code: 'invalid_overview' }); await expect(h.app.search('actor', { ...search, siteId: 'foreign' } as typeof search)).rejects.toMatchObject({ code: 'invalid_overview' }); h.profile('unknown'); await expect(h.app.context('actor')).rejects.toMatchObject({ code: 'overview_denied' }); });
 test('source admission budgets are enforced independently', async () => { const h = harness(); (h.reads.assets as jest.Mock).mockResolvedValue({ items: Array.from({ length: 26 }, () => card('assets')), total: 26, nextCursor: '' }); expect((await h.app.search('actor', search)).groups[1].coverage).toBe('unavailable'); });
+
+test('technician selected-day journal stays authorized independently of formal shift access and reports an authorized empty date', async () => {
+    const h = harness();
+    h.profile('technician');
+    h.grants.delete('handover.records.manage');
+    (h.reads.handover as jest.Mock).mockImplementation(async (_actor, selection) => selection.pending
+        ? { items: [card('handover')], total: 1, nextCursor: '' }
+        : { items: [], total: 0, nextCursor: '' });
+    const result = await h.app.area('actor', { locationId: 'area', date: '2026-10-13', recordId: '' });
+    expect(result.groups.find(group => group.view === 'pending')).toMatchObject({ coverage: 'available', total: 1 });
+    expect(result.groups.find(group => group.view === 'daily')).toMatchObject({ coverage: 'available', items: [], total: 0 });
+    expect(h.reads.handover).toHaveBeenCalledWith('actor', expect.objectContaining({ pending: false, date: '2026-10-13' }));
+    expect(result.shifts.coverage).toBe('not-authorized');
+    h.grants.add('workforce.read');
+    h.grants.delete('handover.read');
+    expect((await h.app.area('actor', { locationId: 'area', date: '2026-10-13', recordId: '' })).groups.filter(group => group.source === 'handover'))
+        .toEqual(expect.arrayContaining([expect.objectContaining({ view: 'daily', coverage: 'not-authorized', items: [] }), expect.objectContaining({ view: 'pending', coverage: 'not-authorized', items: [] })]));
+});

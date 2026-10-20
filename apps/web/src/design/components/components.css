@@ -1114,8 +1114,11 @@
   min-height: 28px;
   min-width: 28px;
   padding: 4px;
+  color: var(--iop-muted);
 }
+.iop-ui .iop-filter-button:is(:hover, :focus-visible),
 .iop-ui .iop-filter-button[aria-pressed="true"] {
+  color: var(--iop-activeInk);
   background: var(--iop-activeSurface);
 }
 

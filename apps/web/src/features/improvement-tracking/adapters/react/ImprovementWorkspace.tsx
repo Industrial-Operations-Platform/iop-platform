@@ -312,10 +312,10 @@ export function ImprovementWorkspace({
       }}>
         <FieldRow>
           <DepartmentScope value={selection.locationId ?? ""} onChange={locationId => apply({ ...selection, locationId, cursor: "" })} choices={catalog.locations} />
-          <Field>{t("Status")}<Select value={selection.status ?? ""} onChange={event => apply({ ...selection, status: event.target.value as Selection["status"], cursor: "" })}>
+          <Field layout="inline" className="iop-context-field"><span>{t("Status")}</span><Select value={selection.status ?? ""} onChange={event => apply({ ...selection, status: event.target.value as Selection["status"], cursor: "" })}>
             <option value="">{t("All statuses")}</option>{statuses.map(status => <option key={status} value={status}>{statusLabel(status)} ({count(page?.statusCounts[status] ?? 0)})</option>)}
           </Select></Field>
-          <Field>{t("Owner")}<Select value={selection.ownerId ?? ""} onChange={event => apply({ ...selection, ownerId: event.target.value, cursor: "" })}>
+          <Field layout="inline" className="iop-context-field"><span>{t("Owner")}</span><Select value={selection.ownerId ?? ""} onChange={event => apply({ ...selection, ownerId: event.target.value, cursor: "" })}>
             <option value="">{t("All owners")}</option>{catalog.people.map(person => <option key={person.id} value={person.id}>{person.name}</option>)}
           </Select></Field>
           <SearchControl label={t("Search improvements")} placeholder={t("Title, goal or linked equipment")} value={search} onChange={setSearch} />

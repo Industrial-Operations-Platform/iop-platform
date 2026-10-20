@@ -194,6 +194,18 @@ and priority beside the label. Native month/message/file selects open from the f
 field and support keyboard arrows and scrolling; do not replace them with manual
 text entry. Source-row tables belong to administration, outside report templates.
 
+### Operational control refinement — IOP-215
+
+The owner's 2026-10-20 request keeps table filter indicators muted until hover,
+keyboard focus or an applied filter. Keep the icon visible, its accessible name,
+pressed state and keyboard target; active filters retain the shared blue tint.
+Improvement Tracking's Status and Owner filters use the same inline caption,
+divider and value treatment as Department / Halle, through `iop-context-field`.
+Area overview entry titles align with their supporting text at the left edge.
+Maintenance board cards show a grab cursor only when editable; eligible destination
+columns receive the shared active tint during a drag. Opening the card retains the
+keyboard-accessible status actions and required transition evidence.
+
 ## Operational hierarchy — IOP-180
 
 The owner requested a more readable Start and Journal on 2026-09-29. Preserve the

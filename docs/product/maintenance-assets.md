@@ -32,6 +32,12 @@ focused review requiring outcome, task completion and workplace/equipment
 confirmation, plus the existing complete linked-report review. The same authorized
 save and atomic resolution rules apply; conflicts retain the review for correction.
 
+Editable board cards can also be dragged into another status column. Ordinary
+progress changes save through the same revision-checked operation and retain the
+board. Blocking, completing and reopening use the existing evidence/review dialog;
+cancelling leaves the record unchanged. Read-only cards cannot be moved. The
+card's detail actions provide the equivalent keyboard workflow.
+
 The board, records list and personal work view share server-filtered data. Status,
 priority, configured location, asset, responsible person/team, due-date bounds and
 text search apply before total counts and stable pagination. Status counters
