@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed and integrated into local develop on 2026-10-20. The owner's 2026-10-20 request authorizes a new branch from `develop`
+Completed and published to origin on 2026-10-20. The owner's 2026-10-20 request authorizes a new branch from `develop`
 to improve the platform icon, brand placement, navigation and upper-right header
 alignment shown in the supplied screenshots.
 
@@ -32,4 +32,11 @@ IOP-215 work is independent and must remain untouched.
 
 The owner explicitly requested merging all pending IOP-215 and IOP-216 commits
 into local `develop`. Both stories are integrated and validated. [Integration evidence](../completed/IOP-216-develop-integration-plan.md) records execution.
-Remote publication remains a separate approval.
+The owner subsequently approved publication as recorded below.
+
+## Approved publication — 2026-10-20
+
+The owner explicitly approved pushing both retained story branches and `develop`
+to `origin`. The atomic push succeeded and remote hashes were independently
+verified. [Publication evidence](../completed/IOP-216-publication-plan.md) records the result and
+completion checks.
