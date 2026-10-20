@@ -2,8 +2,11 @@ import type { SiteMaterialAudit } from "../../../audit";
 import { lockHitliste, projectHitliste } from "./hitliste-projection";
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
+import { sitePersonProfile } from "../../../users-rbac/adapters/postgres/site-people";
+import { evaluateSiteAccess } from "../../../users-rbac";
 import {
   runSiteOperation,
+  SiteAccessDeniedError,
   type SiteTransaction,
 } from "../../../../persistence/site-operation";
 import type { ImportSource } from "../../../integrations";
@@ -106,6 +109,10 @@ export class PgReportingProfiles implements ReportingProfileRepository {
     profile: CompiledProfile,
   ): Promise<ProfileResult> {
     return this.run(actor, true, async (tx) => {
+      await tx.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [this.source.organizationId]);
+      if (await sitePersonProfile(tx, this.source.organizationId, this.source.siteId, actor) !== "administrator" ||
+        !(await evaluateSiteAccess(tx, { ...this.source, userId: actor, permissions: ["imports.submit"] })).allowed)
+        throw new SiteAccessDeniedError();
       await lockHitliste(tx, this.source);
       const version = randomUUID();
       const result =

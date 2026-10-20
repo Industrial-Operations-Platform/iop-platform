@@ -6,8 +6,9 @@ function allowed(profile:Profile,permission:string,active=true) {
 }
 describe('owner-authorized advanced functions',()=>{
   test.each(['administrator','team-leader','task-force'] as Profile[])('%s receives explicit operational permissions',profile=>{
-    for(const permission of ['handover.records.manage','improvement.read','improvement.contribute','improvement.coordinate','locator.read','integrations.read'])
+    for(const permission of ['handover.records.manage','improvement.read','improvement.contribute','improvement.coordinate','locator.read'])
       expect(allowed(profile,permission)).toEqual({allowed:true});
+    expect(allowed(profile,'integrations.read').allowed).toBe(profile==='administrator');
     expect(allowed(profile,'integrations.manage').allowed).toBe(profile==='administrator');
     expect(allowed(profile,'locator.manage').allowed).toBe(profile==='administrator');
   });

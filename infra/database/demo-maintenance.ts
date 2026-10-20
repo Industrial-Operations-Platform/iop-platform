@@ -36,6 +36,8 @@ const names = [
   "20261014060000-asset-domain",
   "20261014070000-site-material-audit",
   "20261014080000-canonical-demo-reset",
+  "20261014090000-administrator-assets-locator",
+  "20261020000000-administrator-configuration",
 ];
 function target(env: NodeJS.ProcessEnv) {
   if (env.IOP_EXECUTION_MODE !== "local-demo" || env.NODE_ENV === "production")

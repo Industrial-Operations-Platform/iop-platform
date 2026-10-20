@@ -56,6 +56,7 @@ import { hitlisteAnalysisCalendar } from "./adapters/hitliste-analysis-calendar"
 import { hitlisteReportingProfile } from "./adapters/hitliste-reporting-profile";
 import { createImportWorkflow } from "./adapters/import-gateway";
 import { evaluateSiteAccess } from "../modules/users-rbac";
+import { profiles, type Profile } from "../modules/users-rbac/domain/profiles";
 import {
   ReportingProfiles,
   OipReports,
@@ -492,7 +493,7 @@ export class PlatformRuntime {
     this.access = config.passwordAuthentication
       ? composeAccess(pool, this.source)
       : null;
-    this.batches = new ImportBatches(pool, this.source, siteMaterialAudit);
+    this.batches = new ImportBatches(pool, this.source, siteMaterialAudit, !!config.passwordAuthentication);
     const profileRepository = new PgReportingProfiles(
       pool,
       this.source,
@@ -566,10 +567,10 @@ export class PlatformRuntime {
     }
     await this.pool.end();
   }
-  async checkUser(actor: string): Promise<void> {
+  async checkUser(actor: string): Promise<Profile | undefined> {
     if (!this.access && !this.config.users.some((u) => u.id === actor))
       throw new ForbiddenException();
-    await runSiteOperation(
+    return runSiteOperation(
       this.pool,
       {
         userId: actor,
@@ -584,6 +585,8 @@ export class PlatformRuntime {
         );
         if (r.rows[0]?.time_zone !== this.source.siteTimeZone)
           throw new ConfigurationError("seeded site zone");
+        const profile = await sitePersonProfile(tx, this.source.organizationId, this.source.siteId, actor);
+        return profiles.includes(profile as Profile) ? profile as Profile : undefined;
       },
     );
   }
@@ -630,7 +633,12 @@ export class PlatformRuntime {
           siteId: this.source.siteId,
           permissions,
         },
-        async () => true,
+        async (tx) => {
+          if (!this.config.passwordAuthentication || !permissions.some(permission => permission.startsWith("imports."))) return true;
+          await tx.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [this.source.organizationId]);
+          return await sitePersonProfile(tx, this.source.organizationId, this.source.siteId, actor) === "administrator" &&
+            (await evaluateSiteAccess(tx, { ...this.source, userId: actor, permissions })).allowed;
+        },
       );
     } catch (error) {
       if (error instanceof SiteAccessDeniedError) return false;

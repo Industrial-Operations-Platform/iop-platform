@@ -11,6 +11,11 @@ import {
 } from "../src/features/analysis/application/workspace";
 import { WorkspaceApp } from "../src/host/WorkspaceApp";
 import { AccessApplication } from "../src/features/access/application/access";
+import { AssetsApplication } from "../src/features/assets/application/assets";
+import { emptyAsset } from "../src/features/assets/domain/models";
+import { ConnectionsApplication } from "../src/features/integrations/application/connections";
+import { AssetDomainApplication } from "../src/features/assets-domain/application/domain";
+import { LocatorApplication } from "../src/features/asset-locator/application/locator";
 import type {
   ProfileResult,
   Report,
@@ -44,13 +49,16 @@ const profile: ProfileResult = {
     aliases: [{ field: "area", from: "Area,A", to: "Area A" }],
   },
 };
-function setup(access?: AccessApplication) {
+function setup(
+  access?: AccessApplication,
+  modules: Partial<Pick<Parameters<typeof WorkspaceApp>[0], "assets" | "assetDomain" | "connections" | "locator">> = {},
+) {
   const gateway = {
     messages: jest.fn().mockResolvedValue({ values: [], nextCursor: null }),
     context: jest.fn().mockResolvedValue({
       enabled: true,
       canImport: true,
-      user: { id: "admin", name: "Administrator" },
+      user: { id: "admin", name: "Administrator", profile: "administrator" },
       users: [{ id: "admin", name: "Administrator" }],
       scope: null,
     }),
@@ -97,10 +105,121 @@ function setup(access?: AccessApplication) {
     <WorkspaceApp
       application={new AnalysisWorkspace(gateway as unknown as AnalysisGateway)}
       access={access}
+      {...modules}
     />,
   );
   return gateway;
 }
+
+function configurationModules() {
+  const asset = {
+    id: "asset", revision: 1, authorId: "admin", authorName: "Administrator",
+    createdAt: "2026-10-01T08:00:00Z", updatedAt: "2026-10-01T08:00:00Z",
+    content: { ...emptyAsset(), name: "Assembly conveyor", code: "AS-001" },
+  };
+  const assetsGateway = {
+    context: jest.fn(async () => ({ actorId: "admin", canManage: true, timeZone: "UTC", locations: [] })),
+    query: jest.fn(async () => ({ assets: [asset], total: 1, nextCursor: "" })),
+    detail: jest.fn(async () => asset),
+    history: jest.fn(async () => ({ asset, revisions: [], nextBefore: 0 })),
+    timeline: jest.fn(async () => ({ asset, records: [], sources: [], total: 0, nextCursor: "" })),
+    equipmentCatalog: jest.fn(), save: jest.fn(),
+  };
+  const connectionsGateway = { query: jest.fn(async () => ({ connections: [] })), save: jest.fn(), history: jest.fn() };
+  const assetDomainGateway = {
+    catalog: jest.fn(async () => ({ canManage: true, sourceId: "source", catalog: { revision: 0, types: [] } })),
+    references: jest.fn(async () => ({ assets: [], enrichments: [], total: 0, nextCursor: "" })),
+  };
+  const locatorGateway = {
+    context: jest.fn(async () => ({ canManage: true, references: [], locations: [], componentCatalog: [], coordinateSystem: "Image-local normalized", globalCalibration: "pending" })),
+    query: jest.fn(async () => ({ scenes: [], total: 0 })),
+  };
+  return {
+    modules: {
+      assets: new AssetsApplication(assetsGateway, () => "new-asset"),
+      connections: new ConnectionsApplication(connectionsGateway),
+      assetDomain: new AssetDomainApplication(assetDomainGateway as never, () => "new-model"),
+      locator: new LocatorApplication(locatorGateway as never, () => "new-scene"),
+    },
+    assetsGateway, connectionsGateway, assetDomainGateway, locatorGateway,
+  };
+}
+
+test.each(["team-leader", "task-force"])(
+  "%s retains operational asset evidence without configuration even with stale elevated capabilities",
+  async (profile) => {
+    const fixture = configurationModules();
+    setup(new AccessApplication({
+      context: jest.fn(async () => ({ enabled: true, authentication: "password" as const, canImport: true, canAdminister: true,
+        user: { id: "worker", name: "Worker", profile }, users: [], scope: null })),
+      users: jest.fn(async () => []), login: jest.fn(), password: jest.fn(), logout: jest.fn(),
+      rename: jest.fn(), update: jest.fn(), activity: jest.fn(async () => []), create: jest.fn(), change: jest.fn(),
+    }), fixture.modules);
+    await screen.findByRole("heading", { name: "Welcome, Worker" });
+    const navigation = within(screen.getByRole("navigation", { name: "Main navigation" }));
+    for (const name of ["Asset management", "Integrations", "Data administration", "Users & profiles"])
+      expect(navigation.queryByRole("button", { name })).not.toBeInTheDocument();
+    fireEvent.click(navigation.getByRole("button", { name: "Assets" }));
+    await screen.findByRole("table", { name: "Asset directory" });
+    expect(screen.queryByRole("button", { name: "Register asset" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "AS-001" }));
+    await screen.findByLabelText("Asset timeline");
+    expect(screen.queryByRole("button", { name: "Edit asset" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Model and survey" })).not.toBeInTheDocument();
+    fireEvent.click(navigation.getByRole("button", { name: "Asset Locator" }));
+    await screen.findByText(/^No scenes are initialized\./);
+    expect(screen.queryByRole("button", { name: "Configure scenes" })).not.toBeInTheDocument();
+    expect(fixture.connectionsGateway.query).not.toHaveBeenCalled();
+    expect(fixture.assetDomainGateway.catalog).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "User menu" }));
+    expect(screen.queryByRole("combobox", { name: "Profile view" })).not.toBeInTheDocument();
+  },
+);
+
+test("Administrator previews suppress configuration routes and restore them on return", async () => {
+  const fixture = configurationModules();
+  setup(new AccessApplication({
+    context: jest.fn(async () => ({ enabled: true, authentication: "password" as const, canImport: true, canAdminister: true,
+      user: { id: "admin", name: "Administrator", profile: "administrator" }, users: [], scope: null })),
+    users: jest.fn(async () => []), login: jest.fn(), password: jest.fn(), logout: jest.fn(),
+    rename: jest.fn(), update: jest.fn(), activity: jest.fn(async () => []), create: jest.fn(), change: jest.fn(),
+  }), fixture.modules);
+  await screen.findByRole("region", { name: "Administration overview" });
+  const navigation = within(screen.getByRole("navigation", { name: "Main navigation" }));
+  fireEvent.click(navigation.getByRole("button", { name: "Integrations" }));
+  await screen.findByText("No integrations are configured.");
+  fireEvent.click(navigation.getByRole("button", { name: "Asset management" }));
+  await waitFor(() => expect(fixture.assetDomainGateway.catalog).toHaveBeenCalledTimes(1));
+  for (const profile of ["team-leader", "task-force", "technician"]) {
+    fireEvent.click(screen.getByRole("button", { name: "User menu" }));
+    fireEvent.change(screen.getByRole("combobox", { name: "Profile view" }), { target: { value: profile } });
+    await screen.findByRole("region", { name: "Profile preview" });
+    for (const name of ["Asset management", "Integrations", "Data administration", "Users & profiles"])
+      expect(navigation.queryByRole("button", { name })).not.toBeInTheDocument();
+    if (profile !== "technician") {
+      fireEvent.click(navigation.getByRole("button", { name: "Assets" }));
+      await screen.findByRole("table", { name: "Asset directory" });
+      expect(screen.queryByRole("button", { name: "Register asset" })).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "AS-001" }));
+      await screen.findByLabelText("Asset timeline");
+      expect(screen.queryByRole("button", { name: "Edit asset" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Model and survey" })).not.toBeInTheDocument();
+      fireEvent.click(navigation.getByRole("button", { name: "Asset Locator" }));
+      await screen.findByText(/^No scenes are initialized\./);
+      expect(screen.queryByRole("button", { name: "Configure scenes" })).not.toBeInTheDocument();
+    }
+  }
+  expect(fixture.connectionsGateway.query).toHaveBeenCalledTimes(1);
+  expect(fixture.assetDomainGateway.catalog).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByRole("button", { name: "Return to administration" }));
+  await screen.findByRole("region", { name: "Administration overview" });
+  expect(navigation.getByRole("button", { name: "Asset management" })).toBeVisible();
+  expect(navigation.getByRole("button", { name: "Integrations" })).toBeVisible();
+  fireEvent.click(navigation.getByRole("button", { name: "Assets" }));
+  await screen.findByRole("button", { name: "Register asset" });
+  fireEvent.click(screen.getByRole("button", { name: "AS-001" }));
+  await screen.findByRole("button", { name: "Model and survey" });
+});
 
 test.each([true, false])(
   "administration defaults respect capabilities and profile preview (canAdminister=%s)",

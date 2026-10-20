@@ -1,6 +1,8 @@
 import type { SiteMaterialAudit } from "../../../audit";
 import { createHash, randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
+import { sitePersonProfile } from '../../../users-rbac/adapters/postgres/site-people';
+import { evaluateSiteAccess } from '../../../users-rbac';
 import { runSiteOperation, SiteAccessDeniedError, AuthorizationUnavailableError,
   type SiteTransaction } from '../../../../persistence/site-operation';
 
@@ -57,7 +59,8 @@ function inspect(input: Inspection, success: boolean): Inspection {
 
 export class ImportBatches {
   private readonly source: ImportSource;
-  constructor(private readonly pool: Pick<Pool, 'connect'>, source: ImportSource, private readonly audit?: SiteMaterialAudit) {
+  constructor(private readonly pool: Pick<Pool, 'connect'>, source: ImportSource, private readonly audit?: SiteMaterialAudit,
+    private readonly requireAdministrator = false) {
     if (!source || ![source.organizationId, source.siteId, source.sourceId, source.adapterRevision,
       source.profileRevision, source.mappingRevision].every(id) ||
       typeof source.siteTimeZone !== 'string' || source.siteTimeZone.length > 100 ||
@@ -69,6 +72,13 @@ export class ImportBatches {
   private key(importId: string): string {
     return JSON.stringify([this.source.organizationId, this.source.siteId, this.source.sourceId, importId]);
   }
+  private async authorizeProfile(tx: SiteTransaction, actor: string, permission: 'imports.submit' | 'imports.review'): Promise<void> {
+    if (!this.requireAdministrator) return;
+    await tx.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [this.source.organizationId]);
+    if (await sitePersonProfile(tx, this.source.organizationId, this.source.siteId, actor) !== 'administrator' ||
+      !(await evaluateSiteAccess(tx, { ...this.source, userId: actor, permissions: [permission] })).allowed)
+      throw new SiteAccessDeniedError();
+  }
   private async run<T>(actor: string, importId: string, permission: 'imports.submit' | 'imports.review',
     write: boolean, action: (tx: SiteTransaction) => Promise<T>): Promise<T> {
     if (!uuid(importId)) throw new ImportBatchError('invalid-input');
@@ -78,6 +88,7 @@ export class ImportBatches {
     try {
       return await runSiteOperation(this.pool, { userId: actor, organizationId: this.source.organizationId,
         siteId: this.source.siteId, permissions: [permission] }, async tx => {
+        await this.authorizeProfile(tx, actor, permission);
         await tx.query("SET LOCAL lock_timeout = '5s'");
         await tx.query("SET LOCAL statement_timeout = '30s'");
         await tx.query("SET LOCAL idle_in_transaction_session_timeout = '30s'");
@@ -129,6 +140,7 @@ export class ImportBatches {
   async history(actor: string): Promise<ImportSummary[]> {
     return runSiteOperation(this.pool, { userId: actor, organizationId: this.source.organizationId,
       siteId: this.source.siteId, permissions: ['imports.review'] }, async tx => {
+      await this.authorizeProfile(tx, actor, 'imports.review');
       const result = await tx.query(`SELECT import_id AS "importId", original_filename AS "originalFilename",
         reporting_date::text AS "reportingDate", outcome, received_at AS "receivedAt", submitted_by AS "submittedBy",
         admitted_record_count AS "admittedRecordCount", reason_code AS "reasonCode", byte_length AS "byteLength"

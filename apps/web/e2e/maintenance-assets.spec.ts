@@ -11,7 +11,7 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    const { requests } = await installMaintenanceAssetsFixture(page);
+    const { requests } = await installMaintenanceAssetsFixture(page, "administrator");
     await page.goto("/");
     const navigation = page.getByRole("navigation", {
       name: "Main navigation",
@@ -161,6 +161,31 @@ for (const viewport of [
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    await expect(navigation.getByRole("button", { name: "Asset management", exact: true })).toBeVisible();
+    await expect(navigation.getByRole("button", { name: "Integrations", exact: true })).toBeVisible();
+    for (const profile of ["team-leader", "task-force", "technician"]) {
+      await page.getByRole("button", { name: "User menu" }).click();
+      await page.getByRole("combobox", { name: "Profile view" }).selectOption(profile);
+      await expect(page.getByRole("region", { name: "Profile preview" })).toBeVisible();
+      for (const name of ["Asset management", "Integrations", "Data administration", "Users & profiles"])
+        await expect(navigation.getByRole("button", { name, exact: true })).toHaveCount(0);
+      if (profile !== "technician") {
+        await navigation.getByRole("button", { name: "Assets", exact: true }).click();
+        await expect(page.getByRole("table", { name: "Asset directory" })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Register asset", exact: true })).toHaveCount(0);
+        await page.getByRole("button", { name: "DRIVE-01", exact: true }).click();
+        await expect(page.getByLabel("Asset timeline", { exact: true })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Edit asset", exact: true })).toHaveCount(0);
+        await expect(page.getByRole("button", { name: "Model and survey", exact: true })).toHaveCount(0);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: `/tmp/IOP-217-${profile}-preview-${viewport.width}.png`, fullPage: true });
+    }
+    await page.getByRole("button", { name: "Return to administration" }).click();
+    await expect(navigation.getByRole("button", { name: "Asset management", exact: true })).toBeVisible();
+    await expect(navigation.getByRole("button", { name: "Integrations", exact: true })).toBeVisible();
+    expect(requests.some(({ path }) => /\/(asset-domain|integrations)\//.test(path))).toBe(false);
+    await page.screenshot({ path: `/tmp/IOP-217-administrator-${viewport.width}.png`, fullPage: true });
   });
 }
 for (const profile of [
@@ -179,6 +204,8 @@ for (const profile of [
     const navigation = page.getByRole("navigation", {
       name: "Main navigation",
     });
+    for (const name of ["Asset management", "Integrations"])
+      await expect(navigation.getByRole("button", { name, exact: true })).toHaveCount(profile === "administrator" ? 1 : 0);
     if (profile === "technician") {
       await expect(navigation.getByRole("button", { name: "Maintenance", exact: true })).toHaveCount(0);
       await page.getByRole("region", { name: "Your maintenance assignments", exact: true })
@@ -205,11 +232,13 @@ for (const profile of [
       .click();
     await expect(
       page.getByRole("button", { name: "Register asset", exact: true }),
-    ).toHaveCount(1);
+    ).toHaveCount(profile === "administrator" ? 1 : 0);
     await page.getByRole("button", { name: "DRIVE-01", exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Edit asset", exact: true }),
-    ).toHaveCount(1);
+    ).toHaveCount(profile === "administrator" ? 1 : 0);
+    if (profile !== "administrator")
+      await expect(page.getByRole("button", { name: "Model and survey", exact: true })).toHaveCount(0);
     if (profile === "technician")
       await expect(
         page.getByText("Not authorized", { exact: true }),

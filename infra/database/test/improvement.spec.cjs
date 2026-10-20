@@ -228,7 +228,7 @@ beforeAll(async () => {
     const csv = '"Häufigkeit";"Dauer";"Bereich";"Betriebsmittelkennzeichen";"Meldetext";"Typ";"Meldegruppe"\r\n' + frequency + ';0 0:' + String(Math.floor(seconds / 60)).padStart(2, "0") + ':' + String(seconds % 60).padStart(2, "0") + ';Area A;=EQ-001;Jam;01;007\r\n0;0 0:00:00;Area A;=EQ-IDLE;Idle;01;007\r\n';
     expect((await runtime.imports.submit("admin", "Hitliste-" + day + ".csv", Buffer.from("\ufeff" + csv, "utf16le"))).outcome).toBe("succeeded");
   }
-  asset = await runtime.assets.save("leader", {
+  asset = await runtime.assets.save("admin", {
     key: randomUUID(),
     id: "",
     expectedRevision: 0,

@@ -85,6 +85,7 @@ beforeAll(async () => {
     await seedUser({ ...seed, IOP_SEED_USER_ID: user });
     await seedMembership({ ...seed, IOP_SEED_USER_ID: user });
   }
+  await admin("INSERT INTO users_rbac.profiles(organization_id,user_id,site_id,display_name,profile) VALUES($1,'demo-a',$2,'Demo administrator','administrator')", [scope.organizationId, scope.siteId]);
   runtime = new PlatformRuntime(new Pool({ ...configs.runtime, max: 5 }), {
     local: {
       organization: { id: scope.organizationId },

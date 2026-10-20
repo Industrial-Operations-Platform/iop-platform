@@ -4,7 +4,7 @@ import type { SourceTuple, DomainQuery, AssetType, SaveEnrichment, SaveMapping, 
 type Schema = components["schemas"];
 const errors: Record<string, string> = {
   invalid_asset_domain: "Check the asset model fields, reference capabilities and metadata types.",
-  asset_domain_denied: "Asset management requires current Administrator, Team Leader or Task Force access.",
+  asset_domain_denied: "Asset management requires current Administrator access.",
   asset_domain_missing: "The scoped asset or mapping is unavailable.",
   asset_domain_conflict: "The asset model or mapping changed. Reload before saving.",
   asset_domain_cycle: "This composition would create an asset cycle.",

@@ -1,5 +1,6 @@
 import type { SiteMaterialAudit } from "../../../audit";
 import type { Pool } from "pg";
+import { sitePersonProfile } from "../../../users-rbac/adapters/postgres/site-people";
 import {
   runSiteOperation,
   SiteAccessDeniedError,
@@ -47,6 +48,11 @@ export class PgWorkforce implements Store {
         );
         if (!(await this.directory.allowed(tx, actor, permission)))
           throw new SiteAccessDeniedError();
+        const administrator = await sitePersonProfile(
+          tx, this.scope.organizationId, this.scope.siteId, actor,
+        ) === "administrator";
+        if (permission === "workforce.administer" && !administrator)
+          throw new SiteAccessDeniedError();
         // One site write lease makes overlap, phone exclusivity and optimistic revisions atomic.
         await tx.query(
           "SELECT pg_advisory_xact_lock(hashtext('iop-workforce'),hashtext($1))",
@@ -57,7 +63,7 @@ export class PgWorkforce implements Store {
             tx,
             this.scope,
             await this.directory.allowed(tx, actor, "workforce.plan"),
-            await this.directory.allowed(tx, actor, "workforce.administer"),
+            administrator && await this.directory.allowed(tx, actor, "workforce.administer"),
             () => this.directory.people(tx),
             (ids) => this.directory.names(tx, ids),
             this.directory.audit,

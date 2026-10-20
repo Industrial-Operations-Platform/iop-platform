@@ -9,7 +9,7 @@ import { createOpenApiDocument } from "../src/host/openapi";
 import { domainFixture, enrichment, mappingInput } from "./asset-domain-fixture";
 describe("Asset domain transport", () => {
   let app: INestApplication,
-    actor = "leader";
+    actor = "admin";
   const f = domainFixture();
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -32,7 +32,7 @@ describe("Asset domain transport", () => {
     await app.close();
   });
   afterEach(() => {
-    actor = "leader";
+    actor = "admin";
   });
   test("publishes scoped type/reference/model/mapping and full-total Pareto contracts", async () => {
     await request(app.getHttpServer()).post("/api/v1/asset-domain/save").send(enrichment("sensor", "sensor")).expect(201);
@@ -50,7 +50,7 @@ describe("Asset domain transport", () => {
     actor = "tech";
     const denied = await request(app.getHttpServer()).post("/api/v1/asset-domain/catalog").send({}).expect(403);
     expect(denied.body.code).toBe("asset_domain_denied");
-    actor = "leader";
+    actor = "admin";
     await request(app.getHttpServer()).post("/api/v1/asset-domain/references?site=foreign").send({}).expect(400);
     await request(app.getHttpServer()).post("/api/v1/asset-domain/save").send({
       ...enrichment("sensor"),
@@ -60,5 +60,13 @@ describe("Asset domain transport", () => {
     await request(app.getHttpServer()).post("/api/v1/asset-domain/detail").send({
       assetId: "foreign"
     }).expect(404);
+  });
+  test.each(["leader", "task"])("%s can read operational records but cannot configure identities or source mappings", async (profile) => {
+    actor = profile;
+    const context = await request(app.getHttpServer()).post("/api/v1/asset-domain/catalog").send({}).expect(201);
+    expect(context.body.canManage).toBe(false);
+    await request(app.getHttpServer()).post("/api/v1/asset-domain/save").send(enrichment("sensor")).expect(403);
+    await request(app.getHttpServer()).post("/api/v1/asset-domain/save-mapping").send(mappingInput).expect(403);
+    await request(app.getHttpServer()).post("/api/v1/asset-domain/configure").send({ expectedRevision: 0, types: context.body.catalog.types }).expect(403);
   });
 });

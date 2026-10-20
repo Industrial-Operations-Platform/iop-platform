@@ -214,11 +214,10 @@ export function AssetsWorkspace({
     };
   }, [application, selectedId, from, to, source, version]);
   const canManage =
-    context?.canManage &&
-    (!profile ||
-      ["administrator", "team-leader", "task-force"].includes(profile));
+    context?.canManage && profile === "administrator";
   const refresh = () => setVersion((current) => current + 1);
   const save = async (input: SaveInput) => {
+    if (!canManage) return;
     const epoch = detailEpoch.current;
     setSaving(true);
     setError("");
@@ -355,7 +354,7 @@ export function AssetsWorkspace({
         ) : selected ? (
           <>
             <Panel>
-              {onManageModel && selected && <Button variant="secondary" onClick={()=>onManageModel(selected.id)}>{t("Model and survey")}</Button>}
+              {canManage && onManageModel && <Button variant="secondary" onClick={()=>onManageModel(selected.id)}>{t("Model and survey")}</Button>}
         <AssetDetails
                 asset={selected}
                 context={context}

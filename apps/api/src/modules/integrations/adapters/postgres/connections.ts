@@ -19,7 +19,7 @@ export class PgConnections implements ConnectionStore {
         return runSiteOperation(this.pool, { ...this.scope, userId: actor, permissions: [permission] }, async (tx) => {
             await tx.query("SELECT pg_advisory_xact_lock_shared(hashtext('iop-access'),hashtext($1))", [this.scope.organizationId]);
             const profile = await this.access.profile(tx, actor);
-            if (!['administrator', 'team-leader', 'task-force'].includes(profile) || (write && profile !== 'administrator') ||
+            if (profile !== 'administrator' ||
                 !await this.access.allowed(tx, actor, permission))
                 throw new ConnectionError("integration_denied");
             if (write)

@@ -1,5 +1,7 @@
 const {PostgreSqlContainer}=require('@testcontainers/postgresql');
 const {Client,Pool}=require('pg');
+const {readFileSync}=require('node:fs');
+const {join}=require('node:path');
 const {provision}=require('../dist/provision');
 const {migrate}=require('../dist/migrate');
 const {provisioningConfiguration}=require('../dist/configuration');
@@ -35,13 +37,13 @@ beforeAll(async()=>{
   pool=new Pool({...configs.runtime,max:5});connections=composeConnections(pool,scope);
 },90000);
 afterAll(async()=>{if(pool)await pool.end();if(container)await container.stop();});
-test('registry starts honestly unconfigured and all advanced profiles can inspect',async()=>{
-  for(const actor of ['admin','lead','task']){
+test('registry starts honestly unconfigured and only Administrator can inspect',async()=>{
+  for(const actor of ['admin']){
     const result=await connections.query(actor);
     expect(result.connections).toHaveLength(3);
     expect(result.connections.every(c=>c.lastSuccessfulConnection===null)).toBe(true);
   }
-  await expect(connections.query('tech')).rejects.toThrow();
+  for(const actor of ['lead','task','tech']) await expect(connections.query(actor)).rejects.toThrow();
   await expect(connections.query('foreign')).rejects.toThrow();
 });
 test('concurrent saves retain one projection and one immutable revision',async()=>{
@@ -50,7 +52,7 @@ test('concurrent saves retain one projection and one immutable revision',async()
   expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);
   expect(results.filter(r=>r.status==='rejected')).toHaveLength(1);
   const history=await connections.history('admin','wincc');expect(history.revisions).toHaveLength(1);
-  expect((await connections.query('task')).connections.find(c=>c.configuration.kind==='wincc').status).toBe('transport-pending');
+  expect((await connections.query('admin')).connections.find(c=>c.configuration.kind==='wincc').status).toBe('transport-pending');
   await expect(connections.save('task',{expectedRevision:1,configuration})).rejects.toThrow();
 });
 test('current profile rejects a stray Technician grant and revocation denies new reads',async()=>{
@@ -58,6 +60,14 @@ test('current profile rejects a stray Technician grant and revocation denies new
   await expect(connections.query('tech')).rejects.toThrow('integration_denied');
   await db('bootstrap',c=>c.query("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id='org-a' AND user_id='lead' AND site_id='site-a' AND role_id='integration-reader'"));
   await expect(connections.query('lead')).rejects.toThrow();
+});
+test('non-administrator profiles cannot inspect the registry through stale integration grants',async()=>{
+  for(const actor of ['lead','task']) {
+    for(const role of ['integration-reader','integration-manager']) await db('bootstrap',c=>c.query(
+      "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a',$1,'site-a',$2,true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",[actor,role]));
+    await expect(connections.query(actor)).rejects.toThrow('integration_denied');
+    await expect(connections.history(actor,'wincc')).rejects.toThrow('integration_denied');
+  }
 });
 test('runtime cannot mutate immutable revision evidence and RLS hides foreign registry',async()=>{
   await db('runtime',async c=>{
@@ -73,4 +83,22 @@ test('runtime cannot mutate immutable revision evidence and RLS hides foreign re
     throw new Error('rollback requested');
   })).rejects.toThrow('rollback requested');
   expect((await connections.query('admin')).connections.find(c=>c.configuration.kind==='wincc').revision).toBe(1);
+});
+test('configuration migration revokes obsolete profile grants and preserves operational reads, administrators and profileless native operators',async()=>{
+  const restricted=['assets-administrator','integration-reader','integration-manager','locator-manager','workforce-administrator','maintenance-administrator','site-operator','jobs-administrator'];
+  await db('bootstrap',async c=>{
+    await c.query("INSERT INTO users_rbac.users(user_id,is_active) VALUES('native-operator',true)");
+    await c.query("INSERT INTO users_rbac.organization_memberships(organization_id,user_id,is_active) VALUES('org-a','native-operator',true)");
+    await c.query("INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','native-operator','site-a','site-operator',true)");
+    for(const role of restricted) await c.query(
+      "INSERT INTO users_rbac.site_role_assignments(organization_id,user_id,site_id,role_id,is_active) VALUES('org-a','lead','site-a',$1,true) ON CONFLICT(organization_id,user_id,site_id,role_id) DO UPDATE SET is_active=true",[role]);
+    await c.query("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE user_id='admin' AND role_id='jobs-administrator'");
+  });
+  await db('migrator',c=>c.query(readFileSync(join(__dirname,'../migrations/20261020000000-administrator-configuration.sql'),'utf8')));
+  const grants=await db('bootstrap',c=>c.query("SELECT user_id,role_id,is_active FROM users_rbac.site_role_assignments WHERE organization_id='org-a' AND site_id='site-a'"));
+  expect(grants.rows.filter(row=>row.user_id==='lead'&&restricted.includes(row.role_id)).every(row=>!row.is_active)).toBe(true);
+  expect(grants.rows.find(row=>row.user_id==='lead'&&row.role_id==='assets-reader').is_active).toBe(true);
+  expect(grants.rows.find(row=>row.user_id==='admin'&&row.role_id==='assets-administrator').is_active).toBe(true);
+  expect(grants.rows.find(row=>row.user_id==='admin'&&row.role_id==='jobs-administrator').is_active).toBe(false);
+  expect(grants.rows.find(row=>row.user_id==='native-operator'&&row.role_id==='site-operator').is_active).toBe(true);
 });
