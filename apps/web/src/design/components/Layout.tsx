@@ -1,5 +1,11 @@
 import { t } from "../../localization/i18n";
-import type { ComponentProps, CSSProperties, ReactNode } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  type ComponentProps,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { appearanceIdentity, variablesForIdentity } from "../identity";
 import { useAppearance } from "../useAppearance";
 import "./components.css";
@@ -37,13 +43,30 @@ export function AppShell({
   skipLabel: string;
   className?: string;
 }) {
+  const shell = useRef<HTMLDivElement>(null);
+  const headerElement = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const element = headerElement.current;
+    if (!element) return;
+    const measure = () => {
+      shell.current?.style.setProperty(
+        "--shell-header-height",
+        `${element.getBoundingClientRect().height}px`,
+      );
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined"
+      ? undefined
+      : new ResizeObserver(measure);
+    observer?.observe(element);
+    return () => observer?.disconnect();
+  }, []);
   return (
-    <IdentityRoot className={className}>
+    <IdentityRoot ref={shell} className={`iop-shell ${className ?? ""}`}>
       <a className="iop-skip" href={`#${mainId}`}>
         {skipLabel}
       </a>
-      <header className="iop-top">{header}</header>
-      <aside className="iop-sidebar">
+      <header ref={headerElement} className="iop-top">
         {brandAction ? (
           <button
             type="button"
@@ -56,8 +79,9 @@ export function AppShell({
         ) : (
           <div className="iop-brand">{brand}</div>
         )}
-        {navigation}
-      </aside>
+        <div className="iop-header-actions">{header}</div>
+      </header>
+      <aside className="iop-sidebar">{navigation}</aside>
       <main id={mainId} className="iop-main">
         <div className="iop-content">{children}</div>
       </main>

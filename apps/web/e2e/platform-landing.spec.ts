@@ -97,8 +97,8 @@ async function graphicalCapabilities(page: Page) {
     .toEqual(["distribution", "equipment", "history", "people", "planning", "signals"]);
   await expect(scene.locator(".intro-connection[data-feature]")).toHaveCount(6);
   await expect(scene.locator(".intro-capability .intro-scene-float")).toHaveCount(6);
-  await expect(scene.locator(".intro-hub-mark")).toHaveAttribute("href", "/iop-mark.svg?v=unified-record");
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/iop-mark.svg?v=unified-record");
+  await expect(scene.locator(".intro-hub-mark")).toHaveAttribute("href", "/iop-mark.svg?v=unified-record-v2");
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/iop-mark.svg?v=unified-record-v2");
   expect(await capabilities.evaluateAll((nodes) => nodes.every((node) => {
     const box = node.getBoundingClientRect();
     const sceneBox = node.closest(".intro-scene")!.getBoundingClientRect();
@@ -107,7 +107,7 @@ async function graphicalCapabilities(page: Page) {
   }))).toBe(true);
   const mark = page.locator(".intro-brand img");
   await expect(mark).toBeVisible();
-  await expect(mark).toHaveAttribute("src", "/iop-mark.svg?v=unified-record");
+  await expect(mark).toHaveAttribute("src", "/iop-mark.svg?v=unified-record-v2");
   await expect.poll(() => mark.evaluate((node) => {
     const image = node as HTMLImageElement;
     return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;

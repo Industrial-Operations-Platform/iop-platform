@@ -506,8 +506,10 @@ export function WorkspaceApp({
       brand={
         <>
           <PlatformMark />
-          {t(" IOP")}
-          <span>{t("Industrial Operations Platform")}</span>
+          <span className="iop-brand-copy">
+            <strong>IOP</strong>
+            <span>{t("Industrial Operations Platform")}</span>
+          </span>
         </>
       }
       navigation={

@@ -289,42 +289,71 @@
   padding: 14px;
   border-radius: 6px;
 }
+.iop-shell {
+  --shell-rail-width: var(--iop-shellRailWidth);
+}
 .iop-ui .iop-top {
-  height: 64px;
+  min-height: var(--iop-shellHeaderHeight);
   background: var(--iop-surface);
   border-bottom: 1px solid var(--iop-line);
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  justify-content: space-between;
   align-items: center;
-  padding: 0 28px;
+  gap: 8px 24px;
+  padding: 12px 24px;
   position: sticky;
   top: 0;
-  z-index: 5;
+  z-index: 7;
+}
+.iop-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--iop-toolbarGap);
+  min-width: 0;
+  max-width: 100%;
+  margin-left: auto;
+}
+.iop-header-actions > * {
+  min-width: 0;
+}
+.iop-header-actions > .iop-popover {
+  flex-shrink: 0;
+}
+.iop-header-actions > .iop-field {
+  flex-shrink: 0;
+  max-width: 100%;
 }
 .iop-ui .iop-top .iop-field {
   gap: 12px;
 }
+.iop-ui .iop-top .iop-header-actions .iop-select {
+  min-height: var(--iop-toolbarControlSize);
+}
 .iop-ui .iop-sidebar {
   position: fixed;
-  top: 0;
+  top: var(--shell-header-height, var(--iop-shellHeaderHeight));
   bottom: 0;
   left: 0;
-  width: 195px;
+  width: var(--shell-rail-width);
   background: var(--iop-surface);
   border-right: 1px solid var(--iop-line);
   z-index: 6;
-  padding: 25px 15px;
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
 }
 .iop-ui .iop-brand {
-  font-size: var(--iop-brandSize);
-  font-weight: var(--iop-brandWeight);
-  letter-spacing: 1px;
-  padding: 0 0 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-height: var(--iop-toolbarControlSize);
+  padding: 0;
 }
 .iop-ui button.iop-brand {
-  display: block;
   border: 0;
   background: transparent;
   color: inherit;
@@ -332,27 +361,29 @@
   text-align: left;
   cursor: pointer;
 }
-.iop-ui .iop-brand span {
+.iop-brand > img {
   display: block;
-  font-size: var(--iop-eyebrowSize);
-  font-weight: var(--iop-mediumWeight);
-  letter-spacing: 0;
-  color: var(--iop-muted);
-  margin-top: 6px;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
 }
-.iop-ui .iop-sidebar nav {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  margin-top: 44px;
-  background: var(--iop-activeSurface);
-  color: var(--iop-activeInk);
-  padding: 14px 10px;
-  border-radius: 6px;
-  font-weight: var(--iop-metricWeight);
+.iop-brand-copy {
+  display: grid;
+  gap: 2px;
+}
+.iop-brand-copy strong {
+  font-size: var(--iop-brandSize);
+  font-weight: var(--iop-brandWeight);
+  line-height: var(--iop-titleLineHeight);
+}
+.iop-brand-copy > span {
+  font-size: var(--iop-smallSize);
+  font-weight: var(--iop-mediumWeight);
+  line-height: var(--iop-titleLineHeight);
+  color: var(--iop-muted);
 }
 .iop-ui .iop-main {
-  margin-left: 195px;
+  margin-left: var(--shell-rail-width);
   padding: 28px 30px 90px;
   min-width: 0;
 }
@@ -417,7 +448,7 @@
 .iop-ui .iop-view-navigation {
   position: fixed;
   bottom: 0;
-  left: 195px;
+  left: var(--shell-rail-width);
   right: 0;
   display: flex;
   flex-direction: row;
@@ -456,15 +487,14 @@
   top: 5px;
 }
 @media (max-width: 1050px) {
-  .iop-ui .iop-sidebar {
-    width: 155px;
+  .iop-shell {
+    --shell-rail-width: var(--iop-shellRailCompactWidth);
+  }
+  .iop-brand-copy > span {
+    display: none;
   }
   .iop-ui .iop-main {
-    margin-left: 155px;
     padding: 22px 18px 90px;
-  }
-  .iop-ui .iop-view-navigation {
-    left: 155px;
   }
   .iop-ui .iop-metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -477,31 +507,39 @@
   .iop-ui .iop-sidebar {
     position: static;
     width: auto;
+    border-right: 0;
     border-bottom: 1px solid var(--iop-line);
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    padding: 12px 15px;
+    padding: 8px 12px;
   }
-  .iop-ui .iop-brand {
+  .iop-brand-copy strong {
     font-size: var(--iop-brandCompactSize);
-    padding: 0;
   }
-  .iop-ui .iop-brand span {
-    display: none;
-  }
-  .iop-ui .iop-sidebar nav {
-    margin: 0;
-    padding: 8px;
+  .iop-brand > img {
+    width: 32px;
+    height: 32px;
   }
   .iop-ui .iop-main {
     margin-left: 0;
     padding: 18px 12px 90px;
   }
   .iop-ui .iop-top {
-    height: 56px;
-    padding: 0 12px;
+    height: auto;
+    min-height: 64px;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .iop-header-actions {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .iop-header-actions:has(.iop-search-control[data-expanded="true"]) {
+    flex-basis: 100%;
+  }
+  .iop-header-actions .iop-search-control[data-expanded="true"] {
+    flex: 1;
+    width: auto;
   }
   .iop-ui .iop-view-navigation {
     left: 0;
@@ -556,9 +594,10 @@
 }
 
 .iop-ui .iop-sidebar .iop-side-navigation {
+  display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 0;
+  gap: 4px;
+  margin: 0;
   background: transparent;
   min-height: 0;
   overflow-y: auto;
@@ -568,39 +607,35 @@
   padding: 4px;
   margin-inline: -4px;
 }
-.iop-ui .iop-sidebar .iop-brand,
 .iop-ui .iop-side-navigation .iop-button {
   flex-shrink: 0;
 }
 .iop-ui .iop-side-navigation .iop-button {
+  justify-content: flex-start;
   text-align: left;
-  padding: 14px 10px;
+  padding: 10px 12px;
+  font-weight: var(--iop-labelWeight);
   color: var(--iop-muted);
+}
+.iop-ui .iop-side-navigation .iop-button:hover {
+  background: var(--iop-canvas);
+  color: var(--iop-ink);
 }
 .iop-ui .iop-side-navigation [aria-current="page"] {
   background: var(--iop-activeSurface);
   color: var(--iop-activeInk);
 }
-.iop-ui .iop-top {
-  gap: 16px;
-  flex-wrap: wrap;
-  min-height: 64px;
-  height: auto;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
 @media (max-width: 620px) {
   .iop-ui .iop-sidebar .iop-side-navigation {
     flex-direction: row;
-    flex-wrap: wrap;
-    flex: 1;
     min-width: 0;
-    overflow: visible;
+    overflow-x: auto;
     scrollbar-gutter: auto;
     margin-inline: 0;
   }
   .iop-ui .iop-side-navigation .iop-button {
-    padding: 8px;
+    padding: 8px 12px;
+    white-space: nowrap;
   }
 }
 
@@ -977,10 +1012,6 @@
   background: var(--iop-canvas);
   border-radius: var(--iop-cardRadius);
 }
-.iop-ui .iop-top {
-  gap: 1rem;
-  padding-left: 215px;
-}
 .iop-account {
   display: flex;
   align-items: center;
@@ -1036,12 +1067,6 @@
   min-width: 0;
 }
 @media (max-width: 620px) {
-  .iop-ui .iop-top {
-    padding: 0.5rem 0.75rem;
-    gap: 0.5rem;
-    height: auto;
-    min-height: 64px;
-  }
   .iop-account {
     margin-right: auto;
   }
@@ -1243,7 +1268,7 @@
   right: 0;
   top: calc(100% + 10px);
   width: min(20rem, calc(100vw - 24px));
-  max-height: min(36rem, calc(100dvh - 90px));
+  max-height: min(36rem, calc(100dvh - var(--shell-header-height, var(--iop-shellHeaderHeight)) - 24px));
   overflow: auto;
   padding: 8px;
   border: 1px solid var(--iop-line);
@@ -1489,7 +1514,7 @@
 @media (max-width: 620px) {
   .iop-ui .iop-notifications .iop-popover-panel {
     position: fixed;
-    top: 70px;
+    top: calc(var(--shell-header-height, var(--iop-shellHeaderHeight)) + 8px);
     right: 12px;
   }
 }
