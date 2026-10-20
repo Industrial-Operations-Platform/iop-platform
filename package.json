@@ -49,7 +49,8 @@
     "local:linked-maintenance-demo": "node scripts/local/linked-maintenance-demo.cjs",
     "local:handover-demo": "node scripts/local/handover-demo.cjs",
     "local:workforce-demo": "node scripts/local/workforce-demo-host.cjs",
-    "local:operational-demos": "node scripts/local/operational-demos.cjs"
+    "local:operational-demos": "node scripts/local/operational-demos.cjs",
+    "local:team-availability-demo": "node scripts/local/team-availability-demo.cjs"
   },
   "dependencies": {
     "node-pg-migrate": "9.0.0",
