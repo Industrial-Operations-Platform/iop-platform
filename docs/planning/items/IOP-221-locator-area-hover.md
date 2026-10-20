@@ -2,9 +2,10 @@
 
 ## Status and goal
 
-Completed locally. The owner's 2026-10-20 request is to show the Bereich name when the
+Completed; published to origin. The owner's 2026-10-20 request is to show the Bereich name when the
 pointer passes over its tile in Asset Locator / Plant overview.
-The owner has approved merging the story into develop and pushing both to origin.
+The owner approved merging the story into develop and pushing both to origin;
+the approved publication succeeded.
 
 ## Scope and acceptance
 
@@ -25,5 +26,5 @@ private revision activation or architectural changes are required.
 ## Evidence
 
 [Completed execution and verification](../completed/IOP-221-locator-area-hover-plan.md).
-[Approved publication](../active/IOP-221-publication-plan.md).
+[Verified publication](../completed/IOP-221-publication-plan.md).
 Service activation remains outside this increment.

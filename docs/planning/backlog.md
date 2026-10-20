@@ -8,7 +8,7 @@ See the [workflow](workflow.md).
 
 | Task context | Status |
 | --- | --- |
-| [IOP-211 — Locator equipment models and administrator-owned editing](items/IOP-211-locator-models-and-access.md) | Completed; integrated locally, publication pending |
+| [IOP-211 — Locator equipment models and administrator-owned editing](items/IOP-211-locator-models-and-access.md) | Completed; published through develop |
 
 ## Owner-authorized independent completion — 2026-10-14
 
@@ -407,6 +407,6 @@ pending; source image colors do not establish live equipment health.
 | [IOP-216 — Balanced workspace header and platform mark](items/IOP-216-shell-branding.md) | Completed; published |
 | [IOP-217 — Administrator configuration and operational demonstrations](items/IOP-217-admin-configuration-demos.md) | Completed; published to origin, locally active |
 | [IOP-218 — Team Leader distribution and absence demonstrations](items/IOP-218-team-availability.md) | Completed; published to origin, locally active |
-| [IOP-219 — Private editing references and accurate Locator curves](items/IOP-219-locator-reference-curves.md) | In progress; code integrated locally, private model activation pending |
+| [IOP-219 — Private editing references and accurate Locator curves](items/IOP-219-locator-reference-curves.md) | In progress; code published through develop, private model activation pending |
 | [IOP-220 — Align record titles with their supporting content](items/IOP-220-record-title-alignment.md) | Completed; published |
-| [IOP-221 — Show Locator area names on hover](items/IOP-221-locator-area-hover.md) | Completed locally |
+| [IOP-221 — Show Locator area names on hover](items/IOP-221-locator-area-hover.md) | Completed; published to origin |

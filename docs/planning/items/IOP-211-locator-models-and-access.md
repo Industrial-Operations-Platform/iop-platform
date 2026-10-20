@@ -2,9 +2,10 @@
 
 ## Status and request
 
-Completed locally, including the explicit visual/navigation review follow-up.
-Integrated into local develop with IOP-219 on 2026-10-20. Remote publication
-approval remains pending. The owner requests broader provisional
+Completed, including the explicit visual/navigation review follow-up.
+Integrated into develop with IOP-219 on 2026-10-20 and published through develop
+under the owner's [IOP-221 publication approval](../completed/IOP-221-publication-plan.md).
+The retained review branch was not separately pushed by that publication. The owner requests broader provisional
 3D modelling from the supplied private Bereich schematics, correct motor/photoelectric-sensor identities, stricter
 administrator-owned Assets/editing, reader-only operational navigation, aligned
 area controls and a clear integrated Handover entry point. This supersedes the

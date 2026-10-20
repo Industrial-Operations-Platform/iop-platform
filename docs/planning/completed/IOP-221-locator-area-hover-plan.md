@@ -1,6 +1,6 @@
 # IOP-221 — Area hover label execution plan
 
-Completed locally. Authorized by the owner's 2026-10-20 hover request.
+Completed and published. Authorized by the owner's 2026-10-20 hover request.
 Story branch: `feature/IOP-221-locator-area-hover`, created from clean `develop`
 at `b41e395`. [Permanent scope](../items/IOP-221-locator-area-hover.md).
 
@@ -52,6 +52,7 @@ No source images, durable scenes, permissions or running installation were chang
 ## Closure
 
 All acceptance criteria are complete. The item/backlog are synchronized and this
-plan is archived under `completed/`. Commit the validated increment on the recorded
-story branch; merging, pushing to origin and service activation require the owner's
-publication/activation instruction. The separate IOP-219 activation plan stays open.
+plan is archived under `completed/`. Implementation `c74e65d` is committed on the
+recorded story branch. The owner subsequently approved merging it into develop and
+pushing both to origin; see the [verified publication](IOP-221-publication-plan.md).
+Service activation was not requested. The separate IOP-219 activation plan stays open.
