@@ -49,3 +49,9 @@ the selected-date entries, while formal shift context retains its separate acces
 rule. Regression coverage records both populated and empty dates. No grant was
 broadened. Implementation is committed locally; merge, push and deployment await
 separate authorization.
+
+## Approved local integration — 2026-10-20
+
+The owner explicitly requested merging all pending IOP-215 and IOP-216 commits
+into local `develop`. [Integration plan](../active/IOP-215-develop-integration-plan.md) records execution.
+Remote publication remains a separate approval.
