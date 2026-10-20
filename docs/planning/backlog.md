@@ -400,4 +400,4 @@ pending; source image colors do not establish live equipment health.
 | [IOP-215 — Operational usability and loading improvements](items/IOP-215-operational-refinements.md) | Completed; published |
 | [IOP-216 — Balanced workspace header and platform mark](items/IOP-216-shell-branding.md) | Completed; published |
 | [IOP-217 — Administrator configuration and operational demonstrations](items/IOP-217-admin-configuration-demos.md) | Completed; published to origin, locally active |
-| [IOP-218 — Team Leader distribution and absence demonstrations](items/IOP-218-team-availability.md) | Completed; local review |
+| [IOP-218 — Team Leader distribution and absence demonstrations](items/IOP-218-team-availability.md) | Completed; published to origin, locally active |

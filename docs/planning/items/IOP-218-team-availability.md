@@ -34,4 +34,6 @@ vacation/sickness examples and additional training/compensation/accident/mainten
 states. Repeated commands preserve the examples, prior formal records and unrelated
 data. The owner subsequently authorized integration into develop, publication of
 both story branches and develop to origin, and local Docker image updates.
-[Publication and activation plan](../active/IOP-218-publication-plan.md).
+[Publication and activation evidence](../completed/IOP-218-publication-plan.md).
+Both stories are integrated into develop and published to origin; updated local
+Docker services are healthy and all twelve availability scenarios preserved.
