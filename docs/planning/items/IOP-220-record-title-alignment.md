@@ -25,3 +25,9 @@ Follow the [visual identity](../../design/visual-identity.md),
 ## Evidence and remaining work
 
 [Execution evidence](../completed/IOP-220-record-title-alignment-plan.md).
+
+## Approved publication — 2026-10-20
+
+The owner explicitly approved merging `fix/IOP-220-record-title-alignment` into
+`develop` and pushing both branches to `origin`. Publication is in progress;
+[publication plan](../active/IOP-220-publication-plan.md) records this approved slice.
