@@ -6,6 +6,11 @@ export interface CameraState {
   position: number[];
   target: number[];
 }
+export interface HoverTarget {
+  id: string;
+  x: number;
+  y: number;
+}
 export interface CameraControls {
   snapshot(): CameraState;
   reset(): void;
@@ -170,6 +175,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
   selectedId: string;
   problemAssetIds: Set<string>;
   onSelect: (id: string) => void;
+  onHover?: (target: HoverTarget | null) => void;
   onPlace?: (point: {
     x: number;
     y: number;
@@ -208,7 +214,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
   light.position.set(30, 90, 40);
   scene.add(light);
   let disposed = false;
-  const contextLost = (event: Event) => { event.preventDefault(); if (!disposed) input.onContextLost?.(); };
+  const contextLost = (event: Event) => { event.preventDefault(); if (!disposed) { input.onHover?.(null); input.onContextLost?.(); } };
   renderer.domElement.addEventListener('webglcontextlost', contextLost);
   const prepareTexture = (texture: THREE.Texture, maxDimension = 2048) => {
     try { boundReferenceTexture(texture, Math.min(maxDimension, renderer.capabilities.maxTextureSize)); return true; }
@@ -216,9 +222,11 @@ export function createSceneRenderer(container: HTMLElement, input: {
   };
   const render = () => {
     if (disposed) return;
+    input.onHover?.(null);
     renderer.render(scene, camera);
     input.onCameraChange?.({ position: camera.position.toArray(), target: controls.target.toArray() });
   };
+  const tileSurfaces: THREE.Object3D[] = [];
   const objects = input.scene.content.components.map((c, index) => {
     const tile = input.tiles?.[index];
     if (!tile)
@@ -230,6 +238,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
     const plane = new THREE.Mesh(new THREE.PlaneGeometry(tileWidth, tileDepth), material);
     plane.rotation.x = -Math.PI / 2;
     group.add(plane);
+    tileSurfaces.push(plane);
     const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(tileWidth, 0.25, tileDepth)), new THREE.LineBasicMaterial({ color: input.palette.line }));
     group.add(edge);
     // Overview thumbnails batch simplified solids. Opening a scene retains the full templates.
@@ -274,15 +283,33 @@ export function createSceneRenderer(container: HTMLElement, input: {
   controls.addEventListener('change', render);
   const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
   let down = { x: 0, y: 0 };
-  const press = (event: PointerEvent) => { down = { x: event.clientX, y: event.clientY }; };
+  const clearHover = () => input.onHover?.(null);
+  const hitsAt = (event: PointerEvent, targets: THREE.Object3D[] = objects) => {
+    const bounds = renderer.domElement.getBoundingClientRect();
+    pointer.set((event.clientX - bounds.left) / bounds.width * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
+    raycaster.setFromCamera(pointer, camera);
+    return raycaster.intersectObjects(targets, true);
+  };
+  const hover = (event: PointerEvent) => {
+    if (!input.onHover) return;
+    if (event.buttons || event.pointerType === 'touch') { clearHover(); return; }
+    // Tile surfaces cover the whole area without testing every thumbnail or edge.
+    const hit = hitsAt(event, input.tiles ? tileSurfaces : objects).find(hit => (hit.object as THREE.Mesh).isMesh);
+    const bounds = container.getBoundingClientRect();
+    input.onHover(hit ? { id: hit.object.userData.componentId as string, x: event.clientX - bounds.left, y: event.clientY - bounds.top } : null);
+  };
+  const press = (event: PointerEvent) => { clearHover(); down = { x: event.clientX, y: event.clientY }; };
   const select = (event: PointerEvent) => { if (Math.hypot(event.clientX - down.x, event.clientY - down.y) > 5)
-    return; const bounds = renderer.domElement.getBoundingClientRect(); pointer.set((event.clientX - bounds.left) / bounds.width * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1); raycaster.setFromCamera(pointer, camera); const hit = raycaster.intersectObjects(objects, true)[0]; if (hit) {
+    return; const hit = hitsAt(event)[0]; if (hit) {
     input.onSelect(hit.object.userData.componentId as string);
     return;
   } const point = raycaster.intersectObject(floor)[0]?.point; if (point && input.onPlace)
     input.onPlace({ x: Math.max(0, Math.min(1, point.x / SCALE + 0.5)), y: Math.max(0, Math.min(1, point.z / depth + 0.5)) }); };
   renderer.domElement.addEventListener('pointerdown', press);
   renderer.domElement.addEventListener('pointerup', select);
+  renderer.domElement.addEventListener('pointermove', hover);
+  renderer.domElement.addEventListener('pointerleave', clearHover);
+  renderer.domElement.addEventListener('pointercancel', clearHover);
   resize();
   const result: CameraControls = { snapshot() { return { position: camera.position.toArray(), target: controls.target.toArray() }; }, reset() { camera.position.set(80, 95, 105); controls.target.set(0, 0, 0); controls.update(); render(); }, top() { camera.position.set(0, 140, 0.01); controls.target.set(0, 0, 0); controls.update(); render(); }, zoom(factor) { camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target); controls.update(); render(); }, rotate(delta) { const offset = camera.position.clone().sub(controls.target); offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), delta); camera.position.copy(controls.target).add(offset); controls.update(); render(); }, focus(id) { const object = objects.find(o => o.userData.componentId === id); if (!object)
       return; const offset = camera.position.clone().sub(controls.target).normalize().multiplyScalar(45); controls.target.copy(object.position); camera.position.copy(object.position).add(offset); controls.update(); render(); }, select(id) {
@@ -295,7 +322,7 @@ export function createSceneRenderer(container: HTMLElement, input: {
       });
     }));
     render();
-  }, dispose() { if (disposed) return; disposed = true; renderer.domElement.removeEventListener('webglcontextlost', contextLost); observer?.disconnect(); window.removeEventListener('resize', resize); controls.removeEventListener('change', render); renderer.domElement.removeEventListener('pointerdown', press); renderer.domElement.removeEventListener('pointerup', select); controls.dispose(); const materials = new Set<THREE.Material>(), geometries = new Set<THREE.BufferGeometry>(); scene.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.geometry)
+  }, dispose() { if (disposed) return; disposed = true; clearHover(); renderer.domElement.removeEventListener('webglcontextlost', contextLost); observer?.disconnect(); window.removeEventListener('resize', resize); controls.removeEventListener('change', render); renderer.domElement.removeEventListener('pointerdown', press); renderer.domElement.removeEventListener('pointerup', select); renderer.domElement.removeEventListener('pointermove', hover); renderer.domElement.removeEventListener('pointerleave', clearHover); renderer.domElement.removeEventListener('pointercancel', clearHover); controls.dispose(); const materials = new Set<THREE.Material>(), geometries = new Set<THREE.BufferGeometry>(); scene.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.geometry)
       geometries.add(mesh.geometry); if (mesh.material)
       (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach(m => materials.add(m)); }); geometries.forEach(g => g.dispose()); materials.forEach(m => { const material = m as THREE.MeshStandardMaterial; material.map?.dispose(); m.dispose(); }); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); } };
   return result;

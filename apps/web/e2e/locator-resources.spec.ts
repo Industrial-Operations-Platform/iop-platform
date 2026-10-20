@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { installDesktopConsistencyFixture } from "./desktop-consistency-fixture";
 import type { Scene } from "../src/features/asset-locator/domain/models";
 
-async function installLocatorFixture(page: Page, canManage: boolean) {
+async function installLocatorFixture(page: Page, canManage: boolean, appearance: 'light' | 'dark' = 'light') {
   const base = await installDesktopConsistencyFixture(page);
   const referenceRequests: string[] = [], searches: unknown[] = [];
   const scenes: Scene[] = Array.from({ length: 71 }, (_, index) => ({
@@ -27,8 +27,8 @@ async function installLocatorFixture(page: Page, canManage: boolean) {
     if (path.endsWith("/search")) { searches.push(input); return route.fulfill({ json: { results: [], problems: { items: [], coverage: [] }, total: 0, limit: 200 } }); }
     throw new Error(`Unexpected Locator fixture request ${path}`);
   });
-  await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
-  await page.addInitScript(() => { localStorage.setItem("iop.language", "en"); localStorage.setItem("iop.appearance", "light"); });
+  await page.emulateMedia({ colorScheme: appearance, reducedMotion: "reduce" });
+  await page.addInitScript(value => { localStorage.setItem("iop.language", "en"); localStorage.setItem("iop.appearance", value); }, appearance);
   await page.goto("/");
   await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("button", { name: "Asset Locator", exact: true }).click();
   return { ...base, referenceRequests, searches };
@@ -54,6 +54,74 @@ const viewports = [
   { name: "desktop", width: 1440, height: 900 },
   { name: "mobile", width: 390, height: 844 },
 ];
+
+for (const viewport of viewports) {
+  for (const appearance of ['light', 'dark'] as const) {
+    test(`Locator area hover names follow actual tiles in ${appearance} on ${viewport.name}`, async ({ page }, info) => {
+      await page.setViewportSize(viewport);
+      const errors: string[] = [];
+      page.on('pageerror', error => errors.push(error.message));
+      const fixture = await installLocatorFixture(page, false, appearance);
+      const main = page.getByRole('main');
+      await expect(page.locator('.iop-ui').first()).toHaveAttribute('data-appearance', appearance);
+      const canvas = main.locator('.locator-canvas canvas');
+      await expect(canvas).toBeVisible();
+      await main.getByRole('button', { name: 'Top view', exact: true }).click();
+      await canvas.scrollIntoViewIfNeeded();
+      const bounds = (await canvas.boundingBox())!;
+      const center = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
+      // The top camera sees row 3, column 5 at the center of the 11-column grid.
+      const column = (100 / 11) * bounds.height / (2 * 140 * Math.tan(Math.PI / 8));
+      const tooltip = page.getByRole('tooltip');
+      await page.mouse.move(center.x, center.y);
+      await expect(tooltip).toHaveText('Assembly area 38');
+      await page.mouse.move(center.x - column, center.y);
+      await expect(tooltip).toHaveText('Assembly area 37');
+      await page.mouse.move(center.x - column / 2, center.y);
+      await expect(tooltip).toHaveCount(0);
+      // The rightmost tile exercises label containment close to the narrow edge.
+      await page.mouse.move(center.x + column * 5, center.y);
+      await expect(tooltip).toHaveText('Assembly area 43');
+      const label = (await tooltip.boundingBox())!;
+      expect(label.x).toBeGreaterThanOrEqual(bounds.x);
+      expect(label.x + label.width).toBeLessThanOrEqual(bounds.x + bounds.width);
+      expect(label.y + label.height).toBeLessThanOrEqual(bounds.y + bounds.height);
+      await page.screenshot({ path: info.outputPath('locator-area-hover.png') });
+      await canvas.dispatchEvent('pointercancel', { pointerId: 1, pointerType: 'mouse' });
+      await expect(tooltip).toHaveCount(0);
+      await page.mouse.move(center.x, center.y);
+      await expect(tooltip).toHaveText('Assembly area 38');
+      await page.mouse.move(bounds.x + 4, bounds.y + 4);
+      await expect(tooltip).toHaveCount(0);
+      await page.mouse.move(center.x, center.y);
+      await expect(tooltip).toHaveText('Assembly area 38');
+      await page.mouse.move(bounds.x - 2, bounds.y + 4);
+      await expect(tooltip).toHaveCount(0);
+      await page.mouse.move(center.x, center.y);
+      await expect(tooltip).toHaveText('Assembly area 38');
+      await canvas.dispatchEvent('wheel', { deltaY: 100, bubbles: true, cancelable: true });
+      await expect(tooltip).toHaveCount(0);
+      await page.mouse.down();
+      await page.mouse.move(center.x + 20, center.y + 20, { steps: 3 });
+      await page.mouse.up();
+      await expect(tooltip).toHaveCount(0);
+      await expect(main.locator('.locator-scene-card')).toHaveCount(71);
+      await main.getByRole('button', { name: 'Top view', exact: true }).click();
+      await canvas.scrollIntoViewIfNeeded();
+      const resetBounds = (await canvas.boundingBox())!;
+      await page.mouse.move(resetBounds.x + resetBounds.width / 2, resetBounds.y + resetBounds.height / 2);
+      await expect(tooltip).toHaveText('Assembly area 38');
+      await page.mouse.down();
+      await expect(tooltip).toHaveCount(0);
+      await page.mouse.up();
+      await expect(main.getByRole('button', { name: 'Back to overview', exact: true })).toBeVisible();
+      await expect(tooltip).toHaveCount(0);
+      expect(fixture.referenceRequests).toEqual([]);
+      expect(fixture.unexpectedRequests).toEqual([]);
+      expect(errors).toEqual([]);
+    });
+  }
+}
 
 for (const viewport of viewports) {
   for (const canManage of [false, true]) {
