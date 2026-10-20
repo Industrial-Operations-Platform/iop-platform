@@ -4,8 +4,11 @@
   white-space: pre-wrap;
 }
 
-.iop-improvement-title {
+.iop-ui .iop-button.iop-improvement-title {
   text-align: left;
+  justify-content: flex-start;
+  padding-inline: 0;
+  border-inline-width: 0;
 }
 .iop-improvement-collection {
   min-width: 44rem;
@@ -13,6 +16,7 @@
 .iop-improvement-title + small {
   display: block;
   margin-top: 0.35rem;
+  margin-inline-start: 8px;
   color: var(--iop-muted);
   font-weight: var(--iop-regularWeight);
 }

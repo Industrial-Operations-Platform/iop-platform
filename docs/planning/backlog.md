@@ -401,3 +401,4 @@ pending; source image colors do not establish live equipment health.
 | [IOP-216 — Balanced workspace header and platform mark](items/IOP-216-shell-branding.md) | Completed; published |
 | [IOP-217 — Administrator configuration and operational demonstrations](items/IOP-217-admin-configuration-demos.md) | Completed; published to origin, locally active |
 | [IOP-218 — Team Leader distribution and absence demonstrations](items/IOP-218-team-availability.md) | Completed; published to origin, locally active |
+| [IOP-220 — Align record titles with their supporting content](items/IOP-220-record-title-alignment.md) | Completed |
