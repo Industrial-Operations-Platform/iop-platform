@@ -78,7 +78,7 @@ export function FormalHandoverWorkspace({ application, departmentId = "", onEntr
       {!department && <p>{t("Choose a department to create a shift record.")}</p>}
       {department && !shifts.length && !loading && <Panel variant="empty">{t("No planned Workforce shift exists in this period. Add actual assignments in Workforce before creating a record.")}</Panel>}
       <p>{t("{0} of {1} records shown.", [page.records.length, page.total])}</p>
-      <div className="handover-summary-cards">{page.records.map((item) => <Button key={item.id} variant="secondary" className="handover-summary-card" onClick={() => void perform(() => open(item.id))}>
+      <div className="handover-summary-cards handover-summary-cards--formal">{page.records.map((item) => <Button key={item.id} variant="secondary" className="handover-summary-card" onClick={() => void perform(() => open(item.id))}>
         <strong>{item.content.title}</strong><span className="handover-card-location">{item.departmentLabel}{item.areaLabel && ` · ${item.areaLabel}`}</span>
         <span>{item.shift.date} · {item.shift.label}</span><Badge tone={item.state === "closed" ? "success" : "neutral"}>{formalState(item.state)}</Badge>
       </Button>)}</div>

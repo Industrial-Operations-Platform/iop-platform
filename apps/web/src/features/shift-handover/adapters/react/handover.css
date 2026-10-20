@@ -278,6 +278,9 @@
   color: var(--iop-link);
   font-weight: var(--iop-labelWeight);
 }
+.handover-summary-cards--formal > .handover-summary-card > span {
+  margin-inline-start: 8px;
+}
 .handover-summary-card > span {
   font-size: var(--iop-captionSize);
   font-weight: var(--iop-regularWeight);

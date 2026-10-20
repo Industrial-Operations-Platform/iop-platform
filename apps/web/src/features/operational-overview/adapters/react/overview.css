@@ -6,7 +6,8 @@
 .overview-search-panel .overview-groups { gap: 10px; }
 .overview-results { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; max-height: 26rem; overflow: auto; }
 .overview-result { padding-bottom: 10px; border-bottom: 1px solid var(--iop-line); min-width: 0; }
-.overview-result .iop-button { text-align: left; justify-content: flex-start; padding-inline: 0; font-weight: var(--iop-labelWeight); max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.iop-ui .overview-result > .iop-button { text-align: left; justify-content: flex-start; padding-inline: 0; border-inline-width: 0; font-weight: var(--iop-labelWeight); max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.overview-result > :is(.overview-summary, .overview-metadata) { margin-inline-start: 8px; }
 .overview-summary, .overview-coverage, .overview-metadata { color: var(--iop-muted); font-size: var(--iop-captionSize); overflow-wrap: anywhere; }
 .overview-metadata { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .overview-groups h2 { font-size: var(--iop-sectionTitleSize); }
