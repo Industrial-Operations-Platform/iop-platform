@@ -63,7 +63,9 @@ real-provider verification, database integration rerun or deployment is claimed.
 ## Local review
 
 Logical increments: `f3a1048` (loading recovery), `765e3c4` (shared desktop/table
-presentation) and `c619872` (pagination/integration forms), followed by the completion
-increment containing deferred loading and browser evidence. The item/backlog are
-complete and this plan is retained under `completed/`. No merge, push or deployment
-was performed; remote publication follows the explicit repository convention.
+presentation) and `c619872` (pagination/integration forms), followed by `089e46b`
+containing deferred loading and browser evidence. At implementation closure on
+2026-10-15, the item/backlog were complete locally and no merge, push or deployment
+had been performed. The owner approved publication on 2026-10-19; the subsequent
+[publication evidence](IOP-214-publication-plan.md) records integration and origin
+verification. This preserves the implementation results above as historical evidence.

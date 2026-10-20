@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed locally. The owner's 2026-10-15 follow-up authorizes implementing the findings
+Completed and published to origin. The owner's 2026-10-15 follow-up authorizes implementing the findings
 from the platform review autonomously, prioritizing a harmonious desktop experience
 and preserving the existing mobile baseline and platform identity.
 
@@ -28,16 +28,18 @@ Follow [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundari
 [visual identity](../../design/visual-identity.md). The owner-authorized table
 alignment refinement supersedes the affected IOP-187 presentation rules only;
 palette, typography, permissions, source semantics and module ownership are retained.
-No new backend architecture, dependency, schema, deployment, merge or push is implied.
+No new backend architecture, dependency or schema is introduced. Publication is
+separately authorized below; deployment remains outside this story.
 Never sort a partial server page as if it were the complete matching collection.
 
 ## Evidence and remaining work
 
 [Execution evidence](../completed/IOP-214-desktop-consistency-plan.md).
-All requested local changes are implemented and validated; publication is not implied.
+All requested changes are implemented and validated; approved publication is complete.
 
 ## Approved publication — 2026-10-19
 
 The owner explicitly approved merging `fix/IOP-214-desktop-consistency` into
 `develop` and pushing both branches to `origin`.
-[Publication plan](../active/IOP-214-publication-plan.md) records execution and checks.
+[Publication evidence](../completed/IOP-214-publication-plan.md) records the verified
+integration into develop and atomic publication of both branches to origin.
