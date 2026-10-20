@@ -1,4 +1,4 @@
-import { DailyPlan } from "../src/features/workforce/adapters/react/PlanBoard";
+import { DailyPlan, PlanBoard } from "../src/features/workforce/adapters/react/PlanBoard";
 /** @jest-environment jsdom */
 import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
@@ -312,4 +312,29 @@ test("personal assignments show shift and hours once while keeping different ava
   expect(
     personal.getByText("Scheduled availability: 05:00–14:15"),
   ).toBeVisible();
+});
+
+
+test("compact weekly planning retains shift context, phone signals and assignment details with one column per date", () => {
+  const record: import("../src/features/workforce/domain/models").RecordEntry<"assignment"> = {
+    id: "weekly-assignment", kind: "assignment", revision: 1, deleted: false, personName: "Casey Planner",
+    data: { userId: "tech", date: "2026-10-12", shiftId: "early", targetId: "zone", duty: "zone", phone: "zone", start: "05:00", end: "14:15", startsAt: "2026-10-12T05:00:00Z", endsAt: "2026-10-12T14:15:00Z" },
+  };
+  const data: Board = { ...board, settings: { ...board.settings, shifts: [...board.settings.shifts, { id: "late", label: "Late", start: "14:15", end: "23:00", days: [0, 1, 2, 3, 4, 5, 6] }] }, records: [record] };
+  const dates = ["2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16", "2026-10-17", "2026-10-18"];
+  const select = jest.fn();
+  render(<PlanBoard board={data} dates={dates} select={select} />);
+  const table = screen.getByRole("table", { name: "Weekly plan" });
+  expect(screen.getByRole("button", { name: "Compact week" })).toHaveAttribute("aria-pressed", "true");
+  expect(table.querySelector("thead tr")?.children).toHaveLength(8);
+  const zone = within(table).getByRole("row", { name: /Test zone/ });
+  expect(within(zone).getAllByText("Early")).toHaveLength(7);
+  expect(within(zone).getAllByText("Late")).toHaveLength(7);
+  expect(within(zone).getAllByText("05:00–14:15")).toHaveLength(7);
+  fireEvent.click(within(table).getByRole("button", { name: "Casey Planner Phone" }));
+  expect(select).toHaveBeenCalledWith(record);
+  fireEvent.click(screen.getByRole("button", { name: "Shift columns" }));
+  expect(table.querySelectorAll("thead tr")).toHaveLength(2);
+  expect(table.querySelectorAll("thead tr")[1].children).toHaveLength(14);
+  expect(within(table).getByRole("button", { name: "Casey Planner Phone" })).toBeVisible();
 });

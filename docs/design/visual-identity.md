@@ -64,8 +64,8 @@ its Sign in/About dialogs follow the selected appearance. Workspace content is
 centered within a shared 1600px bound on large screens. Metric labels/figures and
 captions center; section headings, form labels and narrative prose retain their
 reading hierarchy. Supporting page descriptions use a 72-character reading bound.
-Shared tables center headings/metadata and use `TableText` for content-aware
-justification. Avoid global text centering/justification. Controls reuse shared
+Shared tables use semantic column alignment and stable left-aligned `TableText`
+prose under the IOP-214 refinement below. Controls reuse shared
 hover, placeholder, disabled and keyboard-focus treatments in both modes.
 
 See [IOP-202](../planning/items/IOP-202-platform-quality-theme.md) for desktop/narrow
@@ -301,12 +301,13 @@ priority or destructive intent. `DeleteButton` supplies a labelled trash icon.
 Form footers use `iop-form-actions` to separate Cancel/Save from editing controls.
 Use the common bordered, keyboard-scrollable `TableViewport`, muted sticky headers
 and row hover/focus treatment across modules. Every column/group header, including
-the first, centers horizontally and vertically. Body cells center vertically;
-the first column aligns left, and the remaining cells/actions center horizontally
-unless the owner explicitly specifies another alignment. Table prose uses shared
-`TableText`: more than two rendered lines are justified, with the last line aligned
-left; shorter text inherits its column's alignment. This responds to content and
-width changes. Features may set column widths but should not recreate the table
+the first, originally centered horizontally and vertically. IOP-214 refines this:
+text columns align left, comparable numbers align right with tabular numerals, and
+states/dates/action groups retain centered metadata alignment. Set matching
+`data-align="text|number|status"` roles on headers and cells; unannotated matrices
+retain their centered context headings. Body cells remain vertically centered.
+Use stable left-aligned `TableText` for prose at every width. Features may set
+column widths but should not recreate the table
 theme. More than three tabs use a
 horizontal viewport on narrow screens to prevent label collisions.
 
@@ -330,7 +331,8 @@ name/profile column widths instead of stretching the gap across the screen.
 Shared badges use 1px vertical and 3px horizontal padding, and operational summary
 cards use a uniform light border without a darker top stripe.
 
-The owner's IOP-187 refinement centers all headers, including Date and Zone.
+The owner's IOP-187 refinement centers matrix headers, including Date and Zone;
+IOP-214 adds semantic alignment for ordinary record and analytical columns.
 Department matrix title buttons start at the left while their supporting metadata
 stays centered; long details follow the shared prose rule, and status badges stack
 vertically. Daily shift leaders show names only beneath their shift heading;
@@ -442,8 +444,8 @@ owner-selected Unified Record symbol under IOP-201; IOP remains the name.
 Department matrix uses shared `Table variant="records"`: quiet alternating surfaces,
 a stronger sticky header, comfortable cell padding and hover/focus highlighting.
 Preserve centered headings and date values, left-aligned title buttons, centered
-supporting metadata and vertical state badges. Longer prose retains `TableText`
-justification rules. Keep native semantic tables and keyboard-scrollable viewports.
+supporting metadata and vertical state badges. Prose uses the IOP-214 stable
+left-aligned `TableText` rule. Keep native semantic tables and keyboard-scrollable viewports.
 
 
 ## Compact account rows and operational matrix — IOP-193
@@ -485,3 +487,25 @@ view in the shared Dialog. Information also appears above personal Start content
 for every profile, independently of department selection. Forms reuse shared fields,
 date controls, existing image previews and completion confirmation controls.
 This supersedes earlier navigation/density statements for the affected views.
+
+## Desktop consistency — IOP-214
+
+The owner authorized the review remedies on 2026-10-15. Preserve the palette,
+type scale, shared compact controls and mobile baseline. Use `PageStack` for a
+consistent section gap and `DetailFacts` for labelled, wrapping detail metadata;
+bound narrative text with `iop-prose`. Forms retain the separated shared action
+footer. Operational collections use `Table variant="records"`; evidence tables
+may remain compact. Text and numeric alignment follow the semantic roles above,
+superseding prior global centering and conditional justification for those cells.
+
+The desktop rail keeps its brand visible and scrolls navigation independently on
+short screens. Native date/select controls inherit selected appearance. Weekly
+Workforce defaults to seven day columns with labelled shifts stacked within each
+day; Shift columns retains the expanded matrix. Sorting a partial page must never
+imply ordering the complete server collection. Applied filters, clear/reset actions,
+loading/empty/error states and loaded/total counts remain explicit.
+
+The host defers the analytical workspace and its chart rendering until entered;
+its loading fallback is announced. This changes delivery timing only, not analytical
+selection, totals or permissions. See [IOP-214](../planning/items/IOP-214-desktop-consistency.md)
+for rendering and regression evidence.

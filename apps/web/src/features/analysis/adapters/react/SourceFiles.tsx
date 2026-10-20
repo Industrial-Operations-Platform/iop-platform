@@ -157,7 +157,7 @@ export function SourceFiles({
               </caption>
               <thead>
                 <tr>
-                  <th scope="col">{t("Line")}</th>
+                  <th scope="col" data-align="number">{t("Line")}</th>
                   {columns.map((column) => {
                     const index = selection.sort.findIndex(
                         (x) => x.field === column.field,
@@ -166,6 +166,7 @@ export function SourceFiles({
                     return (
                       <SortableHeader
                         key={column.field}
+                        align="text"
                         direction={criterion?.direction}
                         priority={index + 1}
                         onClick={() =>
@@ -183,21 +184,21 @@ export function SourceFiles({
                       </SortableHeader>
                     );
                   })}
-                  <th scope="col">{t("Häufigkeit")}</th>
-                  <th scope="col">{t("Dauer · minutes")}</th>
+                  <th scope="col" data-align="number">{t("Häufigkeit")}</th>
+                  <th scope="col" data-align="number">{t("Dauer · minutes")}</th>
                 </tr>
               </thead>
               <tbody>
                 {result.records.map((row) => (
                   <tr key={row.line}>
-                    <td>{row.line}</td>
+                    <td data-align="number">{row.line}</td>
                     {columns.map((column) => (
-                      <td key={column.field}>
+                      <td key={column.field} data-align="text">
                         <TableText>{row[column.field]}</TableText>
                       </td>
                     ))}
-                    <td>{number(row.frequency)}</td>
-                    <td>{number(row.minutes)}</td>
+                    <td data-align="number">{number(row.frequency)}</td>
+                    <td data-align="number">{number(row.minutes)}</td>
                   </tr>
                 ))}
               </tbody>

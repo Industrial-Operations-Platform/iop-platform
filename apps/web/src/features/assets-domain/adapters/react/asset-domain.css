@@ -1,3 +1,8 @@
 .iop-asset-domain-provenance {
   overflow-wrap: anywhere;
 }
+
+.iop-asset-domain-form { display: grid; gap: var(--iop-sectionGap); min-width: 0; }
+.iop-asset-domain-form > :is(h2, p) { margin: 0; }
+.iop-asset-domain-prose { max-width: var(--iop-readingWidth); white-space: pre-wrap; overflow-wrap: anywhere; }
+.iop-asset-domain-muted { color: var(--iop-muted); font-size: var(--iop-captionSize); }

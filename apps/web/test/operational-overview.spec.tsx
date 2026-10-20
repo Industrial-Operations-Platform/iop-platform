@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { GlobalSearch } from '../src/features/operational-overview/adapters/react/GlobalSearch';
 import { AreaOverview } from '../src/features/operational-overview/adapters/react/AreaOverview';
 import { OperationalOverviewApplication, type Gateway } from '../src/features/operational-overview/application/overview';
@@ -21,4 +21,28 @@ test('formal pages use only source-owned cursors and selected actual record iden
     fireEvent.change(await screen.findByRole('combobox', { name: 'Explicit shift record' }), { target: { value: 'actual-record' } });
     await waitFor(() => expect(h.gateway.area).toHaveBeenLastCalledWith(expect.objectContaining({ recordCursor: 'formal-page-two', recordId: 'actual-record' })));
     expect(await screen.findByText('Selected actual shift')).toBeInTheDocument();
+});
+
+test('area overview Refresh retries failed context and later retains the selected location and date', async () => {
+    const h = harness();
+    let release!: (value: Context) => void;
+    const retry = new Promise<Context>(resolve => { release = resolve; });
+    (h.gateway.context as jest.Mock).mockRejectedValueOnce(new Error('Temporary connection failure')).mockImplementationOnce(() => retry);
+    render(<IdentityRoot><AreaOverview application={h.app} initialLocationId="area" onNavigate={() => { }} /></IdentityRoot>);
+    expect(await screen.findByRole('alert')).toHaveTextContent('Temporary connection failure');
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+    await waitFor(() => expect(h.gateway.context).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Loading authorized area context…');
+    await act(async () => { release(context); });
+    await screen.findByRole('button', { name: 'Exact sensor A' });
+    fireEvent.change(screen.getByLabelText('Journal date'), { target: { value: '2026-10-13' } });
+    await waitFor(() => expect(h.gateway.area).toHaveBeenLastCalledWith(expect.objectContaining({ locationId: 'area', date: '2026-10-13' })));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Refresh' })).toBeEnabled());
+    const calls = (h.gateway.area as jest.Mock).mock.calls.length;
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+    await waitFor(() => expect(h.gateway.area).toHaveBeenCalledTimes(calls + 1));
+    expect(h.gateway.context).toHaveBeenCalledTimes(2);
+    expect(h.gateway.area).toHaveBeenLastCalledWith(expect.objectContaining({ locationId: 'area', date: '2026-10-13' }));
+    expect(screen.getByLabelText('Journal date')).toHaveValue('2026-10-13');
 });

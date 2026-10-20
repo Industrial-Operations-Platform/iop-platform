@@ -366,16 +366,16 @@ function DataTables({
           </caption>
           <thead>
             <tr>
-              <th>{t("Group")}</th>
-              <th>{t("Frequency")}</th>
-              <th>{t("Minutes")}</th>
-              <th>{t("Rows")}</th>
+              <th scope="col" data-align="text">{t("Group")}</th>
+              <th scope="col" data-align="number">{t("Frequency")}</th>
+              <th scope="col" data-align="number">{t("Minutes")}</th>
+              <th scope="col" data-align="number">{t("Rows")}</th>
             </tr>
           </thead>
           <tbody>
             {report.groups.map((g) => (
               <tr key={g.key}>
-                <th>
+                <th scope="row" data-align="text">
                   <Button variant="text" onClick={() => onSelect(g.key)}>
                     <TableText>
                       {report.selection.dimension === "duration"
@@ -384,9 +384,9 @@ function DataTables({
                     </TableText>
                   </Button>
                 </th>
-                <td>{number(g.frequency)}</td>
-                <td>{number(g.minutes)}</td>
-                <td>{g.records}</td>
+                <td data-align="number">{number(g.frequency)}</td>
+                <td data-align="number">{number(g.minutes)}</td>
+                <td data-align="number">{g.records}</td>
               </tr>
             ))}
           </tbody>
@@ -397,17 +397,17 @@ function DataTables({
           <caption>{t("Historical trend")}</caption>
           <thead>
             <tr>
-              <th>{t("Period")}</th>
-              <th>{t("Frequency")}</th>
-              <th>{t("Minutes")}</th>
+              <th scope="col" data-align="text">{t("Period")}</th>
+              <th scope="col" data-align="number">{t("Frequency")}</th>
+              <th scope="col" data-align="number">{t("Minutes")}</th>
             </tr>
           </thead>
           <tbody>
             {report.timeline.map((p) => (
               <tr key={p.period}>
-                <th>{p.period}</th>
-                <td>{number(p.frequency)}</td>
-                <td>{number(p.minutes)}</td>
+                <th scope="row" data-align="text">{p.period}</th>
+                <td data-align="number">{number(p.frequency)}</td>
+                <td data-align="number">{number(p.minutes)}</td>
               </tr>
             ))}
           </tbody>

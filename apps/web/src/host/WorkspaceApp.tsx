@@ -41,7 +41,7 @@ import { PlatformMark } from "../design/components/PlatformMark";
 import type { HandoverApplication } from "../features/shift-handover/application/handover";
 import { HandoverWorkspace } from "../features/shift-handover/adapters/react/HandoverWorkspace";
 import { HandoverHighlights } from "../features/shift-handover/adapters/react/HandoverHighlights";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   Alert,
   AppShell,
@@ -53,7 +53,6 @@ import {
   Select,
 } from "../design/components";
 import { AnalysisWorkspace } from "../features/analysis/application/workspace";
-import { ReportWorkspace } from "../features/analysis/adapters/react/Workspace";
 import { StartOverview } from "../features/analysis/adapters/react/StartOverview";
 import type { SessionContext } from "../features/access/domain/access";
 import { profileLabels, type Profile } from "../features/access/domain/access";
@@ -67,6 +66,13 @@ import {
 } from "./AdministrationOverview";
 import { ProfileViewControl } from "./ProfileViewControl";
 import { AccountControl } from "./AccountControl";
+import { AnalysisLoadBoundary } from "./AnalysisLoadBoundary";
+
+const ReportWorkspace = lazy(() =>
+  import("../features/analysis/adapters/react/Workspace").then((module) => ({
+    default: module.ReportWorkspace,
+  })),
+);
 export function WorkspaceApp({
   application,
   access,
@@ -627,7 +633,7 @@ export function WorkspaceApp({
         <LocatorWorkspace application={locator} onAsset={id => {setAssetRecord(id);setAssetVisit(v=>v+1);setPage("assets");}}
           onProblem={(kind,id) => kind === "maintenance" ? openMaintenance(id) : openInformation(id)}/>
       ) : page === "integrations" && connections && canReadAssets ? (
-        <ConnectionsWorkspace application={connections} canManage={effectiveProfile === "administrator"}/>
+        <ConnectionsWorkspace application={connections} canManage={effectiveProfile === "administrator"} timeZone={context.scope?.siteTimeZone ?? "UTC"}/>
       ) : page === "maintenance" && maintenance && signedIn ? (
         <MaintenanceWorkspace
           key={`${context.user?.id}:${effectiveProfile}`}
@@ -866,15 +872,19 @@ export function WorkspaceApp({
           openAnalysis={() => setPage("analysis")}
         />
       ) : context?.user && canReadAnalytics ? (
-        <ReportWorkspace
-          key={`${context.user.id}:${page}:${administrationTool}`}
-          application={application}
-          context={context}
-          administration={
-            page === "administration" && administration && context.canImport
-          }
-          initialAdministrationTool={administrationTool}
-        />
+        <AnalysisLoadBoundary>
+          <Suspense fallback={<Panel><p role="status">{t("Loading analysis workspace…")}</p></Panel>}>
+            <ReportWorkspace
+              key={`${context.user.id}:${page}:${administrationTool}`}
+              application={application}
+              context={context}
+              administration={
+                page === "administration" && administration && context.canImport
+              }
+              initialAdministrationTool={administrationTool}
+            />
+          </Suspense>
+        </AnalysisLoadBoundary>
       ) : (
         <Panel variant="empty">
           <h1>{t("Data analysis")}</h1>

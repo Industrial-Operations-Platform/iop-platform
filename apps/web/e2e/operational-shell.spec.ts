@@ -249,13 +249,11 @@ for (const width of [1440, 1024, 375]) {
     });
     await expect(table.locator("tbody tr")).toHaveCount(3);
     await expect.poll(() => queries.at(-1)?.departmentMatrix).toBe(true);
-    expect(
-      await table
-        .getByRole("columnheader")
-        .evaluateAll((headers) =>
-          headers.every((h) => getComputedStyle(h).textAlign === "center"),
-        ),
-    ).toBe(true);
+    const matrixHeaders = table.getByRole("columnheader");
+    await expect(matrixHeaders).toHaveCount(7);
+    for (const header of await matrixHeaders.all()) {
+      await expect(header).toHaveCSS("text-align", "center");
+    }
     expect(
       await table
         .locator("tbody tr")

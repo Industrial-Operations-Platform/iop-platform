@@ -168,6 +168,7 @@ export function UserAdministration({
           <Table
             className="access-users"
             aria-label={t("Accounts for this site")}
+            variant="records"
           >
             <colgroup>
               <col className="access-users-person" />
@@ -190,6 +191,7 @@ export function UserAdministration({
                   return (
                     <SortableHeader
                       key={field}
+                      align={field === "status" ? "status" : "text"}
                       direction={sort[index]?.direction}
                       priority={sort.length > 1 ? index + 1 : undefined}
                       onClick={() =>
@@ -206,13 +208,13 @@ export function UserAdministration({
             <tbody>
               {visibleUsers.map((user) => (
                 <tr key={user.id}>
-                  <th scope="row">
+                  <th scope="row" data-align="text">
                     <span className="access-user-identity">
                       <span className="access-user-name">{user.name}</span>
                       <small>{user.username}</small>
                     </span>
                   </th>
-                  <td>{t(profileLabels[user.profile])}</td>
+                  <td data-align="text">{t(profileLabels[user.profile])}</td>
                   <td>
                     <Badge tone={user.active ? "success" : "neutral"}>
                       {user.active ? t("Active") : t("Disabled")}

@@ -26,6 +26,12 @@ Appearance in the account dropdown offers Light, Dark and System beside Language
 roles rather than embedding light-only colors or using surface colors as action ink.
 The public introduction keeps its illustration colors; dialogs follow appearance.
 
+IOP-214 applies shared section spacing, labelled detail facts, semantic table
+alignment and localized result states to the operational workspaces. The desktop
+rail scrolls independently on short displays; Workforce offers a compact seven-day
+layout alongside Shift columns. Analytical rendering loads when its workspace is
+opened, with a loading status and a recoverable failure panel that retains navigation.
+
 Executive Overview alone presents priority KPI cards. Overview uses one month and Halle uses imported-month selection; finer views add relevant dimensions. Import counts belong in file review.
 Selected-month source-group frequency/duration Pareto is delivered under IOP-163;
 broader canonical asset coverage remains with IOP-093. The [product scope](../../docs/product/scope-poc.md) owns these rules.

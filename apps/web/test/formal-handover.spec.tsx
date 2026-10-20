@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { FormalHandoverApplication, type FormalGateway } from "../src/features/shift-handover/application/formal-records";
 import { FormalHandoverWorkspace } from "../src/features/shift-handover/adapters/react/FormalHandoverWorkspace";
 import type { FormalContext, FormalRecord, EntryEvidence, ShiftReference } from "../src/features/shift-handover/domain/formal-models";
@@ -100,4 +100,31 @@ test("area navigation opens the requested formal record and a home visit clears 
   view.rerender(<FormalHandoverWorkspace application={f.application} homeVisit={1}/>);
   await screen.findByRole("button",{name:"New shift record"});
   expect(screen.queryByRole("button",{name:"Publish record"})).not.toBeInTheDocument();
+});
+
+test.each(["context", "collection"] as const)("direct record navigation waits for delayed %s before rendering site times", async (delayed) => {
+  const f = fixture();
+  await f.application.save({ id: "", expectedRevision: 0, note: "", content: {
+    shiftId: shift.id, shiftDate: shift.date, departmentId: "department", areaId: "",
+    title: "Direct transfer", summary: "Retained context", entryIds: [],
+  } });
+  const settings = await f.application.context();
+  let release!: () => void;
+  const ready = new Promise<void>((resolve) => { release = resolve; });
+  if (delayed === "context") {
+    f.gateway.context = jest.fn(async () => { await ready; return settings; });
+  } else {
+    const records = await f.application.query({ from: shift.date, to: shift.date, departmentId: "department", areaId: "", cursor: "" });
+    f.gateway.query = jest.fn(async () => { await ready; return records; });
+  }
+  render(<FormalHandoverWorkspace application={f.application} initialRecordId="record" />);
+  await waitFor(() => expect(f.gateway.history).toHaveBeenCalledWith("record", 0));
+  await act(async () => { await Promise.resolve(); });
+  expect(screen.getByRole("status")).toHaveTextContent("Loading shift records…");
+  expect(screen.queryByRole("button", { name: "Publish record" })).not.toBeInTheDocument();
+  await act(async () => { release(); });
+  expect(await screen.findByRole("heading", { name: "Direct transfer", level: 2 })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Publish record" })).toBeInTheDocument();
+  expect(screen.getByText(/Early · .*UTC/)).toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 });

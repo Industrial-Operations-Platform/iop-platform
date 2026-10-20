@@ -5,6 +5,14 @@ import {improvementGerman} from "./improvement-de";
 import {locatorGerman} from "./locator-de";
 import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
+  "Sort priority {0}": "Sortierpriorität {0}",
+  "Loading analysis workspace…": "Analysebereich wird geladen…",
+  "The analysis workspace could not be loaded. Reload the page to try again.": "Der Analysebereich konnte nicht geladen werden. Die Seite neu laden, um es erneut zu versuchen.",
+  "Reload workspace": "Arbeitsbereich neu laden",
+  "Compact week": "Kompakte Woche",
+  "Shift columns": "Schichtspalten",
+  "Weekly layout": "Wochenansicht",
+  "Select a person to open assignment details.": "Eine Person auswählen, um die Einsatzdetails zu öffnen.",
   ...assetDomainGerman,
   "Model and survey": "Modell und Erhebung",
   ...operationalOverviewGerman,

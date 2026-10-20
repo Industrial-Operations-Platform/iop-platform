@@ -1,7 +1,8 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { ImprovementApplication, type Gateway } from "../src/features/improvement-tracking/application/improvement";
 import { ImprovementWorkspace } from "../src/features/improvement-tracking/adapters/react/ImprovementWorkspace";
+import { ImprovementForm } from "../src/features/improvement-tracking/adapters/react/ImprovementForm";
 import { emptyAction, statuses, type ActionView, type Catalog, type Comparison, type Evidence, type SavedComparison } from "../src/features/improvement-tracking/domain/models";
 const catalog: Catalog = {
   actorId: "leader",
@@ -229,6 +230,7 @@ test("creates linked owner/target actions and retains form identity after an unc
       value: "Reduce observed alarms"
     }
   });
+  await screen.findByRole("option", { name: "S-001 · Drive" });
   fireEvent.change(screen.getByLabelText("Linked asset"), {
     target: {
       value: "asset"
@@ -258,6 +260,139 @@ test("creates linked owner/target actions and retains form identity after an unc
       })
     })
   }));
+});
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>(done => { resolve = done; });
+  return { promise, resolve };
+}
+function actionPage(actions: ActionView[], nextCursor = "") {
+  return { actions, nextCursor, total: 3, statusCounts: Object.fromEntries(statuses.map(status => [status, status === "planned" ? actions.length : 0])) as Record<typeof statuses[number], number> };
+}
+function anotherAction(id: string, title = id): ActionView {
+  return { ...initial, id, data: { ...initial.data, title } };
+}
+
+test("action paging retains applied filters, blocks unsubmitted search and discards late pages", async () => {
+  const late = deferred<ReturnType<typeof actionPage>>();
+  const filtered = anotherAction("filtered", "Filtered action");
+  const query = jest.fn(async (selection: Parameters<Gateway["query"]>[0]) => {
+    if (selection.cursor) return late.promise;
+    return selection.status ? actionPage([filtered]) : actionPage([initial], "next-actions");
+  });
+  const { application } = setup({ query });
+  render(<ImprovementWorkspace application={application} timeZone="UTC" />);
+  const more = await screen.findByRole("button", { name: "Load more actions" });
+  fireEvent.click(screen.getByRole("button", { name: "Search improvements" }));
+  const search = screen.getByRole("searchbox", { name: "Search improvements" });
+  fireEvent.change(search, { target: { value: "draft" } });
+  expect(more).toBeDisabled();
+  expect(query).toHaveBeenCalledTimes(1);
+  fireEvent.change(search, { target: { value: "" } });
+  fireEvent.click(more);
+  fireEvent.click(more);
+  expect(query).toHaveBeenCalledTimes(2);
+  expect(query).toHaveBeenLastCalledWith({ cursor: "next-actions" });
+  fireEvent.change(screen.getByLabelText("Status"), { target: { value: "blocked" } });
+  await screen.findByRole("button", { name: "Filtered action" });
+  await act(async () => late.resolve(actionPage([anotherAction("late", "Late unfiltered action")])));
+  expect(screen.queryByRole("button", { name: "Late unfiltered action" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
+  await screen.findByRole("button", { name: "Reduce repeated alarms" });
+  expect(search).toHaveValue("");
+  expect(screen.getByLabelText("Status")).toHaveValue("");
+});
+
+test("applied search is reused by action paging and failures can be retried", async () => {
+  const query = jest.fn<ReturnType<Gateway["query"]>, Parameters<Gateway["query"]>>()
+    .mockRejectedValueOnce(new Error("Query unavailable"))
+    .mockResolvedValue(actionPage([initial], "next-actions"));
+  const { application } = setup({ query });
+  render(<ImprovementWorkspace application={application} timeZone="UTC" />);
+  expect(await screen.findByRole("alert")).toHaveTextContent("Query unavailable");
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  await screen.findByRole("button", { name: "Reduce repeated alarms" });
+  fireEvent.click(screen.getByRole("button", { name: "Search improvements" }));
+  fireEvent.change(screen.getByRole("searchbox", { name: "Search improvements" }), { target: { value: "alarms" } });
+  fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Load more actions" }));
+  await waitFor(() => expect(query).toHaveBeenLastCalledWith({ search: "alarms", cursor: "next-actions" }));
+  expect(within(screen.getByRole("table", { name: "Improvement actions" })).getAllByRole("rowheader")).toHaveLength(1);
+});
+
+test.each(["evidence", "comparisons", "revisions"] as const)("late %s pages cannot contaminate another action and duplicate requests are blocked", async kind => {
+  const second = anotherAction("second", "Second action");
+  const lateEvidence = deferred<Awaited<ReturnType<Gateway["evidence"]>>>();
+  const lateComparisons = deferred<Awaited<ReturnType<Gateway["comparisons"]>>>();
+  const lateHistory = deferred<Awaited<ReturnType<Gateway["history"]>>>();
+  const evidence = jest.fn(async (id: string, cursor?: string) => cursor ? lateEvidence.promise : { evidence: [], nextCursor: id === initial.id ? "next-evidence" : "" });
+  const comparisons = jest.fn(async (id: string, cursor?: string) => cursor ? lateComparisons.promise : { comparisons: [], nextCursor: id === initial.id ? "next-comparisons" : "" });
+  const history = jest.fn(async (id: string, before?: number) => before ? lateHistory.promise : { action: id === initial.id ? initial : second, revisions: [], nextBefore: id === initial.id ? 1 : 0 });
+  const { application } = setup({ query: async () => actionPage([initial, second]), evidence, comparisons, history });
+  render(<ImprovementWorkspace application={application} timeZone="UTC" />);
+  fireEvent.click(await screen.findByRole("button", { name: "Reduce repeated alarms" }));
+  await screen.findByText("Reduce reported frequency by 20%");
+  if (kind === "comparisons") fireEvent.click(screen.getByText("Saved comparison evidence (0)"));
+  if (kind === "revisions") fireEvent.click(screen.getByText("Action revision history"));
+  const button = screen.getByRole("button", { name: kind === "evidence" ? "Load more evidence" : kind === "comparisons" ? "Load more comparisons" : "Load older revisions" });
+  fireEvent.click(button);
+  fireEvent.click(button);
+  const gateway = kind === "evidence" ? evidence : kind === "comparisons" ? comparisons : history;
+  expect(gateway).toHaveBeenCalledTimes(2);
+  fireEvent.click(screen.getByRole("button", { name: "Improvement Tracking" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Second action" }));
+  await screen.findByText("Reduce reported frequency by 20%");
+  await act(async () => {
+    if (kind === "evidence") lateEvidence.resolve({ evidence: [{ id: "late", actionId: initial.id, actionRevision: 1, kind: "note", note: "Late evidence from first action", externalReference: "", supersedesId: "", actorId: "leader", actorName: "Jordan", at: initial.createdAt }], nextCursor: "" });
+    if (kind === "comparisons") lateComparisons.resolve({ comparisons: [{ id: "late", actionId: initial.id, actionRevision: 1, actorId: "leader", actorName: "Late comparison author", at: initial.createdAt, note: "Late comparison from first action", comparison: comparison() }], nextCursor: "" });
+    if (kind === "revisions") lateHistory.resolve({ action: initial, revisions: [{ action: initial, actorId: "leader", actorName: "Jordan", at: initial.createdAt, change: "updated", reason: "Late revision from first action", referenceId: "" }], nextBefore: 0 });
+  });
+  expect(screen.queryByText(/Late .* from first action/)).not.toBeInTheDocument();
+  expect(screen.getByText("Second action", { exact: true })).toBeVisible();
+});
+
+test("evidence editors and comparison requests are scoped to action identity at equal revisions", async () => {
+  const second = anotherAction("second", "Second action");
+  const late = deferred<Awaited<ReturnType<Gateway["saveComparison"]>>>();
+  const compare = jest.fn(async () => comparison());
+  const saveComparison = jest.fn(() => late.promise);
+  const { application } = setup({ query: async () => actionPage([initial, second]), history: async id => ({ action: id === initial.id ? initial : second, revisions: [], nextBefore: 0 }), compare, saveComparison });
+  render(<ImprovementWorkspace application={application} timeZone="UTC" />);
+  fireEvent.click(await screen.findByRole("button", { name: "Reduce repeated alarms" }));
+  fireEvent.click(await screen.findByText("Add note or observed result"));
+  fireEvent.change(screen.getByLabelText("Evidence note"), { target: { value: "Draft for first action" } });
+  fireEvent.click(screen.getByText("Before and after comparison"));
+  for (const [label, value] of [["Before from", "2026-10-01"], ["Before end (exclusive)", "2026-10-02"], ["After from", "2026-10-08"], ["After end (exclusive)", "2026-10-09"]]) fireEvent.change(screen.getByLabelText(label), { target: { value } });
+  fireEvent.click(screen.getByRole("button", { name: "Calculate observed comparison" }));
+  expect(compare).toHaveBeenCalledTimes(1);
+  fireEvent.click(await screen.findByRole("button", { name: "Save comparison evidence" }));
+  expect(saveComparison).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByRole("button", { name: "Improvement Tracking" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Second action" }));
+  fireEvent.click(await screen.findByText("Add note or observed result"));
+  expect(screen.getByLabelText("Evidence note")).toHaveValue("");
+  await act(async () => late.resolve({ action: initial, saved: { id: "old-save", actionId: initial.id, actionRevision: 1, actorId: "leader", actorName: "Jordan", at: initial.createdAt, note: "", comparison: comparison() } }));
+  expect(screen.queryByRole("region", { name: "Observed before and after result" })).not.toBeInTheDocument();
+  expect(screen.getByText("Second action", { exact: true })).toBeVisible();
+});
+
+test("late issue choice pages are discarded after a search change and selection is retained", async () => {
+  const late = deferred<{ issues: import("../src/features/improvement-tracking/domain/models").IssueReference[]; nextCursor: string }>();
+  const issue = { id: "first-issue", title: "First issue", state: "open", revision: 1, equipmentCode: "S-001", area: "Assembly" };
+  const issues = jest.fn(async (search: string, cursor?: string) => cursor ? late.promise : { issues: [{ ...issue, id: search || issue.id, title: search || issue.title }], nextCursor: search ? "" : "next-issues" });
+  const { application } = setup({ issues });
+  render(<ImprovementForm application={application} catalog={catalog} pending={false} onSave={jest.fn()} onCancel={jest.fn()} />);
+  await screen.findByRole("option", { name: "First issue · S-001" });
+  fireEvent.change(screen.getByLabelText("Linked issue"), { target: { value: "first-issue" } });
+  const more = screen.getByRole("button", { name: "Load more issues" });
+  fireEvent.click(more); fireEvent.click(more);
+  expect(issues).toHaveBeenCalledTimes(2);
+  fireEvent.change(screen.getByLabelText("Find reported issue"), { target: { value: "New match" } });
+  await screen.findByRole("option", { name: "New match · S-001" });
+  await act(async () => late.resolve({ issues: [{ ...issue, id: "late", title: "Late issue" }], nextCursor: "" }));
+  expect(screen.queryByRole("option", { name: "Late issue · S-001" })).not.toBeInTheDocument();
+  expect(screen.getByLabelText("Linked issue")).toHaveValue("first-issue");
 });
 test("records attributed evidence and shows a server-computed comparison with retained provenance", async () => {
   const {
@@ -306,7 +441,7 @@ test("records attributed evidence and shows a server-computed comparison with re
   })));
   await screen.findByText("Saved comparison evidence (1)");
   fireEvent.click(screen.getByText("Saved comparison evidence (1)"));
-  expect(screen.getByText("Publication revision: retained-publication-revision")).toBeInTheDocument();
+  expect(screen.getByText("Publication revision").nextElementSibling).toHaveTextContent("retained-publication-revision");
 });
 test("access denial remains visible without presenting mutation controls", async () => {
   const {

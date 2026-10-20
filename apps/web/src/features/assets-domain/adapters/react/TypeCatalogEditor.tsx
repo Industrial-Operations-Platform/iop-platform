@@ -30,7 +30,7 @@ export function TypeCatalogEditor({
       ...patch
     } : f)
   });
-  return <Panel><form onSubmit={e => {
+  return <Panel><form className="iop-asset-domain-form" onSubmit={e => {
       e.preventDefault();
       onSave(types);
     }}><p>{t("Type labels and metadata fields belong to site configuration. Existing records must remain valid after a schema change.")}</p>
@@ -62,7 +62,7 @@ export function TypeCatalogEditor({
               label: e.target.value
             })} /></Field><Field>{t("Value kind")}<Select value={f.kind} onChange={e => field(i, {
               kind: e.target.value as FieldKind
-            })}>{(["text", "number", "boolean", "date"] as const).map(k => <option key={k} value={k}>{k}</option>)}</Select></Field><Field>{t("Unit label")}<Input value={f.unit} onChange={e => field(i, {
+            })}>{(["text", "number", "boolean", "date"] as const).map(k => <option key={k} value={k}>{t({ text: "Text", number: "Number", boolean: "Yes / no", date: "Date" }[k])}</option>)}</Select></Field><Field>{t("Unit label")}<Input value={f.unit} onChange={e => field(i, {
               unit: e.target.value
             })} /></Field><Field><Input type="checkbox" checked={f.required} onChange={e => field(i, {
               required: e.target.checked

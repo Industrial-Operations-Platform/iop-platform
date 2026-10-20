@@ -1,9 +1,10 @@
 import React from "react";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { AssetDomainApplication, type Gateway } from "../src/features/assets-domain/application/domain";
 import { AssetDomainWorkspace } from "../src/features/assets-domain/adapters/react/AssetDomainWorkspace";
 import { AssetReferencePicker } from "../src/features/assets-domain/adapters/react/AssetReferencePicker";
 import { CanonicalPareto } from "../src/features/assets-domain/adapters/react/CanonicalPareto";
+import { setLanguage } from "../src/localization/i18n";
 import { emptyEnrichment, type AssetType, type Context, type Detail, type Enrichment, type Mapping, type ReferencePage, type ModelHistory, type CanonicalPareto as ParetoResult } from "../src/features/assets-domain/domain/models";
 const types: AssetType[] = [{
   id: "generic",
@@ -817,4 +818,53 @@ test("selecting a tab during initial loading retains a current configuration req
   expect(await screen.findByLabelText("Type to configure")).toBeVisible();
   await act(async () => first.resolve(page("OUTDATED-INITIAL-PAGE")));
   expect(screen.getByLabelText("Type to configure")).toBeVisible();
+});
+
+
+test("inventory ordering is available only after all matching pages are loaded", async () => {
+  const { application } = setup({ references: jest.fn(async query => query.cursor ? {
+    assets: [refs.assets[1]], enrichments: [refs.enrichments[1]], total: 3, nextCursor: ""
+  } : { assets: [refs.assets[0], refs.assets[2]], enrichments: [refs.enrichments[0], refs.enrichments[2]], total: 3, nextCursor: "next" }) });
+  render(<AssetDomainWorkspace application={application} timeZone="UTC" />);
+  await screen.findByText("2 / 3 registry matches");
+  const table = screen.getByRole("table", { name: "Asset model inventory" });
+  expect(within(table).queryByRole("button", { name: "Registered asset" })).toBeNull();
+  expect(within(table).getAllByRole("row").slice(1).map(row => within(row).getAllByRole("cell")[0].textContent)).toEqual(["SENSOR-001", "PLC-001"]);
+  fireEvent.click(screen.getByRole("button", { name: "Load more assets" }));
+  await screen.findByText("3 / 3 registry matches");
+  expect(within(table).getAllByRole("row").slice(1).map(row => within(row).getAllByRole("cell")[0].textContent)).toEqual(["CONVEYOR-001", "PLC-001", "SENSOR-001"]);
+  fireEvent.click(within(table).getByRole("button", { name: "Registered asset" }));
+  expect(within(table).getByRole("columnheader", { name: "Registered asset" })).toHaveAttribute("aria-sort", "descending");
+  expect(within(table).getAllByRole("row").slice(1).map(row => within(row).getAllByRole("cell")[0].textContent)).toEqual(["SENSOR-001", "PLC-001", "CONVEYOR-001"]);
+});
+
+test("clearing an empty inventory search reloads the unfiltered collection", async () => {
+  const { application, gateway } = setup({ references: jest.fn(async query => query.search ? { assets: [], enrichments: [], total: 0, nextCursor: "" } : refs) });
+  render(<AssetDomainWorkspace application={application} timeZone="UTC" />);
+  await screen.findByText("3 / 1506 registry matches");
+  fireEvent.change(screen.getByLabelText("Search asset inventory"), { target: { value: "missing" } });
+  fireEvent.click(screen.getByRole("button", { name: "Search" }));
+  expect(await screen.findByText("No assets match this inventory search.")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Clear inventory search" }));
+  await screen.findByText("3 / 1506 registry matches");
+  expect(screen.getByLabelText("Search asset inventory")).toHaveValue("");
+  expect(gateway.references).toHaveBeenLastCalledWith({ search: "", limit: 30 });
+});
+
+test("asset survey and registry states use localized labels without changing identifiers", async () => {
+  setLanguage("de");
+  try {
+    const { application } = setup();
+    render(<AssetDomainWorkspace application={application} timeZone="UTC" />);
+    const inventory = await screen.findByRole("table", { name: "Asset-Modellbestand" });
+    expect(await within(inventory).findByText("Ausstehend")).toBeVisible();
+    expect(within(inventory).getAllByText("Validiert")).toHaveLength(2);
+    expect(within(inventory).queryByText("pending")).toBeNull();
+    fireEvent.click(within(inventory).getByRole("button", { name: "SENSOR-001" }));
+    expect(await screen.findByText("Registerstatus")).toBeVisible();
+    expect(screen.getByText("Hersteller")).toBeVisible();
+    expect(screen.getByText("Fictional maker")).toBeVisible();
+  } finally {
+    setLanguage("en");
+  }
 });
