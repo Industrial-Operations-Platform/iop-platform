@@ -19,6 +19,7 @@ import type {
 } from "../../domain/report";
 import type { ReportRepository } from "../../application/ports";
 import { PgReportingProfiles } from "./reporting-profiles";
+import { ReportCache } from "./report-cache";
 interface ReportSnapshot {
   kpi_values: {
     definition: ExecutiveKpiDefinition;
@@ -29,6 +30,7 @@ interface ReportSnapshot {
   }[];
   publications: { id: string; date: string }[];
   profile_version: string;
+  profile_fingerprint: string;
   totals: Record<string, unknown>;
   executive: (Record<string, unknown> &
     Pick<ExecutiveLeader, "dimension" | "metric">)[];
@@ -60,11 +62,50 @@ export class PgReportRepository implements ReportRepository {
   constructor(
     private readonly profiles: PgReportingProfiles,
     private readonly calendar = new AnalysisCalendar(),
+    private readonly cache = new ReportCache(),
   ) {}
+  private revision(publications: { id: string }[], profileVersion: string): string {
+    return "a1." + digest([
+      1,
+      ...scopeTuple(this.profiles.source),
+      publications.map((p) => p.id).sort(),
+      this.calendar.excludedWeekdays,
+      profileVersion,
+      this.profiles.initialVersion,
+    ]);
+  }
   async query(actor: string, q: ReportRequest): Promise<ReportResult> {
     const source = this.profiles.source;
     return this.profiles.run(actor, false, async (tx) => {
       await tx.query("SET LOCAL statement_timeout='30s'");
+      const { revision: requestedRevision, ...selection } = q;
+      const cacheKey = digest([actor, ...scopeTuple(source), {
+        ...selection,
+        filters: reportDimensions.map((field) => [field, [...new Set(q.filters[field] ?? [])].sort()]),
+      }]);
+      const cached = this.cache.get(cacheKey);
+      if (cached) {
+        // A hit is a current business read: authorization has already run and this
+        // statement validates the exact immutable data/profile snapshot it reuses.
+        const current = (await tx.query(`WITH p AS (SELECT coalesce(
+          (SELECT version::text FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$4::text) AS version,
+          coalesce((SELECT config FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$5::jsonb) AS config)
+          SELECT (SELECT version FROM p) AS profile_version,
+          (SELECT encode(sha256(convert_to(config::text,'UTF8')),'hex') FROM p) AS profile_fingerprint,
+          (SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id) ORDER BY import_id),'[]'::jsonb)
+            FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3) AS publications,
+          ((SELECT count(*) FROM analytics.fact_hitliste WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
+            =(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
+            AND NOT EXISTS(SELECT 1 FROM analytics.fact_hitliste CROSS JOIN p
+              WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND profile_version<>p.version)) AS projection_valid`,
+          [...scopeTuple(source), this.profiles.initialVersion, JSON.stringify(this.profiles.initial)])).rows[0] as unknown as
+          Pick<ReportSnapshot, "profile_version" | "profile_fingerprint" | "publications" | "projection_valid">;
+        if (!current.projection_valid)
+          throw new AnalyticsError("analytics_projection_unavailable");
+        if (cached.revision === this.revision(current.publications, current.profile_version)
+          && this.cache.matchesProfile(cacheKey, current.profile_fingerprint))
+          return { ...cached, selection: q };
+      }
       const vals: unknown[] = [
         ...scopeTuple(source),
         JSON.stringify(this.profiles.initial),
@@ -118,7 +159,8 @@ export class PgReportRepository implements ReportRepository {
    opts AS (SELECT key,value,count(*) AS n FROM eligible CROSS JOIN LATERAL jsonb_each_text(values) GROUP BY key,value),
    rankedopts AS (SELECT *,row_number() OVER(PARTITION BY key ORDER BY value COLLATE "C") AS pos FROM opts)
    SELECT (SELECT coalesce(jsonb_agg(k ORDER BY ordinality),'[]'::jsonb) FROM kpi_values k) AS kpi_values,
-    (SELECT version FROM p) AS profile_version,(SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb) FROM manifest) AS publications,
+    (SELECT version FROM p) AS profile_version,(SELECT encode(sha256(convert_to(config::text,'UTF8')),'hex') FROM p) AS profile_fingerprint,
+    (SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb) FROM manifest) AS publications,
     (SELECT jsonb_build_object('frequency',coalesce(sum(reported_frequency),0)::text,'seconds',coalesce(sum(accumulated_alarm_seconds),0)::text,'records',count(*)::text) FROM selected) AS totals,
     (SELECT coalesce(jsonb_agg(e ORDER BY dimension),'[]'::jsonb) FROM executive_ranked e WHERE rank=1) AS executive,
     ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
@@ -139,16 +181,7 @@ export class PgReportRepository implements ReportRepository {
       if (!r.projection_valid)
         throw new AnalyticsError("analytics_projection_unavailable");
       const pubs = r.publications.filter((p) => this.calendar.includes(p.date));
-      const revision =
-        "a1." +
-        digest([
-          1,
-          ...scopeTuple(source),
-          r.publications.map((p) => p.id).sort(),
-          this.calendar.excludedWeekdays,
-          r.profile_version,
-          this.profiles.initialVersion,
-        ]);
+      const revision = this.revision(r.publications, r.profile_version);
       const totals = asRow(r.totals);
       const options: Record<string, string[]> = {};
       for (const o of r.options) {
@@ -156,7 +189,7 @@ export class PgReportRepository implements ReportRepository {
       }
       const points = (xs: Record<string, unknown>[]) =>
         xs.map((x) => ({ ...asRow(x), period: String(x.period) }));
-      return {
+      const result: ReportResult = {
         revision,
         excludedWeekdays: [...this.calendar.excludedWeekdays],
         profileVersion: r.profile_version,
@@ -220,6 +253,8 @@ export class PgReportRepository implements ReportRepository {
         pageCount: Math.ceil(totals.records / 50),
         unclassifiedCount: r.unclassified,
       };
+      this.cache.set(cacheKey, result, r.profile_fingerprint);
+      return result;
     });
   }
 }

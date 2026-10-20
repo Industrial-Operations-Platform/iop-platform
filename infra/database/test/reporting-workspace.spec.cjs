@@ -169,6 +169,13 @@ test("full historical report preserves all source rows and exact duration", asyn
   ]);
   expect(report.groups.reduce((n, x) => n + x.frequency, 0)).toBe(19);
   expect(report.records).toHaveLength(9);
+  const repeated = await runtime.reports.query("demo-a", {
+    ...selection,
+    revision: report.revision,
+  });
+  expect(repeated.totals).toEqual(report.totals);
+  expect(repeated.records).toEqual(report.records);
+  expect(repeated.revision).toBe(report.revision);
   expect(report.executive).toEqual([
     {
       dimension: "area",
@@ -1011,4 +1018,24 @@ test("frequency leaders and period series remain independent of duration leaders
     expect(report.frequencyGroups.reduce((n, row) => n + row.frequency, 0)).toBeLessThan(report.totals.frequency);
     expect(report.totals.seconds).toBe(744870);
   } finally { await ref.close(); }
+});
+
+test("bounded repeated reports preserve exact totals on a 4000-row synthetic import", async () => {
+  const header = "Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe";
+  const rows = Array.from({ length: 4000 }, (_, index) => `2;0 0:01:30;Area A;=CACHE-${index % 40};Cache benchmark;01;001`);
+  const imported = await runtime.submit("demo-a", "Hitliste-20261001.csv", Buffer.from("\ufeff" + header + "\r\n" + rows.join("\r\n") + "\r\n", "utf16le"));
+  expect(imported.outcome).toBe("succeeded");
+  const request = { ...selection, from: "2026-10-01", toExclusive: "2026-10-02", search: "Cache benchmark" };
+  const started = performance.now();
+  const cold = await runtime.reports.query("demo-a", request);
+  const coldMs = performance.now() - started;
+  const repeatedAt = performance.now();
+  const warm = await runtime.reports.query("demo-a", { ...request, revision: cold.revision });
+  const warmMs = performance.now() - repeatedAt;
+  expect(warm.totals).toMatchObject({ records: 4000, frequency: 8000, seconds: 360000 });
+  expect(warm.totals).toEqual(cold.totals);
+  expect(warm.records).toEqual(cold.records);
+  console.info(JSON.stringify({ fixture: "4000 synthetic rows", coldMs: Math.round(coldMs), warmMs: Math.round(warmMs) }));
+  await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id=$1 AND site_id=$2 AND user_id='demo-a'", [scope.organizationId, scope.siteId]);
+  await expect(runtime.reports.query("demo-a", request)).rejects.toThrow();
 });
