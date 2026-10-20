@@ -1396,4 +1396,12 @@ export const german: Readonly<Record<string, string>> = {
   "During your shift": "Während deiner Schicht",
   "Scheduled": "Geplant",
   "Weekly assignments": "Wocheneinsätze",
+  "My team": "Mein Team",
+  "Your primary teams, planned availability and assignments for the week.": "Deine Stammteams, geplante Verfügbarkeit und Einsätze für die Woche.",
+  "No primary team is assigned to you.": "Dir ist kein Stammteam zugewiesen.",
+  "{0} workers": "{0} Mitarbeitende",
+  "1 worker": "1 Mitarbeitender",
+  "Team distribution for {0}": "Teameinteilung für {0}",
+  "View assignment for {0} on {1}: {2}": "Einsatz für {0} am {1} ansehen: {2}",
+  "Continues from {0}": "Fortsetzung vom {0}",
 };
