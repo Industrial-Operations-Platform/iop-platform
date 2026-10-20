@@ -33,4 +33,6 @@ complete seven-day planning for those users. Repeated application makes no chang
 original data and analytical totals remain unchanged. The owner subsequently
 authorized integration into develop, publication of both story branches and
 develop to origin, and local Docker image updates.
-[Publication and activation plan](../active/IOP-217-publication-plan.md).
+[Publication and activation evidence](../completed/IOP-217-publication-plan.md).
+Both stories are integrated into develop and published to origin; updated local
+Docker services are healthy and retained demonstrations and permissions verified.
