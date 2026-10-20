@@ -8,7 +8,7 @@ M6 IOP-050–059. This local operational module is independent of Data Analysis.
 | Profile | Operational view | Changes |
 | --- | --- | --- |
 | Technician | Own day first; colleagues by zone, floating support and shift leaders | None |
-| Team Leader | Monday–Sunday board, daily schedules and separate leader section | Enter/update weekly personal schedules; assign/reassign workers, zones, floating/maintenance duties and phone responsibility |
+| Team Leader | Own primary teams with daily availability/distribution, Monday–Sunday board, daily schedules and separate leader section | Enter/update weekly personal schedules; assign/reassign workers, zones, floating/maintenance duties and phone responsibility |
 | Administrator | Planning plus import, configuration and workforce profiles | Personal schedules, monthly CSV/email import, teams, shifts, zones, profiles and logical deletion |
 | Task Force | Daily operational visibility | None |
 
@@ -31,6 +31,16 @@ edit membership and a person's configured technical level in Worker profiles,
 independently of their access profile. The initial site choices are ILO Technical
 Operator and ILO Maintenance Technician. Missing qualifications remain unspecified;
 retiring a choice preserves its saved label in worker history.
+
+**My team** groups the current actor's primary-team workers independently of the
+leader's own shift or availability. Each week shows current member names, dated
+availability and every planned shift, zone or duty, including an overnight duty
+continuing from the previous date. Members working outside their home zone remain
+visible. Unknown days, planned absence, training and available-but-unassigned work
+stay distinct; missing records never imply absence or a day off. Training hours
+are shown as training, without implying an operational zone assignment is required.
+This view organizes already-authorized site data and does not restrict the broader
+Weekly plan or grant new planning/configuration authority.
 
 My day indicates a leader's planned availability now and overlap with the viewer's
 own shift, including overnight intervals. Text accompanies subtle semantic colors;

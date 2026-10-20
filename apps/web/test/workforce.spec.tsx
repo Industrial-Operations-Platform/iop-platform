@@ -55,6 +55,7 @@ test("technician opens personal day and colleagues without import or planning ac
   ).toBeVisible();
   expect(screen.getByRole("heading", { name: "Other zones" })).toBeVisible();
   expect(screen.queryByRole("button", { name: "Assign" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "My team" })).toBeNull();
   expect(screen.queryByRole("button", { name: "Weekly schedules" })).toBeNull();
   expect(screen.queryByRole("button", { name: "Schedule import" })).toBeNull();
 });

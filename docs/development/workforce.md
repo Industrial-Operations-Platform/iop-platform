@@ -32,6 +32,18 @@ handover/source data and original imports are preserved.
 
 ## Enter or update a week without files
 
+To inspect a Team Leader's workers, open **Workforce & shifts → My team** and choose
+any date in the desired week. The view uses the signed-in person's configured
+primary groups, including days when the leader has no duty. Inspect each member's
+availability and exact shift/zone allocations; the existing Weekly plan remains
+available for broader site planning. An empty primary group is a configuration
+prerequisite, not a missing duty. Administrator manages group membership.
+
+The [team-availability demonstration](team-availability-demo.md) adds explicitly
+synthetic vacation, sick leave and other statuses to the existing weekly exercise
+through normal Administrator Workforce operations. It retains original history
+and the Formal Handover records.
+
 Open **Workforce & shifts → Weekly schedules** (**Personal & Schichten →
 Wochendienstplan** in German), choose any date in the required week and select a
 person. Existing schedules appear Monday through Sunday. Choose a shift/status and

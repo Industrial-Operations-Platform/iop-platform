@@ -29,6 +29,7 @@ import { WeeklySchedule } from "./WeeklySchedule";
 import { ManualSchedule } from "./ManualSchedule";
 import { RecordDetails } from "./RecordDetails";
 import { previousDate } from "../../domain/leader-availability";
+import { MyTeam } from "./MyTeam";
 import "./workforce.css";
 export function WorkforceWorkspace({
   application,
@@ -78,6 +79,7 @@ export function WorkforceWorkspace({
   const viewLabel = (
     {
       day: "My day",
+      team: "My team",
       week: "Weekly plan",
       schedules: "Weekly schedules",
       import: "Schedule import",
@@ -212,6 +214,7 @@ export function WorkforceWorkspace({
                 { id: "day", label: t("My day") },
                 ...(canPlan
                   ? [
+                      { id: "team", label: t("My team") },
                       { id: "week", label: t("Weekly plan") },
                       { id: "schedules", label: t("Weekly schedules") },
                     ]
@@ -304,6 +307,9 @@ export function WorkforceWorkspace({
               )}
               {tab === "day" && (
                 <DailyPlan board={board} date={date} select={select} />
+              )}
+              {tab === "team" && canPlan && (
+                <MyTeam board={board} dates={dates} date={date} select={select} />
               )}
               {tab === "week" && canPlan && (
                 <PlanBoard board={board} dates={dates} select={select} />
