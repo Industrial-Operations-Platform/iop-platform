@@ -1,39 +1,36 @@
 # IOP transferido a este PC
 
-Restaurado el 31 de octubre de 2026 desde la captura del 30 de octubre de 2026.
+Actualizado el 2 de noviembre de 2026.
 
-Aplicacion: http://127.0.0.1:8080. Usa tus cuentas y contrasenas anteriores.
+La base traída de casa ya sustituye a la base de la instalación habitual `iop-platform-local`. La aplicación está disponible en http://127.0.0.1:8080 con las cuentas y contraseñas transferidas.
 
-La restauracion ha verificado las 62 tablas y sus 155.067 registros contra los hashes del respaldo, incluidos roles, contrasenas PostgreSQL, propietarios, permisos y politicas RLS. Tambien se han verificado los cinco archivos de configuracion y los 75 archivos privados de Locator copiados a volumenes Docker. No habia eventos Audit caducados. Web y API responden HTTP 200.
+## Uso habitual
 
-La instalacion anterior `iop-platform-local` permanece detenida, con sus volumenes y configuracion originales. La copia transferida utiliza el proyecto independiente `iop-transfer-20261030` y la version del codigo incluida en el paquete. La carpeta IOP abierta en el IDE conserva su configuracion anterior.
-
-## Uso desde PowerShell en la carpeta IOP
-
-Abre Docker Desktop y ejecuta:
+Desde la carpeta IOP, con Docker Desktop abierto:
 
 ```powershell
-node output/iop-transfer-20261030.cjs start
-node output/iop-transfer-20261030.cjs status
-node output/iop-transfer-20261030.cjs stop
+npm run local:up
+npm run local:status
+npm run local:stop
 ```
 
-Estos comandos solo operan sobre los tres contenedores de la copia transferida y conservan los datos al detenerlos.
+No se han modificado `compose.platform.yaml`, los demás Compose, `.dockerignore`, `package.json` ni los scripts de arranque. Esta operación solo ha cambiado datos, configuración privada y recursos Docker de este PC. La ruta del ejecutable Docker se ha añadido al PATH del usuario de Windows de este PC; si una terminal antigua no lo encuentra, vuelve a abrirla.
 
-## Ubicaciones y persistencia
+## Verificación
 
-- Codigo incluido: Ubuntu, `/home/victortilvesalgado/iop-transfer-20261030/iop-platform`.
-- Credenciales/configuracion originales restauradas: `.local-platform/` dentro de ese codigo.
-- Informe completo: Ubuntu, `/home/victortilvesalgado/iop-transfer-20261030/restore-review-20261030/restore-verification.json`.
-- Base activa: volumen `58b4da3a9a50cb3a20c9284c57c5bb3c8a45d3f28733af3fdf010c7cd0855e05`.
-- Configuracion activa: volumen `iop-transfer-20261030_config`, montado en solo lectura.
-- Referencias activas: volumen `iop-transfer-20261030_locator-references`, montado en solo lectura.
-- Override de restauracion: `.local-platform/compose.restored.yaml` dentro del codigo incluido. Conserva ese archivo junto con los datos privados.
-- El contenedor `iop-restore-1f09332b-abb5-41a9-916c-2f4c80411930` permanece detenido como evidencia de la restauracion; comparte el volumen de la base activa y debe seguir detenido.
-- El respaldo cifrado y su clave originales permanecen en la carpeta de transferencia de Windows; tambien hay una copia privada en Ubuntu.
+Se compararon las 62 tablas y sus 155.069 registros, roles, propietarios, permisos y políticas RLS antes y después de copiar la base. El arranque habitual terminó correctamente y no cambió los datos ni los permisos. Las 78 fechas históricas se verificaron sin importar ninguna de nuevo. Los cinco archivos de configuración y los 75 archivos privados de Locator coinciden con la copia transferida. Web y API responden correctamente y los tres servicios están saludables.
 
-La configuracion y las referencias se copiaron y verificaron en volumenes dedicados porque los montajes de carpetas de WSL fallaban. Las futuras modificaciones de esos archivos requieren actualizar tambien el volumen correspondiente. No se han ejecutado migraciones ni semillas sobre la copia restaurada.
+## Persistencia y copias de seguridad
 
-Para esta copia utiliza el script anterior; `npm run local:up` de la carpeta IOP corresponde a la instalacion anterior. Conserva los volumenes Docker, el respaldo y su clave. No ejecutes `down -v` ni limpieza de volumenes sobre esta instalacion.
+- Base activa: `iop-platform-local_platform-data`.
+- Configuración activa: `.local-platform/config/`, con los archivos de credenciales en `.local-platform/`.
+- Referencias activas: `iop-platform-local_locator-references`, conservando también los archivos en `.local-platform/locator/`.
+- Copia de la base anterior: `iop-platform-local_pre-20261102-normalize-database`.
+- Copia de las referencias anteriores: `iop-platform-local_pre-20261102-normalize-locator`.
+- Configuración anterior, conciliación completa e informe: `.local-platform/backups/20261102-normalize/`.
+- El volumen original de la transferencia se conserva sin contenedores asociados: `58b4da3a9a50cb3a20c9284c57c5bb3c8a45d3f28733af3fdf010c7cd0855e05`.
+- El respaldo cifrado y su clave originales se conservan.
 
-La conservacion de cuentas y contrasenas se comprobo mediante la reconciliacion completa de la base y los archivos; no se ha realizado un inicio de sesion con una contrasena personal.
+Se retiraron los cinco contenedores de transferencia y verificación. Ahora solo existen los tres contenedores de `iop-platform-local`. El antiguo lanzador `output/iop-transfer-20261030.cjs` queda archivado en la carpeta de copias indicada; ya no se utiliza.
+
+No se ha realizado un inicio de sesión con una contraseña personal. La conservación de las cuentas y contraseñas se verificó mediante la comparación completa de los registros de la base.
