@@ -135,7 +135,8 @@ npm run railway:deploy
 ```
 
 La primera ejecución usa el destino guardado por `railway:configure`. El comando
-exige un árbol Git limpio y ejecuta `npm run test:poc` (incluye PostgreSQL y
+exige un árbol Git limpio, rechaza avisos altos o críticos en dependencias de
+producción mediante `npm audit` y ejecuta `npm run test:poc` (incluye PostgreSQL y
 navegador con Docker), antes del envío. Se pueden suministrar identificadores
 explícitos mediante `RAILWAY_PROJECT_ID`, `RAILWAY_ENVIRONMENT_ID`,
 `RAILWAY_SERVICE_ID`, `RAILWAY_DATABASE_SERVICE_ID` e `IOP_PUBLIC_ORIGIN`.
@@ -237,8 +238,13 @@ npm run railway -- usage limit set --workspace WORKSPACE_ID --target workspace -
 
 El límite se refiere al consumo; revisar impuestos y cualquier cargo adicional
 en la pantalla de facturación. No activar Railway Agent para esta automatización.
-Activar copias automáticas diarias en ambos volúmenes desde Railway y comprobar
-una restauración en un entorno separado. La configuración IaC administra los
+En esta cuenta, la API de copias nativas manuales y programadas de volúmenes
+rechaza Hobby y exige Pro. No se activaron esas copias ni se cambió a Pro.
+La instantánea inicial privada se conserva localmente, pero no contiene los
+cambios posteriores de los evaluadores. Para conservar esos cambios al finalizar,
+exportar PostgreSQL con `pg_dump` por SSH y copiar `/data/locator` junto con la
+configuración privada; verificar la restauración en un entorno separado.
+La configuración IaC administra los
 límites de recursos y los volúmenes de 5 GB. La ubicación de cada volumen debe
 coincidir exactamente con Railway: no aceptar un cambio de ubicación como parte
 de una ampliación. Los límites de consumo requieren una suscripción de pago activa.
@@ -254,7 +260,16 @@ la copia. El repositorio no programa un borrado automático del entorno al mes.
 - [Volúmenes y restricciones de despliegue](https://docs.railway.com/volumes/reference)
 - [Control del consumo](https://docs.railway.com/pricing/cost-control)
 
-Preparación implementada el 2026-11-06. La disponibilidad pública, importación real,
-facturación y recuperación en Railway solo se confirman después de ejecutar los
-pasos en la cuenta y observar el resultado. La validación local sin Docker no
-sustituye el job Linux, la prueba de importación inicial o un despliegue real.
+Primera publicación real verificada el 2026-11-06 en
+`https://iop-production-9fb7.up.railway.app`, proyecto `IOP-evaluation`, entorno
+`production`, cuenta Hobby. Se importó la base local y se compararon los recuentos
+de sus 62 tablas. Se transfirieron 75 archivos del Locator y se verificaron sus
+SHA-256 y permisos privados de Node. La web y API responden por HTTPS, se rechaza
+el acceso anónimo a usuarios y la revisión publicada coincide con el commit enviado.
+Se configuraron alerta de consumo US$15 y límite duro US$20.
+
+Los comandos locales y de publicación están operativos. El workflow de GitHub
+está preparado en el repositorio; sus secretos y variables no están activados en
+GitHub. No se ha comprobado una recuperación remota ni aceptación funcional de
+los evaluadores. La validación de Windows omite las pruebas específicas de POSIX;
+el job Linux preparado las ejecuta.

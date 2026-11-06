@@ -11,7 +11,7 @@ is distinct from remote, operating, human and whole-platform release evidence.
 
 ## Milestone and goal
 
-M17 — v1 Validation & Release. Local operating procedures delivered; other-environment proof pending.
+M17 — v1 Validation & Release. Local and Railway deployment delivered; remote recovery proof pending.
 
 IOP can be deployed in another authorized environment.
 
@@ -20,16 +20,18 @@ IOP can be deployed in another authorized environment.
 Local Docker build/start/stop/rebuild, private scoped configuration and operator
 troubleshooting are documented. IOP-208 adds CI/checks, encryption/key separation,
 full backup/isolated restore, jobs, scoped Audit operation and readiness measurement
-procedures. Root IOP-203 assembles these with the operational modules; remote
-hosting and another authorized deployment environment remain unverified.
+procedures. Root IOP-203 assembles these with the operational modules.
 
 On 2026-11-06 the owner selected Railway for a one-month evaluation with a US$20
 budget and requested both Docker and Railway update automation. The
 [Railway guide](../../development/railway.md) now documents the combined web/API
 image, explicit HTTPS mode, initial copy of current local data, forward migrations,
 CLI and GitHub release workflows, storage, backups and account configuration.
-Repository preparation does not establish actual cloud deployment or recovery;
-these remain open until executed in the connected Railway account.
+The first Railway deployment was executed on 2026-11-06 in the authorized Hobby
+account. HTTPS web/API and anonymous access rejection passed; all 62 imported
+table row counts and 75 private reference checksums were verified. Remote recovery
+and evaluator acceptance remain open. GitHub release configuration is prepared
+in source; account secrets and automatic publication are not activated.
 
 ## Requirements and delivery boundary
 
@@ -50,8 +52,10 @@ Current local software builds and repository validation pass. See the
 [platform guide](../../development/platform-completion.md), [local operating guide](../../development/local-operations.md),
 [local configuration](../../development/local-configuration.md) and
 [IOP-203 plan](../completed/IOP-203-platform-completion-plan.md).
-Actual local backup/isolated restore passes under IOP-112/113; remote CI and
-another deployment environment remain pending. No new remote environment was deployed.
+Actual local backup/isolated restore passes under IOP-112/113. The authorized
+Railway environment is deployed; remote CI and remote restore remain pending.
+Native volume backup requests require Pro in this account and were not enabled
+under the owner's Hobby budget. The private initial snapshot remains available.
 
 ## Dependencies
 
@@ -62,9 +66,9 @@ Their broader criteria are not closed by this bounded increment.
 
 ## Remaining work
 
-Select and authorize the additional environment, supply its operating/security
-constraints, verify clean reproducibility and recovery, and record human acceptance.
-This documentation increment does not publish, deploy or complete v1 release.
+Verify isolated recovery of the Railway data and record human acceptance. Review
+the deployment guide's cost, native backup and GitHub activation limitations.
+The evaluation deployment does not establish completion of the whole v1 release.
 
 ## Documentation traceability
 

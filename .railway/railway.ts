@@ -3,7 +3,7 @@ import { defineRailway, image, project, service, volume } from "railway/iac";
 export default defineRailway((ctx) => {
   const region = "europe-west4-drams3a";
   // Match existing placement exactly; changing a volume's region could move persisted data.
-  const references = volume("iop-data", { region: "europe-west4", sizeMB: 5000 });
+  const references = volume("iop-data", { region, sizeMB: 5000 });
   const postgresData = volume("iop-database", { region, sizeMB: 5000 });
   const iop = service("iop", {
     configFile: "",

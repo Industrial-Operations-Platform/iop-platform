@@ -40,9 +40,10 @@ function main(env = process.env) {
   const target = readTarget(env); validateTarget(target);
   const { project, environment, service, origin } = target;
   const sha = cleanTree();
+  if (!env.npm_execpath || !existsSync(env.npm_execpath)) throw new Error("Run deployment through npm run railway:deploy.");
+  run(process.execPath, [env.npm_execpath, "audit", "--omit=dev", "--audit-level=high"]);
   if (!(env.GITHUB_ACTIONS === "true" && env.IOP_VALIDATED_SHA === sha)) {
     run("docker", ["info", "--format", "{{.ServerVersion}}"], true);
-    if (!env.npm_execpath || !existsSync(env.npm_execpath)) throw new Error("Run deployment through npm run railway:deploy.");
     run(process.execPath, [env.npm_execpath, "run", "test:poc"]);
   }
   if (cleanTree() !== sha) throw new Error("Source changed during validation; retry the deployment.");

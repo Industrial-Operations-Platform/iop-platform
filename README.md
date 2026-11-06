@@ -4,8 +4,8 @@ IOP is a modular industrial operations platform with Data Analysis (OIP), Shift
 Handover, Workforce, Maintenance Management, Improvement Tracking, Asset Locator
 and a Digital Asset Record. The local
 application uses individual accounts with Administrator, Team Leader, Task Force
-and Technician profiles. Railway deployment tooling is available; corporate login
-and proof of an actual remote deployment remain pending.
+and Technician profiles. A Railway Hobby evaluation was deployed and verified over
+HTTPS on 2026-11-06 with a copy of the local data. Corporate login remains pending.
 
 ## Publish and update
 
