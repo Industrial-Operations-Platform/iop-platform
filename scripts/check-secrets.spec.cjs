@@ -52,3 +52,12 @@ test('fails closed with safe diagnostics outside a repository', () => {
   expect(result.status).toBe(1);
   expect(result.stderr).toBe('Secret hygiene could not inspect the Git index. Check repository access and index state.\n');
 });
+
+test('ignores ASCII85 PDF stream noise while retaining checks on text and metadata', () => {
+  const noise = ['V:', '//ABCD:', 'EFGH', '@IJKL'].join('');
+  const stream = `<< /Filter [/ASCII85Decode /FlateDecode] >>\nstream\n${noise}\nendstream`;
+  expect(inspect('report.pdf', `%PDF-1.7\n${stream}`)).toEqual([]);
+  expect(inspect('report.pdf', `%PDF-1.7\n${stream}\n${url}`)).toContain('credential-url');
+  expect(inspect('report.pdf', `%PDF-1.7\n<< >>\nstream\n${url}\nendstream`)).toContain('credential-url');
+  expect(inspect('ordinary.txt', stream)).toContain('credential-url');
+});

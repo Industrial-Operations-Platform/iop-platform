@@ -11,7 +11,16 @@ function inspect(path, content) {
     rules.add('private-file');
   }
   if (/-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----/.test(content)) rules.add('private-key');
-  if (/[a-z][a-z0-9+.-]*:\/\/[^\s/:@]+:[^\s/@]+@/i.test(content)) rules.add('credential-url');
+  // ReportLab's ASCII85-encoded PDF streams can coincidentally resemble URLs.
+  // Keep inspecting ordinary PDF text/metadata, but not encoded stream bytes.
+  const credentialText = content.startsWith('%PDF-')
+    ? content.replace(/\bstream\r?\n[\s\S]*?endstream/g, (stream, offset) => {
+        const prefix = content.slice(Math.max(0, offset - 4096), offset);
+        const dictionary = prefix.slice(prefix.lastIndexOf('<<'));
+        return /\/ASCII85Decode\b/.test(dictionary) ? '' : stream;
+      })
+    : content;
+  if (/[a-z][a-z0-9+.-]*:\/\/[^\s/:@]+:[^\s/@]+@/i.test(credentialText)) rules.add('credential-url');
   for (const line of content.split(/\r?\n/)) {
     const assignment = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
     if (assignment && example && /PASSWORD|SECRET|TOKEN|API_KEY|PRIVATE_KEY/i.test(assignment[1]) &&
