@@ -82,14 +82,17 @@ test('private candidate generation preserves original images/baselines and is by
   const candidate=JSON.parse(fs.readFileSync(output,'utf8'));
   expect(candidate.scenes[0].previousComponents).toEqual([]);expect(candidate.scenes[0].evidence.sourceSha256).toBe(ref.id);
   expect(fs.readFileSync(path.join(root,ref.id+'.png'))).toEqual(png);
-  expect(fs.statSync(output).mode&0o777).toBe(0o600);expect(fs.statSync(path.dirname(output)).mode&0o777).toBe(0o700);
+  // NTFS does not expose POSIX modes; Linux CI verifies the private file modes.
+  if(process.platform!=='win32'){expect(fs.statSync(output).mode&0o777).toBe(0o600);expect(fs.statSync(path.dirname(output)).mode&0o777).toBe(0o700);}
 });
 test('modified source bytes, symlinks and linked/surveyed trace baselines are refused before output',()=>{
   const {f,ref}=inputs(),output=path.join(root,'models.json'),source=path.join(root,ref.id+'.png'),args={directory:root,output,adapter:{decode:()=>f.rgba}};
   const original=fs.readFileSync(source);fs.appendFileSync(source,'changed');
   expect(()=>prepareModels(args)).toThrow('Original schematic');expect(fs.existsSync(output)).toBe(false);
-  fs.writeFileSync(source,original);fs.renameSync(source,source+'.original');fs.symlinkSync(source+'.original',source);
-  expect(()=>prepareModels(args)).toThrow('Unsafe');fs.unlinkSync(source);fs.renameSync(source+'.original',source);
+  fs.writeFileSync(source,original);
+  // Creating file symlinks requires elevated privileges on Windows; Linux CI covers this branch.
+  if(process.platform!=='win32'){fs.renameSync(source,source+'.original');fs.symlinkSync(source+'.original',source);
+  expect(()=>prepareModels(args)).toThrow('Unsafe');fs.unlinkSync(source);fs.renameSync(source+'.original',source);}
   fs.writeFileSync(path.join(root,'traces.json'),JSON.stringify({version:1,organizationId:'org',siteId:'site',scenes:[{referenceId:ref.id,components:[{assetId:'explicit-linked-asset',verification:'surveyed',elevation:0.2}]}]}));
   expect(()=>prepareModels(args)).toThrow('linked or surveyed');expect(fs.existsSync(output)).toBe(false);
 });

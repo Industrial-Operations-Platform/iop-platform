@@ -139,9 +139,8 @@ async function seedHistory(
     `Analytics seed verified: ${files.length} dates, ${files.reduce((n, f) => n + f.records, 0)} rows, frequency ${files.reduce((n, f) => n + f.frequency, 0)}, ${files.reduce((n, f) => n + f.seconds, 0)} exact seconds; ${imported} dates imported, ${files.length - imported} unchanged.`,
   );
 }
-async function main() {
-  const env = process.env,
-    local = JSON.parse(readFileSync(env.IOP_CONFIG_FILE, "utf8"));
+async function initializeDatabase(env = process.env) {
+  const local = JSON.parse(readFileSync(env.IOP_CONFIG_FILE, "utf8"));
   const users = JSON.parse(
     readFileSync(env.IOP_LOCAL_IDENTITY_FILE, "utf8"),
   ).users;
@@ -192,6 +191,10 @@ async function main() {
       userSeed,
     );
   }
+}
+async function main() {
+  const env = process.env;
+  await initializeDatabase(env);
   console.log("Preparing historical analytics…");
   const runtime = await startPlatformRuntime(env);
   try {
@@ -212,4 +215,4 @@ if (require.main === module)
     );
     process.exitCode = 1;
   });
-module.exports = { seedHistory };
+module.exports = { seedHistory, initializeDatabase };

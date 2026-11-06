@@ -2,6 +2,7 @@ name: iop-platform-local
 services:
   database:
     image: postgres:17.6-bookworm
+    restart: unless-stopped
     env_file: .local-platform/postgres.env
     volumes:
       - platform-data:/var/lib/postgresql/data
@@ -38,6 +39,7 @@ services:
       database:
         condition: service_healthy
   api:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: apps/api/Dockerfile
@@ -67,6 +69,7 @@ services:
       - locator-references:/destination
       - ./scripts/local/locator-private-copy.cjs:/tool/locator-private-copy.cjs:ro
   web:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: apps/web/Dockerfile

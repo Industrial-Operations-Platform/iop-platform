@@ -1,6 +1,7 @@
 import { startPlatformRuntime } from "./host/runtime";
 import { createApplication } from "./host/application";
 import { ConfigurationError, readStartupConfiguration } from "./host/configuration";
+import { configureStaticWeb } from "./host/static-web";
 
 async function bootstrap(): Promise<void> {
   const { host, port } = readStartupConfiguration(process.env);
@@ -15,6 +16,7 @@ async function bootstrap(): Promise<void> {
   }
   app.enableShutdownHooks();
   try {
+    if (process.env.IOP_WEB_ROOT) configureStaticWeb(app, process.env.IOP_WEB_ROOT);
     await app.listen(port, host);
     console.info(`API listening on http://${host}:${port}`);
   } catch (error) {

@@ -65,7 +65,7 @@ test("appearance adapters stay independent of feature and transport policy", () 
 test("calendar-day fields and compact control styles use the mandatory shared components", () => {
   const root = resolve(__dirname, "../src");
   const violations: string[] = [];
-  for (const file of readdirSync(root, { recursive: true }).map(String)) {
+  for (const file of readdirSync(root, { recursive: true }).map(value => String(value).replace(/\\/g, "/"))) {
     if (file.startsWith("design/")) continue;
     if (file.endsWith(".css")) {
       if (

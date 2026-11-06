@@ -41,6 +41,8 @@
     "analysis:start": "node scripts/demo.cjs start-reference",
     "analysis:load-reference": "node scripts/demo.cjs fixtures-reference",
     "local:up": "node scripts/local/platform.cjs up",
+    "local:update": "node scripts/local/platform.cjs update",
+    "local:sync": "node scripts/local/sync.cjs",
     "local:stop": "node scripts/local/platform.cjs stop",
     "local:status": "node scripts/local/platform.cjs status",
     "local:admin": "node scripts/local/platform.cjs admin",
@@ -50,18 +52,29 @@
     "local:handover-demo": "node scripts/local/handover-demo.cjs",
     "local:workforce-demo": "node scripts/local/workforce-demo-host.cjs",
     "local:operational-demos": "node scripts/local/operational-demos.cjs",
-    "local:team-availability-demo": "node scripts/local/team-availability-demo.cjs"
+    "local:team-availability-demo": "node scripts/local/team-availability-demo.cjs",
+    "railway": "node scripts/railway/cli.cjs",
+    "railway:configure": "node scripts/railway/configure.cjs prepare",
+    "railway:variables": "node scripts/railway/configure.cjs push",
+    "railway:deploy": "node scripts/railway/deploy.cjs",
+    "railway:check": "node scripts/railway/smoke.cjs",
+    "railway:snapshot": "node scripts/railway/initial-data.cjs snapshot",
+    "railway:import-initial": "node scripts/railway/initial-data.cjs restore",
+    "railway:references": "node scripts/railway/initial-data.cjs references",
+    "railway:verify-data": "node scripts/railway/verify-initial.cjs"
   },
   "dependencies": {
     "node-pg-migrate": "9.0.0",
     "pg": "8.23.0"
   },
   "devDependencies": {
+    "@railway/cli": "5.71.0",
     "@testcontainers/postgresql": "12.1.0",
     "@types/jest": "30.0.0",
     "@types/node": "22.20.3",
     "@types/pg": "8.18.0",
     "jest": "30.5.1",
+    "railway": "3.16.0",
     "ts-jest": "29.4.12",
     "typescript": "5.9.3"
   }

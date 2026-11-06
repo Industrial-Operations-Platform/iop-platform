@@ -40,6 +40,10 @@ header, introduction and favicon, bypassing cached icons from earlier designs.
 Reload the browser after a successful rebuild; the running web container must
 serve the same SVG bytes as `apps/web/public/iop-mark.svg`.
 This stack uses individual temporary local accounts and remains loopback-only.
+Use `npm run local:update` to rebuild the current checkout or `npm run local:sync`
+to fast-forward Git and rebuild. Images build before the active application stops;
+both commands preserve private configuration and named volumes. See the separate
+[Railway guide](../../docs/development/railway.md) for internet hosting and code releases.
 After the first startup, run `npm run local:admin` to issue the initial administrator
 password in your terminal, then change it at first sign-in. Existing accounts and
 analytical data survive rebuilds. See the operator guide for profiles and recovery.

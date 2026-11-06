@@ -23,6 +23,14 @@ full backup/isolated restore, jobs, scoped Audit operation and readiness measure
 procedures. Root IOP-203 assembles these with the operational modules; remote
 hosting and another authorized deployment environment remain unverified.
 
+On 2026-11-06 the owner selected Railway for a one-month evaluation with a US$20
+budget and requested both Docker and Railway update automation. The
+[Railway guide](../../development/railway.md) now documents the combined web/API
+image, explicit HTTPS mode, initial copy of current local data, forward migrations,
+CLI and GitHub release workflows, storage, backups and account configuration.
+Repository preparation does not establish actual cloud deployment or recovery;
+these remain open until executed in the connected Railway account.
+
 ## Requirements and delivery boundary
 
 Use the current local stack and reviewed private configuration. Keep source

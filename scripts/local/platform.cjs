@@ -174,21 +174,22 @@ function extract(backup) {
 function main() {
   const [command, backup, ...extra] = process.argv.slice(2);
   if (
-    !["up", "stop", "status", "admin"].includes(command) ||
+    !["up", "update", "stop", "status", "admin"].includes(command) ||
     extra.length ||
     (command !== "up" &&
       !(command === "admin" && backup === "--reset") &&
       backup)
   )
     throw new Error(
-      "Use local:up [backup path], local:stop, local:status or local:admin [--reset].",
+      "Use local:up [backup path], local:update, local:stop, local:status or local:admin [--reset].",
     );
-  if (command === "up") {
+  if (command === "up" || command === "update") {
     configuration();
+    // Keep the current application running if an updated image cannot build.
+    docker(["build", "setup", "api", "web"]);
     docker(["stop", "web", "api"]);
     docker(["up", "-d", "--wait", "database"]);
     if (backup) extract(backup);
-    docker(["build", "setup", "api", "web"]);
     docker(["run", "--rm", "setup"]);
     docker(["run", "--rm", "locator-setup"]);
     docker(["up", "-d", "--wait", "api", "web"]);

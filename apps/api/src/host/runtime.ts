@@ -1,4 +1,5 @@
 import { siteMaterialAudit } from "../modules/audit/adapters/postgres/site-material";
+import { remoteOrigin, railwayDatabaseHost } from "./remote-transport";
 import {composeAssetDomain} from "./asset-domain-composition";
 import {composePlatformOverview} from "./overview-composition";
 import {resolve} from "node:path";
@@ -99,6 +100,7 @@ export interface LocalUser {
 }
 export interface LocalIdentityConfiguration {
   passwordAuthentication?: boolean;
+  remote?: boolean;
   locatorReferenceRoot?: string;
   handover?: unknown;
   users: LocalUser[];
@@ -129,9 +131,13 @@ export function readLocalIdentityConfiguration(
     env.IOP_TRANSPORT === "container" &&
     env.HOST === "0.0.0.0" &&
     env.IOP_DATABASE_HOST === "database";
+  const remote = env.IOP_EXECUTION_MODE === "railway" &&
+    env.IOP_TRANSPORT === "container" && env.HOST === "0.0.0.0" &&
+    env.NODE_ENV === "production" && env.IOP_AUTHENTICATION === "password" &&
+    railwayDatabaseHost(env.IOP_DATABASE_HOST);
   if (
-    (!native && !container) ||
-    env.IOP_DATABASE_MODE !== "local" ||
+    (!native && !container && !remote) ||
+    env.IOP_DATABASE_MODE !== (remote ? "railway" : "local") ||
     env.IOP_DATABASE_NAME !== "iop_local"
   )
     throw new ConfigurationError("local application mode");
@@ -170,6 +176,7 @@ export function readLocalIdentityConfiguration(
       throw new Error();
     const origins = value.origins.map((o: unknown) => {
       if (typeof o !== "string") throw new Error();
+      if (remote) return remoteOrigin(o);
       const url = new URL(o);
       if (
         url.origin !== o ||
@@ -197,6 +204,7 @@ export function readLocalIdentityConfiguration(
       throw new Error();
     return {
       users,
+      ...(remote ? { remote: true } : {}),
       ...(env.IOP_LOCATOR_REFERENCE_ROOT ? {locatorReferenceRoot: env.IOP_LOCATOR_REFERENCE_ROOT} : {}),
       ...(env.IOP_HANDOVER_CONFIG_FILE
         ? { handover: jsonFile(env.IOP_HANDOVER_CONFIG_FILE, 262144) }
@@ -648,10 +656,11 @@ export class PlatformRuntime {
   protect(request: IncomingMessage, apiPort: number): void {
     if (!this.lease) throw new ServiceUnavailableException();
     const hosts = new Set([
-      `127.0.0.1:${apiPort}`,
+      ...(this.config.remote ? [] : [`127.0.0.1:${apiPort}`]),
       ...this.config.origins.map((o) => new URL(o).host),
     ]);
     if (
+      (this.config.remote && request.headers["x-forwarded-proto"] !== "https") ||
       !hosts.has(request.headers.host ?? "") ||
       request.headers["sec-fetch-site"] === "cross-site" ||
       (request.headers.origin !== undefined &&

@@ -1,0 +1,55 @@
+# Synthetic, disposable deployment verification. Never points at a real installation.
+services:
+  database:
+    image: postgres:17.6-bookworm
+    environment:
+      POSTGRES_DB: iop_local
+      POSTGRES_USER: iop_bootstrap
+      POSTGRES_PASSWORD: synthetic-bootstrap-password
+    networks:
+      default:
+        aliases: [database.railway.internal]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U iop_bootstrap -d iop_local']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  setup:
+    image: iop-railway:ci
+    command: [node, scripts/railway/prepare.cjs]
+    environment: &configuration
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: '8080'
+      IOP_TRANSPORT: container
+      IOP_EXECUTION_MODE: railway
+      IOP_DATABASE_MODE: railway
+      IOP_AUTHENTICATION: password
+      IOP_DATABASE_HOST: database.railway.internal
+      IOP_DATABASE_PORT: '5432'
+      IOP_DATABASE_NAME: iop_local
+      IOP_POSTGRES_PASSWORD: synthetic-bootstrap-password
+      IOP_MIGRATOR_PASSWORD: synthetic-migrator-password
+      IOP_RUNTIME_PASSWORD: synthetic-runtime-password
+      IOP_SCOPE_JSON: '{"organization":{"id":"ci-org"},"site":{"id":"ci-site","organizationId":"ci-org","timeZone":"UTC"},"source":{"id":"ci-source","organizationId":"ci-org","siteId":"ci-site"}}'
+      IOP_USERS_JSON: '{"users":[{"id":"ci-admin","name":"CI Administrator"}],"origins":["https://railway.test.example"]}'
+      IOP_MAPPINGS_JSON: '{"organizationId":"ci-org","siteId":"ci-site","sourceId":"ci-source","mappingRevision":"ci-v1","sectors":[],"areas":[]}'
+      IOP_HANDOVER_JSON: '{"organizationId":"ci-org","siteId":"ci-site","locations":[],"externalSystemLabel":"External","categories":[{"id":"information","label":"Information"}]}'
+    depends_on:
+      database:
+        condition: service_healthy
+  app:
+    image: iop-railway:ci
+    environment:
+      <<: *configuration
+      RAILWAY_VOLUME_MOUNT_PATH: /data
+    ports: ['127.0.0.1:18080:8080']
+    volumes: [test-references:/data]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8080/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 3s
+      start_period: 20s
+      retries: 30
+volumes:
+  test-references:

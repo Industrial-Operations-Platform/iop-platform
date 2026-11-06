@@ -43,7 +43,8 @@ beforeAll(async()=>{
   await archive.createKey(join(directory,'separate.key'));
 },90000);
 afterAll(async()=>{if(restored)database.cleanupRestore(restored.container);if(container)await container.stop();if(directory)await fs.rm(directory,{recursive:true,force:true});});
-test('full database, credentials/grants, private configuration and PNG/trace references restore into a fresh isolated stopped installation with exact verification',async()=>{
+// This operator enforces POSIX ownership/modes and is validated by the Linux CI runner.
+(process.platform === 'win32' ? test.skip : test)('full database, credentials/grants, private configuration and PNG/trace references restore into a fresh isolated stopped installation with exact verification',async()=>{
   const input=join(directory,'private'),output=join(directory,'platform.iopbk'),keyPath=join(directory,'separate.key');
   const result=await backup({container:container.getId(),privateRoot:input,keyPath,output});expect(result.tables).toBeGreaterThan(10);expect(result.rows).toBeGreaterThan(0);
   const destination=join(directory,'isolated');restored=await restore({input:output,keyPath,destination});expect(restored).toMatchObject({verified:true,network:'none',state:'stopped'});expect(restored.tables).toBe(result.tables);expect(restored.rows).toBe(result.rows);

@@ -36,6 +36,14 @@ test('provisioning requires separate passwords; migration needs only its own', (
   expect(configuration({ ...env, IOP_POSTGRES_PASSWORD: undefined, IOP_RUNTIME_PASSWORD: undefined }, 'migrator').user).toBe('iop_migrator');
 });
 
+test('Railway uses private networking and fixed separated roles without accepting ambient public URLs', () => {
+  const remote = { ...env, IOP_EXECUTION_MODE: 'railway', IOP_DATABASE_MODE: 'railway', IOP_DATABASE_HOST: 'database.railway.internal' };
+  expect(configuration(remote, 'runtime')).toMatchObject({ host: 'database.railway.internal', database: 'iop_local', user: 'iop_runtime', ssl: false });
+  expect(provisioningConfiguration(remote).bootstrap.user).toBe('iop_bootstrap');
+  for (const host of ['database', 'public.example', 'database.railway.internal.attacker.com', 'https://database.railway.internal', '']) expect(() => configuration({ ...remote, IOP_DATABASE_HOST: host }, 'runtime')).toThrow();
+  expect(() => configuration({ ...remote, IOP_EXECUTION_MODE: undefined }, 'runtime')).toThrow();
+});
+
 test.each(['provision', 'migrate', 'seed-organization', 'seed-site', 'seed-user', 'seed-membership', 'unknown'])('CLI rejects incomplete input safely: %s', (command) => {
   const result = spawnSync(process.execPath, [resolve(__dirname, '../dist/cli.js'), command], {
     env: { PATH: process.env.PATH, IOP_DATABASE_NAME: 'do-not-print-this-value' }, encoding: 'utf8',

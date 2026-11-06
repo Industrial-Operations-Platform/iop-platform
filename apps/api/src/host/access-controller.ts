@@ -1,4 +1,5 @@
 import { RemoveUserDto, RenameUserDto } from "./access-contracts";
+import { sessionCookie } from "./remote-transport";
 import {
   Body,
   Controller,
@@ -68,10 +69,10 @@ async function accessOperation<T>(work: () => Promise<T>): Promise<T> {
     throw error;
   }
 }
-const clearCookie = (response: ServerResponse) =>
+const clearCookie = (response: ServerResponse, secure: boolean) =>
   response.setHeader(
     "Set-Cookie",
-    "iop_session=; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=0",
+    sessionCookie("", secure, 0),
   );
 @ApiTags("Local access")
 @Controller("api/v1")
@@ -99,7 +100,7 @@ export class AccessController {
     );
     res.setHeader(
       "Set-Cookie",
-      `iop_session=${token}; HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=28800`,
+      sessionCookie(token, r.config.remote === true),
     );
     return { ok: true };
   }
@@ -120,7 +121,7 @@ export class AccessController {
         body.password,
       ),
     );
-    clearCookie(res);
+    clearCookie(res, r.config.remote === true);
     return { ok: true };
   }
   @Post("auth/logout")
@@ -133,7 +134,7 @@ export class AccessController {
     await accessOperation(() =>
       r.access!.authentication.logout(r.sessionToken(req)),
     );
-    clearCookie(res);
+    clearCookie(res, r.config.remote === true);
     return { ok: true };
   }
   @Get("users")

@@ -134,7 +134,7 @@ async function main() {
     await client.end();
   }
 }
-main().catch((error) => {
+if (require.main === module) main().catch((error) => {
   console.error(
     error.constructor === Error
       ? error.message
@@ -142,3 +142,4 @@ main().catch((error) => {
   );
   process.exitCode = 1;
 });
+module.exports = { main };

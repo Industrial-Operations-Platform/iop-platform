@@ -1,0 +1,21 @@
+# Defense in depth. The supported deploy command uploads an explicit source allowlist.
+.git/
+.local-platform/
+.local-demo/
+.local-analysis/
+.railway/
+.env
+.env.*
+node_modules/
+**/node_modules/
+**/dist/
+output/
+tmp/
+docs/
+fixtures/
+*.iopbk
+*.dump
+*.backup
+*.key
+*.pem
+**/*.local.json

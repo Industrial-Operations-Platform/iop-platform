@@ -12,10 +12,11 @@ const passwordFields = {
 } as const;
 
 export function configuration(env: NodeJS.ProcessEnv, role: DatabaseRole): ClientConfig {
-  if (env.IOP_DATABASE_MODE !== 'local') throw new DatabaseError('Explicit local database mode is required.');
+  const remote = env.IOP_DATABASE_MODE === 'railway' && env.IOP_EXECUTION_MODE === 'railway';
+  if (env.IOP_DATABASE_MODE !== 'local' && !remote) throw new DatabaseError('Explicit database mode is required.');
   const host = env.IOP_DATABASE_HOST;
-  if (!host || !['127.0.0.1', 'localhost', '::1', 'database'].includes(host)) {
-    throw new DatabaseError('A supported local database host is required.');
+  if (!host || (remote ? !/^[a-z][a-z0-9-]{0,62}\.railway\.internal$/.test(host) : !['127.0.0.1', 'localhost', '::1', 'database'].includes(host))) {
+    throw new DatabaseError('A supported database host is required.');
   }
   const port = env.IOP_DATABASE_PORT;
   if (!port || !/^[1-9][0-9]{0,4}$/.test(port) || Number(port) > 65535) {

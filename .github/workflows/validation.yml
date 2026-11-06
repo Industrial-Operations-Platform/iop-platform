@@ -7,7 +7,7 @@ permissions:
   contents: read
 concurrency:
   group: validation-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   local-platform:
     runs-on: ubuntu-24.04
@@ -29,6 +29,14 @@ jobs:
         run: npm run check:secrets
       - name: Validate complete local platform
         run: npm run test:poc
+      - name: Build local and Railway containers
+        run: |
+          docker build -f infra/local/Dockerfile -t iop-setup:ci .
+          docker build -f apps/api/Dockerfile -t iop-api:ci .
+          docker build -f apps/web/Dockerfile -t iop-web:ci .
+          docker build -f infra/railway/Dockerfile -t iop-railway:ci .
+      - name: Exercise the Railway image with a synthetic private database
+        run: node scripts/railway/check-container.cjs
       - name: Retain synthetic browser failure evidence
         if: failure()
         uses: actions/upload-artifact@v7
@@ -39,3 +47,38 @@ jobs:
             apps/web/playwright-report/
           if-no-files-found: ignore
           retention-days: 7
+  railway:
+    needs: local-platform
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.ref_name == (vars.RAILWAY_DEPLOY_BRANCH || 'main') &&
+      (github.event_name == 'workflow_dispatch' || vars.RAILWAY_AUTO_DEPLOY == 'true')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: railway-production
+    concurrency:
+      group: railway-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+      - name: Install locked deployment tooling
+        run: |
+          npm install --global npm@10.9.2
+          npm ci
+          npm run build --workspace @iop/api
+      - name: Publish validated revision and verify live access
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
+          RAILWAY_DATABASE_SERVICE_ID: ${{ vars.RAILWAY_DATABASE_SERVICE_ID }}
+          IOP_PUBLIC_ORIGIN: ${{ vars.IOP_PUBLIC_ORIGIN }}
+          IOP_VALIDATED_SHA: ${{ github.sha }}
+        run: npm run railway:deploy

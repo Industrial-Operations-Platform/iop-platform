@@ -46,3 +46,6 @@ id_ed25519*
 .local-analysis/
 
 .local-platform/
+.railway/*
+!.railway/railway.ts
+!.railway/README.md

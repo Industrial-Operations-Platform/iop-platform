@@ -75,8 +75,11 @@ test('private candidates validate scope, replacement, symlink and size without s
     expect((await source.list())[0].components[0].label).toBe(old.label);
     await write({organizationId:'foreign'}); await expect(source.list()).rejects.toMatchObject({code:'locator_reference_unavailable'});
     await write({scenes:[candidate,candidate]}); await expect(source.list()).rejects.toMatchObject({code:'locator_reference_unavailable'});
-    await rm(file); await writeFile(join(root,'outside.json'),'{}'); await symlink(join(root,'outside.json'),file);
-    await expect(source.list()).rejects.toMatchObject({code:'locator_reference_unavailable'});
+    // File symlinks need elevated Windows privileges; Linux CI exercises this branch.
+    if (process.platform !== 'win32') {
+      await rm(file); await writeFile(join(root,'outside.json'),'{}'); await symlink(join(root,'outside.json'),file);
+      await expect(source.list()).rejects.toMatchObject({code:'locator_reference_unavailable'});
+    }
     await rm(file); await write(); await truncate(file,32*1024*1024+1);
     await expect(source.list()).rejects.toMatchObject({code:'locator_reference_unavailable'});
   } finally { await rm(root,{recursive:true,force:true}); }
