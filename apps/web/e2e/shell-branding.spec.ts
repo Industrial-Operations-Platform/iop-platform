@@ -31,6 +31,7 @@ async function capture(page: Page, info: TestInfo, name: string) {
 for (const scenario of [
   { width: 1440, height: 900, appearance: "light", language: "en" },
   { width: 1366, height: 768, appearance: "dark", language: "en" },
+  { width: 1366, height: 640, appearance: "dark", language: "en" },
   { width: 768, height: 900, appearance: "light", language: "en" },
   { width: 390, height: 844, appearance: "dark", language: "de" },
   { width: 320, height: 844, appearance: "light", language: "en" },
@@ -66,8 +67,8 @@ for (const scenario of [
     const account = header.getByRole("button", { name: label("User menu"), exact: true });
     const notifications = header.getByRole("button", { name: label("Notifications"), exact: true });
     const search = header.getByRole("button", { name: label("Global search"), exact: true });
-    await expect(navigation.getByRole("button")).toHaveCount(14);
-    await expect(page.getByRole("main").getByRole("heading", { name: "Administration", exact: true })).toBeVisible();
+    await expect(navigation.getByRole("button")).toHaveCount(13);
+    await expect(page.getByRole("main").getByRole("heading", { name: label("Administration"), exact: true })).toBeVisible();
 
     const image = brand.locator("img");
     await expect.poll(() => image.evaluate(node => (node as HTMLImageElement).complete && (node as HTMLImageElement).naturalWidth > 0)).toBe(true);
@@ -111,7 +112,7 @@ for (const scenario of [
       })).toBeLessThanOrEqual(1);
     }
     if (width <= 620) expect(await navigation.evaluate(node => node.scrollLeft)).toBeGreaterThan(0);
-    if (height === 768) expect(await navigation.evaluate(node => node.scrollTop)).toBeGreaterThan(0);
+    if (height === 640) expect(await navigation.evaluate(node => node.scrollTop)).toBeGreaterThan(0);
     await expectContainedPage(page);
 
     const maintenance = navigation.getByRole("button", { name: label("Maintenance"), exact: true });
@@ -120,7 +121,7 @@ for (const scenario of [
     await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toContainText(label("Maintenance"));
     await brand.click();
     await expect(destinations.first()).toHaveAttribute("aria-current", "page");
-    await expect(page.getByRole("main").getByRole("heading", { name: "Administration", exact: true })).toBeVisible();
+    await expect(page.getByRole("main").getByRole("heading", { name: label("Administration"), exact: true })).toBeVisible();
 
     await account.click();
     const menu = page.getByRole("dialog", { name: label("User menu"), exact: true });
@@ -175,7 +176,7 @@ for (const width of [621, 800]) {
     await page.goto("/");
     const header = page.getByRole("banner");
     const navigation = page.getByRole("navigation", { name: "Main navigation", exact: true });
-    await expect(navigation.getByRole("button")).toHaveCount(14);
+    await expect(navigation.getByRole("button")).toHaveCount(13);
     const viewAs = header.getByRole("button", { name: "View as", exact: true });
     await viewAs.click();
     const profile = header.getByRole("combobox", { name: "Profile view", exact: true });
