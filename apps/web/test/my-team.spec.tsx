@@ -3,9 +3,57 @@ import { MyTeam } from "../src/features/workforce/adapters/react/MyTeam";
 import { WorkforceWorkspace } from "../src/features/workforce/adapters/react/WorkforceWorkspace";
 import { WorkforceApplication, type Gateway } from "../src/features/workforce/application/workforce";
 import { setLanguage } from "../src/localization/i18n";
-import { teamBoard, teamDates, teamAssignment } from "./fixtures/team-distribution";
+import { teamBoard, teamDates, teamAssignment, teamSchedule } from "./fixtures/team-distribution";
 
 afterEach(() => setLanguage("en"));
+
+test("a full-day allocation shows the shift, hours and area once", () => {
+  const board = teamBoard();
+  board.records = board.records.filter((record) => record.kind !== "assignment");
+  board.records.push(teamAssignment("full-day", "alice", teamDates[0]));
+  render(<MyTeam board={board} dates={[teamDates[0]]} date={teamDates[0]} select={jest.fn()} />);
+  const row = screen.getByRole("row", { name: /Alice Current/ });
+  expect(within(row).getAllByText("Early shift")).toHaveLength(1);
+  expect(within(row).getAllByText("05:00–14:15")).toHaveLength(1);
+  expect(within(row).getAllByText("Assembly")).toHaveLength(1);
+  expect(within(row).queryByText("Work")).toBeNull();
+  expect(within(row).queryByText("Zone coverage")).toBeNull();
+  expect(within(row).getByRole("button")).toHaveAccessibleName(/Early shift, Assembly, Zone coverage, 05:00–14:15/);
+});
+
+test("split allocations retain their distinct hours without repeating the daily shift", () => {
+  render(<MyTeam board={teamBoard()} dates={[teamDates[0]]} date={teamDates[0]} select={jest.fn()} />);
+  const row = screen.getByRole("row", { name: /Alice Current/ });
+  expect(within(row).getAllByText("Early shift")).toHaveLength(1);
+  for (const hours of ["05:00–14:15", "05:00–08:00", "08:00–14:15"]) {
+    expect(within(row).getByText(hours)).toBeVisible();
+  }
+});
+
+test("a different assigned shift and an allocation without a schedule retain their context", () => {
+  const board = teamBoard();
+  board.records.push(teamAssignment("different-shift", "bob", teamDates[0], { shiftId: "night", start: "22:00", end: "06:00", startsAt: teamDates[0] + "T22:00:00Z", endsAt: teamDates[1] + "T06:00:00Z" }),
+    teamAssignment("unknown-day", "unknown", teamDates[0]));
+  render(<MyTeam board={board} dates={[teamDates[0]]} date={teamDates[0]} select={jest.fn()} />);
+  const bob = screen.getByRole("row", { name: /Bob Technician/ });
+  expect(within(bob).getByText("Early shift")).toBeVisible();
+  expect(within(bob).getByText("Night shift")).toBeVisible();
+  expect(within(bob).getByText("22:00–06:00")).toBeVisible();
+  const unknown = screen.getByRole("row", { name: /Unknown Schedule/ });
+  for (const label of ["No schedule yet", "Early shift", "05:00–14:15", "Assembly"]) {
+    expect(within(unknown).getByText(label)).toBeVisible();
+  }
+});
+
+test("a continuation keeps its hours when the new day's schedule has matching clock times", () => {
+  const board = teamBoard();
+  board.records.push(teamSchedule("unknown", teamDates[1], "work", "22:00", "06:00"),
+    teamAssignment("unknown-night", "unknown", teamDates[0], { shiftId: "night", start: "22:00", end: "06:00", startsAt: teamDates[0] + "T22:00:00Z", endsAt: teamDates[1] + "T06:00:00Z" }));
+  render(<MyTeam board={board} dates={[teamDates[1]]} date={teamDates[1]} select={jest.fn()} />);
+  const row = screen.getByRole("row", { name: /Unknown Schedule/ });
+  expect(within(within(row).getByRole("button")).getByText("22:00–06:00")).toBeVisible();
+  expect(within(row).getByText("Continues from 2026-10-19")).toBeVisible();
+});
 
 test("the weekly team view shows absences and allocations without requiring an on-duty leader", () => {
   const select = jest.fn();

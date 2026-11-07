@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { installMaintenanceAssetsFixture } from "./maintenance-assets-fixture";
-import { teamBoard } from "../test/fixtures/team-distribution";
+import { teamAssignment, teamBoard, teamDates } from "../test/fixtures/team-distribution";
 
 for (const width of [1440, 390]) {
   test(`leader team availability and allocations remain readable at ${width}px`, async ({ page }) => {
@@ -10,6 +10,7 @@ for (const width of [1440, 390]) {
     page.on("pageerror", (error) => errors.push(error.message));
     const { requests } = await installMaintenanceAssetsFixture(page, "team-leader");
     const board = teamBoard();
+    board.records.push(teamAssignment("bob-full-day", "bob", teamDates[0]));
     board.actorId = "admin";
     board.settings.teams = board.settings.teams.map((team) => team.leaderId === "leader" ? { ...team, leaderId: "admin" } : team);
     await page.route("**/workforce/board", (route) => route.fulfill({ json: board }));
@@ -24,6 +25,12 @@ for (const width of [1440, 390]) {
       await expect(alice.getByText(label, { exact: true })).toBeVisible();
     }
     await expect(table.getByText("Continues from 2026-10-19", { exact: true })).toBeVisible();
+    const fullDay = table.getByRole("row", { name: /Bob Technician/ }).getByRole("cell").first();
+    await expect(fullDay.getByText("Early shift", { exact: true })).toHaveCount(1);
+    await expect(fullDay.getByText("05:00–14:15", { exact: true })).toHaveCount(1);
+    await expect(fullDay.getByText("Assembly", { exact: true })).toHaveCount(1);
+    await expect(fullDay.getByText("Work", { exact: true })).toHaveCount(0);
+    await expect(fullDay.getByText("Zone coverage", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("table", { name: "Team distribution for Support team", exact: true })).toBeVisible();
     await expect(page.getByText("Other Leader's Worker", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Configuration", exact: true })).toHaveCount(0);
@@ -31,13 +38,13 @@ for (const width of [1440, 390]) {
     const viewport = table.locator("..");
     expect(await viewport.evaluate((element) => element.scrollHeight <= element.clientHeight)).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.screenshot({ path: `/tmp/iop-218-my-team-${width}.png`, fullPage: true });
+    await page.screenshot({ path: test.info().outputPath(`my-team-${width}.png`), fullPage: true });
     if (width === 390) {
       expect(await viewport.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(true);
       const before = (await table.getByRole("rowheader").first().boundingBox())!.x;
       await viewport.evaluate((element) => { element.scrollLeft = 400; });
       expect(Math.abs((await table.getByRole("rowheader").first().boundingBox())!.x - before)).toBeLessThan(1);
-      await page.screenshot({ path: "/tmp/iop-218-my-team-390-scrolled.png", fullPage: true });
+      await page.screenshot({ path: test.info().outputPath("my-team-390-scrolled.png"), fullPage: true });
       await viewport.evaluate((element) => { element.scrollLeft = 0; });
     }
     await alice.getByRole("button").first().click();

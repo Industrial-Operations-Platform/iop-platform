@@ -13,9 +13,9 @@ function TeamDayCell({ day, board, personName, select }: {
   const schedule = day.schedule;
   const working = schedule && ["work", "training", "maintenance"].includes(schedule.data.status);
   return <div className="workforce-team-day">
-    <Badge tone={working ? "info" : "neutral"}>
+    {schedule?.data.status !== "work" && <Badge tone={working ? "info" : "neutral"}>
       {schedule ? t(statusLabels[schedule.data.status]) : t("No schedule yet")}
-    </Badge>
+    </Badge>}
     {schedule && working && <div className="workforce-team-hours">
       {day.shiftLabel && <span>{t(day.shiftLabel)}</span>}
       <span>{schedule.data.start}–{schedule.data.end}</span>
@@ -25,14 +25,18 @@ function TeamDayCell({ day, board, personName, select }: {
       const data = assignment.data;
       const shift = board.settings.shifts.find((item) => item.id === data.shiftId)?.label || data.shiftLabel || data.shiftId;
       const zone = board.settings.targets.find((item) => item.id === data.targetId)?.label || data.targetLabel;
+      const repeatedShift = working && day.shiftLabel && t(shift) === t(day.shiftLabel);
+      const repeatedHours = working && data.date === schedule.data.date &&
+        Date.parse(data.startsAt) === Date.parse(schedule.data.startsAt) &&
+        Date.parse(data.endsAt) === Date.parse(schedule.data.endsAt);
       const context = [t(shift), zone, t(dutyLabels[data.duty]), `${data.start}–${data.end}`].filter(Boolean).join(", ");
       return <Button key={assignment.id} variant="text" className="workforce-team-assignment"
         aria-label={t("View assignment for {0} on {1}: {2}", [personName, day.date, context])}
         onClick={() => select({ ...assignment, personName })}>
-        <strong>{t(shift)}</strong>
+        {!repeatedShift && <strong>{t(shift)}</strong>}
         {zone && <span>{zone}</span>}
-        <span>{t(dutyLabels[data.duty])}</span>
-        <small>{data.start}–{data.end}</small>
+        {(data.duty !== "zone" || !zone) && <span>{t(dutyLabels[data.duty])}</span>}
+        {!repeatedHours && <small>{data.start}–{data.end}</small>}
         {data.date !== day.date && <small>{t("Continues from {0}", [data.date])}</small>}
       </Button>;
     })}
