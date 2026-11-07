@@ -59,6 +59,7 @@ for (const scenario of [
       } });
     });
     await page.goto("/");
+    await expect(page).toHaveTitle("IOP · Industrial Operations Platform");
 
     const label = (source: string) => language === "de" ? german[source] ?? source : source;
     const header = page.getByRole("banner");
@@ -75,7 +76,8 @@ for (const scenario of [
     const imageBox = await bounds(image), copyBox = await bounds(brand.locator(".iop-brand-copy"));
     expect(Math.abs(imageBox.y + imageBox.height / 2 - copyBox.y - copyBox.height / 2)).toBeLessThanOrEqual(1);
     expect(copyBox.x - imageBox.x - imageBox.width).toBeGreaterThanOrEqual(8);
-    const controls = await Promise.all([brand, search, notifications, account].map(bounds));
+    const navigationToggle = header.getByRole("button", { name: label("Hide navigation"), exact: true });
+    const controls = await Promise.all([navigationToggle, brand, search, notifications, account].map(bounds));
     const centers = controls.map(box => box.y + box.height / 2);
     expect(Math.max(...centers) - Math.min(...centers)).toBeLessThanOrEqual(1);
     for (const control of [brand, search, notifications, account]) await expectContained(control, page);

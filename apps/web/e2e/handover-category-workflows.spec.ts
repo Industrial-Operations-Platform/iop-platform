@@ -4,7 +4,7 @@ import { emptyWorkforce } from "./workforce-fixture";
 import type { Entry, Content } from "../src/features/shift-handover/domain/models";
 
 for (const width of [1440, 375]) {
-  test(`category workflows, personal Journal and exact notices at ${width}px`, async ({ page }) => {
+  test(`category workflows, personal Journal and exact notices at ${width}px`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.clock.setFixedTime(new Date("2026-10-07T10:00:00.000Z"));
     await page.addInitScript(() => {
@@ -107,7 +107,7 @@ for (const width of [1440, 375]) {
     const expanded = page.getByRole("dialog", { name: "Information", exact: true });
     await expect(expanded.getByAltText("Briefing diagram").first()).toBeVisible();
     await expect(expanded.getByText("Full instructions for the next shift.").first()).toBeVisible();
-    await page.screenshot({ path: `/private/tmp/iop-199-information-${width}.png`, fullPage: true });
+    await page.screenshot({ path: info.outputPath("information.png"), fullPage: true });
     await page.keyboard.press("Escape");
     await canvas.getByRole("region", { name: "People section", exact: true }).getByRole("button", { name: "People", exact: true }).click();
     const people = page.getByRole("dialog", { name: "People", exact: true });
@@ -124,7 +124,7 @@ for (const width of [1440, 375]) {
     await expect(form.getByLabel("Department / Halle", { exact: true })).toHaveValue("");
     await form.getByLabel("Date", { exact: true }).fill("2026-10-07");
     await expect(form.getByLabel("Department / Halle", { exact: true })).toHaveValue("hall-a");
-    await page.screenshot({ path: `/private/tmp/iop-199-safety-${width}.png`, fullPage: true });
+    await page.screenshot({ path: info.outputPath("safety.png"), fullPage: true });
     await form.getByLabel("Category", { exact: true }).selectOption("problems");
     await expect(form.getByLabel("Category", { exact: true }).locator("option")).not.toContainText(["Performance", "Problems"]);
     await form.getByLabel("Summary", { exact: true }).fill("Blocked sorting plant");
@@ -140,7 +140,7 @@ for (const width of [1440, 375]) {
     await form.getByLabel("Summary", { exact: true }).fill("Drive checked and restored");
     await form.getByLabel(/Own technical report/).check();
     await form.getByLabel(/I confirm the selected work/).check();
-    await page.screenshot({ path: `/private/tmp/iop-199-success-${width}.png`, fullPage: true });
+    await page.screenshot({ path: info.outputPath("success.png"), fullPage: true });
     await form.getByRole("button", { name: "Publish update", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Completed records", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Track as issue", exact: true })).toHaveCount(0);
@@ -151,7 +151,7 @@ for (const width of [1440, 375]) {
     await expect(page.getByRole("button", { name: /Other technician report/ })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Own technical report/ })).toBeVisible();
     expect(queries.some((selection) => selection.mine === true)).toBe(true);
-    await page.screenshot({ path: `/private/tmp/iop-199-journal-${width}.png`, fullPage: true });
+    await page.screenshot({ path: info.outputPath("journal.png"), fullPage: true });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(errors).toEqual([]);
   });

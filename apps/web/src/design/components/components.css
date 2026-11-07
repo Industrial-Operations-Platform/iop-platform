@@ -526,6 +526,12 @@
   }
 }
 @media (max-width: 620px) {
+  .iop-shell-identity {
+    gap: 8px;
+  }
+  .iop-ui .iop-brand {
+    gap: 8px;
+  }
   .iop-ui .iop-sidebar {
     position: static;
     width: auto;
@@ -555,6 +561,7 @@
   .iop-header-actions {
     flex-wrap: wrap;
     max-width: 100%;
+    gap: 8px;
   }
   .iop-header-actions:has(.iop-search-control[data-expanded="true"]) {
     flex-basis: 100%;
