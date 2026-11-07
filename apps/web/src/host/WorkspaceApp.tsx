@@ -757,7 +757,6 @@ export function WorkspaceApp({
         <AdministrationOverview
           personal={signedIn && (workforce || handover) ? (
             <>
-            {handover && <InformationNotices application={handover} open={openInformation} />}
             {workforce && (
             <div className="analysis-start-personal">
               <StartPersonalProfile
@@ -767,6 +766,7 @@ export function WorkspaceApp({
                 handover={handover}
                 onDepartment={setAssignedDepartmentId}
               />
+              {handover && <InformationNotices application={handover} open={openInformation} />}
               <WorkforceToday
                 application={workforce}
                 timeZone={context.scope?.siteTimeZone ?? "UTC"}
@@ -782,6 +782,7 @@ export function WorkspaceApp({
               />
             </div>
             )}
+            {!workforce && handover && <InformationNotices application={handover} open={openInformation} />}
             </>
           ) : undefined}
           canImport={!!context?.canImport}
@@ -847,15 +848,11 @@ export function WorkspaceApp({
           }
           canReadAnalytics={canReadAnalytics}
           authenticated={context.authentication === "password"}
-          personalProfile={signedIn && (workforce || handover) ? (
-            <>
-            {handover && <InformationNotices application={handover} open={openInformation} />}
-            {workforce && (
+          information={signedIn && handover ? <InformationNotices application={handover} open={openInformation} /> : undefined}
+          personalProfile={signedIn && workforce ? (
             <StartPersonalProfile name={context.user!.name}
               profileLabel={profileLabels[effectiveProfile as Profile] ?? "Profile"}
               workforce={workforce} handover={handover} onDepartment={setAssignedDepartmentId} />
-            )}
-            </>
           ) : undefined}
           workforce={
             workforce && signedIn ? (

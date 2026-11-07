@@ -10,6 +10,7 @@ export function EntrySummaryCards({
   expanded = false,
   personal = false,
   preview = "latest",
+  notice = false,
 }: {
   entries: (Pick<
     Entry,
@@ -31,12 +32,13 @@ export function EntrySummaryCards({
       | "dueDate"
       | "feedbackDueDate"
       | "images"
-    > & { condition: string };
+    > & { condition: string; displayUntil?: string };
   })[];
   open: (id: string) => void;
   expanded?: boolean;
   personal?: boolean;
   preview?: "latest" | "original";
+  notice?: boolean;
 }) {
   return (
     <div
@@ -65,7 +67,7 @@ export function EntrySummaryCards({
           {entry.content.images?.[0] && <img className="handover-card-image" src={entry.content.images[0].dataUrl} alt={entry.content.images[0].name} />}
           {expanded && (
             <>
-              <span className="handover-card-tags">
+              {!notice && <span className="handover-card-tags">
                 <Badge tone={issueTone(entry.issueState)}>
                   {issueLabel(entry.issueState)}
                 </Badge>
@@ -73,7 +75,7 @@ export function EntrySummaryCards({
                   entry.content.condition === "blocked" && (
                     <Badge tone="attention">{t("Reported blocked")}</Badge>
                   )}
-              </span>
+              </span>}
               {entry.content.equipmentCode && (
                 <span className="handover-card-equipment">
                   {entry.content.equipmentCode}
@@ -94,7 +96,13 @@ export function EntrySummaryCards({
                       {entry.content.date}
                     </time>
                   </span>
-                  {entry.issueState !== "none" && (
+                  {notice && entry.content.displayUntil && (
+                    <span>
+                      <span>{t("Display through")}</span>
+                      <time dateTime={entry.content.displayUntil}>{entry.content.displayUntil}</time>
+                    </span>
+                  )}
+                  {!notice && entry.issueState !== "none" && (
                     <span>
                       <span>{t("Responsible")}</span>
                       <strong>

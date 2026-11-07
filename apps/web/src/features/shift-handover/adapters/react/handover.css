@@ -512,8 +512,19 @@
   .handover-meeting-section--wide { grid-column: span 1; }
 }
 
-.handover-information-notices .handover-meeting-canvas { grid-template-columns: minmax(0, 1fr); }
-.handover-information-notices .handover-meeting-section { grid-column: span 1; }
+.handover-information-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.handover-information-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--iop-sectionGap);
+  flex-wrap: wrap;
+  margin-top: var(--iop-sectionGap);
+}
 
 .iop-ui .handover-meeting-title > .iop-button {
   padding: 0;

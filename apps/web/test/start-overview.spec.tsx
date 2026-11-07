@@ -25,6 +25,18 @@ const context: DemoContext = {
   users: [],
   scope: null,
 };
+
+test("Profile stays before Information and assignment, including the fallback profile", () => {
+  const { application } = setup();
+  const { container, rerender } = render(<StartOverview application={application} context={context} openAnalysis={() => {}}
+    canReadAnalytics={false} personalProfile={<section data-testid="profile">Personal profile</section>}
+    information={<section data-testid="information">Notices</section>} workforce={<section data-testid="assignment">Assignments</section>} />);
+  expect(Array.from(container.querySelectorAll('[data-testid]')).map(node => node.getAttribute('data-testid'))).toEqual(['profile','information','assignment']);
+  rerender(<StartOverview application={application} context={context} openAnalysis={() => {}} canReadAnalytics={false}
+    information={<section data-testid="information">Information failed to load</section>} />);
+  const personal = container.querySelector('.analysis-start-personal')!;
+  expect(personal.firstElementChild).toHaveTextContent('Profile');
+});
 function makeReport(selection: ReportRequest, key = "Halle A"): Report {
   const row = { key, frequency: 123, seconds: 600, minutes: 10, records: 2 };
   return {
