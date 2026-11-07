@@ -11,6 +11,10 @@ caller-supplied actions align at the right. Use `iop-brand-copy` for the stacked
 name/subtitle beside `PlatformMark`. Desktop navigation starts below the header,
 with compact left-aligned rows and independent scrolling. Narrow navigation uses
 one horizontally scrollable row with the same keyboard-accessible destinations.
+Pass `navigationCollapsed` and `onToggleNavigation` to enable the header toggle.
+The caller owns the expanded state; the workspace opens it on each new session.
+Hiding the rail also frees the main content
+and bottom navigation width, and removes hidden destinations from keyboard focus.
 Components contain no feature models,
 HTTP requests, permissions, report calculations or chart-library dependencies.
 `IdentityRoot` follows the shared appearance subscription; all descendants inherit
@@ -38,7 +42,7 @@ surface tokens represent backgrounds. Keep charts on the same selected identity.
 | `Panel` | Content, chart, empty and metric surface treatments |
 | `MonthMultiPicker` | Checkbox selection of nonconsecutive calendar months |
 | `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
-| `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison |
+| `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison; `compact` reduces spacing; `layout="row"` aligns labels and figures in two columns; optional `action` reserves room for a details control |
 | `MetricGrid`, `MetricCard` | Responsive centered labels/figures/captions; `layout="paired"` centers two cards; `tone` adds neutral/info/attention emphasis; use `iop-metric-description` for supporting text |
 | `Table`, `TableViewport` | Common bordered viewport, muted sticky headers, row hover/focus and keyboard-accessible bounded scrolling |
 | `TableText` | Stable left-aligned prose that wraps without changing alignment on resize |
@@ -178,6 +182,11 @@ category/date/department context when moving between a collection and its detail
 `Popover` is a non-modal anchored disclosure for compact account/activity panels.
 Callers supply the trigger content and panel actions; it owns initial focus, native
 Tab navigation, Escape restoration and outside dismissal. Never add backdrop blur.
+Use `placement="viewport"` for controls within cards: the floating panel stays
+inside the viewport and follows scrolling without changing its card's size.
+`triggerTitle` can provide a short tooltip while `label` identifies the specific
+record for assistive technology. Use `iop-popover-toggle--minimal` for an inline
+information icon.
 `ActionIcon` supplies the shared account/search/bell glyphs. Reuse `AddButton` for
 New entry and `IconButton` plus the search glyph for Search history launchers.
 `Table variant="records"` refines operational record surfaces without changing

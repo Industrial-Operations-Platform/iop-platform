@@ -22,6 +22,8 @@ export interface MonthlyExecutive {
   calendarDays: number;
   analysisDays?: number;
   historicalDays: number;
+  historicalFrom?: string | null;
+  historicalToExclusive?: string;
   kpis: ExecutiveKpi[];
 }
 export function executiveDefinitions(value: unknown): ExecutiveKpiDefinition[] {

@@ -32,6 +32,17 @@ test("normalization preserves punctuation, identity characters and decomposed Un
     "Halle B Sky",
   );
 });
+test("persistent exclusions use exact prepared values and reject invalid or duplicate rules", () => {
+  expect(compileProfile({ ...profile,
+    aliases: [{ field: "message", from: "Old label", to: "Owner, message" }],
+    excludedValues: [{ field: "message", value: " Old label " }],
+  }).excludedValues).toEqual([{ field: "message", value: "Owner, message" }]);
+  for (const excludedValues of [
+    null, {}, [{ field: "frequency", value: "1" }], [{ field: "message", value: " " }],
+    [{ field: "message", value: "Jam", extra: true }],
+    [{ field: "message", value: "Jam" }, { field: "message", value: " Jam " }],
+  ]) expect(() => compileProfile({ ...profile, excludedValues })).toThrow("invalid_selection");
+});
 test("ambiguous normalized mappings and chained corrections are rejected", () => {
   expect(() =>
     compileProfile({

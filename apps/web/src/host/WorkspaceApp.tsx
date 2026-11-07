@@ -102,6 +102,7 @@ export function WorkspaceApp({
   assetDomain?: AssetDomainApplication;
 }) {
   const currentLanguage = useSyncExternalStore(subscribeLanguage, language);
+  const [navigationCollapsed, setNavigationCollapsed] = useState(false);
   useEffect(() => {
     document.documentElement.lang = currentLanguage;
   }, [currentLanguage]);
@@ -159,6 +160,8 @@ export function WorkspaceApp({
     [error, setError] = useState<unknown>(),
     [pending, setPending] = useState(false),
     [connectionAttempt, setConnectionAttempt] = useState(0);
+  // Each new authenticated session starts with its destinations visible.
+  useEffect(() => { setNavigationCollapsed(false); }, [context?.user?.id, context?.mustChangePassword]);
   useEffect(() => { setAssignedDepartmentId(undefined); setDepartmentId(""); }, [context?.user?.id]);
   useEffect(() => {
     let active = true;
@@ -457,6 +460,8 @@ export function WorkspaceApp({
   return (
     <AppShell
       className="analysis-app"
+      navigationCollapsed={navigationCollapsed}
+      onToggleNavigation={() => setNavigationCollapsed(collapsed => !collapsed)}
       mainId="analysis-main"
       skipLabel={t("Skip to workspace")}
       header={

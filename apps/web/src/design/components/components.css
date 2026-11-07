@@ -297,6 +297,20 @@
 .iop-shell {
   --shell-rail-width: var(--iop-shellRailWidth);
 }
+.iop-shell[data-navigation-collapsed="true"] {
+  --shell-rail-width: 0px;
+}
+.iop-shell-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.iop-ui .iop-navigation-toggle {
+  color: var(--iop-muted);
+}
+.iop-ui .iop-sidebar[hidden] {
+  display: none;
+}
 .iop-ui .iop-top {
   min-height: var(--iop-shellHeaderHeight);
   background: var(--iop-surface);
@@ -396,6 +410,9 @@
   max-width: var(--iop-contentWidth);
   margin-inline: auto;
   min-width: 0;
+}
+.iop-ui[data-navigation-collapsed="true"] .iop-content {
+  max-width: none;
 }
 .iop-page-stack {
   display: grid;
@@ -596,6 +613,76 @@
 .iop-ui .iop-comparison-result {
   margin: 10px 0;
   font-weight: var(--iop-labelWeight);
+}
+.iop-ui .iop-comparison--compact {
+  padding: 12px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.iop-ui .iop-comparison--compact .iop-metric-value {
+  font-size: var(--iop-metricCompactSize);
+  margin-top: 4px;
+}
+.iop-ui .iop-comparison--compact .iop-comparison-result {
+  font-size: var(--iop-smallSize);
+  margin: 4px 0 8px;
+}
+.iop-ui .iop-comparison--compact small {
+  font-size: var(--iop-captionSize);
+}
+.iop-comparison--with-action {
+  position: relative;
+}
+.iop-comparison--with-action .iop-metric-label {
+  padding-right: 28px;
+}
+.iop-comparison-action {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+.iop-ui .iop-comparison--row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  align-content: center;
+  gap: 4px 12px;
+  padding: 8px 40px 8px 12px;
+}
+.iop-ui .iop-comparison--row .iop-metric-label {
+  grid-column: 1;
+  padding-right: 0;
+  font-size: var(--iop-captionSize);
+  font-weight: var(--iop-labelWeight);
+}
+.iop-ui .iop-comparison--row .iop-metric-value {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  text-align: right;
+}
+.iop-ui .iop-comparison--row .iop-comparison-result {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+}
+.iop-ui .iop-comparison--row > small {
+  grid-column: 2;
+  grid-row: 2;
+  text-align: right;
+  font-size: var(--iop-smallSize);
+}
+.iop-comparison--row .iop-comparison-action {
+  top: calc(50% - 16px);
+}
+.iop-ui .iop-popover-toggle--minimal {
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--iop-muted);
 }
 
 .iop-ui .iop-sidebar .iop-side-navigation {
@@ -1290,6 +1377,13 @@
   background: var(--iop-surface);
   box-shadow: var(--iop-popoverShadow);
   z-index: 20;
+}
+.iop-ui .iop-popover--viewport .iop-popover-panel {
+  position: fixed;
+  left: var(--popover-left, 12px);
+  top: var(--popover-top, 12px);
+  right: auto;
+  max-height: calc(100dvh - 24px);
 }
 .iop-ui .iop-account-toggle {
   display: flex;

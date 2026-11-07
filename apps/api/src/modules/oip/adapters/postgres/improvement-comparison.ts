@@ -4,6 +4,7 @@ import type { ImportSource } from "../../../integrations";
 import { AnalysisCalendar } from "../../domain/analysis-calendar";
 import { AnalyticsError, exactTotal } from "../../domain/values";
 import { hitlisteReadModel } from "./read-model";
+import { includedReportingValues } from "./reporting-exclusions";
 import { digest, scopeTuple } from "./analytics";
 import { comparisonSelection, type AssetReference, type ComparisonSelection, type Measurement, type Period, type PeriodMeasure } from "../../../improvement-tracking/domain/improvement";
 interface Aggregate {
@@ -52,7 +53,7 @@ export async function improvementComparison(tx: SiteTransaction, source: ImportS
   const result = await tx.query(`WITH ready AS MATERIALIZED (${hitlisteReadModel}),
     expected AS (SELECT coalesce((SELECT version::text FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$4::text) AS version),
     manifest AS MATERIALIZED (SELECT import_id::text AS id,reporting_date::text AS date FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),
-    selected AS MATERIALIZED (SELECT * FROM ready WHERE NOT (extract(isodow FROM reporting_date)::integer=ANY($5::integer[]))
+    selected AS MATERIALIZED (SELECT * FROM ready WHERE ${includedReportingValues()} AND NOT (extract(isodow FROM reporting_date)::integer=ANY($5::integer[]))
       AND (($6::boolean AND EXISTS(SELECT 1 FROM jsonb_array_elements($7::jsonb) alias WHERE values->>'equipment'=alias->>'code' AND values->>'sector'=alias->>'sector' AND values->>'area'=alias->>'area'))
         OR (NOT $6::boolean AND ($8='' OR values->>'sector'=$8) AND ($9='' OR values->>'area'=$9) AND ($10='' OR values->>'equipment'=$10) AND ($11='' OR values->>'message'=$11)))),
     periods AS (SELECT 'before' AS period,$12::date AS from_date,$13::date AS to_date UNION ALL SELECT 'after',$14::date,$15::date),

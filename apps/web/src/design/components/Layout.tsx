@@ -1,6 +1,7 @@
 import { t } from "../../localization/i18n";
 import {
   useLayoutEffect,
+  useId,
   useRef,
   type ComponentProps,
   type CSSProperties,
@@ -8,6 +9,7 @@ import {
 } from "react";
 import { appearanceIdentity, variablesForIdentity } from "../identity";
 import { useAppearance } from "../useAppearance";
+import { Button } from "./Controls";
 import "./components.css";
 
 export function IdentityRoot({
@@ -29,6 +31,8 @@ export function AppShell({
   brand,
   brandAction,
   navigation,
+  navigationCollapsed = false,
+  onToggleNavigation,
   children,
   mainId,
   skipLabel,
@@ -38,12 +42,15 @@ export function AppShell({
   brand: ReactNode;
   brandAction?: { label: string; onClick: () => void };
   navigation: ReactNode;
+  navigationCollapsed?: boolean;
+  onToggleNavigation?: () => void;
   children: ReactNode;
   mainId: string;
   skipLabel: string;
   className?: string;
 }) {
   const shell = useRef<HTMLDivElement>(null);
+  const navigationId = useId();
   const headerElement = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const element = headerElement.current;
@@ -62,26 +69,43 @@ export function AppShell({
     return () => observer?.disconnect();
   }, []);
   return (
-    <IdentityRoot ref={shell} className={`iop-shell ${className ?? ""}`}>
+    <IdentityRoot ref={shell} className={`iop-shell ${className ?? ""}`} data-navigation-collapsed={navigationCollapsed}>
       <a className="iop-skip" href={`#${mainId}`}>
         {skipLabel}
       </a>
       <header ref={headerElement} className="iop-top">
-        {brandAction ? (
-          <button
-            type="button"
-            className="iop-brand"
-            aria-label={brandAction.label}
-            onClick={brandAction.onClick}
-          >
-            {brand}
-          </button>
-        ) : (
-          <div className="iop-brand">{brand}</div>
-        )}
+        <div className="iop-shell-identity">
+          {onToggleNavigation && (
+            <Button
+              variant="text"
+              className="iop-icon-button iop-navigation-toggle"
+              aria-label={t(navigationCollapsed ? "Show navigation" : "Hide navigation")}
+              title={t(navigationCollapsed ? "Show navigation" : "Hide navigation")}
+              aria-expanded={!navigationCollapsed}
+              aria-controls={navigationId}
+              onClick={onToggleNavigation}
+            >
+              <svg className="iop-toolbar-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d={navigationCollapsed ? "M4 6h16M4 12h16M4 18h16" : "m13 6-6 6 6 6m6-12-6 6 6 6"} />
+              </svg>
+            </Button>
+          )}
+          {brandAction ? (
+            <button
+              type="button"
+              className="iop-brand"
+              aria-label={brandAction.label}
+              onClick={brandAction.onClick}
+            >
+              {brand}
+            </button>
+          ) : (
+            <div className="iop-brand">{brand}</div>
+          )}
+        </div>
         <div className="iop-header-actions">{header}</div>
       </header>
-      <aside className="iop-sidebar">{navigation}</aside>
+      <aside id={navigationId} className="iop-sidebar" hidden={navigationCollapsed}>{navigation}</aside>
       <main id={mainId} className="iop-main">
         <div className="iop-content">{children}</div>
       </main>

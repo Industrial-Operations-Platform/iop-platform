@@ -10611,6 +10611,28 @@
           "nextCursor"
         ]
       },
+      "ValueExclusionDto": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "area",
+              "equipment",
+              "message",
+              "type",
+              "messageGroup"
+            ]
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "value"
+        ]
+      },
       "ExecutiveKpiDefinitionDto": {
         "type": "object",
         "properties": {
@@ -10706,6 +10728,12 @@
       "ReportingProfileDto": {
         "type": "object",
         "properties": {
+          "excludedValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValueExclusionDto"
+            }
+          },
           "executiveKpis": {
             "type": "array",
             "items": {
@@ -11102,6 +11130,13 @@
           "historicalDays": {
             "type": "number"
           },
+          "historicalFrom": {
+            "type": "string",
+            "nullable": true
+          },
+          "historicalToExclusive": {
+            "type": "string"
+          },
           "kpis": {
             "type": "array",
             "items": {
@@ -11223,6 +11258,12 @@
       "ReportDto": {
         "type": "object",
         "properties": {
+          "excludedValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValueExclusionDto"
+            }
+          },
           "excludedWeekdays": {
             "description": "Excluded ISO weekdays (Monday 1 through Sunday 7).",
             "type": "array",

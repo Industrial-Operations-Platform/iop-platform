@@ -10,6 +10,7 @@ import type {
   SourceResult,
 } from "../../../assets/domain/assets";
 import { hitlisteReadModel } from "./read-model";
+import { includedReportingValues } from "./reporting-exclusions";
 import { scopeTuple } from "./analytics";
 import { exactTotal, AnalyticsError } from "../../domain/values";
 
@@ -50,7 +51,7 @@ export async function analyticAssetTimeline(
       import_id::text||':'||source_record_number::text AS source_record_id,reporting_date::text AS date,
       values->>'message' AS title,concat_ws(' · ',values->>'equipment',values->>'sector',values->>'area') AS summary,
       reported_frequency::text AS frequency,accumulated_alarm_seconds::text AS seconds
-      FROM ready WHERE reporting_date BETWEEN $4::date AND $5::date
+      FROM ready WHERE ${includedReportingValues()} AND reporting_date BETWEEN $4::date AND $5::date
       AND EXISTS(SELECT 1 FROM jsonb_array_elements($6::jsonb) alias
         WHERE values->>'equipment'=alias->>'code' AND values->>'sector'=alias->>'sector' AND values->>'area'=alias->>'area')),
     page AS (SELECT * FROM matching WHERE $7='' OR

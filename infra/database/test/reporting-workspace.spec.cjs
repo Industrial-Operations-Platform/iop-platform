@@ -791,7 +791,7 @@ test("monthly Meldetext KPIs persist in configured order, use scoped history and
   expect((await runtime.profiles.get("demo-b")).profile.executiveKpis).toEqual(definitions);
   const query = { ...selection, executive: true, dimension: "area" };
   const july = await runtime.reports.query("demo-a", query);
-  expect(july.monthlyExecutive).toMatchObject({ month: "2026-07", importedDays: 2, calendarDays: 31, historicalDays: 3 });
+  expect(july.monthlyExecutive).toMatchObject({ month: "2026-07", importedDays: 2, calendarDays: 31, historicalDays: 3, historicalFrom: "2026-07-01" });
   const kpis = july.monthlyExecutive.kpis;
   expect(kpis.map(x => x.id)).toEqual(definitions.map(x => x.id));
   expect(kpis[0]).toMatchObject({ total: 9, average: 4.5, historicalAverage: 14 / 3, referenceKind: "historical", status: "better" });
@@ -813,6 +813,72 @@ test("monthly Meldetext KPIs persist in configured order, use scoped history and
   expect(legacy.profile.areaSectors).toEqual(saved.profile.areaSectors);
   expect(legacy.profile.executiveKpis).toHaveLength(4);
   expect((await runtime.reports.query("demo-a", query)).monthlyExecutive.kpis.map(x => x.message)).toEqual(legacy.profile.executiveKpis.map(x => x.message));
+});
+
+test("all months share the complete historical reference, including later imports, and saved exclusions are reversible", async () => {
+  const sourceId = "complete-history-exclusions";
+  const ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 3 }), {
+    ...runtimeConfig, local: { ...runtimeConfig.local, source: { ...runtimeConfig.local.source, id: sourceId } },
+    mappings: new SourceMappings({ ...runtimeConfig.mappings.configuration, sourceId }),
+  });
+  try {
+    const header = fixture("valid/Hitliste-20260701.csv").toString("utf16le").replace(/^\ufeff/, "").split(/\r?\n/)[0];
+    const upload = async (date, rows) => {
+      const result = await ref.submit("demo-a", `Hitliste-${date}.csv`, Buffer.from("\ufeff" + header + "\r\n" + rows.join("\r\n") + "\r\n", "utf16le"));
+      expect(result.outcome).toBe("succeeded");
+      return result.importId;
+    };
+    const row = (frequency, message, equipment = "=EQ") => `"${frequency}";"0 0:01:00";"Area A";"${equipment}";"${message}";"Alarm";"007"`;
+    await upload("20260501", [row(10, "Jam")]);
+    const mayFile = await upload("20260502", [row(30, "Jam"), row(100, "Off scope")]);
+    await upload("20260601", [row(30, "Jam"), row(1000, "Off scope")]);
+    // Later imports contribute to every selected month's historical reference.
+    await upload("20260701", [row(9000, "Jam", "=FUTURE")]);
+    const current = await ref.profiles.get("demo-a");
+    let saved = await ref.profiles.save("demo-a", { version: current.version, profile: {
+      ...current.profile, executiveKpis: [
+        { id: "history", label: "Jam history", message: "Jam", metric: "frequency", goal: null },
+        { id: "goal", label: "Jam goal", message: "Jam", metric: "frequency", goal: 25 },
+      ],
+    } });
+    const q = { executive: true, dimension: "area", metric: "frequency", period: "day", from: "2026-05-01", toExclusive: "2026-06-01" };
+    const may = await ref.reports.query("demo-a", q);
+    expect(may.monthlyExecutive).toMatchObject({ importedDays: 2, historicalDays: 4, historicalFrom: "2026-05-01", historicalToExclusive: "2026-07-02" });
+    expect(may.monthlyExecutive.kpis[0]).toMatchObject({ average: 20, historicalAverage: 9070 / 4, reference: 9070 / 4, status: "better" });
+    expect(may.monthlyExecutive.kpis[1]).toMatchObject({ average: 20, reference: 25, referenceKind: "goal", status: "better", changePercent: -20 });
+    const juneQuery = { ...q, from: "2026-06-01", toExclusive: "2026-07-01" };
+    const june = await ref.reports.query("demo-a", juneQuery);
+    expect(june.monthlyExecutive).toMatchObject({ importedDays: 1, historicalDays: 4, historicalFrom: "2026-05-01", historicalToExclusive: "2026-07-02" });
+    expect(june.monthlyExecutive.kpis[0]).toMatchObject({ average: 30, historicalAverage: 9070 / 4, reference: 9070 / 4, status: "better" });
+    expect(june.totals.frequency).toBe(1030);
+    const counts = async () => (await admin(`SELECT
+      (SELECT count(*)::int FROM oip.facts WHERE source_id=$1) AS original,
+      (SELECT count(*)::int FROM analytics.fact_hitliste WHERE source_id=$1) AS relational`, [sourceId])).rows[0];
+    const before = await counts();
+    saved = await ref.profiles.save("demo-a", { version: saved.version, profile: {
+      ...saved.profile, excludedValues: [{ field: "message", value: " Off scope " }, { field: "equipment", value: "=FUTURE" }],
+    } });
+    expect(saved.profile.excludedValues).toEqual([{ field: "message", value: "Off scope" }, { field: "equipment", value: "=FUTURE" }]);
+    expect((await ref.profiles.get("demo-b")).profile.excludedValues).toEqual(saved.profile.excludedValues);
+    const filtered = await ref.reports.query("demo-a", juneQuery);
+    expect(filtered.totals.frequency).toBe(30);
+    expect(filtered.excludedValues).toEqual(saved.profile.excludedValues);
+    expect(filtered.options.message).not.toContain("Off scope");
+    expect(filtered.monthlyExecutive.kpis[0].reference).toBe(70 / 4);
+    expect(await counts()).toEqual(before);
+    expect((await ref.explorer.sourceRows("demo-a", { importId: mayFile, page: 1, sort: [] })).recordCount).toBe(2);
+    expect((await ref.explorer.messages("demo-a", {})).values).toContain("Off scope");
+    await upload("20260801", [row(60, "Jam"), row(1000, "Off scope")]);
+    const august = await ref.reports.query("demo-a", { ...q, from: "2026-08-01", toExclusive: "2026-09-01" });
+    expect(august.totals.frequency).toBe(60);
+    expect(august.monthlyExecutive.kpis[0].historicalAverage).toBe((40 + 30 + 60) / 5);
+    await ref.profiles.save("demo-a", { version: saved.version, profile: { ...saved.profile, excludedValues: [] } });
+    const restored = await ref.reports.query("demo-a", juneQuery);
+    expect(restored.totals.frequency).toBe(1030);
+    expect(restored.monthlyExecutive.kpis[0].reference).toBe((40 + 30 + 9000 + 60) / 5);
+    // Another source keeps its own profile and unchanged totals.
+    expect((await runtime.profiles.get("demo-a")).profile.excludedValues ?? []).toEqual([]);
+  } finally { await ref.close(); }
 });
 
 test("administrator file rows sort across pages and catalog choices include every current scoped message", async () => {

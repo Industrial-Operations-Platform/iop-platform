@@ -1,104 +1,140 @@
-# Railway y Docker: publicación y actualizaciones
+# Railway and Docker: deployment and updates
 
-La instalación local conserva sus contenedores separados. Railway usa **dos
-servicios**: `iop` sirve React y la API en el mismo origen; `database` ejecuta
-PostgreSQL 17.6 en la red privada. Cada instalación tiene datos y credenciales
-independientes. Una actualización de código nunca vuelve a importar los datos.
+The local installation keeps its separate containers. Railway uses **two
+services**: `iop` serves React and the API from the same origin; `database` runs
+PostgreSQL 17.6 on the private network. Each installation has independent data
+and credentials. A code update never imports the data again.
 
-## Comandos habituales
+## Common commands
 
-Ejecutar desde la raíz del repositorio. En PowerShell con scripts deshabilitados,
-usar `npm.cmd` en lugar de `npm`.
+Run these commands from the repository root. In PowerShell with scripts disabled,
+use `npm.cmd` instead of `npm`.
 
-| Comando | Resultado |
+| Command | Result |
 | --- | --- |
-| `npm run local:up` | Construye e inicia Docker local; conserva sus datos |
-| `npm run local:update` | Reconstruye el código actual y aplica migraciones sin borrar volúmenes |
-| `npm run local:sync` | Exige un árbol Git limpio, ejecuta `git pull --ff-only` y actualiza Docker |
-| `npm run local:stop` | Detiene Docker sin eliminar datos |
-| `npm run local:status` | Consulta los contenedores |
-| `npm run railway:deploy` | Valida y publica el commit actual en Railway; verifica la revisión accesible por HTTPS |
-| `npm run railway:check` | Comprueba HTTPS, web, autenticación y rechazo de acceso anónimo |
+| `npm run local:up` | Builds and starts local Docker; preserves its data |
+| `npm run local:update` | Rebuilds the current code and applies migrations without deleting volumes |
+| `npm run local:sync` | Requires a clean Git tree, runs `git pull --ff-only`, and updates Docker |
+| `npm run local:stop` | Stops Docker without deleting data |
+| `npm run local:status` | Checks the containers |
+| `npm run railway:deploy` | Validates and publishes the current commit to Railway; verifies the revision served over HTTPS |
+| `npm run railway:check` | Checks HTTPS, the web app, authentication, and rejection of anonymous access |
 
-`local:update` construye las imágenes antes de detener la versión anterior. Si la
-construcción falla, la aplicación existente sigue funcionando. Un error posterior
-de migración requiere revisar el fallo y volver a ejecutar la actualización;
-el comando conserva los datos y no intenta deshacer migraciones automáticamente.
-Los servicios locales se reinician tras reiniciar Docker, salvo parada explícita.
+`local:update` builds the images before stopping the previous version. If the
+build fails, the existing application keeps running. A later migration error
+requires investigating the failure and running the update again; the command
+preserves data and does not automatically roll back migrations. Local services
+restart when Docker restarts, unless explicitly stopped.
 
-## Preparación inicial de Railway
+## Review interface changes before deployment
 
-Requisitos: cuenta de Railway con Hobby, Node 24.21.0, npm 10.9.2, Git y Docker
-Desktop funcionando para exportar la instalación local y ejecutar la validación
-completa. `npm ci` instala la CLI oficial **5.71.0** fijada en el lockfile. No es
-necesaria una instalación global. Autenticación interactiva:
+For changes limited to React/CSS, update only the local web service:
+
+```sh
+docker compose -f compose.platform.yaml build web
+docker compose -f compose.platform.yaml up -d --no-deps --wait web
+```
+
+This preserves the API, PostgreSQL, and their volumes. Review the result at
+`http://127.0.0.1:8080` before publishing the commit with `npm run railway:deploy`.
+The navigation toggle sits beside the logo; every new session starts with the
+navigation open. Charts resize automatically when the navigation is hidden.
+Monthly averages follow their series colors and axis sides. Each KPI has its own
+details icon, which opens a small floating panel without resizing the dashboard.
+
+For API behavior changes without a database migration, build and update both
+application services while leaving PostgreSQL and its volume running:
+
+```sh
+docker compose -f compose.platform.yaml build api web
+docker compose -f compose.platform.yaml up -d --no-deps --wait api web
+```
+
+Monthly KPI references and persistent exclusions require the updated API as well
+as the web app. Exclusions use the existing versioned reporting profile; no schema
+migration is required. See [analysis settings](../product/analysis-settings.md) for
+the historical reference formula and the administration path.
+
+Railway may contain imported months that do not exist locally. Before the next
+deployment, export the **current remote database** with `pg_dump` over SSH and
+verify that the backup contains those months. The initial local snapshot does
+not include them. An interface update does not require importing data, changing
+variables, or recreating services or volumes. Do not run `railway:import-initial`
+or restore a local backup over production to update the interface.
+
+## Initial Railway setup
+
+Requirements: a Railway account on Hobby, Node 24.21.0, npm 10.9.2, Git, and a
+working Docker Desktop installation to export the local installation and run
+full validation. `npm ci` installs the official CLI **5.71.0**, pinned in the
+lockfile. A global installation is unnecessary. Sign in interactively:
 
 ```sh
 npm run railway -- login
 ```
 
-Crear un proyecto y un entorno `production` con estos recursos. Se puede hacer
-desde el panel o la integración de Railway; **no conectar GitHub todavía**.
+Create a project and a `production` environment with the following resources.
+Use the dashboard or Railway integration; **do not connect GitHub yet**.
 
-| Recurso | Configuración inicial |
+| Resource | Initial configuration |
 | --- | --- |
-| Servicio `database` | Imagen `postgres:17.6-bookworm`, sin dominio público ni TCP proxy |
-| Volumen de `database` | Montado en `/var/lib/postgresql/data`; conservarlo entre despliegues |
-| Servicio vacío `iop` | Raíz del repositorio; configuración `.railway/railway.ts` |
-| Volumen de `iop` | Nombre **`iop-data`**, montado en **`/data`** |
-| Dominio de `iop` | Generar un dominio HTTPS `*.up.railway.app`; no hace falta comprar uno |
-| Réplicas | Una en la misma región europea que la base de datos |
+| `database` service | Image `postgres:17.6-bookworm`, without a public domain or TCP proxy |
+| `database` volume | Mounted at `/var/lib/postgresql/data`; preserve it between deployments |
+| Empty `iop` service | Repository root; configuration `.railway/railway.ts` |
+| `iop` volume | Named **`iop-data`**, mounted at **`/data`** |
+| `iop` domain | Generate an HTTPS `*.up.railway.app` domain; no domain purchase is required |
+| Replicas | One, in the same European region as the database |
 
-No arrancar PostgreSQL con credenciales predeterminadas antes de configurar sus
-variables. Si ya se inicializó con otro usuario/base, crear una instalación nueva:
-no cambiar las variables sobre un volumen con datos esperando que se reinicialice.
-Esta aplicación requiere el propietario `iop_bootstrap`, la base `iop_local` y
-roles separados `iop_migrator` e `iop_runtime`.
+Do not start PostgreSQL with default credentials before configuring its variables.
+If it was already initialized with a different user/database, create a new
+installation: changing variables on a populated volume will not reinitialize it.
+This application requires the owner `iop_bootstrap`, database `iop_local`, and
+separate roles `iop_migrator` and `iop_runtime`.
 
-Copiar los identificadores del proyecto, entorno y servicios. Generar las
-variables a partir de las configuraciones locales actuales:
+Copy the project, environment, and service identifiers. Generate the variables
+from the current local configuration:
 
 ```sh
 npm run build
-npm run railway:configure -- --project PROJECT_ID --environment ENVIRONMENT_ID --service APP_SERVICE_ID --database-service DATABASE_SERVICE_ID --origin https://TU-APP.up.railway.app
+npm run railway:configure -- --project PROJECT_ID --environment ENVIRONMENT_ID --service APP_SERVICE_ID --database-service DATABASE_SERVICE_ID --origin https://YOUR-APP.up.railway.app
 npm run railway:variables
 npm run railway -- link --project PROJECT_ID --environment ENVIRONMENT_ID --service APP_SERVICE_ID
 npm run railway -- config plan
 npm run railway -- config apply --yes
 ```
 
-Los valores privados se guardan en `.railway/`, excluidos de Git y de los envíos
-de código. Solo su configuración IaC y README se versionan. Este formato sustituye
-`railway.json`, retirado por Railway el 2026-12-01. Las variables quedan fuera de
-la gestión IaC para conservar sus secretos. El generador copia scope, usuarios,
-mappings y Handover; sustituye solo
-los orígenes locales por el dominio HTTPS. Genera tres contraseñas nuevas para
-Railway y conserva esas mismas contraseñas al repetir la configuración. La
-referencia `${{database.RAILWAY_PRIVATE_DOMAIN}}` presupone el nombre **database**.
-Las variables se transmiten por stdin y no aparecen en argumentos ni en la salida.
-El archivo adicional local `workforce-groups.json`, si existe, se conserva en la
-copia privada de configuración; no es una entrada del runtime de la API.
+Private values are stored in `.railway/`, excluded from Git and code uploads.
+Only its IaC configuration and README are versioned. This format replaces
+`railway.json`, scheduled for retirement by Railway on 2026-12-01. Variables
+remain outside IaC management to preserve their secrets. The generator copies
+scope, users, mappings, and Handover; it replaces only the local origins with the
+HTTPS domain. It generates three new passwords for Railway and preserves those
+same passwords when configuration is repeated. The
+`${{database.RAILWAY_PRIVATE_DOMAIN}}` reference assumes the service is named
+**database**. Variables are sent through stdin and do not appear in command
+arguments or output. The additional local `workforce-groups.json` file, if present,
+is preserved in the private configuration copy; it is not an API runtime input.
 
-Iniciar el servicio `database` después de configurar las variables y esperar a
-que PostgreSQL esté listo. Mantener `iop` sin desplegar hasta completar la copia.
+Start the `database` service after configuring the variables and wait for
+PostgreSQL to become ready. Keep `iop` undeployed until the copy is complete.
 
-## Copiar los datos actuales una sola vez
+## Copy the current data once
 
-Con Docker local en ejecución, tomar una instantánea actual; no usar una copia
-antigua del repositorio o de `transfer-staging`:
+With local Docker running, take a current snapshot; do not use an old copy from
+the repository or `transfer-staging`:
 
 ```sh
 npm run railway:snapshot
 ```
 
-Se guarda un `pg_dump` consistente de la base actual, las referencias privadas del
-Locator y la configuración en `.railway/initial-snapshot/`. Este directorio contiene
-datos sensibles y contraseñas de provisionamiento del destino; mantenerlo privado.
-En Windows, proteger el directorio mediante los permisos de la cuenta del usuario;
-los modos POSIX `0600` no sustituyen los permisos NTFS.
+A consistent `pg_dump` of the current database, private Locator references, and
+configuration are saved in `.railway/initial-snapshot/`. This directory contains
+sensitive data and destination provisioning passwords; keep it private.
+On Windows, protect the directory with the user's account permissions; POSIX
+`0600` modes do not replace NTFS permissions.
 
-Registrar la clave SSH mediante una primera conexión interactiva al servicio
-`database`, con los identificadores del proyecto y entorno, si Railway la solicita:
+Register the SSH key through an initial interactive connection to the `database`
+service, using the project and environment identifiers, if Railway requests it:
 
 ```sh
 npm run railway -- ssh --project PROJECT_ID --environment ENVIRONMENT_ID --service DATABASE_SERVICE_ID -- true
@@ -106,170 +142,172 @@ npm run railway:import-initial
 npm run railway:verify-data
 ```
 
-La importación exige una base **nueva y vacía**, sin roles de aplicación previos,
-y rechaza repetir la operación. Crea los roles con contraseñas independientes y
-restaura el esquema, datos, propietarios y permisos en una sola transacción. No
-borra tablas ni modifica el volumen local. Conserva los usuarios y sus contraseñas;
-revoca las sesiones copiadas para exigir un nuevo inicio de sesión. Si falla,
-revisar el error antes de reintentar; no quitar la comprobación de destino vacío.
+The import requires a **new, empty database**, without existing application roles,
+and refuses to run again. It creates roles with independent passwords and restores
+the schema, data, ownership, and permissions in a single transaction. It does not
+delete tables or modify the local volume. It preserves users and their passwords;
+copied sessions are revoked to require a new login. If it fails, investigate the
+error before retrying; do not remove the empty-destination check.
 
-La verificación compara el número de filas de las tablas con la copia inicial,
-sin imprimir registros de negocio. Ejecutarla inmediatamente después de importar.
+Verification compares table row counts with the initial copy without printing
+business records. Run it immediately after importing.
 
-Después del primer despliegue, con `iop` activo, ejecutar `npm run railway:references`.
-Comprueba que `/data/locator` está vacío, copia los archivos mediante SCP cifrado
-y les aplica permisos privados de Node. Requiere OpenSSH y una clave registrada:
-guardar su ruta en `sshIdentity` de `.railway/target.json`, o suministrar
-`IOP_RAILWAY_SSH_IDENTITY`. Se niega a sobrescribir referencias previas. Las
-actualizaciones normales conservan el volumen y no repiten esta transferencia.
+After the first deployment, with `iop` active, run `npm run railway:references`.
+It checks that `/data/locator` is empty, copies files using encrypted SCP, and
+applies private Node permissions. It requires OpenSSH and a registered key:
+store its path in `sshIdentity` in `.railway/target.json`, or supply
+`IOP_RAILWAY_SSH_IDENTITY`. It refuses to overwrite existing references. Normal
+updates preserve the volume and do not repeat this transfer.
 
-## Primera publicación y publicaciones siguientes
+## First and subsequent deployments
 
-Guardar los cambios revisados en un commit antes de publicar. El comando envía
-una lista explícita de fuentes y recursos; nunca envía `.local-platform`,
-`.railway`, archivos de credenciales, copias de seguridad ni todo el directorio
-de trabajo.
+Commit reviewed changes before deployment. The command uploads an explicit list
+of sources and resources; it never uploads `.local-platform`, `.railway`,
+credential files, backups, or the entire working directory.
 
 ```sh
 npm run railway:deploy
 ```
 
-La primera ejecución usa el destino guardado por `railway:configure`. El comando
-exige un árbol Git limpio, rechaza avisos altos o críticos en dependencias de
-producción mediante `npm audit` y ejecuta `npm run test:poc` (incluye PostgreSQL y
-navegador con Docker), antes del envío. Se pueden suministrar identificadores
-explícitos mediante `RAILWAY_PROJECT_ID`, `RAILWAY_ENVIRONMENT_ID`,
-`RAILWAY_SERVICE_ID`, `RAILWAY_DATABASE_SERVICE_ID` e `IOP_PUBLIC_ORIGIN`.
+The first run uses the target saved by `railway:configure`. Before uploading, the
+command requires a clean Git tree, rejects high or critical production dependency
+advisories through `npm audit`, and runs `npm run test:poc` (including PostgreSQL
+and browser checks with Docker). Explicit identifiers can be supplied through
+`RAILWAY_PROJECT_ID`, `RAILWAY_ENVIRONMENT_ID`, `RAILWAY_SERVICE_ID`,
+`RAILWAY_DATABASE_SERVICE_ID`, and `IOP_PUBLIC_ORIGIN`.
 
-Railway construye la imagen conjunta con el lockfile. El paso previo aplica las
-migraciones hacia adelante y verifica el provisionamiento sin abrir otro runtime
-de aplicación. Un error impide activar esa publicación. La aplicación usa las
-credenciales no propietarias, cookies `Secure`/`HttpOnly`/`SameSite=Strict`, dominio
-exacto, comprobaciones de origen y cabecera CSRF. El modo local sigue limitado a
-loopback; el selector de demostración no puede activarse en Railway.
+Railway builds the combined image using the lockfile. The pre-deployment step
+applies forward migrations and checks provisioning without starting another
+application runtime. A failure prevents that release from becoming active. The
+application uses non-owner credentials, `Secure`/`HttpOnly`/`SameSite=Strict`
+cookies, an exact domain, origin checks, and a CSRF header. Local mode remains
+limited to loopback; the demo selector cannot be enabled on Railway.
 
-El servicio conserva secretos de migración para el paso previo; el lanzador los
-retira del entorno del proceso de la API. Esto separa los roles de conexión, pero
-no aísla esos secretos de un operador con control sobre el contenedor de Railway.
-La red privada Railway se usa entre aplicación y base; no se admite una URL de
-base de datos pública ni se deshabilita la validación TLS de un servicio externo.
+The service retains migration secrets for the pre-deployment step; the launcher
+removes them from the API process environment. This separates connection roles,
+but does not isolate those secrets from an operator who controls the Railway
+container. The application and database communicate over Railway's private
+network; a public database URL is not accepted, and TLS validation for an external
+service is not disabled.
 
-El volumen de aplicación es obligatorio: Railway detiene la instancia anterior
-antes de montarlo en la siguiente. Esto respeta el bloqueo de proceso único de
-IOP, con una breve interrupción durante las actualizaciones. No habilitar réplicas.
-El lanzador ajusta la propiedad del volumen y ejecuta Node como usuario no root.
+The application volume is mandatory: Railway stops the previous instance before
+mounting it on the next one. This respects IOP's single-process lock, with a brief
+interruption during updates. Do not enable replicas. The launcher adjusts volume
+ownership and runs Node as a non-root user.
 
-El comando comprueba `/health`, la web, el contexto anónimo y que `/users` rechace
-el acceso sin sesión. También espera a que `build-revision.json` coincida con el
-commit enviado, para no confundir una versión anterior sana con el despliegue
-nuevo. `/health` sigue siendo salud del proceso: no sustituye una prueba funcional
-autenticada ni una recuperación de copia de seguridad.
+The command checks `/health`, the web app, the anonymous context, and rejection
+of unauthenticated `/users` access. It also waits for `build-revision.json` to
+match the uploaded commit, avoiding confusion between a healthy previous version
+and the new deployment. `/health` remains a process health check: it does not
+replace an authenticated functional test or a backup recovery test.
 
-Para volver al código de una revisión anterior, usar un checkout limpio de ese
-commit y ejecutar el mismo comando de publicación después de verificar su
-compatibilidad con el esquema actual. No restaurar la instantánea inicial ni
-deshacer migraciones automáticamente: ambas acciones podrían perder cambios de
-los evaluadores. Railway conserva las versiones de despliegue para diagnóstico,
-pero volver al código anterior tampoco revierte las migraciones de PostgreSQL.
+To return to the code from an earlier revision, use a clean checkout of that
+commit and run the same deployment command after checking compatibility with
+the current schema. Do not restore the initial snapshot or automatically reverse
+migrations: either action could lose evaluator changes. Railway retains deployment
+versions for diagnostics, but reverting application code does not reverse
+PostgreSQL migrations either.
 
-Después de publicar, entrar con las cuentas copiadas y probar, con cada perfil,
-una consulta y una operación de escritura permitida. Crear cuentas individuales
-para ambos evaluadores desde la administración. Si se eligió una instalación
-vacía, emitir el primer acceso únicamente mediante una terminal SSH interactiva:
+After deployment, sign in with the copied accounts and test a query and an allowed
+write operation for each profile. Create individual accounts for both evaluators
+through administration. If an empty installation was chosen, issue initial access
+only through an interactive SSH terminal:
 
 ```sh
 npm run railway -- ssh --project PROJECT_ID --environment ENVIRONMENT_ID --service APP_SERVICE_ID -- node scripts/railway/admin.cjs
 ```
 
-No ejecutar la emisión de contraseñas en el paso de despliegue ni en GitHub Actions.
+Do not issue passwords during deployment or through GitHub Actions.
 
-## Actualización automática desde GitHub
+## Automatic updates from GitHub
 
-El workflow **Platform validation** valida el código, PostgreSQL, navegador y
-construcción de las cuatro imágenes Docker. También inicia la imagen de Railway
-con una base sintética y verifica login, HTTPS, cookies y ejecución sin root.
-Después puede publicar ese mismo SHA;
-el job de publicación nunca recibe código de un pull request. Las publicaciones
-de producción se serializan para no solapar migraciones.
+The **Platform validation** workflow validates the code, PostgreSQL, browser, and
+builds of all four Docker images. It also starts the Railway image against a
+synthetic database and checks login, HTTPS, cookies, and non-root execution.
+It can then publish that same SHA; the deployment job never receives code from a
+pull request. Production deployments are serialized to prevent overlapping
+migrations.
 
-Crear el entorno de GitHub `railway-production` con:
+Create the GitHub environment `railway-production` with:
 
-| Tipo | Nombre | Valor |
+| Type | Name | Value |
 | --- | --- | --- |
-| Secret | `RAILWAY_TOKEN` | Token de proyecto, limitado al entorno de Railway elegido |
-| Variable | `RAILWAY_PROJECT_ID` | Identificador del proyecto |
-| Variable | `RAILWAY_ENVIRONMENT_ID` | Identificador de `production` |
-| Variable | `RAILWAY_SERVICE_ID` | Identificador del servicio `iop` |
-| Variable | `RAILWAY_DATABASE_SERVICE_ID` | Identificador del servicio `database` |
-| Variable | `IOP_PUBLIC_ORIGIN` | Origen HTTPS exacto |
+| Secret | `RAILWAY_TOKEN` | Project token limited to the chosen Railway environment |
+| Variable | `RAILWAY_PROJECT_ID` | Project identifier |
+| Variable | `RAILWAY_ENVIRONMENT_ID` | `production` identifier |
+| Variable | `RAILWAY_SERVICE_ID` | `iop` service identifier |
+| Variable | `RAILWAY_DATABASE_SERVICE_ID` | `database` service identifier |
+| Variable | `IOP_PUBLIC_ORIGIN` | Exact HTTPS origin |
 
-Crear como **variables del repositorio**, para que la condición del job pueda
-leerlas antes de entrar al entorno:
+Create these as **repository variables**, so the job condition can read them
+before entering the environment:
 
-| Variable | Valor |
+| Variable | Value |
 | --- | --- |
-| `RAILWAY_DEPLOY_BRANCH` | Rama de publicación; por defecto `main`. Usar `develop` si esa será la rama elegida |
-| `RAILWAY_AUTO_DEPLOY` | `true` para publicar automáticamente tras las comprobaciones |
+| `RAILWAY_DEPLOY_BRANCH` | Deployment branch; defaults to `main`. Use `develop` if that is the chosen branch |
+| `RAILWAY_AUTO_DEPLOY` | `true` to deploy automatically after validation |
 
-También se puede ejecutar **Run workflow** sobre la rama elegida para validar y
-publicar manualmente. Mantener desactivado el autodespliegue directo de GitHub en
-Railway: el workflow es quien publica después de validar. Así no hay dos vías
-compitiendo ni publicaciones anteriores a los tests. En Windows, cuatro pruebas
-de permisos/propiedad POSIX se omiten explícitamente; Linux CI las ejecuta todas,
-incluidas las comprobaciones de symlinks que requieren privilegios en Windows.
-Una quinta prueba de restauración con permisos POSIX también se ejecuta solo en Linux.
+You can also use **Run workflow** on the chosen branch to validate and deploy
+manually. Keep Railway's direct GitHub auto-deployment disabled: the workflow
+deploys after validation. This avoids competing deployment paths or deployment
+before tests. On Windows, four POSIX permission/ownership tests are explicitly
+skipped; Linux CI runs them all, including symlink checks that require privileges
+on Windows. A fifth restore test involving POSIX permissions also runs only on
+Linux.
 
-## Coste, copias y fin de la evaluación
+## Cost, backups, and the end of the evaluation
 
-Usar Hobby, dos servicios, una región y una réplica. La API limita el heap de Node
-a 384 MiB como punto de partida; medir RSS y consumo real después de cargar los
-datos. En Railway, fijar inicialmente 0.5 CPU/0.75 GB para `iop` y
-0.5 CPU/0.5 GB para PostgreSQL, y revisar memoria tras una importación. Esos límites
-limitan recursos, no garantizan por sí solos una factura de US$20.
+Use Hobby, two services, one region, and one replica. The API limits Node's heap
+to 384 MiB as a starting point; measure RSS and actual consumption after loading
+data. On Railway, initially allocate 0.5 CPU/0.75 GB to `iop` and 0.5 CPU/0.5 GB
+to PostgreSQL, then review memory after an import. These settings limit resources;
+they do not guarantee a US$20 bill.
 
-En el **workspace dedicado a esta evaluación**, configurar alerta US$15 y límite
-duro de consumo US$20; el límite detiene los servicios si se alcanza. El límite es
-del workspace, no solo de este proyecto. No aplicarlo a un workspace con otros
-proyectos sin revisar el efecto. Con el identificador del workspace dedicado:
+In the **workspace dedicated to this evaluation**, configure a US$15 alert and
+US$20 hard usage limit; reaching the hard limit stops the services. The limit
+applies to the workspace, not just this project. Do not apply it to a workspace
+with other projects without reviewing the impact. With the dedicated workspace's
+identifier:
 
 ```sh
 npm run railway -- usage limit set --workspace WORKSPACE_ID --target workspace --soft 15 --hard 20
 ```
 
-El límite se refiere al consumo; revisar impuestos y cualquier cargo adicional
-en la pantalla de facturación. No activar Railway Agent para esta automatización.
-En esta cuenta, la API de copias nativas manuales y programadas de volúmenes
-rechaza Hobby y exige Pro. No se activaron esas copias ni se cambió a Pro.
-La instantánea inicial privada se conserva localmente, pero no contiene los
-cambios posteriores de los evaluadores. Para conservar esos cambios al finalizar,
-exportar PostgreSQL con `pg_dump` por SSH y copiar `/data/locator` junto con la
-configuración privada; verificar la restauración en un entorno separado.
-La configuración IaC administra los
-límites de recursos y los volúmenes de 5 GB. La ubicación de cada volumen debe
-coincidir exactamente con Railway: no aceptar un cambio de ubicación como parte
-de una ampliación. Los límites de consumo requieren una suscripción de pago activa.
+The limit applies to usage; review taxes and any additional charges on the billing
+page. Do not enable Railway Agent for this automation. In this account, the API
+for manual and scheduled native volume backups rejects Hobby and requires Pro.
+Those backups were not enabled, and the account was not upgraded to Pro.
 
-Al cerrar la evaluación, exportar los datos, conservar la configuración privada y
-cancelar los recursos que ya no se necesiten. No borrar volúmenes antes de verificar
-la copia. El repositorio no programa un borrado automático del entorno al mes.
+The private initial snapshot is retained locally, but does not contain later
+evaluator changes. To retain those changes at the end, export PostgreSQL with
+`pg_dump` over SSH and copy `/data/locator` together with the private configuration;
+verify restoration in a separate environment. The IaC configuration manages
+resource limits and 5 GB volumes. Each volume's location must match Railway
+exactly: do not accept a location change as part of an expansion. Usage limits
+require an active paid subscription.
 
-## Fuentes y estado de verificación
+At the end of the evaluation, export the data, retain the private configuration,
+and cancel resources that are no longer needed. Do not delete volumes before
+verifying the backup. The repository does not schedule automatic deletion of the
+environment after one month.
 
-- [Infraestructura declarativa de Railway](https://docs.railway.com/infrastructure-as-code)
-- [Migraciones antes del despliegue](https://docs.railway.com/deployments/pre-deploy-command)
-- [Volúmenes y restricciones de despliegue](https://docs.railway.com/volumes/reference)
-- [Control del consumo](https://docs.railway.com/pricing/cost-control)
+## Sources and verification status
 
-Primera publicación real verificada el 2026-11-06 en
-`https://iop-production-9fb7.up.railway.app`, proyecto `IOP-evaluation`, entorno
-`production`, cuenta Hobby. Se importó la base local y se compararon los recuentos
-de sus 62 tablas. Se transfirieron 75 archivos del Locator y se verificaron sus
-SHA-256 y permisos privados de Node. La web y API responden por HTTPS, se rechaza
-el acceso anónimo a usuarios y la revisión publicada coincide con el commit enviado.
-Se configuraron alerta de consumo US$15 y límite duro US$20.
+- [Railway infrastructure as code](https://docs.railway.com/infrastructure-as-code)
+- [Pre-deployment migrations](https://docs.railway.com/deployments/pre-deploy-command)
+- [Volumes and deployment restrictions](https://docs.railway.com/volumes/reference)
+- [Usage controls](https://docs.railway.com/pricing/cost-control)
 
-Los comandos locales y de publicación están operativos. El workflow de GitHub
-está preparado en el repositorio; sus secretos y variables no están activados en
-GitHub. No se ha comprobado una recuperación remota ni aceptación funcional de
-los evaluadores. La validación de Windows omite las pruebas específicas de POSIX;
-el job Linux preparado las ejecuta.
+The first real deployment was verified on 2026-11-06 at
+`https://iop-production-9fb7.up.railway.app`, project `IOP-evaluation`, environment
+`production`, on Hobby. The local database was imported and row counts were
+compared across all 62 tables. Seventy-five Locator files were transferred, and
+their SHA-256 hashes and private Node permissions were verified. The web app and
+API respond over HTTPS, anonymous user access is rejected, and the published
+revision matches the uploaded commit. A US$15 usage alert and US$20 hard limit
+were configured.
+
+The local and deployment commands are operational. The GitHub workflow is prepared
+in the repository; its secrets and variables are not enabled on GitHub. Remote
+recovery and evaluator functional acceptance have not been verified. Windows
+validation skips POSIX-specific tests; the prepared Linux job runs them.

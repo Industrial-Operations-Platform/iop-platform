@@ -234,6 +234,13 @@ export function ReportWorkspace({
                 <AnalysisCalendarNotice
                   excludedWeekdays={report.excludedWeekdays}
                 />
+                {!!report.excludedValues?.length && (
+                  <Disclosure summary={t("Analysis exclusions · {0} active", [report.excludedValues.length])}>
+                    <ul>{report.excludedValues.map(rule => (
+                      <li key={JSON.stringify(rule)}>{labels[rule.field]}: {rule.value}</li>
+                    ))}</ul>
+                  </Disclosure>
+                )}
                 {template === 0 && (
                   <MonthlyOverview
                     report={report}

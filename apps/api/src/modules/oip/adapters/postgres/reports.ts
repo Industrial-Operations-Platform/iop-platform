@@ -20,7 +20,9 @@ import type {
 import type { ReportRepository } from "../../application/ports";
 import { PgReportingProfiles } from "./reporting-profiles";
 import { ReportCache } from "./report-cache";
+import { includedReportingValues } from "./reporting-exclusions";
 interface ReportSnapshot {
+  excluded_values: ReportResult["excludedValues"];
   kpi_values: {
     definition: ExecutiveKpiDefinition;
     frequency: string;
@@ -66,7 +68,7 @@ export class PgReportRepository implements ReportRepository {
   ) {}
   private revision(publications: { id: string }[], profileVersion: string): string {
     return "a1." + digest([
-      1,
+      3,
       ...scopeTuple(this.profiles.source),
       publications.map((p) => p.id).sort(),
       this.calendar.excludedWeekdays,
@@ -132,7 +134,7 @@ export class PgReportRepository implements ReportRepository {
     coalesce((SELECT version::text FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$5::text) AS version,$8::text AS whitespace),
    manifest AS MATERIALIZED (SELECT import_id,reporting_date FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),
    ready AS MATERIALIZED (${hitlisteReadModel}),
-   eligible AS MATERIALIZED (SELECT * FROM ready WHERE ${eligibleReportingDate(this.calendar)}),
+   eligible AS MATERIALIZED (SELECT * FROM ready n WHERE ${eligibleReportingDate(this.calendar)} AND ${includedReportingValues("n.values", "(SELECT config FROM p)")}),
    selected AS MATERIALIZED (SELECT * FROM eligible n WHERE reporting_date >= $6::date AND reporting_date < $7::date ${predicates.map((x) => "AND " + x).join(" ")}
     AND (${search}::text='' OR EXISTS (SELECT 1 FROM jsonb_each_text(n.values) field WHERE position(${search}::text in lower(field.value))>0))),
    groups AS MATERIALIZED (SELECT values->>'${q.dimension}' AS key,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected GROUP BY 1),
@@ -158,7 +160,8 @@ export class PgReportRepository implements ReportRepository {
      WHERE ${q.executive ? "true" : "false"} GROUP BY definition,ordinality),
    opts AS (SELECT key,value,count(*) AS n FROM eligible CROSS JOIN LATERAL jsonb_each_text(values) GROUP BY key,value),
    rankedopts AS (SELECT *,row_number() OVER(PARTITION BY key ORDER BY value COLLATE "C") AS pos FROM opts)
-   SELECT (SELECT coalesce(jsonb_agg(k ORDER BY ordinality),'[]'::jsonb) FROM kpi_values k) AS kpi_values,
+   SELECT (SELECT coalesce(config->'excludedValues','[]'::jsonb) FROM p) AS excluded_values,
+    (SELECT coalesce(jsonb_agg(k ORDER BY ordinality),'[]'::jsonb) FROM kpi_values k) AS kpi_values,
     (SELECT version FROM p) AS profile_version,(SELECT encode(sha256(convert_to(config::text,'UTF8')),'hex') FROM p) AS profile_fingerprint,
     (SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb) FROM manifest) AS publications,
     (SELECT jsonb_build_object('frequency',coalesce(sum(reported_frequency),0)::text,'seconds',coalesce(sum(accumulated_alarm_seconds),0)::text,'records',count(*)::text) FROM selected) AS totals,
@@ -181,6 +184,7 @@ export class PgReportRepository implements ReportRepository {
       if (!r.projection_valid)
         throw new AnalyticsError("analytics_projection_unavailable");
       const pubs = r.publications.filter((p) => this.calendar.includes(p.date));
+      const historicalDates = pubs.map(p => p.date).sort();
       const revision = this.revision(r.publications, r.profile_version);
       const totals = asRow(r.totals);
       const options: Record<string, string[]> = {};
@@ -190,6 +194,7 @@ export class PgReportRepository implements ReportRepository {
       const points = (xs: Record<string, unknown>[]) =>
         xs.map((x) => ({ ...asRow(x), period: String(x.period) }));
       const result: ReportResult = {
+        excludedValues: r.excluded_values,
         revision,
         excludedWeekdays: [...this.calendar.excludedWeekdays],
         profileVersion: r.profile_version,
@@ -204,6 +209,10 @@ export class PgReportRepository implements ReportRepository {
                 calendarDays:
                   (Date.parse(q.toExclusive) - Date.parse(q.from)) / 86400000,
                 historicalDays: pubs.length,
+                historicalFrom: historicalDates[0] ?? null,
+                historicalToExclusive: historicalDates.length
+                  ? new Date(Date.parse(historicalDates[historicalDates.length - 1]) + 86400000).toISOString().slice(0, 10)
+                  : undefined,
                 kpis: r.kpi_values.map((x) =>
                   compareExecutiveKpi(
                     x.definition,

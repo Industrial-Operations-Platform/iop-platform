@@ -12,6 +12,7 @@ import {
 import type { AnalysisWorkspace } from "../../application/workspace";
 import type { ProfileResult } from "../../domain/models";
 import { labels } from "./labels";
+import { AnalysisExclusions } from "./AnalysisExclusions";
 
 export function ProfileEditor({
   application,
@@ -81,6 +82,8 @@ export function ProfileEditor({
       ) : null}
       {value && profile && (
         <>
+          <AnalysisExclusions application={application} rules={profile.excludedValues ?? []} disabled={pending}
+            onChange={excludedValues => edit({ ...value, profile: { ...profile, excludedValues } })} />
           <div className="analysis-checks">
             {(["trim", "unicodeNfc", "collapseWhitespace"] as const).map(
               (key) => (
@@ -300,7 +303,7 @@ export function ProfileEditor({
               {t("Add value correction ")}
             </Button>
           </Disclosure>
-          <Button disabled={pending} onClick={() => void save()}>
+          <Button disabled={pending || profile.excludedValues?.some(rule => !rule.value.trim())} onClick={() => void save()}>
             {pending ? t("Saving…") : t("Save historical preparation")}
           </Button>
           {saved && (

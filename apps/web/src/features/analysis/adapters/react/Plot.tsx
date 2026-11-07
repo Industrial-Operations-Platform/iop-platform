@@ -4,7 +4,8 @@ import { Panel } from "../../../../design/components";
 import { useAppearance } from "../../../../design/useAppearance";
 import { appearanceIdentity } from "../../../../design/identity";
 import type { Report } from "../../domain/models";
-import { mountChart, pareto, type ChartKind } from "../echarts/charts";
+import { monthlyAverages } from "../../domain/monthly-averages";
+import { mountChart, number, pareto, type ChartKind } from "../echarts/charts";
 export function Plot({
   kind,
   report,
@@ -18,6 +19,7 @@ export function Plot({
 }) {
   const element = useRef<HTMLDivElement>(null);
   const { resolved } = useAppearance();
+  const averages = kind === "daily-overlay" || kind === "trend" ? monthlyAverages(report) : [];
   useEffect(() => {
     if (element.current)
       return mountChart(
@@ -27,6 +29,27 @@ export function Plot({
   return (
     <Panel variant="chart">
       <h2>{title}</h2>
+      {averages.length > 0 && (
+        <div className="analysis-monthly-averages" role="note" aria-label={t("Monthly daily averages")}
+          title={t("Averages use eligible imported days, including days with no matching alarms. Missing dates are excluded.")}>
+          {(["frequency", "minutes"] as const).map(metric => (
+            <div className="analysis-average-series" data-series={metric} key={metric}
+              role="group" aria-label={t(metric === "frequency" ? "Frequency" : "Alarm minutes")}>
+              <span className="analysis-average-label">
+                {t(metric === "frequency" ? "Frequency" : "Alarm minutes")}
+                <span>{t("Daily average")}</span>
+              </span>
+              <ul>
+                {averages.map(average => (
+                  <li key={average.month}>
+                    <span>{average.month}</span>{" · "}<strong>Ø {number(average[metric])}</strong>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
       {(kind === "frequency" || kind === "duration") && (
         <p className="analysis-footnote">
           {pareto(report, kind).summary}

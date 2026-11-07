@@ -9,6 +9,48 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
+.analysis-monthly-averages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  font-size: var(--iop-captionSize);
+  margin: 0 15px 10px;
+}
+.analysis-average-series {
+  color: var(--iop-chartFrequency);
+  min-width: 0;
+}
+.analysis-average-series[data-series="minutes"] {
+  color: var(--iop-chartComparison);
+  text-align: right;
+}
+.analysis-average-label {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.analysis-average-label > span {
+  color: var(--iop-muted);
+  font-size: var(--iop-smallSize);
+}
+.analysis-average-series[data-series="minutes"] :is(.analysis-average-label, ul) {
+  justify-content: flex-end;
+}
+.analysis-monthly-averages ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+.analysis-monthly-averages li > span {
+  color: var(--iop-muted);
+}
+.analysis-monthly-averages strong {
+  font-weight: var(--iop-labelWeight);
+}
 .analysis-plot {
   width: 100%;
   height: 335px;
@@ -86,21 +128,75 @@
 .analysis-executive-grid .analysis-plot {
   height: 450px;
 }
+.analysis-executive-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  align-items: stretch;
+  gap: 18px;
+  margin-top: 18px;
+}
+.analysis-executive-summary .analysis-plot {
+  height: 360px;
+}
+.analysis-executive-summary > .iop-panel--chart:not(.analysis-executive-kpis) {
+  align-self: start;
+}
 .analysis-executive-kpis {
   min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  /* The chart determines the shared row height; the KPI grid fills that height. */
+  contain: size;
 }
 .analysis-executive-kpis .iop-metric-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: minmax(80px, 1fr);
+  overflow-y: auto;
+  gap: 10px;
+}
+.analysis-kpi-detail {
+  padding: 8px;
+  overflow-wrap: anywhere;
+}
+.analysis-kpi-detail-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.analysis-kpi-detail-heading > h3 {
+  margin: 0;
+}
+.analysis-kpi-detail-heading > button {
+  flex-shrink: 0;
+}
+.analysis-kpi-detail .iop-detail-facts {
+  gap: 10px;
+  margin: 12px 0;
 }
 .analysis-executive-settings {
   margin: 20px 0;
+}
+.analysis-exclusion-rule {
+  margin-bottom: 12px;
+  align-items: end;
 }
 .analysis-kpi-setting {
   margin-bottom: 16px;
 }
 @media (max-width: 1050px) {
-  .analysis-executive-grid {
+  .analysis-executive-grid,
+  .analysis-executive-summary {
     grid-template-columns: 1fr;
+  }
+  .analysis-executive-kpis {
+    contain: none;
+  }
+  .analysis-executive-kpis .iop-metric-grid {
+    grid-auto-rows: auto;
   }
 }
 @media (max-width: 620px) {

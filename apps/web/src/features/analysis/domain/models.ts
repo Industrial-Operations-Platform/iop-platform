@@ -95,6 +95,8 @@ export interface ExecutiveKpi extends ExecutiveKpiDefinition {
   status: "better" | "worse" | "equal" | "unavailable";
 }
 export interface MonthlyExecutive {
+  historicalFrom?: string | null;
+  historicalToExclusive?: string;
   month: string;
   importedDays: number;
   calendarDays: number;
@@ -103,6 +105,7 @@ export interface MonthlyExecutive {
   kpis: ExecutiveKpi[];
 }
 export interface ReportingProfile {
+  excludedValues?: { field: ValueAlias["field"]; value: string }[];
   executiveKpis?: ExecutiveKpiDefinition[];
   normalization: Normalization;
   unclassifiedLabel: string;
@@ -173,6 +176,7 @@ export interface ExecutiveLeader extends ReportRow {
   metric: "frequency" | "duration";
 }
 export interface Report {
+  excludedValues?: ReportingProfile["excludedValues"];
   excludedWeekdays?: number[];
   monthlyExecutive?: MonthlyExecutive;
   revision: string;
@@ -185,6 +189,8 @@ export interface Report {
   durationGroups: ReportRow[];
   groupCount: number;
   timeline: ReportPoint[];
+  /** Same filtered snapshot at daily resolution, for weekly buckets crossing months. */
+  dailyTimeline?: ReportPoint[];
   series: ReportPoint[];
   monthly: ReportPoint[];
   options: {

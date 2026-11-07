@@ -128,7 +128,11 @@ export class AnalysisWorkspace {
       86400000;
     if (!Number.isFinite(days) || days < 1 || days > 3660)
       throw new Error("Choose a reporting range between 1 and 3660 days.");
-    return this.gateway.report(selection);
+    const report = await this.gateway.report(selection);
+    if (selection.period !== "week") return report;
+    const daily = await this.gateway.report({ ...selection, period: "day", page: 1, revision: report.revision });
+    // Never combine averages and chart values from different import/profile snapshots.
+    return daily.revision === report.revision ? { ...report, dailyTimeline: daily.timeline } : report;
   }
 }
 

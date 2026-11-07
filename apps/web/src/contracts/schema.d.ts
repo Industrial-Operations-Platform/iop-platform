@@ -3381,6 +3381,11 @@ export interface components {
             options: components["schemas"]["OptionDto"][];
             nextCursor: string | null;
         };
+        ValueExclusionDto: {
+            /** @enum {string} */
+            field: "area" | "equipment" | "message" | "type" | "messageGroup";
+            value: string;
+        };
         ExecutiveKpiDefinitionDto: {
             id: string;
             label: string;
@@ -3405,6 +3410,7 @@ export interface components {
             to: string;
         };
         ReportingProfileDto: {
+            excludedValues?: components["schemas"]["ValueExclusionDto"][];
             executiveKpis?: components["schemas"]["ExecutiveKpiDefinitionDto"][];
             normalization: components["schemas"]["NormalizationDto"];
             unclassifiedLabel: string;
@@ -3505,6 +3511,8 @@ export interface components {
             calendarDays: number;
             analysisDays?: number;
             historicalDays: number;
+            historicalFrom?: string | null;
+            historicalToExclusive?: string;
             kpis: components["schemas"]["ExecutiveKpiDto"][];
         };
         ReportRowDto: {
@@ -3534,6 +3542,7 @@ export interface components {
             period: string;
         };
         ReportDto: {
+            excludedValues?: components["schemas"]["ValueExclusionDto"][];
             /** @description Excluded ISO weekdays (Monday 1 through Sunday 7). */
             excludedWeekdays?: number[];
             monthlyExecutive?: components["schemas"]["MonthlyExecutiveDto"];

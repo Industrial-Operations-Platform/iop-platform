@@ -23,6 +23,7 @@ export const textFields = [
 ] as const;
 export type TextField = (typeof textFields)[number];
 export interface ReportingProfile {
+  excludedValues?: { field: TextField; value: string }[];
   executiveKpis?: ExecutiveKpiDefinition[];
   normalization: {
     trim: boolean;
@@ -66,7 +67,7 @@ export function compileProfile(value: unknown): CompiledProfile {
   if (
     !obj(value) ||
     Object.keys(value)
-      .filter((key) => key !== "executiveKpis")
+      .filter((key) => key !== "executiveKpis" && key !== "excludedValues")
       .sort()
       .join(",") !== "aliases,areaSectors,normalization,unclassifiedLabel" ||
     !obj(value.normalization)
@@ -120,5 +121,18 @@ export function compileProfile(value: unknown): CompiledProfile {
   }
 
   if (v.executiveKpis !== undefined) executiveDefinitions(v.executiveKpis);
-  return { ...v, compiled: { areas, aliases } };
+  let excludedValues: ReportingProfile["excludedValues"];
+  if (v.excludedValues !== undefined) {
+    if (!Array.isArray(v.excludedValues) || v.excludedValues.length > 1000) fail();
+    const seen = new Set<string>();
+    excludedValues = v.excludedValues.map(rule => {
+      if (!obj(rule) || Object.keys(rule).sort().join(",") !== "field,value" || !textFields.includes(rule.field)) fail();
+      const value = alias(rule.field, rule.value);
+      const key = JSON.stringify([rule.field, value]);
+      if (seen.has(key)) fail();
+      seen.add(key);
+      return { field: rule.field, value };
+    });
+  }
+  return { ...v, ...(excludedValues ? { excludedValues } : {}), compiled: { areas, aliases } };
 }

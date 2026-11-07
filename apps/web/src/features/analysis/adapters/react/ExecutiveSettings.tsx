@@ -87,7 +87,7 @@ export function ExecutiveSettings({
     >
       <p>
         {t(
-          "Choose up to eight KPIs. Choose an exact prepared Meldetext for each KPI. Goals use the same daily-average unit as the KPI; leave a goal empty to compare with all imported history. Lower is better. ",
+          "Choose up to eight KPIs. Choose an exact prepared Meldetext for each KPI. Goals use the same daily-average unit as the KPI; leave a goal empty to compare with all eligible imported history, including the selected month and later months. Lower is better. ",
         )}
       </p>
       {error && <Alert>{error}</Alert>}

@@ -1,6 +1,6 @@
 import type { MonthlyExecutive } from "./executive";
 import { AnalyticsError, dateLabel } from "./values";
-import { reportDimensions, type ReportDimension } from "./reporting-profile";
+import { reportDimensions, type ReportDimension, type ReportingProfile } from "./reporting-profile";
 export interface ReportRequest {
   months?: string[];
   executive?: boolean;
@@ -29,6 +29,7 @@ export interface ExecutiveLeader extends ReportRow {
   metric: "frequency" | "duration";
 }
 export interface ReportResult {
+  excludedValues?: ReportingProfile["excludedValues"];
   excludedWeekdays?: number[];
   monthlyExecutive?: MonthlyExecutive;
   revision: string;

@@ -202,6 +202,11 @@ export class ValueAliasDto {
   @ApiProperty() from!: string;
   @ApiProperty() to!: string;
 }
+export class ValueExclusionDto {
+  @ApiProperty({ enum: ["area", "equipment", "message", "type", "messageGroup"] })
+  field!: "area" | "equipment" | "message" | "type" | "messageGroup";
+  @ApiProperty() value!: string;
+}
 export class ExecutiveKpiDefinitionDto {
   @ApiProperty() id!: string;
   @ApiProperty() label!: string;
@@ -234,9 +239,12 @@ export class MonthlyExecutiveDto {
   @ApiProperty() calendarDays!: number;
   @ApiProperty({ required: false }) analysisDays?: number;
   @ApiProperty() historicalDays!: number;
+  @ApiProperty({ type: String, nullable: true, required: false }) historicalFrom?: string | null;
+  @ApiProperty({ required: false }) historicalToExclusive?: string;
   @ApiProperty({ type: [ExecutiveKpiDto] }) kpis!: ExecutiveKpiDto[];
 }
 export class ReportingProfileDto {
+  @ApiProperty({ type: [ValueExclusionDto], required: false }) excludedValues?: ValueExclusionDto[];
   @ApiProperty({ type: [ExecutiveKpiDefinitionDto], required: false })
   executiveKpis?: ExecutiveKpiDefinitionDto[];
   @ApiProperty({ type: NormalizationDto }) normalization!: NormalizationDto;
@@ -328,6 +336,7 @@ export class ExecutiveLeaderDto extends ReportRowDto {
     | "duration";
 }
 export class ReportDto {
+  @ApiProperty({ type: [ValueExclusionDto], required: false }) excludedValues?: ValueExclusionDto[];
   @ApiProperty({
     type: [Number],
     required: false,

@@ -11,6 +11,14 @@ const definition = {
   metric: "frequency" as const,
   goal: null,
 };
+test("a single imported month equals its historical reference; explicit goals still apply", () => {
+  expect(compareExecutiveKpi(definition, 40, 40, 2, 2)).toMatchObject({
+    average: 20, historicalAverage: 20, reference: 20, changePercent: 0, status: "equal",
+  });
+  expect(compareExecutiveKpi({ ...definition, goal: 25 }, 40, 40, 2, 2)).toMatchObject({
+    average: 20, reference: 25, referenceKind: "goal", status: "better", changePercent: -20,
+  });
+});
 test("monthly comparison uses imported-date averages and lower is better", () => {
   expect(compareExecutiveKpi(definition, 9, 14, 2, 3)).toMatchObject({
     total: 9,
