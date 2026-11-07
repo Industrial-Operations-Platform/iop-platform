@@ -1,6 +1,6 @@
 # IOP-222 — Start Information execution
 
-Completed locally. Authorized by the owner's 2026-11-07 request.
+Completed, published and active on Railway. Authorized by the owner's 2026-11-07 request.
 Branch: `feature/IOP-222-start-information`, created from clean `develop`.
 [Permanent scope](../items/IOP-222-start-information.md).
 
@@ -62,7 +62,8 @@ were reviewed. No unrelated active IOP-219 work is included.
 
 ## Closure
 
-Implementation and requested data corrections are complete. The new UI is available
-in the local build; Railway still serves the previous UI. Merge/push/deployment
-require explicit owner approval under the repository workflow. No remote code refs,
-permissions, schema or unrelated demo records were changed.
+Implementation and requested data corrections are complete. The owner subsequently
+approved merge/push/deployment. Railway serves the validated new UI; the German
+Information records and retained database were verified after activation. See the
+[publication record](IOP-222-publication-plan.md). No permissions, schema or unrelated
+demo records were changed.
