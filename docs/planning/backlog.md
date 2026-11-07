@@ -410,4 +410,4 @@ pending; source image colors do not establish live equipment health.
 | [IOP-219 — Private editing references and accurate Locator curves](items/IOP-219-locator-reference-curves.md) | In progress; code published through develop, private model activation pending |
 | [IOP-220 — Align record titles with their supporting content](items/IOP-220-record-title-alignment.md) | Completed; published |
 | [IOP-221 — Show Locator area names on hover](items/IOP-221-locator-area-hover.md) | Completed; published to origin |
-| [IOP-222 — Profile-first Start and compact Information](items/IOP-222-start-information.md) | Completed locally; code publication pending |
+| [IOP-222 — Profile-first Start and compact Information](items/IOP-222-start-information.md) | Completed; published to origin and active on Railway |
