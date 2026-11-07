@@ -35,6 +35,7 @@ export function StartOverview({
   workforce,
   maintenance,
   personalProfile,
+  information,
   onSectorChange,
   canReadAnalytics = true,
 }: {
@@ -47,6 +48,7 @@ export function StartOverview({
   workforce?: ReactNode;
   maintenance?: ReactNode;
   personalProfile?: ReactNode;
+  information?: ReactNode;
   canReadAnalytics?: boolean;
   onSectorChange?: (sector: string) => void;
 }) {
@@ -162,6 +164,7 @@ export function StartOverview({
                   : t("Team and role profile: not configured.")}
               </p>
             </Panel>}
+            {information}
             {workforce ?? (
               <Panel>
                 <span className="analysis-home-label">

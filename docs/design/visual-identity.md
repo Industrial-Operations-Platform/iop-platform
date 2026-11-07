@@ -159,6 +159,14 @@ remain whole. The selected date-only due period retains overdue and undated work
 Technicians open assigned work through Start or notifications; their sidebar
 does not include Maintenance. Other delivered profile navigation remains scoped.
 
+The owner's IOP-222 refinement keeps Profile as the first content card in both
+operational and Administrator Start. Active Information follows it in a shared
+Panel with a count, refresh action and at most three expanded summary cards.
+Use the shared card presentation with original notice text, publication and
+display-through dates; omit issue-state metadata for these notices. A labelled
+collection action opens all active notices in the shared dialog, retaining detail
+navigation and pagination. Keep site-wide scope independent of department filters.
+
 Meeting category headings group label/count with an 8px gap and retain the add
 action at the right. Empty sections size to their content. Activity notifications
 group title/unread count and read/refresh actions above a separately scrollable
