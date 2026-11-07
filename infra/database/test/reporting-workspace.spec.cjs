@@ -898,6 +898,26 @@ test("administrator file rows sort across pages and catalog choices include ever
     expect(natural.totalRecordCount).toBe(235);
     expect(natural.options.message).toHaveLength(200);
     expect(natural.options.minutes).toEqual(["0.50"]);
+    const reportQuery = { ...selection, from: "2026-09-01", toExclusive: "2026-10-01", months: ["2026-09"] };
+    const reportChoices = await ref.reports.query("demo-a", reportQuery);
+    // Selects must expose every choice, including values after the old 200-suggestion cap.
+    expect(reportChoices.options.message).toHaveLength(235);
+    expect(reportChoices.optionCounts.message).toBe(235);
+    const filteredChoices = await ref.reports.query("demo-a", { ...reportQuery, filters: {
+      sector: ["Preparation"], area: ["Area A"], equipment: ["=EQ-234"], message: ["Müll, 234"], type: ["Störung"],
+    } });
+    expect(filteredChoices.totals.records).toBe(1);
+    expect(filteredChoices.options.sector).toEqual(reportChoices.options.sector);
+    expect(filteredChoices.options.area).toEqual(["Area A"]);
+    expect(filteredChoices.options.equipment).toHaveLength(118);
+    expect(filteredChoices.options.message).toEqual(["Müll, 234"]);
+    expect(filteredChoices.options.type).toEqual(["Störung"]);
+    expect(filteredChoices.options.messageGroup).toEqual(["007"]);
+    const incompatible = await ref.reports.query("demo-a", { ...reportQuery, filters: { sector: ["Preparation"], area: ["Area B"] } });
+    expect(incompatible.options.area).toEqual(["Area A"]);
+    expect(incompatible.options.equipment ?? []).toEqual([]);
+    const otherMonth = await ref.reports.query("demo-a", { ...reportQuery, from: "2026-08-01", months: ["2026-08"] });
+    expect(otherMonth.options).toEqual({});
     const specific = await ref.explorer.sourceRows("demo-a", {...q, filters: {
       sector: natural.records[0].sector, area: "Area A", equipment: "=EQ-234", message: "Müll, 234",
       type: "Störung", messageGroup: "007", frequency: "1", minutes: "0.5", line: "236",

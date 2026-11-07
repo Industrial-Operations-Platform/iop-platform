@@ -21,7 +21,7 @@ import {
   TableViewport,
   ViewNavigation,
 } from "../../../../design/components";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   AnalysisWorkspace,
   executiveSelection,
@@ -137,6 +137,10 @@ export function ReportWorkspace({
   const select = (key: string) => {
     if (selection) drill(selection.dimension, key);
   };
+  const loadFilterOptions = useCallback(
+    (request: ReportRequest) => application.previewReportFilters(request),
+    [application],
+  );
   return (
     <>
       <PageHeading
@@ -214,6 +218,7 @@ export function ReportWorkspace({
               months={months}
               view={template}
               report={report}
+              loadOptions={loadFilterOptions}
               onApply={(s) => setSelection(s)}
             />
           )}

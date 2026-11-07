@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import type { Report, ReportRequest } from "../src/features/analysis/domain/models";
 import { ReportFilters } from "../src/features/analysis/adapters/react/ReportFilters";
 import { historySelection } from "../src/features/analysis/application/workspace";
 
@@ -73,4 +74,67 @@ test("clear is outside the collapsed panel and resets month, dimension and draft
   expect(onApply).toHaveBeenLastCalledWith(
     expect.objectContaining({ months, filters: {}, search: "" }),
   );
+});
+
+function reportFor(request: ReportRequest, options: Report["options"]): Report {
+  return { selection: request, options } as Report;
+}
+const dropdown = (field: string) => screen.getByRole("combobox", { name: field + " filter" });
+const values = (field: string) => within(dropdown(field)).getAllByRole("option").map((option) => (option as HTMLOptionElement).value);
+
+test("dropdown choices follow draft ancestors, clear descendants and ignore out-of-order responses before Apply", async () => {
+  jest.useFakeTimers();
+  try {
+    const initial = { ...selection, filters: { sector: ["A"], area: ["Area A"], equipment: ["=A"], message: ["Jam"], type: ["01"] } };
+    const pending: { request: ReportRequest; resolve: (report: Report) => void }[] = [];
+    const loadOptions = jest.fn((request: ReportRequest) => new Promise<Report>((resolve) => pending.push({ request, resolve })));
+    const onApply = jest.fn();
+    const { container } = render(<ReportFilters selection={initial} months={months} view={4}
+      report={reportFor(initial, { sector: ["A", "B", "C"], area: ["Area A"], equipment: ["=A"], message: ["Jam"], type: ["01"], messageGroup: ["001"] })}
+      loadOptions={loadOptions} onApply={onApply} />);
+    container.querySelector("details")!.open = true;
+    expect(container.querySelector("datalist")).toBeNull();
+    fireEvent.change(dropdown("Sector / Halle"), { target: { value: "B" } });
+    for (const field of ["Bereich", "Betriebsmittelkennzeichen", "Meldetext", "Typ"]) expect(dropdown(field)).toHaveValue("");
+    expect(dropdown("Bereich")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Apply filters" })).toBeDisabled();
+    await act(async () => { jest.advanceTimersByTime(150); });
+    fireEvent.change(dropdown("Sector / Halle"), { target: { value: "C" } });
+    await act(async () => { jest.advanceTimersByTime(150); });
+    await act(async () => { pending[1].resolve(reportFor(pending[1].request, { sector: ["A", "B", "C"], area: ["Area C"], equipment: ["=C"], message: ["Alarm"], type: ["02"] })); });
+    await act(async () => { pending[0].resolve(reportFor(pending[0].request, { area: ["Area B"] })); });
+    expect(values("Bereich")).toEqual(["", "Area C"]);
+    expect(onApply).not.toHaveBeenCalled();
+    fireEvent.change(dropdown("Bereich"), { target: { value: "Area C" } });
+    expect(dropdown("Betriebsmittelkennzeichen")).toBeDisabled();
+    await act(async () => { jest.advanceTimersByTime(150); });
+    await act(async () => { pending[2].resolve(reportFor(pending[2].request, { sector: ["A", "B", "C"], area: ["Area C"], equipment: ["=C"], message: ["Alarm"], type: ["02"] })); });
+    expect(values("Betriebsmittelkennzeichen")).toEqual(["", "=C"]);
+    fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ filters: { sector: ["C"], area: ["Area C"] }, months: ["2026-07"] }));
+  } finally { jest.useRealTimers(); }
+});
+
+test("failed choices can be retried and changing months reloads choices without old descendants", async () => {
+  jest.useFakeTimers();
+  try {
+    const initial = { ...selection, filters: { sector: ["A"], area: ["Area A"] } };
+    const loadOptions = jest.fn<Promise<Report>, [ReportRequest]>()
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockImplementation(async (request) => reportFor(request, { sector: ["B"], area: ["Area B"] }));
+    const onApply = jest.fn();
+    const { container } = render(<ReportFilters selection={initial} months={months} view={2}
+      report={reportFor(initial, { sector: ["A"], area: ["Area A"] })} loadOptions={loadOptions} onApply={onApply} />);
+    container.querySelector("details")!.open = true;
+    fireEvent.click(screen.getByRole("checkbox", { name: "May 2026" }));
+    expect(dropdown("Sector / Halle")).toHaveValue("");
+    await act(async () => { jest.advanceTimersByTime(150); });
+    expect(screen.getByRole("alert")).toHaveTextContent("Could not validate");
+    expect(screen.getByRole("button", { name: "Apply filters" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Retry choices" }));
+    await act(async () => { jest.advanceTimersByTime(150); });
+    expect(values("Bereich")).toEqual(["", "Area B"]);
+    fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ months: ["2026-05", "2026-07"], filters: {} }));
+  } finally { jest.useRealTimers(); }
 });

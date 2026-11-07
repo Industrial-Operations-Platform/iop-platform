@@ -120,13 +120,25 @@ export class PgReportRepository implements ReportRepository {
         vals.push(v);
         return "$" + vals.length;
       };
-      const predicates = reportDimensions
+      const filterPredicates = reportDimensions
         .filter((k) => q.filters[k]?.length)
-        .map((k) => `n.values->>'${k}'=ANY(${bind(q.filters[k])}::text[])`);
-      if (q.months?.length)
-        predicates.push(
-          `to_char(n.reporting_date,'YYYY-MM')=ANY(${bind(q.months)}::text[])`,
+        .map((field) => ({
+          field,
+          condition: `n.values->>'${field}'=ANY(${bind(q.filters[field])}::text[])`,
+        }));
+      const predicates = filterPredicates.map((p) => p.condition);
+      // Each list sees preceding filters, so its own selection never hides alternatives.
+      const optionPredicates = reportDimensions.map((field, index) => {
+        const preceding = filterPredicates.filter(
+          (p) => reportDimensions.indexOf(p.field) < index,
         );
+        return `(key='${field}' AND (${preceding.map((p) => p.condition).join(" AND ") || "true"}))`;
+      });
+      const monthPredicate = q.months?.length
+        ? `to_char(n.reporting_date,'YYYY-MM')=ANY(${bind(q.months)}::text[])`
+        : "true";
+      if (q.months?.length)
+        predicates.push(monthPredicate);
       const search = bind(q.search.toLowerCase()),
         offset = bind((q.page - 1) * 50);
       const metric = q.metric === "frequency" ? "frequency" : "seconds";
@@ -158,7 +170,10 @@ export class PgReportRepository implements ReportRepository {
      FROM p CROSS JOIN LATERAL jsonb_array_elements(coalesce(p.config->'executiveKpis',$4::jsonb->'executiveKpis','[]'::jsonb)) WITH ORDINALITY AS definitions(definition,ordinality)
      LEFT JOIN eligible ON eligible.values->>'message'=definition->>'message'
      WHERE ${q.executive ? "true" : "false"} GROUP BY definition,ordinality),
-   opts AS (SELECT key,value,count(*) AS n FROM eligible CROSS JOIN LATERAL jsonb_each_text(values) GROUP BY key,value),
+   opts AS (SELECT key,value,count(*) AS n FROM eligible n CROSS JOIN LATERAL jsonb_each_text(n.values)
+     WHERE n.reporting_date >= $6::date AND n.reporting_date < $7::date AND ${monthPredicate}
+     AND (${search}::text='' OR EXISTS (SELECT 1 FROM jsonb_each_text(n.values) field WHERE position(${search}::text in lower(field.value))>0))
+     AND (${optionPredicates.join(" OR ")}) GROUP BY key,value),
    rankedopts AS (SELECT *,row_number() OVER(PARTITION BY key ORDER BY value COLLATE "C") AS pos FROM opts)
    SELECT (SELECT coalesce(config->'excludedValues','[]'::jsonb) FROM p) AS excluded_values,
     (SELECT coalesce(jsonb_agg(k ORDER BY ordinality),'[]'::jsonb) FROM kpi_values k) AS kpi_values,
@@ -176,7 +191,7 @@ export class PgReportRepository implements ReportRepository {
     (SELECT coalesce(jsonb_agg(t ORDER BY period),'[]'::jsonb) FROM timeline t) AS timeline,
     (SELECT coalesce(jsonb_agg(t ORDER BY period,key),'[]'::jsonb) FROM series t) AS series,
     (SELECT coalesce(jsonb_agg(t ORDER BY period,key),'[]'::jsonb) FROM monthly t) AS monthly,
-    (SELECT coalesce(jsonb_agg(jsonb_build_object('field',key,'value',value)),'[]'::jsonb) FROM rankedopts WHERE pos<=200) AS options,
+    (SELECT coalesce(jsonb_agg(jsonb_build_object('field',key,'value',value) ORDER BY key,value COLLATE "C"),'[]'::jsonb) FROM rankedopts WHERE key NOT IN ('frequency','duration') OR pos<=200) AS options,
     (SELECT coalesce(jsonb_object_agg(key,n),'{}'::jsonb) FROM(SELECT key,count(*) AS n FROM opts GROUP BY key)x) AS option_counts,
     (SELECT coalesce(jsonb_agg(r),'[]'::jsonb) FROM(SELECT values,reporting_date::text AS date,import_id::text AS import_id,source_record_number AS line,reported_frequency::text AS frequency,accumulated_alarm_seconds::text AS seconds FROM selected ORDER BY reporting_date,import_id,source_record_number LIMIT 50 OFFSET ${offset})r) AS records`;
       const r = (await tx.query(sql, vals))

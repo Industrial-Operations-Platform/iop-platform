@@ -108,9 +108,23 @@ test("Executive Overview rounds the current selection to one month and clears al
   const executive = selectView(historySelection(["2026-12-31"])!, 0);
   expect(executive.toExclusive).toBe("2027-01-01");
   expect(drillInto(executive, 0, "area", "Area A")).toMatchObject({
-    view: 2,
-    selection: { executive: false, filters: { area: ["Area A"] } },
+    view: 3,
+    selection: { executive: false, dimension: "equipment", filters: { area: ["Area A"] } },
   });
+});
+
+test("each standard analysis drill opens the next level with all selected ancestors and months", () => {
+  const initial = { ...historySelection(["2026-05-01", "2026-07-01"])!, months: ["2026-05", "2026-07"], metric: "duration" as const };
+  const hall = drillInto(initial, 1, "sector", "Hall B");
+  const area = drillInto(hall.selection, hall.view, "area", "Area B");
+  const equipment = drillInto(area.selection, area.view, "equipment", "=EQ, 1");
+  expect([hall.view, area.view, equipment.view]).toEqual([2, 3, 4]);
+  expect([hall.selection.dimension, area.selection.dimension, equipment.selection.dimension]).toEqual(["area", "equipment", "message"]);
+  expect(equipment.selection).toMatchObject({
+    months: initial.months, metric: "duration", page: 1,
+    filters: { sector: ["Hall B"], area: ["Area B"], equipment: ["=EQ, 1"] },
+  });
+  expect(drillInto(equipment.selection, 4, "message", "Alarm").view).toBe(5);
 });
 
 test("catalog loading follows every cursor instead of truncating messages to report options", async () => {

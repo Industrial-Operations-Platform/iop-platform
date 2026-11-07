@@ -92,6 +92,10 @@ export class AnalysisWorkspace {
   }
 
   constructor(readonly gateway: AnalysisGateway) {}
+  /** Draft choices need one snapshot, without the extra daily read for weekly charts. */
+  previewReportFilters(selection: ReportRequest): Promise<Report> {
+    return this.gateway.report({ ...selection, period: "day" });
+  }
   async messageOptions(): Promise<string[]> {
     const values = new Set<string>();
     let after: string | undefined;
@@ -205,7 +209,7 @@ export function drillInto(
 ) {
   const target = reportViews.findIndex(
     (policy, index) =>
-      index >= view &&
+      index >= (view === 0 ? 3 : view + 1) &&
       (policy.filters as readonly string[]).includes(dimension),
   );
   const next = target < 0 ? 5 : target;
