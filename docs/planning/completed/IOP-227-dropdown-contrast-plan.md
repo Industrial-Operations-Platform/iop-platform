@@ -43,4 +43,15 @@ Scope: [IOP-227](../items/IOP-227-dropdown-contrast.md).
 
 All acceptance criteria met. Item/backlog synchronized and this plan moved to
 completed. No API/domain changes, unrelated edits or translation-only changes.
-Local story commit is ready for review; no merge, push or deployment authorized.
+Implementation commit: `d9ab839`.
+
+## Owner-approved publication — 2026-11-08
+
+The owner approved merging `fix/IOP-227-dropdown-contrast` into local `develop`
+and pushing both branches to `origin`. After fetching, local `develop` and
+`origin/develop` matched, and the working tree was clean.
+
+Publication steps: commit this authorization record on the story branch, merge
+the story into `develop`, atomically push both branches to `origin`, and verify
+that the local, tracking and remote branch tips match. Preserve the story branch;
+no stage/master promotion or manual deployment is included.

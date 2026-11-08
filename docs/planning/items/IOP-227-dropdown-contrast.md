@@ -23,4 +23,6 @@ No API, business rules or customer data changes.
 
 Execution and validation: [completed plan](../completed/IOP-227-dropdown-contrast-plan.md).
 Shared option colors cover every native select; 319 web tests, 9 browser scenarios
-and the web build passed. Committed locally; publication requires owner approval.
+and the web build passed. Implementation commit: `d9ab839`. On 2026-11-08 the owner
+approved merging the story into `develop` and pushing both branches to `origin`;
+the completed plan records the publication procedure.

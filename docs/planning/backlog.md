@@ -415,4 +415,4 @@ pending; source image colors do not establish live equipment health.
 | [IOP-224 — Align Shift Handover category cards](items/IOP-224-handover-card-alignment.md) | Completed; responsive validation published and active on Railway |
 | [IOP-225 — Publish Railway updates only for application changes](items/IOP-225-selective-railway-deployments.md) | Completed; automatic deployment verified, hosted validation restricted to develop |
 | [IOP-226 — Integrate personal username operator tooling](items/IOP-226-personal-username-tooling.md) | In progress |
-| [IOP-227 — Consistent native dropdown contrast](items/IOP-227-dropdown-contrast.md) | Completed; local validation complete, publication pending |
+| [IOP-227 — Consistent native dropdown contrast](items/IOP-227-dropdown-contrast.md) | Completed; publication to develop and origin approved |
