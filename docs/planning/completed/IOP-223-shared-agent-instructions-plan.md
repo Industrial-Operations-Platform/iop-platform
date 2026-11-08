@@ -1,6 +1,6 @@
 # IOP-223 — Synchronize Mac source and share agent instructions
 
-In progress. Authorized by the owner's 2026-11-08 request to update the Mac
+Completed. Authorized by the owner's 2026-11-08 request to update the Mac
 checkout from the primary Windows development source and publish `AGENTS.md`.
 The owner clarified that only source and instructions are in scope.
 Story branch: `docs/IOP-223-shared-agent-instructions`, created from `develop`
@@ -44,6 +44,14 @@ No application services or private configuration were changed.
 
 ## Closure
 
-Record actual results, synchronize item/backlog, and move this plan to completed/.
-Retain the earlier transfer branch and all review branches. Windows retrieval is
-through a normal fast-forward pull of develop; execution on that PC is not claimed.
+Commit `b1d587c` versions the instructions and synchronized workflow. The indexed
+secret-hygiene guard passed for all 1,444 files. Integrated the story into develop
+by fast-forward and pushed both refs atomically to origin on 2026-11-08.
+`git ls-remote --heads origin develop docs/IOP-223-shared-agent-instructions`
+confirmed both at `b1d587c01c220dc6ef31a72a1f34c74182dfd501`; local and both
+remote-tracking `AGENTS.md` blobs match `fff3b4537e9dd8ff1de6371662a48e742186592f`.
+
+Item/backlog are complete and this plan is in completed/. Publish this evidence
+increment through the same story/develop refs. The earlier transfer branch and all
+review branches remain intact. Windows retrieval is through a normal fast-forward
+pull of develop; execution on that PC is not claimed.
