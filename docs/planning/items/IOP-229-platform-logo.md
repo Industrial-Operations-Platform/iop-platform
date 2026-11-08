@@ -27,11 +27,11 @@ This owner-selected artwork supersedes the mark from
 
 [Execution plan](../completed/IOP-229-platform-logo-plan.md), including the selected
 built-in image-generation prompt and validation evidence.
-[Caption follow-up](../completed/IOP-229-logo-caption-plan.md). Publication requires
-separate owner authorization under ADR-0008.
+[Caption follow-up](../completed/IOP-229-logo-caption-plan.md). The owner approved
+publication of the logo and left navigation work to origin/develop.
 
 The owner approved local develop integration together with IOP-230 on 2026-11-08.
 Both logo commits are included through the dependent navigation branch;
 [integration evidence](../completed/IOP-230-navigation-close-plan.md) records the
-verified fast-forward. The owner subsequently authorized origin publication of all
-pending branches under [IOP-231](IOP-231-pending-branch-publication.md).
+verified fast-forward. [IOP-232](IOP-232-publication-scope.md) removes the unrelated
+documentation added during the overly broad publication, preserving this logo.

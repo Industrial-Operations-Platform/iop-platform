@@ -2,11 +2,11 @@
 
 ## Status and goal
 
-Completed and integrated into local develop. The owner's 2026-11-08 refinements require both toggle states to share
+Completed and published to origin/develop. The owner's 2026-11-08 refinements require both toggle states to share
 a slightly smaller left inset, double right chevrons (option B) for opening and a
 panel that visibly slides out from the left. The owner explicitly requested that
-this branch start from the pending logo branch. Preserve local commits and defer
-publication until separately authorized. The latest follow-up authorizes matching
+this branch start from the pending logo branch. The owner approved publication
+only of the logo and left navigation work. The latest follow-up authorizes matching
 the closing motion to opening and integrating the completed work into local develop.
 
 ## Scope and acceptance
@@ -38,6 +38,6 @@ The current successor branch `fix/IOP-230-navigation-motion` starts from
 position was restored and validated in that slice.
 [Logo-based branch and motion](../completed/IOP-230-navigation-motion-plan.md).
 [Closing motion and integration](../completed/IOP-230-navigation-close-plan.md).
-Local develop contains the completed implementation. The owner subsequently
-authorized origin publication of all pending branches under
-[IOP-231](IOP-231-pending-branch-publication.md).
+Origin/develop contains the completed logo and navigation implementation.
+[IOP-232](IOP-232-publication-scope.md) removes the unrelated documentation added
+during the overly broad publication without changing the approved application.
