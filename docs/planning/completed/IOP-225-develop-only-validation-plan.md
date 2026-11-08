@@ -1,6 +1,6 @@
 # IOP-225 - Develop-only GitHub validation
 
-In progress. Authorized by the owner's 2026-11-08 request to avoid duplicate
+Completed. Authorized by the owner's 2026-11-08 request to avoid duplicate
 Actions consumption: story branches run relevant checks locally; only develop
 runs hosted validation for Railway delivery.
 Branch: `fix/IOP-225-develop-only-validation`, from develop at `f267148`.
@@ -26,4 +26,12 @@ Local evidence: all 99 scripts tests passed (four Windows/POSIX skips). Parsed
 workflow YAML passes eight event/ref scenarios covering develop, story branches,
 stage, tags, pull requests and manual runs. Deployment dependencies, runtime/opt-in
 gates, default manual validation and serialization remain intact. Whitespace checks
-pass. Remote trigger verification remains pending publication.
+pass. All 238 relative file links in affected documents resolve.
+
+Remote evidence: `ee5ded4` was pushed to the named story branch and develop.
+GitHub returned exactly one workflow run for that SHA, on develop:
+[run 42487935089](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/42487935089).
+Its classification passed and hosted validation was in progress at closure;
+no story-branch run was created. The workflow-only change is not a runtime input,
+so it does not independently deploy Railway. This verifies the requested trigger
+policy; the earlier deployment evidence remains in the original execution record.

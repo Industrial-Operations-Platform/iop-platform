@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-In progress: develop-only validation follow-up; automatic deployment is verified.
+Completed: automatic deployment and develop-only hosted validation are verified.
 Activation resumed by the owner on 2026-11-08 after manually creating
 the repository Actions secret `RAILWAY_TOKEN`. On 2026-11-08 the owner requested integrating all pending work and
 limiting GitHub-triggered Railway publication to code changes, such as features
@@ -39,6 +39,8 @@ automatically with the updated token. HTTPS serves that exact revision; the
   than duplicating it as an environment secret.
 
 [Execution record](../completed/IOP-225-selective-railway-deployments-plan.md).
-[Develop-only follow-up](../active/IOP-225-develop-only-validation-plan.md).
+[Develop-only follow-up](../completed/IOP-225-develop-only-validation-plan.md):
+one develop Actions run for `ee5ded4` published to both branches; story pushes
+and pull requests no longer trigger hosted validation.
 Follow [ADR-0008](../../architecture/adr/ADR-0008-story-branches.md) and the
 [workflow](../workflow.md). This changes delivery automation, not module boundaries.

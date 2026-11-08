@@ -413,5 +413,5 @@ pending; source image colors do not establish live equipment health.
 | [IOP-221 — Show Locator area names on hover](items/IOP-221-locator-area-hover.md) | Completed; published to origin |
 | [IOP-222 — Profile-first Start and compact Information](items/IOP-222-start-information.md) | Completed; published to origin and active on Railway |
 | [IOP-224 — Align Shift Handover category cards](items/IOP-224-handover-card-alignment.md) | Completed; responsive validation published and active on Railway |
-| [IOP-225 — Publish Railway updates only for application changes](items/IOP-225-selective-railway-deployments.md) | In progress; develop-only hosted validation follow-up |
+| [IOP-225 — Publish Railway updates only for application changes](items/IOP-225-selective-railway-deployments.md) | Completed; automatic deployment verified, hosted validation restricted to develop |
 | [IOP-226 — Integrate personal username operator tooling](items/IOP-226-personal-username-tooling.md) | In progress |
