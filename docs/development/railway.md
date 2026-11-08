@@ -285,11 +285,16 @@ It can then publish that same SHA; the deployment job never receives code from a
 pull request. Development deployments are serialized to prevent overlapping
 migrations.
 
-Create the GitHub environment `railway-development` with:
+Create the GitHub environment `railway-development` with the target variables below.
+Store the development-scoped Railway project token as the Actions secret
+`RAILWAY_TOKEN` in the repository or this environment. The current installation uses
+the repository secret created manually by the owner; the deployment job reads it
+through `secrets.RAILWAY_TOKEN` and checks that it is present before installing
+deployment tooling. Its value is never printed. An environment secret with the
+same name takes precedence, so avoid an outdated duplicate.
 
 | Type | Name | Value |
 | --- | --- | --- |
-| Secret | `RAILWAY_TOKEN` | Project token limited to the chosen Railway environment |
 | Variable | `RAILWAY_PROJECT_ID` | Project identifier |
 | Variable | `RAILWAY_ENVIRONMENT_ID` | `development` identifier |
 | Variable | `RAILWAY_SERVICE_ID` | `iop` service identifier |
@@ -360,6 +365,8 @@ environment after one month.
 - [Usage controls](https://docs.railway.com/pricing/cost-control)
 - [GitHub workflow triggers](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)
 - [Railway GitHub autodeploy controls](https://docs.railway.com/deployments/github-autodeploys)
+- [Railway project tokens for CLI deployment](https://docs.railway.com/cli/deploying)
+- [GitHub Actions secret precedence](https://docs.github.com/en/actions/reference/security/secrets)
 
 The first real deployment was verified on 2026-11-06 on Railway Hobby.
 On 2026-11-08, the existing project and environment were renamed
@@ -377,12 +384,13 @@ it does not name the Railway environment or create a production installation.
 
 The local and deployment commands are operational. The GitHub `railway-development`
 environment and its five target variables are configured and restricted to develop.
-The selective workflow is prepared, but automatic deployment remains disabled until
-an environment-scoped Railway project token is saved as that environment's
-`RAILWAY_TOKEN` secret and the repository variable `RAILWAY_AUTO_DEPLOY` is set to
-`true`. The current OAuth CLI session cannot create project tokens; use Railway's
-project settings to issue the development token. Do not paste it into chat or Git.
-The owner deferred this activation step on 2026-11-08; leave automatic deployment
-disabled until that work is resumed.
+The owner resumed automatic deployment activation on 2026-11-08 after creating
+the repository Actions secret `RAILWAY_TOKEN`. The workflow already passes that
+secret to the CLI. The repository variable `RAILWAY_AUTO_DEPLOY=true` is configured;
+changed application inputs now qualify for publication after successful validation
+on develop. The first workflow deployment is pending explicit approval for the
+current remote database backup required above; automatic review rejected that
+export without specific transfer approval. The [activation execution record](../planning/active/IOP-225-selective-railway-deployments-plan.md)
+tracks the result. Do not paste the token into chat or Git.
 Remote recovery and evaluator functional acceptance have not been verified. Windows
 validation skips POSIX-specific tests; the prepared Linux job runs them.

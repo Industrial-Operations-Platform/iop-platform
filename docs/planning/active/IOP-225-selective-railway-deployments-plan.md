@@ -1,6 +1,8 @@
 # IOP-225 - Selective Railway deployment
 
-Planned activation, deferred by the owner; implementation validated.
+Blocked for the first workflow deployment's backup approval; activation configured.
+The owner resumed activation on 2026-11-08 after manually creating
+the repository Actions secret `RAILWAY_TOKEN` and requested remote publication.
 Branch: `fix/IOP-225-selective-railway-deployments`, from develop at
 `7921e92`, after the authorized fast-forward integration of IOP-224.
 [Permanent scope](../items/IOP-225-selective-railway-deployments.md).
@@ -77,3 +79,43 @@ decision on `docs/IOP-225-deferred-activation`, from develop at `11a5df8`, integ
 and publish the source changes, and keep the deployment enable flag unset/false.
 Resume token setup only when requested. This active plan retains the deferred
 activation step; it does not block the completed source integration.
+
+## Resumed token activation
+
+Branch: `fix/IOP-225-token-activation`, from develop at `d2f21d1`, after the
+owner-approved IOP-224 integration and push of its review branch and develop.
+GitHub metadata confirms the repository secret exists, the development environment
+has its five target variables and branch restriction, and the repository enable
+flag is absent. Secret values are neither requested nor printed.
+
+1. Update `.github/workflows/validation.yml` with an early missing-token check,
+   preserving `secrets.RAILWAY_TOKEN`, post-validation gating and develop-only scope.
+2. Update `docs/development/railway.md`, this plan, the item and backlog to document
+   the owner's repository-secret setup and resumed activation. This supersedes the
+   previous need to transfer a token into an environment secret.
+3. Run the scripts regressions, parse/review workflow YAML, check documentation
+   links and whitespace, and commit on the story branch. No module boundaries change.
+4. Set repository variable `RAILWAY_AUTO_DEPLOY=true`, integrate the story into
+   develop and push both branches to origin under the owner's publication request.
+5. Take a current remote database backup as required by the Railway guide, then
+   dispatch the explicit deployment workflow on develop because this increment
+   changes only workflow/tests/docs; inspect Linux validation and token-authenticated
+   deployment, then verify the published HTTPS revision. Record actual outcomes.
+
+### Activation evidence and remaining approval
+
+- GitHub metadata confirms the manually created repository `RAILWAY_TOKEN` secret;
+  no duplicate environment secret exists. The five environment variables and the
+  single develop deployment branch policy are present.
+- Set and read back repository variable `RAILWAY_AUTO_DEPLOY=true` successfully.
+- Scripts suite: 97 passed, four Windows/POSIX skips. Workflow YAML parses and its
+  dependency, environment, token bindings, develop restriction and opt-in were checked.
+- Indexed secret hygiene passed for 1,455 files; scoped whitespace checks passed.
+- Automatic approval review rejected the attempted pre-deployment remote database
+  export because deployment authorization did not clearly cover transferring the
+  full potentially sensitive database into a private local backup. The export did
+  not run. Obtain explicit approval for that backup before dispatching deployment;
+  continue source publication independently. No Railway deployment was dispatched.
+
+This is a completed source/configuration increment; the first token-authenticated
+deployment and this parent story remain open pending the backup approval.
