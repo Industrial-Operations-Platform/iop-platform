@@ -45,5 +45,6 @@ Origin/develop contains the completed logo and navigation implementation.
 [IOP-232](IOP-232-publication-scope.md) removes the unrelated documentation added
 during the overly broad publication without changing the approved application.
 [Closing flicker regression](../completed/IOP-230-navigation-flicker-plan.md).
-The regression fix is committed separately for review; integration/publication of
-that increment is pending authorization.
+The regression fix `960eedf` is committed separately. The owner explicitly approved
+its develop integration and origin publication on 2026-11-08.
+[Publication plan](../active/IOP-230-flicker-publication-plan.md).
