@@ -1,7 +1,7 @@
 name: Platform validation
 on:
   push:
-  pull_request:
+    branches: [develop]
   workflow_dispatch:
     inputs:
       deploy:
@@ -12,9 +12,10 @@ permissions:
   contents: read
 concurrency:
   group: validation-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: false
 jobs:
   change-scope:
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:

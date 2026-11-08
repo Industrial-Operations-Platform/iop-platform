@@ -264,7 +264,13 @@ installation whose accounts have been personalized.
 
 ## Automatic updates from GitHub
 
-The **Platform validation** workflow first classifies the complete changed-file
+The **Platform validation** workflow runs automatically only for pushes to
+`develop`. Story branches run their relevant checks locally before integration;
+their pushes and pull requests do not start hosted validation. Pushing the same
+commit to a story branch and develop therefore starts only one Actions run.
+Manual runs are also limited to develop; selecting another ref skips all jobs.
+
+On develop, the workflow first classifies the complete changed-file
 range using Git, including every commit in a push and both sides of renames.
 Documentation-only updates run this lightweight check without installing
 dependencies, running the full suite, building images or deploying. The workflow
@@ -281,8 +287,7 @@ still reports a result for required checks. Commit subjects such as `feat`, `fix
 Full validation checks the code, PostgreSQL, browser, and
 builds of all four Docker images. It also starts the Railway image against a
 synthetic database and checks login, HTTPS, cookies, and non-root execution.
-It can then publish that same SHA; the deployment job never receives code from a
-pull request. Development deployments are serialized to prevent overlapping
+It can then publish that same SHA. Development deployments are serialized to prevent overlapping
 migrations.
 
 Create the GitHub environment `railway-development` with the target variables below.

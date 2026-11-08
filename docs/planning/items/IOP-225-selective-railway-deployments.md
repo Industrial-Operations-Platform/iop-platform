@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-Completed: automatic activation configured and deployment verified through GitHub.
+In progress: develop-only validation follow-up; automatic deployment is verified.
 Activation resumed by the owner on 2026-11-08 after manually creating
 the repository Actions secret `RAILWAY_TOKEN`. On 2026-11-08 the owner requested integrating all pending work and
 limiting GitHub-triggered Railway publication to code changes, such as features
@@ -21,7 +21,10 @@ The `fe0eecf` push subsequently passed complete Linux validation and deployed
 automatically with the updated token. HTTPS serves that exact revision; the
 165 publications and seven imported months are preserved.
 
-- Detect changed files across the complete push or pull request.
+- Run hosted validation only for develop pushes or explicit manual runs on develop.
+  Story branches and pull requests use the relevant local checks before integration;
+  neither triggers hosted validation. This is the owner's 2026-11-08 refinement.
+- Detect changed files across the complete develop push.
 - Skip expensive validation for documentation-only changes; test/tooling changes
   may validate but must not independently deploy the application.
 - Deploy changes affecting Railway's application/build inputs after successful
@@ -36,5 +39,6 @@ automatically with the updated token. HTTPS serves that exact revision; the
   than duplicating it as an environment secret.
 
 [Execution record](../completed/IOP-225-selective-railway-deployments-plan.md).
+[Develop-only follow-up](../active/IOP-225-develop-only-validation-plan.md).
 Follow [ADR-0008](../../architecture/adr/ADR-0008-story-branches.md) and the
 [workflow](../workflow.md). This changes delivery automation, not module boundaries.
