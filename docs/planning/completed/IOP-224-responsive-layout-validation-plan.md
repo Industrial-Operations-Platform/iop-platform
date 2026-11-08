@@ -42,5 +42,7 @@ under the owner's publication convention; do not deploy the story branch.
   3.2 minutes, including the three responsive personal workflows.
 
 The obsolete height check is replaced without changing application CSS or behavior.
-The item/backlog are complete and this execution record is archived. Commit remains
-on the review branch; merge, push and Railway deployment have not been performed.
+The item/backlog are complete and this execution record is archived. The owner
+subsequently approved publication: `d2f21d1` was integrated into develop and pushed
+with `fix/IOP-224-responsive-layout-validation` to origin. Full Linux validation
+passed, and Railway's verified `fe0eecf` release includes the correction.
