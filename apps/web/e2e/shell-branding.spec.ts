@@ -99,6 +99,28 @@ for (const scenario of [
     }
     await capture(page, info, "header-navigation");
 
+    const expandedBrand = await bounds(brand), expandedAccount = await bounds(account);
+    await navigationToggle.click();
+    const reveal = header.getByRole("button", { name: label("Show navigation"), exact: true });
+    await expect(reveal).toHaveAttribute("aria-expanded", "false");
+    await expect(navigation).toBeHidden();
+    const revealBox = await bounds(reveal);
+    expect(revealBox.x).toBe(0);
+    expect(revealBox.width).toBeGreaterThanOrEqual(44);
+    expect(revealBox.height).toBeGreaterThanOrEqual(44);
+    expect((await bounds(brand)).x).toBeCloseTo(expandedBrand.x, 1);
+    expect((await bounds(account)).x).toBeCloseTo(expandedAccount.x, 1);
+    await expectContained(reveal, page);
+    await expectContainedPage(page);
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Shift+Tab");
+    await expect(reveal).toBeFocused();
+    expect(await reveal.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe("none");
+    await capture(page, info, "collapsed-navigation-reveal");
+    await page.keyboard.press("Enter");
+    await expect(navigation).toBeVisible();
+    await expect(navigationToggle).toHaveAttribute("aria-expanded", "true");
+
     // Tab must reveal every destination inside the rail or the narrow horizontal strip.
     const destinations = navigation.getByRole("button");
     await destinations.first().focus();
