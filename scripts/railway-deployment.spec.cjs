@@ -1,13 +1,33 @@
 const fs = require('node:fs');
 const {join} = require('node:path');
 const {tmpdir} = require('node:os');
-const {copyInput,validateDevelopmentDeployment} = require('./railway/deploy.cjs');
+const {copyInput,validateDevelopmentDeployment,inspectDeploymentTarget} = require('./railway/deploy.cjs');
 const {runtimeEnvironment} = require('./railway/configuration.cjs');
 const {restoreGuard} = require('./railway/initial-data.cjs');
 const {smoke} = require('./railway/smoke.cjs');
 let directory;
 beforeEach(()=>{directory=fs.mkdtempSync(join(tmpdir(),'iop-deployment-test-'));});
 afterEach(()=>{fs.rmSync(directory,{recursive:true,force:true});jest.restoreAllMocks();});
+test('project-token deployment inspects its explicit target without enumerating user workspaces',()=>{
+  const target={project:'project-id',environment:'environment-id',service:'app-id'};
+  const status={id:target.project,environments:{edges:[{node:{id:target.environment,name:'development'}}]}};
+  const execute=jest.fn(args=>{
+    if(args[0]==='link')throw new Error('Project token cannot enumerate user workspaces');
+    return {stdout:JSON.stringify(status)};
+  });
+  const actual=inspectDeploymentTarget(target,{RAILWAY_TOKEN:'project-token'},execute);
+  expect(execute).toHaveBeenCalledTimes(1);
+  expect(execute).toHaveBeenCalledWith(['status','--project',target.project,'--environment',target.environment,'--json'],{stdio:'pipe',encoding:'utf8'});
+  expect(()=>validateDevelopmentDeployment('develop',actual,target)).not.toThrow();
+  expect(()=>validateDevelopmentDeployment('develop',actual,{...target,environment:'another-environment'})).toThrow('development environment');
+});
+test('interactive-user deployment keeps the explicit local link before inspecting status',()=>{
+  const target={project:'project-id',environment:'environment-id',service:'app-id'};
+  const execute=jest.fn().mockReturnValueOnce({}).mockReturnValueOnce({stdout:JSON.stringify({id:target.project})});
+  expect(inspectDeploymentTarget(target,{},execute)).toEqual({id:target.project});
+  expect(execute).toHaveBeenNthCalledWith(1,['link','--project',target.project,'--environment',target.environment,'--service',target.service]);
+  expect(execute).toHaveBeenNthCalledWith(2,['status','--project',target.project,'--environment',target.environment,'--json'],{stdio:'pipe',encoding:'utf8'});
+});
 test('deployment accepts only develop and the explicitly selected development environment',()=>{
   const target={project:'project-id',environment:'environment-id'};
   const status={id:target.project,environments:{edges:[{node:{id:target.environment,name:'development'}}]}};

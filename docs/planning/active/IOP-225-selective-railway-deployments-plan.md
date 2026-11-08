@@ -130,3 +130,25 @@ live database: 165 publications across all seven months from May through Novembe
 then passed without restoring or modifying any database. The dump, extracted
 verification data and SHA-256 manifest remain under ignored `.railway/backups/`.
 The published story and develop refs both resolve to `c0828ca` at this checkpoint.
+
+### Project-token deployment compatibility
+
+The first manual run for `87241da` passed complete Linux validation, all four
+container builds and synthetic Railway-image checks, then failed before upload
+with Unauthorized in `railway link`. The pinned CLI's link command enumerates user
+workspaces, while project-token context can resolve the project/environment directly.
+See the [pinned link implementation](https://github.com/railwayapp/cli/blob/v5.71.0/src/commands/link.rs)
+and [token context resolution](https://github.com/railwayapp/cli/blob/v5.71.0/src/config.rs).
+
+Extend this same delivery increment in `scripts/railway/deploy.cjs` and
+`scripts/railway-deployment.spec.cjs`: inspect explicit project/environment status
+without linking when `RAILWAY_TOKEN` is supplied, preserve interactive-user linking
+and the development-target guard, and add command-level regression coverage.
+Run the scripts suite, publish the validated fix on the same story/develop refs,
+and verify the next Actions run. Token validity remains to be verified through
+the project-scoped operation; do not replace or expose the secret.
+
+Compatibility fix validation: all 99 scripts tests passed, with four Windows/POSIX
+skips; Node syntax, whitespace and 237 affected-document file links passed. The
+two added regressions exercise project-token status without workspace linking,
+development-environment rejection and the retained interactive-user link path.

@@ -292,6 +292,9 @@ the repository secret created manually by the owner; the deployment job reads it
 through `secrets.RAILWAY_TOKEN` and checks that it is present before installing
 deployment tooling. Its value is never printed. An environment secret with the
 same name takes precedence, so avoid an outdated duplicate.
+Project-token deployment inspects the explicit project and environment directly;
+it skips `railway link`, which enumerates user workspaces. Local interactive CLI
+sessions keep the linking step. Both paths retain the development-target check.
 
 | Type | Name | Value |
 | --- | --- | --- |

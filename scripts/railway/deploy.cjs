@@ -29,6 +29,15 @@ function validateDevelopmentDeployment(branch, status, target) {
     throw new Error("The selected Railway target must be the development environment. Production is not configured.");
   }
 }
+function inspectDeploymentTarget(target, env = process.env, execute = railway) {
+  const { project, environment, service } = target;
+  // Linking enumerates user workspaces, which project-scoped CI tokens cannot read.
+  if (!env.RAILWAY_TOKEN) {
+    execute(["link", "--project", project, "--environment", environment, "--service", service]);
+  }
+  return JSON.parse(execute(["status", "--project", project, "--environment", environment, "--json"],
+    { stdio: "pipe", encoding: "utf8" }).stdout);
+}
 function copyInput(relative, target, base = root) {
   const source = resolve(base, relative), info = lstatSync(source);
   if (info.isSymbolicLink()) throw new Error("Deployment inputs must not contain symbolic links.");
@@ -49,8 +58,7 @@ function main(env = process.env) {
   const sha = cleanTree();
   const branch = run("git", ["branch", "--show-current"], true).trim();
   // Pin and inspect the target before any infrastructure change or code upload.
-  railway(["link", "--project", project, "--environment", environment, "--service", service]);
-  const status = JSON.parse(railway(["status", "--json"], { stdio: "pipe", encoding: "utf8" }).stdout);
+  const status = inspectDeploymentTarget(target, env);
   validateDevelopmentDeployment(branch, status, target);
   if (!env.npm_execpath || !existsSync(env.npm_execpath)) throw new Error("Run deployment through npm run railway:deploy.");
   run(process.execPath, [env.npm_execpath, "audit", "--omit=dev", "--audit-level=high"]);
@@ -73,4 +81,4 @@ function main(env = process.env) {
   } finally { rmSync(directory, { recursive: true, force: true }); }
 }
 if (require.main === module) { try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; } }
-module.exports = { inputs, copyInput, cleanTree, validateDevelopmentDeployment };
+module.exports = { inputs, copyInput, cleanTree, validateDevelopmentDeployment, inspectDeploymentTarget };
