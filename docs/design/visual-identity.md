@@ -610,10 +610,9 @@ palette, focus treatments and anchored account/notification surfaces in both mod
 See [IOP-216](../planning/items/IOP-216-shell-branding.md) and
 [IOP-229](../planning/items/IOP-229-platform-logo.md) for validation evidence.
 
-IOP-230 refines the collapsed navigation toggle: a left-panel outline and
-right-pointing arrow replace the hamburger. Mount its 44px control flush with the
-left viewport edge using the shared surface, border and ink tokens, square left
-corners and rounded right corners. Keep keyboard focus inset within the viewport,
-preserve the expanded icon and avoid moving the brand or header actions when the
-control changes state. Desktop/mobile offsets account for their existing header
-padding. See [IOP-230](../planning/items/IOP-230-collapsed-navigation.md).
+IOP-230 refines the collapsed navigation toggle. The owner's correction requires
+collapse and expand controls to occupy the same original position with identical
+44px targets and shared text-button styling. Only the glyph and accessible name
+change; do not add collapsed-only offsets, tab borders or focus overrides. Keep
+the expanded icon and brand/header actions stable. The opening glyph remains
+pending owner selection. See [IOP-230](../planning/items/IOP-230-collapsed-navigation.md).

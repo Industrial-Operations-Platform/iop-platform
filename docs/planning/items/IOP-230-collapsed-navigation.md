@@ -1,17 +1,18 @@
-# IOP-230 — Edge-mounted navigation reveal control
+# IOP-230 — Navigation reveal icon
 
 ## Status and goal
 
-Completed. On 2026-11-08 the owner requested a different icon when the left
-navigation is collapsed, positioned closer to the left edge and suggesting that
-clicking it pulls the hidden panel out from that side. Keep this in a separate
-local commit; the owner will integrate it with the pending logo work later.
+In progress; icon selection pending. On 2026-11-08 the owner requested a different
+icon when the left navigation is collapsed. The owner subsequently rejected edge
+placement: both collapse and expand buttons must retain the same original position,
+with only the opening icon changed. Present alternatives for the owner to select.
+Keep local commits separate from logo work for later owner integration.
 
 ## Scope and acceptance
 
-- [x] Replace the collapsed hamburger with a left-panel outline and right-pointing
-  reveal arrow, anchored at the viewport's left edge without shifting the brand
-  or right-hand header actions.
+- [x] Restore identical original position/dimensions for both states without
+  collapsed-only tab styling or shifts in neighboring header controls.
+- [ ] Apply the owner's selected opening icon after showing alternatives in chat.
 - [x] Preserve the expanded control, translated accessible names, expanded/control
   relationships, visible keyboard focus and 44px interaction target.
 - [x] Verify collapse/reopen behavior, navigation reachability, analytical resizing
@@ -25,3 +26,5 @@ IOP-229 is an independent pending story and is not merged into this branch.
 ## Evidence
 
 [Execution plan](../completed/IOP-230-collapsed-navigation-plan.md).
+[Position correction](../completed/IOP-230-toggle-position-plan.md). The original
+position is restored and validated; the owner is choosing the final opening icon.
