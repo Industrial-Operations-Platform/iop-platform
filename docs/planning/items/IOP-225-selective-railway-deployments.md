@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-Blocked for pre-deployment backup approval; automatic activation is configured.
+In progress: pre-deployment backup explicitly approved; automatic activation is configured.
 Activation resumed by the owner on 2026-11-08 after manually creating
 the repository Actions secret `RAILWAY_TOKEN`. On 2026-11-08 the owner requested integrating all pending work and
 limiting GitHub-triggered Railway publication to code changes, such as features
@@ -14,9 +14,9 @@ and develop-only deployment policy are configured. The owner resumed the previou
 deferred activation, requested the workflow use the existing repository secret,
 and authorized synchronization with origin. Enable the repository opt-in and verify
 deployment through GitHub without reading or copying the stored secret value.
-The enable flag is now `true`. The first deployment is pending explicit approval
-to export a current private database backup after automatic review rejected the
-transfer as insufficiently authorized. Workflow/source publication can proceed.
+The enable flag is now `true` and the workflow is published. After automatic review
+rejected the initial backup transfer, the owner explicitly approved exporting the
+full remote database to a private local backup and continuing deployment.
 
 - Detect changed files across the complete push or pull request.
 - Skip expensive validation for documentation-only changes; test/tooling changes

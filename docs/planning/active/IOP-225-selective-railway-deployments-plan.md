@@ -1,6 +1,6 @@
 # IOP-225 - Selective Railway deployment
 
-Blocked for the first workflow deployment's backup approval; activation configured.
+In progress: backup explicitly approved; automatic activation configured and published.
 The owner resumed activation on 2026-11-08 after manually creating
 the repository Actions secret `RAILWAY_TOKEN` and requested remote publication.
 Branch: `fix/IOP-225-selective-railway-deployments`, from develop at
@@ -117,5 +117,16 @@ flag is absent. Secret values are neither requested nor printed.
   not run. Obtain explicit approval for that backup before dispatching deployment;
   continue source publication independently. No Railway deployment was dispatched.
 
-This is a completed source/configuration increment; the first token-authenticated
-deployment and this parent story remain open pending the backup approval.
+The owner explicitly authorized the full private SSH database export and continued
+deployment in response to the approval question. The source/configuration increment
+is published as `c0828ca` on the story branch and develop. The first
+token-authenticated deployment remains in progress; no additional backup approval
+is required. Preserve the backup outside Git and verify archive coverage first.
+
+Backup verification completed: private custom-format archive, 29,788,836 bytes,
+restricted to the current Windows user. Extracted publication data matches the
+live database: 165 publications across all seven months from May through November
+2026. The initial `pg_restore` invocation needed explicit `--file=-`; verification
+then passed without restoring or modifying any database. The dump, extracted
+verification data and SHA-256 manifest remain under ignored `.railway/backups/`.
+The published story and develop refs both resolve to `c0828ca` at this checkpoint.

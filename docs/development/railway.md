@@ -388,9 +388,9 @@ The owner resumed automatic deployment activation on 2026-11-08 after creating
 the repository Actions secret `RAILWAY_TOKEN`. The workflow already passes that
 secret to the CLI. The repository variable `RAILWAY_AUTO_DEPLOY=true` is configured;
 changed application inputs now qualify for publication after successful validation
-on develop. The first workflow deployment is pending explicit approval for the
-current remote database backup required above; automatic review rejected that
-export without specific transfer approval. The [activation execution record](../planning/active/IOP-225-selective-railway-deployments-plan.md)
-tracks the result. Do not paste the token into chat or Git.
+on develop. The owner explicitly approved the current remote database backup;
+it was exported privately and verified before the first workflow deployment.
+The [activation execution record](../planning/active/IOP-225-selective-railway-deployments-plan.md)
+tracks deployment verification. Do not paste the token into chat or Git.
 Remote recovery and evaluator functional acceptance have not been verified. Windows
 validation skips POSIX-specific tests; the prepared Linux job runs them.
