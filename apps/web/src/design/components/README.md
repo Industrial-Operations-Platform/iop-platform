@@ -7,8 +7,11 @@ visual reference across the platform: use its shared typography and surfaces wit
 blue action accents in every module and detail view. `AppShell` accepts an optional
 `brandAction` with an accessible label and caller-owned click handler; without it,
 the brand remains static. The brand occupies the left side of the shared header;
-caller-supplied actions align at the right. Use `iop-brand-copy` for the stacked
-name/subtitle beside `PlatformMark`. Desktop navigation starts below the header,
+caller-supplied actions align at the right. `PlatformMark` displays the owner-supplied
+3:1 IOP logo; use `iop-brand-copy` only for the supporting platform name on wide
+screens, since the artwork already contains IOP. Preserve its alpha transparency;
+shared dark styling lifts the lettering and retains the cyan pulse without a tile.
+Desktop navigation starts below the header,
 with compact left-aligned rows and independent scrolling. Narrow navigation uses
 one horizontally scrollable row with the same keyboard-accessible destinations.
 Pass `navigationCollapsed` and `onToggleNavigation` to enable the header toggle.

@@ -97,8 +97,9 @@ async function graphicalCapabilities(page: Page) {
     .toEqual(["distribution", "equipment", "history", "people", "planning", "signals"]);
   await expect(scene.locator(".intro-connection[data-feature]")).toHaveCount(6);
   await expect(scene.locator(".intro-capability .intro-scene-float")).toHaveCount(6);
-  await expect(scene.locator(".intro-hub-mark")).toHaveAttribute("href", "/iop-mark.svg?v=unified-record-v2");
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/iop-mark.svg?v=unified-record-v2");
+  await expect(scene.locator(".intro-hub-mark")).toHaveAttribute("href", "/iop-logo.png?v=gear-pulse-transparent-v1");
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/iop-logo.png?v=gear-pulse-transparent-v1");
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("type", "image/png");
   expect(await capabilities.evaluateAll((nodes) => nodes.every((node) => {
     const box = node.getBoundingClientRect();
     const sceneBox = node.closest(".intro-scene")!.getBoundingClientRect();
@@ -107,7 +108,10 @@ async function graphicalCapabilities(page: Page) {
   }))).toBe(true);
   const mark = page.locator(".intro-brand img");
   await expect(mark).toBeVisible();
-  await expect(mark).toHaveAttribute("src", "/iop-mark.svg?v=unified-record-v2");
+  await expect(mark).toHaveAttribute("src", "/iop-logo.png?v=gear-pulse-transparent-v1");
+  const logoBox = await mark.boundingBox();
+  expect(logoBox!.width / logoBox!.height).toBeCloseTo(3, 2);
+  await expect(page.locator(".intro-brand strong")).toHaveCount(0);
   await expect.poll(() => mark.evaluate((node) => {
     const image = node as HTMLImageElement;
     return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
@@ -149,7 +153,7 @@ for (const width of [1440, 1024, 375]) {
     await graphicalCapabilities(page);
     expect(fixture.requests.every((path) => path.endsWith("/session/context"))).toBe(true);
     await noOverflow(page);
-    await page.screenshot({ path: `/tmp/iop-201-capabilities-${width}.png`, fullPage: true });
+    await page.screenshot({ path: test.info().outputPath(`iop-201-capabilities-${width}.png`), fullPage: true });
 
     await page.getByRole("link", { name: "Skip to platform overview" }).focus();
     await page.keyboard.press("Enter");
@@ -161,7 +165,7 @@ for (const width of [1440, 1024, 375]) {
     await expect(about.getByRole("heading", { name: "From shift context to retained history" })).toBeVisible();
     await expect(about.getByRole("heading", { name: "Digital Asset Record", exact: true })).toBeVisible();
     await expect(about.getByLabel("Username", { exact: true })).toHaveCount(0);
-    await page.screenshot({ path: `/tmp/iop-201-capabilities-about-${width}.png`, fullPage: true });
+    await page.screenshot({ path: test.info().outputPath(`iop-201-capabilities-about-${width}.png`), fullPage: true });
     await page.keyboard.press("Escape");
     await expect(about).toHaveCount(0);
     await expect(aboutButton).toBeFocused();
@@ -170,7 +174,7 @@ for (const width of [1440, 1024, 375]) {
     await expect(page.locator("html")).toHaveAttribute("lang", "de");
     await noOverflow(page);
     await graphicalCapabilities(page);
-    await page.screenshot({ path: `/tmp/iop-201-capabilities-de-${width}.png`, fullPage: true });
+    await page.screenshot({ path: test.info().outputPath(`iop-201-capabilities-de-${width}.png`), fullPage: true });
     await page.reload();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Den Betrieb in den Fokus rücken.");
     await page.getByRole("combobox", { name: "Sprache" }).selectOption("en");
@@ -257,7 +261,7 @@ for (const failure of [true, "html", "network"] as const) test(`the platform rec
   await expect(access.getByRole("status")).toHaveText("Connection unavailable. Reconnect to the local API and try again.");
   await expect(access).not.toContainText(/Unexpected token|Bad Gateway|valid JSON|Failed to fetch/);
   await noOverflow(page);
-  await page.screenshot({ path: `/tmp/iop-212-reconnect-${failure}.png`, fullPage: true });
+  await page.screenshot({ path: test.info().outputPath(`iop-212-reconnect-${failure}.png`), fullPage: true });
   await expect(access.getByLabel("Username", { exact: true })).toHaveCount(0);
   fixture.recover();
   await access.getByRole("button", { name: "Retry connection" }).click();
@@ -421,7 +425,7 @@ for (const width of [1440, 375]) test(`area controls share inline filters and re
     expect(caption!.x + caption!.width).toBeLessThanOrEqual(value!.x);
   }
   await noOverflow(page);
-  await page.screenshot({ path: `/tmp/iop-212-area-${width}.png`, fullPage: true });
+  await page.screenshot({ path: test.info().outputPath(`iop-212-area-${width}.png`), fullPage: true });
   await area.selectOption("area");
   await expect.poll(() => selections.at(-1)?.locationId).toBe("area");
   await page.getByLabel("Journal date", { exact: true }).fill("2026-10-14");

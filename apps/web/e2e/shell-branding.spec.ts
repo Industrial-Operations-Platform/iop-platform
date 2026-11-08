@@ -73,9 +73,16 @@ for (const scenario of [
 
     const image = brand.locator("img");
     await expect.poll(() => image.evaluate(node => (node as HTMLImageElement).complete && (node as HTMLImageElement).naturalWidth > 0)).toBe(true);
-    const imageBox = await bounds(image), copyBox = await bounds(brand.locator(".iop-brand-copy"));
-    expect(Math.abs(imageBox.y + imageBox.height / 2 - copyBox.y - copyBox.height / 2)).toBeLessThanOrEqual(1);
-    expect(copyBox.x - imageBox.x - imageBox.width).toBeGreaterThanOrEqual(8);
+    await expect(image).toHaveAttribute("src", "/iop-logo.png?v=gear-pulse-transparent-v1");
+    const imageBox = await bounds(image);
+    expect(imageBox.width / imageBox.height).toBeCloseTo(3, 2);
+    await expect(brand.locator("strong")).toHaveCount(0);
+    const copy = brand.locator(".iop-brand-copy");
+    if (width > 1050) {
+      const copyBox = await bounds(copy);
+      expect(Math.abs(imageBox.y + imageBox.height / 2 - copyBox.y - copyBox.height / 2)).toBeLessThanOrEqual(1);
+      expect(copyBox.x - imageBox.x - imageBox.width).toBeGreaterThanOrEqual(8);
+    } else await expect(copy).toBeHidden();
     const navigationToggle = header.getByRole("button", { name: label("Hide navigation"), exact: true });
     const controls = await Promise.all([navigationToggle, brand, search, notifications, account].map(bounds));
     const centers = controls.map(box => box.y + box.height / 2);

@@ -81,7 +81,7 @@ export function IntroScene({ active }: { active: IntroModule }) {
             <circle className="intro-hub-halo" cx="300" cy="252" r="82" />
             <circle className="intro-hub-rim" cx="300" cy="252" r="70" />
             <circle className="intro-hub-surface" cx="300" cy="252" r="62" />
-            <image className="intro-hub-mark" href={platformMarkUrl} x="262" y="214" width="76" height="76" />
+            <image className="intro-hub-mark" href={platformMarkUrl} x="240" y="232" width="120" height="40" />
           </g>
           {capabilities.map((capability, index) => (
             <g key={capability.id} className="intro-capability"

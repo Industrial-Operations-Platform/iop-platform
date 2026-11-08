@@ -101,10 +101,11 @@ with six upright, unnamed capability glyphs around the platform mark. Signals,
 distribution, equipment, people, planning and history are illustrative features;
 module selection illuminates the relevant glyphs and paths, with history shared
 across all three selections. Keep the approved background, palette and movement.
-The owner-selected Unified Record mark uses two nested rounded-square loops, with
-white strokes and a blue outer lower/right segment on a navy tile. It remains the
-same SVG asset in the header, workspace shell and favicon. Preserve small
-size legibility, keyboard module selection, optional parallax and reduced motion.
+The owner-supplied IOP gear/pulse logo from IOP-229 replaces the original Unified
+Record mark. The same PNG artwork is used in the header, workspace shell,
+decorative hub and favicon, preserving its 3:1 proportions and alpha transparency.
+Preserve small size legibility, keyboard module selection, optional parallax and
+reduced motion.
 
 Use the existing `Inter, system-ui, sans-serif` stack. Inter is not bundled; when it
 is unavailable the same system fallback applies to every view. Do not load a
@@ -312,14 +313,12 @@ visible focus. Counts continue to show the full existing collection totals.
 
 ## Platform mark and localization
 
-IOP-184 introduced the shared [SVG mark](../../apps/web/public/iop-mark.svg), reused
-by `PlatformMark`, the introduction and the browser favicon. IOP-201 replaces its
-geometry with the owner's selected [Unified Record reference](references/IOP-201-unified-record.png):
-two nested rounded-square loops with rounded white ends and a blue outer segment.
-The SVG removes the preview's surrounding whitespace and uses flat navy/white/blue
-colors from this identity. All branding consumers use the same `unified-record-v2`
-URL revision; the Docker web server revalidates the mark and entry HTML after
-rebuilds. German and English interface text share the presentation
+IOP-229 replaces the earlier IOP-184/201/216 mark with the owner-supplied
+[gear/pulse logo](../../apps/web/public/iop-logo.png), reused by `PlatformMark`,
+the introduction and the browser favicon. Preserve the supplied navy lettering,
+turquoise pulse line, transparent negative spaces and 3:1 proportions. All branding consumers
+use the same `gear-pulse-transparent-v1` URL revision; the Docker web server revalidates the
+logo and entry HTML after rebuilds. German and English interface text share the presentation
 dictionary; localized text must use the same component hierarchy and tokens.
 
 ## Shared navigation and compact account controls — M6 refinement
@@ -495,8 +494,8 @@ and semantically red. Do not add a Settings item without an implemented destinat
 Use ordinary button/select Tab navigation, initial focus, Escape restoration and
 outside-click dismissal. The notification bell sits immediately before the account
 trigger; its count has a textual accessible equivalent. Notification and account
-panels use the same surface and typography. The source SVG mark/favicon uses the
-owner-selected Unified Record symbol under IOP-201; IOP remains the name.
+panels use the same surface and typography. The logo/favicon uses the
+owner-supplied gear/pulse artwork under IOP-229; IOP remains the name.
 
 Department matrix uses shared `Table variant="records"`: quiet alternating surfaces,
 a stronger sticky header, comfortable cell padding and hover/focus highlighting.
@@ -581,12 +580,19 @@ See [IOP-220](../planning/items/IOP-220-record-title-alignment.md) for evidence.
 
 The owner's 2026-10-20 request refines the brand placement, icon and navigation
 alignment. The shared desktop header has a 72px minimum height and spans the workspace: the platform mark
-and stacked IOP/name lockup align at the left, while search, notifications and
+and supporting platform name align at the left, while search, notifications and
 account controls share a centered row at the right with the standard toolbar gap.
 Keep the supporting platform name on wide screens; hide it when space is limited.
-The brand remains a labelled action back to Start. The existing Unified Record SVG
-uses centered square loops with equal strokes and the blue lower/right accent;
-the introduction, workspace and favicon all use this one versioned asset.
+The brand remains a labelled action back to Start. IOP-229 replaces the previous
+Unified Record SVG with the owner's navy IOP gear and turquoise pulse-line PNG at
+`apps/web/public/iop-logo.png`, shared by introduction, workspace and favicon via
+the `gear-pulse-transparent-v1` URL revision. Display the full 3:1 artwork without
+stretching or repeating the IOP wordmark. The owner explicitly requested a new
+image without the white background: preserve actual alpha in the canvas, gear
+center and letter counters. On the navy introduction and dark workspace, the
+shared invert/hue-rotation filter lifts the lettering and retains a cyan pulse;
+never restore a white tile. The shared logo is 144×48px on desktop, 96×32px on mobile and
+84×28px at 360px and below; the decorative hub uses 120×40px.
 
 The desktop rail begins below the header, uses 220px width (200px on compact
 desktops), compact 44px minimum targets and consistently left-aligned labels.
@@ -597,4 +603,5 @@ Expanded search and native demo selectors may occupy another header row; the rai
 follows the measured header height. Search results stay inside the viewport at
 intermediate and narrow widths. Preserve the shared typography,
 palette, focus treatments and anchored account/notification surfaces in both modes.
-See [IOP-216](../planning/items/IOP-216-shell-branding.md) for validation evidence.
+See [IOP-216](../planning/items/IOP-216-shell-branding.md) and
+[IOP-229](../planning/items/IOP-229-platform-logo.md) for validation evidence.

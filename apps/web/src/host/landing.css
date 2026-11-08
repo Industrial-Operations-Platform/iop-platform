@@ -74,9 +74,8 @@
   display: grid;
   gap: 3px;
 }
-.intro-brand strong {
-  font-size: var(--iop-brandSize);
-  line-height: var(--iop-titleLineHeight);
+.landing .iop-platform-logo {
+  filter: invert(1) hue-rotate(180deg);
 }
 .intro-brand > span > span {
   color: color-mix(in srgb, var(--iop-introForeground) 60%, transparent);
@@ -210,7 +209,7 @@
   filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--iop-introCanvas) 60%, transparent));
 }
 .intro-hub-mark {
-  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--iop-introAccent) 15%, transparent));
+  filter: invert(1) hue-rotate(180deg);
 }
 .intro-scene-float {
   animation: intro-float 8s ease-in-out infinite;
@@ -395,7 +394,7 @@
 @media (max-width: 760px) {
   .intro-container { width: calc(100% - 40px); }
   .intro-header { min-height: 92px; gap: 16px; }
-  .intro-brand > span > span { display: none; }
+  .intro-brand > span { display: none; }
   .intro-navigation { gap: 8px; }
   .landing .intro-navigation > .iop-button--primary { min-width: 0; gap: 12px; }
   .intro-main { padding-top: 24px; gap: 24px; }
@@ -414,8 +413,6 @@
 @media (max-width: 400px) {
   .intro-header { flex-wrap: wrap; padding-block: 16px; gap: 10px; }
   .intro-brand { gap: 8px; }
-  .intro-brand strong { font-size: var(--iop-brandCompactSize); }
-  .intro-brand img { width: 28px; height: 28px; }
   .intro-navigation { margin-left: auto; gap: 4px; font-size: var(--iop-captionSize); }
   .landing .intro-navigation > .iop-button { padding-inline: 8px; }
   .landing .intro-navigation > .iop-button--primary { gap: 8px; }

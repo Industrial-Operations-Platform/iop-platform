@@ -402,20 +402,19 @@
   text-align: left;
   cursor: pointer;
 }
-.iop-brand > img {
+.iop-platform-logo {
   display: block;
-  width: 36px;
-  height: 36px;
+  width: 144px;
+  height: 48px;
+  object-fit: contain;
   flex-shrink: 0;
+}
+.iop-ui[data-appearance="dark"] .iop-platform-logo {
+  filter: invert(1) hue-rotate(180deg);
 }
 .iop-brand-copy {
   display: grid;
   gap: 2px;
-}
-.iop-brand-copy strong {
-  font-size: var(--iop-brandSize);
-  font-weight: var(--iop-brandWeight);
-  line-height: var(--iop-titleLineHeight);
 }
 .iop-brand-copy > span {
   font-size: var(--iop-smallSize);
@@ -534,7 +533,7 @@
   .iop-shell {
     --shell-rail-width: var(--iop-shellRailCompactWidth);
   }
-  .iop-brand-copy > span {
+  .iop-brand-copy {
     display: none;
   }
   .iop-ui .iop-main {
@@ -562,11 +561,8 @@
     display: flex;
     padding: 8px 12px;
   }
-  .iop-brand-copy strong {
-    font-size: var(--iop-brandCompactSize);
-  }
-  .iop-brand > img {
-    width: 32px;
+  .iop-platform-logo {
+    width: 96px;
     height: 32px;
   }
   .iop-ui .iop-main {
@@ -608,6 +604,13 @@
   }
   .iop-ui .iop-panel--chart {
     padding: 12px 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .iop-platform-logo {
+    width: 84px;
+    height: 28px;
   }
 }
 

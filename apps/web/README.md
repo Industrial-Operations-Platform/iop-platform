@@ -87,11 +87,15 @@ dependencies. Original identity tokens and English/German resources remain share
 Workforce provides technician daily visibility, leader weekly planning and
 administrator schedule import/configuration. The shared English/German dictionary
 selects the browser language automatically and persists explicit overrides.
-The owner-selected Unified Record SVG mark in `public/iop-mark.svg` is reused by
+The owner-supplied gear/pulse PNG logo in `public/iop-logo.png` is reused by
 the introduction, shell and favicon and copied into the web image. See the
 [Workforce guide](../../docs/development/workforce.md).
-All branding consumers use the `unified-record-v2` URL revision; Docker revalidates
-the icon and entry HTML so browser caches receive the selected mark after rebuilds.
+All branding consumers use the `gear-pulse-transparent-v1` URL revision; Docker revalidates
+the logo and entry HTML so browser caches receive the selected artwork after rebuilds.
+Keep its 3:1 proportions and real alpha transparency. Dark surfaces apply the
+shared invert/hue-rotation filter for light lettering and a cyan pulse. The
+artwork already contains IOP; show only the supporting platform name beside it on
+wide screens. See [IOP-229](../../docs/planning/items/IOP-229-platform-logo.md).
 
 ## Maintenance and Digital Asset Record — IOP-194
 

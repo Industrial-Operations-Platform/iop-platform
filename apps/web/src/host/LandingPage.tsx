@@ -31,7 +31,7 @@ export function LandingPage({ children, busy = false }: { children: ReactNode; b
       <header className="intro-header intro-container">
         <a className="intro-brand" href="#landing-main" aria-label={t("IOP platform overview")}>
           <PlatformMark />
-          <span><strong>IOP</strong><span>{t("Industrial Operations Platform")}</span></span>
+          <span><span>{t("Industrial Operations Platform")}</span></span>
         </a>
         <nav className="intro-navigation" aria-label={t("Platform navigation")}>
           <Button variant="text" aria-label={t("About IOP")} onClick={() => setView("about")}>{t("About")}</Button>
