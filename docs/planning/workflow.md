@@ -26,8 +26,10 @@ in the backlog. Link to the source instead of copying its content. Cite external
 sources when they support a decision or technical claim. Record actual validation
 results and material limitations, without repetitive progress narratives.
 
-`AGENTS.md` is an optional local, ignored instruction file. Shared rules live here
-and in the linked ADRs; a fresh clone does not depend on that local file.
+The root [`AGENTS.md`](../../AGENTS.md) is versioned agent guidance shared by macOS
+and Windows checkouts. Keep its instructions portable and synchronize changes with
+this workflow and the linked ADRs, which remain the canonical detailed rules.
+Machine-local paths, credentials and private data stay outside shared guidance.
 
 ## Code architecture and quality
 
@@ -70,7 +72,7 @@ contract plus desktop/mobile evidence.
 | active/IOP-NNN-slug-plan.md | How the authorized task/slice will be executed now, expected files and verification. |
 | completed/IOP-NNN-slug-plan.md | Finished execution record with outcomes, tests, limitations and deviations. |
 | ADRs | Decision records; only Accepted decisions are binding. Proposed records remain under review. |
-| AGENTS.md (local, ignored) | Optional local agent guidance; shared rules remain in this workflow and ADRs. |
+| AGENTS.md | Versioned agent navigation and instructions shared across computers; detailed rules remain in this workflow and ADRs. |
 
 An item is not a plan. A plan is not an architectural decision. A completed plan
 can finish one slice while the parent item remains open. Preserve research as a
@@ -104,7 +106,7 @@ it silently to make its files appear. Independent stories can branch from develo
 ## Start work
 
 1. Resolve the requested ID through backlog.md and read its permanent context,
-   this workflow, local AGENTS.md if present, ARCHITECTURE.md and relevant ADRs.
+   this workflow, AGENTS.md, ARCHITECTURE.md and relevant ADRs.
 2. Check existing active plans and unresolved dependencies. Confirm which slice
    the user requested. Read-only inspection or explanation needs no artificial task.
 3. Before making changes, create/update a plan in active/ using the template.
@@ -155,7 +157,7 @@ do not overwrite prior completed records. Do not publish or deploy by inference.
 
 ```text
 Work on IOP-032.
-Read docs/planning/workflow.md, local AGENTS.md if present, ARCHITECTURE.md,
+Read docs/planning/workflow.md, AGENTS.md, ARCHITECTURE.md,
 the relevant ADRs and:
 docs/planning/items/IOP-032-asset-hierarchy.md
 Create an execution plan under docs/planning/active before implementation.

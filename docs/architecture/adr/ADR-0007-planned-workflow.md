@@ -60,3 +60,13 @@ ignored guidance. This supersedes the requirement above to version permanent rul
 in AGENTS.md. Items/plans remain required but concise, linking canonical information
 instead of repeating it. English authoring and translation-on-read rules live in
 the workflow. No change to decision acceptance or story branch boundaries.
+
+## Owner-approved shared agent instructions — 2026-11-08
+
+[IOP-223](../../planning/items/IOP-223-shared-agent-instructions.md) records the
+owner's explicit request to publish the root `AGENTS.md` for use from the primary
+Windows computer and the Mac checkout. Version this portable guidance in Git and
+remove its ignore rule. This supersedes the 2026-09-25 local/ignored disposition;
+the workflow and Accepted ADRs retain the detailed rules. Machine-local paths,
+credentials and private data stay outside shared guidance. Planning, English
+authoring, decision acceptance and story/publication boundaries remain unchanged.
