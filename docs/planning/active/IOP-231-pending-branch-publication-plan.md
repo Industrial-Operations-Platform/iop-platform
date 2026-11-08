@@ -39,3 +39,28 @@ IOP-230 review branch (`63ec153`) and the historical transfer branch (`08318de`)
 The latter's current 36-line note contains operational history and private backup
 locations, not credential values; that branch already exists on origin. Its
 historical transfer launcher is deleted in its final tree and must stay deleted.
+
+## Integration evidence
+
+Initial inventory: 17 retained local refs (including this review branch) and 160
+origin story refs. Only the older navigation and historical transfer tips lacked
+ancestry in develop. The navigation merge `78412f3` retains the approved current
+versions in six overlapping files; its resulting tree is unchanged. Transfer
+merge `a8dac1e` adds only the existing 36-line historical note. Both original branch
+tips are now ancestors of this review branch, alongside every other retained tip.
+IOP-226's backlog mirror was reconciled with its existing Completed/published item.
+
+## Pre-publication validation
+
+- Application, scripts, infrastructure, configuration and package trees match
+  validated `7ad6b01` exactly; no behavioral retesting is required for these
+  ancestry/documentation-only merges. IOP-230 records the successful build,
+  319 web unit tests and 35 browser scenarios for that identical application.
+- All 178 retained local/origin refs checked (excluding origin HEAD/stage/master)
+  are ancestors of the consolidation tip.
+- `node scripts/check-secrets.cjs` passed for 1473 indexed files (bounded rules).
+- 252 changed-document local link targets resolved; `git diff --check` passed.
+
+Ready to commit this record, fast-forward local develop and publish the 17
+explicit local refs atomically to origin. Only five refs differ or are new:
+develop, this review branch, the logo branch and both navigation branches.

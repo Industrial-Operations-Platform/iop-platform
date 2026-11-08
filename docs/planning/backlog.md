@@ -415,8 +415,8 @@ pending; source image colors do not establish live equipment health.
 | [IOP-222 — Profile-first Start and compact Information](items/IOP-222-start-information.md) | Completed; published to origin and active on Railway |
 | [IOP-224 — Align Shift Handover category cards](items/IOP-224-handover-card-alignment.md) | Completed; responsive validation published and active on Railway |
 | [IOP-225 — Publish Railway updates only for application changes](items/IOP-225-selective-railway-deployments.md) | Completed; automatic deployment verified, hosted validation restricted to develop |
-| [IOP-226 — Integrate personal username operator tooling](items/IOP-226-personal-username-tooling.md) | In progress |
+| [IOP-226 — Integrate personal username operator tooling](items/IOP-226-personal-username-tooling.md) | Completed; published to origin |
 | [IOP-227 — Consistent native dropdown contrast](items/IOP-227-dropdown-contrast.md) | Completed; publication to develop and origin approved |
 | [IOP-228 — Bound card collections with internal scrolling](items/IOP-228-bounded-card-collections.md) | Completed; publication to develop and origin approved |
-| [IOP-229 — Owner-supplied platform logo](items/IOP-229-platform-logo.md) | Completed; integrated into local develop, origin publication pending |
-| [IOP-230 — Navigation reveal icon and motion](items/IOP-230-collapsed-navigation.md) | Completed; integrated into local develop, origin publication pending |
+| [IOP-229 — Owner-supplied platform logo](items/IOP-229-platform-logo.md) | Completed; origin publication authorized under IOP-231 |
+| [IOP-230 — Navigation reveal icon and motion](items/IOP-230-collapsed-navigation.md) | Completed; origin publication authorized under IOP-231 |

@@ -8,11 +8,11 @@ and normal pushes; preserve all branch refs and history.
 
 ## Scope and acceptance
 
-- [ ] Audit local/origin branch tips and integrate outstanding ancestry without
+- [x] Audit local/origin branch tips and integrate outstanding ancestry without
   reverting the approved IOP-229/230 logo, caption or navigation behavior.
-- [ ] Retain the existing historical transfer note from the already-published
+- [x] Retain the existing historical transfer note from the already-published
   local transfer branch; do not run its documented operator actions.
-- [ ] Verify the resulting application tree matches the validated build, check
+- [x] Verify the resulting application tree matches the validated build, check
   indexed secret hygiene and documentation links/status consistency.
 - [ ] Publish develop and every retained local story branch to origin without
   force/deletion; verify remote parity and a clean final develop checkout.

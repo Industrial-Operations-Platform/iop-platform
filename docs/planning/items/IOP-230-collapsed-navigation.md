@@ -38,5 +38,6 @@ The current successor branch `fix/IOP-230-navigation-motion` starts from
 position was restored and validated in that slice.
 [Logo-based branch and motion](../completed/IOP-230-navigation-motion-plan.md).
 [Closing motion and integration](../completed/IOP-230-navigation-close-plan.md).
-Local develop contains the completed implementation; origin publication requires
-separate approval.
+Local develop contains the completed implementation. The owner subsequently
+authorized origin publication of all pending branches under
+[IOP-231](IOP-231-pending-branch-publication.md).

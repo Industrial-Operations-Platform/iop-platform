@@ -33,4 +33,5 @@ separate owner authorization under ADR-0008.
 The owner approved local develop integration together with IOP-230 on 2026-11-08.
 Both logo commits are included through the dependent navigation branch;
 [integration evidence](../completed/IOP-230-navigation-close-plan.md) records the
-verified fast-forward. Origin publication remains pending separate authorization.
+verified fast-forward. The owner subsequently authorized origin publication of all
+pending branches under [IOP-231](IOP-231-pending-branch-publication.md).
