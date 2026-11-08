@@ -416,4 +416,4 @@ pending; source image colors do not establish live equipment health.
 | [IOP-225 — Publish Railway updates only for application changes](items/IOP-225-selective-railway-deployments.md) | Completed; automatic deployment verified, hosted validation restricted to develop |
 | [IOP-226 — Integrate personal username operator tooling](items/IOP-226-personal-username-tooling.md) | In progress |
 | [IOP-227 — Consistent native dropdown contrast](items/IOP-227-dropdown-contrast.md) | Completed; publication to develop and origin approved |
-| [IOP-228 — Bound card collections with internal scrolling](items/IOP-228-bounded-card-collections.md) | Completed; validated locally, publication pending |
+| [IOP-228 — Bound card collections with internal scrolling](items/IOP-228-bounded-card-collections.md) | Completed; publication to develop and origin approved |

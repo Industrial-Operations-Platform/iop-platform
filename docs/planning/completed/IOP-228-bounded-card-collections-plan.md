@@ -1,6 +1,6 @@
 # IOP-228 - Bounded card collections execution plan
 
-Completed locally. Authorized by the owner's 2026-11-08 scrolling request.
+Completed. Authorized by the owner's 2026-11-08 scrolling request.
 Branch: `fix/IOP-228-bounded-card-collections`, created from `develop`.
 [Scope and acceptance](../items/IOP-228-bounded-card-collections.md).
 
@@ -47,6 +47,13 @@ Branch: `fix/IOP-228-bounded-card-collections`, created from `develop`.
 ## Closure
 
 Completed the item/backlog and moved this record to completed. No scope deviations,
-new ADRs or story translations were required. Commit the coherent scoped increment
-on the recorded story branch. Publication and hosted activation remain subject to
-the owner's separate approval under ADR-0008; no push or deployment was requested.
+new ADRs or story translations were required. Implementation commit: `7f95441`.
+
+## Approved publication - 2026-11-08
+
+The owner explicitly approved merging `fix/IOP-228-bounded-card-collections` into
+`develop` and pushing both branches to `origin` under ADR-0008. Record that approval
+on the story branch, verify current remote refs, merge the validated story without
+rewriting history, push both refs and verify their remote hashes and a clean tree.
+Preserve the story branch. Hosted activation is reported only after separate
+deployment evidence; no manual Railway deployment is included in this approval.
