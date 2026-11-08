@@ -86,7 +86,12 @@ export function AppShell({
               onClick={onToggleNavigation}
             >
               <svg className="iop-toolbar-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d={navigationCollapsed ? "M4 6h16M4 12h16M4 18h16" : "m13 6-6 6 6 6m6-12-6 6 6 6"} />
+                {navigationCollapsed ? (
+                  <>
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                    <path d="M8 4v16m3-8h7m-3-3 3 3-3 3" />
+                  </>
+                ) : <path d="m13 6-6 6 6 6m6-12-6 6 6 6" />}
               </svg>
             </Button>
           )}

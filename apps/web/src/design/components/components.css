@@ -330,6 +330,20 @@
 .iop-ui .iop-navigation-toggle {
   color: var(--iop-muted);
 }
+.iop-ui.iop-shell[data-navigation-collapsed="true"] .iop-navigation-toggle {
+  margin-inline: -24px 24px;
+  border: 1px solid var(--iop-line);
+  border-left: 0;
+  border-radius: 0 var(--iop-controlRadius) var(--iop-controlRadius) 0;
+  color: var(--iop-ink);
+  background: var(--iop-surface);
+}
+.iop-ui.iop-shell[data-navigation-collapsed="true"] .iop-navigation-toggle:hover {
+  background: var(--iop-activeSurface);
+}
+.iop-ui.iop-shell[data-navigation-collapsed="true"] .iop-navigation-toggle:focus-visible {
+  outline-offset: -3px;
+}
 .iop-ui .iop-sidebar[hidden] {
   display: none;
 }
@@ -549,6 +563,9 @@
   }
 }
 @media (max-width: 620px) {
+  .iop-ui.iop-shell[data-navigation-collapsed="true"] .iop-navigation-toggle {
+    margin-inline: -12px 12px;
+  }
   .iop-shell-identity {
     gap: 8px;
   }

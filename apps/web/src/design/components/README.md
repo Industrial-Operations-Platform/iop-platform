@@ -16,6 +16,9 @@ with compact left-aligned rows and independent scrolling. Narrow navigation uses
 one horizontally scrollable row with the same keyboard-accessible destinations.
 Pass `navigationCollapsed` and `onToggleNavigation` to enable the header toggle.
 The caller owns the expanded state; the workspace opens it on each new session.
+When collapsed, the shared control sits at the left viewport edge as a compact
+tab with a panel outline and right-pointing reveal arrow. Keep its 44px target,
+inset keyboard focus and translated name; neighboring header controls stay fixed.
 Hiding the rail also frees the main content
 and bottom navigation width, and removes hidden destinations from keyboard focus.
 Components contain no feature models,
