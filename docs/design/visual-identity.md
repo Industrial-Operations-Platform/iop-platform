@@ -583,6 +583,10 @@ alignment. The shared desktop header has a 72px minimum height and spans the wor
 and supporting platform name align at the left, while search, notifications and
 account controls share a centered row at the right with the standard toolbar gap.
 Keep the supporting platform name on wide screens; hide it when space is limited.
+The owner's IOP-229 follow-up centers that name below the logo with a compact
+2px gap in both the workspace and public introduction. Retain the shared caption
+typography and existing English/German translations; the measured workspace
+header grows to contain the stacked brand without overlapping navigation.
 The brand remains a labelled action back to Start. IOP-229 replaces the previous
 Unified Record SVG with the owner's navy IOP gear and turquoise pulse-line PNG at
 `apps/web/public/iop-logo.png`, shared by introduction, workspace and favicon via

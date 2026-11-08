@@ -94,8 +94,9 @@ All branding consumers use the `gear-pulse-transparent-v1` URL revision; Docker 
 the logo and entry HTML so browser caches receive the selected artwork after rebuilds.
 Keep its 3:1 proportions and real alpha transparency. Dark surfaces apply the
 shared invert/hue-rotation filter for light lettering and a cyan pulse. The
-artwork already contains IOP; show only the supporting platform name beside it on
-wide screens. See [IOP-229](../../docs/planning/items/IOP-229-platform-logo.md).
+artwork already contains IOP; center the supporting platform name beneath it on
+wide screens in the workspace and introduction. See
+[IOP-229](../../docs/planning/items/IOP-229-platform-logo.md).
 
 ## Maintenance and Digital Asset Record — IOP-194
 

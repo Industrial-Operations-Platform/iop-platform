@@ -15,6 +15,8 @@ owner explicitly clarified that a new image with a transparent background is req
   supporting platform name on wide screens.
 - [x] Verify desktop/mobile and light/dark rendering, Start navigation, relevant
   regressions, design/architecture guards and the production build.
+- [x] Center the localized platform name beneath the logo in the workspace and
+  introduction, as requested in the owner's follow-up; preserve compact visibility.
 
 Presentation stays in the shared design and host adapters under Accepted
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md).
@@ -24,5 +26,6 @@ This owner-selected artwork supersedes the mark from
 ## Evidence and remaining work
 
 [Execution plan](../completed/IOP-229-platform-logo-plan.md), including the selected
-built-in image-generation prompt and validation evidence. Publication requires
+built-in image-generation prompt and validation evidence.
+[Caption follow-up](../completed/IOP-229-logo-caption-plan.md). Publication requires
 separate owner authorization under ADR-0008.

@@ -112,6 +112,14 @@ async function graphicalCapabilities(page: Page) {
   const logoBox = await mark.boundingBox();
   expect(logoBox!.width / logoBox!.height).toBeCloseTo(3, 2);
   await expect(page.locator(".intro-brand strong")).toHaveCount(0);
+  const caption = page.locator(".intro-brand > span");
+  if (page.viewportSize()!.width > 760) {
+    await expect(caption).toBeVisible();
+    const captionBox = (await caption.boundingBox())!;
+    expect(captionBox.y - logoBox!.y - logoBox!.height).toBeGreaterThanOrEqual(1);
+    expect(captionBox.y - logoBox!.y - logoBox!.height).toBeLessThanOrEqual(4);
+    expect(Math.abs(logoBox!.x + logoBox!.width / 2 - captionBox.x - captionBox.width / 2)).toBeLessThanOrEqual(1);
+  } else await expect(caption).toBeHidden();
   await expect.poll(() => mark.evaluate((node) => {
     const image = node as HTMLImageElement;
     return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;

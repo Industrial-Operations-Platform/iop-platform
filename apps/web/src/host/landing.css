@@ -65,14 +65,16 @@
 }
 .iop-ui .intro-brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 2px;
   color: var(--iop-introForeground);
   text-decoration: none;
 }
 .intro-brand > span {
   display: grid;
   gap: 3px;
+  text-align: center;
 }
 .landing .iop-platform-logo {
   filter: invert(1) hue-rotate(180deg);

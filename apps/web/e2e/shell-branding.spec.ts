@@ -31,7 +31,7 @@ async function capture(page: Page, info: TestInfo, name: string) {
 for (const scenario of [
   { width: 1440, height: 900, appearance: "light", language: "en" },
   { width: 1366, height: 768, appearance: "dark", language: "en" },
-  { width: 1366, height: 640, appearance: "dark", language: "en" },
+  { width: 1366, height: 640, appearance: "dark", language: "de" },
   { width: 768, height: 900, appearance: "light", language: "en" },
   { width: 390, height: 844, appearance: "dark", language: "de" },
   { width: 320, height: 844, appearance: "light", language: "en" },
@@ -80,8 +80,10 @@ for (const scenario of [
     const copy = brand.locator(".iop-brand-copy");
     if (width > 1050) {
       const copyBox = await bounds(copy);
-      expect(Math.abs(imageBox.y + imageBox.height / 2 - copyBox.y - copyBox.height / 2)).toBeLessThanOrEqual(1);
-      expect(copyBox.x - imageBox.x - imageBox.width).toBeGreaterThanOrEqual(8);
+      await expect(copy).toHaveText(label("Industrial Operations Platform"));
+      expect(copyBox.y - imageBox.y - imageBox.height).toBeGreaterThanOrEqual(1);
+      expect(copyBox.y - imageBox.y - imageBox.height).toBeLessThanOrEqual(4);
+      expect(Math.abs(imageBox.x + imageBox.width / 2 - copyBox.x - copyBox.width / 2)).toBeLessThanOrEqual(1);
     } else await expect(copy).toBeHidden();
     const navigationToggle = header.getByRole("button", { name: label("Hide navigation"), exact: true });
     const controls = await Promise.all([navigationToggle, brand, search, notifications, account].map(bounds));
