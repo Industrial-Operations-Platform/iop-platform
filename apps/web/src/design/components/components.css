@@ -61,6 +61,14 @@
   color: var(--iop-ink);
   padding: 8px;
 }
+/* Native popup options need opaque colors even when the closed select is transparent. */
+.iop-ui .iop-select :is(option, optgroup) {
+  background: var(--iop-surface);
+  color: var(--iop-ink);
+}
+.iop-ui .iop-select :is(option, optgroup):disabled {
+  color: var(--iop-muted);
+}
 .iop-ui :is(.iop-input, .iop-select):not(:disabled):hover {
   border-color: var(--iop-activeInk);
 }

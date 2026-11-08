@@ -67,6 +67,10 @@ reading hierarchy. Supporting page descriptions use a 72-character reading bound
 Shared tables use semantic column alignment and stable left-aligned `TableText`
 prose under the IOP-214 refinement below. Controls reuse shared
 hover, placeholder, disabled and keyboard-focus treatments in both modes.
+Native select options and groups use explicit opaque `surface` backgrounds and
+`ink` text, with `muted` text for disabled choices. This also applies when compact
+filters or account rows use transparent closed controls. Keep native selection,
+scrolling and browser/OS highlights. See [IOP-227](../planning/items/IOP-227-dropdown-contrast.md).
 
 See [IOP-202](../planning/items/IOP-202-platform-quality-theme.md) for desktop/narrow
 rendering, preference and regression evidence.
