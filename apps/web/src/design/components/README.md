@@ -102,7 +102,13 @@ a heavier top stripe.
 `Disclosure` uses native `details/summary` keyboard behavior. View navigation uses
 ordinary buttons; it does not claim the keyboard model of ARIA tabs.
 
-Reuse variants before writing additional CSS. Font sizes, weights, line heights
+Reuse variants before writing additional CSS. Collection limits come from shared
+identity tokens. Use `iop-card-collection`
+with `tabIndex={0}` on growing card-list bodies: its maximum is 26rem or 60dvh,
+whichever is smaller, with native scrolling and focus padding. Keep headings and
+pagination outside it; use only one scroll owner for related report collections.
+
+Font sizes, weights, line heights
 and families in stylesheets must inherit or use `identity.ts` tokens. Use
 `PageHeading` for page/detail titles and keep module navigation in the same visual
 hierarchy. Feature CSS may arrange content but must not define a competing theme.

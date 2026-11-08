@@ -107,53 +107,55 @@ export function AssetTimeline({
               })),
             ]}
           />
-          {records.map((record) => (
-            <Panel key={record.id} className="assets-timeline-record">
-              <div className="assets-collection-heading">
-                <h3>{record.title}</h3>
-                <Badge>{sourceLabel(record.kind)}</Badge>
-              </div>
-              <div className="assets-timeline-metadata">
-                <strong>{record.date}</strong>
-                <Badge>
-                  {t(
-                    record.periodKind === "daily-aggregate"
-                      ? "Daily aggregate"
-                      : "Calendar date",
+          <div className="iop-card-collection assets-timeline-records" tabIndex={0}>
+            {records.map((record) => (
+              <Panel key={record.id} className="assets-timeline-record">
+                <div className="assets-collection-heading">
+                  <h3>{record.title}</h3>
+                  <Badge>{sourceLabel(record.kind)}</Badge>
+                </div>
+                <div className="assets-timeline-metadata">
+                  <strong>{record.date}</strong>
+                  <Badge>
+                    {t(
+                      record.periodKind === "daily-aggregate"
+                        ? "Daily aggregate"
+                        : "Calendar date",
+                    )}
+                  </Badge>
+                  {record.recordedAt && (
+                    <span>
+                      {t("Recorded")}:{" "}
+                      {new Date(record.recordedAt).toLocaleString(locale(), {
+                        timeZone,
+                      })}
+                    </span>
                   )}
-                </Badge>
-                {record.recordedAt && (
-                  <span>
-                    {t("Recorded")}:{" "}
-                    {new Date(record.recordedAt).toLocaleString(locale(), {
-                      timeZone,
-                    })}
-                  </span>
+                </div>
+                <p className="assets-prose">{record.summary}</p>
+                {record.periodKind === "daily-aggregate" && (
+                  <dl className="iop-detail-fields">
+                    <div>
+                      <dt>{t("Frequency")}</dt>
+                      <dd>{record.frequency ?? "—"}</dd>
+                    </div>
+                    <div>
+                      <dt>{t("Alarm duration (seconds)")}</dt>
+                      <dd>{record.seconds ?? "—"}</dd>
+                    </div>
+                  </dl>
                 )}
-              </div>
-              <p className="assets-prose">{record.summary}</p>
-              {record.periodKind === "daily-aggregate" && (
-                <dl className="iop-detail-fields">
-                  <div>
-                    <dt>{t("Frequency")}</dt>
-                    <dd>{record.frequency ?? "—"}</dd>
-                  </div>
-                  <div>
-                    <dt>{t("Alarm duration (seconds)")}</dt>
-                    <dd>{record.seconds ?? "—"}</dd>
-                  </div>
-                </dl>
-              )}
-              {openSource && record.sourceRecordId && (
-                <Button
-                  variant="secondary"
-                  onClick={() => openSource(record.kind, record.sourceRecordId)}
-                >
-                  {t("Open source record")}
-                </Button>
-              )}
-            </Panel>
-          ))}
+                {openSource && record.sourceRecordId && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => openSource(record.kind, record.sourceRecordId)}
+                  >
+                    {t("Open source record")}
+                  </Button>
+                )}
+              </Panel>
+            ))}
+          </div>
           {!records.length && (
             <Panel variant="empty">
               {t("No records shown for this source and date window.")}
