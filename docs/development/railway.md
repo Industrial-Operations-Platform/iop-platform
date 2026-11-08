@@ -382,5 +382,7 @@ an environment-scoped Railway project token is saved as that environment's
 `RAILWAY_TOKEN` secret and the repository variable `RAILWAY_AUTO_DEPLOY` is set to
 `true`. The current OAuth CLI session cannot create project tokens; use Railway's
 project settings to issue the development token. Do not paste it into chat or Git.
+The owner deferred this activation step on 2026-11-08; leave automatic deployment
+disabled until that work is resumed.
 Remote recovery and evaluator functional acceptance have not been verified. Windows
 validation skips POSIX-specific tests; the prepared Linux job runs them.

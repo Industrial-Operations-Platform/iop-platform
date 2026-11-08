@@ -1,6 +1,7 @@
 # IOP-225 - Selective Railway deployment
 
-In progress. Branch: `fix/IOP-225-selective-railway-deployments`, from develop at
+Planned activation, deferred by the owner; implementation validated.
+Branch: `fix/IOP-225-selective-railway-deployments`, from develop at
 `7921e92`, after the authorized fast-forward integration of IOP-224.
 [Permanent scope](../items/IOP-225-selective-railway-deployments.md).
 
@@ -70,3 +71,9 @@ Remaining activation: create the development-scoped project token through an
 authorized Railway first-party interface, save it as the GitHub environment secret
 and enable the repository variable. Do not transfer the account OAuth token.
 No live application deployment or database mutation was performed in this increment.
+
+The owner explicitly chose to leave activation pending on 2026-11-08. Record that
+decision on `docs/IOP-225-deferred-activation`, from develop at `11a5df8`, integrate
+and publish the source changes, and keep the deployment enable flag unset/false.
+Resume token setup only when requested. This active plan retains the deferred
+activation step; it does not block the completed source integration.
