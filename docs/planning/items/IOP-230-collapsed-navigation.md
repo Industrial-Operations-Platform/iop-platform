@@ -2,8 +2,8 @@
 
 ## Status and goal
 
-Completed locally with the closing flicker correction; previous delivery is published
-to origin/develop. The owner's 2026-11-08 refinements require both toggle states to share
+Completed and published to origin/develop, including the closing flicker correction.
+The owner's 2026-11-08 refinements require both toggle states to share
 a slightly smaller left inset, double right chevrons (option B) for opening and a
 panel that visibly slides out from the left. The owner explicitly requested that
 this branch start from the pending logo branch. The owner approved publication
@@ -47,4 +47,5 @@ during the overly broad publication without changing the approved application.
 [Closing flicker regression](../completed/IOP-230-navigation-flicker-plan.md).
 The regression fix `960eedf` is committed separately. The owner explicitly approved
 its develop integration and origin publication on 2026-11-08.
-[Publication plan](../active/IOP-230-flicker-publication-plan.md).
+[Publication evidence](../completed/IOP-230-flicker-publication-plan.md).
+The validated fix is published; only the bug-fix branch and develop were updated.

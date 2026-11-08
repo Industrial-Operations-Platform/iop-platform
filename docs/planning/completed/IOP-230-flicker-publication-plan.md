@@ -1,6 +1,6 @@
 # IOP-230 — Publish the closing flicker fix
 
-In progress. On 2026-11-08 the owner explicitly approved integrating
+Completed. On 2026-11-08 the owner explicitly approved integrating
 `fix/IOP-230-navigation-flicker` into develop and publishing both refs to origin.
 [Permanent scope](../items/IOP-230-collapsed-navigation.md).
 
@@ -20,3 +20,17 @@ Verify application/tooling content stays identical to `960eedf`; documentation-o
 publication needs link/whitespace and Git parity checks, not repeated UI tests.
 Preserve all other branches and history; no force push, branch deletion,
 stage/master promotion, database/account action or explicit deployment.
+
+## Publication evidence
+
+Local develop fast-forwarded from `b5a3bc4` to `3053c1e`, containing implementation
+`960eedf` and the approval record. Atomic publication of only develop and the
+bug-fix branch succeeded. An independent `git ls-remote` verification confirmed
+both remote tips matched `3053c1e`, the worktree was clean and every other one of
+the 167 snapshotted remote branch tips remained unchanged.
+
+The application/tooling tree matches validated `960eedf` exactly. This closure
+updates documentation only; commit it on the same branch, fast-forward develop
+and publish only those same two refs. Verify final hashes and unchanged-other-ref
+parity in the session. Item/backlog are complete and this plan is retained under
+completed. No deployment status or service activation is claimed.
