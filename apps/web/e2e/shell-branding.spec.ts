@@ -109,6 +109,7 @@ for (const scenario of [
     await capture(page, info, "header-navigation");
 
     const expandedToggle = await bounds(navigationToggle);
+    expect(expandedToggle.x).toBe(width <= 620 ? 8 : 12);
     const expandedBrand = await bounds(brand), expandedAccount = await bounds(account);
     await navigationToggle.click();
     const reveal = header.getByRole("button", { name: label("Show navigation"), exact: true });

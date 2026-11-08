@@ -16,9 +16,11 @@ with compact left-aligned rows and independent scrolling. Narrow navigation uses
 one horizontally scrollable row with the same keyboard-accessible destinations.
 Pass `navigationCollapsed` and `onToggleNavigation` to enable the header toggle.
 The caller owns the expanded state; the workspace opens it on each new session.
-The collapse and expand controls retain the same position and styling; only their
-glyph and translated name change. Keep the 44px target and visible keyboard focus;
-neighboring header controls stay fixed. The owner is selecting the opening glyph.
+The collapse and expand controls retain the same position and styling, with a
+12px desktop/8px compact left inset. Double right chevrons open the navigation;
+double left chevrons close it. Keep the 44px target and visible keyboard focus;
+compensating margins retain the brand position. The sidebar slides in from the
+left over 220ms on opening and appears immediately when reduced motion is requested.
 Hiding the rail also frees the main content
 and bottom navigation width, and removes hidden destinations from keyboard focus.
 Components contain no feature models,

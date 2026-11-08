@@ -329,6 +329,7 @@
 }
 .iop-ui .iop-navigation-toggle {
   color: var(--iop-muted);
+  margin-inline: -12px 12px;
 }
 .iop-ui .iop-sidebar[hidden] {
   display: none;
@@ -385,6 +386,13 @@
   padding: 16px 12px;
   display: flex;
   flex-direction: column;
+}
+.iop-ui .iop-sidebar:not([hidden]) {
+  animation: iop-navigation-reveal 220ms ease-out;
+}
+@keyframes iop-navigation-reveal {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
 .iop-ui .iop-brand {
   display: inline-flex;
@@ -549,6 +557,9 @@
   }
 }
 @media (max-width: 620px) {
+  .iop-ui .iop-navigation-toggle {
+    margin-inline: -4px 4px;
+  }
   .iop-shell-identity {
     gap: 8px;
   }
@@ -926,6 +937,9 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .iop-ui .iop-sidebar:not([hidden]) {
+    animation: none;
+  }
   .iop-refresh-spinning {
     animation: none;
   }
