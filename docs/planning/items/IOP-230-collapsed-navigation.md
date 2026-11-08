@@ -2,11 +2,12 @@
 
 ## Status and goal
 
-Completed. The owner's 2026-11-08 refinements require both toggle states to share
+Completed implementation; local integration approved. The owner's 2026-11-08 refinements require both toggle states to share
 a slightly smaller left inset, double right chevrons (option B) for opening and a
 panel that visibly slides out from the left. The owner explicitly requested that
 this branch start from the pending logo branch. Preserve local commits and defer
-develop integration/publication until separately authorized.
+publication until separately authorized. The latest follow-up authorizes matching
+the closing motion to opening and integrating the completed work into local develop.
 
 ## Scope and acceptance
 
@@ -16,6 +17,8 @@ develop integration/publication until separately authorized.
   12px desktop/8px compact in both states.
 - [x] Slide the panel in from the left on opening, respecting reduced motion and
   keeping closed destinations inaccessible to keyboard navigation.
+- [x] Slide the panel out to the left when closing with the same timing; disable
+  its interaction immediately and handle reduced motion and interrupted closing.
 - [x] Preserve the expanded control, translated accessible names, expanded/control
   relationships, visible keyboard focus and 44px interaction target.
 - [x] Verify collapse/reopen behavior, navigation reachability, analytical resizing
@@ -34,5 +37,5 @@ The current successor branch `fix/IOP-230-navigation-motion` starts from
 [Position correction](../completed/IOP-230-toggle-position-plan.md). The original
 position was restored and validated in that slice.
 [Logo-based branch and motion](../completed/IOP-230-navigation-motion-plan.md).
-All current acceptance criteria are met on the successor branch; owner integration
-and publication remain deferred.
+[Closing motion and integration](../active/IOP-230-navigation-close-plan.md).
+Local develop integration is authorized; origin publication requires separate approval.

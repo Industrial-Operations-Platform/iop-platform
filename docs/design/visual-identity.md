@@ -615,7 +615,10 @@ IOP-230 keeps collapse and expand controls in the same position with identical
 chevrons for opening, paired with the existing double left chevrons for closing.
 Use a 12px desktop/8px compact left inset in both states, compensating margins to
 preserve the brand's position; do not add collapsed-only offsets or tab borders.
-On opening, the panel slides from the left to its normal position over 220ms
-with ease-out timing. Respect reduced motion by showing it immediately. Closed
-navigation remains hidden and excluded from keyboard focus.
+The panel slides from the left on opening and back to the left on closing, both
+over 220ms with ease-out timing. Keep its full physical width during closing even
+as workspace space is released. Closing navigation becomes inert and aria-hidden
+immediately, then fully hidden when its own closing animation ends; reopening
+cancels closing. Reduced motion completes either action immediately, including
+when the preference changes during closing. Closed destinations cannot take focus.
 See [IOP-230](../planning/items/IOP-230-collapsed-navigation.md).

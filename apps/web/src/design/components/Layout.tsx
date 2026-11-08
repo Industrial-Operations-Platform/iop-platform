@@ -3,6 +3,7 @@ import {
   useLayoutEffect,
   useId,
   useRef,
+  useState,
   type ComponentProps,
   type CSSProperties,
   type ReactNode,
@@ -52,6 +53,20 @@ export function AppShell({
   const shell = useRef<HTMLDivElement>(null);
   const navigationId = useId();
   const headerElement = useRef<HTMLElement>(null);
+  const previousNavigationCollapsed = useRef(navigationCollapsed);
+  const [navigationClosing, setNavigationClosing] = useState(false);
+  useLayoutEffect(() => {
+    const startedClosing = navigationCollapsed && !previousNavigationCollapsed.current;
+    previousNavigationCollapsed.current = navigationCollapsed;
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    setNavigationClosing(startedClosing && !reducedMotion?.matches);
+    if (!startedClosing) return;
+    const stopClosing = () => {
+      if (reducedMotion?.matches) setNavigationClosing(false);
+    };
+    reducedMotion?.addEventListener("change", stopClosing);
+    return () => reducedMotion?.removeEventListener("change", stopClosing);
+  }, [navigationCollapsed]);
   useLayoutEffect(() => {
     const element = headerElement.current;
     if (!element) return;
@@ -105,7 +120,17 @@ export function AppShell({
         </div>
         <div className="iop-header-actions">{header}</div>
       </header>
-      <aside id={navigationId} className="iop-sidebar" hidden={navigationCollapsed}>{navigation}</aside>
+      <aside id={navigationId} className="iop-sidebar"
+        hidden={navigationCollapsed && !navigationClosing}
+        inert={navigationCollapsed} aria-hidden={navigationCollapsed}
+        data-closing={navigationClosing}
+        onAnimationEnd={event => {
+          if (event.target === event.currentTarget &&
+            event.animationName === "iop-navigation-hide" && navigationCollapsed)
+            setNavigationClosing(false);
+        }}>
+        {navigation}
+      </aside>
       <main id={mainId} className="iop-main">
         <div className="iop-content">{children}</div>
       </main>

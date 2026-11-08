@@ -317,7 +317,8 @@
   border-radius: 6px;
 }
 .iop-shell {
-  --shell-rail-width: var(--iop-shellRailWidth);
+  --shell-navigation-width: var(--iop-shellRailWidth);
+  --shell-rail-width: var(--shell-navigation-width);
 }
 .iop-shell[data-navigation-collapsed="true"] {
   --shell-rail-width: 0px;
@@ -379,7 +380,7 @@
   top: var(--shell-header-height, var(--iop-shellHeaderHeight));
   bottom: 0;
   left: 0;
-  width: var(--shell-rail-width);
+  width: var(--shell-navigation-width);
   background: var(--iop-surface);
   border-right: 1px solid var(--iop-line);
   z-index: 6;
@@ -390,9 +391,17 @@
 .iop-ui .iop-sidebar:not([hidden]) {
   animation: iop-navigation-reveal 220ms ease-out;
 }
+.iop-ui .iop-sidebar[data-closing="true"] {
+  animation: iop-navigation-hide 220ms ease-out;
+  pointer-events: none;
+}
 @keyframes iop-navigation-reveal {
   from { transform: translateX(-100%); }
   to { transform: translateX(0); }
+}
+@keyframes iop-navigation-hide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
 }
 .iop-ui .iop-brand {
   display: inline-flex;
@@ -541,7 +550,7 @@
 }
 @media (max-width: 1050px) {
   .iop-shell {
-    --shell-rail-width: var(--iop-shellRailCompactWidth);
+    --shell-navigation-width: var(--iop-shellRailCompactWidth);
   }
   .iop-brand-copy {
     display: none;
@@ -937,7 +946,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .iop-ui .iop-sidebar:not([hidden]) {
+  .iop-ui .iop-sidebar:not([hidden]),
+  .iop-ui .iop-sidebar[data-closing="true"] {
     animation: none;
   }
   .iop-refresh-spinning {

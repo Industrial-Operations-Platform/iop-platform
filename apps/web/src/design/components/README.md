@@ -20,7 +20,10 @@ The collapse and expand controls retain the same position and styling, with a
 12px desktop/8px compact left inset. Double right chevrons open the navigation;
 double left chevrons close it. Keep the 44px target and visible keyboard focus;
 compensating margins retain the brand position. The sidebar slides in from the
-left over 220ms on opening and appears immediately when reduced motion is requested.
+left on opening and back out on closing, using matching 220ms timing. Closing
+navigation becomes inert and aria-hidden immediately and is fully hidden when the
+motion ends. Reopening cancels closing; reduced motion completes either action
+immediately, including when that preference changes during closing.
 Hiding the rail also frees the main content
 and bottom navigation width, and removes hidden destinations from keyboard focus.
 Components contain no feature models,
