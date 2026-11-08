@@ -3,13 +3,37 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy the validated develop revision to Railway
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
   group: validation-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  change-scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      validate: ${{ steps.scope.outputs.validate }}
+      runtime: ${{ steps.scope.outputs.runtime }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+      - name: Classify the complete change range
+        id: scope
+        run: node scripts/ci/change-scope.cjs
   local-platform:
+    needs: change-scope
+    if: needs.change-scope.outputs.validate == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -48,16 +72,18 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
   railway:
-    needs: local-platform
+    needs: [change-scope, local-platform]
     if: >-
-      github.event_name != 'pull_request' &&
-      github.ref_name == (vars.RAILWAY_DEPLOY_BRANCH || 'main') &&
-      (github.event_name == 'workflow_dispatch' || vars.RAILWAY_AUTO_DEPLOY == 'true')
+      github.ref == 'refs/heads/develop' &&
+      ((github.event_name == 'push' &&
+        needs.change-scope.outputs.runtime == 'true' &&
+        vars.RAILWAY_AUTO_DEPLOY == 'true') ||
+       (github.event_name == 'workflow_dispatch' && inputs.deploy))
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    environment: railway-production
+    environment: railway-development
     concurrency:
-      group: railway-production
+      group: railway-development
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v7
@@ -72,7 +98,7 @@ jobs:
           npm install --global npm@10.9.2
           npm ci
           npm run build --workspace @iop/api
-      - name: Publish validated revision and verify live access
+      - name: Publish validated development revision and verify live access
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}

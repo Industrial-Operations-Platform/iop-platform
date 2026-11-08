@@ -4,14 +4,15 @@ IOP is a modular industrial operations platform with Data Analysis (OIP), Shift
 Handover, Workforce, Maintenance Management, Improvement Tracking, Asset Locator
 and a Digital Asset Record. The local
 application uses individual accounts with Administrator, Team Leader, Task Force
-and Technician profiles. A Railway Hobby evaluation was deployed and verified over
-HTTPS on 2026-11-06 with a copy of the local data. Corporate login remains pending.
+and Technician profiles. Railway hosts the development app with evaluation data,
+which does not represent the final application or exact real-world data.
+There is no production installation. Corporate login remains pending.
 
 ## Publish and update
 
 Use `npm run local:update` to rebuild the current code in Docker, or
 `npm run local:sync` to fast-forward from Git and rebuild. Both preserve local data.
-For Railway, use `npm run railway:deploy` after the initial configuration and data
+For Railway development, use `npm run railway:deploy` from `develop` after the initial configuration and data
 transfer. The [Railway deployment guide](docs/development/railway.md) covers the
 initial copy of local data, HTTPS, automated GitHub releases, backups and cost limits.
 

@@ -54,7 +54,8 @@ is needed. Stage/master promotion and branch deletion remain outside scope.
 - Railway deployment `547efe71-11ce-43e9-87f0-44206fba5898` completed. HTTPS smoke
   verified `/health`, the web app, password authentication, rejection of anonymous
   business access and live build revision `d2aecfe71e81abead729fbf246808710c624184d`
-  at `https://iop-production-9fb7.up.railway.app` on 2026-11-07 at 22:49 UTC.
+  on 2026-11-07 at 22:49 UTC. The same installation was renamed to development
+  on 2026-11-08 and is now at `https://iop-development-9fb7.up.railway.app`.
 - Two browser scenarios passed using the deployed web assets and synthetic German
   notice fixtures: 1440px light and 390px dark, Profile first, three notice
   previews, all-five collection, Escape/focus return and exact detail navigation.

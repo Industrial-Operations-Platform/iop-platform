@@ -31,7 +31,7 @@ export default defineRailway((ctx) => {
     volumeMounts: { "/var/lib/postgresql/data": postgresData },
   });
 
-  return project(ctx.projectName ?? "IOP-evaluation", {
+  return project(ctx.projectName ?? "IOP-development", {
     variables: { managed: false },
     resources: [iop, database, references, postgresData],
   });

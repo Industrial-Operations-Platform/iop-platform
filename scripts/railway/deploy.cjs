@@ -22,6 +22,13 @@ function cleanTree() {
   if (run("git", ["status", "--porcelain"], true).trim()) throw new Error("Commit all intended changes before deploying so the published version is reproducible.");
   return run("git", ["rev-parse", "HEAD"], true).trim();
 }
+function validateDevelopmentDeployment(branch, status, target) {
+  if (branch !== "develop") throw new Error("Railway development deployments must use the develop branch.");
+  const environment = status.environments?.edges?.find(({ node }) => node.id === target.environment)?.node;
+  if (status.id !== target.project || environment?.name !== "development") {
+    throw new Error("The selected Railway target must be the development environment. Production is not configured.");
+  }
+}
 function copyInput(relative, target, base = root) {
   const source = resolve(base, relative), info = lstatSync(source);
   if (info.isSymbolicLink()) throw new Error("Deployment inputs must not contain symbolic links.");
@@ -40,6 +47,11 @@ function main(env = process.env) {
   const target = readTarget(env); validateTarget(target);
   const { project, environment, service, origin } = target;
   const sha = cleanTree();
+  const branch = run("git", ["branch", "--show-current"], true).trim();
+  // Pin and inspect the target before any infrastructure change or code upload.
+  railway(["link", "--project", project, "--environment", environment, "--service", service]);
+  const status = JSON.parse(railway(["status", "--json"], { stdio: "pipe", encoding: "utf8" }).stdout);
+  validateDevelopmentDeployment(branch, status, target);
   if (!env.npm_execpath || !existsSync(env.npm_execpath)) throw new Error("Run deployment through npm run railway:deploy.");
   run(process.execPath, [env.npm_execpath, "audit", "--omit=dev", "--audit-level=high"]);
   if (!(env.GITHUB_ACTIONS === "true" && env.IOP_VALIDATED_SHA === sha)) {
@@ -47,8 +59,6 @@ function main(env = process.env) {
     run(process.execPath, [env.npm_execpath, "run", "test:poc"]);
   }
   if (cleanTree() !== sha) throw new Error("Source changed during validation; retry the deployment.");
-  // Pin the exact resource target before applying versioned infrastructure settings.
-  railway(["link", "--project", project, "--environment", environment, "--service", service]);
   railway(["config", "apply", "--environment", environment, "--yes"]);
   const directory = mkdtempSync(join(tmpdir(), "iop-deploy-"));
   try {
@@ -63,4 +73,4 @@ function main(env = process.env) {
   } finally { rmSync(directory, { recursive: true, force: true }); }
 }
 if (require.main === module) { try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; } }
-module.exports = { inputs, copyInput, cleanTree };
+module.exports = { inputs, copyInput, cleanTree, validateDevelopmentDeployment };

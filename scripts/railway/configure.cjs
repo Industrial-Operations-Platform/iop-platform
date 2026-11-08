@@ -43,6 +43,7 @@ function configure(args) {
   users.origins = [target.origin];
   const secret = () => randomBytes(32).toString("base64url");
   const app = {
+    // NODE_ENV selects the optimized Node runtime, independently of the Railway environment name.
     NODE_ENV: "production", HOST: "0.0.0.0", IOP_TRANSPORT: "container",
     IOP_EXECUTION_MODE: "railway", IOP_DATABASE_MODE: "railway", IOP_AUTHENTICATION: "password",
     IOP_DATABASE_HOST: "${{database.RAILWAY_PRIVATE_DOMAIN}}", IOP_DATABASE_PORT: "5432", IOP_DATABASE_NAME: "iop_local",

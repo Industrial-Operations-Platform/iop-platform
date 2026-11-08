@@ -1,5 +1,10 @@
 # Railway infrastructure
 
+The current installation is development, deployed from the develop branch to the
+IOP-development project and development environment. There is no production
+installation; a future production app belongs in a separate Railway workspace
+with independent data and credentials.
+
 railway.ts defines the two IOP services, forward migrations, resource limits and persistent volumes.
 Service variables are unmanaged: secrets stay in Railway and private ignored files.
 

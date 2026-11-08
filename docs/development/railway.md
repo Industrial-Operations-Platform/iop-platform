@@ -5,6 +5,13 @@ services**: `iop` serves React and the API from the same origin; `database` runs
 PostgreSQL 17.6 on the private network. Each installation has independent data
 and credentials. A code update never imports the data again.
 
+The current Railway installation is **development**, deployed from `develop` to
+project `IOP-development`, environment `development`. It contains evaluation data
+and is not the final application or an exact representation of real-world data.
+There is no production installation. When needed, production will be created in
+a **separate Railway workspace**, with its own project, data, secrets and deployment
+workflow; the current environment will remain development.
+
 ## Common commands
 
 Run these commands from the repository root. In PowerShell with scripts disabled,
@@ -60,7 +67,7 @@ deployment, export the **current remote database** with `pg_dump` over SSH and
 verify that the backup contains those months. The initial local snapshot does
 not include them. An interface update does not require importing data, changing
 variables, or recreating services or volumes. Do not run `railway:import-initial`
-or restore a local backup over production to update the interface.
+or restore a local backup over Railway development to update the interface.
 
 ## Initial Railway setup
 
@@ -73,7 +80,9 @@ lockfile. A global installation is unnecessary. Sign in interactively:
 npm run railway -- login
 ```
 
-Create a project and a `production` environment with the following resources.
+Create the `IOP-development` project and a `development` environment with the following resources.
+If Railway creates a default `production` environment, rename that environment
+to `development` before configuring the services; do not keep a second environment.
 Use the dashboard or Railway integration; **do not connect GitHub yet**.
 
 | Resource | Initial configuration |
@@ -82,7 +91,7 @@ Use the dashboard or Railway integration; **do not connect GitHub yet**.
 | `database` volume | Mounted at `/var/lib/postgresql/data`; preserve it between deployments |
 | Empty `iop` service | Repository root; configuration `.railway/railway.ts` |
 | `iop` volume | Named **`iop-data`**, mounted at **`/data`** |
-| `iop` domain | Generate an HTTPS `*.up.railway.app` domain; no domain purchase is required |
+| `iop` domain | Use an HTTPS `iop-development-*.up.railway.app` domain; no domain purchase is required |
 | Replicas | One, in the same European region as the database |
 
 Do not start PostgreSQL with default credentials before configuring its variables.
@@ -161,8 +170,9 @@ updates preserve the volume and do not repeat this transfer.
 
 ## First and subsequent deployments
 
-Commit reviewed changes before deployment. The command uploads an explicit list
-of sources and resources; it never uploads `.local-platform`, `.railway`,
+Commit reviewed changes on `develop` before deployment. The command rejects other
+branches and checks that the selected remote environment is named `development`.
+The command uploads an explicit list of sources and resources; it never uploads `.local-platform`, `.railway`,
 credential files, backups, or the entire working directory.
 
 ```sh
@@ -170,7 +180,7 @@ npm run railway:deploy
 ```
 
 The first run uses the target saved by `railway:configure`. Before uploading, the
-command requires a clean Git tree, rejects high or critical production dependency
+command requires a clean Git tree, rejects high or critical runtime dependency
 advisories through `npm audit`, and runs `npm run test:poc` (including PostgreSQL
 and browser checks with Docker). Explicit identifiers can be supplied through
 `RAILWAY_PROJECT_ID`, `RAILWAY_ENVIRONMENT_ID`, `RAILWAY_SERVICE_ID`,
@@ -201,10 +211,10 @@ match the uploaded commit, avoiding confusion between a healthy previous version
 and the new deployment. `/health` remains a process health check: it does not
 replace an authenticated functional test or a backup recovery test.
 
-To return to the code from an earlier revision, use a clean checkout of that
-commit and run the same deployment command after checking compatibility with
-the current schema. Do not restore the initial snapshot or automatically reverse
-migrations: either action could lose evaluator changes. Railway retains deployment
+To return to the code from an earlier revision, revert the relevant changes on
+`develop`, commit the reviewed result, and run the same deployment command after
+checking compatibility with the current schema. Do not restore the initial snapshot
+or automatically reverse migrations: either action could lose evaluator changes. Railway retains deployment
 versions for diagnostics, but reverting application code does not reverse
 PostgreSQL migrations either.
 
@@ -221,34 +231,52 @@ Do not issue passwords during deployment or through GitHub Actions.
 
 ## Automatic updates from GitHub
 
-The **Platform validation** workflow validates the code, PostgreSQL, browser, and
+The **Platform validation** workflow first classifies the complete changed-file
+range using Git, including every commit in a push and both sides of renames.
+Documentation-only updates run this lightweight check without installing
+dependencies, running the full suite, building images or deploying. The workflow
+still reports a result for required checks. Commit subjects such as `feat`, `fix`,
+`refactor` or `docs` do not control publication; changed application inputs do.
+
+| Change | Full validation | Automatic Railway deployment |
+| --- | --- | --- |
+| Documentation, Markdown or documentation images only | No | No |
+| Tests, GitHub workflows or operator tooling only | Yes | No |
+| Shipped application sources/assets, dependencies, migrations or Railway build/deployment configuration | Yes | On `develop`, after validation, when enabled |
+| Mixed code and documentation | Yes | Same rule as application changes |
+
+Full validation checks the code, PostgreSQL, browser, and
 builds of all four Docker images. It also starts the Railway image against a
 synthetic database and checks login, HTTPS, cookies, and non-root execution.
 It can then publish that same SHA; the deployment job never receives code from a
-pull request. Production deployments are serialized to prevent overlapping
+pull request. Development deployments are serialized to prevent overlapping
 migrations.
 
-Create the GitHub environment `railway-production` with:
+Create the GitHub environment `railway-development` with:
 
 | Type | Name | Value |
 | --- | --- | --- |
 | Secret | `RAILWAY_TOKEN` | Project token limited to the chosen Railway environment |
 | Variable | `RAILWAY_PROJECT_ID` | Project identifier |
-| Variable | `RAILWAY_ENVIRONMENT_ID` | `production` identifier |
+| Variable | `RAILWAY_ENVIRONMENT_ID` | `development` identifier |
 | Variable | `RAILWAY_SERVICE_ID` | `iop` service identifier |
 | Variable | `RAILWAY_DATABASE_SERVICE_ID` | `database` service identifier |
 | Variable | `IOP_PUBLIC_ORIGIN` | Exact HTTPS origin |
 
-Create these as **repository variables**, so the job condition can read them
+Create this as a **repository variable**, so the job condition can read it
 before entering the environment:
 
 | Variable | Value |
 | --- | --- |
-| `RAILWAY_DEPLOY_BRANCH` | Deployment branch; defaults to `main`. Use `develop` if that is the chosen branch |
-| `RAILWAY_AUTO_DEPLOY` | `true` to deploy automatically after validation |
+| `RAILWAY_AUTO_DEPLOY` | `true` to deploy changed application inputs automatically after validation |
 
-You can also use **Run workflow** on the chosen branch to validate and deploy
-manually. Keep Railway's direct GitHub auto-deployment disabled: the workflow
+The deployment branch is fixed to `develop`; `main` does not deploy to Railway.
+**Run workflow** validates by default. On `develop`, explicitly select **Deploy
+the validated develop revision to Railway** to deploy manually, including a
+revision without new application changes. A pull request, tag or story branch
+never deploys. Missing or unreadable Git revisions fail the classification job
+and prevent deployment.
+Keep Railway's direct GitHub auto-deployment disabled: the workflow
 deploys after validation. This avoids competing deployment paths or deployment
 before tests. On Windows, four POSIX permission/ownership tests are explicitly
 skipped; Linux CI runs them all, including symlink checks that require privileges
@@ -297,15 +325,22 @@ environment after one month.
 - [Pre-deployment migrations](https://docs.railway.com/deployments/pre-deploy-command)
 - [Volumes and deployment restrictions](https://docs.railway.com/volumes/reference)
 - [Usage controls](https://docs.railway.com/pricing/cost-control)
+- [GitHub workflow triggers](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)
+- [Railway GitHub autodeploy controls](https://docs.railway.com/deployments/github-autodeploys)
 
-The first real deployment was verified on 2026-11-06 at
-`https://iop-production-9fb7.up.railway.app`, project `IOP-evaluation`, environment
-`production`, on Hobby. The local database was imported and row counts were
+The first real deployment was verified on 2026-11-06 on Railway Hobby.
+On 2026-11-08, the existing project and environment were renamed
+to `IOP-development` and `development`; the application origin is
+`https://iop-development-9fb7.up.railway.app`. Services and data volumes were preserved.
+The local database was imported and row counts were
 compared across all 62 tables. Seventy-five Locator files were transferred, and
 their SHA-256 hashes and private Node permissions were verified. The web app and
 API respond over HTTPS, anonymous user access is rejected, and the published
 revision matches the uploaded commit. A US$15 usage alert and US$20 hard limit
 were configured.
+
+`NODE_ENV=production` remains the optimized Node runtime setting in the container;
+it does not name the Railway environment or create a production installation.
 
 The local and deployment commands are operational. The GitHub workflow is prepared
 in the repository; its secrets and variables are not enabled on GitHub. Remote

@@ -1,13 +1,23 @@
 const fs = require('node:fs');
 const {join} = require('node:path');
 const {tmpdir} = require('node:os');
-const {copyInput} = require('./railway/deploy.cjs');
+const {copyInput,validateDevelopmentDeployment} = require('./railway/deploy.cjs');
 const {runtimeEnvironment} = require('./railway/configuration.cjs');
 const {restoreGuard} = require('./railway/initial-data.cjs');
 const {smoke} = require('./railway/smoke.cjs');
 let directory;
 beforeEach(()=>{directory=fs.mkdtempSync(join(tmpdir(),'iop-deployment-test-'));});
 afterEach(()=>{fs.rmSync(directory,{recursive:true,force:true});jest.restoreAllMocks();});
+test('deployment accepts only develop and the explicitly selected development environment',()=>{
+  const target={project:'project-id',environment:'environment-id'};
+  const status={id:target.project,environments:{edges:[{node:{id:target.environment,name:'development'}}]}};
+  expect(()=>validateDevelopmentDeployment('develop',status,target)).not.toThrow();
+  expect(()=>validateDevelopmentDeployment('main',status,target)).toThrow('develop branch');
+  expect(()=>validateDevelopmentDeployment('develop',{...status,id:'other-project'},target)).toThrow('development environment');
+  status.environments.edges[0].node.name='production';
+  expect(()=>validateDevelopmentDeployment('develop',status,target)).toThrow('development environment');
+  expect(()=>validateDevelopmentDeployment('develop',status,{...target,environment:'other-environment'})).toThrow('development environment');
+});
 test('source staging refuses credential files, credential URLs and private keys before upload',()=>{
   const source=join(directory,'source'),target=join(directory,'stage');fs.mkdirSync(source);
   fs.writeFileSync(join(source,'.env'),'PASSWORD=private');
