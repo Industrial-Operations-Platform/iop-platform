@@ -232,13 +232,18 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
 }
 .handover-meeting-section--wide {
   grid-column: span 2;
 }
 .handover-meeting-section {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+}
+.handover-meeting-section > .iop-button {
+  align-self: flex-start;
 }
 .handover-meeting-section h3 {
   margin: 0;
@@ -250,10 +255,18 @@
 }
 .handover-meeting-section > .handover-section-heading {
   flex-wrap: nowrap;
+  flex-shrink: 0;
   min-height: 44px;
 }
 .iop-ui .handover-meeting-section > .handover-muted {
   margin: 8px 0 0;
+}
+.iop-ui .handover-meeting-section > .handover-meeting-empty {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  padding-block: var(--iop-sectionGap);
+  text-align: center;
 }
 .handover-summary-cards {
   display: grid;
@@ -290,19 +303,13 @@
   .handover-meeting-canvas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .handover-meeting-section--wide {
+    grid-column: auto;
+  }
 }
 @media (max-width: 600px) {
   .handover-meeting-canvas {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 600px) {
-  .handover-meeting-section--wide {
-  grid-column: span 2;
-}
-.handover-meeting-section {
-    min-height: 0;
   }
 }
 
@@ -507,10 +514,6 @@
 .handover-card-image { width: 100%; max-height: 140px; object-fit: contain; border-radius: var(--iop-cardRadius); }
 
 .handover-workspace { grid-template-columns: minmax(0, 1fr); }
-
-@media (max-width: 1000px) {
-  .handover-meeting-section--wide { grid-column: span 1; }
-}
 
 .handover-information-title {
   display: flex;

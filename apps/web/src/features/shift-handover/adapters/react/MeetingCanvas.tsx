@@ -58,7 +58,7 @@ export function MeetingCanvas({
           {category.workflow === "people" && onPeople && <Button variant="text" onClick={onPeople}>{t("Workforce & shifts")}</Button>}
           <EntrySummaryCards entries={page.entries} open={open} />
           {!page.total && (
-            <p className="handover-muted">
+            <p className="handover-muted handover-meeting-empty">
               {t(
                 outstanding
                   ? "No unresolved issues."
