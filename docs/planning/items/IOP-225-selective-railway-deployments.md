@@ -2,7 +2,7 @@
 
 ## Status and scope
 
-In progress: pre-deployment backup explicitly approved; automatic activation is configured.
+Completed: automatic activation configured and deployment verified through GitHub.
 Activation resumed by the owner on 2026-11-08 after manually creating
 the repository Actions secret `RAILWAY_TOKEN`. On 2026-11-08 the owner requested integrating all pending work and
 limiting GitHub-triggered Railway publication to code changes, such as features
@@ -17,6 +17,9 @@ deployment through GitHub without reading or copying the stored secret value.
 The enable flag is now `true` and the workflow is published. After automatic review
 rejected the initial backup transfer, the owner explicitly approved exporting the
 full remote database to a private local backup and continuing deployment.
+The `fe0eecf` push subsequently passed complete Linux validation and deployed
+automatically with the updated token. HTTPS serves that exact revision; the
+165 publications and seven imported months are preserved.
 
 - Detect changed files across the complete push or pull request.
 - Skip expensive validation for documentation-only changes; test/tooling changes
@@ -32,6 +35,6 @@ full remote database to a private local backup and continuing deployment.
   The owner's resumed request uses the existing repository Actions secret rather
   than duplicating it as an environment secret.
 
-[Execution plan](../active/IOP-225-selective-railway-deployments-plan.md).
+[Execution record](../completed/IOP-225-selective-railway-deployments-plan.md).
 Follow [ADR-0008](../../architecture/adr/ADR-0008-story-branches.md) and the
 [workflow](../workflow.md). This changes delivery automation, not module boundaries.

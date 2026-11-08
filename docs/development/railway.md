@@ -393,7 +393,11 @@ secret to the CLI. The repository variable `RAILWAY_AUTO_DEPLOY=true` is configu
 changed application inputs now qualify for publication after successful validation
 on develop. The owner explicitly approved the current remote database backup;
 it was exported privately and verified before the first workflow deployment.
-The [activation execution record](../planning/active/IOP-225-selective-railway-deployments-plan.md)
-tracks deployment verification. Do not paste the token into chat or Git.
+The [automatic push workflow](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/42486142854)
+passed complete Linux validation and deployed `fe0eecf`; HTTPS serves that exact
+revision. A read-only check confirmed all 165 publications and seven imported
+months from May through November 2026 remain present. See the
+[activation execution record](../planning/completed/IOP-225-selective-railway-deployments-plan.md).
+Do not paste the token into chat or Git.
 Remote recovery and evaluator functional acceptance have not been verified. Windows
 validation skips POSIX-specific tests; the prepared Linux job runs them.

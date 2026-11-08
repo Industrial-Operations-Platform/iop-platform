@@ -1,6 +1,6 @@
 # IOP-225 - Selective Railway deployment
 
-In progress: backup explicitly approved; automatic activation configured and published.
+Completed: automatic activation configured, published and verified on Railway.
 The owner resumed activation on 2026-11-08 after manually creating
 the repository Actions secret `RAILWAY_TOKEN` and requested remote publication.
 Branch: `fix/IOP-225-selective-railway-deployments`, from develop at
@@ -152,3 +152,24 @@ Compatibility fix validation: all 99 scripts tests passed, with four Windows/POS
 skips; Node syntax, whitespace and 237 affected-document file links passed. The
 two added regressions exercise project-token status without workspace linking,
 development-environment rejection and the retained interactive-user link path.
+
+## Final activation and deployment evidence
+
+- The owner replaced an initially incorrect repository secret. Its metadata shows
+  an update before the `fe0eecf` push run was queued. Their reattempt of `87241da`
+  still used the old link command; the corrected run used the updated credential.
+- [Automatic push run 42486142854](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/42486142854)
+  passed all three jobs: classification, complete Linux platform/container validation
+  and token-authenticated Railway publication. No manual dispatch was needed for
+  this runtime-input change; `RAILWAY_AUTO_DEPLOY=true` selected the deployment.
+- HTTPS `build-revision.json` returns `fe0eecfc3270b1f77e1ed3e12d6801e232e9e24a`.
+  The workflow's smoke checks passed for the web/API and anonymous-access rejection.
+- Post-deployment read-only verification matches the backup: all 165 publications
+  and all seven months from May through November 2026 remain present. Evidence is
+  retained with the private backup; no restore or data import was performed.
+- Source commits `c0828ca`, `87241da` and `fe0eecf` were integrated into develop and
+  pushed to origin with `fix/IOP-225-token-activation` under the owner's request.
+
+All planned activation criteria are complete. The item/backlog and deployment guide
+are synchronized, and this plan is archived. Existing recovery and evaluator
+functional acceptance limitations in the deployment guide remain unchanged.
