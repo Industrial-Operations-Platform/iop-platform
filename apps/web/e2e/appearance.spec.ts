@@ -1,5 +1,25 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import { installMaintenanceAssetsFixture } from "./maintenance-assets-fixture";
+
+async function expectReadableOptions(scope: Locator) {
+  const options = scope.locator("select option, select optgroup");
+  expect(await options.count()).toBeGreaterThan(0);
+  const failures = await options.evaluateAll(elements => elements.flatMap(element => {
+    const style = getComputedStyle(element);
+    const disabled = element.matches(":disabled");
+    // Resolve semantic colors through a real painted element rather than assuming
+    // a particular RGB palette or accepting the native transparent fallback.
+    const reference = document.createElement("span");
+    reference.style.backgroundColor = "var(--iop-surface)";
+    reference.style.color = disabled ? "var(--iop-muted)" : "var(--iop-ink)";
+    element.closest(".iop-ui")!.append(reference);
+    const expected = getComputedStyle(reference);
+    const readable = style.backgroundColor === expected.backgroundColor && style.color === expected.color;
+    reference.remove();
+    return readable ? [] : [{ label: element.textContent, background: style.backgroundColor, color: style.color }];
+  }));
+  expect(failures).toEqual([]);
+}
 
 for (const width of [1440, 1024, 390]) {
   test(`appearance remains consistent across workspace modules at ${width}px`, async ({ page }) => {
@@ -19,6 +39,7 @@ for (const width of [1440, 1024, 390]) {
       await expect(appearance).toHaveValue(mode === "light" ? "system" : "light");
       await appearance.selectOption(mode);
       await expect(root).toHaveAttribute("data-appearance", mode);
+      await expectReadableOptions(page.locator(".iop-account-menu"));
       if (mode === "dark") {
         await page.screenshot({ path: `test-results/IOP-202-account-dark-${width}.png`, fullPage: true });
       }
@@ -27,6 +48,14 @@ for (const width of [1440, 1024, 390]) {
       for (const section of ["Administration", "Data administration", "Data analysis", "Shift Handover", "Workforce & shifts", "Maintenance", "Assets", "Users & profiles"]) {
         await navigation.getByRole("button", { name: section, exact: true }).click();
         await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
+        const main = page.getByRole("main");
+        if (await main.locator("select option").count()) await expectReadableOptions(main);
+        if (section === "Maintenance") {
+          const location = main.getByRole("combobox", { name: "Selected location", exact: true });
+          await location.selectOption("assembly");
+          await expect(location).toHaveValue("assembly");
+          await location.selectOption("");
+        }
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.screenshot({ path: `test-results/IOP-202-${section.replace(/\s/g, "-")}-${mode}-${width}.png`, fullPage: true });
@@ -42,6 +71,7 @@ for (const width of [1440, 1024, 390]) {
     await page.emulateMedia({ colorScheme: "dark" });
     await expect(root).toHaveAttribute("data-appearance", "dark");
     await account.click();
+    await expectReadableOptions(page.locator(".iop-account-menu"));
     await page.getByRole("combobox", { name: "Language", exact: true }).selectOption("de");
     await expect(page.getByRole("combobox", { name: "Darstellung" })).toHaveValue("system");
     await expect(page.getByRole("option", { name: "Dunkel", exact: true })).toHaveCount(1);

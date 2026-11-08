@@ -2,11 +2,12 @@ import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixtu
 import { emptyWorkforce } from "./workforce-fixture";
 import { expect, test } from "@playwright/test";
 
-for (const width of [1440, 375]) {
-  test(`month comparison and collapsed reset at ${width}px`, async ({
+for (const width of [1440, 375]) for (const appearance of ["light", "dark"]) {
+  test(`month comparison and collapsed reset at ${width}px ${appearance}`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ colorScheme: appearance as "light" | "dark" });
     const requests: {
       months?: string[];
       filters?: Record<string, string[]>;
@@ -112,6 +113,12 @@ for (const width of [1440, 375]) {
     await page
       .getByRole("button", { name: "Data analysis", exact: true })
       .click();
+    const monthOptions = page.locator('select[aria-label="Month"] option');
+    await expect(monthOptions).toHaveCount(3);
+    for (const option of await monthOptions.all()) {
+      await expect(option).toHaveCSS("background-color", appearance === "dark" ? "rgb(26, 41, 60)" : "rgb(255, 255, 255)");
+      await expect(option).toHaveCSS("color", appearance === "dark" ? "rgb(227, 237, 247)" : "rgb(23, 43, 67)");
+    }
     await page
       .getByRole("button", { name: "Bereich analysis", exact: true })
       .click();
