@@ -1,6 +1,6 @@
 # IOP-230 — Closing motion and approved develop integration
 
-In progress. The owner's 2026-11-08 request authorizes matching the closing effect
+Completed. The owner's 2026-11-08 request authorizes matching the closing effect
 to opening and integrating the completed logo/navigation work into develop.
 Push is not inferred from that integration request; ask separately before origin
 publication under AGENTS.md/ADR-0008.
@@ -19,7 +19,7 @@ Story branch: `fix/IOP-230-navigation-motion`, already based on
 3. Extend navigation-session scenarios for actual mid-close geometry, hidden and
    noninteractive destinations, reduced motion and interrupted closing. Preserve
    the paired chevrons, button position and logo/caption.
-4. Synchronize shared docs, item/backlog and run web build/design guards, relevant
+4. Synchronize shared docs, both story contexts/backlog and run web build/design guards, relevant
    web unit tests and shell-branding, navigation-session, analysis-layout,
    platform-landing and appearance browser specs. Inspect actual motion/screenshots;
    check Markdown links and whitespace.
@@ -54,7 +54,15 @@ the test, and the final 35-case run passed. The temporary fixture-only preview
 configuration was removed and its server stopped after validation. Existing
 large-bundle warnings remain; no API or database change is involved.
 
-Implementation is ready for its local story commit and the owner-approved
-fast-forward into develop. After that integration, record the actual source/hash
-and ancestry on the story branch, complete this record and fast-forward the
-documentation increment into develop. Do not push without separate authorization.
+## Approved local integration
+
+Implementation commit: `0b2d385`. Local develop fast-forwarded from `f2e5454`
+to that commit with `git merge --ff-only fix/IOP-230-navigation-motion`.
+Verified both refs resolved to `0b2d385`, their trees were identical and the working
+tree was clean. This integrates the original logo/caption commits and the selected
+navigation icon, spacing and both animation directions without rewriting history.
+
+This documentation-only closure is committed on the story branch and then
+fast-forwarded into develop; it changes no validated application code. Retain all
+review branches. Origin remains unchanged pending explicit push authorization.
+The exact final documentation commit/ref verification is reported in the session.

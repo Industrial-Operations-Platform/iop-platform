@@ -417,5 +417,5 @@ pending; source image colors do not establish live equipment health.
 | [IOP-226 — Integrate personal username operator tooling](items/IOP-226-personal-username-tooling.md) | In progress |
 | [IOP-227 — Consistent native dropdown contrast](items/IOP-227-dropdown-contrast.md) | Completed; publication to develop and origin approved |
 | [IOP-228 — Bound card collections with internal scrolling](items/IOP-228-bounded-card-collections.md) | Completed; publication to develop and origin approved |
-| [IOP-229 — Owner-supplied platform logo](items/IOP-229-platform-logo.md) | Completed; logo and caption ready for local review |
-| [IOP-230 — Navigation reveal icon and motion](items/IOP-230-collapsed-navigation.md) | Completed implementation; local develop integration approved |
+| [IOP-229 — Owner-supplied platform logo](items/IOP-229-platform-logo.md) | Completed; integrated into local develop, origin publication pending |
+| [IOP-230 — Navigation reveal icon and motion](items/IOP-230-collapsed-navigation.md) | Completed; integrated into local develop, origin publication pending |

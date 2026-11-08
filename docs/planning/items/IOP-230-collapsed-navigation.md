@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed implementation; local integration approved. The owner's 2026-11-08 refinements require both toggle states to share
+Completed and integrated into local develop. The owner's 2026-11-08 refinements require both toggle states to share
 a slightly smaller left inset, double right chevrons (option B) for opening and a
 panel that visibly slides out from the left. The owner explicitly requested that
 this branch start from the pending logo branch. Preserve local commits and defer
@@ -37,5 +37,6 @@ The current successor branch `fix/IOP-230-navigation-motion` starts from
 [Position correction](../completed/IOP-230-toggle-position-plan.md). The original
 position was restored and validated in that slice.
 [Logo-based branch and motion](../completed/IOP-230-navigation-motion-plan.md).
-[Closing motion and integration](../active/IOP-230-navigation-close-plan.md).
-Local develop integration is authorized; origin publication requires separate approval.
+[Closing motion and integration](../completed/IOP-230-navigation-close-plan.md).
+Local develop contains the completed implementation; origin publication requires
+separate approval.

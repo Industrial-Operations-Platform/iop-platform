@@ -29,3 +29,8 @@ This owner-selected artwork supersedes the mark from
 built-in image-generation prompt and validation evidence.
 [Caption follow-up](../completed/IOP-229-logo-caption-plan.md). Publication requires
 separate owner authorization under ADR-0008.
+
+The owner approved local develop integration together with IOP-230 on 2026-11-08.
+Both logo commits are included through the dependent navigation branch;
+[integration evidence](../completed/IOP-230-navigation-close-plan.md) records the
+verified fast-forward. Origin publication remains pending separate authorization.
