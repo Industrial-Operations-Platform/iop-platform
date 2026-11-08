@@ -48,7 +48,25 @@ project and environment. Existing services/data are preserved.
 - The earlier IOP-224 web build, design guards, unit tests and 11 browser checks
   remain applicable; no further application UI changes were made.
 
-Cloud credential setup is awaiting the owner's explicit confirmation: automatic
-approval review rejected creating and transferring a new Railway environment token
-without authorization naming the token and GitHub destination. The prepared setup
-has not executed; repository publication and source integration are independent.
+The owner explicitly approved the named token creation, encrypted transfer to the
+GitHub repository/environment and automatic activation after the initial approval
+review rejection. GitHub's `railway-development` environment now exists, with five
+target variables and a deploy-branch policy allowing only develop. Railway's
+OAuth CLI session rejects project-token creation with `Not Authorized`. Browser
+access also stopped because its policy host could not verify the Windows browser
+URL. No token was created or transferred; automatic deployment remains disabled.
+
+Follow-up branch `fix/IOP-225-github-activation-status`, from develop at `980ec5c`,
+also compares new story branches against the default branch's merge base, so a
+new documentation branch does not classify the pre-existing application as new.
+Added regression cases for new documentation and feature branches.
+
+The updated classifier passes 24 regression cases. Indexed secret hygiene passed
+for all 1,454 files; scoped whitespace and documentation-link checks passed.
+Railway's live application source has no connected repository or image, so it
+cannot bypass these Actions conditions through direct GitHub autodeployment.
+
+Remaining activation: create the development-scoped project token through an
+authorized Railway first-party interface, save it as the GitHub environment secret
+and enable the repository variable. Do not transfer the account OAuth token.
+No live application deployment or database mutation was performed in this increment.

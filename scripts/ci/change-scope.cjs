@@ -47,6 +47,11 @@ function changedFiles(eventName, event, cwd = process.cwd()) {
   } else {
     throw new Error('Unsupported workflow event; deployment scope was not inferred.');
   }
+  const defaultBranch = event.repository?.default_branch;
+  if (/^0+$/.test(before) && defaultBranch && event.ref !== `refs/heads/${defaultBranch}`) {
+    git(['check-ref-format', `refs/heads/${defaultBranch}`]);
+    before = git(['merge-base', `refs/remotes/origin/${defaultBranch}`, after]);
+  }
   const output = /^0+$/.test(before)
     ? git(['ls-tree', '-r', '--name-only', '-z', after])
     : git(['diff', '--name-only', '--no-renames', '-z', before, after, '--']);

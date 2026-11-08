@@ -375,7 +375,12 @@ were configured.
 `NODE_ENV=production` remains the optimized Node runtime setting in the container;
 it does not name the Railway environment or create a production installation.
 
-The local and deployment commands are operational. The GitHub workflow is prepared
-in the repository; its secrets and variables are not enabled on GitHub. Remote
-recovery and evaluator functional acceptance have not been verified. Windows
+The local and deployment commands are operational. The GitHub `railway-development`
+environment and its five target variables are configured and restricted to develop.
+The selective workflow is prepared, but automatic deployment remains disabled until
+an environment-scoped Railway project token is saved as that environment's
+`RAILWAY_TOKEN` secret and the repository variable `RAILWAY_AUTO_DEPLOY` is set to
+`true`. The current OAuth CLI session cannot create project tokens; use Railway's
+project settings to issue the development token. Do not paste it into chat or Git.
+Remote recovery and evaluator functional acceptance have not been verified. Windows
 validation skips POSIX-specific tests; the prepared Linux job runs them.

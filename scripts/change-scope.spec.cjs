@@ -84,6 +84,26 @@ test('new branches inspect their complete tree and deleted refs do not run appli
   expect(workflowScope('push', { deleted: true }, directory)).toEqual({ validate: false, runtime: false });
 });
 
+test('a new documentation branch compares with the default branch instead of treating existing code as new', () => {
+  const base = commit('apps/api/src/example.ts', 'export {};', 'feat: initial application');
+  git(['update-ref', 'refs/remotes/origin/develop', base]);
+  git(['checkout', '--quiet', '-b', 'docs/example']);
+  const after = commit('docs/guide.md', 'Guide', 'docs: guide');
+  const event = { before: '0'.repeat(40), after, ref: 'refs/heads/docs/example', repository: { default_branch: 'develop' } };
+  expect(workflowScope('push', event, directory)).toEqual({ validate: false, runtime: false });
+  git(['update-ref', 'refs/remotes/origin/develop', after]);
+  expect(workflowScope('push', event, directory)).toEqual({ validate: false, runtime: false });
+});
+
+test('a new feature branch still validates newly changed application inputs', () => {
+  const base = commit('README.md', 'Initial', 'docs: initial');
+  git(['update-ref', 'refs/remotes/origin/develop', base]);
+  const after = commit('apps/web/src/example.ts', 'export {};', 'feat: application');
+  expect(workflowScope('push', {
+    before: '0'.repeat(40), after, ref: 'refs/heads/feature/example', repository: { default_branch: 'develop' },
+  }, directory)).toEqual({ validate: true, runtime: true });
+});
+
 test('manual validation remains available and invalid or unavailable revisions fail closed', () => {
   expect(workflowScope('workflow_dispatch', {}, directory)).toEqual({ validate: true, runtime: false });
   expect(() => changedFiles('push', { before: '--all', after: 'a'.repeat(40) }, directory)).toThrow('exact Git revisions');

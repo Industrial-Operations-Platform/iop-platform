@@ -7,6 +7,12 @@ limiting GitHub-triggered Railway publication to code changes, such as features
 and fixes, without a special deployment marker. Documentation should not incur
 the full validation/build/deployment pipeline.
 
+Implementation is validated. GitHub's development environment, five variables
+and develop-only deployment policy are configured. Activation awaits a Railway
+project token: the OAuth CLI cannot create one and browser control was stopped
+because its current URL could not be verified. The owner has explicitly approved
+the token transfer and activation; no further publication approval is needed.
+
 - Detect changed files across the complete push or pull request.
 - Skip expensive validation for documentation-only changes; test/tooling changes
   may validate but must not independently deploy the application.
