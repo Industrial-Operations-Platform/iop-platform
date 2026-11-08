@@ -2,7 +2,7 @@ import { fulfillOverviewContext, overviewContextFixture } from "./overview-fixtu
 import { expect, test } from "@playwright/test";
 import { emptyRecord } from "../src/features/maintenance/domain/models";
 
-for (const width of [1440, 375]) {
+for (const width of [1440, 1050, 375]) {
   test(`personal Start, historical daily and focused maintenance at ${width}px`, async ({
     page,
   }) => {
@@ -405,7 +405,43 @@ for (const width of [1440, 375]) {
       daily.getByText("Today's briefing", { exact: true }),
     ).toBeVisible();
     const safety = daily.getByRole("region", { name: "Safety section", exact: true });
-    expect((await safety.boundingBox())!.height).toBeLessThan(160);
+    const panels = await daily.getByRole("region").evaluateAll((regions) =>
+      regions.map((region) => {
+        const { top, bottom, left, width, height } = region.getBoundingClientRect();
+        return { top, bottom, left, width, height };
+      }),
+    );
+    if (width > 600) {
+      const firstRow = panels.filter((panel) => Math.abs(panel.top - panels[0].top) < 1);
+      expect(firstRow).toHaveLength(width > 1100 ? 3 : 2);
+      for (const panel of panels) {
+        const peers = panels.filter((peer) => Math.abs(peer.top - panel.top) < 1);
+        for (const peer of peers) expect(Math.abs(peer.height - panel.height)).toBeLessThan(1);
+      }
+    } else {
+      for (let index = 1; index < panels.length; index++) {
+        expect(panels[index].top).toBeGreaterThan(panels[index - 1].bottom);
+        expect(Math.abs(panels[index].left - panels[0].left)).toBeLessThan(1);
+        expect(Math.abs(panels[index].width - panels[0].width)).toBeLessThan(1);
+      }
+      const problems = daily.getByRole("region", { name: "Problems section", exact: true });
+      expect((await safety.boundingBox())!.height).toBeLessThan((await problems.boundingBox())!.height);
+    }
+    const emptyMessage = safety.getByText("No entries for this day.", { exact: true });
+    await expect(emptyMessage).toBeVisible();
+    const messageAlignment = await emptyMessage.evaluate((message) => {
+      const range = document.createRange();
+      range.selectNodeContents(message);
+      const text = range.getBoundingClientRect();
+      const body = message.getBoundingClientRect();
+      return {
+        horizontalOffset: Math.abs(text.left + text.width / 2 - body.left - body.width / 2),
+        verticalOffset: Math.abs(text.top + text.height / 2 - body.top - body.height / 2),
+      };
+    });
+    expect(messageAlignment.horizontalOffset).toBeLessThan(1);
+    expect(messageAlignment.verticalOffset).toBeLessThan(3);
+    await page.screenshot({ path: test.info().outputPath("daily-current.png"), fullPage: true });
     expect(await safety.locator(".handover-meeting-title").evaluate((heading) => {
       const label = document.createRange();
       label.selectNodeContents(heading.firstChild!);

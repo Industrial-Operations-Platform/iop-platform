@@ -168,7 +168,10 @@ collection action opens all active notices in the shared dialog, retaining detai
 navigation and pagination. Keep site-wide scope independent of department filters.
 
 Meeting category headings group label/count with an 8px gap and retain the add
-action at the right. Empty sections size to their content. Activity notifications
+action at the right. Under the owner's IOP-224 refinement, category panels match
+their row peers in three desktop columns and two medium-screen columns. Empty
+messages center in the available body while headings/actions remain at the top.
+The single-column mobile layout uses natural content heights. Activity notifications
 group title/unread count and read/refresh actions above a separately scrollable
 feed of bordered cards. The anchored panel remains viewport-bounded and preserves
 Escape/focus return and native keyboard controls. Reuse existing tokens and

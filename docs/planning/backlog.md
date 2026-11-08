@@ -412,6 +412,6 @@ pending; source image colors do not establish live equipment health.
 | [IOP-220 — Align record titles with their supporting content](items/IOP-220-record-title-alignment.md) | Completed; published |
 | [IOP-221 — Show Locator area names on hover](items/IOP-221-locator-area-hover.md) | Completed; published to origin |
 | [IOP-222 — Profile-first Start and compact Information](items/IOP-222-start-information.md) | Completed; published to origin and active on Railway |
-| [IOP-224 — Align Shift Handover category cards](items/IOP-224-handover-card-alignment.md) | Completed; validated |
+| [IOP-224 — Align Shift Handover category cards](items/IOP-224-handover-card-alignment.md) | Completed; responsive validation follow-up passed, publication pending |
 | [IOP-225 — Publish Railway updates only for application changes](items/IOP-225-selective-railway-deployments.md) | Deferred activation by owner; implementation validated |
 | [IOP-226 — Integrate personal username operator tooling](items/IOP-226-personal-username-tooling.md) | In progress |
