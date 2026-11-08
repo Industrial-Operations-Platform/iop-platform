@@ -22,4 +22,5 @@ See the [execution record](../completed/IOP-224-handover-card-alignment-plan.md)
   regression checks and pass the full browser suite before deployment.
 
 See the [validation follow-up](../completed/IOP-224-responsive-layout-validation-plan.md):
-all 110 browser tests passed. Publication of this follow-up remains pending.
+all 110 browser tests passed. The owner-approved follow-up is published through
+develop to origin and included in Railway's verified `fe0eecf` release.
