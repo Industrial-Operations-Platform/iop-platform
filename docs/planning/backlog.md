@@ -331,6 +331,7 @@ pending; source image colors do not establish live equipment health.
 | [IOP-195 — Reconcile delivered capabilities and remaining development](items/IOP-195-development-status.md) | Completed |
 | [IOP-197 — Integrate retained branches into develop and origin](items/IOP-197-branch-integration.md) | Completed |
 | [IOP-223 — Synchronize Mac source and share agent instructions](items/IOP-223-shared-agent-instructions.md) | Completed; published to origin |
+| [IOP-231 — Consolidate and publish pending branches](items/IOP-231-pending-branch-publication.md) | In progress |
 
 ## Owner-supplied reference data
 
