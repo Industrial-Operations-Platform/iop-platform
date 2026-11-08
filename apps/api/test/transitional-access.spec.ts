@@ -57,6 +57,19 @@ test("the attempt budget prevents password work and session issuance", async () 
   expect(passwords.verify).not.toHaveBeenCalled();
   expect(tx.issue).not.toHaveBeenCalled();
 });
+
+test.each(["AlexRivera", "alexRivera", "ALEXRIVERA"])("personal username %s resolves to the same canonical account", async (username) => {
+  const { service, tx, passwords } = authenticationFixture();
+  jest.mocked(tx.credential).mockResolvedValue({
+    userId: "stable-id", hash: "existing-hash", version: 4,
+    mustChangePassword: false, blockedUntil: 0,
+  });
+  jest.mocked(passwords.verify).mockResolvedValue(true);
+  await expect(service.login({ username, password: "existing-secret" })).resolves.toBe("a".repeat(43));
+  expect(tx.credential).toHaveBeenCalledWith("alexrivera");
+  expect(passwords.verify).toHaveBeenCalledWith("existing-secret", "existing-hash");
+  expect(tx.issue).toHaveBeenCalledWith("digest:" + "a".repeat(43), "stable-id", 4, 100 + 8 * 3600000);
+});
 test("initial-change sessions cannot authorize business access", async () => {
   const { service, tx } = authenticationFixture();
   jest.mocked(tx.session).mockResolvedValue({

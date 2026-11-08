@@ -54,6 +54,7 @@
     "local:operational-demos": "node scripts/local/operational-demos.cjs",
     "local:team-availability-demo": "node scripts/local/team-availability-demo.cjs",
     "railway": "node scripts/railway/cli.cjs",
+    "users:rename": "node scripts/access/rename-usernames.cjs",
     "railway:configure": "node scripts/railway/configure.cjs prepare",
     "railway:variables": "node scripts/railway/configure.cjs push",
     "railway:deploy": "node scripts/railway/deploy.cjs",

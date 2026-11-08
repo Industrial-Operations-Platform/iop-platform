@@ -229,6 +229,39 @@ npm run railway -- ssh --project PROJECT_ID --environment ENVIRONMENT_ID --servi
 
 Do not issue passwords during deployment or through GitHub Actions.
 
+## Personal usernames in local and Railway development
+
+Personal accounts use the first given name and first surname without a separator,
+for example `Alex Rivera Torres` becomes `alexrivera`. Login is case-insensitive:
+`AlexRivera` and `alexrivera` resolve to the same account. Storage remains lowercase.
+German umlauts use `ae`, `oe`, `ue`, and `ss`; other supported accents are removed.
+The generic `admin` account keeps its existing login because it has no personal name.
+
+On 2026-11-08, 16 existing accounts were renamed in each installation. Passwords,
+credential versions, user IDs, profiles, permissions and existing sessions were
+preserved. Old usernames are no longer login aliases. Changing a display name
+later does not automatically change the login. Use this naming convention when
+creating new personal accounts; resolve duplicate names explicitly.
+
+The operator command previews all changes and refuses username collisions. It
+requires Docker locally and the configured private SSH target for Railway
+development. Apply saves the previous mapping privately, executes a rollback
+trial, then commits the transaction and verifies credential preservation. Each
+change appends an operator event to the existing access audit.
+
+```sh
+npm run users:rename -- local --preview
+npm run users:rename -- railway --preview
+npm run users:rename -- local --apply
+npm run users:rename -- railway --apply
+```
+
+Private plans and verification records are stored under
+`.local-platform/username-changes/` and `.railway/username-changes/`. Repeating
+the command with the same account names produces no changes. The old workforce
+fixture command creates synthetic `m6.*` accounts; do not rerun it on an
+installation whose accounts have been personalized.
+
 ## Automatic updates from GitHub
 
 The **Platform validation** workflow first classifies the complete changed-file
