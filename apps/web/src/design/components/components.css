@@ -392,7 +392,7 @@
   animation: iop-navigation-reveal 220ms ease-out;
 }
 .iop-ui .iop-sidebar[data-closing="true"] {
-  animation: iop-navigation-hide 220ms ease-out;
+  animation: iop-navigation-hide 220ms ease-out forwards;
   pointer-events: none;
 }
 @keyframes iop-navigation-reveal {

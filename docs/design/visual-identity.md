@@ -618,7 +618,9 @@ preserve the brand's position; do not add collapsed-only offsets or tab borders.
 The panel slides from the left on opening and back to the left on closing, both
 over 220ms with ease-out timing. Keep its full physical width during closing even
 as workspace space is released. Closing navigation becomes inert and aria-hidden
-immediately, then fully hidden when its own closing animation ends; reopening
-cancels closing. Reduced motion completes either action immediately, including
-when the preference changes during closing. Closed destinations cannot take focus.
+immediately, then fully hidden when its own closing animation ends. Retain the
+final offscreen keyframe until hidden is applied so the panel cannot flash back
+onscreen at completion. Reopening cancels closing. Reduced motion completes either
+action immediately, including when the preference changes during closing. Closed
+destinations cannot take focus.
 See [IOP-230](../planning/items/IOP-230-collapsed-navigation.md).

@@ -3,8 +3,8 @@ import { installDesktopConsistencyFixture } from "./desktop-consistency-fixture"
 
 async function pauseNextNavigationAnimation(sidebar: Locator, animationName: string) {
   await sidebar.evaluate((element, expectedName) => {
-    const pause = (event: AnimationEvent) => {
-      if (event.target !== element || event.animationName !== expectedName) return;
+    const pause = (event: Event) => {
+      if (!(event instanceof AnimationEvent) || event.target !== element || event.animationName !== expectedName) return;
       element.removeEventListener("animationstart", pause);
       const animation = element.getAnimations().find(animation =>
         animation instanceof CSSAnimation && animation.animationName === expectedName)!;
@@ -41,9 +41,36 @@ test("navigation slides both ways, handles interruptions and resets after login"
   await page.goto("/");
   const navigation = page.getByRole("navigation", { name: "Main navigation", exact: true });
   await expect(navigation).toBeVisible();
-  await page.getByRole("button", { name: "Hide navigation", exact: true }).click();
-  await expect(navigation).toBeHidden();
   const sidebar = page.locator(".iop-sidebar");
+  // Expose the final CSS frame while React's completion handler is still pending.
+  await sidebar.evaluate(element => {
+    const holdCompletion = (event: Event) => {
+      if (!(event instanceof AnimationEvent) || event.target !== element || event.animationName !== "iop-navigation-hide") return;
+      element.removeEventListener("animationend", holdCompletion, true);
+      event.stopPropagation();
+      element.setAttribute("data-completion-held", "true");
+    };
+    element.addEventListener("animationend", holdCompletion, true);
+  });
+  await page.getByRole("button", { name: "Hide navigation", exact: true }).click();
+  await expect(sidebar).toHaveAttribute("data-completion-held", "true");
+  const completionFrames = await sidebar.evaluate(async element => {
+    const frames: number[] = [];
+    for (let frame = 0; frame < 2; frame++) {
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      frames.push(element.getBoundingClientRect().right);
+    }
+    return frames;
+  });
+  await page.screenshot({ path: info.outputPath("navigation-closing-completion.png") });
+  for (const rightEdge of completionFrames) expect(rightEdge).toBeLessThanOrEqual(0);
+  await sidebar.evaluate(element => {
+    element.removeAttribute("data-completion-held");
+    element.dispatchEvent(new AnimationEvent("animationend", {
+      animationName: "iop-navigation-hide", bubbles: true,
+    }));
+  });
+  await expect(navigation).toBeHidden();
   await expect(sidebar).toBeHidden();
   await pauseNextNavigationAnimation(sidebar, "iop-navigation-reveal");
   await page.getByRole("button", { name: "Show navigation", exact: true }).click();

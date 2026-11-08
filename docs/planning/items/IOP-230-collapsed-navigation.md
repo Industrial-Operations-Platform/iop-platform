@@ -2,7 +2,8 @@
 
 ## Status and goal
 
-Completed and published to origin/develop. The owner's 2026-11-08 refinements require both toggle states to share
+Completed locally with the closing flicker correction; previous delivery is published
+to origin/develop. The owner's 2026-11-08 refinements require both toggle states to share
 a slightly smaller left inset, double right chevrons (option B) for opening and a
 panel that visibly slides out from the left. The owner explicitly requested that
 this branch start from the pending logo branch. The owner approved publication
@@ -23,6 +24,8 @@ the closing motion to opening and integrating the completed work into local deve
   relationships, visible keyboard focus and 44px interaction target.
 - [x] Verify collapse/reopen behavior, navigation reachability, analytical resizing
   and desktop/mobile light/dark rendering; pass relevant guards/build/browser checks.
+- [x] Keep the panel offscreen at the closing animation's completion boundary,
+  without a visible flash before it becomes fully hidden.
 
 Shared design presentation owns this change under Accepted
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md).
@@ -41,3 +44,6 @@ position was restored and validated in that slice.
 Origin/develop contains the completed logo and navigation implementation.
 [IOP-232](IOP-232-publication-scope.md) removes the unrelated documentation added
 during the overly broad publication without changing the approved application.
+[Closing flicker regression](../completed/IOP-230-navigation-flicker-plan.md).
+The regression fix is committed separately for review; integration/publication of
+that increment is pending authorization.
