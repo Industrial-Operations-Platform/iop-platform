@@ -11,6 +11,10 @@
   padding: 0;
   margin: 0;
 }
+.assets-timeline-records {
+  display: grid;
+  gap: var(--iop-sectionGap);
+}
 .assets-equipment-picker {
   grid-template-columns: minmax(0, 1fr);
 }

@@ -84,7 +84,7 @@ export function MaintenanceAssignments({
         </p>
       )}
       {error && <Alert>{t(error)}</Alert>}
-      <div className="maintenance-assignment-cards">
+      <div className="maintenance-assignment-cards iop-card-collection" tabIndex={0}>
         {visible.slice(0, 4).map((record) => (
           <Button
             key={record.id}

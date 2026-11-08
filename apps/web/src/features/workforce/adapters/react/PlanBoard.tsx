@@ -297,7 +297,7 @@ export function DailyPlan({
               {personal.data.end || "—"}
             </p>
           )}
-        <div className="workforce-card-grid">
+        <div className="workforce-card-grid iop-card-collection" tabIndex={0}>
           {own.map((record) => {
             const assignment = record.data;
             const shift =
@@ -411,7 +411,7 @@ export function DailyPlan({
         <h2>
           {t("Floating support")} · {t("Maintenance")}
         </h2>
-        <div className="workforce-card-grid">
+        <div className="workforce-card-grid iop-card-collection" tabIndex={0}>
           {assignments
             .filter((r) => ["floating", "maintenance"].includes(r.data.duty))
             .map((r) => (

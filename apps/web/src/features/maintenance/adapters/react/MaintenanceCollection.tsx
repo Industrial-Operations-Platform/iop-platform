@@ -137,7 +137,7 @@ export function MaintenanceCollection({
                   {page.statusCounts[status]}
                 </Badge>
               </h2>
-              <div className="maintenance-cards">
+              <div className="maintenance-cards iop-card-collection" tabIndex={0}>
                 {page.records
                   .filter((record) => record.data.status === status)
                   .map((record) => (

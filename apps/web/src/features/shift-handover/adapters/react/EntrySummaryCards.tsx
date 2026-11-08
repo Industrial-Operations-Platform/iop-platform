@@ -42,7 +42,8 @@ export function EntrySummaryCards({
 }) {
   return (
     <div
-      className={`handover-summary-cards${expanded ? " handover-expanded-cards" : ""}${personal ? " handover-personal-cards" : ""}`}
+      tabIndex={0}
+      className={`handover-summary-cards iop-card-collection${expanded ? " handover-expanded-cards" : ""}${personal ? " handover-personal-cards" : ""}`}
     >
       {entries.map((entry) => (
         <Button

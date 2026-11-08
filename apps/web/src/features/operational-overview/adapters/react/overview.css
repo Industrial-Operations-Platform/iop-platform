@@ -4,7 +4,7 @@
 .overview-search-heading { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
 .overview-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--iop-sectionGap); min-width: 0; }
 .overview-search-panel .overview-groups { gap: 10px; }
-.overview-results { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; max-height: 26rem; overflow: auto; }
+.overview-results { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .overview-result { padding-bottom: 10px; border-bottom: 1px solid var(--iop-line); min-width: 0; }
 .iop-ui .overview-result > .iop-button { text-align: left; justify-content: flex-start; padding-inline: 0; border-inline-width: 0; font-weight: var(--iop-labelWeight); max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
 .overview-result > :is(.overview-summary, .overview-metadata) { margin-inline-start: 8px; }

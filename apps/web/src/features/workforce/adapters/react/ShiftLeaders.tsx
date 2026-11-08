@@ -23,7 +23,7 @@ export function ShiftLeaders({ board, date, select }: {
   return <Panel>
     <h2>{t("Shift leaders")}</h2>
     <p className="workforce-availability">{t("Availability follows planned working hours.")}</p>
-    <div className="workforce-card-grid">
+    <div className="workforce-card-grid iop-card-collection" tabIndex={0}>
       {visibleShifts(board).sort((a, b) => a.start.localeCompare(b.start)).map((shift) => {
         const records = leaders.filter((record) => record.data.shiftId === shift.id);
         return <section className="workforce-leader-shift" key={shift.id} aria-label={shift.label}>

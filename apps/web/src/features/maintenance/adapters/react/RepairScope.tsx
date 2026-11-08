@@ -219,7 +219,7 @@ export function RepairScope({
             <h4>
               {t(group.label)} <Badge>{group.entries.length}</Badge>
             </h4>
-            <div className="maintenance-related-reports">
+            <div className="maintenance-related-reports iop-card-collection" tabIndex={0}>
               {group.entries.map((entry) => {
                 const link = links.find((value) => value.id === entry.id);
                 return (

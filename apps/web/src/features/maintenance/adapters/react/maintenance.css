@@ -29,6 +29,12 @@
 .maintenance-related-report .handover-summary-cards {
   grid-template-columns: minmax(0, 1fr);
 }
+/* Related reports already scroll as one outer collection. */
+.iop-ui .maintenance-related-reports .handover-summary-cards {
+  max-height: none;
+  overflow: visible;
+  scrollbar-gutter: auto;
+}
 .maintenance-context-hidden {
   display: none;
 }

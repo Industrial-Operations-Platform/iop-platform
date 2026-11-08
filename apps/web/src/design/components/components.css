@@ -8,6 +8,20 @@
 .iop-ui * {
   box-sizing: border-box;
 }
+/* Bound the collection body; headings and pagination remain with its owner. */
+.iop-ui .iop-card-collection {
+  max-height: min(var(--iop-cardCollectionMaxHeight), 60dvh);
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  padding: 6px;
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+.iop-ui .iop-card-collection:empty {
+  padding: 0;
+}
 .iop-ui .iop-button,
 .iop-ui .iop-input,
 .iop-ui .iop-select {

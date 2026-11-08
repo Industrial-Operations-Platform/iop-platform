@@ -175,7 +175,8 @@ Meeting category headings group label/count with an 8px gap and retain the add
 action at the right. Under the owner's IOP-224 refinement, category panels match
 their row peers in three desktop columns and two medium-screen columns. Empty
 messages center in the available body while headings/actions remain at the top.
-The single-column mobile layout uses natural content heights. Activity notifications
+The single-column mobile layout uses natural panel heights around the bounded
+collection bodies introduced by IOP-228. Activity notifications
 group title/unread count and read/refresh actions above a separately scrollable
 feed of bordered cards. The anchored panel remains viewport-bounded and preserves
 Escape/focus return and native keyboard controls. Reuse existing tokens and
@@ -255,6 +256,21 @@ Show one Start collection at a time with at most three entries and an explicit
 shown/total count. Open reports excludes attention entries under IOP-196; highlights
 follow the assigned or explicitly browsed department. Empty collections show an explanatory state. Ordinary
 buttons preserve Tab/Enter/Space navigation without claiming ARIA tab semantics.
+
+## Bounded card collections — IOP-228
+
+Growing card collections use the shared `iop-card-collection` body and
+`cardCollectionMaxHeight` token: at most 26rem or 60% of the viewport height,
+whichever is smaller. Short and empty collections retain natural height. Keep
+panel headings, totals, filters and pagination outside the scrollable body. Apply
+this to Maintenance, Shift Handover, Area Overview, Workforce card grids and
+Digital Asset Record timeline cards. Existing bounded tables, Locator lists and
+dialogs retain their dedicated viewports.
+
+Collection bodies accept keyboard focus (`tabIndex={0}`), reserve scrollbar space
+and include padding for the shared focus outline. Preserve responsive columns,
+full record access and aligned category panels. Related reports scroll once at
+their outer collection rather than nesting independent scrolling card bodies.
 
 ## Operational collections — IOP-181
 

@@ -82,6 +82,7 @@ export const identity = {
   shellRailWidth: "220px",
   shellRailCompactWidth: "200px",
   readingWidth: "72ch",
+  cardCollectionMaxHeight: "26rem",
 } as const;
 
 export type Appearance = "light" | "dark";
