@@ -1,6 +1,6 @@
 # IOP-233 — Authorized develop and Railway publication
 
-Status: In progress. Branch: `feature/IOP-233-schedule-preview`.
+Status: Completed. Branch: `feature/IOP-233-schedule-preview`.
 [Implementation](../items/IOP-233-schedule-preview.md).
 
 ## Authorization and steps
@@ -41,3 +41,25 @@ and successfully inspected with remote `pg_restore --list`. Its private manifest
 retains SHA-256 and counts: 167 analytical publications across May–November 2026,
 2,019 Workforce records and 2,061 revisions. No isolated restore was executed
 because this workstation has no container runtime. No remote data was changed.
+
+## Publication evidence
+
+- Commit `84fc5d7` and publication authorization `3a3f515` fast-forwarded into
+  develop; both named refs were pushed normally to origin. No other branches,
+  stage/master, history or existing deployment resources were changed.
+- [GitHub run 43243781706](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/43243781706)
+  passed change classification, complete Linux platform/database/browser/container
+  validation and Railway publication. No validation guard was bypassed.
+- HTTPS `https://iop-development-9fb7.up.railway.app/build-revision.json` returned
+  `3a3f51569a12c875b5fbe1cd4ac6a109882a755e`; deployment smoke checks passed.
+- IOP-234 separately filled the owner-selected November roster and converted the
+  expressly approved Task Force days. Expected Workforce additions/revisions are
+  documented there; the same 167 analytical publications remain preserved.
+- Browser-host access was unavailable. A read-only native browser check was stopped
+  because Windows could not determine the browser URL confidently. No browser
+  interaction or authenticated visual claim was made. The release is verified by
+  successful complete CI, deployment smoke/revision checks and scoped remote data
+  operations; local responsive preview screenshots remain the visual evidence.
+
+Item/backlog synchronized and this plan archived. This publication does not
+authorize stage/master promotion or branch deletion.
