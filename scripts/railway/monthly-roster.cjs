@@ -8,17 +8,25 @@ const { prepareMonthlyRoster } = require("./monthly-roster-plan.cjs");
 const { runMonthlyRoster, pinnedWorkforcePort } = require("./monthly-roster-runner.cjs");
 
 function main(args = process.argv.slice(2)) {
-  const [flag, month, action = "--preview", conversion] = args;
-  if (flag !== "--month" || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month ?? "") || args.length > 4 ||
-      ![undefined, "--convert-task-force"].includes(conversion) || !["--preview", "--apply"].includes(action))
-    throw new Error("Use node scripts/railway/monthly-roster.cjs --month YYYY-MM [--preview|--apply] [--convert-task-force]. This generates evaluation plans only.");
+  const [flag, month, action = "--preview", conversion, balanceWeek] = args;
+  const balance = conversion === "--balance-technicians-week";
+  if (flag !== "--month" || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month ?? "") || args.length > (balance ? 5 : 4) ||
+      ![undefined, "--convert-task-force", "--balance-technicians-week"].includes(conversion) ||
+      (balance && !/^\d{4}-\d{2}-\d{2}$/.test(balanceWeek ?? "")) || !["--preview", "--apply"].includes(action))
+    throw new Error("Use node scripts/railway/monthly-roster.cjs --month YYYY-MM --preview|--apply [--convert-task-force | --balance-technicians-week YYYY-MM-DD].");
   const target = readTarget(); validateTarget(target);
   const status = JSON.parse(railway(["status", "--project", target.project, "--environment", target.environment, "--json"], { stdio: "pipe", encoding: "utf8" }).stdout);
   validateDevelopmentDeployment("develop", status, target);
   if (!target.sshIdentity || !fs.existsSync(target.sshIdentity)) throw new Error("Configure the existing private Railway SSH identity.");
   const variables = JSON.parse(fs.readFileSync(path.join(root, ".railway/app.variables.json"), "utf8"));
   const scope = JSON.parse(variables.IOP_SCOPE_JSON);
-  const input = { month, organizationId: scope.organization.id, siteId: scope.site.id, convertTaskForce: conversion === "--convert-task-force" };
+  const input = {
+    month,
+    organizationId: scope.organization.id,
+    siteId: scope.site.id,
+    convertTaskForce: conversion === "--convert-task-force",
+    ...(balance ? { balanceTechnicianWeek: balanceWeek } : {}),
+  };
   const directory = path.join(root, ".railway/monthly-rosters", month);
   const pointer = path.join(directory, "preview.json");
   const destination = { project: target.project, environment: target.environment, service: target.service };

@@ -82,30 +82,31 @@ async function runMonthlyRoster(input, expected, apply, prepareMonthlyRoster, pi
         assignmentsAdded += week.assignments.length;
       });
     }
-    if (apply) {
-      const groups = new Map();
-      for (const change of prepared.plan.conversions) {
-        const key = change.userId + "/" + change.weekStart;
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(change);
-      }
-      for (const changes of groups.values()) await store.run(actor, "workforce.administer", async tx => {
+    if (apply && prepared.plan.conversions.length) {
+      const changes = prepared.plan.conversions;
+      await store.run(actor, "workforce.administer", async tx => {
         if (digest((await tx.get("settings", "site"))?.data) !== digest(prepared.board.settings) ||
             digest(await tx.people()) !== digest(prepared.board.people))
           throw new Error("Shift configuration or people changed; repreview the conversions.");
         const app = compose(pinnedWorkforcePort(tx, actor));
         for (const change of changes) {
           if (stable(await tx.get("schedule", change.before.id)) !== stable(change.before))
-            throw new Error("A Task Force day changed; repreview its conversion.");
+            throw new Error("A planned day changed. Repreview its conversion.");
           const duties = (await tx.records(change.day.date, change.day.date)).filter(record =>
             record.kind === "assignment" && record.data.userId === change.userId);
           if (digest(duties) !== digest(change.duties))
-            throw new Error("Task Force duties changed; repreview their conversion.");
+            throw new Error("Planned duties changed. Repreview their conversion.");
           for (const duty of change.duties) await app.save(actor, {
             kind: "assignment", id: duty.id, expectedRevision: duty.revision, deleted: true, data: duty.data,
           });
         }
-        await app.saveWeek(actor, { userId: changes[0].userId, weekStart: changes[0].weekStart, days: changes.map(change => change.day) });
+        const weeks = new Map();
+        for (const change of changes) {
+          const key = change.userId + "/" + change.weekStart;
+          if (!weeks.has(key)) weeks.set(key, { userId: change.userId, weekStart: change.weekStart, days: [] });
+          weeks.get(key).days.push(change.day);
+        }
+        for (const week of weeks.values()) await app.saveWeek(actor, week);
         for (const change of changes) for (const assignment of change.assignments) await app.save(actor, assignment);
         schedulesConverted += changes.length;
         assignmentsConverted += changes.reduce((sum, change) => sum + change.assignments.length, 0);
@@ -119,12 +120,14 @@ async function runMonthlyRoster(input, expected, apply, prepareMonthlyRoster, pi
     if (apply) for (const change of prepared.plan.conversions) {
       const schedule = final.board.records.find(record => record.kind === "schedule" && record.id === change.before.id);
       if (schedule?.revision !== change.before.revision + 1 || schedule.data.start !== change.day.start || schedule.data.end !== change.day.end)
-        throw new Error("Task Force schedule verification failed.");
+        throw new Error("Converted schedule verification failed.");
       for (const previous of change.duties) {
         const duty = final.board.records.find(record => record.kind === "assignment" && record.id === previous.id);
-        if (!duty || duty.deleted || duty.revision !== previous.revision + 2 || duty.data.shiftId !== "middle" ||
+        const expected = change.assignments.find(assignment => assignment.id === previous.id);
+        if (!duty || duty.deleted || duty.revision !== previous.revision + 2 || duty.data.shiftId !== expected.data.shiftId ||
+            duty.data.start !== expected.data.start || duty.data.end !== expected.data.end ||
             duty.data.targetId !== previous.data.targetId || duty.data.phone !== previous.data.phone || duty.data.duty !== previous.data.duty)
-          throw new Error("Task Force duty preservation verification failed.");
+          throw new Error("Converted duty preservation verification failed.");
       }
     }
     const metrics = final.plan.people.map(person => {

@@ -19,25 +19,56 @@ function prepareMonthlyRoster(board, input, clock) {
   const plans = new Map();
   const preserved = [];
   const conversions = [];
+  const technicianChoices = new Map();
+  if (input.balanceTechnicianWeek) {
+    const weekStart = input.balanceTechnicianWeek;
+    const end = new Date(Date.parse(weekStart) + 6 * 86400000).toISOString().slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(weekStart) || monday(weekStart) !== weekStart || weekStart < from || end > to)
+      throw new Error("Choose a Monday and a complete technician week within the evaluation month.");
+    for (let offset = 0; offset < 7; offset++) {
+      const date = new Date(Date.parse(weekStart) + offset * 86400000).toISOString().slice(0, 10);
+      const working = people.filter(person => person.profile === "technician" && board.records.some(record =>
+        record.kind === "schedule" && !record.deleted && record.data.userId === person.id &&
+        record.data.date === date && record.data.status === "work"));
+      for (const [rank, person] of working.entries())
+        technicianChoices.set(person.id + "/" + date, shifts[(rank + offset) % 2]);
+    }
+  }
+  function conversion(person, existing, duties, shift) {
+    const previous = shifts.find(item => item.start === existing.data.start && item.end === existing.data.end);
+    if (!previous || duties.some(duty => duty.deleted || duty.data.start !== previous.start || duty.data.end !== previous.end))
+      throw new Error("A planned shift change has custom or removed duties. Review that day separately.");
+    return {
+      userId: person.id,
+      weekStart: monday(existing.data.date),
+      before: existing,
+      duties,
+      day: { date: existing.data.date, status: "work", start: shift.start, end: shift.end, expectedRevision: existing.revision },
+      assignments: duties.map(duty => ({
+        kind: "assignment",
+        id: duty.id,
+        deleted: false,
+        expectedRevision: duty.revision + 1,
+        data: { ...duty.data, shiftId: shift.id, start: shift.start, end: shift.end, startsAt: "", endsAt: "" },
+      })),
+    };
+  }
   for (const [index, person] of people.entries()) {
     for (let time = Date.parse(from); time <= Date.parse(to); time += 86400000) {
       const date = new Date(time).toISOString().slice(0, 10);
       const existing = board.records.find(record => record.kind === "schedule" && record.id === `${person.id}_${date}`);
       const duties = board.records.filter(record => record.kind === "assignment" && record.data.userId === person.id && record.data.date === date);
       if (existing || duties.length) {
-        const middle = shifts[2];
-        if (input.convertTaskForce && person.profile === "task-force" && existing && !existing.deleted &&
-            existing.data.status === "work" && (existing.data.start !== middle.start || existing.data.end !== middle.end)) {
-          const previous = shifts.find(shift => shift.start === existing.data.start && shift.end === existing.data.end);
-          if (!previous || duties.some(duty => duty.deleted || duty.data.start !== previous.start || duty.data.end !== previous.end))
-            throw new Error("A Task Force day has custom or removed duties; review it separately before conversion.");
-          conversions.push({ userId: person.id, weekStart: monday(date), before: existing, duties,
-            day: { date, status: "work", start: middle.start, end: middle.end, expectedRevision: existing.revision },
-            assignments: duties.map(duty => ({ kind: "assignment", id: duty.id, deleted: false, expectedRevision: duty.revision + 1,
-              data: { ...duty.data, shiftId: middle.id, start: middle.start, end: middle.end, startsAt: "", endsAt: "" } })) });
+        const desired = input.convertTaskForce && person.profile === "task-force"
+          ? shifts[2]
+          : technicianChoices.get(person.id + "/" + date);
+        if (desired && existing && !existing.deleted && existing.data.status === "work" &&
+            (existing.data.start !== desired.start || existing.data.end !== desired.end)) {
+          conversions.push(conversion(person, existing, duties, desired));
         } else preserved.push({ userId: person.id, date });
         continue;
       }
+      if (input.balanceTechnicianWeek) continue;
       const weekday = (new Date(date).getUTCDay() + 6) % 7;
       const week = Math.floor((time - Date.parse(firstMonday)) / (7 * 86400000));
       const offStart = (index + week) % 7;

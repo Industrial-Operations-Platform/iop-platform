@@ -2,7 +2,8 @@
 
 ## Status and authorization
 
-Completed. On 2026-11-12 the owner requested updating develop and the online
+In progress for a reported current-week distribution correction.
+On 2026-11-12 the owner requested updating develop and the online
 Railway installation: technicians should have early, late and weekend shifts;
 Task Force should have middle shifts. The owner selected the entire current
 month, November 2026, and agreed to preserving existing schedules/assignments.
@@ -44,3 +45,12 @@ development. Added 455 days/323 duties and converted exactly the approved 18
 Task Force days/duties. All requested coverage and original revision retention
 were verified; immediate repreview is a no-op. Source tooling is on origin/develop;
 the subsequent container packaging workflow is tracked separately in the evidence.
+
+## Current-week correction
+
+The owner's subsequent report identified missing late coverage in the visible
+November 9–15 week. Live inspection confirms 17 technicians on early hours on
+each working date November 9–14. The monthly coverage check was insufficient.
+Rebalance those existing working dates between early and late, retaining current
+Task Force middle work and prior revision evidence. Validate daily schedule and
+assignment counts. [Correction plan](../active/IOP-234-late-shift-balance-plan.md).

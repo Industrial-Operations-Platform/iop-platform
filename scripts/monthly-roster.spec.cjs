@@ -98,3 +98,58 @@ test("pinned application permissions use Workforce flags without requiring a SQL
   await expect(pinnedWorkforcePort({ canAdminister: false }, "actor").run("actor", "workforce.administer", useCase)).rejects.toThrow("authorization");
   expect(useCase).toHaveBeenCalledTimes(2);
 });
+
+test("the retained current week balances every working date and gives every technician early and late shifts", () => {
+  const current = board();
+  current.people = Array.from({ length: 17 }, (_, index) => ({ id: `technician-${index}`, profile: "technician" }));
+  current.people.push({ id: "task", profile: "task-force" });
+  for (const person of current.people) {
+    for (let day = 9; day <= 15; day++) {
+      const date = `2026-11-${String(day).padStart(2, "0")}`;
+      const working = day < 15;
+      const middle = person.profile === "task-force";
+      let start = "";
+      let end = "";
+      if (working) {
+        const shift = current.settings.shifts[middle ? 2 : 0];
+        start = shift.start;
+        end = shift.end;
+      }
+      current.records.push({
+        kind: "schedule", id: `${person.id}_${date}`, revision: 1, deleted: false,
+        data: { userId: person.id, date, status: working ? "work" : "off", start, end },
+      });
+      if (working) current.records.push({
+        kind: "assignment", id: `${person.id}_duty_${date}`, revision: 1, deleted: false,
+        data: { userId: person.id, date, shiftId: middle ? "middle" : "early", start, end, targetId: "zone", duty: "zone", phone: "" },
+      });
+    }
+  }
+  const before = structuredClone(current);
+  const input = { month: "2026-11", balanceTechnicianWeek: "2026-11-09" };
+  const plan = prepareMonthlyRoster(current, input, clock);
+  expect(current).toEqual(before);
+  expect(plan.conversions).toHaveLength(51);
+  expect(plan.weeks).toEqual([]);
+  expect(plan.conversions.some(change => change.userId === "task" || change.day.date === "2026-11-15")).toBe(false);
+  for (const change of plan.conversions) {
+    current.records.find(row => row.kind === "schedule" && row.id === change.before.id).data = {
+      ...change.before.data, start: change.day.start, end: change.day.end,
+    };
+    const duty = current.records.find(row => row.kind === "assignment" && row.id === change.duties[0].id);
+    duty.data = change.assignments[0].data;
+    expect(duty.data).toMatchObject({ shiftId: "late", targetId: "zone", duty: "zone", phone: "" });
+  }
+  for (let day = 9; day < 15; day++) {
+    const date = `2026-11-${String(day).padStart(2, "0")}`;
+    const schedules = current.records.filter(row => row.kind === "schedule" && row.data.date === date && row.data.userId !== "task");
+    const late = schedules.filter(row => row.data.start === "13:45").length;
+    expect([8, 9]).toContain(late);
+    expect(Math.abs(late - (schedules.length - late))).toBe(1);
+  }
+  for (const person of current.people.filter(person => person.profile === "technician"))
+    expect(current.records.filter(row => row.kind === "schedule" && row.data.userId === person.id && row.data.start === "13:45")).toHaveLength(3);
+  expect(prepareMonthlyRoster(current, input, clock).conversions).toEqual([]);
+  expect(() => prepareMonthlyRoster(current, { month: "2026-11", balanceTechnicianWeek: "2026-11-08" }, clock)).toThrow("Monday");
+  expect(() => prepareMonthlyRoster(current, { month: "2026-11", balanceTechnicianWeek: "2026-11-30" }, clock)).toThrow("complete technician week");
+});

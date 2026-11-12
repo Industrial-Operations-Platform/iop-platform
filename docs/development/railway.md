@@ -265,6 +265,15 @@ retained and any conflict rejects the transaction. Custom intervals, removed
 duties, absences and other profiles are not silently rewritten. Historical
 revisions remain available. Changing this flag requires a new matching preview.
 
+To correct a retained evaluation week's technician distribution, use
+`--balance-technicians-week YYYY-MM-DD` with an explicit Monday, on both preview
+and apply. Working technicians alternate early/late by person and date, giving
+daily shift counts that differ by at most one. The option applies to existing
+working dates within a complete week of the selected month. The complete
+conversion batch shares one transaction while schedules and existing duty IDs
+move together. Private evidence records each expected revision and resulting
+schedule/duty. The normal missing-day planner remains available.
+
 ## Personal usernames in local and Railway development
 
 Personal accounts use the first given name and first surname without a separator,
