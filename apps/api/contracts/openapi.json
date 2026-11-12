@@ -10221,15 +10221,42 @@
           "outcome"
         ]
       },
+      "WorkforceImportRevisionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "expectedRevision": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "expectedRevision"
+        ]
+      },
       "WorkforceProposalPreviewRequestDto": {
         "type": "object",
         "properties": {
           "weeks": {
-            "minItems": 1,
+            "minItems": 0,
             "maxItems": 100,
+            "description": "An empty list views saved schedules without changes.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/WorkforceWeekDto"
+            }
+          },
+          "replanAssignments": {
+            "type": "boolean",
+            "description": "Preview and atomically apply dependent full-shift duty moves/removals with schedule edits."
+          },
+          "assignmentRevisions": {
+            "description": "Exact active dependent-duty revisions returned by preview, required when saving with replanning.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceImportRevisionDto"
             }
           },
           "from": {
@@ -10325,6 +10352,103 @@
           "after"
         ]
       },
+      "WorkforceProposalIssueDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "assignmentId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "custom-hours",
+              "assignment-conflict"
+            ]
+          }
+        },
+        "required": [
+          "userId",
+          "date",
+          "assignmentId",
+          "code"
+        ]
+      },
+      "WorkforceAssignmentIntervalDto": {
+        "type": "object",
+        "properties": {
+          "shiftId": {
+            "type": "string"
+          },
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "shiftId",
+          "start",
+          "end"
+        ]
+      },
+      "WorkforceProposalAssignmentChangeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "move",
+              "remove"
+            ]
+          },
+          "targetLabel": {
+            "type": "string"
+          },
+          "phoneLabel": {
+            "type": "string"
+          },
+          "before": {
+            "$ref": "#/components/schemas/WorkforceAssignmentIntervalDto"
+          },
+          "after": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WorkforceAssignmentIntervalDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "date",
+          "action",
+          "targetLabel",
+          "phoneLabel",
+          "before",
+          "after"
+        ]
+      },
       "WorkforceProposalPreviewDto": {
         "type": "object",
         "properties": {
@@ -10341,12 +10465,37 @@
             "items": {
               "$ref": "#/components/schemas/WorkforcePersonLoadDto"
             }
+          },
+          "canSave": {
+            "type": "boolean"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceProposalIssueDto"
+            }
+          },
+          "assignmentChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceProposalAssignmentChangeDto"
+            }
+          },
+          "assignmentRevisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceImportRevisionDto"
+            }
           }
         },
         "required": [
           "from",
           "to",
-          "people"
+          "people",
+          "canSave",
+          "issues",
+          "assignmentChanges",
+          "assignmentRevisions"
         ]
       },
       "WorkforceProposalDto": {
@@ -10359,25 +10508,21 @@
             "items": {
               "$ref": "#/components/schemas/WorkforceWeekDto"
             }
+          },
+          "replanAssignments": {
+            "type": "boolean",
+            "description": "Preview and atomically apply dependent full-shift duty moves/removals with schedule edits."
+          },
+          "assignmentRevisions": {
+            "description": "Exact active dependent-duty revisions returned by preview, required when saving with replanning.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceImportRevisionDto"
+            }
           }
         },
         "required": [
           "weeks"
-        ]
-      },
-      "WorkforceImportRevisionDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "expectedRevision": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "id",
-          "expectedRevision"
         ]
       },
       "WorkforceCommitDto": {

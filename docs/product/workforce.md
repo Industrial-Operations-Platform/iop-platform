@@ -58,6 +58,8 @@ weekdays; unknown days stay empty. Only changed days are submitted in one save.
 
 [IOP-233](../planning/items/IOP-233-schedule-preview.md) adds an unsaved proposal
 for up to 100 people in the same week. Switching people retains each draft.
+**View schedule** shows the selected person's saved week and workload comparison
+without requiring edits or writing data.
 **Preview proposal** validates the complete proposal without writing and displays
 a weekly matrix plus saved/proposed workload comparisons for active site people.
 Choose an inclusive analysis period of up to 93 days containing the edited week;
@@ -81,9 +83,17 @@ it, switching weeks or reloading the page. This adds no persisted draft state.
 
 Week updates recheck the current scoped grant and each day's revision, and validate
 the complete proposed week, neighboring overnight schedules and existing zone/phone
-assignments. An invalid or stale row prevents every write. Updating personal hours
-does not move or delete workplace assignments: incompatible assignments must first
-be corrected within the valid interval, or removed by an Administrator and replanned.
+assignments. An invalid or stale row prevents every write.
+[IOP-235](../planning/items/IOP-235-schedule-edit-preview.md) lets the weekly editor
+preview full configured-shift assignments moving with a changed shift, retaining
+their Halle and phone responsibility. Absence or training changes preview removal
+of operational assignments. The preview lists every intended assignment change;
+Save proposal commits it with the schedules and retains revision history.
+Custom assignment hours that no longer fit, or conflicting phone responsibilities,
+remain visible as blocking issues. Correct those assignments before saving.
+**Reload saved schedules** discards drafts and reloads current revisions after a
+stale-data error. Legacy weekly API saves and imports retain strict assignment
+preservation unless proposal replanning is explicitly requested.
 Technicians cannot edit weekly schedules. CSV/email remains an optional admin tool.
 
 ## Initial configuration

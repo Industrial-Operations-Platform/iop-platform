@@ -1824,6 +1824,48 @@ test("multi-person proposal preview is read-only and stale second person rolls b
   expect(await workforce.history("tech-a", "schedule", "tech-a_2026-12-07")).toHaveLength(1);
 });
 
+test("assigned schedule proposals preview without writes and atomically replan with current duty revisions", async () => {
+  const workforce = workforceService();
+  const original = await workforce.board("admin-a", "2026-12-14", "2026-12-20");
+  const settingsRecord = original.records.find(record => record.kind === "settings");
+  await workforce.save("admin-a", { kind: "settings", id: "site", expectedRevision: settingsRecord?.revision ?? 0, deleted: false,
+    data: { ...original.settings, shifts: [...original.settings.shifts,
+      { id: "test-middle", label: "Test middle", start: "08:45", end: "18:00", days: [0, 1, 2, 3, 4, 5, 6] }] } });
+  try {
+    const week = { userId: "tech-a", weekStart: "2026-12-14", days: [
+      { date: "2026-12-15", status: "work", start: "05:00", end: "14:15", expectedRevision: 0 },
+    ] };
+    await workforce.saveWeek("lead-a", week);
+    const duty = await workforce.save("lead-a", { kind: "assignment", id: "proposal-assigned-duty", expectedRevision: 0, deleted: false,
+      data: { userId: "tech-a", date: "2026-12-15", shiftId: "early", targetId: "zone", duty: "zone", phone: "", start: "05:00", end: "14:15" } });
+    const input = { replanAssignments: true, weeks: [{ ...week, days: [{ ...week.days[0], start: "08:45", end: "18:00", expectedRevision: 1 }] }] };
+    const preview = await workforce.previewProposal("lead-a", { ...input, from: "2026-12-14", to: "2026-12-20" });
+    expect(preview).toMatchObject({ canSave: true, issues: [], assignmentChanges: [{ id: duty.id, action: "move" }] });
+    expect(await workforce.history("tech-a", "assignment", duty.id)).toHaveLength(1);
+    await workforce.save("lead-a", { kind: "assignment", id: duty.id, expectedRevision: 1, deleted: false, data: duty.data });
+    await expect(workforce.saveProposal("lead-a", { ...input, assignmentRevisions: preview.assignmentRevisions })).rejects.toMatchObject({ code: "workforce_conflict" });
+    expect(await workforce.history("tech-a", "schedule", "tech-a_2026-12-15")).toHaveLength(1);
+    const current = await workforce.previewProposal("lead-a", { ...input, from: "2026-12-14", to: "2026-12-20" });
+    await workforce.saveProposal("lead-a", { ...input, assignmentRevisions: current.assignmentRevisions });
+    const board = await workforce.board("lead-a", "2026-12-15", "2026-12-15");
+    expect(board.records.find(record => record.kind === "schedule" && record.data.userId === "tech-a").data).toMatchObject({ start: "08:45", end: "18:00" });
+    expect(board.records.find(record => record.id === duty.id)).toMatchObject({ revision: 3, data: { shiftId: "test-middle", targetId: "zone", start: "08:45", end: "18:00" } });
+    const training = { replanAssignments: true, weeks: [{ ...week, days: [{ ...week.days[0], status: "training", start: "08:45", end: "18:00", expectedRevision: 2 }] }] };
+    const removal = await workforce.previewProposal("lead-a", { ...training, from: "2026-12-14", to: "2026-12-20" });
+    expect(removal).toMatchObject({ canSave: true, assignmentChanges: [{ id: duty.id, action: "remove", after: null }] });
+    await workforce.saveProposal("lead-a", { ...training, assignmentRevisions: removal.assignmentRevisions });
+    const retired = await workforce.board("lead-a", "2026-12-15", "2026-12-15");
+    expect(retired.records.find(record => record.id === duty.id)).toBeUndefined();
+    const history = await workforce.history("tech-a", "assignment", duty.id);
+    expect(history).toHaveLength(4);
+    expect(history[0]).toMatchObject({ action: "deleted", record: { deleted: true, revision: 4 } });
+  } finally {
+    const current = await workforce.board("admin-a", "2026-12-14", "2026-12-20");
+    await workforce.save("admin-a", { kind: "settings", id: "site", expectedRevision: current.records.find(record => record.kind === "settings").revision,
+      deleted: false, data: original.settings });
+  }
+});
+
 test("matrix column filters combine before counts and cursor pagination, with literal references and exact assignees", async () => {
   const ids = [];
   for (let index = 0; index < 23; index++) {

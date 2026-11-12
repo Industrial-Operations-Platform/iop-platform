@@ -163,6 +163,7 @@ for (const width of [1440, 375]) {
     await page.setViewportSize({ width, height: 1000 });
     const errors: string[] = [];
     const writes: { path: string; data: unknown }[] = [];
+    const savedDays = new Map<string, { status: string; start: string; end: string }>();
     page.on("pageerror", (error) => errors.push(error.message));
     let users = [
       {
@@ -256,6 +257,10 @@ for (const width of [1440, 375]) {
             })),
             records: board.records.map((record) => ({
               ...record,
+              data: "userId" in record.data && "date" in record.data && savedDays.has(record.data.userId + "/" + record.data.date)
+                ? { ...record.data, ...savedDays.get(record.data.userId + "/" + record.data.date),
+                  ...(record.kind === "assignment" ? { shiftId: "middle" } : {}) }
+                : record.data,
               personName:
                 "userId" in record.data
                   ? (names.get(record.data.userId) ?? record.personName)
@@ -266,13 +271,30 @@ for (const width of [1440, 375]) {
       }
       if (path.endsWith("/workforce/schedules/preview")) {
         const input = route.request().postDataJSON();
-        expect(input.weeks).toHaveLength(2);
+        expect(input.replanAssignments).toBe(true);
+        expect(input.weeks.length).toBeLessThanOrEqual(2);
+        const changed = input.weeks.flatMap((week: { userId: string; days: { date: string; start: string; end: string }[] }) =>
+          week.userId === "tech" ? week.days.map(day => ({
+            id: "zone-" + day.date + "-early", userId: week.userId, date: day.date, action: "move",
+            targetLabel: "Assembly", phoneLabel: "", before: { shiftId: "early", start: "05:00", end: "14:15" },
+            after: { shiftId: shifts.find(shift => shift.start === day.start)?.id, start: day.start, end: day.end },
+          })) : []);
         const load = { days: 0, minutes: 0, saturdays: 0, sundays: 0, unknownDays: 7,
           shifts: shifts.map((shift) => ({ id: shift.id, label: shift.label, count: 0 })) };
-        return route.fulfill({ json: { from: input.from, to: input.to, people: [
+        return route.fulfill({ json: { from: input.from, to: input.to,
+          canSave: input.weeks.length > 0, issues: [], assignmentChanges: changed,
+          assignmentRevisions: changed.map((change: { id: string }) => ({ id: change.id, expectedRevision: 1 })), people: [
           { userId: "tech", name: "Morgan Updated", before: load, after: { ...load, days: 5, minutes: 2775 } },
           { userId: "support", name: "Jordan Support", before: load, after: { ...load, days: 5, minutes: 2775 } },
         ] } });
+      }
+      if (path.endsWith("/workforce/schedules/proposal")) {
+        const input = route.request().postDataJSON();
+        expect(input.replanAssignments).toBe(true);
+        expect(input.assignmentRevisions).toHaveLength(1);
+        writes.push({ path, data: input });
+        for (const week of input.weeks) for (const day of week.days) savedDays.set(week.userId + "/" + day.date, day);
+        return route.fulfill({ json: { changed: 1, unchanged: 0 } });
       }
       throw new Error(`Unexpected request: ${path}`);
     });
@@ -571,6 +593,18 @@ for (const width of [1440, 375]) {
       .getByRole("button", { name: "Weekly schedules", exact: true })
       .click();
     await page.getByLabel("Person", { exact: true }).selectOption("tech");
+    await page.getByRole("button", { name: "View schedule", exact: true }).click();
+    await expect(page.getByLabel("Proposed weekly schedules")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Save proposal/ })).toHaveCount(0);
+    const tuesday = page.getByRole("region", { name: /Tuesday/ });
+    await tuesday.getByLabel("Shift or status").selectOption("shift:middle");
+    await page.getByRole("button", { name: "Preview proposal (1)" }).click();
+    const assignmentChanges = page.getByLabel("Assignment changes", { exact: true });
+    await expect(assignmentChanges.getByRole("cell", { name: "08:45–18:00", exact: true })).toBeVisible();
+    await screenshot("assigned-shift-preview");
+    await page.getByRole("button", { name: "Save proposal (1)" }).click();
+    await expect(page.getByText("Saved 1 schedule days.")).toBeVisible();
+    await expect(tuesday.getByLabel("Start time")).toHaveValue("08:45");
     await page.getByLabel("Apply shift or status").selectOption("shift:late");
     await page.getByRole("button", { name: "Apply to selected days" }).click();
     await screenshot("weekly");
@@ -584,7 +618,7 @@ for (const width of [1440, 375]) {
     await expect(page.getByRole("button", { name: "Save proposal (10)" })).toBeVisible();
     await expect(page.getByLabel("Workload comparison", { exact: true }).getByRole("row")).toHaveCount(3);
     await screenshot("proposal");
-    expect(writes).toHaveLength(1);
+    expect(writes).toHaveLength(2);
     await page.getByRole("button", { name: "Cancel", exact: true }).click();
     await expect(matrix).toBeVisible();
     await page
@@ -620,7 +654,7 @@ for (const width of [1440, 375]) {
       }),
     ).toBeVisible();
     await screenshot("configuration-de");
-    expect(writes).toHaveLength(1);
+    expect(writes).toHaveLength(2);
     expect(errors).toEqual([]);
   });
 }

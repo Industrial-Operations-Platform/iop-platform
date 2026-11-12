@@ -63,10 +63,17 @@ const board: Board = {
 };
 function renderEditor() {
   const load = { days: 0, minutes: 0, saturdays: 0, sundays: 0, unknownDays: 7, shifts: [{ id: "early", label: "Early", count: 0 }, { id: "late", label: "Late", count: 0 }, { id: "", label: "Other scheduled hours", count: 0 }] };
+  const preview = {
+    from: "2026-09-01", to: "2026-10-04", canSave: true,
+    issues: [], assignmentChanges: [], assignmentRevisions: [],
+    people: board.people.map(person => ({ userId: person.id, name: person.name, before: load, after: { ...load, days: 5, minutes: 2775 } })),
+  };
   const gateway: Gateway = {
     board: jest.fn(),
     saveWeek: jest.fn(async () => ({ changed: 5, unchanged: 0 })),
-    previewProposal: jest.fn(async (input) => ({ from: input.from, to: input.to, people: board.people.map((person) => ({ userId: person.id, name: person.name, before: load, after: { ...load, days: 5, minutes: 2775 } })) })),
+    previewProposal: jest.fn(async (input) => ({
+      ...preview, from: input.from, to: input.to, canSave: input.weeks.length > 0,
+    })),
     saveProposal: jest.fn(async () => ({ changed: 5, unchanged: 0 })),
     save: jest.fn(),
     preview: jest.fn(),
@@ -89,7 +96,7 @@ function renderEditor() {
   fireEvent.change(screen.getByLabelText("Person"), {
     target: { value: "tech" },
   });
-  return { gateway, refresh, rerenderBoard: (next: Board) => view.rerender(editor(next)) };
+  return { gateway, refresh, preview, rerenderBoard: (next: Board) => view.rerender(editor(next)) };
 }
 test("weekly entry loads existing absence, applies weekdays, adjusts one day and saves only changed dates with revisions", async () => {
   const { gateway, refresh } = renderEditor();
@@ -205,4 +212,54 @@ test("people retain separate drafts, preview the whole proposal and invalidate i
   expect(screen.queryByRole("button", { name: /Save proposal/ })).not.toBeInTheDocument();
   expect(gateway.saveProposal).not.toHaveBeenCalled();
   expect(gateway.saveWeek).not.toHaveBeenCalled();
+});
+
+test("a saved schedule can be viewed without edits or any save request", async () => {
+  const { gateway } = renderEditor();
+  fireEvent.click(screen.getByRole("button", { name: "View schedule" }));
+  expect(await screen.findByLabelText("Proposed weekly schedules")).toBeVisible();
+  expect(screen.getByText("Preview only. Nothing has been saved.")).toBeVisible();
+  expect(gateway.previewProposal).toHaveBeenCalledWith({ weeks: [], replanAssignments: true, from: "2026-09-01", to: "2026-10-04" });
+  expect(screen.queryByRole("button", { name: /Save proposal/ })).not.toBeInTheDocument();
+  expect(gateway.saveProposal).not.toHaveBeenCalled();
+});
+
+test("assignment moves are reviewed and their exact revision tokens accompany the explicit save", async () => {
+  const { gateway, preview } = renderEditor();
+  const tokens = [{ id: "duty", expectedRevision: 3 }];
+  jest.mocked(gateway.previewProposal!).mockResolvedValue({ ...preview,
+    assignmentRevisions: tokens,
+    assignmentChanges: [{ id: "duty", userId: "tech", date: "2026-09-28", action: "move", targetLabel: "Test Halle", phoneLabel: "",
+      before: { shiftId: "early", start: "05:00", end: "14:15" }, after: { shiftId: "late", start: "13:45", end: "23:00" } }],
+  });
+  fireEvent.change(within(screen.getByRole("region", { name: /Monday/ })).getByLabelText("Shift or status"), { target: { value: "shift:late" } });
+  fireEvent.click(screen.getByRole("button", { name: "Preview proposal (1)" }));
+  const changes = within(await screen.findByLabelText("Assignment changes"));
+  expect(changes.getByText("Test Halle")).toBeVisible();
+  expect(changes.getByText("05:00–14:15")).toBeVisible();
+  expect(changes.getByText("13:45–23:00")).toBeVisible();
+  expect(gateway.saveProposal).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Save proposal (1)" }));
+  await waitFor(() => expect(gateway.saveProposal).toHaveBeenCalledWith(expect.objectContaining({ replanAssignments: true, assignmentRevisions: tokens })));
+});
+
+test("a conflicting proposal still displays the calendar and offers reload recovery for stale data", async () => {
+  const { gateway, preview, refresh } = renderEditor();
+  jest.mocked(gateway.previewProposal!).mockResolvedValueOnce({ ...preview, canSave: false,
+    issues: [{ userId: "tech", date: "2026-09-28", assignmentId: "duty", code: "custom-hours" }],
+  });
+  const monday = within(screen.getByRole("region", { name: /Monday/ }));
+  fireEvent.change(monday.getByLabelText("Shift or status"), { target: { value: "shift:late" } });
+  fireEvent.click(screen.getByRole("button", { name: "Preview proposal (1)" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("custom hours");
+  expect(screen.getByLabelText("Proposed weekly schedules")).toBeVisible();
+  expect(screen.getByRole("button", { name: "Save proposal (1)" })).toBeDisabled();
+  expect(gateway.saveProposal).not.toHaveBeenCalled();
+  fireEvent.change(monday.getByLabelText("Start time"), { target: { value: "14:00" } });
+  jest.mocked(gateway.previewProposal!).mockRejectedValueOnce(new Error("The plan changed or has dependent assignments. Reload before saving."));
+  fireEvent.click(screen.getByRole("button", { name: "Preview proposal (1)" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Reload saved schedules" }));
+  expect(refresh).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole("button", { name: "View schedule" })).toBeVisible();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 });

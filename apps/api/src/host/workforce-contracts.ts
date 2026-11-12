@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import type {
   Kind,
   Payloads,
@@ -136,8 +136,14 @@ export class WorkforcePersonalSummaryDto {
 export class WorkforceProposalDto {
   @ApiProperty({ type: [WorkforceWeekDto], minItems: 1, maxItems: 100 })
   weeks!: WorkforceWeekDto[];
+  @ApiPropertyOptional({ description: "Preview and atomically apply dependent full-shift duty moves/removals with schedule edits." })
+  replanAssignments?: boolean;
+  @ApiPropertyOptional({ type: [WorkforceImportRevisionDto], description: "Exact active dependent-duty revisions returned by preview, required when saving with replanning." })
+  assignmentRevisions?: WorkforceImportRevisionDto[];
 }
 export class WorkforceProposalPreviewRequestDto extends WorkforceProposalDto {
+  @ApiProperty({ type: [WorkforceWeekDto], minItems: 0, maxItems: 100, description: "An empty list views saved schedules without changes." })
+  declare weeks: WorkforceWeekDto[];
   @ApiProperty({ format: "date", description: "Inclusive analysis period, at most 93 days, containing the entire edited week." }) from!: string;
   @ApiProperty({ format: "date" }) to!: string;
 }
@@ -160,6 +166,31 @@ export class WorkforcePersonLoadDto {
   @ApiProperty({ type: WorkforceScheduleLoadDto }) before!: WorkforceScheduleLoadDto;
   @ApiProperty({ type: WorkforceScheduleLoadDto }) after!: WorkforceScheduleLoadDto;
 }
+export class WorkforceProposalIssueDto {
+  @ApiProperty() userId!: string;
+  @ApiProperty({ format: "date" }) date!: string;
+  @ApiProperty() assignmentId!: string;
+  @ApiProperty({ enum: ["custom-hours", "assignment-conflict"] }) code!: string;
+}
+export class WorkforceAssignmentIntervalDto {
+  @ApiProperty() shiftId!: string;
+  @ApiProperty() start!: string;
+  @ApiProperty() end!: string;
+}
+export class WorkforceProposalAssignmentChangeDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() userId!: string;
+  @ApiProperty({ format: "date" }) date!: string;
+  @ApiProperty({ enum: ["move", "remove"] }) action!: string;
+  @ApiProperty() targetLabel!: string;
+  @ApiProperty() phoneLabel!: string;
+  @ApiProperty({ type: WorkforceAssignmentIntervalDto }) before!: WorkforceAssignmentIntervalDto;
+  @ApiProperty({ type: WorkforceAssignmentIntervalDto, nullable: true }) after!: WorkforceAssignmentIntervalDto | null;
+}
 export class WorkforceProposalPreviewDto extends WorkforceRangeDto {
   @ApiProperty({ type: [WorkforcePersonLoadDto] }) people!: WorkforcePersonLoadDto[];
+  @ApiProperty() canSave!: boolean;
+  @ApiProperty({ type: [WorkforceProposalIssueDto] }) issues!: WorkforceProposalIssueDto[];
+  @ApiProperty({ type: [WorkforceProposalAssignmentChangeDto] }) assignmentChanges!: WorkforceProposalAssignmentChangeDto[];
+  @ApiProperty({ type: [WorkforceImportRevisionDto] }) assignmentRevisions!: WorkforceImportRevisionDto[];
 }

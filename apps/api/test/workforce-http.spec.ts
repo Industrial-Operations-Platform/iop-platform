@@ -23,6 +23,18 @@ describe("schedule proposal transport", () => {
     await app.init();
   });
   afterEach(async () => { await app.close(); });
+  test("read-only viewing and replanning revision tokens cross the transport unchanged", async () => {
+    const api = request(app.getHttpServer());
+    const view = { weeks: [], replanAssignments: true, from: "2026-11-01", to: "2026-11-15" };
+    const response = { ...view, people: [], canSave: false, issues: [], assignmentChanges: [], assignmentRevisions: [] };
+    service.previewProposal.mockResolvedValueOnce(response);
+    await api.post("/api/v1/workforce/schedules/preview").send(view).expect(201, response);
+    expect(service.previewProposal).toHaveBeenCalledWith(actor, view);
+    const proposal = { weeks: [{ userId: "tech", weekStart: "2026-11-09", days: [{ date: "2026-11-10", status: "work", start: "08:45", end: "18:00", expectedRevision: 2 }] }],
+      replanAssignments: true, assignmentRevisions: [{ id: "duty", expectedRevision: 3 }] };
+    await api.post("/api/v1/workforce/schedules/proposal").send(proposal).expect(201);
+    expect(service.saveProposal).toHaveBeenCalledWith(actor, proposal);
+  });
   test("preview and save derive the actor from the session and preserve conflict and denial responses", async () => {
     const api = request(app.getHttpServer());
     const proposal = { weeks: [{ userId: "tech", weekStart: "2026-11-09", days: [{ date: "2026-11-09", status: "work", start: "05:00", end: "14:15", expectedRevision: 0 }] }] };

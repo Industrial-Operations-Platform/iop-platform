@@ -187,6 +187,129 @@ const assignment = {
     endsAt: "",
   },
 };
+
+async function assignedProposalFixture(partial = false) {
+  const fixture = setup();
+  await fixture.app.save("admin", { kind: "settings", id: "site", expectedRevision: 0, deleted: false, data: {
+    ...config, shifts: [...config.shifts,
+      { id: "middle", label: "Middle", start: "08:45", end: "18:00", days: [0, 1, 2, 3, 4, 5, 6] },
+      { id: "late", label: "Late", start: "13:45", end: "23:00", days: [0, 1, 2, 3, 4, 5, 6] },
+    ],
+  } });
+  await fixture.app.import("admin", source, await fixture.app.preview("admin", source));
+  await fixture.app.save("lead", { ...assignment, data: { ...assignment.data, end: partial ? "10:00" : "14:15" } });
+  const input = { replanAssignments: true, weeks: [{ ...manualWeek, days: [
+    { ...manualWeek.days[2], start: "08:45", end: "18:00", expectedRevision: 1 },
+  ] }] };
+  return { ...fixture, input, request: { ...input, from: "2026-09-28", to: "2026-10-04" } };
+}
+
+test("planner previews an assigned shift change without writes, then saves schedule and duty together", async () => {
+  const { app, records, revisions, input, request } = await assignedProposalFixture();
+  const before = structuredClone([...records]);
+  const history = structuredClone(revisions);
+  const preview = await app.previewProposal("lead", request);
+  expect(preview).toMatchObject({ canSave: true, issues: [],
+    assignmentRevisions: [{ id: "assignment", expectedRevision: 1 }],
+    assignmentChanges: [{ id: "assignment", action: "move", targetLabel: "Zone", before: { start: "05:00", end: "14:15" }, after: { shiftId: "middle", start: "08:45", end: "18:00" } }],
+  });
+  expect([...records]).toEqual(before);
+  expect(revisions).toEqual(history);
+  expect(await app.saveProposal("lead", { ...input, assignmentRevisions: preview.assignmentRevisions })).toEqual({ changed: 1, unchanged: 0 });
+  expect(records.get("scheduletech_2026-09-30")).toMatchObject({ revision: 2, data: { start: "08:45", end: "18:00" } });
+  expect(records.get("assignmentassignment")).toMatchObject({ revision: 2, deleted: false,
+    data: { shiftId: "middle", start: "08:45", end: "18:00", targetId: "zone", phone: "zone", duty: "zone" } });
+  expect((await app.history("tech", "assignment", "assignment"))[0].record).toEqual(before.find(([key]) => key === "assignmentassignment")![1]);
+  await expect(app.save("lead", { ...assignment, expectedRevision: 2, deleted: true })).rejects.toMatchObject({ code: "workforce_denied" });
+});
+
+test.each(["vacation", "training"] as const)("explicit %s proposal previews and atomically retires operational duties", async status => {
+  const { app, records, revisions, input } = await assignedProposalFixture();
+  const day = { ...input.weeks[0].days[0], status, start: status === "training" ? "08:45" : "", end: status === "training" ? "18:00" : "" };
+  const changed = { ...input, weeks: [{ ...input.weeks[0], days: [day] }] };
+  const before = revisions.length;
+  const preview = await app.previewProposal("lead", { ...changed, from: "2026-09-28", to: "2026-10-04" });
+  expect(preview.assignmentChanges).toMatchObject([{ action: "remove", after: null }]);
+  expect(revisions).toHaveLength(before);
+  await app.saveProposal("lead", { ...changed, assignmentRevisions: preview.assignmentRevisions });
+  expect(records.get("assignmentassignment")).toMatchObject({ revision: 2, deleted: true });
+  expect(records.get("scheduletech_2026-09-30")?.data).toMatchObject({ status });
+});
+
+test("dependent duty revision changes reject a reviewed proposal atomically", async () => {
+  const { app, records, revisions, input, request } = await assignedProposalFixture();
+  const preview = await app.previewProposal("lead", request);
+  await app.save("lead", { ...assignment, expectedRevision: 1, data: { ...assignment.data, phone: "" } });
+  const before = structuredClone([...records]);
+  const count = revisions.length;
+  await expect(app.saveProposal("lead", { ...input, assignmentRevisions: preview.assignmentRevisions })).rejects.toMatchObject({ code: "workforce_conflict" });
+  expect([...records]).toEqual(before);
+  expect(revisions).toHaveLength(count);
+  await expect(app.saveProposal("lead", input)).rejects.toMatchObject({ code: "workforce_conflict" });
+  const current = await app.previewProposal("lead", request);
+  await app.saveProposal("lead", { ...input, assignmentRevisions: current.assignmentRevisions });
+});
+
+test("custom incompatible duties stay visible in preview with save disabled", async () => {
+  const { app, records, input, request } = await assignedProposalFixture(true);
+  const before = structuredClone([...records]);
+  const preview = await app.previewProposal("lead", request);
+  expect(preview.canSave).toBe(false);
+  expect(preview.issues).toMatchObject([{ assignmentId: "assignment", code: "custom-hours" }]);
+  expect(preview.people.find(person => person.userId === "tech")?.after.shifts).toContainEqual({ id: "middle", label: "Middle", count: 1 });
+  await expect(app.saveProposal("lead", { ...input, assignmentRevisions: preview.assignmentRevisions })).rejects.toMatchObject({ code: "workforce_conflict" });
+  expect([...records]).toEqual(before);
+});
+
+test("phone conflicts render in preview and reject every write", async () => {
+  const { app, records, revisions, input, request } = await assignedProposalFixture();
+  await app.saveWeek("lead", { ...manualWeek, userId: "other", days: [{ ...manualWeek.days[2], start: "13:45", end: "23:00", expectedRevision: 1 }] });
+  await app.save("lead", { ...assignment, id: "other-duty", data: { ...assignment.data, userId: "other", shiftId: "late", start: "16:00", end: "17:00" } });
+  const before = structuredClone([...records]);
+  const count = revisions.length;
+  const preview = await app.previewProposal("lead", request);
+  expect(preview).toMatchObject({ canSave: false, issues: [{ assignmentId: "assignment", code: "assignment-conflict" }] });
+  await expect(app.saveProposal("lead", { ...input, assignmentRevisions: preview.assignmentRevisions })).rejects.toMatchObject({ code: "workforce_conflict" });
+  expect([...records]).toEqual(before);
+  expect(revisions).toHaveLength(count);
+});
+
+test("viewing an unchanged saved schedule requires no changed-day proposal and never writes", async () => {
+  const { app, records, revisions } = await assignedProposalFixture();
+  const before = structuredClone([...records]);
+  const count = revisions.length;
+  const preview = await app.previewProposal("lead", { weeks: [], replanAssignments: true, from: "2026-09-28", to: "2026-10-04" });
+  expect(preview).toMatchObject({ canSave: false, issues: [], assignmentChanges: [], assignmentRevisions: [] });
+  expect(preview.people.every(person => JSON.stringify(person.before) === JSON.stringify(person.after))).toBe(true);
+  expect([...records]).toEqual(before);
+  expect(revisions).toHaveLength(count);
+});
+
+test("cross-person phone shift swaps validate the complete final proposal before writing", async () => {
+  const { app, records } = setup();
+  await app.save("admin", { kind: "settings", id: "site", expectedRevision: 0, deleted: false, data: {
+    ...config, shifts: [
+      { ...config.shifts[0], end: "13:45" },
+      { id: "late", label: "Late", start: "13:45", end: "23:00", days: [0, 1, 2, 3, 4, 5, 6] },
+    ],
+  } });
+  const early = { ...manualWeek.days[2], end: "13:45" };
+  const late = { ...manualWeek.days[2], start: "13:45", end: "23:00" };
+  await app.saveWeek("lead", { ...manualWeek, days: [early] });
+  await app.saveWeek("lead", { ...manualWeek, userId: "other", days: [late] });
+  await app.save("lead", { ...assignment, data: { ...assignment.data, end: "13:45" } });
+  await app.save("lead", { ...assignment, id: "other-duty", data: { ...assignment.data, userId: "other", shiftId: "late", start: "13:45", end: "23:00" } });
+  const input = { replanAssignments: true, weeks: [
+    { ...manualWeek, days: [{ ...late, expectedRevision: 1 }] },
+    { ...manualWeek, userId: "other", days: [{ ...early, expectedRevision: 1 }] },
+  ] };
+  const preview = await app.previewProposal("lead", { ...input, from: "2026-09-28", to: "2026-10-04" });
+  expect(preview).toMatchObject({ canSave: true, issues: [] });
+  expect(preview.assignmentChanges).toHaveLength(2);
+  await app.saveProposal("lead", { ...input, assignmentRevisions: preview.assignmentRevisions });
+  expect(records.get("assignmentassignment")?.data).toMatchObject({ shiftId: "late", phone: "zone" });
+  expect(records.get("assignmentother-duty")?.data).toMatchObject({ shiftId: "early", phone: "zone" });
+});
 test("primary groups do not limit other leaders and configured technical levels retain trusted labels", async () => {
   const { app, revisions } = setup();
   const configured = {

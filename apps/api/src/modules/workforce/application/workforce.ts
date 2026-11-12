@@ -1,4 +1,6 @@
 import { personalMonths, personalSummary } from "../domain/personal-summary";
+import { proposalView } from "./proposal-view";
+import { checkAssignmentRevisions, planAssignmentChanges, type ProposalAssignmentChange, type ProposalIssue } from "../domain/proposal-assignments";
 import {
   compareScheduleLoads,
   validatePreview,
@@ -13,6 +15,7 @@ import {
 } from "../domain/weekly-schedule";
 import {
   assert,
+  WorkforceError,
   date,
   identifier,
   range,
@@ -405,7 +408,7 @@ export class Workforce {
   previewProposal(actor: string, input: ScheduleProposalPreview) {
     validatePreview(input);
     return this.store.run(actor, "workforce.plan", async (tx) => {
-      const prepared = await this.prepareProposal(tx, input);
+      const prepared = await this.proposal(tx, input);
       const schedules = (await tx.records(input.from, input.to))
         .filter((record) => record.kind === "schedule" && !record.deleted)
         .map((record) => record.data as Schedule);
@@ -413,24 +416,82 @@ export class Workforce {
         from: input.from,
         to: input.to,
         people: compareScheduleLoads(
-          await tx.people(), schedules, prepared.map((day) => day.schedule),
+          await tx.people(), schedules, prepared.days.map((day) => day.schedule),
           await this.configuration(tx), input.from, input.to,
         ),
+        canSave: !prepared.issues.length && (prepared.days.some(day => !day.unchanged) || prepared.changes.length > 0),
+        issues: prepared.issues,
+        assignmentRevisions: prepared.assignmentRevisions,
+        assignmentChanges: prepared.changes.map(change => ({
+          id: change.before.id, userId: change.before.data.userId, date: change.before.data.date,
+          action: change.after ? "move" : "remove",
+          targetLabel: change.before.data.targetLabel || change.before.data.targetId,
+          phoneLabel: change.before.data.phoneLabel || change.before.data.phone,
+          before: { shiftId: change.before.data.shiftId, start: change.before.data.start, end: change.before.data.end },
+          after: change.after ? { shiftId: change.after.shiftId, start: change.after.start, end: change.after.end } : null,
+        })),
       };
     });
   }
   saveProposal(actor: string, input: ScheduleProposal) {
     validateProposal(input);
     return this.store.run(actor, "workforce.plan", async (tx) => {
-      const prepared = await this.prepareProposal(tx, input);
+      const prepared = await this.proposal(tx, input);
+      if (input.replanAssignments) {
+        checkAssignmentRevisions(input.assignmentRevisions, prepared.assignmentRevisions);
+        assert(!prepared.issues.length, "workforce_conflict");
+      }
       let changed = 0;
-      for (const day of prepared) {
+      for (const day of prepared.days) {
         if (day.unchanged) continue;
         await this.write(tx, actor, "schedule", day.id, day.schedule, day.revision);
         changed++;
       }
-      return { changed, unchanged: prepared.length - changed };
+      for (const change of prepared.changes) await this.write(
+        tx, actor, "assignment", change.before.id, change.after ?? change.before.data,
+        change.before.revision, !change.after, change.after ? "saved" : "deleted",
+      );
+      return { changed, unchanged: prepared.days.length - changed };
     });
+  }
+  private async proposal(tx: Transaction, input: ScheduleProposal) {
+    const changes: ProposalAssignmentChange[] = [];
+    const issues: ProposalIssue[] = [];
+    const assignmentRevisions: { id: string; expectedRevision: number }[] = [];
+    if (!input.weeks.length) return { days: [], changes, issues, assignmentRevisions };
+    if (!input.replanAssignments) return {
+      days: await this.prepareProposal(tx, input), changes, issues, assignmentRevisions,
+    };
+    const first = input.weeks[0].weekStart;
+    const last = new Date(Date.parse(first) + 6 * 86400000).toISOString().slice(0, 10);
+    const records = await tx.records(this.previousDate(first), this.nextDate(last));
+    const changedIds = new Set(input.weeks.flatMap(week => week.days.map(day => `${week.userId}_${day.date}`)));
+    const related = records.filter(record => record.kind === "assignment" && !record.deleted &&
+      changedIds.has(`${(record.data as Assignment).userId}_${(record.data as Assignment).date}`)) as RecordEntry<"assignment">[];
+    assignmentRevisions.push(...related.map(record => ({ id: record.id, expectedRevision: record.revision })));
+    const withoutDuties = proposalView(tx, records, new Set(related.map(record => record.id)));
+    const days = await this.prepareProposal(withoutDuties.transaction, input);
+    const settings = await this.configuration(tx);
+    const plan = planAssignmentChanges(days.map(day => day.schedule), related, settings);
+    changes.push(...plan.changes);
+    issues.push(...plan.issues);
+    const final = proposalView(tx, records, new Set(changes.map(change => change.before.id)));
+    for (const day of days) final.stage({
+      kind: "schedule", id: day.id, revision: day.revision + Number(!day.unchanged),
+      deleted: false, personName: "", data: day.schedule,
+    });
+    for (const change of changes) {
+      if (!change.after) continue;
+      try {
+        change.after = await this.assignment(final.transaction, change.after, settings, change.before.id);
+        final.stage({ ...change.before, data: change.after });
+      } catch (error) {
+        if (!(error instanceof WorkforceError)) throw error;
+        issues.push({ userId: change.before.data.userId, date: change.before.data.date,
+          assignmentId: change.before.id, code: "assignment-conflict" });
+      }
+    }
+    return { days, changes, issues, assignmentRevisions };
   }
   private async prepareProposal(tx: Transaction, input: ScheduleProposal) {
     const people = await tx.people();

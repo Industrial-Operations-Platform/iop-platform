@@ -90,6 +90,7 @@ export function WeeklySchedule({
   const setDrafts = (
     change: ScheduleDayDraft[] | ((days: ScheduleDayDraft[]) => ScheduleDayDraft[]),
   ) => {
+    setError("");
     setPreview(undefined);
     setPeopleDrafts((current) => ({
       ...current,
@@ -110,6 +111,13 @@ export function WeeklySchedule({
     (count, week) => count + week.days.length, 0,
   );
   const busy = pending || loading;
+  const discard = () => {
+    setPeopleDrafts({});
+    setPreview(undefined);
+    setBaseline(board);
+    setError("");
+    setSaved(undefined);
+  };
   const update = (index: number, change: Partial<ScheduleDayDraft>) => {
     setSaved(undefined);
     setDrafts((current) =>
@@ -117,17 +125,20 @@ export function WeeklySchedule({
     );
   };
   const submit = async () => {
+    if (preview && changeCount && !preview.canSave) return;
     setPending(true);
     setError("");
     try {
-      if (preview) {
-        const result = await application.saveProposal(proposal);
+      if (preview && changeCount) {
+        const result = await application.saveProposal({
+          ...proposal, replanAssignments: true, assignmentRevisions: preview.assignmentRevisions,
+        });
         setSaved(result.changed);
         setPeopleDrafts({});
         setPreview(undefined);
         refresh();
       } else {
-        setPreview(await application.previewProposal({ ...proposal, ...period }));
+        setPreview(await application.previewProposal({ ...proposal, ...period, replanAssignments: true }));
       }
     } catch (e) {
       setError((e as Error).message);
@@ -143,7 +154,12 @@ export function WeeklySchedule({
           "Edit several people in this week, preview the proposed schedule and compare workloads before saving.",
         )}
       </p>
-      {error && <Alert>{t(error)}</Alert>}
+      {error && <Alert>
+        <p>{t(error)}</p>
+        <Button variant="secondary" disabled={busy} onClick={() => { discard(); refresh(); }}>
+          {t("Reload saved schedules")}
+        </Button>
+      </Alert>}
       {saved !== undefined && (
         <p role="status">{t("Saved {0} schedule days.", [saved])}</p>
       )}
@@ -315,16 +331,16 @@ export function WeeklySchedule({
               </div>
               <p>
                 {t(
-                  "Existing zone and phone assignments are kept. A conflicting schedule change is rejected without saving any day.",
+                  "Review how existing assignments follow your schedule. Saving applies the schedule and assignments together.",
                 )}
               </p>
             </>
           )}
-          {!!changeCount && <>
-            <p role="status">{t(
+          {(!!changeCount || !!userId) && <>
+            {!!changeCount && <p role="status">{t(
               "Unsaved proposal: {0} people, {1} changed days.",
               [proposal.weeks.length, changeCount],
-            )}</p>
+            )}</p>}
             <FieldRow>
               <DateField label={t("Analysis from")} required value={period.from}
                 max={weekStart} onChange={(event) => {
@@ -342,7 +358,7 @@ export function WeeklySchedule({
             )}</p>
             {preview && <ScheduleProposalView
               board={baseline} weekStart={weekStart}
-              drafts={peopleDrafts} preview={preview}
+              drafts={userId ? { ...peopleDrafts, [userId]: drafts } : peopleDrafts} preview={preview}
             />}
           </>}
           <Actions className="iop-form-actions">
@@ -353,21 +369,16 @@ export function WeeklySchedule({
               <>
                 <Button
                   variant="secondary"
-                  onClick={() => {
-                    setPeopleDrafts({});
-                    setPreview(undefined);
-                    setBaseline(board);
-                    setError("");
-                    setSaved(undefined);
-                  }}
+                  onClick={discard}
                 >
                   {t("Discard proposal")}
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={!!preview && !preview.canSave}>
                   {pending ? t("Processing…") : preview ? t("Save proposal") : t("Preview proposal")} ({changeCount})
                 </Button>
               </>
             )}
+            {!changeCount && !!userId && <Button type="submit">{t("View schedule")}</Button>}
           </Actions>
         </fieldset>
       </form>

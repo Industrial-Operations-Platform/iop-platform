@@ -3,6 +3,8 @@ import { validateWeek, type WeeklyScheduleInput } from "./weekly-schedule";
 
 export interface ScheduleProposal {
   weeks: WeeklyScheduleInput[];
+  replanAssignments?: boolean;
+  assignmentRevisions?: { id: string; expectedRevision: number }[];
 }
 export interface ScheduleProposalPreview extends ScheduleProposal {
   from: string;
@@ -11,6 +13,7 @@ export interface ScheduleProposalPreview extends ScheduleProposal {
 export function validateProposal(input: ScheduleProposal) {
   assert(input && Array.isArray(input.weeks) &&
     input.weeks.length > 0 && input.weeks.length <= 100);
+  assert(input.replanAssignments === undefined || typeof input.replanAssignments === "boolean");
   const users = new Set<string>();
   for (const week of input.weeks) {
     validateWeek(week);
@@ -19,8 +22,11 @@ export function validateProposal(input: ScheduleProposal) {
   }
 }
 export function validatePreview(input: ScheduleProposalPreview) {
-  validateProposal(input);
+  assert(input && Array.isArray(input.weeks));
+  assert(input.replanAssignments === undefined || typeof input.replanAssignments === "boolean");
   range(input.from, input.to);
+  if (!input.weeks.length) return;
+  validateProposal(input);
   const end = validateWeek(input.weeks[0]);
   assert(input.from <= input.weeks[0].weekStart && input.to >= end);
 }

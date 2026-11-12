@@ -46,7 +46,8 @@ and the Formal Handover records.
 
 Open **Workforce & shifts → Weekly schedules** (**Personal & Schichten →
 Wochendienstplan** in German), choose any date in the required week and select a
-person. Existing schedules appear Monday through Sunday. Choose a shift/status and
+person. Existing schedules appear Monday through Sunday. **View schedule** opens
+the saved weekly calendar and workload analysis without changes. Choose a shift/status and
 **Apply to selected days** and adjust exceptions. Switch people to add more drafts
 for the same week, then use **Preview proposal** to inspect the joint weekly matrix
 and saved → proposed workload table. Choose up to 93 inclusive analysis days
@@ -61,12 +62,16 @@ page discards them. Cancel and Discard proposal do not write. Changing any draft
 analysis date requires a new preview. A background board refresh preserves draft
 revisions so newer changes cannot be silently overwritten.
 
-Both Team Leader and Administrator may use this editor. The whole save fails on
-stale revisions, overlapping availability or incompatible current assignments;
-refresh stale data and correct the conflicting interval or have an Administrator
-remove an incompatible assignment before replanning. A manual change records its
-actor, revision and `manual` source, preserving older imported revisions. It does
-not silently change zones or phone holders.
+Both Team Leader and Administrator may use this editor. Full configured-shift
+assignments follow a proposed shift while retaining the same Halle and phone;
+absence or training proposes removal of dated operational assignments. Review the
+Assignment changes table before saving. Incompatible custom hours and conflicting
+phone duties appear as blocking issues while the calendar and analysis remain
+available. Correct those duties before saving. The complete save fails on stale
+schedule/assignment revisions, overlapping availability or remaining conflicts.
+**Reload saved schedules** discards drafts and fetches current values after a
+stale-data error. A manual change records its actor, revision and `manual` source;
+assignment moves and logical removals retain their own revision histories.
 
 The preview table distinguishes missing schedules from explicit absence. Scheduled
 work/training/maintenance counts once per date; elapsed hours use resolved instants
@@ -144,7 +149,7 @@ assignments use opaque IDs. Creation expects revision 0. Site scope and actor co
 from the authenticated host, never from request data. Reviewed OpenAPI describes
 transport envelopes; the domain types define kind-specific payload fields.
 
-`schedules/preview` accepts `weeks` (1–100 distinct people, all for the same Monday,
+`schedules/preview` accepts `weeks` (0–100 distinct people, all for the same Monday,
 each using the existing weekly input), `from` and `to` (up to 93 inclusive days
 containing that entire week). It requires `workforce.plan`, reuses full weekly
 validation and returns per-person `before`/`after` loads without writing records,
@@ -152,7 +157,18 @@ revisions or audit events. Loads expose `days`, `minutes`, `saturdays`, `sundays
 `unknownDays` and configured `shifts`; the empty shift ID represents custom hours.
 `schedules/proposal` accepts the same `weeks` and commits all changed days atomically
 with fresh authorization/revision/conflict checks and retained manual history.
-The existing `schedules/week` route delegates to that same preparation/save path.
+An empty `weeks` list is read-only viewing and cannot be saved. The optional
+`replanAssignments: true` mode returns `assignmentChanges`, blocking `issues`,
+`canSave` and `assignmentRevisions` for all active duties on edited person/dates.
+Full configured-shift duties move to the proposed configured shift; absence and
+training remove duties logically. Compatible custom duties remain unchanged;
+incompatible custom duties and final assignment/phone conflicts block save.
+The browser sends the exact returned assignment revision set with its proposal.
+Save rechecks that set, prepares the final schedules and duties together, and
+persists them atomically under current planning authority. A concurrent addition,
+removal or update requires repreview. Proposal preview never writes.
+The existing `schedules/week` route delegates to the strict default preparation/save
+path; it and imports preserve assignments and reject incompatible schedule changes.
 The browser must preview again after editing; server save always independently
 validates input and does not trust a prior preview as an authorization snapshot.
 

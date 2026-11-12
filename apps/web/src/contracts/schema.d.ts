@@ -3304,8 +3304,17 @@ export interface components {
             /** @enum {string} */
             outcome: "create" | "replace" | "unchanged";
         };
+        WorkforceImportRevisionDto: {
+            id: string;
+            expectedRevision: number;
+        };
         WorkforceProposalPreviewRequestDto: {
+            /** @description An empty list views saved schedules without changes. */
             weeks: components["schemas"]["WorkforceWeekDto"][];
+            /** @description Preview and atomically apply dependent full-shift duty moves/removals with schedule edits. */
+            replanAssignments?: boolean;
+            /** @description Exact active dependent-duty revisions returned by preview, required when saving with replanning. */
+            assignmentRevisions?: components["schemas"]["WorkforceImportRevisionDto"][];
             /**
              * Format: date
              * @description Inclusive analysis period, at most 93 days, containing the entire edited week.
@@ -3334,19 +3343,48 @@ export interface components {
             before: components["schemas"]["WorkforceScheduleLoadDto"];
             after: components["schemas"]["WorkforceScheduleLoadDto"];
         };
+        WorkforceProposalIssueDto: {
+            userId: string;
+            /** Format: date */
+            date: string;
+            assignmentId: string;
+            /** @enum {string} */
+            code: "custom-hours" | "assignment-conflict";
+        };
+        WorkforceAssignmentIntervalDto: {
+            shiftId: string;
+            start: string;
+            end: string;
+        };
+        WorkforceProposalAssignmentChangeDto: {
+            id: string;
+            userId: string;
+            /** Format: date */
+            date: string;
+            /** @enum {string} */
+            action: "move" | "remove";
+            targetLabel: string;
+            phoneLabel: string;
+            before: components["schemas"]["WorkforceAssignmentIntervalDto"];
+            after: components["schemas"]["WorkforceAssignmentIntervalDto"] | null;
+        };
         WorkforceProposalPreviewDto: {
             /** Format: date */
             from: string;
             /** Format: date */
             to: string;
             people: components["schemas"]["WorkforcePersonLoadDto"][];
+            canSave: boolean;
+            issues: components["schemas"]["WorkforceProposalIssueDto"][];
+            assignmentChanges: components["schemas"]["WorkforceProposalAssignmentChangeDto"][];
+            assignmentRevisions: components["schemas"]["WorkforceImportRevisionDto"][];
         };
         WorkforceProposalDto: {
             weeks: components["schemas"]["WorkforceWeekDto"][];
-        };
-        WorkforceImportRevisionDto: {
-            id: string;
-            expectedRevision: number;
+            /** @description Preview and atomically apply dependent full-shift duty moves/removals with schedule edits. */
+            replanAssignments?: boolean;
+            /** @description Exact active dependent-duty revisions returned by preview, required when saving with replanning. */
+            assignmentRevisions?: components["schemas"]["WorkforceImportRevisionDto"][];
         };
         WorkforceCommitDto: {
             input: components["schemas"]["WorkforceImportDto"];

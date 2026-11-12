@@ -1,4 +1,4 @@
-import { Table, TableViewport } from "../../../../design/components";
+import { Alert, Table, TableViewport } from "../../../../design/components";
 import { locale, t } from "../../../../localization/i18n";
 import { weekDates, type Board } from "../../domain/models";
 import { scheduleChoice, hasWorkingHours } from "../../domain/weekly-schedule";
@@ -27,6 +27,29 @@ export function ScheduleProposalView({ board, weekStart, drafts, preview }: {
   return <section className="workforce-proposal" aria-label={t("Schedule preview")}>
     <h3>{t("Schedule preview")}</h3>
     <p role="status">{t("Preview only. Nothing has been saved.")}</p>
+    {!!preview.issues.length && <Alert>
+      <p>{t("Resolve these assignment conflicts before saving.")}</p>
+      <ul>{preview.issues.map(issue => <li key={issue.assignmentId + issue.code}>
+        {board.people.find(person => person.id === issue.userId)?.name} · {issue.date} · {issue.code === "custom-hours"
+          ? t("This duty has custom hours. Adjust its assignment before saving the new schedule.")
+          : t("This duty conflicts with another person, phone or configured assignment. Adjust the proposal before saving.")}
+      </li>)}</ul>
+    </Alert>}
+    {!!preview.assignmentChanges.length && <>
+      <h3>{t("Assignment changes")}</h3>
+      <TableViewport aria-label={t("Assignment changes")}><Table>
+        <thead><tr>
+          {[t("Person"), t("Date"), t("Assignment"), t("Current hours"), t("Proposed hours")].map(label => <th key={label} scope="col">{label}</th>)}
+        </tr></thead>
+        <tbody>{preview.assignmentChanges.map(change => <tr key={change.id}>
+          <th scope="row">{board.people.find(person => person.id === change.userId)?.name}</th>
+          <td>{change.date}</td>
+          <td>{change.targetLabel || t("Duty")}{change.phoneLabel && <small>{change.phoneLabel}</small>}</td>
+          <td>{change.before.start}–{change.before.end}</td>
+          <td>{change.after ? `${change.after.start}–${change.after.end}` : t("Remove assignment")}</td>
+        </tr>)}</tbody>
+      </Table></TableViewport>
+    </>}
     <TableViewport aria-label={t("Proposed weekly schedules")}>
       <Table>
         <thead><tr>
