@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-In progress for the owner's dated Halle/shift coverage correction.
+Completed, including daily early/late coverage in every Halle.
 On 2026-11-12 the owner requested updating develop and the online
 Railway installation: technicians should have early, late and weekend shifts;
 Task Force should have middle shifts. The owner selected the entire current
@@ -14,13 +14,12 @@ real attendance, payroll or a legally assessed staffing roster.
 
 - [x] Use existing active Technician and Task Force accounts and configured shift
   definitions; keep all three shifts available Monday–Sunday.
-- [x] Preview and fill only missing November schedules. Technicians rotate through
-  configured early/late/middle shifts and staggered weekend work with days off;
-  Task Force uses middle shifts on weekdays and explicit weekend days off.
-- [x] Preserve existing days, duties, absences, account credentials/profiles,
-  historical revisions and unrelated module data. Retained tombstones are not
-  silently recreated. New working days use existing home-zone duties, or floating
-  support when no home zone is configured, without adding phone responsibility.
+- [x] Complete November schedules and the owner's selected dated coverage.
+  Every Halle has technicians on early and late shifts every day. Task Force
+  uses middle work hours. Weekend dates are included in the coverage matrix.
+- [x] Apply the explicitly requested schedule and Halle/duty corrections with
+  retained historical revisions, account profiles, absence states and unrelated
+  module data. Preserve existing phone responsibilities in their configured Halle.
 - [x] Use existing scoped Workforce operations, recheck expected revisions and
   protect concurrent work. Verify the complete month and immediate rerun no-op;
   retain private pre-change evidence and a current remote backup.
@@ -28,8 +27,9 @@ real attendance, payroll or a legally assessed staffing roster.
   through a story branch and develop, apply on Railway development and confirm
   live preview availability from IOP-233.
 
-No account creation, password reset, overwrite of existing schedules, production
-installation, external provider, optimization or permission change is included.
+Requested evaluation schedule corrections use existing scoped operations and
+retain prior revisions. Account provisioning and permissions follow their own
+existing administration workflows.
 Reuse [Workforce](../../product/workforce.md), [Railway operations](../../development/railway.md)
 and the Accepted scoped application/adapter patterns in ADR-0032.
 
@@ -65,6 +65,10 @@ original revision snapshots remain retained.
 The owner clarified that each Halle needs technicians in each required shift on
 every date. Site-level shift balance did not satisfy this requirement. Correct
 the selected November month at the date/Halle/shift level, including reassignment
-between Halles and sufficient eligible evaluation work dates. The owner is choosing
+between Halles and sufficient eligible evaluation work dates. The owner selected
 early/late technician coverage in every Halle, with Task Force on middle hours.
-[Coverage execution](../active/IOP-234-halle-shift-coverage-plan.md).
+The correction is applied. All 300 date/Halle/shift combinations have full-interval
+technician coverage with compatible personal schedules. Activated ten evaluation
+off dates, updated 167 schedules and revised/created 258 duties. Preserved all 501
+original schedule/duty revision snapshots and verified immediate rerun no-op.
+[Coverage evidence](../completed/IOP-234-halle-shift-coverage-plan.md).

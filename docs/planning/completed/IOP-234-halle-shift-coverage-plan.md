@@ -1,6 +1,6 @@
 # IOP-234 — Complete dated Halle and shift coverage
 
-Status: In progress. Branch `fix/IOP-234-halle-shift-coverage`, from develop `8882f25`.
+Status: Completed. Branch `fix/IOP-234-halle-shift-coverage`, from develop `8882f25`.
 [Scope](../items/IOP-234-railway-monthly-roster.md).
 
 ## Requested correction
@@ -62,3 +62,30 @@ The refreshed live preview contains 258 affected dates, 300 covered cells and te
 activated evaluation off dates, with zero proposed gaps. Apply this exact selected
 proposal after the fresh backup. Private previews are retained under
 `.railway/monthly-rosters/`.
+
+## Applied and verified
+
+- Owner selection recorded at `e506d3a`, following the tested source increment
+  `0290e3c`. A fresh protected custom PostgreSQL archive (30,502,899 bytes) was
+  exported and its archive list inspected before the selected apply.
+- The complete coverage correction committed atomically through existing scoped
+  Workforce operations. Updated 167 schedule rows and 258 duties, including 15
+  newly created duties. Ten evaluation off dates became working availability.
+- Persisted verification enumerated all 300 date × Halle × early/late cells for
+  November 1–30. Every cell has at least one distinct active technician for the
+  complete configured interval and compatible personal availability. Worker
+  overlap checks returned zero conflicts. Task Force retains middle-only work.
+- For November 12 the early/late counts are Halle A T3 2/2, Halle A T2 2/2,
+  Halle A T1 2/2, Halle B Sh 1/2 and Halle B Sky 1/1. The same complete matrix
+  check includes every Saturday and Sunday in the month.
+- Compared all 501 original schedule/duty snapshots with retained revision
+  history, with exact matches. Current Workforce counts are 2,812 records and
+  3,714 revisions. All 167 analytical publications remain present.
+- Immediate live repreview proposes zero additions/conversions, 300 covered
+  cells and zero gaps. Private evidence includes the complete persisted matrix
+  and backup manifests. The 110-test scripts suite, syntax, whitespace and
+  affected-document relative links passed.
+
+Item/backlog synchronized and this plan archived. Publish the correction branch
+and develop under the owner's continuing authorization. The live coverage data
+has already been applied and verified through the existing running application.
