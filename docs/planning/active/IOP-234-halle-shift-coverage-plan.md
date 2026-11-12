@@ -10,8 +10,8 @@ selected November month. Earlier checks counted shifts across the whole site.
 Live November 12 data shows Halle A T3 with four late and zero early technicians,
 Halle A T2 with four early and zero late, and Halle B Sky missing late coverage.
 The site has five configured Halles and 17 technicians. The explicit required
-shift set is awaiting the owner's answer. Early/late coverage needs ten technicians
-per day and all-three-shift coverage needs fifteen. November 15 currently has all
+shift set was explicitly chosen by the owner as technician early/late coverage,
+with Task Force on middle hours. This needs ten technicians per day. November 15 currently has all
 technicians off, so complete daily coverage also requires activating some of the
 evaluation's off dates. Other November dates have 11–17 working technicians.
 
@@ -57,5 +57,8 @@ Both live no-write options were prepared. Early/late proposes 258 affected dates
 have zero proposed coverage gaps and all original board snapshots compare equal.
 The full scripts suite passed 110 tests with four platform skips. Syntax and
 whitespace checks passed.
-The explicit required shift choice remains pending. No coverage changes have
-been applied yet. Private previews are retained under `.railway/monthly-rosters/`.
+The owner selected early/late technician coverage and Task Force middle hours.
+The refreshed live preview contains 258 affected dates, 300 covered cells and ten
+activated evaluation off dates, with zero proposed gaps. Apply this exact selected
+proposal after the fresh backup. Private previews are retained under
+`.railway/monthly-rosters/`.

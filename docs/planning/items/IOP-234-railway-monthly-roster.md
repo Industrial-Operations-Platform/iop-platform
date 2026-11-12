@@ -66,5 +66,5 @@ The owner clarified that each Halle needs technicians in each required shift on
 every date. Site-level shift balance did not satisfy this requirement. Correct
 the selected November month at the date/Halle/shift level, including reassignment
 between Halles and sufficient eligible evaluation work dates. The owner is choosing
-whether required technician coverage includes early/late or all three shifts.
+early/late technician coverage in every Halle, with Task Force on middle hours.
 [Coverage execution](../active/IOP-234-halle-shift-coverage-plan.md).
