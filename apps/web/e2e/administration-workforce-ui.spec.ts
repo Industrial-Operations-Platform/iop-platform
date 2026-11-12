@@ -159,7 +159,7 @@ function workforce(weekDate: string): Board {
   };
 }
 for (const width of [1440, 375]) {
-  test(`account and workforce refinements at ${width}px`, async ({ page }) => {
+  test(`account and workforce refinements at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 1000 });
     const errors: string[] = [];
     const writes: { path: string; data: unknown }[] = [];
@@ -264,6 +264,16 @@ for (const width of [1440, 375]) {
           },
         });
       }
+      if (path.endsWith("/workforce/schedules/preview")) {
+        const input = route.request().postDataJSON();
+        expect(input.weeks).toHaveLength(2);
+        const load = { days: 0, minutes: 0, saturdays: 0, sundays: 0, unknownDays: 7,
+          shifts: shifts.map((shift) => ({ id: shift.id, label: shift.label, count: 0 })) };
+        return route.fulfill({ json: { from: input.from, to: input.to, people: [
+          { userId: "tech", name: "Morgan Updated", before: load, after: { ...load, days: 5, minutes: 2775 } },
+          { userId: "support", name: "Jordan Support", before: load, after: { ...load, days: 5, minutes: 2775 } },
+        ] } });
+      }
       throw new Error(`Unexpected request: ${path}`);
     });
     const screenshot = async (name: string) => {
@@ -274,7 +284,7 @@ for (const width of [1440, 375]) {
       ).toBe(true);
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.screenshot({
-        path: `/tmp/iop-191-compact-${name}-${width}.png`,
+        path: testInfo.outputPath(`${name}-${width}.png`),
         fullPage: true,
       });
     };
@@ -564,6 +574,17 @@ for (const width of [1440, 375]) {
     await page.getByLabel("Apply shift or status").selectOption("shift:late");
     await page.getByRole("button", { name: "Apply to selected days" }).click();
     await screenshot("weekly");
+    await page.getByLabel("Person", { exact: true }).selectOption("support");
+    await page.getByLabel("Apply shift or status").selectOption("shift:early");
+    await page.getByRole("button", { name: "Apply to selected days" }).click();
+    await page.getByLabel("Person", { exact: true }).selectOption("tech");
+    await expect(page.getByRole("region", { name: /Monday/ }).getByLabel("Start time")).toHaveValue("13:45");
+    await page.getByRole("button", { name: "Preview proposal (10)" }).click();
+    await expect(page.getByText("Preview only. Nothing has been saved.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Save proposal (10)" })).toBeVisible();
+    await expect(page.getByLabel("Workload comparison", { exact: true }).getByRole("row")).toHaveCount(3);
+    await screenshot("proposal");
+    expect(writes).toHaveLength(1);
     await page.getByRole("button", { name: "Cancel", exact: true }).click();
     await expect(matrix).toBeVisible();
     await page

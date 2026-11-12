@@ -2095,6 +2095,68 @@
         ]
       }
     },
+    "/api/v1/workforce/schedules/preview": {
+      "post": {
+        "operationId": "WorkforceController_previewProposal",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkforceProposalPreviewRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkforceProposalPreviewDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
+    "/api/v1/workforce/schedules/proposal": {
+      "post": {
+        "operationId": "WorkforceController_saveProposal",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkforceProposalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkforceResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Workforce"
+        ]
+      }
+    },
     "/api/v1/workforce/import": {
       "post": {
         "operationId": "WorkforceController_commit",
@@ -10157,6 +10219,150 @@
           "expectedRevision",
           "data",
           "outcome"
+        ]
+      },
+      "WorkforceProposalPreviewRequestDto": {
+        "type": "object",
+        "properties": {
+          "weeks": {
+            "minItems": 1,
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceWeekDto"
+            }
+          },
+          "from": {
+            "type": "string",
+            "format": "date",
+            "description": "Inclusive analysis period, at most 93 days, containing the entire edited week."
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "weeks",
+          "from",
+          "to"
+        ]
+      },
+      "WorkforceShiftLoadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "count"
+        ]
+      },
+      "WorkforceScheduleLoadDto": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "number"
+          },
+          "minutes": {
+            "type": "number",
+            "description": "Elapsed scheduled minutes, including training and maintenance; not attendance or paid time."
+          },
+          "saturdays": {
+            "type": "number"
+          },
+          "sundays": {
+            "type": "number"
+          },
+          "unknownDays": {
+            "type": "number"
+          },
+          "shifts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceShiftLoadDto"
+            }
+          }
+        },
+        "required": [
+          "days",
+          "minutes",
+          "saturdays",
+          "sundays",
+          "unknownDays",
+          "shifts"
+        ]
+      },
+      "WorkforcePersonLoadDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "before": {
+            "$ref": "#/components/schemas/WorkforceScheduleLoadDto"
+          },
+          "after": {
+            "$ref": "#/components/schemas/WorkforceScheduleLoadDto"
+          }
+        },
+        "required": [
+          "userId",
+          "name",
+          "before",
+          "after"
+        ]
+      },
+      "WorkforceProposalPreviewDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "people": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforcePersonLoadDto"
+            }
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "people"
+        ]
+      },
+      "WorkforceProposalDto": {
+        "type": "object",
+        "properties": {
+          "weeks": {
+            "minItems": 1,
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkforceWeekDto"
+            }
+          }
+        },
+        "required": [
+          "weeks"
         ]
       },
       "WorkforceImportRevisionDto": {

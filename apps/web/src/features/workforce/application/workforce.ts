@@ -1,4 +1,5 @@
 import type { WeeklyScheduleInput } from "../domain/weekly-schedule";
+import type { ScheduleProposal, ScheduleProposalPreview, ScheduleProposalPreviewRequest } from "../domain/schedule-proposal";
 import type {
   Board,
   PersonalSummary,
@@ -10,6 +11,8 @@ import type {
   SaveInput,
 } from "../domain/models";
 export interface Gateway {
+  previewProposal?(input: ScheduleProposalPreviewRequest): Promise<ScheduleProposalPreview>;
+  saveProposal?(input: ScheduleProposal): Promise<{ changed: number; unchanged: number }>;
   summary?(): Promise<PersonalSummary>;
   board(from: string, to: string): Promise<Board>;
   saveWeek(
@@ -37,6 +40,14 @@ export class WorkforceApplication {
   }
   saveWeek(input: WeeklyScheduleInput) {
     return this.gateway.saveWeek(input);
+  }
+  previewProposal(input: ScheduleProposalPreviewRequest) {
+    if (!this.gateway.previewProposal) return Promise.reject(new Error("Schedule preview is unavailable."));
+    return this.gateway.previewProposal(input);
+  }
+  saveProposal(input: ScheduleProposal) {
+    if (!this.gateway.saveProposal) return Promise.reject(new Error("Schedule preview is unavailable."));
+    return this.gateway.saveProposal(input);
   }
   save(input: Omit<SaveInput, "id"> & { id?: string }) {
     return this.gateway.save({ ...input, id: input.id || this.ids() });

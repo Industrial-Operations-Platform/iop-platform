@@ -1,5 +1,12 @@
 import { personalMonths, personalSummary } from "../domain/personal-summary";
 import {
+  compareScheduleLoads,
+  validatePreview,
+  validateProposal,
+  type ScheduleProposal,
+  type ScheduleProposalPreview,
+} from "../domain/schedule-proposal";
+import {
   sameSchedule,
   validateWeek,
   type WeeklyScheduleInput,
@@ -393,16 +400,50 @@ export class Workforce {
   }
   saveWeek(actor: string, input: WeeklyScheduleInput) {
     validateWeek(input);
+    return this.saveProposal(actor, { weeks: [input] });
+  }
+  previewProposal(actor: string, input: ScheduleProposalPreview) {
+    validatePreview(input);
     return this.store.run(actor, "workforce.plan", async (tx) => {
-      assert((await tx.people()).some((person) => person.id === input.userId));
-      const replacingDates = new Set(input.days.map((day) => day.date));
-      const prepared = [];
-      for (const day of input.days) {
+      const prepared = await this.prepareProposal(tx, input);
+      const schedules = (await tx.records(input.from, input.to))
+        .filter((record) => record.kind === "schedule" && !record.deleted)
+        .map((record) => record.data as Schedule);
+      return {
+        from: input.from,
+        to: input.to,
+        people: compareScheduleLoads(
+          await tx.people(), schedules, prepared.map((day) => day.schedule),
+          await this.configuration(tx), input.from, input.to,
+        ),
+      };
+    });
+  }
+  saveProposal(actor: string, input: ScheduleProposal) {
+    validateProposal(input);
+    return this.store.run(actor, "workforce.plan", async (tx) => {
+      const prepared = await this.prepareProposal(tx, input);
+      let changed = 0;
+      for (const day of prepared) {
+        if (day.unchanged) continue;
+        await this.write(tx, actor, "schedule", day.id, day.schedule, day.revision);
+        changed++;
+      }
+      return { changed, unchanged: prepared.length - changed };
+    });
+  }
+  private async prepareProposal(tx: Transaction, input: ScheduleProposal) {
+    const people = await tx.people();
+    const prepared = [];
+    for (const week of input.weeks) {
+      assert(people.some((person) => person.id === week.userId));
+      const replacingDates = new Set(week.days.map((day) => day.date));
+      for (const day of week.days) {
         const schedule = this.schedule(
-          { ...day, userId: input.userId },
+          { ...day, userId: week.userId },
           "manual",
         );
-        const id = `${input.userId}_${day.date}`;
+        const id = `${week.userId}_${day.date}`;
         const prior = await tx.get("schedule", id);
         // Revision zero means no active day, including a retained tombstone.
         assert(
@@ -421,29 +462,20 @@ export class Workforce {
             sameSchedule(prior.data as Schedule, schedule),
         });
       }
-      const working = prepared
-        .filter((day) => day.schedule.startsAt)
-        .sort((a, b) => a.schedule.startsAt.localeCompare(b.schedule.startsAt));
-      for (let i = 1; i < working.length; i++)
-        assert(
+    }
+    const working = prepared
+      .filter((day) => day.schedule.startsAt)
+      .sort((a, b) =>
+        a.schedule.userId.localeCompare(b.schedule.userId) ||
+        a.schedule.startsAt.localeCompare(b.schedule.startsAt),
+      );
+    for (let i = 1; i < working.length; i++)
+      assert(
+        working[i - 1].schedule.userId !== working[i].schedule.userId ||
           !overlaps(working[i - 1].schedule, working[i].schedule),
-          "workforce_overlap",
-        );
-      let changed = 0;
-      for (const day of prepared) {
-        if (day.unchanged) continue;
-        await this.write(
-          tx,
-          actor,
-          "schedule",
-          day.id,
-          day.schedule,
-          day.revision,
-        );
-        changed++;
-      }
-      return { changed, unchanged: prepared.length - changed };
-    });
+        "workforce_overlap",
+      );
+    return prepared;
   }
   preview(actor: string, input: ImportInput) {
     return this.store.run(actor, "workforce.administer", (tx) =>

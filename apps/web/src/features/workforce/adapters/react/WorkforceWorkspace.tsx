@@ -319,6 +319,7 @@ export function WorkforceWorkspace({
               )}
               {tab === "schedules" && canPlan && (
                 <WeeklySchedule
+                  key={from}
                   board={board}
                   weekStart={from}
                   application={application}

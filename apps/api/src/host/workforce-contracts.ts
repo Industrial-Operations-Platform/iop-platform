@@ -132,3 +132,34 @@ export class WorkforcePersonalSummaryDto {
   @ApiProperty() saturdays!: number;
   @ApiProperty() sundays!: number;
 }
+
+export class WorkforceProposalDto {
+  @ApiProperty({ type: [WorkforceWeekDto], minItems: 1, maxItems: 100 })
+  weeks!: WorkforceWeekDto[];
+}
+export class WorkforceProposalPreviewRequestDto extends WorkforceProposalDto {
+  @ApiProperty({ format: "date", description: "Inclusive analysis period, at most 93 days, containing the entire edited week." }) from!: string;
+  @ApiProperty({ format: "date" }) to!: string;
+}
+export class WorkforceShiftLoadDto {
+  @ApiProperty() id!: string;
+  @ApiProperty() label!: string;
+  @ApiProperty() count!: number;
+}
+export class WorkforceScheduleLoadDto {
+  @ApiProperty() days!: number;
+  @ApiProperty({ description: "Elapsed scheduled minutes, including training and maintenance; not attendance or paid time." }) minutes!: number;
+  @ApiProperty() saturdays!: number;
+  @ApiProperty() sundays!: number;
+  @ApiProperty() unknownDays!: number;
+  @ApiProperty({ type: [WorkforceShiftLoadDto] }) shifts!: WorkforceShiftLoadDto[];
+}
+export class WorkforcePersonLoadDto {
+  @ApiProperty() userId!: string;
+  @ApiProperty() name!: string;
+  @ApiProperty({ type: WorkforceScheduleLoadDto }) before!: WorkforceScheduleLoadDto;
+  @ApiProperty({ type: WorkforceScheduleLoadDto }) after!: WorkforceScheduleLoadDto;
+}
+export class WorkforceProposalPreviewDto extends WorkforceRangeDto {
+  @ApiProperty({ type: [WorkforcePersonLoadDto] }) people!: WorkforcePersonLoadDto[];
+}

@@ -1805,6 +1805,25 @@ test("weekly schedules allow planners, reject readers and retain atomic revision
     record: { data: { start: "05:00", source: "manual" } },
   });
 });
+test("multi-person proposal preview is read-only and stale second person rolls back the complete PostgreSQL save", async () => {
+  const workforce = workforceService();
+  const week = (userId) => ({ userId, weekStart: "2026-12-07", days: [
+    { date: "2026-12-07", status: "work", start: "05:00", end: "14:15", expectedRevision: 0 },
+  ] });
+  const proposal = { weeks: [week("tech-a"), week("lead-a")] };
+  await expect(workforce.previewProposal("tech-a", { ...proposal, from: "2026-12-01", to: "2026-12-13" })).rejects.toThrow();
+  await expect(workforceService({ organizationId: "org-b", siteId: "site-b" }).saveProposal("lead-a", proposal)).rejects.toThrow();
+  const preview = await workforce.previewProposal("lead-a", { ...proposal, from: "2026-12-01", to: "2026-12-13" });
+  expect(preview.people.find((person) => person.userId === "tech-a").after.days).toBe(1);
+  expect(await workforce.history("tech-a", "schedule", "tech-a_2026-12-07")).toHaveLength(0);
+  await workforce.saveWeek("lead-a", week("lead-a"));
+  await expect(workforce.saveProposal("lead-a", proposal)).rejects.toMatchObject({ code: "workforce_conflict" });
+  expect(await workforce.history("tech-a", "schedule", "tech-a_2026-12-07")).toHaveLength(0);
+  proposal.weeks[1].days[0].expectedRevision = 1;
+  expect(await workforce.saveProposal("lead-a", proposal)).toEqual({ changed: 1, unchanged: 1 });
+  expect(await workforce.history("tech-a", "schedule", "tech-a_2026-12-07")).toHaveLength(1);
+});
+
 test("matrix column filters combine before counts and cursor pagination, with literal references and exact assignees", async () => {
   const ids = [];
   for (let index = 0; index < 23; index++) {

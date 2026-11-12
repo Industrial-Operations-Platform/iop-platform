@@ -311,6 +311,8 @@
 .iop-ui .workforce-board--compact tr > :first-child { width: 8rem; }
 .iop-ui .workforce-board--compact td { vertical-align: top; }
 .workforce-day-shifts { display: grid; gap: 8px; }
+.workforce-proposal { display: grid; gap: 12px; min-width: 0; }
+.workforce-proposal td small { display: block; color: var(--iop-muted); }
 .workforce-compact-shift { display: grid; gap: 4px; min-width: 0; }
 .workforce-compact-shift + .workforce-compact-shift { border-top: 1px solid var(--iop-line); padding-top: 8px; }
 .workforce-compact-shift-label { color: var(--iop-muted); font-size: var(--iop-compactSize); font-weight: var(--iop-labelWeight); }

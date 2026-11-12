@@ -3,6 +3,7 @@ import {
   Actions,
   Alert,
   Button,
+  DateField,
   Field,
   FieldRow,
   Input,
@@ -14,12 +15,18 @@ import type { WorkforceApplication } from "../../application/workforce";
 import { entries, type Board } from "../../domain/models";
 import {
   applyChoice,
-  changedDays,
   hasWorkingHours,
   scheduleChoice,
   weekDrafts,
   type ScheduleDayDraft,
 } from "../../domain/weekly-schedule";
+import {
+  defaultAnalysisPeriod,
+  proposalInput,
+  type ProposalDrafts,
+  type ScheduleProposalPreview,
+} from "../../domain/schedule-proposal";
+import { ScheduleProposalView } from "./ScheduleProposalView";
 import { statusLabels } from "./labels";
 
 function dayLabel(date: string) {
@@ -69,20 +76,39 @@ export function WeeklySchedule({
   refresh: () => void;
 }) {
   const [userId, setUserId] = useState(initialUserId);
-  const [drafts, setDrafts] = useState<ScheduleDayDraft[]>([]);
+  const [baseline, setBaseline] = useState(board);
+  const [peopleDrafts, setPeopleDrafts] = useState<ProposalDrafts>({});
+  const [preview, setPreview] = useState<ScheduleProposalPreview>();
+  const [period, setPeriod] = useState(() => defaultAnalysisPeriod(weekStart));
   const [selected, setSelected] = useState<string[]>([]);
   const [preset, setPreset] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState<number>();
-  const original = weekDrafts(board, userId, weekStart);
+  const original = weekDrafts(baseline, userId, weekStart);
+  const drafts = peopleDrafts[userId] ?? original;
+  const setDrafts = (
+    change: ScheduleDayDraft[] | ((days: ScheduleDayDraft[]) => ScheduleDayDraft[]),
+  ) => {
+    setPreview(undefined);
+    setPeopleDrafts((current) => ({
+      ...current,
+      [userId]: typeof change === "function" ? change(current[userId] ?? original) : change,
+    }));
+  };
+  // Keep original revisions while drafts exist, even if the parent board reloads.
   useEffect(() => {
-    const days = weekDrafts(board, userId, weekStart);
-    setDrafts(days);
+    if (!Object.keys(peopleDrafts).length) setBaseline(board);
+  }, [board]);
+  useEffect(() => {
+    const days = weekDrafts(baseline, userId, weekStart);
     setSelected(days.slice(0, 5).map((day) => day.date));
     setError("");
-  }, [board, userId, weekStart]);
-  const changes = changedDays(original, drafts);
+  }, [userId, weekStart]);
+  const proposal = proposalInput(baseline, weekStart, peopleDrafts);
+  const changeCount = proposal.weeks.reduce(
+    (count, week) => count + week.days.length, 0,
+  );
   const busy = pending || loading;
   const update = (index: number, change: Partial<ScheduleDayDraft>) => {
     setSaved(undefined);
@@ -94,13 +120,15 @@ export function WeeklySchedule({
     setPending(true);
     setError("");
     try {
-      const result = await application.saveWeek({
-        userId,
-        weekStart,
-        days: changes,
-      });
-      setSaved(result.changed);
-      refresh();
+      if (preview) {
+        const result = await application.saveProposal(proposal);
+        setSaved(result.changed);
+        setPeopleDrafts({});
+        setPreview(undefined);
+        refresh();
+      } else {
+        setPreview(await application.previewProposal({ ...proposal, ...period }));
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -112,7 +140,7 @@ export function WeeklySchedule({
       <h2>{t("Enter weekly shifts")}</h2>
       <p>
         {t(
-          "Choose a person, apply a shift to selected days, then adjust individual days.",
+          "Edit several people in this week, preview the proposed schedule and compare workloads before saving.",
         )}
       </p>
       {error && <Alert>{t(error)}</Alert>}
@@ -130,7 +158,6 @@ export function WeeklySchedule({
             {t("Person")}
             <Select
               aria-label={t("Person")}
-              required
               value={userId}
               onChange={(event) => {
                 setUserId(event.target.value);
@@ -138,7 +165,7 @@ export function WeeklySchedule({
               }}
             >
               <option value="">{t("Select a person")}</option>
-              {board.people.map((person) => (
+              {baseline.people.map((person) => (
                 <option key={person.id} value={person.id}>
                   {person.name}
                 </option>
@@ -156,7 +183,7 @@ export function WeeklySchedule({
                     onChange={(event) => setPreset(event.target.value)}
                   >
                     <option value="">{t("Choose a shift or status")}</option>
-                    <Choices board={board} />
+                    <Choices board={baseline} />
                   </Select>
                 </Field>
                 <Button
@@ -167,7 +194,7 @@ export function WeeklySchedule({
                     setDrafts((days) =>
                       days.map((day) =>
                         selected.includes(day.date)
-                          ? applyChoice(day, preset, board.settings)
+                          ? applyChoice(day, preset, baseline.settings)
                           : day,
                       ),
                     );
@@ -231,14 +258,14 @@ export function WeeklySchedule({
                         {t("Shift or status")}
                         <Select
                           aria-label={t("Shift or status")}
-                          value={scheduleChoice(day, board.settings)}
+                          value={scheduleChoice(day, baseline.settings)}
                           onChange={(event) =>
                             update(
                               index,
                               applyChoice(
                                 day,
                                 event.target.value,
-                                board.settings,
+                                baseline.settings,
                               ),
                             )
                           }
@@ -246,7 +273,7 @@ export function WeeklySchedule({
                           <option value="" disabled={!!original[index]?.status}>
                             {t("Not planned")}
                           </option>
-                          <Choices board={board} date={day.date} />
+                          <Choices board={baseline} date={day.date} />
                         </Select>
                       </Field>
                       {hasWorkingHours(day.status) && (
@@ -293,25 +320,51 @@ export function WeeklySchedule({
               </p>
             </>
           )}
+          {!!changeCount && <>
+            <p role="status">{t(
+              "Unsaved proposal: {0} people, {1} changed days.",
+              [proposal.weeks.length, changeCount],
+            )}</p>
+            <FieldRow>
+              <DateField label={t("Analysis from")} required value={period.from}
+                max={weekStart} onChange={(event) => {
+                  setPeriod({ ...period, from: event.target.value });
+                  setPreview(undefined);
+                }} />
+              <DateField label={t("Analysis to")} required value={period.to}
+                min={drafts[6]?.date} onChange={(event) => {
+                  setPeriod({ ...period, to: event.target.value });
+                  setPreview(undefined);
+                }} />
+            </FieldRow>
+            <p>{t(
+              "Choose up to 93 days including the edited week. Totals describe personal schedules, not attendance or paid hours.",
+            )}</p>
+            {preview && <ScheduleProposalView
+              board={baseline} weekStart={weekStart}
+              drafts={peopleDrafts} preview={preview}
+            />}
+          </>}
           <Actions className="iop-form-actions">
             <Button variant="secondary" onClick={cancel}>
               {t("Cancel")}
             </Button>
-            {userId && (
+            {!!changeCount && (
               <>
                 <Button
                   variant="secondary"
-                  disabled={!changes.length}
                   onClick={() => {
-                    setDrafts(original);
+                    setPeopleDrafts({});
+                    setPreview(undefined);
+                    setBaseline(board);
                     setError("");
                     setSaved(undefined);
                   }}
                 >
-                  {t("Discard edits")}
+                  {t("Discard proposal")}
                 </Button>
-                <Button type="submit" disabled={!changes.length}>
-                  {t(pending ? "Saving…" : "Save week")} ({changes.length})
+                <Button type="submit">
+                  {pending ? t("Processing…") : preview ? t("Save proposal") : t("Preview proposal")} ({changeCount})
                 </Button>
               </>
             )}

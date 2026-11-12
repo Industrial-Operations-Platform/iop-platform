@@ -105,6 +105,65 @@ function setup() {
     names,
   };
 }
+
+test("multi-person preview reads complete history without writes and proposal commit is atomic and scoped", async () => {
+  const { app, records, revisions } = setup();
+  await app.saveWeek("lead", { userId: "tech", weekStart: "2026-09-21", days: [
+    { date: "2026-09-26", status: "work", start: "05:00", end: "14:15", expectedRevision: 0 },
+    { date: "2026-09-27", status: "off", start: "", end: "", expectedRevision: 0 },
+  ] });
+  const proposal = { weeks: [manualWeek, { ...manualWeek, userId: "other" }] };
+  const request = { ...proposal, from: "2026-09-21", to: "2026-10-04" };
+  const before = structuredClone([...records]);
+  const historyLength = revisions.length;
+  await expect(app.previewProposal("tech", request)).rejects.toMatchObject({ code: "workforce_denied" });
+  await expect(app.saveProposal("tech", proposal)).rejects.toMatchObject({ code: "workforce_denied" });
+  const preview = await app.previewProposal("lead", request);
+  expect(preview.people.find((person) => person.userId === "tech")).toMatchObject({
+    before: { days: 1, minutes: 555, saturdays: 1, sundays: 0, unknownDays: 12 },
+    after: { days: 6, minutes: 3330, saturdays: 1, sundays: 0, unknownDays: 7 },
+  });
+  expect(preview.people.find((person) => person.userId === "other")?.after.shifts).toEqual([
+    { id: "early", label: "Early", count: 5 }, { id: "", label: "Other scheduled hours", count: 0 },
+  ]);
+  expect([...records]).toEqual(before);
+  expect(revisions).toHaveLength(historyLength);
+  await app.saveWeek("admin", { ...manualWeek, userId: "other", days: [manualWeek.days[4]] });
+  await expect(app.saveProposal("lead", proposal)).rejects.toMatchObject({ code: "workforce_conflict" });
+  expect(records.has("scheduletech_2026-09-28")).toBe(false);
+  const updated = { weeks: [manualWeek, { ...manualWeek, userId: "other", days: manualWeek.days.map((day, i) => ({ ...day, expectedRevision: i === 4 ? 1 : 0 })) }] };
+  expect(await app.saveProposal("lead", updated)).toEqual({ changed: 9, unchanged: 1 });
+  expect(await app.history("tech", "schedule", "tech_2026-09-28")).toHaveLength(1);
+});
+
+test("proposal totals count weekends, absences, custom overnight hours and DST elapsed hours without multiplying duties", async () => {
+  const { app } = setup();
+  const proposal = { weeks: [{ userId: "tech", weekStart: "2026-10-19", days: [
+    { date: "2026-10-23", status: "vacation" as const, start: "", end: "", expectedRevision: 0 },
+    { date: "2026-10-24", status: "training" as const, start: "22:00", end: "06:00", expectedRevision: 0 },
+    { date: "2026-10-25", status: "maintenance" as const, start: "13:45", end: "23:00", expectedRevision: 0 },
+  ] }] };
+  const preview = await app.previewProposal("lead", { ...proposal, from: "2026-10-19", to: "2026-10-25" });
+  expect(preview.people.find((person) => person.userId === "tech")?.after).toMatchObject({
+    days: 2, minutes: 1095, saturdays: 1, sundays: 1, unknownDays: 4,
+    shifts: [{ id: "early", count: 0 }, { id: "", count: 2 }],
+  });
+  await app.import("admin", source, await app.preview("admin", source));
+  await app.save("lead", assignment);
+  const withDuty = await app.previewProposal("lead", { weeks: [{ ...manualWeek, days: [{ ...manualWeek.days[2], expectedRevision: 1 }] }], from: "2026-09-28", to: "2026-10-04" });
+  expect(withDuty.people.find((person) => person.userId === "tech")).toMatchObject({
+    before: { days: 1, minutes: 555 }, after: { days: 1, minutes: 555 },
+  });
+  await expect(app.previewProposal("lead", { weeks: [{ ...manualWeek, days: [{ ...manualWeek.days[2], start: "13:45", end: "23:00", expectedRevision: 1 }] }], from: "2026-09-28", to: "2026-10-04" })).rejects.toMatchObject({ code: "workforce_conflict" });
+});
+
+test("proposal bounds reject duplicate people, mixed weeks, excluded dates and unbounded analysis", () => {
+  const { app } = setup();
+  for (const weeks of [[], [manualWeek, manualWeek], Array.from({ length: 101 }, (_, i) => ({ ...manualWeek, userId: `person-${i}` })), [manualWeek, { ...manualWeek, userId: "other", weekStart: "2026-10-05" }]])
+    expect(() => app.saveProposal("lead", { weeks })).toThrow("workforce_invalid");
+  for (const period of [{ from: "2026-01-01", to: "2026-10-04" }, { from: "2026-09-29", to: "2026-10-04" }, { from: "2026-09-28", to: "2026-10-03" }])
+    expect(() => app.previewProposal("lead", { weeks: [manualWeek], ...period })).toThrow("workforce_invalid");
+});
 const source = {
   format: "csv" as const,
   userId: "",

@@ -87,6 +87,18 @@ export class WorkforceController {
   preview(@Req() req: IncomingMessage, @Body() body: C.WorkforceImportDto) {
     return this.operation(req, (r, a) => r.workforce.preview(a, body));
   }
+  @Post("schedules/preview")
+  @ApiBody({ type: C.WorkforceProposalPreviewRequestDto })
+  @ApiCreatedResponse({ type: C.WorkforceProposalPreviewDto })
+  previewProposal(@Req() req: IncomingMessage, @Body() body: C.WorkforceProposalPreviewRequestDto) {
+    return this.operation(req, (r, a) => r.workforce.previewProposal(a, body));
+  }
+  @Post("schedules/proposal")
+  @ApiBody({ type: C.WorkforceProposalDto })
+  @ApiCreatedResponse({ type: C.WorkforceResultDto })
+  saveProposal(@Req() req: IncomingMessage, @Body() body: C.WorkforceProposalDto) {
+    return this.operation(req, (r, a) => r.workforce.saveProposal(a, body));
+  }
   @Post("import")
   @ApiBody({ type: C.WorkforceCommitDto })
   @ApiCreatedResponse({ type: C.WorkforceResultDto })

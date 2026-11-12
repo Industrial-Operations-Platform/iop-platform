@@ -47,10 +47,19 @@ and the Formal Handover records.
 Open **Workforce & shifts → Weekly schedules** (**Personal & Schichten →
 Wochendienstplan** in German), choose any date in the required week and select a
 person. Existing schedules appear Monday through Sunday. Choose a shift/status and
-**Apply to selected days**, adjust exceptions, then **Save week**. Monday–Friday is
+**Apply to selected days** and adjust exceptions. Switch people to add more drafts
+for the same week, then use **Preview proposal** to inspect the joint weekly matrix
+and saved → proposed workload table. Choose up to 93 inclusive analysis days
+containing the entire edited week; totals cover complete server-side schedules in
+that period. Use **Save proposal** only when ready to persist all people together.
+Monday–Friday is
 preselected; select the weekend only when needed. A shift preset skips weekdays on
 which it is inactive. Unchanged and unknown days are left alone. **Edit week** on
-an existing personal schedule opens that person's weekly editor.
+an existing personal schedule opens that person's weekly editor. Drafts remain in
+this editor while switching people, but closing it, changing weeks or reloading the
+page discards them. Cancel and Discard proposal do not write. Changing any draft or
+analysis date requires a new preview. A background board refresh preserves draft
+revisions so newer changes cannot be silently overwritten.
 
 Both Team Leader and Administrator may use this editor. The whole save fails on
 stale revisions, overlapping availability or incompatible current assignments;
@@ -58,6 +67,13 @@ refresh stale data and correct the conflicting interval or have an Administrator
 remove an incompatible assignment before replanning. A manual change records its
 actor, revision and `manual` source, preserving older imported revisions. It does
 not silently change zones or phone holders.
+
+The preview table distinguishes missing schedules from explicit absence. Scheduled
+work/training/maintenance counts once per date; elapsed hours use resolved instants
+including DST and full overnight intervals. Saturday/Sunday refers to the local
+start date. Configured shift counts match exact hours and active weekdays; custom
+hours use Other scheduled hours. Operational assignments do not add hours a second
+time. These are planned loads, not attendance or payroll.
 
 ## Manual source contract
 
@@ -127,6 +143,18 @@ Settings use ID `site`, workers use user ID, schedules use `userId_YYYY-MM-DD` a
 assignments use opaque IDs. Creation expects revision 0. Site scope and actor come
 from the authenticated host, never from request data. Reviewed OpenAPI describes
 transport envelopes; the domain types define kind-specific payload fields.
+
+`schedules/preview` accepts `weeks` (1–100 distinct people, all for the same Monday,
+each using the existing weekly input), `from` and `to` (up to 93 inclusive days
+containing that entire week). It requires `workforce.plan`, reuses full weekly
+validation and returns per-person `before`/`after` loads without writing records,
+revisions or audit events. Loads expose `days`, `minutes`, `saturdays`, `sundays`,
+`unknownDays` and configured `shifts`; the empty shift ID represents custom hours.
+`schedules/proposal` accepts the same `weeks` and commits all changed days atomically
+with fresh authorization/revision/conflict checks and retained manual history.
+The existing `schedules/week` route delegates to that same preparation/save path.
+The browser must preview again after editing; server save always independently
+validates input and does not trust a prior preview as an authorization snapshot.
 
 Settings additionally support optional `technicalLevels` (`id`, `label`); worker
 snapshots support optional `technicalLevelId` and a server-owned saved label.

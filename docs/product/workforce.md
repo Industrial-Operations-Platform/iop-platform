@@ -56,6 +56,29 @@ can be applied to selected days, with Monday–Friday selected initially. Indivi
 rows support another shift, status or working interval. Presets respect their active
 weekdays; unknown days stay empty. Only changed days are submitted in one save.
 
+[IOP-233](../planning/items/IOP-233-schedule-preview.md) adds an unsaved proposal
+for up to 100 people in the same week. Switching people retains each draft.
+**Preview proposal** validates the complete proposal without writing and displays
+a weekly matrix plus saved/proposed workload comparisons for active site people.
+Choose an inclusive analysis period of up to 93 days containing the edited week;
+the default starts on the first day of the week's starting month and ends Sunday.
+The server reads the complete period, rather than extrapolating the visible week.
+
+Workload includes scheduled work, training and maintenance days and elapsed hours,
+Saturday/Sunday start dates and each configured shift's count. Matching uses exact
+configured local hours and active weekdays; unmatched intervals appear as Other
+scheduled hours. Overnight hours include the whole interval and actual DST elapsed
+time, attributed to the starting date. Assignments do not multiply personal hours;
+absence contributes no working load, and unknown days are shown separately.
+These measures describe schedules, not attendance, paid hours or staffing adequacy.
+
+**Save proposal** explicitly commits all changed people/days in one transaction,
+rechecking authority, revisions, neighboring overlaps and dependent assignments.
+An edit or analysis-period change invalidates the preview. Failed preview/save
+retains the drafts for correction; Cancel or Discard proposal clears unsaved work.
+Drafts exist only while this weekly editor remains open and do not survive closing
+it, switching weeks or reloading the page. This adds no persisted draft state.
+
 Week updates recheck the current scoped grant and each day's revision, and validate
 the complete proposed week, neighboring overnight schedules and existing zone/phone
 assignments. An invalid or stale row prevents every write. Updating personal hours

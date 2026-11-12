@@ -1096,6 +1096,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workforce/schedules/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_previewProposal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workforce/schedules/proposal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WorkforceController_saveProposal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workforce/import": {
         parameters: {
             query?: never;
@@ -3272,6 +3304,46 @@ export interface components {
             /** @enum {string} */
             outcome: "create" | "replace" | "unchanged";
         };
+        WorkforceProposalPreviewRequestDto: {
+            weeks: components["schemas"]["WorkforceWeekDto"][];
+            /**
+             * Format: date
+             * @description Inclusive analysis period, at most 93 days, containing the entire edited week.
+             */
+            from: string;
+            /** Format: date */
+            to: string;
+        };
+        WorkforceShiftLoadDto: {
+            id: string;
+            label: string;
+            count: number;
+        };
+        WorkforceScheduleLoadDto: {
+            days: number;
+            /** @description Elapsed scheduled minutes, including training and maintenance; not attendance or paid time. */
+            minutes: number;
+            saturdays: number;
+            sundays: number;
+            unknownDays: number;
+            shifts: components["schemas"]["WorkforceShiftLoadDto"][];
+        };
+        WorkforcePersonLoadDto: {
+            userId: string;
+            name: string;
+            before: components["schemas"]["WorkforceScheduleLoadDto"];
+            after: components["schemas"]["WorkforceScheduleLoadDto"];
+        };
+        WorkforceProposalPreviewDto: {
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string;
+            people: components["schemas"]["WorkforcePersonLoadDto"][];
+        };
+        WorkforceProposalDto: {
+            weeks: components["schemas"]["WorkforceWeekDto"][];
+        };
         WorkforceImportRevisionDto: {
             id: string;
             expectedRevision: number;
@@ -5447,6 +5519,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WorkforcePreviewDto"][];
+                };
+            };
+        };
+    };
+    WorkforceController_previewProposal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkforceProposalPreviewRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforceProposalPreviewDto"];
+                };
+            };
+        };
+    };
+    WorkforceController_saveProposal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkforceProposalDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkforceResultDto"];
                 };
             };
         };

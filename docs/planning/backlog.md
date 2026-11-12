@@ -4,6 +4,12 @@ This index records existing work; permanent contexts own scope and status.
 Execution plans live in `active/`, and completed evidence in `completed/`.
 See the [workflow](workflow.md).
 
+## Schedule planning preview
+
+| Task context | Status |
+| --- | --- |
+| [IOP-233 — Multi-person schedule preview and workload comparison](items/IOP-233-schedule-preview.md) | Completed implementation; PostgreSQL integration execution unavailable |
+
 ## Owner-requested Locator and access refinement
 
 | Task context | Status |
