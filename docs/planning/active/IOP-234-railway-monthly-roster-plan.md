@@ -46,3 +46,13 @@ incorrectly passed a Workforce transaction to the raw SQL authorization adapter.
 Correct it to use the owning transaction's current `canPlan`/`canAdminister` flags;
 the outer PostgreSQL transaction already checks authority and holds the access
 lease. Repreview and verify no changes before retrying the corrected adapter.
+
+The corrected apply added exactly 455 schedules and 323 assignments; every original
+snapshot remained unchanged and no missing days remain. The owner then explicitly
+approved converting the 18 retained Task Force early shifts/duties. Extend the
+operator with an explicit `--convert-task-force` preview/apply flag; capture exact
+before records, use one current authorized transaction per person/week to logically
+retire duties, update availability and restore the same duty IDs at middle hours.
+Retain phones, zones, prior revisions and unrelated data; verify final revisions,
+complete Task Force middle coverage and immediate rerun no-op. Add regression
+coverage for the pinned port and conversion preservation before the live change.

@@ -256,6 +256,15 @@ remote backup before applying, and inspect per-person metrics and preserved-reco
 evidence afterward. This command never creates accounts, changes passwords or
 restores a database.
 
+Only with explicit owner authorization, append `--convert-task-force` to both
+preview and apply commands to convert existing configured Task Force work shifts
+to middle hours. The preview identifies each exact schedule/duty revision. Each
+person/week conversion retires the old duty revision, updates availability and
+restores the same duty IDs in one transaction; locations and phone references are
+retained and any conflict rejects the transaction. Custom intervals, removed
+duties, absences and other profiles are not silently rewritten. Historical
+revisions remain available. Changing this flag requires a new matching preview.
+
 ## Personal usernames in local and Railway development
 
 Personal accounts use the first given name and first surname without a separator,

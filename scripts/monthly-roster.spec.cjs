@@ -1,4 +1,5 @@
 const { prepareMonthlyRoster } = require("./railway/monthly-roster-plan.cjs");
+const { pinnedWorkforcePort } = require("./railway/monthly-roster-runner.cjs");
 const clock = { interval: (date, start, end) => ({ startsAt: `${date}T${start}:00Z`, endsAt: `${date}T${end}:00Z` }) };
 function board() {
   return { timeZone: "UTC", people: [
@@ -65,4 +66,35 @@ test("all technician rotations retain every shift and both weekend days even whe
     expect(new Set(duties.map(row => row.data.shiftId))).toEqual(new Set(["early", "late", "middle"]));
     for (const weekend of [0, 6]) expect(duties.some(row => new Date(row.data.date).getUTCDay() === weekend)).toBe(true);
   }
+});
+
+test("Task Force conversion is explicit, retains identities and duties, and rejects custom intervals", () => {
+  const current = board();
+  const schedule = { kind: "schedule", id: "task_2026-11-09", revision: 4, deleted: false,
+    data: { userId: "task", date: "2026-11-09", status: "work", start: "05:00", end: "14:15" } };
+  const duty = { kind: "assignment", id: "existing-task-duty", revision: 2, deleted: false,
+    data: { userId: "task", date: "2026-11-09", shiftId: "early", start: "05:00", end: "14:15", targetId: "zone", duty: "zone", phone: "zone" } };
+  current.records.push(schedule, duty);
+  expect(prepareMonthlyRoster(current, { month: "2026-11" }, clock).conversions).toEqual([]);
+  const snapshot = structuredClone(current);
+  const plan = prepareMonthlyRoster(current, { month: "2026-11", convertTaskForce: true }, clock);
+  expect(current).toEqual(snapshot);
+  expect(plan.conversions).toHaveLength(1);
+  expect(plan.conversions[0]).toMatchObject({ before: schedule, duties: [duty],
+    day: { date: "2026-11-09", start: "08:45", end: "18:00", expectedRevision: 4 },
+    assignments: [{ id: duty.id, expectedRevision: 3, data: { targetId: "zone", duty: "zone", phone: "zone", shiftId: "middle", start: "08:45", end: "18:00" } }],
+  });
+  duty.data.start = "06:00";
+  expect(() => prepareMonthlyRoster(current, { month: "2026-11", convertTaskForce: true }, clock)).toThrow("custom or removed");
+});
+
+test("pinned application permissions use Workforce flags without requiring a SQL transaction", async () => {
+  const tx = { canPlan: true, canAdminister: true };
+  const useCase = jest.fn(async supplied => supplied);
+  expect(await pinnedWorkforcePort(tx, "actor").run("actor", "workforce.plan", useCase)).toBe(tx);
+  expect(await pinnedWorkforcePort(tx, "actor").run("actor", "workforce.administer", useCase)).toBe(tx);
+  await expect(pinnedWorkforcePort(tx, "actor").run("other", "workforce.plan", useCase)).rejects.toThrow("authorization");
+  await expect(pinnedWorkforcePort({ canPlan: false }, "actor").run("actor", "workforce.plan", useCase)).rejects.toThrow("authorization");
+  await expect(pinnedWorkforcePort({ canAdminister: false }, "actor").run("actor", "workforce.administer", useCase)).rejects.toThrow("authorization");
+  expect(useCase).toHaveBeenCalledTimes(2);
 });

@@ -32,4 +32,10 @@ installation, external provider, optimization or permission change is included.
 Reuse [Workforce](../../product/workforce.md), [Railway operations](../../development/railway.md)
 and the Accepted scoped application/adapter patterns in ADR-0032.
 
+The owner subsequently explicitly approved converting the 18 existing November
+Task Force early shifts and their associated duties to middle shifts. This is the
+only authorized exception to preserving existing schedules. Keep the same account,
+date, duty ID, location and phone reference and retain all prior revisions; perform
+the schedule/duty replacement atomically per person/week.
+
 [Execution plan](../active/IOP-234-railway-monthly-roster-plan.md).

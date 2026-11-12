@@ -18,12 +18,26 @@ function prepareMonthlyRoster(board, input, clock) {
   if (!people.length || people.length > 100) throw new Error("The evaluation requires 1–100 active technicians or Task Force users.");
   const plans = new Map();
   const preserved = [];
+  const conversions = [];
   for (const [index, person] of people.entries()) {
     for (let time = Date.parse(from); time <= Date.parse(to); time += 86400000) {
       const date = new Date(time).toISOString().slice(0, 10);
       const existing = board.records.find(record => record.kind === "schedule" && record.id === `${person.id}_${date}`);
       const duties = board.records.filter(record => record.kind === "assignment" && record.data.userId === person.id && record.data.date === date);
-      if (existing || duties.length) { preserved.push({ userId: person.id, date }); continue; }
+      if (existing || duties.length) {
+        const middle = shifts[2];
+        if (input.convertTaskForce && person.profile === "task-force" && existing && !existing.deleted &&
+            existing.data.status === "work" && (existing.data.start !== middle.start || existing.data.end !== middle.end)) {
+          const previous = shifts.find(shift => shift.start === existing.data.start && shift.end === existing.data.end);
+          if (!previous || duties.some(duty => duty.deleted || duty.data.start !== previous.start || duty.data.end !== previous.end))
+            throw new Error("A Task Force day has custom or removed duties; review it separately before conversion.");
+          conversions.push({ userId: person.id, weekStart: monday(date), before: existing, duties,
+            day: { date, status: "work", start: middle.start, end: middle.end, expectedRevision: existing.revision },
+            assignments: duties.map(duty => ({ kind: "assignment", id: duty.id, deleted: false, expectedRevision: duty.revision + 1,
+              data: { ...duty.data, shiftId: middle.id, start: middle.start, end: middle.end, startsAt: "", endsAt: "" } })) });
+        } else preserved.push({ userId: person.id, date });
+        continue;
+      }
       const weekday = (new Date(date).getUTCDay() + 6) % 7;
       const week = Math.floor((time - Date.parse(firstMonday)) / (7 * 86400000));
       const offStart = (index + week) % 7;
@@ -52,6 +66,6 @@ function prepareMonthlyRoster(board, input, clock) {
     }
   }
   return { month: input.month, from, to, people: people.map(person => ({ id: person.id, profile: person.profile })),
-    weeks: [...plans.values()], preserved };
+    weeks: [...plans.values()], conversions, preserved };
 }
 module.exports = { prepareMonthlyRoster };
