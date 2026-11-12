@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-Completed, including the reported current-week distribution correction.
+In progress for the owner's dated Halle/shift coverage correction.
 On 2026-11-12 the owner requested updating develop and the online
 Railway installation: technicians should have early, late and weekend shifts;
 Task Force should have middle shifts. The owner selected the entire current
@@ -59,3 +59,12 @@ technicians, and every technician has three of each in that week. Live schedule
 and assignment counts agree, Task Force middle hours were verified, and all 102
 original revision snapshots remain retained.
 [Correction evidence](../completed/IOP-234-late-shift-balance-plan.md).
+
+## Halle coverage correction
+
+The owner clarified that each Halle needs technicians in each required shift on
+every date. Site-level shift balance did not satisfy this requirement. Correct
+the selected November month at the date/Halle/shift level, including reassignment
+between Halles and sufficient eligible evaluation work dates. The owner is choosing
+whether required technician coverage includes early/late or all three shifts.
+[Coverage execution](../active/IOP-234-halle-shift-coverage-plan.md).

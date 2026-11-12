@@ -274,6 +274,28 @@ conversion batch shares one transaction while schedules and existing duty IDs
 move together. Private evidence records each expected revision and resulting
 schedule/duty. The normal missing-day planner remains available.
 
+For an explicitly agreed daily Halle coverage requirement, use `--cover-halles`
+with the required configured shift IDs on both preview and apply commands.
+
+```sh
+node scripts/railway/monthly-roster.cjs --month 2026-11 --preview --cover-halles early,late
+node scripts/railway/monthly-roster.cjs --month 2026-11 --apply --cover-halles early,late
+```
+
+Including `middle` requests a technician in that shift in every Halle as well.
+The preview enumerates every date/Halle/shift cell and the eligible off dates
+needed for coverage. It assigns distinct technicians for complete configured
+intervals, prefers their current Halles, distributes extra workers within each
+Halle and retains phone holders in their configured Halle/shift. Coverage planning
+uses existing work and evaluation off dates. Absence states and custom duties
+limit the eligible pool, and insufficient capacity stops preparation.
+
+Apply checks the exact preview and changes the complete proposed coverage in one
+authorized Workforce transaction. Current duty IDs receive retained revisions and
+newly activated work dates receive new zone duties. Verify the entire coverage
+matrix from persisted assignments and matching schedules after applying, including
+weekends. An immediate repeated preview should contain zero conversions.
+
 ## Personal usernames in local and Railway development
 
 Personal accounts use the first given name and first surname without a separator,

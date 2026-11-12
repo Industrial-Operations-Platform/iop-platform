@@ -9,7 +9,7 @@ See the [workflow](workflow.md).
 | Task context | Status |
 | --- | --- |
 | [IOP-233 — Multi-person schedule preview and workload comparison](items/IOP-233-schedule-preview.md) | Completed; published through develop and active on Railway |
-| [IOP-234 — Railway monthly technician and Task Force schedules](items/IOP-234-railway-monthly-roster.md) | Completed; November roster and balanced current-week early/late distribution active on Railway |
+| [IOP-234 — Railway monthly technician and Task Force schedules](items/IOP-234-railway-monthly-roster.md) | In progress; correcting daily coverage in every Halle and required shift |
 
 ## Owner-requested Locator and access refinement
 

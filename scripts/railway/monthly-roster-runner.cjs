@@ -106,10 +106,13 @@ async function runMonthlyRoster(input, expected, apply, prepareMonthlyRoster, pi
           if (!weeks.has(key)) weeks.set(key, { userId: change.userId, weekStart: change.weekStart, days: [] });
           weeks.get(key).days.push(change.day);
         }
-        for (const week of weeks.values()) await app.saveWeek(actor, week);
+        for (const week of weeks.values()) {
+          const result = await app.saveWeek(actor, week);
+          schedulesConverted += result.changed;
+        }
         for (const change of changes) for (const assignment of change.assignments) await app.save(actor, assignment);
-        schedulesConverted += changes.length;
         assignmentsConverted += changes.reduce((sum, change) => sum + change.assignments.length, 0);
+        assignmentsAdded += changes.reduce((sum, change) => sum + change.assignments.filter(assignment => assignment.expectedRevision === 0).length, 0);
       });
     }
     const final = await read();
@@ -119,14 +122,14 @@ async function runMonthlyRoster(input, expected, apply, prepareMonthlyRoster, pi
     if (!preserved) throw new Error("A retained snapshot changed; inspect private evidence before continuing.");
     if (apply) for (const change of prepared.plan.conversions) {
       const schedule = final.board.records.find(record => record.kind === "schedule" && record.id === change.before.id);
-      if (schedule?.revision !== change.before.revision + 1 || schedule.data.start !== change.day.start || schedule.data.end !== change.day.end)
+      const hoursChanged = ["status", "start", "end"].some(field => change.before.data[field] !== change.day[field]);
+      if (schedule?.revision !== change.before.revision + Number(hoursChanged) || schedule.data.status !== change.day.status ||
+          schedule.data.start !== change.day.start || schedule.data.end !== change.day.end)
         throw new Error("Converted schedule verification failed.");
-      for (const previous of change.duties) {
-        const duty = final.board.records.find(record => record.kind === "assignment" && record.id === previous.id);
-        const expected = change.assignments.find(assignment => assignment.id === previous.id);
-        if (!duty || duty.deleted || duty.revision !== previous.revision + 2 || duty.data.shiftId !== expected.data.shiftId ||
-            duty.data.start !== expected.data.start || duty.data.end !== expected.data.end ||
-            duty.data.targetId !== previous.data.targetId || duty.data.phone !== previous.data.phone || duty.data.duty !== previous.data.duty)
+      for (const expected of change.assignments) {
+        const duty = final.board.records.find(record => record.kind === "assignment" && record.id === expected.id);
+        if (!duty || duty.deleted || duty.revision !== expected.expectedRevision + 1 ||
+            ["userId", "date", "shiftId", "targetId", "duty", "phone", "start", "end"].some(field => duty.data[field] !== expected.data[field]))
           throw new Error("Converted duty preservation verification failed.");
       }
     }
