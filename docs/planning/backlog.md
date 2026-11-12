@@ -9,6 +9,7 @@ See the [workflow](workflow.md).
 | Task context | Status |
 | --- | --- |
 | [IOP-233 — Multi-person schedule preview and workload comparison](items/IOP-233-schedule-preview.md) | Completed implementation; PostgreSQL integration execution unavailable |
+| [IOP-234 — Railway monthly technician and Task Force schedules](items/IOP-234-railway-monthly-roster.md) | In progress |
 
 ## Owner-requested Locator and access refinement
 

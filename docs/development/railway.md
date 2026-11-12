@@ -229,6 +229,33 @@ npm run railway -- ssh --project PROJECT_ID --environment ENVIRONMENT_ID --servi
 
 Do not issue passwords during deployment or through GitHub Actions.
 
+## Monthly Workforce evaluation plans
+
+For an explicitly requested evaluation month, prepare a preview before applying:
+
+```sh
+node scripts/railway/monthly-roster.cjs --month 2026-11 --preview
+node scripts/railway/monthly-roster.cjs --month 2026-11 --apply
+```
+
+This command is restricted to the configured Railway development installation and
+an active scoped Administrator. It uses existing accounts, scope and shift hours.
+Technicians rotate early/late/middle in two-day blocks, with staggered days off and
+Saturday/Sunday work. Task Force receives weekday middle shifts and weekend days
+off. These are evaluation schedules, not attendance, payroll or an assessed real
+staffing plan. Existing days, absences, duties and tombstones remain authoritative.
+New working dates receive the configured home-zone duty, or floating support if
+none is configured, without adding phone responsibility.
+
+Private previews/evidence live under `.railway/monthly-rosters/`. Apply checks both
+the saved data fingerprint and exact prepared plan, then rechecks each person/week
+under the existing site transaction. Schedule and duty creation commit together per
+person/week; the complete month is not a single transaction. Repreview after a
+failure to inspect remaining work. Repeated completion adds nothing. Keep a current
+remote backup before applying, and inspect per-person metrics and preserved-record
+evidence afterward. This command never creates accounts, changes passwords or
+restores a database.
+
 ## Personal usernames in local and Railway development
 
 Personal accounts use the first given name and first surname without a separator,
