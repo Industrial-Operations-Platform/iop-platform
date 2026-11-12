@@ -56,3 +56,24 @@ retire duties, update availability and restore the same duty IDs at middle hours
 Retain phones, zones, prior revisions and unrelated data; verify final revisions,
 complete Task Force middle coverage and immediate rerun no-op. Add regression
 coverage for the pinned port and conversion preservation before the live change.
+
+## Live execution evidence
+
+- Applied 455 new schedules and 323 duties through existing Workforce operations;
+  all pre-existing snapshots were unchanged in that increment.
+- With the owner's additional approval, converted exactly 18 Task Force schedules
+  and 18 associated duties to middle hours. Same IDs, zones, duties and phone
+  references remain; current revisions were verified and all 36 original revision
+  snapshots compare exactly with retained history.
+- Each of 17 technicians has 30 explicit November dates, all three configured
+  shifts, Saturday work and Sunday work. Combined scheduled shift counts are
+  early 198, late 93, middle 91, including the preserved existing week.
+- Each of 3 Task Force users has 30 explicit dates and only middle working hours
+  (66 middle shifts total, including three preserved Saturday work dates).
+- Immediate guarded repreview proposes zero additions and zero conversions.
+  Private manifests remain under `.railway/monthly-rosters/2026-11/`.
+- Remote aggregate verification: 2,797 Workforce records, 2,893 revisions and the
+  same 167 analytical publications. The fresh pre-conversion protected PostgreSQL
+  archive is 30,466,360 bytes; its signature, SHA-256 and table list were verified.
+- Six focused planning/security regressions passed. Full scripts-suite and final
+  publication evidence are recorded on closure. No new API or migrations.
