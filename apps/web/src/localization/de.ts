@@ -495,6 +495,8 @@ export const german: Readonly<Record<string, string>> = {
   Category: "Kategorie",
   "Category filter": "Kategoriefilter",
   "Change password": "Passwort ändern",
+  "Selecting a lower filter fills its unique higher filters. Ambiguous values stay All. Changing a higher filter clears the following filters.":
+    "Die Auswahl eines untergeordneten Filters ergänzt seine eindeutigen übergeordneten Filter. Mehrdeutige Werte bleiben auf Alle. Änderungen eines übergeordneten Filters setzen die nachfolgenden Filter zurück.",
   "Choices follow the filters above. Changing a filter clears the following filters.":
     "Die Auswahl folgt den obigen Filtern. Änderungen setzen nachfolgende Filter zurück.",
   "Choose a nonempty CSV of at most 5 MiB.":

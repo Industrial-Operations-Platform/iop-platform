@@ -38,6 +38,7 @@ interface ReportSnapshot {
     Pick<ExecutiveLeader, "dimension" | "metric">)[];
   options: { field: string; value: string }[];
   option_counts: Record<string, number>;
+  filter_ancestors?: ReportResult["filterAncestors"];
   groups: Record<string, unknown>[];
   frequency_groups: Record<string, unknown>[];
   duration_groups: Record<string, unknown>[];
@@ -142,6 +143,15 @@ export class PgReportRepository implements ReportRepository {
       const search = bind(q.search.toLowerCase()),
         offset = bind((q.page - 1) * 50);
       const metric = q.metric === "frequency" ? "frequency" : "seconds";
+      const deepestFilter = reportDimensions.reduce((last, field, index) => q.filters[field]?.length ? index : last, -1);
+      const missingAncestors = reportDimensions.slice(0, Math.max(0, deepestFilter))
+        .filter(field => !q.filters[field]?.length);
+      // Every selected fact participates, including missing values and rows beyond pages.
+      const ancestorProjection = missingAncestors.length ? `(SELECT coalesce(jsonb_object_agg(field,jsonb_build_array(value)),'{}'::jsonb)
+        FROM (SELECT d.field,min(n.values->>d.field) AS value FROM selected n
+          CROSS JOIN (VALUES ${missingAncestors.map(field => `('${field}')`).join(",")}) d(field)
+          GROUP BY d.field HAVING bool_and(coalesce(n.values->>d.field,'')<>'')
+            AND min(n.values->>d.field)=max(n.values->>d.field)) ancestors)` : "'{}'::jsonb";
       const sql = `WITH p AS MATERIALIZED (SELECT coalesce((SELECT config FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$4::jsonb) AS config,
     coalesce((SELECT version::text FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$5::text) AS version,$8::text AS whitespace),
    manifest AS MATERIALIZED (SELECT import_id,reporting_date FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),
@@ -175,7 +185,8 @@ export class PgReportRepository implements ReportRepository {
      AND (${search}::text='' OR EXISTS (SELECT 1 FROM jsonb_each_text(n.values) field WHERE position(${search}::text in lower(field.value))>0))
      AND (${optionPredicates.join(" OR ")}) GROUP BY key,value),
    rankedopts AS (SELECT *,row_number() OVER(PARTITION BY key ORDER BY value COLLATE "C") AS pos FROM opts)
-   SELECT (SELECT coalesce(config->'excludedValues','[]'::jsonb) FROM p) AS excluded_values,
+   SELECT ${ancestorProjection} AS filter_ancestors,
+    (SELECT coalesce(config->'excludedValues','[]'::jsonb) FROM p) AS excluded_values,
     (SELECT coalesce(jsonb_agg(k ORDER BY ordinality),'[]'::jsonb) FROM kpi_values k) AS kpi_values,
     (SELECT version FROM p) AS profile_version,(SELECT encode(sha256(convert_to(config::text,'UTF8')),'hex') FROM p) AS profile_fingerprint,
     (SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb) FROM manifest) AS publications,
@@ -261,6 +272,7 @@ export class PgReportRepository implements ReportRepository {
         series: points(r.series),
         monthly: points(r.monthly),
         options,
+        filterAncestors: r.filter_ancestors ?? {},
         optionCounts: r.option_counts,
         dates: pubs.map((x) => x.date).sort(),
         records: r.records.map((x: Record<string, unknown>) => ({

@@ -45,6 +45,7 @@ export interface ReportResult {
   series: ReportPoint[];
   monthly: ReportPoint[];
   options: Record<string, string[]>;
+  filterAncestors?: Partial<Record<ReportDimension, string[]>>;
   optionCounts: Record<string, number>;
   dates: string[];
   records: Record<string, string | number>[];

@@ -3671,6 +3671,10 @@ export interface components {
             options: {
                 [key: string]: string[];
             };
+            /** @description Missing earlier filter fields with one nonempty value across all matching facts. Draft suggestions only; applied selection is unchanged. */
+            filterAncestors?: {
+                [key: string]: string[];
+            };
             optionCounts: {
                 [key: string]: number;
             };

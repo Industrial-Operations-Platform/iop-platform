@@ -881,6 +881,46 @@ test("all months share the complete historical reference, including later import
   } finally { await ref.close(); }
 });
 
+test("report ancestors use complete matching facts, selected months and current exclusions without changing selection", async () => {
+  const sourceId = "ancestor-completion";
+  const ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 3 }), {
+    ...runtimeConfig, local: { ...runtimeConfig.local, source: { ...runtimeConfig.local.source, id: sourceId } },
+    mappings: new SourceMappings({ ...runtimeConfig.mappings.configuration, sourceId }),
+  });
+  try {
+    const header = fixture("valid/Hitliste-20260701.csv").toString("utf16le").replace(/^\ufeff/, "").split(/\r?\n/)[0];
+    const line = (area, equipment, message = "Shared alarm") => `"1";"0 0:00:30";"${area}";"${equipment}";"${message}";"Fault";"007"`;
+    const upload = async (date, rows) => expect((await ref.submit("demo-a", `Hitliste-${date}.csv`,
+      Buffer.from("\ufeff" + header + "\r\n" + rows.join("\r\n") + "\r\n", "utf16le"))).outcome).toBe("succeeded");
+    await upload("20260901", Array.from({ length: 61 }, (_, index) => line(index === 60 ? "Area B" : "Area A", `=EQ-${index}`)));
+    await upload("20261001", [line("Area A", "=OCT")]);
+    await upload("20260906", [line("Area B", "=SUN", "Sunday only")]);
+    const q = { ...selection, from: "2026-09-01", toExclusive: "2026-11-01", months: ["2026-09"], filters: { message: ["Shared alarm"] } };
+    const ambiguous = await ref.reports.query("demo-a", q);
+    expect(ambiguous).toMatchObject({ recordCount: 61, filterAncestors: {}, selection: q });
+    expect(ambiguous.records).toHaveLength(50);
+    expect(ambiguous.records.every(row => row.area === "Area A")).toBe(true);
+    const area = await ref.reports.query("demo-a", { ...q, filters: { area: ["Area B"] } });
+    expect(area.filterAncestors).toEqual({ sector: ["Dispatch"] });
+    const equipment = await ref.reports.query("demo-a", { ...q, filters: { equipment: ["=EQ-60"] } });
+    expect(equipment.filterAncestors).toEqual({ sector: ["Dispatch"], area: ["Area B"] });
+    const explicit = await ref.reports.query("demo-a", { ...q, filters: { sector: ["Dispatch"], equipment: ["=EQ-60"] } });
+    expect(explicit.filterAncestors).toEqual({ area: ["Area B"] });
+    const october = await ref.reports.query("demo-a", { ...q, months: ["2026-10"] });
+    expect(october.filterAncestors).toEqual({ sector: ["Preparation"], area: ["Area A"], equipment: ["=OCT"] });
+    const empty = await ref.reports.query("demo-a", { ...q, filters: { message: ["Missing"] } });
+    expect(empty.filterAncestors).toEqual({});
+    const sunday = await ref.reports.query("demo-a", { ...q, filters: { message: ["Sunday only"] } });
+    expect(sunday).toMatchObject({ recordCount: 0, filterAncestors: {} });
+    const otherSource = await runtime.reports.query("demo-a", { ...q, filters: { equipment: ["=OCT"] }, months: ["2026-10"] });
+    expect(otherSource.filterAncestors).toEqual({});
+    const profile = await ref.profiles.get("demo-a");
+    await ref.profiles.save("demo-a", { version: profile.version, profile: { ...profile.profile, excludedValues: [{ field: "area", value: "Area B" }] } });
+    const excluded = await ref.reports.query("demo-a", q);
+    expect(excluded).toMatchObject({ recordCount: 60, filterAncestors: { sector: ["Preparation"], area: ["Area A"] } });
+  } finally { await ref.close(); }
+});
+
 test("administrator file rows sort across pages and catalog choices include every current scoped message", async () => {
   const sourceId="explorer-pagination";
   const ref=new PlatformRuntime(new Pool({...configs.runtime,max:3}),{
@@ -903,6 +943,8 @@ test("administrator file rows sort across pages and catalog choices include ever
     // Selects must expose every choice, including values after the old 200-suggestion cap.
     expect(reportChoices.options.message).toHaveLength(235);
     expect(reportChoices.optionCounts.message).toBe(235);
+    const lastChoice = await ref.reports.query("demo-a", { ...reportQuery, filters: { equipment: ["=EQ-234"] } });
+    expect(lastChoice.filterAncestors).toEqual({ sector: ["Preparation"], area: ["Area A"] });
     const filteredChoices = await ref.reports.query("demo-a", { ...reportQuery, filters: {
       sector: ["Preparation"], area: ["Area A"], equipment: ["=EQ-234"], message: ["Müll, 234"], type: ["Störung"],
     } });

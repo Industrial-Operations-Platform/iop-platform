@@ -362,6 +362,9 @@ export class ReportDto {
     additionalProperties: { type: "array", items: { type: "string" } },
   })
   options!: Record<string, string[]>;
+  @ApiPropertyOptional({ type: "object", additionalProperties: { type: "array", items: { type: "string" } },
+    description: "Missing earlier filter fields with one nonempty value across all matching facts. Draft suggestions only; applied selection is unchanged." })
+  filterAncestors?: Record<string, string[]>;
   @ApiProperty({ type: "object", additionalProperties: { type: "number" } })
   optionCounts!: Record<string, number>;
   @ApiProperty({ type: [String] }) dates!: string[];

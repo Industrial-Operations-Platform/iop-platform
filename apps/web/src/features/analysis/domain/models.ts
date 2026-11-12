@@ -199,6 +199,7 @@ export interface Report {
   optionCounts: {
     [key: string]: number;
   };
+  filterAncestors?: Partial<Record<Dimension, string[]>>;
   dates: string[];
   records: ReportRecord[];
   recordCount: number;

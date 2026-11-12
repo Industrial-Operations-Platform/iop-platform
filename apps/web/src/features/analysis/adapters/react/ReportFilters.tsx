@@ -1,6 +1,6 @@
 import { t } from "../../../../localization/i18n";
-import { useEffect, useState } from "react";
-import { changeReportFilter } from "../../domain/report-filters";
+import { useEffect, useRef, useState } from "react";
+import { changeReportFilter, completeReportAncestors } from "../../domain/report-filters";
 import {
   Button,
   Disclosure,
@@ -53,13 +53,21 @@ export function ReportFilters({
   const [preview, setPreview] = useState<{ key: string; report: Report }>();
   const [failedKey, setFailedKey] = useState<string>();
   const [retry, setRetry] = useState(0);
+  const latestOptionKey = useRef(optionKey);
+  latestOptionKey.current = optionKey;
   useEffect(() => {
     if (!loadOptions || optionKey === appliedKey || !draftMonths.length) return;
     let active = true;
     const timer = setTimeout(() => {
       void loadOptions(optionRequest).then(
         (result) => {
-          if (active) setPreview({ key: optionKey, report: result });
+          if (!active || latestOptionKey.current !== optionKey) return;
+          setPreview({ key: optionKey, report: result });
+          setDraft(current => {
+            if (latestOptionKey.current !== optionKey) return current;
+            const filters = completeReportAncestors(current.filters, result.filterAncestors);
+            return JSON.stringify(filters) === JSON.stringify(current.filters ?? {}) ? current : { ...current, filters };
+          });
         },
         () => {
           if (active) setFailedKey(optionKey);
@@ -244,7 +252,7 @@ export function ReportFilters({
               ))}
             </FieldRow>
             <p>
-              {t("Choices follow the filters above. Changing a filter clears the following filters. ")}
+              {t("Selecting a lower filter fills its unique higher filters. Ambiguous values stay All. Changing a higher filter clears the following filters.")}
             </p>
             {pending && <p role="status">{t("Updating compatible choices…")}</p>}
             {failed && (

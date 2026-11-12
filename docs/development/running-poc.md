@@ -150,8 +150,15 @@ LAN or internet; remote deployment requires HTTPS and secure cookies.
    to return to reports and select the desired month or comparison months.
 3. Start in **Executive Overview**, then choose Halle, Bereich, equipment, errors or daily/monthly.
    Group by any source field; change the measure and day/week/month period. Filter
-   a sector, location, equipment or message with exact values; suggestions show up
-   to 200 values and an exact typed value can reach others. Commas are part of values.
+   a sector, location, equipment or message with exact values. Dimension dropdowns
+   contain all compatible values; numeric fields offer up to 200 suggestions and
+   allow exact typed values beyond that bound. Commas are part of values.
+   Selecting a lower filter completes missing higher filters when the complete
+   matching data has exactly one nonempty value for each. For example, a Bereich
+   fills its Halle; equipment can fill both. Ambiguous parents remain All. Explicit
+   parents are preserved, and changing a parent clears following criteria. These
+   are draft changes: Apply filters updates the report after compatible choices
+   finish loading. Completion respects selected months, search and exclusions.
 4. Select a chart point/bar or a group in **Explore data** to filter it. **Clear filters**
    restores all available months without dimension filters. Tables expose rankings, periods and
    trends; administrators review original files and source rows in **Files & source rows**.

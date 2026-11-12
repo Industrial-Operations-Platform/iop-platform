@@ -79,6 +79,66 @@ test("clear is outside the collapsed panel and resets month, dimension and draft
 function reportFor(request: ReportRequest, options: Report["options"]): Report {
   return { selection: request, options } as Report;
 }
+
+test("selecting equipment fills its unique draft parents, revalidates choices and applies explicitly", async () => {
+  jest.useFakeTimers();
+  try {
+    const initial = { ...selection, filters: {} };
+    const options = { sector: ["A", "B"], area: ["Area A", "Area B"], equipment: ["=EQ"], message: ["Alarm"] };
+    const loadOptions = jest.fn(async (request: ReportRequest) => ({ ...reportFor(request, options),
+      filterAncestors: request.filters?.sector ? {} : { sector: ["A"], area: ["Area A"] },
+    }));
+    const onApply = jest.fn();
+    const { container } = render(<ReportFilters selection={initial} months={months} view={4}
+      report={reportFor(initial, options)} loadOptions={loadOptions} onApply={onApply} />);
+    container.querySelector("details")!.open = true;
+    fireEvent.change(dropdown("Betriebsmittelkennzeichen"), { target: { value: "=EQ" } });
+    await act(async () => { jest.advanceTimersByTime(150); });
+    expect(dropdown("Sector / Halle")).toHaveValue("A");
+    expect(dropdown("Bereich")).toHaveValue("Area A");
+    expect(dropdown("Meldetext")).toHaveValue("");
+    expect(onApply).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Apply filters" })).toBeDisabled();
+    await act(async () => { jest.advanceTimersByTime(150); });
+    fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ filters: { sector: ["A"], area: ["Area A"], equipment: ["=EQ"] } }));
+    expect(loadOptions).toHaveBeenCalledTimes(2);
+    fireEvent.change(dropdown("Sector / Halle"), { target: { value: "B" } });
+    expect(dropdown("Bereich")).toHaveValue("");
+    expect(dropdown("Betriebsmittelkennzeichen")).toHaveValue("");
+  } finally { jest.useRealTimers(); }
+});
+
+test("ambiguous areas keep Halle unrestricted and stale ancestor completions cannot overwrite newer choices", async () => {
+  jest.useFakeTimers();
+  try {
+    const initial = { ...selection, filters: {} };
+    const options = { sector: ["A", "B", "C"], area: ["Shared", "Area B", "Area C"] };
+    const pending: { request: ReportRequest; resolve: (report: Report) => void }[] = [];
+    const loadOptions = jest.fn((request: ReportRequest) => new Promise<Report>(resolve => pending.push({ request, resolve })));
+    const onApply = jest.fn();
+    const { container } = render(<ReportFilters selection={initial} months={months} view={2}
+      report={reportFor(initial, options)} loadOptions={loadOptions} onApply={onApply} />);
+    container.querySelector("details")!.open = true;
+    fireEvent.change(dropdown("Bereich"), { target: { value: "Shared" } });
+    await act(async () => { jest.advanceTimersByTime(150); });
+    await act(async () => { pending[0].resolve({ ...reportFor(pending[0].request, options), filterAncestors: {} }); });
+    expect(dropdown("Sector / Halle")).toHaveValue("");
+    fireEvent.change(dropdown("Bereich"), { target: { value: "Area B" } });
+    await act(async () => { jest.advanceTimersByTime(150); });
+    fireEvent.change(dropdown("Bereich"), { target: { value: "Area C" } });
+    await act(async () => { jest.advanceTimersByTime(150); });
+    await act(async () => { pending[2].resolve({ ...reportFor(pending[2].request, options), filterAncestors: { sector: ["C"] } }); });
+    await act(async () => { pending[1].resolve({ ...reportFor(pending[1].request, options), filterAncestors: { sector: ["B"] } }); });
+    expect(dropdown("Sector / Halle")).toHaveValue("C");
+    expect(dropdown("Bereich")).toHaveValue("Area C");
+    expect(onApply).not.toHaveBeenCalled();
+    await act(async () => { jest.advanceTimersByTime(150); });
+    await act(async () => { pending[3].resolve({ ...reportFor(pending[3].request, options), filterAncestors: {} }); });
+    fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+    expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ filters: { sector: ["C"], area: ["Area C"] } }));
+  } finally { jest.useRealTimers(); }
+});
 const dropdown = (field: string) => screen.getByRole("combobox", { name: field + " filter" });
 const values = (field: string) => within(dropdown(field)).getAllByRole("option").map((option) => (option as HTMLOptionElement).value);
 

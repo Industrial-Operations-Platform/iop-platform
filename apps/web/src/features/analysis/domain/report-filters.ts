@@ -13,3 +13,17 @@ export function changeReportFilter(
     }),
   );
 }
+
+/** Complete only missing ancestors confirmed unique by the full scoped report. */
+export function completeReportAncestors(
+  filters: ReportRequest["filters"],
+  ancestors: Partial<Record<Dimension, string[]>> = {},
+): NonNullable<ReportRequest["filters"]> {
+  const result = { ...filters };
+  const deepest = dimensions.reduce((last, field, index) => filters?.[field]?.length ? index : last, -1);
+  for (const field of dimensions.slice(0, Math.max(0, deepest))) {
+    const values = ancestors[field];
+    if (!result[field]?.length && values?.length === 1 && values[0]) result[field] = [...values];
+  }
+  return result;
+}
