@@ -68,7 +68,10 @@ async function runMonthlyRoster(input, expected, apply, prepareMonthlyRoster) {
             throw new Error("A duty appeared on a proposed day; repreview before continuing.");
         }
         const pinned = { run: async (userId, permission, work) => {
-          if (userId !== actor || !await allowed(tx, userId, permission)) throw new Error("Evaluation authorization changed.");
+          // These flags belong to this authorized, pinned Workforce transaction.
+          if (userId !== actor || (permission === "workforce.plan" && !tx.canPlan) ||
+              (permission === "workforce.administer" && !tx.canAdminister))
+            throw new Error("Evaluation authorization changed.");
           return work(tx);
         } };
         const app = compose(pinned);

@@ -40,3 +40,9 @@ each configured shift plus Saturday and Sunday work in the prepared missing days
 new Task Force work uses middle only. Existing Task Force data contains 18 early
 shifts/duties. A separate owner choice is pending for converting those existing
 records; the authorized missing-day increment preserves them.
+
+The first guarded apply rejected before writes: the pinned application facade
+incorrectly passed a Workforce transaction to the raw SQL authorization adapter.
+Correct it to use the owning transaction's current `canPlan`/`canAdminister` flags;
+the outer PostgreSQL transaction already checks authority and holds the access
+lease. Repreview and verify no changes before retrying the corrected adapter.
