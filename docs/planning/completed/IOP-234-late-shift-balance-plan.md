@@ -1,6 +1,6 @@
 # IOP-234 — Correct current-week late-shift coverage
 
-Status: In progress. Branch `fix/IOP-234-late-shift-balance`, from develop `ac7d55d`.
+Status: Completed. Branch `fix/IOP-234-late-shift-balance`, from develop `ac7d55d`.
 [Permanent scope](../items/IOP-234-railway-monthly-roster.md).
 
 ## Requested correction
@@ -40,3 +40,27 @@ contains exactly 51 schedule/duty conversions across all 17 technicians and zero
 new dates. None of the 51 duties carries a phone. A fresh protected PostgreSQL
 archive (30,476,440 bytes) was exported and its archive list inspected. Before
 counts are 2,797 Workforce records, 2,893 revisions and 167 analytical publications.
+
+## Execution evidence
+
+- Source correction `98eb0ec` extends the existing operator and makes the complete
+  conversion batch atomic across affected people. Its week option only changes
+  existing working dates in the selected week. Daily coverage regression passed
+  with all 17 retained technicians and the unchanged Task Force middle example.
+- Applied exactly 51 schedule and 51 duty conversions in Railway development.
+  Retained IDs, location/duty/phone fields and every unrelated snapshot were checked.
+- Live schedule and weekly-board assignment counts match for every date. November
+  9/11/13 each have 9 early and 8 late technicians. November 10/12/14 each have
+  8 early and 9 late. Each technician has three early and three late work dates.
+- Immediate preview returns zero additions and conversions. Exact history comparison
+  verified all 102 original revision snapshots. Workforce retains 2,797 records and
+  now has 3,046 revisions. All 167 analytical publications remain present and Task
+  Force has no November working hours outside the configured middle interval.
+- Private preview/apply, backup and verification evidence is retained under the
+  existing `.railway/` directories. Syntax, whitespace and affected-document links
+  checked. No browser interaction was needed for the data correction.
+
+Item/backlog synchronized and this record archived. Integrate the correction and
+evidence into develop and push the named review branch and develop under the
+owner's continuing publication authorization. The visible data correction is
+already applied and verified independently of subsequent tooling image packaging.

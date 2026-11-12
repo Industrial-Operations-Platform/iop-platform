@@ -2,7 +2,7 @@
 
 ## Status and authorization
 
-In progress for a reported current-week distribution correction.
+Completed, including the reported current-week distribution correction.
 On 2026-11-12 the owner requested updating develop and the online
 Railway installation: technicians should have early, late and weekend shifts;
 Task Force should have middle shifts. The owner selected the entire current
@@ -35,7 +35,7 @@ and the Accepted scoped application/adapter patterns in ADR-0032.
 
 The owner subsequently explicitly approved converting the 18 existing November
 Task Force early shifts and their associated duties to middle shifts. This is the
-only authorized exception to preserving existing schedules. Keep the same account,
+authorized exception to preserving existing schedules. Keep the same account,
 date, duty ID, location and phone reference and retain all prior revisions; perform
 the schedule/duty replacement atomically per person/week.
 
@@ -53,4 +53,9 @@ November 9–15 week. Live inspection confirms 17 technicians on early hours on
 each working date November 9–14. The monthly coverage check was insufficient.
 Rebalance those existing working dates between early and late, retaining current
 Task Force middle work and prior revision evidence. Validate daily schedule and
-assignment counts. [Correction plan](../active/IOP-234-late-shift-balance-plan.md).
+assignment counts. The correction moved 51 existing technician dates/duties to
+late hours. Each working date November 9–14 now has 8/9 early and 8/9 late
+technicians, and every technician has three of each in that week. Live schedule
+and assignment counts agree, Task Force middle hours were verified, and all 102
+original revision snapshots remain retained.
+[Correction evidence](../completed/IOP-234-late-shift-balance-plan.md).
