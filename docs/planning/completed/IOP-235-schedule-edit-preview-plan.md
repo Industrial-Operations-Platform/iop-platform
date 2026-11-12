@@ -1,6 +1,6 @@
 # IOP-235 — Schedule edit/preview repair
 
-Status: In progress. Branch `fix/IOP-235-schedule-edit-preview`, from develop `735024c`.
+Status: Completed. Branch `fix/IOP-235-schedule-edit-preview`, from develop `735024c`.
 [Authorized scope](../items/IOP-235-schedule-edit-preview.md).
 
 ## Findings
@@ -59,4 +59,28 @@ revision/audit writes and retained historical records supply persistence behavio
   Baseline: 2,812 Workforce records, 3,714 revisions, 167 analytical publications.
   Private backups, credentials, reproduction snapshots and helper scripts are ignored.
 
-Publication and original-scenario no-write verification remain pending.
+## Published and verified
+
+- Source commit `db41eb6` was fast-forwarded into develop and both story/develop
+  refs pushed to origin under the continuing online-fix authorization.
+- [Complete hosted validation and deployment](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/43298322961)
+  succeeded: 573 API tests, 323 web tests, 339 PostgreSQL tests, 115 Chromium
+  scenarios, script/secret/design/contract checks and all four container builds.
+  The Railway image also passed its synthetic migration/authentication exercise.
+- Railway deployment `466b7cae-3b51-4fcd-be39-3a0ae7476024` reports SUCCESS.
+  The public revision is `db41eb61c1ef3511925c8a828ecae659c98036c0`.
+  HTTPS web/API, password authentication and anonymous-business-access denial
+  passed. Served JavaScript contains View schedule, assignment changes and the
+  explicit replanning request mode.
+- Reproduced the reported November 10 late-to-middle draft using the running
+  Workforce application and current scoped Administrator and Team Leader grants.
+  Preview returns `canSave: true`, zero issues and one Halle B Sh assignment move
+  from 13:45–23:00 to 08:45–18:00. Empty-week viewing returns equal saved/proposed
+  loads and cannot save. No real-person test proposal was committed.
+- Before/after live boards and database counts match: 2,812 Workforce records,
+  3,714 revisions and 167 analytical publications. Rechecked all 300 November
+  date/Halle/early-late cells: zero gaps, zero overlapping technicians, all 501
+  original revision snapshots retained and Task Force middle-only work preserved.
+
+Item/backlog synchronized and plan archived. No schema migration or architectural
+exception was needed. Private evidence and protected backup remain outside Git.
