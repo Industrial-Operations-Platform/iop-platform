@@ -1,6 +1,6 @@
 # IOP-234 — Railway monthly roster execution
 
-Status: In progress. [Scope](../items/IOP-234-railway-monthly-roster.md).
+Status: Completed. [Scope](../items/IOP-234-railway-monthly-roster.md).
 Branch: `feature/IOP-234-railway-monthly-roster`, from develop `3a3f515`.
 Owner explicitly authorizes develop publication and Railway data activation.
 
@@ -76,4 +76,31 @@ coverage for the pinned port and conversion preservation before the live change.
   same 167 analytical publications. The fresh pre-conversion protected PostgreSQL
   archive is 30,466,360 bytes; its signature, SHA-256 and table list were verified.
 - Six focused planning/security regressions passed. Full scripts-suite and final
-  publication evidence are recorded on closure. No new API or migrations.
+  scripts suite passed: 105 tests, four platform skips. Syntax and whitespace
+  checks passed. No new API or migrations.
+
+## Publication and final verification
+
+- Source commits `3819df4`, `a3a2b78`, `0e1a13e` and `78ee3ef` were merged into
+  develop at `e1150a0`; both feature review branches and develop were pushed to
+  origin under explicit owner authorization. The backlog-only merge conflict was
+  resolved by preserving IOP-233's verified publication status and the IOP-234 row.
+- IOP-233's complete validated release is active at HTTPS
+  `https://iop-development-9fb7.up.railway.app`, revision `3a3f515`. A no-write call
+  through that live release's Workforce application confirmed the server workload
+  comparison for November: all 17 technicians have each configured shift and both
+  weekend categories; all 3 Task Force users have middle-only work and no unknown
+  dates. Before/after complete board snapshots matched exactly.
+- [Run 43247883328](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/43247883328)
+  packages the later operator tooling from `e1150a0`; it was still running at this
+  closure. It is not needed to apply the data, which already ran successfully via
+  the explicit remote operator. No claim is made that this later container revision
+  is active. The public application's feature code remains the validated IOP-233
+  version; November data and scoped application verification are already complete.
+- The browser host was unavailable and native browser observation stopped because
+  Windows could not confidently determine the browser URL. No further UI input was
+  attempted; authenticated visual verification remains unavailable. Complete CI,
+  deployed revision and no-write scoped application checks supply the evidence.
+- Closure documentation uses `docs/IOP-234-publication-evidence` from develop.
+  Item/backlog synchronized and this plan archived. No stage/master promotion,
+  branch deletion, account/password change, restore or data loss occurred.
