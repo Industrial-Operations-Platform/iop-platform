@@ -2,7 +2,7 @@
 
 ## Status and goal
 
-Completed locally on 2026-11-13. The owner requested continuing the analytical loading
+Completed and published through develop to origin on 2026-11-13. The owner requested continuing the analytical loading
 improvement after reviewing IOP-215's server cache and the repeated browser loads.
 Keep visited reports available when switching tabs and returning to Data Analysis.
 
@@ -28,4 +28,6 @@ External changes become visible on the next fresh read, explicit refresh or expi
 ## Evidence and remaining work
 
 [Execution evidence](../completed/IOP-238-analytical-session-cache-plan.md).
-Prepared on `feature/IOP-238-analytical-session-cache` for owner review.
+The owner approved merging `feature/IOP-238-analytical-session-cache` into develop
+and publishing both branches to origin. The atomic push succeeded and both remote
+hashes were independently verified. [Publication evidence](../completed/IOP-238-publication-plan.md).
