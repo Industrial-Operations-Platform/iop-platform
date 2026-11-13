@@ -69,6 +69,7 @@ retains current authorization and revision/projection checks from IOP-215.
 
 ## Closure
 
-Acceptance is met locally. The item/backlog and query contract are synchronized;
-this plan is archived for review. The source and test changes stay within IOP-238.
-The review branch remains available for the owner's publication decision.
+Acceptance is met. The item/backlog and query contract are synchronized.
+The owner approved merging the story into develop and publishing both branches
+to origin on 2026-11-13. [Publication evidence](IOP-238-publication-plan.md)
+records the successful atomic push and remote verification. The review branch is retained.
