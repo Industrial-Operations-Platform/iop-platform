@@ -12,6 +12,7 @@ See the [workflow](workflow.md).
 | [IOP-234 — Railway monthly technician and Task Force schedules](items/IOP-234-railway-monthly-roster.md) | Completed; all 300 November date/Halle/early-late combinations covered on Railway |
 | [IOP-235 — Edit assigned schedules and view proposals](items/IOP-235-schedule-edit-preview.md) | Completed; published to develop and verified on Railway |
 | [IOP-236 — Complete analytical filter ancestors](items/IOP-236-infer-filter-ancestors.md) | Completed; publication to origin approved |
+| [IOP-237 — Preserve analytical filters when months change](items/IOP-237-preserve-month-filters.md) | Completed; publication to origin approved |
 
 ## Owner-requested Locator and access refinement
 

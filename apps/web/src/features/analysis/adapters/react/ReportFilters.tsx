@@ -90,9 +90,10 @@ export function ReportFilters({
           .map((key) => request.filters?.[key] ?? []),
       });
     // Ancestors remain usable while a new descendant list is loading.
-    return [preview?.report, report].find(
+    const candidate = [preview?.report, report].find(
       (candidate) => candidate && prefix(candidate.selection) === prefix(optionRequest),
-    )?.options[field];
+    );
+    return candidate ? candidate.options[field] ?? [] : undefined;
   };
   const choices = [...new Set([...months, ...appliedMonths])].sort();
   const activeCount =
@@ -132,13 +133,12 @@ export function ReportFilters({
           months={choices}
           onChange={(value) => {
             setDraftMonths(value);
-            setDraft({ ...draft, filters: {} });
             setFailedKey(undefined);
           }}
         />
         <p>
           {t(
-            "Select one or more months, then apply. Selected months stay active in all detail views. Clear filters restores all available months. ",
+            "Select one or more months, then apply. Other filters stay selected. Selected months stay active in all detail views. Clear filters restores all available months.",
           )}
         </p>
         {!draftMonths.length && (
