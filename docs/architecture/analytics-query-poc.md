@@ -130,3 +130,27 @@ immutable-source and current-authority contract. It does not hold transactions
 between requests or cache errors. Explicit refresh always validates the current
 source before reusing a value. See [IOP-215](../planning/items/IOP-215-operational-refinements.md)
 for actual fixture timings and the limits of that evidence.
+
+## Browser report reuse — IOP-238
+
+The Analysis application retains disposable serialized response copies for the
+currently composed browser session. The host creates a fresh application when
+authentication context, source scope or profile preview changes. Keys cover dates,
+months, grouping, period, measure, filters, search, page, executive mode and pinned
+revision. Equivalent selections share pending reads. Limits are 32 reports, 8 MiB
+of serialized content counted at two bytes per UTF-16 code unit, and five minutes
+from each successful response. Navigation restores the last applied view.
+
+Refresh, import/recovery and preparation/KPI saves clear the retained responses.
+Fresh availability/report revisions and read failures also invalidate them.
+Generation checks keep superseded completions from repopulating current entries.
+Weekly reports reuse a daily timeline only from the same pinned revision.
+
+Revisiting a retained selection presents the previously loaded snapshot. Changes
+made elsewhere become visible after a fresh read, expiry or explicit refresh.
+Every server request retains the current authorization, scope and projection
+checks described above. Browser memory is released with the composed session.
+Chart adapters update existing renderers, use the latest selection handler and
+release observers/renderers on unmount or appearance replacement.
+
+See [IOP-238](../planning/items/IOP-238-analytical-session-cache.md) for verification.

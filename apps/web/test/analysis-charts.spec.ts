@@ -2,7 +2,9 @@ import {
   options,
   pareto,
   chartTheme,
+  mountChart,
 } from "../src/features/analysis/adapters/echarts/charts";
+import { init } from "echarts/core";
 import { identity, darkIdentity } from "../src/design/identity";
 import { setLanguage } from "../src/localization/i18n";
 import type { Report } from "../src/features/analysis/domain/models";
@@ -13,6 +15,44 @@ jest.mock("echarts/components", () => ({}));
 jest.mock("echarts/renderers", () => ({}));
 
 afterEach(() => setLanguage("en"));
+
+test("chart updates reuse one renderer, replace obsolete series and select with the latest report and handler", () => {
+  const chart = { setOption: jest.fn(), on: jest.fn(), resize: jest.fn(), dispose: jest.fn() };
+  (init as jest.Mock).mockReturnValueOnce(chart);
+  const disconnect = jest.fn();
+  const observe = jest.fn();
+  let resize!: () => void;
+  const originalObserver = globalThis.ResizeObserver;
+  globalThis.ResizeObserver = jest.fn(callback => {
+    resize = callback;
+    return { observe, disconnect };
+  }) as unknown as typeof ResizeObserver;
+  try {
+    const mounted = mountChart(document.createElement("div"));
+    const first = jest.fn();
+    const latest = jest.fn();
+    mounted.update("frequency", report, first);
+    mounted.update("frequency", report, latest);
+    expect(chart.setOption).toHaveBeenCalledTimes(1);
+    expect(chart.setOption.mock.calls[0][1]).toEqual({ notMerge: true });
+    const click = chart.on.mock.calls[0][1];
+    click({ name: "Frequency leader" });
+    expect(latest).toHaveBeenCalledWith("Frequency leader");
+    expect(first).not.toHaveBeenCalled();
+    const changed = { ...report, groups: [{ key: "New area" }] } as Report;
+    mounted.update("daily-matrix", { ...changed, dates: [], series: [] }, latest);
+    click({ value: [0, 0] });
+    expect(latest).toHaveBeenLastCalledWith("New area");
+    expect(chart.setOption).toHaveBeenCalledTimes(2);
+    resize();
+    expect(chart.resize).toHaveBeenCalledTimes(1);
+    mounted.dispose();
+    expect(disconnect).toHaveBeenCalledTimes(1);
+    expect(chart.dispose).toHaveBeenCalledTimes(1);
+  } finally {
+    globalThis.ResizeObserver = originalObserver;
+  }
+});
 
 const report = {
   selection: { dimension: "area", metric: "duration" },

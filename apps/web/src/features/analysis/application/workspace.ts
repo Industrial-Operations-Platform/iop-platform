@@ -14,6 +14,7 @@ import type {
   Report,
   ReportRequest,
 } from "../domain/models";
+import { AnalysisReportCache, reportKey } from "./report-cache";
 
 export interface AnalysisGateway {
   sourceRows(selection: SourceRowsRequest): Promise<SourceRowsResult>;
@@ -63,6 +64,51 @@ export function filterGroup(
   });
 }
 export class AnalysisWorkspace {
+  private readonly pendingReports = new Map<string, Promise<Report>>();
+  private reportGeneration = 0;
+  private reportRevision?: string;
+  private availabilityRevision?: string;
+  lastView?: { selection: ReportRequest; template: number };
+
+  invalidateReports(): void {
+    this.reportGeneration++;
+    this.reportCache.clear();
+    this.pendingReports.clear();
+    this.reportRevision = undefined;
+  }
+
+  cachedReport(selection: ReportRequest): Report | undefined {
+    const report = this.reportCache.get(selection);
+    if (!report || selection.period !== "week") return report;
+    const daily = this.reportCache.get({ ...selection, period: "day", page: 1, revision: report.revision });
+    return daily ? { ...report, dailyTimeline: daily.timeline } : undefined;
+  }
+
+  private readReport(selection: ReportRequest): Promise<Report> {
+    const cached = this.reportCache.get(selection);
+    if (cached) return Promise.resolve(cached);
+    const key = reportKey(selection);
+    const pending = this.pendingReports.get(key);
+    if (pending) return pending.then(report => ({ ...report, selection }));
+    const generation = this.reportGeneration;
+    const request = this.gateway.report(selection).then(report => {
+      if (generation === this.reportGeneration) {
+        if (this.reportRevision && this.reportRevision !== report.revision)
+          this.invalidateReports();
+        this.reportRevision = report.revision;
+        this.reportCache.set(selection, report);
+      }
+      return report;
+    }).catch(error => {
+      if (generation === this.reportGeneration) this.invalidateReports();
+      throw error;
+    }).finally(() => {
+      if (this.pendingReports.get(key) === request) this.pendingReports.delete(key);
+    });
+    this.pendingReports.set(key, request);
+    return request;
+  }
+
   sourceEvidence(sourceId: string): Promise<SourceRowsResult> {
     const match =
       /^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}):(\d{1,16})$/i.exec(
@@ -91,10 +137,13 @@ export class AnalysisWorkspace {
     return this.gateway.sourceRows({ importId, filters, page: 1, sort: [] });
   }
 
-  constructor(readonly gateway: AnalysisGateway) {}
+  constructor(
+    readonly gateway: AnalysisGateway,
+    private readonly reportCache = new AnalysisReportCache(),
+  ) {}
   /** Draft choices need one snapshot, without the extra daily read for weekly charts. */
   previewReportFilters(selection: ReportRequest): Promise<Report> {
-    return this.gateway.report({ ...selection, period: "day" });
+    return this.readReport({ ...selection, period: "day" });
   }
   async messageOptions(): Promise<string[]> {
     const values = new Set<string>();
@@ -116,10 +165,19 @@ export class AnalysisWorkspace {
     history: ImportSummary[];
     months: string[];
   }> {
+    const generation = this.reportGeneration;
     const [availability, history] = await Promise.all([
       this.gateway.availability(),
       canReview ? this.gateway.history() : Promise.resolve([]),
-    ]);
+    ]).catch(error => {
+      if (generation === this.reportGeneration) this.invalidateReports();
+      throw error;
+    });
+    if (generation === this.reportGeneration) {
+      if (this.availabilityRevision && this.availabilityRevision !== availability.revision)
+        this.invalidateReports();
+      this.availabilityRevision = availability.revision;
+    }
     return {
       selection: historySelection(availability.dates),
       history,
@@ -132,9 +190,9 @@ export class AnalysisWorkspace {
       86400000;
     if (!Number.isFinite(days) || days < 1 || days > 3660)
       throw new Error("Choose a reporting range between 1 and 3660 days.");
-    const report = await this.gateway.report(selection);
+    const report = await this.readReport(selection);
     if (selection.period !== "week") return report;
-    const daily = await this.gateway.report({ ...selection, period: "day", page: 1, revision: report.revision });
+    const daily = await this.readReport({ ...selection, period: "day", page: 1, revision: report.revision });
     // Never combine averages and chart values from different import/profile snapshots.
     return daily.revision === report.revision ? { ...report, dailyTimeline: daily.timeline } : report;
   }

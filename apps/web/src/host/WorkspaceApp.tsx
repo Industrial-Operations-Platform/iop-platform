@@ -160,6 +160,10 @@ export function WorkspaceApp({
     [error, setError] = useState<unknown>(),
     [pending, setPending] = useState(false),
     [connectionAttempt, setConnectionAttempt] = useState(0);
+  const analysis = useMemo(
+    () => new AnalysisWorkspace(application.gateway),
+    [application, context, preview?.profile],
+  );
   // Each new authenticated session starts with its destinations visible.
   useEffect(() => { setNavigationCollapsed(false); }, [context?.user?.id, context?.mustChangePassword]);
   useEffect(() => { setAssignedDepartmentId(undefined); setDepartmentId(""); }, [context?.user?.id]);
@@ -736,7 +740,7 @@ export function WorkspaceApp({
       ) : page === "analysis" && analyticalSource && canReadAnalytics ? (
         <AnalyticalEvidence
           key={`${context?.user?.id}:${analyticalSource}`}
-          application={application}
+          application={analysis}
           sourceId={analyticalSource}
           onHome={() => setAnalyticalSource("")}
           onBack={() => {
@@ -787,7 +791,7 @@ export function WorkspaceApp({
           canImport={!!context?.canImport}
           canAdminister={!!showUserAdministration}
           access={access}
-          analysis={application}
+          analysis={analysis}
           timeZone={context.scope?.siteTimeZone ?? "UTC"}
         />
       ) : page === "users" && showUserAdministration && access ? (
@@ -835,8 +839,8 @@ export function WorkspaceApp({
         context?.enabled &&
         !error ? (
         <StartOverview
-          key={context.user?.id ?? "no-user"}
-          application={application}
+          key={`${context.user?.id ?? "no-user"}:${JSON.stringify(context.scope)}`}
+          application={analysis}
           context={context}
           profileLabel={
             previewProfile
@@ -904,8 +908,8 @@ export function WorkspaceApp({
         <AnalysisLoadBoundary>
           <Suspense fallback={<Panel><p role="status">{t("Loading analysis workspace…")}</p></Panel>}>
             <ReportWorkspace
-              key={`${context.user.id}:${page}:${administrationTool}`}
-              application={application}
+              key={`${context.user.id}:${JSON.stringify(context.scope)}:${effectiveProfile}:${page}:${administrationTool}`}
+              application={analysis}
               context={context}
               administration={
                 page === "administration" && administration && context.canImport
