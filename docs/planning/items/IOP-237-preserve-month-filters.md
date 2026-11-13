@@ -1,6 +1,6 @@
 # IOP-237 — Preserve analytical filters when months change
 
-Status: Completed locally; publication approval pending. The owner reports that adding/removing comparison months
+Status: Completed. Publication to origin approved on 2026-11-13. The owner reports that adding/removing comparison months
 clears the analytical criteria and requests keeping the current selection.
 
 ## Acceptance
@@ -16,7 +16,8 @@ clears the analytical criteria and requests keeping the current selection.
 
 Reuses [IOP-162](IOP-162-shared-month-filters.md) and Accepted
 [ADR-0023](../../architecture/adr/ADR-0023-poc-analytics-filters.md)/ADR-0032.
-No API, data or metric changes. The separate ancestor-completion story remains
-on its unmerged review branch; this correction is independent from develop.
+The implementation was prepared independently from develop. The owner approved
+integrating both filter corrections into develop and publishing their review
+branches and develop to origin, with a clean working tree.
 
 [Execution evidence](../completed/IOP-237-preserve-month-filters-plan.md).

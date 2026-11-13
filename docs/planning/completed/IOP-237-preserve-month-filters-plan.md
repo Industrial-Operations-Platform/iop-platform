@@ -35,5 +35,8 @@ selection use case. No port, API, schema, metric or architectural pattern change
 - Whitespace and affected documentation links/status consistency checked. No API
   implementation changed; no live data or deployed services were modified.
 
-The independent local implementation is complete. The earlier ancestor-completion
-review branch is preserved separately. Publication/merging/deployment await approval.
+The independent local implementation is complete. On 2026-11-13 the owner approved
+publication of both filter corrections to origin and requested a clean working
+tree. Integrate both review branches into develop, resolve integration conflicts,
+validate the combined browser behavior and push both review branches and develop.
+Check remote refs and working-tree status after publication.
