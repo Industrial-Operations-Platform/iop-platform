@@ -1,6 +1,6 @@
 # IOP-236 — Complete analytical filter ancestors
 
-Status: Completed locally; publication approval pending. The owner requests that selecting a Bereich fills its Halle,
+Status: Completed. Publication to origin approved on 2026-11-13. The owner requests that selecting a Bereich fills its Halle,
 and selecting a lower analytical criterion completes its higher criteria.
 
 ## Acceptance

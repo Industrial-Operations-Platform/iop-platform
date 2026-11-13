@@ -46,6 +46,8 @@ under the repository story-branch workflow.
   mobile screenshots; shared controls fit without document overflow. Applied
   filter counts stay unchanged until the explicit Apply action.
 
-No schema migration, new dependency or architectural exception. Analytical source
-facts and live Railway data were not modified. Implementation is ready for review;
-merging/pushing the new story and deploying it await publication approval.
+On 2026-11-13 the owner approved publication of both filter corrections to origin
+and requested a clean working tree. Integrate both review branches into develop,
+resolve integration conflicts, validate their combined browser behavior and push
+both review branches and develop. Check remote refs and working-tree status after
+publication.
