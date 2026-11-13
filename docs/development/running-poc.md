@@ -69,6 +69,10 @@ Bereich adds sector and area; Equipment adds the code; Error and Daily/monthly a
 finer dimensions. Grouping does not clear these filters. Returning to a broader view
 removes incompatible dimension filters. The collapsed summary lists selected months
 and counts active restrictions, including a restricted month selection.
+Adding or removing comparison months preserves all current draft filters, including
+numeric criteria, grouping, measure and period. Compatible choices reload before
+Apply. Retained values without matching data remain selected and can be cleared
+individually; they produce an empty result rather than silently broadening the report.
 **Clear filters** is always outside the disclosure and resets to all available
 months without dimension filters. Changes become visible in the local installation
 after rebuilding/restarting its web and API services, then reloading the browser.

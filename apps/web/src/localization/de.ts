@@ -847,8 +847,8 @@ export const german: Readonly<Record<string, string>> = {
     "Einen Bereich wählen, um eine Komponente auszuwählen.",
   "Select an error": "Fehler auswählen",
   "Select at least one month.": "Mindestens einen Monat auswählen.",
-  "Select one or more months, then apply. Selected months stay active in all detail views. Clear filters restores all available months.":
-    "Einen oder mehrere Monate auswählen und anwenden. Die Auswahl bleibt in allen Detailansichten aktiv. Filter zurücksetzen stellt alle Monate wieder her.",
+  "Select one or more months, then apply. Other filters stay selected. Selected months stay active in all detail views. Clear filters restores all available months.":
+    "Einen oder mehrere Monate auswählen und anwenden. Andere Filter bleiben ausgewählt. Die Monatsauswahl bleibt in allen Detailansichten aktiv. Filter zurücksetzen stellt alle Monate wieder her.",
   "Select your local user": "Lokalen Benutzer auswählen",
   "Selected department": "Gewählte Abteilung",
   "Selected file:": "Gewählte Datei:",

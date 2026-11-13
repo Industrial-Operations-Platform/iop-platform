@@ -11,6 +11,7 @@ See the [workflow](workflow.md).
 | [IOP-233 — Multi-person schedule preview and workload comparison](items/IOP-233-schedule-preview.md) | Completed; published through develop and active on Railway |
 | [IOP-234 — Railway monthly technician and Task Force schedules](items/IOP-234-railway-monthly-roster.md) | Completed; all 300 November date/Halle/early-late combinations covered on Railway |
 | [IOP-235 — Edit assigned schedules and view proposals](items/IOP-235-schedule-edit-preview.md) | Completed; published to develop and verified on Railway |
+| [IOP-237 — Preserve analytical filters when months change](items/IOP-237-preserve-month-filters.md) | Completed locally; publication approval pending |
 
 ## Owner-requested Locator and access refinement
 
