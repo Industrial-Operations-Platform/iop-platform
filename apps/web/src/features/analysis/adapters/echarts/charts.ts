@@ -551,14 +551,13 @@ export function options(
 }
 export function mountChart(
   element: HTMLElement,
-  kind: ChartKind,
-  report: Report,
-  onSelect: (key: string) => void,
   tokens: Identity = identity,
-): () => void {
+) {
   const chart = init(element, chartTheme(tokens), { renderer: "svg" });
-  chart.setOption(options(kind, report, tokens));
+  let current: { kind: ChartKind; report: Report; onSelect: (key: string) => void } | undefined;
   chart.on("click", (params) => {
+    if (!current) return;
+    const { kind, report, onSelect } = current;
     if (kind === "daily-matrix" && Array.isArray(params.value)) {
       const group = report.groups[Number(params.value[1])];
       if (group) onSelect(group.key);
@@ -579,8 +578,15 @@ export function mountChart(
   });
   const observer = new ResizeObserver(() => chart.resize());
   observer.observe(element);
-  return () => {
-    observer.disconnect();
-    chart.dispose();
+  return {
+    update(kind: ChartKind, report: Report, onSelect: (key: string) => void) {
+      const changed = current?.kind !== kind || current.report !== report;
+      current = { kind, report, onSelect };
+      if (changed) chart.setOption(options(kind, report, tokens), { notMerge: true });
+    },
+    dispose() {
+      observer.disconnect();
+      chart.dispose();
+    },
   };
 }

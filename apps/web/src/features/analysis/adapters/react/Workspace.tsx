@@ -59,21 +59,31 @@ export function ReportWorkspace({
   administration: boolean;
   initialAdministrationTool?: "imports" | "files" | "preparation" | "kpis";
 }) {
-  const [selection, setSelection] = useState<ReportRequest | null>(null),
-    [report, setReport] = useState<Report | null>(null),
+  const remembered = administration ? undefined : application.lastView;
+  const [selection, setSelection] = useState<ReportRequest | null>(remembered?.selection ?? null),
+    [report, setReport] = useState<Report | null>(() =>
+      remembered ? application.cachedReport(remembered.selection) ?? null : null),
     [history, setHistory] = useState<ImportSummary[]>([]),
     [months, setMonths] = useState<string[]>([]);
   const [error, setError] = useState<unknown>(),
-    [loading, setLoading] = useState(true),
+    [loading, setLoading] = useState(!report),
     [refresh, setRefresh] = useState(0),
-    [template, setTemplate] = useState(0),
+    [template, setTemplate] = useState(remembered?.template ?? 0),
     [fileView, setFileView] = useState(initialAdministrationTool === "files");
+  const refreshHistory = () => {
+    application.invalidateReports();
+    setReport(null);
+    setRefresh((value) => value + 1);
+  };
+  useEffect(() => {
+    if (selection && !administration) application.lastView = { selection, template };
+  }, [application, selection, template, administration]);
   useEffect(() => {
     if (!administration) setFileView(false);
   }, [administration]);
   useEffect(() => {
     let active = true;
-    setLoading(true);
+    setLoading(!selection || !application.cachedReport(selection));
     setError(undefined);
     void application
       .loadHistory(administration)
@@ -99,6 +109,7 @@ export function ReportWorkspace({
       })
       .catch((e) => {
         if (active) {
+          setReport(null);
           setError(e);
           setLoading(false);
         }
@@ -109,8 +120,15 @@ export function ReportWorkspace({
   }, [application, refresh, administration]);
   useEffect(() => {
     let active = true;
-    setReport(null);
     if (!selection || administration) return;
+    const cached = application.cachedReport(selection);
+    if (cached) {
+      setReport(cached);
+      setLoading(false);
+      setError(undefined);
+      return;
+    }
+    setReport(null);
     setLoading(true);
     setError(undefined);
     void application
@@ -127,7 +145,7 @@ export function ReportWorkspace({
     return () => {
       active = false;
     };
-  }, [application, selection, administration]);
+  }, [application, selection, administration, refresh]);
   const drill = (dimension: Dimension, key: string) => {
     if (!selection) return;
     const next = drillInto(selection, template, dimension, key);
@@ -179,7 +197,7 @@ export function ReportWorkspace({
             <RefreshButton
               label="Refresh history"
               busy={loading}
-              onClick={() => setRefresh((x) => x + 1)}
+              onClick={refreshHistory}
             />
           </Actions>
         }
@@ -200,7 +218,7 @@ export function ReportWorkspace({
           }
           application={application}
           history={history}
-          onImported={() => setRefresh((x) => x + 1)}
+          onImported={refreshHistory}
         />
       ) : (
         <>

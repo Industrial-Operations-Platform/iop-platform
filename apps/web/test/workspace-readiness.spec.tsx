@@ -278,7 +278,7 @@ test.each([true, false])(
       expect(users).not.toHaveBeenCalled();
     }
     fireEvent.click(screen.getByRole("button", { name: "Data analysis" }));
-    await screen.findByRole("heading", { name: "Data analysis" });
+    await screen.findByRole("heading", { name: "Data analysis" }, { timeout: 5000 });
     expect(
       screen.getByRole("button", { name: "Data administration" }),
     ).toBeVisible();

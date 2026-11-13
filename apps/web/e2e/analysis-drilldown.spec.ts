@@ -78,12 +78,15 @@ for (const width of [1440, 375]) {
     await expect(equipment).toHaveValue("=EQ-B");
     await expect(equipment).toBeEnabled();
     await page.screenshot({ path: info.outputPath("month-filters-retained-empty.png"), fullPage: true });
+    const beforeRestore = requests.length;
     await page.getByRole("checkbox", { name: "July 2026" }).check();
     await expect(equipment).toHaveValue("=EQ-B");
     await expect(apply).toBeEnabled();
     await apply.click();
     await expect(page.getByRole("heading", { name: "No matching records", exact: true })).toHaveCount(0);
-    await expect.poll(() => requests.at(-1)?.filters).toEqual({ sector: ["B"], area: ["Area B"], equipment: ["=EQ-B"] });
-    await expect.poll(() => requests.at(-1)?.months).toEqual(["2026-05", "2026-07"]);
+    await expect(page.locator(".analysis-filter-panel summary")).toContainText("2026-05, 2026-07");
+    await page.locator(".analysis-data summary").click();
+    await expect(page.locator(".analysis-data").getByRole("button", { name: "Alarm", exact: true })).toBeVisible();
+    expect(requests).toHaveLength(beforeRestore);
   });
 }

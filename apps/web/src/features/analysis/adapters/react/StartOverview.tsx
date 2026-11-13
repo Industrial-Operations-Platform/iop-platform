@@ -210,7 +210,10 @@ export function StartOverview({
                 <RefreshButton
                   label={t("Refresh overview")}
                   busy={loading}
-                  onClick={() => setRefresh((n) => n + 1)}
+                  onClick={() => {
+                    application.invalidateReports();
+                    setRefresh((n) => n + 1);
+                  }}
                 />
               </div>
               {!operational && base && (

@@ -18,13 +18,20 @@ export function Plot({
   title: string;
 }) {
   const element = useRef<HTMLDivElement>(null);
+  const chart = useRef<ReturnType<typeof mountChart> | undefined>(undefined);
   const { resolved } = useAppearance();
   const averages = kind === "daily-overlay" || kind === "trend" ? monthlyAverages(report) : [];
   useEffect(() => {
-    if (element.current)
-      return mountChart(
-        element.current, kind, report, onSelect, appearanceIdentity(resolved),
-      );
+    if (!element.current) return;
+    const mounted = mountChart(element.current, appearanceIdentity(resolved));
+    chart.current = mounted;
+    return () => {
+      mounted?.dispose();
+      chart.current = undefined;
+    };
+  }, [resolved]);
+  useEffect(() => {
+    chart.current?.update(kind, report, onSelect);
   }, [kind, report, onSelect, resolved]);
   return (
     <Panel variant="chart">
