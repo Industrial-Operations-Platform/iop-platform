@@ -11,6 +11,7 @@ export function Popover({
   triggerClassName = "",
   triggerTitle = label,
   placement = "anchored",
+  alignment = "end",
 }: {
   label: string;
   description?: string;
@@ -20,6 +21,8 @@ export function Popover({
   triggerClassName?: string;
   triggerTitle?: string;
   placement?: "anchored" | "viewport";
+  /** Viewport placement aligns to the trigger, clamped to the visible screen. */
+  alignment?: "start" | "end";
 }) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -36,7 +39,8 @@ export function Popover({
       if (!toggle.current || !panel.current) return;
       const anchor = toggle.current.getBoundingClientRect();
       const bounds = panel.current.getBoundingClientRect();
-      const left = Math.max(12, Math.min(anchor.right - bounds.width, innerWidth - bounds.width - 12));
+      const preferredLeft = alignment === "start" ? anchor.left : anchor.right - bounds.width;
+      const left = Math.max(12, Math.min(preferredLeft, innerWidth - bounds.width - 12));
       const below = anchor.bottom + 8;
       const top = below + bounds.height <= innerHeight - 12 ? below : Math.max(12, anchor.top - bounds.height - 8);
       panel.current.style.setProperty("--popover-left", `${left}px`);
@@ -49,7 +53,7 @@ export function Popover({
       window.removeEventListener("resize", position);
       window.removeEventListener("scroll", position, true);
     };
-  }, [open, placement]);
+  }, [open, placement, alignment]);
   useEffect(() => {
     if (!open) return;
     panel.current

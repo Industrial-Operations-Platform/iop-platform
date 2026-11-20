@@ -32,6 +32,11 @@ for (const width of [1440, 375]) {
     await page.goto("/");
     await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("button", { name: "Data analysis", exact: true }).click();
     const nav = page.getByRole("navigation", { name: "Analysis templates" });
+    const chooseMonth = async (name: string, checked: boolean) => {
+      await page.getByRole("button", { name: "Choose months", exact: true }).click();
+      await page.getByRole("checkbox", { name, exact: true }).setChecked(checked);
+      await page.getByRole("button", { name: "Done", exact: true }).click();
+    };
     const drill = async (value: string, target: string) => {
       await page.locator(".analysis-data summary").click();
       await page.locator(".analysis-data").getByRole("button", { name: value, exact: true }).click();
@@ -43,7 +48,7 @@ for (const width of [1440, 375]) {
 
     await nav.getByRole("button", { name: "Halle analysis", exact: true }).click();
     await page.locator(".analysis-filter-panel summary").click();
-    await page.getByRole("checkbox", { name: "May 2026" }).check();
+    await chooseMonth("May 2026", true);
     await page.getByRole("button", { name: "Apply filters", exact: true }).click();
     await drill("A", "Bereich analysis");
     await page.locator(".analysis-filter-panel summary").click();
@@ -65,7 +70,7 @@ for (const width of [1440, 375]) {
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.screenshot({ path: info.outputPath("dependent-analysis-filters.png"), fullPage: true });
-    await page.getByRole("checkbox", { name: "July 2026" }).uncheck();
+    await chooseMonth("July 2026", false);
     for (const [name, value] of [["Sector / Halle", "B"], ["Bereich", "Area B"], ["Betriebsmittelkennzeichen", "=EQ-B"]]) {
       await expect(page.getByRole("combobox", { name: name + " filter", exact: true })).toHaveValue(value);
     }
@@ -79,7 +84,7 @@ for (const width of [1440, 375]) {
     await expect(equipment).toBeEnabled();
     await page.screenshot({ path: info.outputPath("month-filters-retained-empty.png"), fullPage: true });
     const beforeRestore = requests.length;
-    await page.getByRole("checkbox", { name: "July 2026" }).check();
+    await chooseMonth("July 2026", true);
     await expect(equipment).toHaveValue("=EQ-B");
     await expect(apply).toBeEnabled();
     await apply.click();

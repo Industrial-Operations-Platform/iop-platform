@@ -8,6 +8,7 @@ import {
   FieldRow,
   FilterForm,
   MonthMultiPicker,
+  monthSelectionSummary,
   Select,
   ValueFilter,
 } from "../../../../design/components";
@@ -123,7 +124,7 @@ export function ReportFilters({
         summary={
           <>
             {t("Months · ")}
-            {appliedMonths.join(t(", "))}
+            {monthSelectionSummary(appliedMonths)}
             {activeCount > 0 ? t(" · {0} active", [activeCount]) : ""}
           </>
         }

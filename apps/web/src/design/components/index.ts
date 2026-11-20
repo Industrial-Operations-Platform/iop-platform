@@ -32,7 +32,7 @@ export { MonthPicker } from "./MonthPicker";
 export { SideNavigation } from "./SideNavigation";
 export { SortableHeader } from "./SortableHeader";
 export { ValueFilter } from "./ValueFilter";
-export { MonthMultiPicker } from "./MonthMultiPicker";
+export { MonthMultiPicker, monthSelectionSummary } from "./MonthMultiPicker";
 export { SectionHeading } from "./SectionHeading";
 export { DepartmentScope } from "./DepartmentScope";
 export { CompactSelect } from "./CompactSelect";

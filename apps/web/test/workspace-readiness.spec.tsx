@@ -359,6 +359,7 @@ test("direct detail entry uses months and an empty draft cannot replace applied 
   await screen.findByRole("heading", { name: "No matching records" });
   const initialCalls = gateway.report.mock.calls.length;
   fireEvent.click(screen.getByText(/Months ·/));
+  fireEvent.click(screen.getByRole("button", { name: "Choose months" }));
   fireEvent.click(screen.getByRole("checkbox", { name: "July 2026" }));
   expect(screen.getByRole("alert")).toHaveTextContent(
     "Select at least one month",

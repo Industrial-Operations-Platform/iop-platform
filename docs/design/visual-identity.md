@@ -187,6 +187,13 @@ for scope and desktop/narrow evidence.
 
 ## Reusable component contract
 
+`MonthMultiPicker` uses the shared viewport-bounded, start-aligned Popover, a native year select
+and a three-column, twelve-month checkbox grid. Unavailable months are disabled;
+selected months use the existing active surface/ink. Keep selections across years,
+show per-year mixed/all state and provide bulk/clear actions. Large selection
+summaries use counts and year coverage instead of an unbounded month list. The
+executive `MonthPicker` retains its deliberate single-month native select.
+
 New frontend presentation must reuse the public
 [component library](../../apps/web/src/design/components/README.md), now consumed
 by both the active import screen and analytical reports. Controls, surfaces, metrics,

@@ -7,6 +7,11 @@ jest.mock("../src/design/components/components.css", () => ({}));
 
 const selection = { ...historySelection(["2026-07-01"])!, months: ["2026-07"] };
 const months = ["2026-05", "2026-06", "2026-07"];
+function monthCheckbox(name: string) {
+  const trigger = screen.getByRole("button", { name: "Choose months" });
+  if (trigger.getAttribute("aria-expanded") !== "true") fireEvent.click(trigger);
+  return screen.getByRole("checkbox", { name });
+}
 
 test.each([1, 2, 3, 4, 5])(
   "view %i compares nonconsecutive months and prevents empty selection",
@@ -23,7 +28,7 @@ test.each([1, 2, 3, 4, 5])(
     );
     container.querySelector("details")!.open = true;
     expect(container.querySelector('input[type="date"]')).toBeNull();
-    fireEvent.click(screen.getByRole("checkbox", { name: "May 2026" }));
+    fireEvent.click(monthCheckbox("May 2026"));
     fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
     expect(onApply).toHaveBeenLastCalledWith(
       expect.objectContaining({
@@ -32,8 +37,8 @@ test.each([1, 2, 3, 4, 5])(
         toExclusive: "2026-08-01",
       }),
     );
-    fireEvent.click(screen.getByRole("checkbox", { name: "May 2026" }));
-    fireEvent.click(screen.getByRole("checkbox", { name: "July 2026" }));
+    fireEvent.click(monthCheckbox("May 2026"));
+    fireEvent.click(monthCheckbox("July 2026"));
     expect(
       screen.getByRole("button", { name: "Apply filters" }),
     ).toBeDisabled();
@@ -65,9 +70,11 @@ test("clear is outside the collapsed panel and resets month, dimension and draft
     expect.objectContaining({ months, filters: {}, search: "", page: 1 }),
   );
   details.open = true;
+  monthCheckbox("May 2026");
   expect(
     screen
       .getAllByRole("checkbox")
+      .filter(input => !(input as HTMLInputElement).disabled)
       .every((input) => (input as HTMLInputElement).checked),
   ).toBe(true);
   fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
@@ -186,7 +193,7 @@ test("failed month choices can be retried without clearing retained filters", as
     const { container } = render(<ReportFilters selection={initial} months={months} view={2}
       report={reportFor(initial, { sector: ["A"], area: ["Area A"] })} loadOptions={loadOptions} onApply={onApply} />);
     container.querySelector("details")!.open = true;
-    fireEvent.click(screen.getByRole("checkbox", { name: "May 2026" }));
+    fireEvent.click(monthCheckbox("May 2026"));
     expect(dropdown("Sector / Halle")).toHaveValue("A");
     await act(async () => { jest.advanceTimersByTime(150); });
     expect(screen.getByRole("alert")).toHaveTextContent("Could not validate");
@@ -213,11 +220,11 @@ test("adding and removing months retains applied and unsaved criteria even with 
     container.querySelector("details")!.open = true;
     fireEvent.change(screen.getByLabelText("Dauer (minutes) filter"), { target: { value: "120" } });
     const expected = { ...filters, duration: ["120"] };
-    fireEvent.click(screen.getByRole("checkbox", { name: "May 2026" }));
+    fireEvent.click(monthCheckbox("May 2026"));
     expect(dropdown("Sector / Halle")).toHaveValue("A");
     expect(screen.getByRole("button", { name: "Apply filters" })).toBeDisabled();
     await act(async () => { jest.advanceTimersByTime(150); });
-    fireEvent.click(screen.getByRole("checkbox", { name: "July 2026" }));
+    fireEvent.click(monthCheckbox("July 2026"));
     await act(async () => { jest.advanceTimersByTime(150); });
     expect(loadOptions.mock.calls.at(-1)?.[0]).toMatchObject({ months: ["2026-05"], filters: expected, search: "Jam" });
     for (const [label, value] of [["Sector / Halle", "A"], ["Bereich", "Area A"], ["Betriebsmittelkennzeichen", "=A"], ["Meldetext", "Jam"], ["Typ", "01"], ["Meldegruppe", "001"]]) {
@@ -246,9 +253,9 @@ test("a late response for older months cannot replace current choices or retaine
     const { container } = render(<ReportFilters selection={initial} months={months} view={2}
       report={reportFor(initial, { sector: ["A"], area: ["Area A"] })} loadOptions={loadOptions} onApply={onApply} />);
     container.querySelector("details")!.open = true;
-    fireEvent.click(screen.getByRole("checkbox", { name: "May 2026" }));
+    fireEvent.click(monthCheckbox("May 2026"));
     await act(async () => { jest.advanceTimersByTime(150); });
-    fireEvent.click(screen.getByRole("checkbox", { name: "July 2026" }));
+    fireEvent.click(monthCheckbox("July 2026"));
     await act(async () => { jest.advanceTimersByTime(150); });
     await act(async () => { pending[1].resolve(reportFor(pending[1].request, {})); });
     await act(async () => { pending[0].resolve(reportFor(pending[0].request, { area: ["Stale area"] })); });
