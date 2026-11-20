@@ -6,6 +6,19 @@ and **Data administration → KPI settings & goals**. In German, the first path 
 
 ## Monthly comparisons
 
+Investigation filters use **Months to compare → Choose months**. Choose a year
+and mark its imported months, then switch years to add nonconsecutive months
+without losing earlier choices. **Whole year** selects or clears only the displayed
+year; **Select all months** and **Clear month selection** affect the whole month
+selection. Unavailable months are disabled, while retained selections remain
+inspectable. **Done** closes the selector; **Apply filters** applies the draft.
+An empty selection cannot be applied. Other analytical filters stay selected.
+
+Large selections show counts and year coverage instead of listing every month.
+Selections remain active through analytical details; **Clear filters** restores
+all available months and clears other criteria. The Executive Overview keeps its
+single-month scope. Existing reporting-range/query budgets still apply.
+
 The selected month's KPI is its total divided by eligible imported days in that
 month. Without an explicit goal, its reference is the same KPI's total over all
 eligible imported days **across the entire available history**, divided by that

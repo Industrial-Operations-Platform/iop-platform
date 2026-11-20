@@ -53,7 +53,7 @@ surface tokens represent backgrounds. Keep charts on the same selected identity.
 | `SearchControl` | Labelled search icon that reveals/focuses a controlled input; optional compact caption; closing or Escape clears it and restores focus; caller owns matching |
 | `FilterForm`, `Disclosure` | Form surface with opt-in plain toolbar treatment; native collapsible content with plain/panel/divided variants |
 | `Panel` | Content, chart, empty and metric surface treatments |
-| `MonthMultiPicker` | Checkbox selection of nonconsecutive calendar months |
+| `MonthMultiPicker`, `monthSelectionSummary` | Compact year/month popover with native checkboxes, available/retained months, per-year/all-month selection and bounded summaries; values remain caller-owned |
 | `MonthPicker` | Controlled calendar-month dropdown using shared native select styling |
 | `ComparisonCard` | Shared metric surface with caller-supplied state, value and textual comparison; `compact` reduces spacing; `layout="row"` aligns labels and figures in two columns; optional `action` reserves room for a details control |
 | `MetricGrid`, `MetricCard` | Responsive centered labels/figures/captions; `layout="paired"` centers two cards; `tone` adds neutral/info/attention emphasis; use `iop-metric-description` for supporting text |
@@ -203,6 +203,8 @@ Callers supply the trigger content and panel actions; it owns initial focus, nat
 Tab navigation, Escape restoration and outside dismissal. Never add backdrop blur.
 Use `placement="viewport"` for controls within cards: the floating panel stays
 inside the viewport and follows scrolling without changing its card's size.
+For viewport placement, `alignment="start"` aligns a left-side filter with its
+trigger; the default `end` alignment remains appropriate for account/KPI controls.
 `triggerTitle` can provide a short tooltip while `label` identifies the specific
 record for assistive technology. Use `iop-popover-toggle--minimal` for an inline
 information icon.

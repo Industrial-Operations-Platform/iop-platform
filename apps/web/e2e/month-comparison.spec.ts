@@ -124,13 +124,17 @@ for (const width of [1440, 375]) for (const appearance of ["light", "dark"]) {
       .click();
     const panel = page.locator(".analysis-filter-panel");
     await panel.locator("summary").click();
+    await page.getByRole("button", { name: "Choose months", exact: true }).click();
     await page.getByRole("checkbox", { name: "May 2026" }).check();
+    await page.getByRole("button", { name: "Done", exact: true }).click();
     await page
       .getByRole("combobox", { name: "Measure", exact: true })
       .selectOption("duration");
+    await page.getByRole("button", { name: "Choose months", exact: true }).click();
     await expect(
       page.getByRole("checkbox", { name: "June 2026" }),
     ).not.toBeChecked();
+    await page.getByRole("button", { name: "Done", exact: true }).click();
     await page
       .getByRole("button", { name: "Apply filters", exact: true })
       .click();
@@ -250,6 +254,7 @@ for (const width of [1440, 375]) for (const appearance of ["light", "dark"]) {
       .toEqual(["2026-05", "2026-06", "2026-07"]);
     await expect(panel).not.toHaveAttribute("open");
     await panel.locator("summary").click();
+    await page.getByRole("button", { name: "Choose months", exact: true }).click();
     await expect(
       page.getByRole("checkbox", { name: "June 2026" }),
     ).toBeChecked();
