@@ -1,6 +1,6 @@
 # IOP-239 — Focused analysis for one selected equipment identifier
 
-Status: Completed locally; publication pending owner approval
+Status: Completed; remote integration and Railway verification authorized
 
 The owner requests useful sensor-specific totals and analysis on the final Data
 Analysis page instead of a group comparison when one sensor is selected.
@@ -24,3 +24,5 @@ Uses existing report contracts and Accepted
 No API, persistence, authorization or architectural pattern change is required.
 
 Execution and validation: [plan](../completed/IOP-239-single-equipment-analysis-plan.md).
+The owner approved remote integration and Railway verification on 2026-11-20.
+[Publication plan](../active/IOP-239-publication-plan.md).
