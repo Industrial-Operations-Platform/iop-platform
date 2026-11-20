@@ -15,6 +15,7 @@ import type {
   ReportRequest,
 } from "../domain/models";
 import { AnalysisReportCache, reportKey } from "./report-cache";
+import { needsDailyTimeline } from "../domain/single-equipment";
 
 export interface AnalysisGateway {
   sourceRows(selection: SourceRowsRequest): Promise<SourceRowsResult>;
@@ -79,9 +80,9 @@ export class AnalysisWorkspace {
 
   cachedReport(selection: ReportRequest): Report | undefined {
     const report = this.reportCache.get(selection);
-    if (!report || selection.period !== "week") return report;
+    if (!report || !needsDailyTimeline(selection)) return report;
     const daily = this.reportCache.get({ ...selection, period: "day", page: 1, revision: report.revision });
-    return daily ? { ...report, dailyTimeline: daily.timeline } : undefined;
+    return daily?.revision === report.revision ? { ...report, dailyTimeline: daily.timeline } : undefined;
   }
 
   private readReport(selection: ReportRequest): Promise<Report> {
@@ -191,7 +192,7 @@ export class AnalysisWorkspace {
     if (!Number.isFinite(days) || days < 1 || days > 3660)
       throw new Error("Choose a reporting range between 1 and 3660 days.");
     const report = await this.readReport(selection);
-    if (selection.period !== "week") return report;
+    if (!needsDailyTimeline(selection)) return report;
     const daily = await this.readReport({ ...selection, period: "day", page: 1, revision: report.revision });
     // Never combine averages and chart values from different import/profile snapshots.
     return daily.revision === report.revision ? { ...report, dailyTimeline: daily.timeline } : report;

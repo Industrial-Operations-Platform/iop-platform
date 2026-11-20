@@ -1,4 +1,5 @@
 import type { Report } from "./models";
+import { eligibleImportedDates } from "./report-days";
 
 export interface MonthlyAverage {
   month: string;
@@ -13,11 +14,7 @@ export interface MonthlyAverage {
 export function monthlyAverages(report: Report): MonthlyAverage[] {
   const daily = report.selection.period === "day" || report.dailyTimeline !== undefined;
   if (!daily && report.selection.period !== "month") return [];
-  const dates = new Set(report.dates.filter(date =>
-    date >= report.selection.from && date < report.selection.toExclusive &&
-    (!report.selection.months || report.selection.months.includes(date.slice(0, 7))) &&
-    !report.excludedWeekdays?.includes(new Date(`${date}T00:00:00Z`).getUTCDay() || 7),
-  ));
+  const dates = new Set(eligibleImportedDates(report));
   const months = new Map<string, MonthlyAverage>();
   for (const date of dates) {
     const month = date.slice(0, 7);
