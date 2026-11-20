@@ -22,6 +22,8 @@ import {
 } from "echarts/components";
 import { SVGRenderer } from "echarts/renderers";
 import type { Report, ReportRow } from "../../domain/models";
+import { eligibleImportedDates } from "../../domain/report-days";
+import { selectedEquipment } from "../../domain/single-equipment";
 use([
   BarChart,
   LineChart,
@@ -480,6 +482,14 @@ export function options(
   if (kind === "trend") {
     const dates = calendar(r),
       at = new Map(r.timeline.map((x) => [x.period, x]));
+    const covered = new Set(selectedEquipment(r.selection) === undefined ? [] :
+      eligibleImportedDates(r).map(date => {
+        const anchor = new Date(date + "T00:00:00Z");
+        if (r.selection.period === "week")
+          anchor.setUTCDate(anchor.getUTCDate() - ((anchor.getUTCDay() + 6) % 7));
+        if (r.selection.period === "month") anchor.setUTCDate(1);
+        return anchor.toISOString().slice(0, 10);
+      }));
     return {
       ...base,
       legend: {
@@ -502,14 +512,14 @@ export function options(
           name: t("Frequency"),
           type: "line",
           connectNulls: false,
-          data: dates.map((d) => at.get(d)?.frequency ?? null),
+          data: dates.map((d) => at.get(d)?.frequency ?? (covered.has(d) ? 0 : null)),
         },
         {
           name: t("Duration (minutes)"),
           type: "line",
           yAxisIndex: 1,
           connectNulls: false,
-          data: dates.map((d) => at.get(d)?.minutes ?? null),
+          data: dates.map((d) => at.get(d)?.minutes ?? (covered.has(d) ? 0 : null)),
         },
       ],
     };

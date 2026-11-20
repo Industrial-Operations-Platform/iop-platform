@@ -267,6 +267,25 @@ test("executive charts share frequency ordering and distinguish missing dates fr
   expect(series[1].data.slice(0, 4)).toEqual([1, null, 0, null]);
 });
 
+test.each([
+  { period: "day", dates: ["2026-07-01", "2026-07-03"], expected: [10, null, 0, null] },
+  { period: "week", dates: ["2026-07-01", "2026-07-13"], expected: [10, null, 0, null] },
+  { period: "month", dates: ["2026-07-01", "2026-09-01"], expected: [10, null, 0] },
+] as const)("single equipment $period trends distinguish covered zeros from missing imports", ({ period, dates, expected }) => {
+  const selected = {
+    ...report,
+    selection: { from: "2026-07-01", toExclusive: period === "month" ? "2026-10-01" : "2026-08-01",
+      period, dimension: "area", metric: "frequency", filters: { equipment: ["S-1"] } },
+    dates: [...dates],
+    timeline: [{ key: "", period: period === "week" ? "2026-06-29" : "2026-07-01",
+      frequency: 10, minutes: 2, seconds: 120, records: 1 }],
+  } as Report;
+  const chart = options("trend", selected);
+  const series = chart.series as { data: (number | null)[] }[];
+  expect(series[0].data.slice(0, expected.length)).toEqual(expected);
+  expect(series[1].data.slice(0, expected.length)).toEqual(expected.map(value => value === 10 ? 2 : value));
+});
+
 test("daily charts omit excluded weekdays without filling missing eligible dates or dropping period anchors", () => {
   const monthly = {
     ...report,

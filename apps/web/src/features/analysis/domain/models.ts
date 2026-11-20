@@ -189,7 +189,7 @@ export interface Report {
   durationGroups: ReportRow[];
   groupCount: number;
   timeline: ReportPoint[];
-  /** Same filtered snapshot at daily resolution, for weekly buckets crossing months. */
+  /** Same filtered snapshot at daily resolution for averages and equipment activity. */
   dailyTimeline?: ReportPoint[];
   series: ReportPoint[];
   monthly: ReportPoint[];

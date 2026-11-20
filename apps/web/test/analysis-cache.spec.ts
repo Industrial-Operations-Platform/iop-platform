@@ -47,15 +47,32 @@ test("keys distinguish all report controls and explicit pinned revisions", () =>
   expect(new Set(keys).size).toBe(keys.length);
 });
 
-test("weekly reuse includes a daily timeline pinned to the same snapshot", async () => {
+test.each([
+  { ...selection, period: "week" as const },
+  { ...selection, period: "month" as const, filters: { equipment: ["S-1"] } },
+])("$period reuse includes a daily timeline pinned to the same snapshot", async weekly => {
   const { app, report } = fixture();
-  const weekly = { ...selection, period: "week" as const };
   const first = await app.report(weekly);
   expect(first.dailyTimeline).toEqual([]);
   expect(report.mock.calls[1][0]).toMatchObject({ period: "day", page: 1, revision: "r1" });
   expect(app.cachedReport(weekly)).toEqual(first);
   expect(await app.report(weekly)).toEqual(first);
   expect(report).toHaveBeenCalledTimes(2);
+});
+
+test("monthly group comparisons do not require an extra daily report", async () => {
+  const { app, report } = fixture();
+  await app.report({ ...selection, period: "month" });
+  expect(report).toHaveBeenCalledTimes(1);
+});
+
+test("single-equipment daily observations never mix report revisions", async () => {
+  const { app, report } = fixture();
+  const monthly = { ...selection, period: "month" as const, filters: { equipment: ["S-1"] } };
+  report.mockImplementationOnce(async request => result(request, "r1"));
+  report.mockImplementationOnce(async request => result(request, "r2"));
+  expect((await app.report(monthly)).dailyTimeline).toBeUndefined();
+  expect(app.cachedReport(monthly)).toBeUndefined();
 });
 
 test("expiry triggers a fresh read while capacity, payload limits and LRU ordering bound memory", async () => {

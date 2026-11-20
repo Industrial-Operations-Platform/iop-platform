@@ -25,6 +25,28 @@ For an installation with imports from May through September:
 Eligible imported days with no matching alarms count as zero; missing dates and
 excluded weekdays do not count. Details show the historical coverage and date range.
 
+## One equipment identifier
+
+On **Data Analysis → Daily / monthly**, selecting exactly one
+**Betriebsmittelkennzeichen** opens a focused equipment view. Its totals cover all
+eligible matching source rows in the selected months and filters, independent of
+ranking limits and source-row pagination. Clearing the equipment filter restores
+the group comparison.
+
+The view shows total frequency, accumulated alarm minutes, daily averages, alarm
+minutes per reported occurrence, days with activity, daily frequency/time peaks,
+last reported activity and the most frequent matching message. The daily table
+includes eligible imported dates without matching alarms as zero; missing imports
+remain absent and appear as gaps in the trend. Weekly/monthly display still uses
+a daily snapshot pinned to the same report revision for daily observations.
+
+Activity means positive reported frequency or accumulated alarm time. Tied peaks
+show the earliest date and the number of tied days. Alarm minutes per occurrence
+is total seconds divided by 60 and total frequency, not an average of daily
+averages or a measured individual incident duration. A zero frequency denominator
+is unavailable. Equipment codes remain source identifiers; accumulated alarm time
+does not establish downtime or live sensor health.
+
 ## Persistent analysis exclusions
 
 Under **Analysis exclusions**, add a field and an exact value, then use

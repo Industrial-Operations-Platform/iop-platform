@@ -9,6 +9,30 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
+.analysis-equipment-detail {
+  margin-top: 18px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.analysis-equipment-detail > .iop-metric-grid {
+  margin-top: 18px;
+}
+.analysis-equipment-insights {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 18px;
+}
+.analysis-equipment-insights > * {
+  min-width: 0;
+}
+.analysis-equipment-insights .iop-detail-facts {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 1050px) {
+  .analysis-equipment-insights {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .analysis-monthly-averages {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

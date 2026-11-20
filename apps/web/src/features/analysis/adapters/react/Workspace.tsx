@@ -5,6 +5,8 @@ import { ExecutiveMonthControls, MonthlyOverview } from "./MonthlyOverview";
 import { ImportWorkspace } from "./ImportWorkspace";
 import { ReportFilters } from "./ReportFilters";
 import { Plot } from "./Plot";
+import { SingleEquipmentAnalysis } from "./SingleEquipmentAnalysis";
+import { selectedEquipment } from "../../domain/single-equipment";
 import { labels } from "./labels";
 import {
   Actions,
@@ -159,6 +161,8 @@ export function ReportWorkspace({
     (request: ReportRequest) => application.previewReportFilters(request),
     [application],
   );
+  const singleEquipment = template === 5 && report !== null &&
+    selectedEquipment(report.selection) !== undefined;
   return (
     <>
       <PageHeading
@@ -270,7 +274,8 @@ export function ReportWorkspace({
                     onArea={(area) => drill("area", area)}
                   />
                 )}
-                {template !== 0 && (
+                {singleEquipment && <SingleEquipmentAnalysis report={report} />}
+                {template !== 0 && !singleEquipment && (
                   <p className="analysis-footnote">
                     {t(
                       "All eligible matching historical rows contribute to totals. Rankings show up to 100 of ",
@@ -281,7 +286,7 @@ export function ReportWorkspace({
                     )}
                   </p>
                 )}
-                {template !== 0 &&
+                {template !== 0 && !singleEquipment &&
                   (report.totals.records === 0 ? (
                     <Panel variant="empty">
                       <h2>{t("No matching records")}</h2>
@@ -352,7 +357,7 @@ export function ReportWorkspace({
                       )}
                     </div>
                   ))}
-                <DataTables report={report} onSelect={select} />
+                {!singleEquipment && <DataTables report={report} onSelect={select} />}
                 <p className="analysis-footnote">
                   {t(
                     "Reporting dates come from file names; reporting windows are unknown. Missing dates are not zero activity. Monthly comparisons use only imported dates. ",
