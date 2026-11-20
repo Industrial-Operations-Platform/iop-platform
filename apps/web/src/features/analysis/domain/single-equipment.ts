@@ -1,5 +1,6 @@
 import type { Report, ReportRequest } from "./models";
 import { eligibleImportedDates } from "./report-days";
+import { reportSummary } from "./report-summary";
 
 export function selectedEquipment(selection: ReportRequest): string | undefined {
   const equipment = selection.filters?.equipment;
@@ -38,15 +39,9 @@ export function singleEquipmentAnalysis(report: Report) {
     minutes: (at.get(date)?.seconds ?? 0) / 60,
   }));
   const activeDays = days?.filter(day => day.frequency > 0 || day.minutes > 0);
-  const minutes = report.totals.seconds / 60;
   return {
     equipment,
-    importedDays: dates.length,
-    frequency: report.totals.frequency,
-    minutes,
-    frequencyPerDay: dates.length ? report.totals.frequency / dates.length : null,
-    minutesPerDay: dates.length ? minutes / dates.length : null,
-    minutesPerOccurrence: report.totals.frequency > 0 ? minutes / report.totals.frequency : null,
+    ...reportSummary(report),
     days,
     activeDays: activeDays?.length ?? null,
     lastActivity: activeDays?.at(-1)?.date ?? null,

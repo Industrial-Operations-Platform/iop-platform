@@ -206,6 +206,28 @@ test("scatter uses summed values and distinct colors for all 100 named component
   expect(reversed.reverse()).toEqual(data);
 });
 
+test.each(["en", "de"] as const)("scatter tooltips label both coordinates in %s, independent of selected measure", language => {
+  setLanguage(language);
+  for (const metric of ["frequency", "duration"] as const) {
+    const chart = options("scatter", { ...report, selection: { ...report.selection, metric } });
+    expect(chart).toMatchObject({
+      tooltip: { trigger: "item", renderMode: "richText", confine: true },
+      series: [{
+        dimensions: [
+          { name: "minutes", displayName: language === "de" ? "Dauer (Minuten)" : "Duration (minutes)" },
+          { name: "frequency", displayName: language === "de" ? "Häufigkeit" : "Frequency" },
+        ],
+        encode: { x: "minutes", y: "frequency", tooltip: ["frequency", "minutes"] },
+      }],
+    });
+    const formatter = (chart.tooltip as { valueFormatter: (value: unknown) => string }).valueFormatter;
+    expect(formatter(0)).toBe("0");
+    expect(formatter(12.5)).toBe("12.5");
+    expect(formatter([])).toBe("");
+    expect(formatter(undefined)).toBe("");
+  }
+});
+
 test("heatmap puts frequency leaders first even for duration-colored cells", () => {
   expect(
     options("heatmap", {

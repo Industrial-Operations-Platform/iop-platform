@@ -1493,4 +1493,12 @@ export const german: Readonly<Record<string, string>> = {
   "Daily activity is unavailable for this snapshot.": "Tagesaktivität ist für diesen Datenstand nicht verfügbar.",
   "Explore data · daily equipment activity": "Daten erkunden · tägliche Betriebsmittelaktivität",
   "Daily equipment activity": "Tägliche Betriebsmittelaktivität",
+  "Error details": "Fehlerdetails",
+  "Error totals": "Fehlersummen",
+  "Matching errors in the selected dates and filters.": "Passende Fehler innerhalb der gewählten Daten und Filter.",
+  "Matching error types": "Passende Fehlertypen",
+  "Matching error details": "Details der passenden Fehler",
+  "Share of total frequency": "Anteil an der Gesamthäufigkeit",
+  "Share of total alarm time": "Anteil an der summierten Alarmzeit",
+  "Duration versus frequency": "Dauer und Häufigkeit",
 };

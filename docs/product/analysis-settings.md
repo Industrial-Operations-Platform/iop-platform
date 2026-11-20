@@ -47,6 +47,20 @@ averages or a measured individual incident duration. A zero frequency denominato
 is unavailable. Equipment codes remain source identifiers; accumulated alarm time
 does not establish downtime or live sensor health.
 
+## Error analysis with one or two errors
+
+When **Error analysis** is grouped by **Meldetext** and the complete matching set
+contains one or two error types, it shows full filtered totals, daily averages,
+alarm minutes per occurrence and each error's frequency/time contribution. Only
+**Duration versus frequency** is plotted. Three or more errors retain the monthly
+comparison and Pareto charts; other grouping dimensions keep their existing views.
+The boundary uses the server's complete group count, not the visible ranking size.
+
+Every duration-versus-frequency point exposes its name, frequency and accumulated
+alarm minutes on hover, regardless of the selected measure. Selecting an error
+still drills into the daily/monthly view with its filters intact. Imported-day,
+zero-denominator and source-aggregate limitations are the same as above.
+
 ## Persistent analysis exclusions
 
 Under **Analysis exclusions**, add a field and an exact value, then use

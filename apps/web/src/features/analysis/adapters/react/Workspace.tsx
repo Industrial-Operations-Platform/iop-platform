@@ -6,7 +6,9 @@ import { ImportWorkspace } from "./ImportWorkspace";
 import { ReportFilters } from "./ReportFilters";
 import { Plot } from "./Plot";
 import { SingleEquipmentAnalysis } from "./SingleEquipmentAnalysis";
+import { FocusedErrorAnalysis } from "./FocusedErrorAnalysis";
 import { selectedEquipment } from "../../domain/single-equipment";
+import { hasFewErrors } from "../../domain/error-analysis";
 import { labels } from "./labels";
 import {
   Actions,
@@ -163,6 +165,7 @@ export function ReportWorkspace({
   );
   const singleEquipment = template === 5 && report !== null &&
     selectedEquipment(report.selection) !== undefined;
+  const focusedErrors = template === 4 && report !== null && hasFewErrors(report);
   return (
     <>
       <PageHeading
@@ -275,7 +278,8 @@ export function ReportWorkspace({
                   />
                 )}
                 {singleEquipment && <SingleEquipmentAnalysis report={report} />}
-                {template !== 0 && !singleEquipment && (
+                {focusedErrors && <FocusedErrorAnalysis report={report} onSelect={select} />}
+                {template !== 0 && !singleEquipment && !focusedErrors && (
                   <p className="analysis-footnote">
                     {t(
                       "All eligible matching historical rows contribute to totals. Rankings show up to 100 of ",
@@ -286,7 +290,7 @@ export function ReportWorkspace({
                     )}
                   </p>
                 )}
-                {template !== 0 && !singleEquipment &&
+                {template !== 0 && !singleEquipment && !focusedErrors &&
                   (report.totals.records === 0 ? (
                     <Panel variant="empty">
                       <h2>{t("No matching records")}</h2>

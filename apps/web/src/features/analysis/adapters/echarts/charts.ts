@@ -417,7 +417,11 @@ export function options(
     );
     return {
       ...base,
-      tooltip: { trigger: "item", renderMode: "richText" },
+      tooltip: {
+        trigger: "item", renderMode: "richText", confine: true,
+        valueFormatter: (value: unknown) => value == null ||
+          (Array.isArray(value) && value.length === 0) ? "" : number(Number(value)),
+      },
       xAxis: {
         type: "value",
         name: t("Duration (minutes)"),
@@ -429,6 +433,11 @@ export function options(
         {
           type: "scatter",
           symbolSize: 12,
+          dimensions: [
+            { name: "minutes", displayName: t("Duration (minutes)") },
+            { name: "frequency", displayName: t("Frequency") },
+          ],
+          encode: { x: "minutes", y: "frequency", tooltip: ["frequency", "minutes"] },
           data: r.groups.map((x) => ({
             name: x.key,
             value: [x.minutes, x.frequency],
