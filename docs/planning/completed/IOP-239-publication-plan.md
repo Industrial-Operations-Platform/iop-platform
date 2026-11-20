@@ -1,6 +1,6 @@
 # IOP-239 — Approved remote integration and Railway verification
 
-Status: In progress. Story branch: `feature/IOP-239-single-equipment-analysis`.
+Status: Completed. Story branch: `feature/IOP-239-single-equipment-analysis`.
 [Scope](../items/IOP-239-single-equipment-analysis.md) and
 [implementation evidence](../completed/IOP-239-single-equipment-analysis-plan.md).
 
@@ -65,3 +65,38 @@ The corrected single-equipment scenarios passed three repetitions each: 9/9
 browser tests, exit 0 (32.2s), at 1440px English/light, 375px German/dark and
 320px English/light. The change is one asynchronous assertion, not a relaxed
 value/revision requirement or a fixed delay.
+
+## Successful publication and live verification
+
+- Test fix `00ebfcc` merged into develop as `2539d82`; both named refs were
+  pushed atomically. The pre-release backup was refreshed and verified again
+  immediately before this retry, with the same 62 table counts and 175 imports.
+- [Full validation and Railway run 44678154737](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/44678154737)
+  passed change classification, complete Linux platform tests, all four container
+  builds, the synthetic Railway-container checks and the Railway deployment job.
+  API 573, web 352, database 340 and all 122 browser scenarios passed. The
+  redundant push-triggered run `44678128760` was cancelled for the same SHA;
+  the successful manual run retained every validation/deployment guard.
+- On 2026-11-20, HTTPS `https://iop-development-9fb7.up.railway.app/build-revision.json`
+  returned exact release `2539d82870501f650d197ad1f4f77091e338d1a4`.
+  Independent smoke checks passed HTTPS web/API responses, password-mode anonymous
+  context and anonymous business-access denial. The served analytical chunk
+  `Workspace-CE52beH7.js` contains Equipment detail, Days with activity, Peak daily
+  frequency and daily-equipment activity presentation.
+- A real Chromium visit rendered the public page and sign-in dialog with no
+  runtime errors. No credentials were submitted; an authenticated live sensor
+  journey was not performed. Functional sensor behavior is covered by the passing
+  local/CI browser scenarios, rather than claimed from public access.
+- Read-only post-release comparison confirmed unchanged counts for all 62 remote
+  tables and unchanged May–November imports. Backup archives, manifests, logs and
+  live verification artifacts remain private under ignored `.railway/`.
+
+## Closure
+
+The item/backlog mirror the verified publication. This final documentation-only
+increment is committed on the story branch and integrated/published through the
+same approved sequence; final branch hashes are reported in the completion
+message. It does not change application sources or trigger another Railway
+deployment. The live application remains the validated `2539d82` release.
+Validate changed links/statuses, whitespace, application-source equality, remote
+ref parity and a clean working tree. No stage/master promotion or branch deletion.
