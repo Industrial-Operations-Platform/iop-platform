@@ -91,7 +91,7 @@ for (const scenario of [
         await expect(metric("Days with activity").locator("strong")).toHaveText("2 / 5");
         await expect.poll(() => requests.some(request => request.period === period &&
           request.filters?.equipment?.[0] === "SENSOR-001")).toBe(true);
-        expect(requests.some(request => request.period === "day" && request.revision === "r1" &&
+        await expect.poll(() => requests.some(request => request.period === "day" && request.revision === "r1" &&
           request.filters?.equipment?.[0] === "SENSOR-001")).toBe(true);
         await expect(detail).toContainText("20 alarm minutes · 2026-11-06");
       }

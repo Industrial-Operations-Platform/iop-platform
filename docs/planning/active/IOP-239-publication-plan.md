@@ -42,3 +42,26 @@ verified. The private manifest records all 62 table counts and 175 analytical
 publications across May–November 2026, including 16 November imports. Counts were
 unchanged during export. No isolated restore was performed and no remote data was
 written or restored.
+
+## Validation refinement
+
+The first push merged as `9a042bf` and published both approved refs. Run
+[44676743610](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/44676743610)
+passed API (573), web (352), database (340), secret/contract checks and 121 browser
+scenarios. One new browser assertion failed because it inspected the pinned daily
+request synchronously after observing the weekly request, before the asynchronous
+daily read had started. No application failure or deployment was observed.
+
+Correct only that assertion in `apps/web/e2e/single-equipment-analysis.spec.ts` to
+wait for the pinned request with Playwright polling, retaining all value/revision
+assertions. Repeat the targeted browser tests and publish the story fix normally.
+Since this follow-up changes tests/docs only, its push will not automatically
+deploy the already-published runtime changes. Dispatch the existing full workflow
+on develop with `deploy=true`; cancel only the redundant push-triggered run for
+the same new SHA. The manual run must pass every existing validation/deployment
+guard. Application code remains identical to implementation `728da6f`.
+
+The corrected single-equipment scenarios passed three repetitions each: 9/9
+browser tests, exit 0 (32.2s), at 1440px English/light, 375px German/dark and
+320px English/light. The change is one asynchronous assertion, not a relaxed
+value/revision requirement or a fixed delay.
