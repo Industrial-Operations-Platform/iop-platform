@@ -1,6 +1,6 @@
 # IOP-240 — Approved publication and Railway verification
 
-Status: In progress. Branch: `feature/IOP-240-focused-error-analysis`.
+Status: Completed. Branch: `feature/IOP-240-focused-error-analysis`.
 [Scope](../items/IOP-240-focused-error-analysis.md) and
 [implementation evidence](../completed/IOP-240-focused-error-analysis-plan.md).
 
@@ -43,3 +43,40 @@ exported privately, checked for signature/SHA-256 and required table-data entrie
 through remote `pg_restore --list`. Its manifest records 62 table counts and 175
 imports across May–November 2026, including 16 November dates. Counts remained
 stable during export; no remote write/restore or isolated restore was performed.
+
+## Publication and verification evidence
+
+- Authorization commit `8e78d15` merged into develop as `333508c`; the merge tree
+  equals the story tree and application inputs equal validated implementation
+  `55d7e58`. Both named refs were pushed atomically and independently checked
+  through `git ls-remote`.
+- [Run 44685217813](https://github.com/Industrial-Operations-Platform/iop-platform/actions/runs/44685217813)
+  passed complete Linux validation, all four container builds, the synthetic
+  Railway-image checks and automatic deployment. API 573, web 361, database 340
+  and all 124 browser scenarios passed. No guard was bypassed.
+- On 2026-11-20, HTTPS `https://iop-development-9fb7.up.railway.app/build-revision.json`
+  returned exact revision `333508cc3c2dd8e418510c4d9abfdd7ca47af23e`.
+  Independent checks passed web/API response, password-mode anonymous context and
+  denied anonymous business access. The served chunk `Workspace-GGwru21B.js`
+  contains the new error-detail, error-count, contribution and scatter presentation.
+- The existing `focused-error-analysis.spec.ts` ran against that hosted frontend
+  with a private configuration and intercepted fictional API fixtures: 2/2 passed
+  (13.8s), exit 0, at 1440px English/light and 375px German/dark. It verifies one/
+  two simplified views, three-error Pareto restoration, both point coordinates,
+  literal source text, empty results and daily-detail drill-down. Inspected hosted
+  tooltip screenshots confirm both labels/values and no extra header zero. No
+  live business login, source-data read or business mutation was performed by
+  these fixture-driven browser checks.
+- Separate read-only database verification found unchanged counts for all 62
+  tables and unchanged May–November imports against the pre-release manifest.
+  Backups, manifests, CI logs and hosted screenshots remain under ignored
+  `.railway/`; no private artifact was published.
+
+## Closure
+
+Item/backlog mirror the verified publication. This final documentation-only
+increment is committed on the story branch and merged/pushed through the same
+approval; final ref hashes are reported in the completion message. Application
+sources remain identical to the live `333508c` release, so the closure does not
+request another deployment. Verify links/statuses, whitespace, source equality,
+remote ref parity and a clean tree; preserve all review branches.
