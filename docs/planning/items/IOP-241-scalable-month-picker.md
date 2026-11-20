@@ -1,6 +1,6 @@
 # IOP-241 — Scalable selection of months across years
 
-Status: Completed; publication and Railway verification authorized
+Status: Completed; published through develop and verified on Railway
 
 The owner requests a compact filter for choosing one or several months from the
 same or different years, remaining manageable when history exceeds twenty months.
@@ -27,4 +27,6 @@ No API, persistence, authorization or new architectural pattern is required.
 
 Execution and validation: [plan](../completed/IOP-241-scalable-month-picker-plan.md).
 The owner approved publication and Railway verification on 2026-11-20.
-[Publication plan](../active/IOP-241-publication-plan.md).
+[Publication evidence](../completed/IOP-241-publication-plan.md) records complete
+CI, exact live release `732f9fe`, hosted desktop/mobile cross-year checks and
+unchanged remote table/import counts.
