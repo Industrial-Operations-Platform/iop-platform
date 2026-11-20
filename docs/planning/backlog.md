@@ -14,7 +14,7 @@ See the [workflow](workflow.md).
 | [IOP-236 — Complete analytical filter ancestors](items/IOP-236-infer-filter-ancestors.md) | Completed; publication to origin approved |
 | [IOP-237 — Preserve analytical filters when months change](items/IOP-237-preserve-month-filters.md) | Completed; publication to origin approved |
 | [IOP-238 — Reuse analytical reports during navigation](items/IOP-238-analytical-session-cache.md) | Completed; published through develop to origin |
-| [IOP-239 — Focused analysis for one selected equipment identifier](items/IOP-239-single-equipment-analysis.md) | Completed; remote integration and Railway verification authorized |
+| [IOP-239 — Focused analysis for one selected equipment identifier](items/IOP-239-single-equipment-analysis.md) | Completed; published through develop and verified on Railway |
 
 ## Owner-requested Locator and access refinement
 
