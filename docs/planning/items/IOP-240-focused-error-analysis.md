@@ -1,6 +1,6 @@
 # IOP-240 — Focused analysis for one or two errors
 
-Status: Completed; publication and Railway verification authorized
+Status: Completed; published through develop and verified on Railway
 
 The owner requests useful event information in Error analysis when only a few
 error types match. The explicit correction sets the threshold to one or two,
@@ -28,4 +28,6 @@ No API, persistence or new architectural pattern is required.
 
 Execution and validation: [plan](../completed/IOP-240-focused-error-analysis-plan.md).
 The owner approved publication and Railway verification on 2026-11-20.
-[Publication plan](../active/IOP-240-publication-plan.md).
+[Publication evidence](../completed/IOP-240-publication-plan.md) records complete
+CI, exact live release `333508c`, hosted desktop/mobile fixture checks and unchanged
+remote table/import counts.
