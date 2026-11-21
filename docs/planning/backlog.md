@@ -17,7 +17,7 @@ See the [workflow](workflow.md).
 | [IOP-239 — Focused analysis for one selected equipment identifier](items/IOP-239-single-equipment-analysis.md) | Completed; published through develop and verified on Railway |
 | [IOP-240 — Focused analysis for one or two errors](items/IOP-240-focused-error-analysis.md) | Completed; published through develop and verified on Railway |
 | [IOP-241 — Scalable selection of months across years](items/IOP-241-scalable-month-picker.md) | Completed; published through develop and verified on Railway |
-| [IOP-242 — Equipment analysis quick access](items/IOP-242-equipment-quick-access.md) | Completed; publication through develop and Railway verification authorized |
+| [IOP-242 — Equipment analysis quick access](items/IOP-242-equipment-quick-access.md) | Completed; published through develop and verified on Railway |
 
 ## Owner-requested Locator and access refinement
 
