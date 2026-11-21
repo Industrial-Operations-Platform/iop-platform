@@ -1,6 +1,6 @@
 # IOP-242 — Equipment analysis quick access
 
-Status: Completed; publication through develop and Railway verification authorized
+Status: Completed; published through develop and verified on Railway
 
 The owner requests a complementary entry from Data Analysis that finds a sensor
 by equipment code without manually changing the report filters. The owner suggests
@@ -29,6 +29,6 @@ The owner authorized publication through develop to origin and Railway verificat
 on 2026-11-21.
 
 Execution and local validation: [plan](../completed/IOP-242-equipment-quick-access-plan.md).
-The PostgreSQL integration extension awaits CI because Docker is unavailable on
-the local host. [Publication plan](../active/IOP-242-publication-plan.md) records the
-authorized remote integration and verification in progress.
+[Publication evidence](../completed/IOP-242-publication-plan.md) records complete
+Linux validation, including the real PostgreSQL lookup cases, exact live revision
+`15f954d`, hosted desktop/mobile checks and unchanged table/import counts.
