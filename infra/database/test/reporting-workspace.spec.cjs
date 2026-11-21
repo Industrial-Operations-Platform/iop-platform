@@ -516,6 +516,7 @@ test("reader-only grants permit historical reports and deny preparation/import o
   const context = await selectUser("demo-b");
   expect(context.body.canImport).toBe(false);
   await api("post", "/analytics/report").send(selection).expect(201);
+  await api("post", "/analytics/equipment-search").send({search:"=EQ-001"}).expect(201);
   await api("get", "/analytics/profile").expect(200);
   const profile = await runtime.profiles.get("demo-b");
   await api("post", "/analytics/profile").send(profile).expect(403);
@@ -933,6 +934,14 @@ test("administrator file rows sort across pages and catalog choices include ever
     const submitted=await ref.submit("demo-a","Hitliste-20260901.csv",Buffer.from("\ufeff"+header+"\r\n"+lines.join("\r\n")+"\r\n","utf16le"));
     expect(submitted.outcome).toBe("succeeded");
     const q={importId:submitted.importId,page:1,sort:[]};
+    const equipment = await ref.explorer.equipment("demo-a", { search: "=eq-" });
+    expect(equipment.values).toHaveLength(20);
+    expect(equipment.more).toBe(true);
+    expect(await ref.explorer.equipment("demo-a", { search: "=eq-234" })).toEqual({
+      values: [{ code: "=EQ-234", sector: "Preparation", area: "Area A" }], more: false,
+    });
+    expect(await ref.explorer.equipment("demo-a", { search: "%_' OR 1=1 --" })).toEqual({ values: [], more: false });
+    expect((await runtime.explorer.equipment("demo-a", { search: "=EQ-234" })).values).toEqual([]);
     const natural=await ref.explorer.sourceRows("demo-a",q);
     expect(natural.recordCount).toBe(235);expect(natural.pageCount).toBe(5);
     expect(natural.totalRecordCount).toBe(235);
@@ -1016,9 +1025,19 @@ test("administrator file rows sort across pages and catalog choices include ever
     await expect(ref.explorer.sourceRows("demo-b",q)).rejects.toThrow();
     const current=await ref.profiles.get("demo-a");await ref.profiles.save("demo-a",current);
     await expect(ref.explorer.sourceRows("demo-a",{...q,page:2,revision:natural.revision})).rejects.toMatchObject({code:"analytics_revision_changed"});
+    const duplicate = `"1";"0 0:00:30";"Area B";"=EQ-234";"Duplicate code";"Störung";"007"\r\n"1";"0 0:00:30";"Area A";"=EQ-2";"Exact short code";"Störung";"007"`;
+    expect((await ref.submit("demo-a", "Hitliste-20261001.csv", Buffer.from("\ufeff"+header+"\r\n"+duplicate+"\r\n", "utf16le"))).outcome).toBe("succeeded");
+    const duplicates = await ref.explorer.equipment("demo-a", { search: "=EQ-234" });
+    expect(duplicates.values.map(value => value.area).sort()).toEqual(["Area A", "Area B"]);
+    expect(duplicates.values.every(value => value.code === "=EQ-234")).toBe(true);
+    const shortCode = await ref.explorer.equipment("demo-a", {search:"=eq-2"});
+    expect(shortCode.more).toBe(true);
+    expect(shortCode.values[0].code).toBe("=EQ-2");
     await selectUser("demo-b");
     await api("post","/analytics/source-rows").send(q).expect(403);
     await api("post","/analytics/messages").send({}).expect(201);
+    await api("post","/analytics/equipment-search").send({search:"=EQ"}).expect(201);
+    await api("post","/analytics/equipment-search").send({search:""}).expect(400);
   } finally {await ref.close();}
 });
 
@@ -1167,4 +1186,5 @@ test("bounded repeated reports preserve exact totals on a 4000-row synthetic imp
   console.info(JSON.stringify({ fixture: "4000 synthetic rows", coldMs: Math.round(coldMs), warmMs: Math.round(warmMs) }));
   await admin("UPDATE users_rbac.site_role_assignments SET is_active=false WHERE organization_id=$1 AND site_id=$2 AND user_id='demo-a'", [scope.organizationId, scope.siteId]);
   await expect(runtime.reports.query("demo-a", request)).rejects.toThrow();
+  await expect(runtime.explorer.equipment("demo-a", {search:"=EQ"})).rejects.toThrow();
 });

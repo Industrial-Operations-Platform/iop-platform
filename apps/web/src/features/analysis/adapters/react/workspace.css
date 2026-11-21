@@ -1,4 +1,27 @@
 /* Analysis-specific arrangements; shared appearance belongs to design/components. */
+.analysis-equipment-results {
+  list-style: none;
+  padding: 0;
+  max-height: min(40vh, 320px);
+  overflow-y: auto;
+}
+.analysis-equipment-results > li {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-bottom: 1px solid var(--iop-line);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.analysis-equipment-results > li[aria-selected="true"] {
+  background: var(--iop-activeSurface);
+  outline: 2px solid var(--iop-focus);
+  outline-offset: -2px;
+}
+.analysis-equipment-results > li > span {
+  color: var(--iop-muted);
+  font-size: var(--iop-captionSize);
+}
 .analysis-footnote {
   font-size: var(--iop-smallSize);
   color: var(--iop-muted);

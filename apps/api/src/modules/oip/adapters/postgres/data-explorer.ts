@@ -9,8 +9,34 @@ import type {
 import type { DataExplorerRepository } from "../../application/ports";
 import { PgReportingProfiles } from "./reporting-profiles";
 import { hitlisteReadModel } from "./read-model";
+import type { EquipmentSearchResult } from "../../domain/equipment-search";
 export class PgDataExplorer implements DataExplorerRepository {
   constructor(private readonly profiles: PgReportingProfiles) {}
+  equipment(actor: string, search: string): Promise<EquipmentSearchResult> {
+    return this.profiles.run(actor, false, async (tx) => {
+      await tx.query("SET LOCAL statement_timeout='30s'");
+      const result = await tx.query(
+        `WITH matches AS (SELECT DISTINCT e.kennzeichen COLLATE "C" AS code,s.name COLLATE "C" AS sector,b.name COLLATE "C" AS area
+         FROM analytics.betriebsmittel e
+         JOIN analytics.fact_hitliste f ON (f.organization_id,f.site_id,f.source_id,f.betriebsmittel_id,f.bereich_id)=(e.organization_id,e.site_id,e.source_id,e.id,e.bereich_id)
+         JOIN analytics.sektor s ON (s.organization_id,s.site_id,s.source_id,s.id)=(f.organization_id,f.site_id,f.source_id,f.sektor_id)
+         JOIN analytics.bereich b ON (b.organization_id,b.site_id,b.source_id,b.id)=(f.organization_id,f.site_id,f.source_id,f.bereich_id)
+         WHERE e.organization_id=$1 AND e.site_id=$2 AND e.source_id=$3 AND e.kennzeichen<>''
+         AND strpos(lower(e.kennzeichen),lower($4::text))>0)
+         SELECT code,sector,area FROM matches
+         ORDER BY CASE WHEN lower(code)=lower($4::text) THEN 0
+           WHEN starts_with(lower(code),lower($4::text)) THEN 1 ELSE 2 END,
+           code,sector,area LIMIT 21`,
+        [...scopeTuple(this.profiles.source), search],
+      );
+      return {
+        values: result.rows.slice(0, 20).map(row => ({
+          code: String(row.code), sector: String(row.sector), area: String(row.area),
+        })),
+        more: result.rows.length > 20,
+      };
+    });
+  }
   messages(actor: string, after: string | null): Promise<MessageCatalog> {
     return this.profiles.run(actor, false, async (tx) => {
       await tx.query("SET LOCAL statement_timeout='30s'");

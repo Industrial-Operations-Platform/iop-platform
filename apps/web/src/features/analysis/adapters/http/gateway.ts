@@ -10,6 +10,9 @@ type Schemas = components["schemas"];
 
 /** Transport DTOs are structurally checked against the inward-owned port. */
 export class HttpAnalysisGateway implements AnalysisGateway {
+  equipment(search: string) {
+    return api<Schemas["EquipmentSearchDto"]>("/analytics/equipment-search", { search });
+  }
   sourceRows(selection: SourceRowsRequest) {
     return api<Schemas["SourceRowsDto"]>("/analytics/source-rows", selection);
   }

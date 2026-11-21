@@ -5,8 +5,31 @@ import {
   filterGroup,
   selectView,
   drillInto,
+  equipmentAnalysisSelection,
   type AnalysisGateway,
 } from "../src/features/analysis/application/workspace";
+
+test("quick equipment access keeps nonconsecutive months and replaces conflicting filters", () => {
+  const selection = equipmentAnalysisSelection({
+    ...historySelection(["2024-05-01", "2026-11-20"])!,
+    months: ["2024-05", "2026-11"], filters: { sector: ["Old hall"], message: ["Jam"], duration: ["60"] },
+    search: "Old", period: "week", page: 3, revision: "old",
+  }, { code: "=S, 01", sector: "Hall B", area: "Area B" });
+  expect(selection).toEqual({
+    from: "2024-05-01", toExclusive: "2026-12-01", months: ["2024-05", "2026-11"],
+    executive: false, dimension: "area", period: "day", metric: "frequency", search: "", page: 1,
+    filters: { sector: ["Hall B"], area: ["Area B"], equipment: ["=S, 01"] },
+  });
+});
+
+test("quick lookup uses only the equipment port without requesting reports", async () => {
+  const equipment = jest.fn().mockResolvedValue({ values: [], more: false });
+  const report = jest.fn();
+  const application = new AnalysisWorkspace({ equipment, report } as unknown as AnalysisGateway);
+  expect(await application.findEquipment(" =Sensor ")).toEqual({ values: [], more: false });
+  expect(equipment).toHaveBeenCalledWith("=Sensor");
+  expect(report).not.toHaveBeenCalled();
+});
 
 test("history selection includes every imported date, not only the latest file", () => {
   expect(historySelection([])).toBeNull();
