@@ -1,6 +1,6 @@
 # IOP-242 — Equipment analysis quick access
 
-Status: Completed; validated locally, publication pending
+Status: Completed; publication through develop and Railway verification authorized
 
 The owner requests a complementary entry from Data Analysis that finds a sensor
 by equipment code without manually changing the report filters. The owner suggests
@@ -25,8 +25,10 @@ OIP owns imported identifier lookup under `analytics.read`; this does not regist
 physical sensors or use Assets permissions. Reuses Accepted
 [ADR-0032](../../architecture/adr/ADR-0032-hexagonal-application-boundaries.md)
 and [IOP-239](IOP-239-single-equipment-analysis.md).
-Publication is not yet authorized for this story.
+The owner authorized publication through develop to origin and Railway verification
+on 2026-11-21.
 
 Execution and local validation: [plan](../completed/IOP-242-equipment-quick-access-plan.md).
 The PostgreSQL integration extension awaits CI because Docker is unavailable on
-the local host. No remote integration or Railway activation is claimed.
+the local host. [Publication plan](../active/IOP-242-publication-plan.md) records the
+authorized remote integration and verification in progress.
