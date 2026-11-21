@@ -6,6 +6,19 @@ import {locatorRefinementsGerman} from "./locator-refinements-de";
 import {locatorGerman} from "./locator-de";
 import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
+  "Find equipment": "Betriebsmittel suchen",
+  "Unclassified": "Nicht zugeordnet",
+  "Search imported equipment by code, then open its existing Daily / monthly analysis.": "Importierte Betriebsmittel nach Kennzeichen suchen und die bestehende Tages- / Monatsanalyse öffnen.",
+  "Months: {0}. Other dimension filters will be replaced by the selected equipment.": "Monate: {0}. Andere Dimensionsfilter werden durch das ausgewählte Betriebsmittel ersetzt.",
+  "Start typing an equipment code": "Betriebsmittelkennzeichen eingeben",
+  "Search covers all imported months. Analysis uses the months selected above.": "Die Suche umfasst alle importierten Monate. Die Analyse verwendet die oben ausgewählten Monate.",
+  "Searching equipment…": "Betriebsmittel werden gesucht…",
+  "{0} matches. Select equipment to open its analysis.": "{0} Treffer. Betriebsmittel auswählen, um die Analyse zu öffnen.",
+  "No equipment matches this code.": "Kein Betriebsmittel mit diesem Kennzeichen gefunden.",
+  "Equipment search could not be loaded. Try again.": "Die Betriebsmittelsuche konnte nicht geladen werden. Bitte erneut versuchen.",
+  "Matching equipment": "Passende Betriebsmittel",
+  "Showing the first 20 matches. Type more of the code to narrow the search.": "Die ersten 20 Treffer werden angezeigt. Weitere Zeichen eingeben, um die Suche einzugrenzen.",
+  "Use arrow keys to choose a match and Enter to open it. You can adjust the report filters afterwards.": "Mit den Pfeiltasten einen Treffer wählen und mit Enter öffnen. Die Berichtsfilter können danach angepasst werden.",
   "No historical reference": "Keine historische Referenz",
   "No imported history is available for comparison.": "Für den Vergleich ist noch kein importierter Verlauf verfügbar.",
   "Historical coverage: {0} eligible imported days across all available months.": "Historische Abdeckung: {0} berücksichtigte importierte Tage aus allen verfügbaren Monaten.",

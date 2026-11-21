@@ -18,6 +18,7 @@ import { AnalysisReportCache, reportKey } from "./report-cache";
 import { needsDailyTimeline } from "../domain/single-equipment";
 
 export interface AnalysisGateway {
+  equipment(search: string): Promise<import("../domain/models").EquipmentSearchResult>;
   sourceRows(selection: SourceRowsRequest): Promise<SourceRowsResult>;
   messages(after?: string): Promise<MessageCatalog>;
   context(): Promise<DemoContext>;
@@ -145,6 +146,9 @@ export class AnalysisWorkspace {
   /** Draft choices need one snapshot, without the extra daily read for weekly charts. */
   previewReportFilters(selection: ReportRequest): Promise<Report> {
     return this.readReport({ ...selection, period: "day" });
+  }
+  findEquipment(search: string) {
+    return this.gateway.equipment(search.trim());
   }
   async messageOptions(): Promise<string[]> {
     const values = new Set<string>();
@@ -280,6 +284,22 @@ export function drillInto(
       value,
     ),
   };
+}
+
+/** Quick access starts a complete equipment analysis within the current months. */
+export function equipmentAnalysisSelection(
+  current: ReportRequest,
+  equipment: import("../domain/models").EquipmentChoice,
+  availableMonths: string[] = [],
+): ReportRequest {
+  return changeSelection(selectView(current, 5, availableMonths), {
+    period: "day",
+    filters: {
+      sector: [equipment.sector],
+      area: [equipment.area],
+      equipment: [equipment.code],
+    },
+  });
 }
 
 /** The executive report always represents one complete calendar month. */

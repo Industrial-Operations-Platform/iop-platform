@@ -1336,6 +1336,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/analytics/equipment-search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PlatformController_equipmentSearch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/analytics/source-rows": {
         parameters: {
             query?: never;
@@ -3537,6 +3553,20 @@ export interface components {
         MessageCatalogDto: {
             values: string[];
             nextCursor: string | null;
+        };
+        EquipmentSearchRequestDto: {
+            /** @description Literal case-insensitive equipment code fragment; nonblank. */
+            search: string;
+        };
+        EquipmentChoiceDto: {
+            code: string;
+            sector: string;
+            area: string;
+        };
+        EquipmentSearchDto: {
+            values: components["schemas"]["EquipmentChoiceDto"][];
+            /** @description Narrow the search when more matches exist. */
+            more: boolean;
         };
         SourceSortDto: {
             /** @enum {string} */
@@ -6496,6 +6526,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageCatalogDto"];
+                };
+            };
+            /** @description Invalid bounded input or unavailable reference. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Select a configured local demo user. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Scope, current grants, host or browser origin denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision changed or import capacity/recovery conflict. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exact analytical total exceeds the supported integer range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Local mode inactive, maintenance, busy upload or persistence unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PlatformController_equipmentSearch: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
+                "X-IOP-Demo"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EquipmentSearchRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EquipmentSearchDto"];
                 };
             };
             /** @description Invalid bounded input or unavailable reference. */

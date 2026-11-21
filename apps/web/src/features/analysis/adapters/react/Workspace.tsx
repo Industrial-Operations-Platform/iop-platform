@@ -7,6 +7,7 @@ import { ReportFilters } from "./ReportFilters";
 import { Plot } from "./Plot";
 import { SingleEquipmentAnalysis } from "./SingleEquipmentAnalysis";
 import { FocusedErrorAnalysis } from "./FocusedErrorAnalysis";
+import { EquipmentSearch } from "./EquipmentSearch";
 import { selectedEquipment } from "../../domain/single-equipment";
 import { hasFewErrors } from "../../domain/error-analysis";
 import { labels } from "./labels";
@@ -31,6 +32,7 @@ import {
   executiveSelection,
   drillInto,
   selectView,
+  equipmentAnalysisSelection,
   reportViews,
 } from "../../application/workspace";
 import {
@@ -74,6 +76,7 @@ export function ReportWorkspace({
     [refresh, setRefresh] = useState(0),
     [template, setTemplate] = useState(remembered?.template ?? 0),
     [fileView, setFileView] = useState(initialAdministrationTool === "files");
+  const [equipmentSearch, setEquipmentSearch] = useState(false);
   const refreshHistory = () => {
     application.invalidateReports();
     setReport(null);
@@ -184,6 +187,9 @@ export function ReportWorkspace({
         actions={
           <Actions>
             {" "}
+            {!administration && <Button variant="secondary" disabled={!selection}
+              aria-haspopup="dialog" aria-expanded={equipmentSearch}
+              onClick={() => setEquipmentSearch(true)}>{t("Find equipment")}</Button>}
             {administration && (
               <Button
                 aria-pressed={!fileView}
@@ -209,6 +215,14 @@ export function ReportWorkspace({
           </Actions>
         }
       />
+      {equipmentSearch && selection && !administration && <EquipmentSearch
+        application={application} months={selection.months ?? [selection.from.slice(0, 7)]}
+        onClose={() => setEquipmentSearch(false)}
+        onSelect={equipment => {
+          setEquipmentSearch(false);
+          setTemplate(5);
+          setSelection(equipmentAnalysisSelection(selection, equipment, months));
+        }} />}
       <Notice error={error} />
       {administration && fileView ? (
         <SourceFiles

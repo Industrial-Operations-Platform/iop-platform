@@ -378,6 +378,18 @@ export class ReportDto {
 export class MessageCatalogRequestDto {
   @ApiPropertyOptional() after?: string;
 }
+export class EquipmentSearchRequestDto {
+  @ApiProperty({ maxLength: 200, description: "Literal case-insensitive equipment code fragment; nonblank." }) search!: string;
+}
+export class EquipmentChoiceDto {
+  @ApiProperty() code!: string;
+  @ApiProperty() sector!: string;
+  @ApiProperty() area!: string;
+}
+export class EquipmentSearchDto {
+  @ApiProperty({ type: [EquipmentChoiceDto], maxItems: 20 }) values!: EquipmentChoiceDto[];
+  @ApiProperty({ description: "Narrow the search when more matches exist." }) more!: boolean;
+}
 export class MessageCatalogDto {
   @ApiProperty({ type: [String] }) values!: string[];
   @ApiProperty({ type: String, nullable: true }) nextCursor!: string | null;

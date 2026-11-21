@@ -252,3 +252,12 @@ export interface MessageCatalog {
   values: string[];
   nextCursor: string | null;
 }
+export interface EquipmentChoice {
+  code: string;
+  sector: string;
+  area: string;
+}
+export interface EquipmentSearchResult {
+  values: EquipmentChoice[];
+  more: boolean;
+}

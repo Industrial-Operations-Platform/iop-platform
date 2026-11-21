@@ -19,6 +19,10 @@ export interface ReportRepository {
 }
 
 export interface DataExplorerRepository {
+  equipment(
+    actor: string,
+    search: string,
+  ): Promise<import("../domain/equipment-search").EquipmentSearchResult>;
   sourceRows(
     actor: string,
     selection: import("../domain/source-rows").SourceRowsRequest,

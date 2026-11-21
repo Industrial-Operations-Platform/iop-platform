@@ -412,6 +412,16 @@ export class PlatformController {
     const r = this.active(req);
     return operation(async () => r.explorer.messages(await r.actor(req), body));
   }
+  @Post("analytics/equipment-search")
+  @ApiBody({ type: C.EquipmentSearchRequestDto })
+  @ApiCreatedResponse({ type: C.EquipmentSearchDto })
+  async equipmentSearch(
+    @Req() req: IncomingMessage,
+    @Body() body: C.EquipmentSearchRequestDto,
+  ): Promise<C.EquipmentSearchDto> {
+    const r = this.active(req);
+    return operation(async () => r.explorer.equipment(await r.actor(req), body));
+  }
   @Post("analytics/source-rows")
   @ApiBody({ type: C.SourceRowsRequestDto })
   @ApiCreatedResponse({ type: C.SourceRowsDto })
