@@ -6,6 +6,7 @@ import {locatorRefinementsGerman} from "./locator-refinements-de";
 import {locatorGerman} from "./locator-de";
 import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
+  "Cancel file selection": "Dateiauswahl abbrechen",
   "Files and accepted rows persist in the database. Importing an existing reporting date asks for confirmation before replacing its current data.": "Dateien und übernommene Zeilen bleiben in der Datenbank gespeichert. Beim erneuten Import eines vorhandenen Berichtsdatums wird vor dem Ersetzen der aktuellen Daten eine Bestätigung angefordert.",
   ". Import this file to confirm replacement of that day's data.": ". Importieren Sie diese Datei, um das Ersetzen der Daten dieses Tages zu bestätigen.",
   "Replace this reporting date?": "Dieses Berichtsdatum ersetzen?",

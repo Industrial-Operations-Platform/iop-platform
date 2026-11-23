@@ -9,6 +9,7 @@ See the [workflow](workflow.md).
 | Task context | Status |
 | --- | --- |
 | [IOP-243 — Confirm and replace an existing reporting date](items/IOP-243-import-day-removal.md) | Completed; integrated into develop and published to origin |
+| [IOP-244 — Cancel a selected CSV before importing](items/IOP-244-cancel-import-selection.md) | Completed locally; publication pending |
 
 ## Schedule planning preview
 

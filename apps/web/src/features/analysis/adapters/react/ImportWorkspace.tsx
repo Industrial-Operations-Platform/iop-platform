@@ -103,6 +103,13 @@ function ImportFiles({
   const [error, setError] = useState<unknown>();
   const [review, setReview] = useState<ImportReview | null>(null);
   const [replacement, setReplacement] = useState<ImportSummary | null>(null);
+  const clearSelection = () => {
+    setFile(null);
+    setFileInputKey((key) => key + 1);
+    setConfirmed(false);
+    setReplacement(null);
+    setError(undefined);
+  };
   const date = file ? previewReportingDate(file.name) : null;
   const duplicate = date
     ? history.find((h) => h.reportingDate === date && h.outcome === "succeeded" && !h.supersededByImportId)
@@ -125,8 +132,7 @@ function ImportFiles({
       );
       setReview(result);
       if (result.outcome === "succeeded") {
-        setFile(null);
-        setFileInputKey((key) => key + 1);
+        clearSelection();
       }
       setConfirmed(false);
     } catch (e) {
@@ -242,9 +248,17 @@ function ImportFiles({
               </p>
             </>
           )}
-          <Button type="submit" disabled={!canUpload}>
-            {pending ? t("Processing CSV…") : t("Import CSV")}
-          </Button>
+          <Actions>
+            <Button type="submit" disabled={!canUpload}>
+              {pending ? t("Processing CSV…") : t("Import CSV")}
+            </Button>
+            {file && (
+              <Button type="button" variant="secondary" disabled={pending}
+                aria-label={t("Cancel file selection")} onClick={clearSelection}>
+                {t("Cancel")}
+              </Button>
+            )}
+          </Actions>
         </form>
         {error ? (
           <Alert>
