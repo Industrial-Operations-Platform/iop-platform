@@ -147,6 +147,14 @@ test("known successful dates require explicit replacement confirmation and cance
   await screen.findByRole("heading", { name: "Import complete" });
   expect(gateway.review).toHaveBeenCalledWith("file", false);
   expect(gateway.upload).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Cancel file selection" }));
+  expect((screen.getByLabelText("CSV file") as HTMLInputElement).files).toHaveLength(0);
+  expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(screen.getByRole("region", { name: "Import review" })).toBeVisible();
+  expect(gateway.upload).not.toHaveBeenCalled();
+  selectFile();
+  expect(screen.getByLabelText("Confirm reporting date: 2026-07-01")).not.toBeChecked();
   fireEvent.click(screen.getByLabelText("Confirm reporting date: 2026-07-01"));
   fireEvent.click(screen.getByRole("button", { name: "Import CSV" }));
   const dialog = screen.getByRole("dialog", { name: "Replace this reporting date?" });
@@ -294,6 +302,9 @@ test("invalid calendar dates are blocked and interrupted uploads refresh history
     expect(previewReportingDate(name)).toBeNull();
   selectFile("Hitliste-20260229.csv");
   expect(screen.getByRole("button", { name: "Import CSV" })).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "Cancel file selection" }));
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(gateway.upload).not.toHaveBeenCalled();
   gateway.upload.mockRejectedValueOnce(new Error("Connection interrupted"));
   selectFile();
   fireEvent.click(screen.getByLabelText("Confirm reporting date: 2026-07-01"));
@@ -308,6 +319,11 @@ test("invalid calendar dates are blocked and interrupted uploads refresh history
   expect(screen.getByText(/Selected file:/)).toHaveTextContent(
     "Hitliste-20260701.csv",
   );
+  fireEvent.click(screen.getByRole("button", { name: "Cancel file selection" }));
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect((screen.getByLabelText("CSV file") as HTMLInputElement).files).toHaveLength(0);
+  expect(gateway.upload).toHaveBeenCalledTimes(1);
+  expect(onImported).toHaveBeenCalledTimes(1);
 });
 
 test("preparation and KPI editors mount separately and load the latest shared profile", async () => {

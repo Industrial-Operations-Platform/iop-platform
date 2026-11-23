@@ -18,11 +18,13 @@ for (const [width, language] of [[1440, "en"], [375, "en"], [375, "de"]] as cons
     };
     let history = [original];
     const uploads: string[] = [];
+    let finishUpload: (() => void) | undefined;
     await page.route("**/api/v1/imports", async route => {
       if (route.request().method() === "GET") return route.fulfill({ json: history });
       uploads.push(route.request().headers()["x-csv-replaces-import-id"]);
       const next = { ...original, importId: "22222222-2222-4222-8222-222222222222", replacesImportId: original.importId };
       history = [next, { ...original, supersededByImportId: next.importId } as typeof original];
+      await new Promise<void>(resolve => { finishUpload = resolve; });
       return route.fulfill({ status: 201, json: {
         ...next, rawId: "raw", sourceId: "source", sha256: "0".repeat(64), dataRecordCount: 10,
         rejectedRecordCount: 0, inspectedValidCount: 10, inspectedInvalidCount: 0,
@@ -34,10 +36,23 @@ for (const [width, language] of [[1440, "en"], [375, "en"], [375, "de"]] as cons
     const administration = navigation.getByRole("button", { name: label("Data administration"), exact: true });
     await expect(administration).toBeVisible();
     await administration.click();
-    await page.getByLabel(label("CSV file"), { exact: true }).setInputFiles({
+    const fileInput = () => page.getByLabel(label("CSV file"), { exact: true });
+    await expect(page.getByRole("button", { name: label("Cancel file selection"), exact: true })).toHaveCount(0);
+    await fileInput().setInputFiles({
       name: original.originalFilename, mimeType: "text/csv", buffer: Buffer.from("synthetic browser fixture"),
     });
     await page.getByRole("checkbox").check();
+    await page.getByRole("button", { name: label("Cancel file selection"), exact: true }).click();
+    await expect(fileInput()).toHaveValue("");
+    await expect(page.getByRole("checkbox")).toHaveCount(0);
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    expect(uploads).toEqual([]);
+    await page.getByLabel(label("CSV file"), { exact: true }).setInputFiles({
+      name: original.originalFilename, mimeType: "text/csv", buffer: Buffer.from("synthetic browser fixture"),
+    });
+    await expect(page.getByRole("checkbox")).not.toBeChecked();
+    await page.getByRole("checkbox").check();
+    await page.screenshot({ path: `test-results/IOP-244-selection-${width}-${language}.png`, fullPage: true });
     await page.getByRole("button", { name: label("Import CSV"), exact: true }).click();
     const dialog = page.getByRole("dialog", { name: label("Replace this reporting date?"), exact: true });
     await expect(dialog).toBeVisible();
@@ -51,6 +66,8 @@ for (const [width, language] of [[1440, "en"], [375, "en"], [375, "de"]] as cons
     await page.getByRole("button", { name: label("Import CSV"), exact: true }).click();
     await dialog.getByRole("button", { name: label("Replace data"), exact: true }).click();
     await expect.poll(() => uploads).toEqual([original.importId]);
+    await expect(page.getByRole("button", { name: label("Cancel file selection"), exact: true })).toBeDisabled();
+    finishUpload!();
     await expect(page.getByRole("heading", { name: "Import complete", exact: true })).toBeVisible();
     await expect(page.getByText(label("Superseded import"), { exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
