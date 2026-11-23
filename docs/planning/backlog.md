@@ -8,7 +8,7 @@ See the [workflow](workflow.md).
 
 | Task context | Status |
 | --- | --- |
-| [IOP-243 — Confirm and replace an existing reporting date](items/IOP-243-import-day-removal.md) | Completed locally; publication pending |
+| [IOP-243 — Confirm and replace an existing reporting date](items/IOP-243-import-day-removal.md) | Completed locally; publication through develop to origin authorized |
 
 ## Schedule planning preview
 

@@ -1,6 +1,6 @@
 # IOP-243 — Confirm and replace an existing reporting date
 
-Status: Completed locally; publication pending.
+Status: Completed locally; publication through develop to origin authorized.
 
 On 2026-11-23 the owner selected confirmation on reimport followed by replacement
 with the new file. This supersedes the initial standalone day-removal proposal and
@@ -28,6 +28,10 @@ Integrations owns date admission/replacement; OIP owns analytical visibility thr
 its receiving contract. Accepted [ADR-0040](../../architecture/adr/ADR-0040-import-day-withdrawal.md)
 records the explicit owner decision. Physical erasure, a separate Delete day action,
 publication and deployment are outside this request.
+
+The owner subsequently authorized merging `feature/IOP-243-import-day-removal`
+into develop and pushing both branches to origin on 2026-11-23.
+[Publication plan](../active/IOP-243-publication-plan.md).
 
 Existing behavior: [IOP-047](IOP-047-import-idempotency.md) and
 [IOP-158](IOP-158-import-administration.md). Implementation/evidence:
