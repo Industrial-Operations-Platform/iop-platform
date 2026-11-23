@@ -1,6 +1,6 @@
 # IOP-243 — Approved GitHub publication
 
-Status: In progress. Branch: `feature/IOP-243-import-day-removal`.
+Status: Completed on 2026-11-23. Branch: `feature/IOP-243-import-day-removal`.
 [Scope](../items/IOP-243-import-day-removal.md) and
 [implementation evidence](../completed/IOP-243-import-day-removal-plan.md).
 
@@ -26,8 +26,20 @@ branch deletion, force push, data mutation or manual deployment is included.
 
 ## Evidence
 
-Started on clean story `581816c`; develop and origin/develop were `1d682ea` before
-fetch. The existing implementation record contains complete local API/web, real
-PostgreSQL and browser validation. Record post-fetch and final publication results
-below before closure. Existing GitHub automation may run after the authorized push;
-this plan does not request new deployment settings or claim a hosted release.
+Fetch confirmed develop and origin/develop both at `1d682ea`, with no divergence.
+Authorization commit `97efdd6` followed validated implementation `581816c` on the
+story. The owner-approved merge produced develop `208b476` without conflicts;
+ancestry and tree comparison confirmed complete story integration.
+
+`git push --atomic -u origin feature/IOP-243-import-day-removal develop` succeeded.
+Independent `git ls-remote --heads` confirmed remote story `97efdd6` and remote
+develop `208b476`. The implementation record retains passing API/web, real
+PostgreSQL and browser evidence; application inputs did not change during this
+publication increment, so those tests were not unnecessarily repeated.
+
+Item/backlog now record publication, this plan is archived, and the documentation
+closure is committed on the story and integrated/pushed through the same approval.
+Final branch hashes and a clean-tree/remote-parity check are reported to the owner.
+Existing GitHub automation runs independently after the push; no hosted deployment
+or CI result is claimed by this publication record. No manual deployment, business
+data mutation, branch deletion or stage/master promotion was performed.
