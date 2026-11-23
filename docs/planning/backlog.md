@@ -4,6 +4,12 @@ This index records existing work; permanent contexts own scope and status.
 Execution plans live in `active/`, and completed evidence in `completed/`.
 See the [workflow](workflow.md).
 
+## Owner-requested same-date import replacement
+
+| Task context | Status |
+| --- | --- |
+| [IOP-243 — Confirm and replace an existing reporting date](items/IOP-243-import-day-removal.md) | Completed locally; publication through develop to origin authorized |
+
 ## Schedule planning preview
 
 | Task context | Status |

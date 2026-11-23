@@ -683,8 +683,8 @@ export class PlatformRuntime {
       this.receiving = false;
     };
   }
-  submit(actor: string, filename: string, bytes: Buffer): Promise<BatchStatus> {
-    return this.imports.submit(actor, filename, bytes);
+  submit(actor: string, filename: string, bytes: Buffer, replacesImportId?: string): Promise<BatchStatus> {
+    return this.imports.submit(actor, filename, bytes, replacesImportId);
   }
   recover(actor: string, id: string): Promise<BatchStatus> {
     return this.imports.recover(actor, id);

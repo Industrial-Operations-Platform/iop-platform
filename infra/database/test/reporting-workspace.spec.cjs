@@ -1168,6 +1168,121 @@ test("frequency leaders and period series remain independent of duration leaders
   } finally { await ref.close(); }
 });
 
+test("confirmed same-date replacement is atomic, retains evidence and invalidates cached analysis", async () => {
+  const sourceId = "confirmed-replacement";
+  const configuration = {
+    ...runtimeConfig,
+    local: { ...runtimeConfig.local, source: { ...runtimeConfig.local.source, id: sourceId } },
+    mappings: new SourceMappings({ ...runtimeConfig.mappings.configuration, sourceId }),
+  };
+  const ref = new PlatformRuntime(new Pool({ ...configs.runtime, max: 4 }), configuration);
+  const peer = new PlatformRuntime(new Pool({ ...configs.runtime, max: 3 }), configuration);
+  const header = "Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe";
+  const csv = (frequency, code, message) => Buffer.from(`\ufeff${header}\r\n${frequency};0 0:01:00;Area A;${code};${message};01;001\r\n`, "utf16le");
+  const filename = "Hitliste-20261123.csv";
+  const query = { ...selection, from: "2026-11-23", toExclusive: "2026-11-24" };
+  try {
+    const originalBytes = csv(2, "=OLD-ONLY", "Original alarm");
+    const original = await ref.submit("demo-a", filename, originalBytes);
+    const before = await ref.reports.query("demo-a", query);
+    await ref.reports.query("demo-a", query); // prime the server report cache
+    expect(before.totals.frequency).toBe(2);
+    const duplicate = await ref.submit("demo-a", filename, csv(9, "=NEW-ONLY", "New alarm"));
+    expect(duplicate).toMatchObject({outcome:"rejected",reasonCode:"duplicate-date"});
+    const invalid = await ref.submit("demo-a", filename, Buffer.from("invalid", "utf16le"), original.importId);
+    expect(invalid.outcome).toBe("rejected");
+    expect((await ref.reports.query("demo-a", query)).revision).toBe(before.revision);
+
+    const publish = ref.receiver.publish.bind(ref.receiver);
+    ref.receiver.publish = async (...args) => { await publish(...args); throw new Error("Synthetic receiver rollback"); };
+    const failed = await ref.submit("demo-a", filename, csv(8, "=ROLLED-BACK", "Rolled back"), original.importId);
+    ref.receiver.publish = publish;
+    expect(failed.outcome).toBe("failed");
+    expect((await ref.reports.query("demo-a", query)).totals.frequency).toBe(2);
+    expect((await ref.batches.review("demo-a", original.importId)).supersededByImportId).toBeNull();
+
+    const replacement = await ref.submit("demo-a", filename, csv(9, "=NEW-ONLY", "New alarm"), original.importId);
+    expect(replacement).toMatchObject({outcome:"succeeded",replacesImportId:original.importId});
+    const after = await ref.reports.query("demo-a", query);
+    expect(after.totals).toMatchObject({frequency:9,seconds:60,records:1});
+    expect(after.revision).not.toBe(before.revision);
+    expect(after.dates.filter(date => date === "2026-11-23")).toHaveLength(1);
+    await expect(ref.reports.query("demo-a", {...query,revision:before.revision})).rejects.toMatchObject({code:"analytics_revision_changed"});
+    expect((await ref.explorer.equipment("demo-a", {search:"=OLD-ONLY"})).values).toEqual([]);
+    expect((await ref.explorer.equipment("demo-a", {search:"=NEW-ONLY"})).values).toHaveLength(1);
+    expect((await ref.explorer.messages("demo-a", {})).values).toEqual(["New alarm"]);
+    expect(await ref.batches.original("demo-a", original.importId)).toEqual(originalBytes);
+    expect(await ref.batches.review("demo-a", original.importId)).toMatchObject({outcome:"succeeded",supersededByImportId:replacement.importId});
+    expect(await ref.batches.reconcile("demo-a", original.importId, ref.receiver)).toBe("succeeded");
+    expect((await ref.explorer.sourceRows("demo-a", {importId:original.importId,page:1,sort:[]})).records).toHaveLength(1);
+
+    const stale = await ref.submit("demo-a", filename, csv(99, "=STALE", "Stale"), original.importId);
+    expect(stale).toMatchObject({outcome:"rejected",reasonCode:"duplicate-date"});
+    const concurrent = await Promise.all([
+      ref.submit("demo-a", filename, csv(10,"=WINNER-A","Winner A"), replacement.importId),
+      peer.submit("demo-a", filename, csv(11,"=WINNER-B","Winner B"), replacement.importId),
+    ]);
+    expect(concurrent.map(result=>result.outcome).sort()).toEqual(["rejected","succeeded"]);
+    const winner = concurrent.find(result=>result.outcome === "succeeded");
+    const identicalBytes = await ref.batches.original("demo-a",winner.importId);
+    const identical = await ref.submit("demo-a",filename,identicalBytes,winner.importId);
+    expect(identical.outcome).toBe("succeeded");
+    expect((await ref.reports.query("demo-a",query)).totals.records).toBe(1);
+    const stored = await ref.profiles.get("demo-a");
+    await ref.profiles.save("demo-a", stored);
+    expect((await ref.reports.query("demo-a",query)).totals.records).toBe(1);
+    expect(await ref.batches.reconcile("demo-a",original.importId,ref.receiver)).toBe("succeeded");
+    const rows = (await admin("SELECT count(*)::integer AS count FROM oip.facts WHERE source_id=$1", [sourceId])).rows[0];
+    expect(rows.count).toBe(4); // original, replacement, concurrent winner, identical replacement
+    const grants = (await admin(`SELECT has_column_privilege('iop_runtime','integrations.import_date_claims','import_id','UPDATE') AS claim,
+      has_column_privilege('iop_runtime','integrations.import_batches','original_bytes','UPDATE') AS bytes,
+      has_table_privilege('iop_runtime','oip.publication_supersessions','DELETE') AS deletion`)).rows[0];
+    expect(grants).toEqual({claim:true,bytes:false,deletion:false});
+  } finally { await ref.close(); await peer.close(); }
+});
+
+test("replacement HTTP headers bind confirmation and lost commit acknowledgement reconciles once", async () => {
+  await selectUser();
+  const filename = "Hitliste-20261124.csv";
+  const bytes = fixture("valid/Hitliste-20260701.csv");
+  const old = (await api("post","/imports").set("Content-Type","application/octet-stream")
+    .set("X-CSV-Filename",filename).send(bytes).expect(201)).body;
+  expect(old.outcome).toBe("succeeded");
+  await api("post","/imports").set("Content-Type","application/octet-stream")
+    .set("X-CSV-Filename",filename).set("X-CSV-Replaces-Import-Id","invalid").send(bytes).expect(400);
+  const next = (await api("post","/imports").set("Content-Type","application/octet-stream")
+    .set("X-CSV-Filename",filename).set("X-CSV-Replaces-Import-Id",old.importId).send(bytes).expect(201)).body;
+  expect(next).toMatchObject({outcome:"succeeded",replacesImportId:old.importId});
+  const stale = (await api("post","/imports").set("Content-Type","application/octet-stream")
+    .set("X-CSV-Filename",filename).set("X-CSV-Replaces-Import-Id",old.importId).send(bytes).expect(201)).body;
+  expect(stale).toMatchObject({outcome:"rejected",reasonCode:"duplicate-date"});
+
+  const pool = new Pool({...configs.runtime,max:3});
+  let losePublication = false, lost = false;
+  const originalConnect = pool.connect.bind(pool);
+  pool.connect = async () => {
+    const client = await originalConnect();
+    return new Proxy(client,{get(target,name) {
+      if(name === "query") return async (...args) => {
+        const result = await target.query(...args);
+        if(typeof args[0] === "string" && args[0].includes("SET outcome=$5") && args[1]?.[4] === "succeeded") losePublication = true;
+        if(args[0] === "COMMIT" && losePublication && !lost) { lost = true; throw new Error("Synthetic lost replacement acknowledgement"); }
+        return result;
+      };
+      const value = target[name]; return typeof value === "function" ? value.bind(target) : value;
+    }});
+  };
+  const ref = new PlatformRuntime(pool,runtimeConfig);
+  try {
+    const reconciled = await ref.submit("demo-a",filename,bytes,next.importId);
+    expect(lost).toBe(true);
+    expect(reconciled).toMatchObject({outcome:"succeeded",replacesImportId:next.importId});
+    expect(await ref.batches.reconcile("demo-a",next.importId,ref.receiver)).toBe("succeeded");
+    const history = await ref.batches.history("demo-a");
+    expect(history.filter(row=>row.reportingDate === "2026-11-24" && row.outcome === "succeeded" && !row.supersededByImportId)).toHaveLength(1);
+  } finally { await ref.close(); }
+});
+
 test("bounded repeated reports preserve exact totals on a 4000-row synthetic import", async () => {
   const header = "Häufigkeit;Dauer;Bereich;Betriebsmittelkennzeichen;Meldetext;Typ;Meldegruppe";
   const rows = Array.from({ length: 4000 }, (_, index) => `2;0 0:01:30;Area A;=CACHE-${index % 40};Cache benchmark;01;001`);

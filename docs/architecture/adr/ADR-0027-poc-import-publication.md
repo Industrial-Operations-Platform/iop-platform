@@ -59,6 +59,11 @@ not a physical disk bound. One host upload slot does not replace database admiss
 
 ### Publication
 
+Accepted [ADR-0040](ADR-0040-import-day-withdrawal.md) refines date admission with
+explicit exact-prior-ID replacement. Its claim transfer, OIP supersession and
+retained receipt metadata commit with the new publication; unconfirmed/stale
+duplicates preserve the current dataset. Original facts/bytes and quota remain.
+
 Integrations owns the unique successful date claim, keyed by complete organization,
 site, source and reporting date and referencing its attempt with matching scope.
 Failed/received attempts do not own a committed claim. OIP owns its records and a

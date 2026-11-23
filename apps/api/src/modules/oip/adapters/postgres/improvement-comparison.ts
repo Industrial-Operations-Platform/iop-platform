@@ -4,6 +4,7 @@ import type { ImportSource } from "../../../integrations";
 import { AnalysisCalendar } from "../../domain/analysis-calendar";
 import { AnalyticsError, exactTotal } from "../../domain/values";
 import { hitlisteReadModel } from "./read-model";
+import { activeImport } from "./active-import";
 import { includedReportingValues } from "./reporting-exclusions";
 import { digest, scopeTuple } from "./analytics";
 import { comparisonSelection, type AssetReference, type ComparisonSelection, type Measurement, type Period, type PeriodMeasure } from "../../../improvement-tracking/domain/improvement";
@@ -52,7 +53,7 @@ export async function improvementComparison(tx: SiteTransaction, source: ImportS
   const mapped = selection.scope === "selection" || aliases.length > 0;
   const result = await tx.query(`WITH ready AS MATERIALIZED (${hitlisteReadModel}),
     expected AS (SELECT coalesce((SELECT version::text FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$4::text) AS version),
-    manifest AS MATERIALIZED (SELECT import_id::text AS id,reporting_date::text AS date FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),
+    manifest AS MATERIALIZED (SELECT import_id::text AS id,reporting_date::text AS date FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.publications")}),
     selected AS MATERIALIZED (SELECT * FROM ready WHERE ${includedReportingValues()} AND NOT (extract(isodow FROM reporting_date)::integer=ANY($5::integer[]))
       AND (($6::boolean AND EXISTS(SELECT 1 FROM jsonb_array_elements($7::jsonb) alias WHERE values->>'equipment'=alias->>'code' AND values->>'sector'=alias->>'sector' AND values->>'area'=alias->>'area'))
         OR (NOT $6::boolean AND ($8='' OR values->>'sector'=$8) AND ($9='' OR values->>'area'=$9) AND ($10='' OR values->>'equipment'=$10) AND ($11='' OR values->>'message'=$11)))),
@@ -60,7 +61,7 @@ export async function improvementComparison(tx: SiteTransaction, source: ImportS
     measures AS (SELECT p.period,coalesce(sum(f.reported_frequency),0)::text AS frequency,coalesce(sum(f.accumulated_alarm_seconds),0)::text AS seconds,count(f.import_id)::text AS records
       FROM periods p LEFT JOIN selected f ON f.reporting_date>=p.from_date AND f.reporting_date<p.to_date GROUP BY p.period)
     SELECT (SELECT version FROM expected) AS profile_version,
-      ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
+      ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.facts")})
        AND NOT EXISTS(SELECT 1 FROM ready CROSS JOIN expected WHERE profile_version<>expected.version)) AS projection_valid,
       (SELECT coalesce(jsonb_agg(manifest ORDER BY id),'[]'::jsonb) FROM manifest) AS publications,
       (SELECT jsonb_object_agg(period,jsonb_build_object('frequency',frequency,'seconds',seconds,'records',records)) FROM measures) AS measures`, [...scopeTuple(source), initialProfileVersion, calendar.excludedWeekdays, selection.scope === "asset", JSON.stringify(aliases), selection.filters.sector, selection.filters.area, selection.filters.equipment, selection.filters.message, selection.before.from, selection.before.toExclusive, selection.after.from, selection.after.toExclusive]);

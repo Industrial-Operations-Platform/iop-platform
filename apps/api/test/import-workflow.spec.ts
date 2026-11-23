@@ -31,3 +31,21 @@ test("unknown publication acknowledgement reconciles without replaying original 
   expect(gateway.reconcile).toHaveBeenCalledWith("actor", "receipt");
   expect(useCase.isBusy).toBe(false);
 });
+
+test("replacement confirmation is persisted with the new receipt and invalid input never publishes", async () => {
+  const gateway: ImportGateway<string> = {
+    now: () => 100,
+    validateFilename: jest.fn(),
+    receive: jest.fn(async () => "replacement"),
+    prepare: () => ({ inspection: {} as Inspection, publication: null }),
+    reject: jest.fn(), publish: jest.fn(),
+    review: jest.fn(async () => ({ importId: "replacement", outcome: "rejected" }) as BatchStatus),
+    reconcile: jest.fn(),
+  };
+  const useCase = new ImportWorkflow(gateway);
+  const bytes = new Uint8Array([1]);
+  expect((await useCase.submit("actor", "daily.csv", bytes, "confirmed-prior")).outcome).toBe("rejected");
+  expect(gateway.receive).toHaveBeenCalledWith("actor", "daily.csv", bytes, "confirmed-prior");
+  expect(gateway.reject).toHaveBeenCalledWith("actor", "replacement", expect.anything());
+  expect(gateway.publish).not.toHaveBeenCalled();
+});

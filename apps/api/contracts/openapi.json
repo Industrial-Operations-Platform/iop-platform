@@ -2471,6 +2471,15 @@
             }
           },
           {
+            "name": "X-CSV-Replaces-Import-Id",
+            "in": "header",
+            "description": "Exact existing import confirmed for atomic same-date replacement. A stale identity is rejected.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "X-CSV-Filename",
             "in": "header",
             "description": "Supported Hitliste-YYYYMMDD.csv reporting label.",
@@ -10769,6 +10778,14 @@
       "ImportSummaryDto": {
         "type": "object",
         "properties": {
+          "replacesImportId": {
+            "type": "string",
+            "nullable": true
+          },
+          "supersededByImportId": {
+            "type": "string",
+            "nullable": true
+          },
           "importId": {
             "type": "string"
           },
@@ -10840,6 +10857,14 @@
       "ImportReviewDto": {
         "type": "object",
         "properties": {
+          "replacesImportId": {
+            "type": "string",
+            "nullable": true
+          },
+          "supersededByImportId": {
+            "type": "string",
+            "nullable": true
+          },
           "importId": {
             "type": "string"
           },

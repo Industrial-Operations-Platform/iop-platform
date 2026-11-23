@@ -41,6 +41,7 @@ export async function api<T>(
   body?: unknown,
   signal?: AbortSignal,
   filename?: string,
+  replacesImportId?: string,
 ): Promise<T> {
   const response = await fetch("/api/v1" + path, {
     method: body === undefined ? "GET" : "POST",
@@ -55,6 +56,7 @@ export async function api<T>(
               : "application/json",
             "X-IOP-Demo": "1",
             ...(filename ? { "X-CSV-Filename": filename } : {}),
+            ...(filename && replacesImportId ? { "X-CSV-Replaces-Import-Id": replacesImportId } : {}),
           },
     ...(body === undefined
       ? {}

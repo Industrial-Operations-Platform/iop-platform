@@ -313,6 +313,18 @@ async function verifyRuntimeAccess(client: Client): Promise<void> {
       'oip.canonical_asset_links':['asset_id','mapping_id','mapping_revision','state','revision_key','snapshot'],
     })) updates.push(...names.map(name=>`${table}.${name}`));
   }
+  const replacementInstalled = installed && (await client.query(
+    "SELECT 1 FROM iop_migrations.history WHERE name='20261123000000-import-replacement'",
+  )).rowCount;
+  if (replacementInstalled) {
+    allowedColumns.push('integrations.import_batches.replaces_import_id', 'integrations.import_batches.superseded_by_import_id');
+    inserts.push('integrations.import_batches.replaces_import_id');
+    updates.push('integrations.import_batches.superseded_by_import_id', 'integrations.import_date_claims.import_id');
+    const replacementColumns = ['organization_id','site_id','source_id','reporting_date',
+      'replaced_import_id','replacement_import_id','superseded_at','superseded_by'];
+    allowedColumns.push(...replacementColumns.map(name => `oip.publication_supersessions.${name}`));
+    inserts.push(...replacementColumns.filter(name => name !== 'superseded_at').map(name => `oip.publication_supersessions.${name}`));
+  }
   const result = await client.query(`SELECT
     has_database_privilege($1, current_database(), 'CREATE,TEMPORARY') OR
     EXISTS (SELECT 1 FROM pg_namespace n WHERE nspname NOT LIKE 'pg_%'

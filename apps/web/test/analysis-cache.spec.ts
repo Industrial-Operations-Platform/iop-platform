@@ -24,6 +24,25 @@ function fixture(cache = new AnalysisReportCache()) {
   return { app, report, availability };
 }
 
+test.each(["success", "unknown"])("%s import invalidates report caches and forwards the confirmed identity", async outcome => {
+  const report = jest.fn(async (request: ReportRequest) => result(request));
+  const upload = jest.fn(async () => {
+    if (outcome === "unknown") throw new Error("unknown acknowledgement");
+    return { importId: "new", outcome: "succeeded" };
+  });
+  const app = new AnalysisWorkspace({ report, upload } as unknown as AnalysisGateway);
+  await app.report(selection);
+  expect(app.cachedReport(selection)).toBeDefined();
+  const bytes = new ArrayBuffer(2);
+  const operation = app.importFile("Hitliste-20260701.csv", bytes, "confirmed-prior");
+  if (outcome === "unknown") await expect(operation).rejects.toThrow("unknown acknowledgement");
+  else await expect(operation).resolves.toMatchObject({ importId: "new" });
+  expect(upload).toHaveBeenCalledWith("Hitliste-20260701.csv", bytes, "confirmed-prior");
+  expect(app.cachedReport(selection)).toBeUndefined();
+  await app.report(selection);
+  expect(report).toHaveBeenCalledTimes(2);
+});
+
 test("repeated and simultaneous equivalent selections reuse one read and retain independent cached values", async () => {
   const { app, report } = fixture();
   const request = { ...selection, months: ["2026-07", "2026-05"], filters: { area: ["B", "A"] } };

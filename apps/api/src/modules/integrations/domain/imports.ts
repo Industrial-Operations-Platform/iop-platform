@@ -38,6 +38,8 @@ export interface Diagnostic {
     | "group";
 }
 export interface BatchStatus extends Inspection {
+  readonly replacesImportId?: string | null;
+  readonly supersededByImportId?: string | null;
   readonly importId: string;
   readonly rawId: string;
   readonly sourceId: string;

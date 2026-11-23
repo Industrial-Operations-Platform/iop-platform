@@ -1,6 +1,7 @@
 import type { SiteTransaction } from "../../../../persistence/site-operation";
 import type { ImportSource } from "../../../integrations";
 import { scopeTuple } from "./analytics";
+import { activeImport } from "./active-import";
 
 /** Imported source identifiers only; callers retain their own durable reference identity. */
 export async function importedEquipmentCodes(
@@ -20,7 +21,7 @@ export async function importedEquipmentCodes(
      JOIN analytics.sektor s ON (s.organization_id,s.site_id,s.source_id,s.id)=(f.organization_id,f.site_id,f.source_id,f.sektor_id)
      JOIN analytics.bereich b ON (b.organization_id,b.site_id,b.source_id,b.id)=(f.organization_id,f.site_id,f.source_id,f.bereich_id)
      JOIN analytics.betriebsmittel e ON (e.organization_id,e.site_id,e.source_id,e.id,e.bereich_id)=(f.organization_id,f.site_id,f.source_id,f.betriebsmittel_id,f.bereich_id)
-     WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3
+     WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3 AND ${activeImport("f")}
      AND s.name=$4 AND b.name=$5 AND length(e.kennzeichen) BETWEEN 1 AND 160
      AND (CASE WHEN $8 THEN e.kennzeichen=$6 ELSE strpos(lower(e.kennzeichen),lower($6))>0 END)
      AND e.kennzeichen COLLATE "C">$7 COLLATE "C" ORDER BY code LIMIT 51`,

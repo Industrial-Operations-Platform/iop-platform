@@ -22,7 +22,7 @@ const subjects = {
   "improvement-comparison": { module: "improvement-tracking", states: ["retained"] },
   "locator-scene": { module: "asset-locator", states: ["pending","surveyed"] },
   "integration-connection": { module: "integrations", states: ["enabled","disabled"] },
-  "import-batch": { module: "integrations", states: ["received","succeeded","rejected","failed"] },
+  "import-batch": { module: "integrations", states: ["received","succeeded","rejected","failed","superseded"] },
   "reporting-profile": { module: "configuration", states: ["configured"] },
   "oip-publication": { module: "oip", states: ["published"] },
 } as const;

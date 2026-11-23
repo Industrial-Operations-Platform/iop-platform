@@ -2,6 +2,7 @@ import type { SiteTransaction } from "../../../../persistence/site-operation";
 import { SiteAccessDeniedError } from "../../../../persistence/site-operation";
 import type { ImportSource } from "../../../integrations";
 import { evaluateSiteAccess } from "../../../users-rbac";
+import { activeImport } from "./active-import";
 export interface ImportedEquipmentCandidate {
   namespace: "analytics";
   sourceId: string;
@@ -52,10 +53,10 @@ export async function importedEquipmentCatalog(
     ), identities AS MATERIALIZED (
       SELECT DISTINCT f.sektor_id,f.bereich_id,f.betriebsmittel_id FROM requested e
       JOIN analytics.fact_hitliste f ON f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3
-        AND f.betriebsmittel_id=e.id AND f.bereich_id=e.bereich_id)`
+        AND f.betriebsmittel_id=e.id AND f.bereich_id=e.bereich_id AND ${activeImport("f")})`
     : `WITH identities AS MATERIALIZED (
       SELECT DISTINCT sektor_id,bereich_id,betriebsmittel_id FROM analytics.fact_hitliste
-      WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)`;
+      WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("analytics.fact_hitliste")})`;
   const result = await tx.query(
     `${identities} SELECT DISTINCT e.kennzeichen COLLATE "C" AS code,s.name COLLATE "C" AS sector,b.name COLLATE "C" AS area
   FROM identities f

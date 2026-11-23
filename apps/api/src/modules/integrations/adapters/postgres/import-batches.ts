@@ -13,6 +13,8 @@ export type { ImportSource, Inspection, Diagnostic, BatchStatus } from '../../do
 export interface ImportPublication<T> {
   publish(transaction: SiteTransaction, batch: BatchStatus, input: T): Promise<number>;
   inspect(transaction: SiteTransaction, batch: BatchStatus): Promise<number | null>;
+  supersede?(transaction: SiteTransaction, prior: BatchStatus, replacement: BatchStatus): Promise<void>;
+  supersededBy?(transaction: SiteTransaction, batch: BatchStatus): Promise<string | null>;
 }
 const id = (value: unknown): value is string => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(value);
 const uuid = (value: unknown): value is string => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(value);
@@ -24,6 +26,7 @@ const emptyInspection: Inspection = Object.freeze({ dataRecordCount: null, inspe
 // across service instances; it is not a distributed execution lease.
 const active = new Set<string>();
 const statusColumns = `import_id AS "importId", raw_id AS "rawId", source_id AS "sourceId",
+  replaces_import_id AS "replacesImportId", superseded_by_import_id AS "supersededByImportId",
   reporting_date::text AS "reportingDate", original_filename AS "originalFilename", sha256,
   byte_length AS "byteLength", outcome, admitted_record_count AS "admittedRecordCount",
   rejected_record_count AS "rejectedRecordCount", reason_code AS "reasonCode",
@@ -112,15 +115,21 @@ export class ImportBatches {
       WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND import_id=$4 ${lock ? 'FOR UPDATE' : ''}`, this.values(importId));
     return result.rows[0] ? Object.freeze(result.rows[0] as unknown as BatchStatus) : null;
   }
-  async receive(actor: string, filename: string, bytes: Buffer): Promise<string> {
+  async receive(actor: string, filename: string, bytes: Buffer, replacesImportId?: string): Promise<string> {
     if (typeof filename !== 'string' || !/^Hitliste-[0-9]{8}\.csv$/.test(filename) ||
-      !Buffer.isBuffer(bytes) || bytes.length < 1 || bytes.length > 5242880) throw new ImportBatchError('invalid-input');
+      !Buffer.isBuffer(bytes) || bytes.length < 1 || bytes.length > 5242880 ||
+      (replacesImportId !== undefined && !uuid(replacesImportId))) throw new ImportBatchError('invalid-input');
     const date = `${filename.slice(9,13)}-${filename.slice(13,15)}-${filename.slice(15,17)}`;
     const parsed = new Date(`${date}T00:00:00Z`);
     if (date.startsWith('0000') || !Number.isFinite(parsed.valueOf()) || parsed.toISOString().slice(0,10) !== date) throw new ImportBatchError('invalid-input');
     const original = Buffer.from(bytes);
     const importId = randomUUID();
     return this.run(actor, importId, 'imports.submit', true, async tx => {
+      if (replacesImportId) {
+        const prior = await this.get(tx, replacesImportId);
+        if (!prior || prior.outcome !== 'succeeded' || prior.reportingDate !== date)
+          throw new ImportBatchError('not-found');
+      }
       const quota = await tx.query(`UPDATE integrations.import_quota
         SET retained_attempts=retained_attempts+1, retained_bytes=retained_bytes+$1
         WHERE singleton AND retained_attempts<1000 AND retained_bytes+$1<=268435456
@@ -128,11 +137,11 @@ export class ImportBatches {
       if (quota.rows.length !== 1) throw new ImportBatchError('capacity');
       await tx.query(`INSERT INTO integrations.import_batches
         (organization_id,site_id,source_id,import_id,raw_id,original_filename,reporting_date,
-         original_bytes,byte_length,sha256,submitted_by,adapter_revision,profile_revision,mapping_revision,site_time_zone)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+         original_bytes,byte_length,sha256,submitted_by,adapter_revision,profile_revision,mapping_revision,site_time_zone,replaces_import_id)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [...this.values(importId), randomUUID(), filename, date, original, original.length,
         createHash('sha256').update(original).digest('hex'), actor, this.source.adapterRevision,
-        this.source.profileRevision, this.source.mappingRevision, this.source.siteTimeZone]);
+        this.source.profileRevision, this.source.mappingRevision, this.source.siteTimeZone, replacesImportId ?? null]);
       await this.audit?.(tx,{subjectType:"import-batch",id:importId,action:"received",revision:1,beforeRevision:0,state:"received",beforeState:""});
       return importId;
     });
@@ -142,6 +151,7 @@ export class ImportBatches {
       siteId: this.source.siteId, permissions: ['imports.review'] }, async tx => {
       await this.authorizeProfile(tx, actor, 'imports.review');
       const result = await tx.query(`SELECT import_id AS "importId", original_filename AS "originalFilename",
+        replaces_import_id AS "replacesImportId", superseded_by_import_id AS "supersededByImportId",
         reporting_date::text AS "reportingDate", outcome, received_at AS "receivedAt", submitted_by AS "submittedBy",
         admitted_record_count AS "admittedRecordCount", reason_code AS "reasonCode", byte_length AS "byteLength"
         FROM integrations.import_batches WHERE organization_id=$1 AND site_id=$2 AND source_id=$3
@@ -211,10 +221,21 @@ export class ImportBatches {
       const batch = await this.get(tx, importId, true);
       if (!batch) throw new ImportBatchError('not-found');
       if (batch.outcome !== 'received') throw new ImportBatchError('terminal');
-      const claim = await tx.query(`INSERT INTO integrations.import_date_claims
-        (organization_id,site_id,source_id,import_id,reporting_date) VALUES ($1,$2,$3,$4,$5)
-        ON CONFLICT (organization_id,site_id,source_id,reporting_date) DO NOTHING RETURNING import_id`,
-      [...this.values(importId), batch.reportingDate]);
+      const prior = batch.replacesImportId ? await this.get(tx, batch.replacesImportId, true) : null;
+      if (batch.replacesImportId && (!prior || prior.outcome !== 'succeeded' ||
+        prior.supersededByImportId || prior.reportingDate !== batch.reportingDate)) {
+        await this.finish(tx, batch, 'rejected', 'duplicate-date', counts);
+        return 'duplicate-date';
+      }
+      if (prior && !receiver.supersede) throw new ImportBatchError('invalid-input');
+      const claim = prior
+        ? await tx.query(`UPDATE integrations.import_date_claims SET import_id=$4
+          WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND reporting_date=$5 AND import_id=$6
+          RETURNING import_id`, [...this.values(importId), batch.reportingDate, prior.importId])
+        : await tx.query(`INSERT INTO integrations.import_date_claims
+          (organization_id,site_id,source_id,import_id,reporting_date) VALUES ($1,$2,$3,$4,$5)
+          ON CONFLICT (organization_id,site_id,source_id,reporting_date) DO NOTHING RETURNING import_id`,
+        [...this.values(importId), batch.reportingDate]);
       if (claim.rows.length === 0) {
         await this.finish(tx, batch, 'rejected', 'duplicate-date', counts);
         return 'duplicate-date';
@@ -222,7 +243,15 @@ export class ImportBatches {
       const published = await receiver.publish(tx, batch, input);
       live();
       if (published !== counts.dataRecordCount) throw new ImportBatchError('inconsistent');
+      if (prior) await receiver.supersede!(tx, prior, batch);
       await this.finish(tx, batch, 'succeeded', null, counts);
+      if (prior) {
+        await tx.query(`UPDATE integrations.import_batches SET superseded_by_import_id=$5
+          WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND import_id=$4`,
+        [...this.values(prior.importId), importId]);
+        await this.audit?.(tx, {subjectType:'import-batch',id:prior.importId,action:'changed',revision:3,
+          beforeRevision:2,state:'superseded',beforeState:'succeeded'});
+      }
       return 'succeeded';
     });
   }
@@ -237,7 +266,11 @@ export class ImportBatches {
       const ownsClaim = claims.rows[0]?.import_id === importId;
       const published = await receiver.inspect(tx, batch);
       if (batch.outcome === 'succeeded') {
-        if (!ownsClaim || published !== batch.admittedRecordCount) throw new ImportBatchError('inconsistent');
+        const supersededBy = receiver.supersededBy ? await receiver.supersededBy(tx, batch) : null;
+        if (published !== batch.admittedRecordCount ||
+          (batch.supersededByImportId
+            ? ownsClaim || supersededBy !== batch.supersededByImportId
+            : !ownsClaim || supersededBy !== null)) throw new ImportBatchError('inconsistent');
         return 'succeeded';
       }
       if (ownsClaim || published !== null) throw new ImportBatchError('inconsistent');
@@ -249,6 +282,7 @@ export class ImportBatches {
 }
 
 export interface ImportSummary {
+  replacesImportId?: string | null; supersededByImportId?: string | null;
   importId: string; originalFilename: string; reportingDate: string;
   outcome: BatchStatus['outcome']; receivedAt: string; submittedBy: string;
   admittedRecordCount: number | null; reasonCode: string | null; byteLength: number;

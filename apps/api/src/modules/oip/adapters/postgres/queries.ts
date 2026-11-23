@@ -1,4 +1,5 @@
 import { AnalysisCalendar } from "../../domain/analysis-calendar";
+import { activeImport } from "./active-import";
 import { eligibleReportingDate } from "./analysis-calendar";
 import type { Pool } from "pg";
 import {
@@ -24,12 +25,12 @@ import {
 const manifest = (
   calendar: AnalysisCalendar,
 ) => `SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb)
-  FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${eligibleReportingDate(calendar)}`;
+  FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.publications")} AND ${eligibleReportingDate(calendar)}`;
 const sourceCte = (
   calendar: AnalysisCalendar,
 ) => `source AS MATERIALIZED (SELECT f.*,p.raw_id,p.context FROM oip.facts f JOIN oip.publications p
   USING (organization_id,site_id,source_id,import_id,reporting_date)
-  WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3 AND ${eligibleReportingDate(calendar, "f.reporting_date")})`;
+  WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3 AND ${activeImport("f")} AND ${eligibleReportingDate(calendar, "f.reporting_date")})`;
 const dimensionsSql = (
   table: string,
 ) => `SELECT d.* FROM ${table} f CROSS JOIN LATERAL (VALUES

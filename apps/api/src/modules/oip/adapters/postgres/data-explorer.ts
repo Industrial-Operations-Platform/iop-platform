@@ -8,7 +8,8 @@ import type {
 } from "../../domain/source-rows";
 import type { DataExplorerRepository } from "../../application/ports";
 import { PgReportingProfiles } from "./reporting-profiles";
-import { hitlisteReadModel } from "./read-model";
+import { retainedHitlisteReadModel } from "./read-model";
+import { activeImport } from "./active-import";
 import type { EquipmentSearchResult } from "../../domain/equipment-search";
 export class PgDataExplorer implements DataExplorerRepository {
   constructor(private readonly profiles: PgReportingProfiles) {}
@@ -21,7 +22,7 @@ export class PgDataExplorer implements DataExplorerRepository {
          JOIN analytics.fact_hitliste f ON (f.organization_id,f.site_id,f.source_id,f.betriebsmittel_id,f.bereich_id)=(e.organization_id,e.site_id,e.source_id,e.id,e.bereich_id)
          JOIN analytics.sektor s ON (s.organization_id,s.site_id,s.source_id,s.id)=(f.organization_id,f.site_id,f.source_id,f.sektor_id)
          JOIN analytics.bereich b ON (b.organization_id,b.site_id,b.source_id,b.id)=(f.organization_id,f.site_id,f.source_id,f.bereich_id)
-         WHERE e.organization_id=$1 AND e.site_id=$2 AND e.source_id=$3 AND e.kennzeichen<>''
+         WHERE e.organization_id=$1 AND e.site_id=$2 AND e.source_id=$3 AND e.kennzeichen<>'' AND ${activeImport("f")}
          AND strpos(lower(e.kennzeichen),lower($4::text))>0)
          SELECT code,sector,area FROM matches
          ORDER BY CASE WHEN lower(code)=lower($4::text) THEN 0
@@ -43,7 +44,7 @@ export class PgDataExplorer implements DataExplorerRepository {
       const result = await tx.query(
         `SELECT DISTINCT m.name COLLATE "C" AS value FROM analytics.meldetext m
         JOIN analytics.fact_hitliste f ON (f.organization_id,f.site_id,f.source_id,f.meldetext_id)=(m.organization_id,m.site_id,m.source_id,m.id)
-        WHERE m.organization_id=$1 AND m.site_id=$2 AND m.source_id=$3 AND ($4::text IS NULL OR m.name COLLATE "C">$4::text COLLATE "C")
+        WHERE m.organization_id=$1 AND m.site_id=$2 AND m.source_id=$3 AND ${activeImport("f")} AND ($4::text IS NULL OR m.name COLLATE "C">$4::text COLLATE "C")
         ORDER BY value LIMIT 201`,
         [...scopeTuple(this.profiles.source), after],
       );
@@ -93,7 +94,7 @@ export class PgDataExplorer implements DataExplorerRepository {
         return `(key='${field}' AND (${preceding.map((p) => p.condition).join(" AND ") || "true"}))`;
       });
       const result = await tx.query(
-        `WITH ready AS MATERIALIZED (${hitlisteReadModel} AND f.import_id=$4::uuid),
+        `WITH ready AS MATERIALIZED (${retainedHitlisteReadModel} AND f.import_id=$4::uuid),
         profile AS (SELECT coalesce((SELECT version::text FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$5::text) AS version),
         filtered AS MATERIALIZED (SELECT * FROM ready WHERE ${predicates.map((p) => p.condition).join(" AND ") || "true"}),
         options AS (SELECT key,value FROM ready CROSS JOIN LATERAL jsonb_each_text(values ||

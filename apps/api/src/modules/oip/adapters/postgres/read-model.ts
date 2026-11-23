@@ -1,5 +1,6 @@
-/** Shared scoped relational read model; positional scope parameters are $1/$2/$3. */
-export const hitlisteReadModel = `SELECT f.organization_id,f.site_id,f.source_id,f.import_id,f.source_record_number,
+import { activeImport } from "./active-import";
+/** Explicit file inspection retains superseded evidence; scope parameters are $1/$2/$3. */
+export const retainedHitlisteReadModel = `SELECT f.organization_id,f.site_id,f.source_id,f.import_id,f.source_record_number,
      f.datum AS reporting_date,f.haufigkeit AS reported_frequency,f.dauer_sekunden AS accumulated_alarm_seconds,f.profile_version,
      jsonb_build_object('sector',s.name,'area',b.name,'equipment',e.kennzeichen,'message',m.name,'type',t.name,'messageGroup',g.name,
        'frequency',f.haufigkeit::text,'duration',f.dauer_sekunden::text) AS values,s.is_unclassified AS unmapped
@@ -11,3 +12,5 @@ export const hitlisteReadModel = `SELECT f.organization_id,f.site_id,f.source_id
      JOIN analytics.meldung_typ t ON (t.organization_id,t.site_id,t.source_id,t.id)=(f.organization_id,f.site_id,f.source_id,f.typ_id)
      JOIN analytics.meldegruppe g ON (g.organization_id,g.site_id,g.source_id,g.id)=(f.organization_id,f.site_id,f.source_id,f.meldegruppe_id)
      WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3`;
+/** Current analysis excludes all superseded versions, including after profile rebuilds. */
+export const hitlisteReadModel = `${retainedHitlisteReadModel} AND ${activeImport("f")}`;

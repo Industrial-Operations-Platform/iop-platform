@@ -297,17 +297,24 @@ export class PlatformController {
     description: "Supported Hitliste-YYYYMMDD.csv reporting label.",
   })
   @ApiBody({ schema: { type: "string", format: "binary" } })
+  @ApiHeader({
+    name: "X-CSV-Replaces-Import-Id", required: false,
+    description: "Exact existing import confirmed for atomic same-date replacement. A stale identity is rejected.",
+  })
   @ApiCreatedResponse({ type: C.ImportReviewDto })
   async submit(
     @Req() req: IncomingMessage,
     @Body() bytes: Buffer,
   ): Promise<C.ImportReviewDto> {
     const r = this.active(req),
-      filename = req.headers["x-csv-filename"];
-    if (typeof filename !== "string" || !Buffer.isBuffer(bytes))
+      filename = req.headers["x-csv-filename"],
+      replacesImportId = req.headers["x-csv-replaces-import-id"];
+    if (typeof filename !== "string" || !Buffer.isBuffer(bytes) ||
+      (replacesImportId !== undefined && (typeof replacesImportId !== "string" ||
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(replacesImportId))))
       throw new BadRequestException();
     const result = await operation(async () =>
-      r.submit(await r.actor(req), filename, bytes),
+      r.submit(await r.actor(req), filename, bytes, replacesImportId),
     );
     console.info(
       JSON.stringify({

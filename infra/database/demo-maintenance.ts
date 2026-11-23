@@ -38,6 +38,7 @@ const names = [
   "20261014080000-canonical-demo-reset",
   "20261014090000-administrator-assets-locator",
   "20261020000000-administrator-configuration",
+  "20261123000000-import-replacement",
 ];
 function target(env: NodeJS.ProcessEnv) {
   if (env.IOP_EXECUTION_MODE !== "local-demo" || env.NODE_ENV === "production")
@@ -112,7 +113,7 @@ export async function demoMaintenance(
     )
       throw new DatabaseError("The configured demo site does not exist.");
     await client.query(
-      "LOCK TABLE oip.canonical_asset_link_history,oip.canonical_asset_links,analytics.fact_hitliste,analytics.betriebsmittel,analytics.bereich,analytics.sektor,analytics.meldetext,analytics.meldung_typ,analytics.meldegruppe,iop_demo.installation,oip.facts,oip.publications,integrations.import_date_claims,integrations.import_batches,integrations.import_quota IN EXCLUSIVE MODE",
+      "LOCK TABLE oip.canonical_asset_link_history,oip.canonical_asset_links,analytics.fact_hitliste,analytics.betriebsmittel,analytics.bereich,analytics.sektor,analytics.meldetext,analytics.meldung_typ,analytics.meldegruppe,iop_demo.installation,oip.publication_supersessions,oip.facts,oip.publications,integrations.import_date_claims,integrations.import_batches,integrations.import_quota IN EXCLUSIVE MODE",
     );
     const marker = await client.query(
       "SELECT * FROM iop_demo.installation WHERE singleton FOR UPDATE",
@@ -178,6 +179,7 @@ export async function demoMaintenance(
       "analytics.meldung_typ",
       "analytics.meldegruppe",
       "oip.facts",
+      "oip.publication_supersessions",
       "oip.publications",
       "integrations.import_date_claims",
       "integrations.import_batches",

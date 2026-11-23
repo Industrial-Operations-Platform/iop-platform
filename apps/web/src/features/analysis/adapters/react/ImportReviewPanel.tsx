@@ -11,8 +11,9 @@ import type { ImportReview, ImportSummary } from "../../domain/models";
 import { number } from "../echarts/charts";
 
 export function importOutcome(
-  value: Pick<ImportSummary, "outcome" | "reasonCode">,
+  value: Pick<ImportSummary, "outcome" | "reasonCode" | "supersededByImportId">,
 ): string {
+  if (value.supersededByImportId) return t("Superseded import");
   if (value.reasonCode === "duplicate-date") return "Duplicate reporting date";
   return {
     succeeded: "Import complete",
@@ -36,6 +37,9 @@ export function ImportReviewPanel({
         {review.originalFilename}
         {t(" · Reporting date:")} <strong>{review.reportingDate}</strong>
       </p>
+      {review.supersededByImportId && (
+        <p>{t("This file was replaced by a later import. Its original data remains available for review and is excluded from current analysis.")}</p>
+      )}
       {review.reasonCode && (
         <p>
           {t("Reason: ")}

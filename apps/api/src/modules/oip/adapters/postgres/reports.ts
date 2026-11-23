@@ -1,5 +1,6 @@
 import { AnalysisCalendar } from "../../domain/analysis-calendar";
 import { eligibleReportingDate } from "./analysis-calendar";
+import { activeImport } from "./active-import";
 import { hitlisteReadModel } from "./read-model";
 import {
   compareExecutiveKpi,
@@ -96,7 +97,7 @@ export class PgReportRepository implements ReportRepository {
           SELECT (SELECT version FROM p) AS profile_version,
           (SELECT encode(sha256(convert_to(config::text,'UTF8')),'hex') FROM p) AS profile_fingerprint,
           (SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id) ORDER BY import_id),'[]'::jsonb)
-            FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3) AS publications,
+            FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.publications")}) AS publications,
           ((SELECT count(*) FROM analytics.fact_hitliste WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
             =(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
             AND NOT EXISTS(SELECT 1 FROM analytics.fact_hitliste CROSS JOIN p
@@ -154,7 +155,7 @@ export class PgReportRepository implements ReportRepository {
             AND min(n.values->>d.field)=max(n.values->>d.field)) ancestors)` : "'{}'::jsonb";
       const sql = `WITH p AS MATERIALIZED (SELECT coalesce((SELECT config FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$4::jsonb) AS config,
     coalesce((SELECT version::text FROM oip.reporting_profiles WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),$5::text) AS version,$8::text AS whitespace),
-   manifest AS MATERIALIZED (SELECT import_id,reporting_date FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3),
+   manifest AS MATERIALIZED (SELECT import_id,reporting_date FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.publications")}),
    ready AS MATERIALIZED (${hitlisteReadModel}),
    eligible AS MATERIALIZED (SELECT * FROM ready n WHERE ${eligibleReportingDate(this.calendar)} AND ${includedReportingValues("n.values", "(SELECT config FROM p)")}),
    selected AS MATERIALIZED (SELECT * FROM eligible n WHERE reporting_date >= $6::date AND reporting_date < $7::date ${predicates.map((x) => "AND " + x).join(" ")}
@@ -192,7 +193,7 @@ export class PgReportRepository implements ReportRepository {
     (SELECT coalesce(jsonb_agg(jsonb_build_object('id',import_id,'date',reporting_date::text) ORDER BY import_id),'[]'::jsonb) FROM manifest) AS publications,
     (SELECT jsonb_build_object('frequency',coalesce(sum(reported_frequency),0)::text,'seconds',coalesce(sum(accumulated_alarm_seconds),0)::text,'records',count(*)::text) FROM selected) AS totals,
     (SELECT coalesce(jsonb_agg(e ORDER BY dimension),'[]'::jsonb) FROM executive_ranked e WHERE rank=1) AS executive,
-    ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
+    ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.facts")})
       AND NOT EXISTS(SELECT 1 FROM ready CROSS JOIN p WHERE profile_version<>p.version)) AS projection_valid,
     (SELECT count(*)::integer FROM selected WHERE unmapped) AS unclassified,
     (SELECT coalesce(jsonb_agg(g),'[]'::jsonb) FROM(SELECT * FROM groups ORDER BY ${metric}::numeric DESC,key COLLATE "C" LIMIT 100)g) AS groups,

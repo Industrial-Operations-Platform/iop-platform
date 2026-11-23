@@ -93,6 +93,9 @@ adapters under ADR-0032; no domain, authorization, API or database preference is
 3. OIP receives immutable source aggregate facts bound to RAW/physical lines;
    publication and the unique organization/site/source/reporting-date claim commit
    atomically. Duplicates never silently replace history.
+   [ADR-0040](docs/architecture/adr/ADR-0040-import-day-withdrawal.md) permits explicit
+   confirmed replacement of the exact current import: original evidence remains,
+   while OIP supersession excludes prior versions from current analytical reads.
 4. Reporting joins normalized catalogs and `analytics` facts, including `sektor`
    and the main fact's `sektor_id`. Publication and versioned profile saves refresh
    this projection atomically, preserving original facts and source bytes.

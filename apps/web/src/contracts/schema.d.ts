@@ -3445,6 +3445,8 @@ export interface components {
             userId: string;
         };
         ImportSummaryDto: {
+            replacesImportId?: string | null;
+            supersededByImportId?: string | null;
             importId: string;
             originalFilename: string;
             reportingDate: string;
@@ -3463,6 +3465,8 @@ export interface components {
             reason?: string;
         };
         ImportReviewDto: {
+            replacesImportId?: string | null;
+            supersededByImportId?: string | null;
             importId: string;
             rawId: string;
             sourceId: string;
@@ -5961,6 +5965,8 @@ export interface operations {
             header: {
                 /** @description Value 1 required on POST, together with an allowed Origin and local session cookie. */
                 "X-IOP-Demo"?: string;
+                /** @description Exact existing import confirmed for atomic same-date replacement. A stale identity is rejected. */
+                "X-CSV-Replaces-Import-Id"?: string;
                 /** @description Supported Hitliste-YYYYMMDD.csv reporting label. */
                 "X-CSV-Filename": string;
             };

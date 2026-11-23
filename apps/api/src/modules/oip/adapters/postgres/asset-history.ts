@@ -10,6 +10,7 @@ import type {
   SourceResult,
 } from "../../../assets/domain/assets";
 import { hitlisteReadModel } from "./read-model";
+import { activeImport } from "./active-import";
 import { includedReportingValues } from "./reporting-exclusions";
 import { scopeTuple } from "./analytics";
 import { exactTotal, AnalyticsError } from "../../domain/values";
@@ -57,7 +58,7 @@ export async function analyticAssetTimeline(
     page AS (SELECT * FROM matching WHERE $7='' OR
       (date COLLATE "C",'' COLLATE "C",'analytics' COLLATE "C",id COLLATE "C")<($7 COLLATE "C",$8 COLLATE "C",$9 COLLATE "C",$10 COLLATE "C")
       ORDER BY date COLLATE "C" DESC,id COLLATE "C" DESC LIMIT $11)
-    SELECT ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3)
+    SELECT ((SELECT count(*) FROM ready)=(SELECT count(*) FROM oip.facts WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.facts")})
       AND NOT EXISTS(SELECT 1 FROM ready CROSS JOIN expected WHERE profile_version<>expected.version)) AS projection_valid,
       (SELECT count(*)::integer FROM matching) AS total,
       coalesce((SELECT jsonb_agg(jsonb_build_object('id',id,'kind','analytics','date',date,'recordedAt','',

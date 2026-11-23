@@ -23,8 +23,8 @@ export function createImportWorkflow(
     validateFilename: (filename) => {
       parseCsvReportingDate(filename);
     },
-    receive: (actor, filename, bytes) =>
-      batches.receive(actor, filename, Buffer.from(bytes)),
+    receive: (actor, filename, bytes, replacesImportId) =>
+      batches.receive(actor, filename, Buffer.from(bytes), replacesImportId),
     prepare: (filename, bytes) => {
       const inspected = validateCsv(filename, Buffer.from(bytes));
       if (inspected.status === "invalid")
