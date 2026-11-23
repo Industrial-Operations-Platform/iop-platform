@@ -1,6 +1,6 @@
 # IOP-243 — Confirm and replace an existing reporting date
 
-Status: Completed locally; publication through develop to origin authorized.
+Status: Completed; integrated into develop and published to origin.
 
 On 2026-11-23 the owner selected confirmation on reimport followed by replacement
 with the new file. This supersedes the initial standalone day-removal proposal and
@@ -31,7 +31,7 @@ publication and deployment are outside this request.
 
 The owner subsequently authorized merging `feature/IOP-243-import-day-removal`
 into develop and pushing both branches to origin on 2026-11-23.
-[Publication plan](../active/IOP-243-publication-plan.md).
+[Publication evidence](../completed/IOP-243-publication-plan.md).
 
 Existing behavior: [IOP-047](IOP-047-import-idempotency.md) and
 [IOP-158](IOP-158-import-administration.md). Implementation/evidence:
