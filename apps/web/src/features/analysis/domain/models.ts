@@ -24,6 +24,8 @@ export interface Diagnostic {
   reason?: string;
 }
 export interface ImportSummary {
+  replacesImportId?: string | null;
+  supersededByImportId?: string | null;
   importId: string;
   originalFilename: string;
   reportingDate: string;
@@ -36,6 +38,8 @@ export interface ImportSummary {
   byteLength: number;
 }
 export interface ImportReview {
+  replacesImportId?: string | null;
+  supersededByImportId?: string | null;
   importId: string;
   rawId: string;
   sourceId: string;

@@ -12,6 +12,13 @@ and [preservation contract](csv-preservation-poc.md).
 Integrations owns the attempt and immutable receipt; OIP owns analytical facts and
 their invariants. One `importId` identifies one attempt with one original `rawId`.
 A corrected resubmission is a new attempt, not an update or replay of old evidence.
+Accepted [ADR-0040](adr/ADR-0040-import-day-withdrawal.md) adds explicitly confirmed
+same-date replacement: the new receipt records `replaces_import_id`; atomic
+publication advances the date claim, records OIP supersession and attributes the
+old receipt's terminal `superseded_by_import_id`. Source bytes, processing outcomes,
+facts and quota charges remain retained. Unconfirmed/stale duplicates never replace
+the current data. Current analysis reads only unsuperseded publications; explicit
+file review retains every version.
 Reuse the complete receipt fields from IOP-041, including explicit organization,
 site, source, reporting date, actor, bytes/hash, revisions and site zone. A date is
 a reporting label with unknown source window, never an occurrence timestamp.
@@ -104,7 +111,8 @@ using the same authorized scoped transaction and original `importId`:
 | Established state | Result |
 | --- | --- |
 | Receipt absent and old receipt transaction settled | No retained attempt; a new explicit submission may proceed. |
-| Success, date claim and matching OIP publication agree | Return existing success; reject a new import of that scoped date. |
+| Success, date claim and matching OIP publication agree | Return existing success; require exact-prior-ID confirmation for a replacement. |
+| Superseded success, retained successor metadata and OIP supersession agree | Return historical success; do not require that old import to own the current date claim. |
 | `received`, with no claim/facts for this attempt, old execution stopped | Mark failed/interrupted; a new explicit submission may proceed if the date remains free. |
 | Terminal rejection/failure with no claim/facts for this attempt | Return unchanged outcome; permit new submission if no other successful attempt owns the date. |
 | Database inaccessible, locks unresolved or permission lost | Outcome remains incomplete/unknown; do not assert retry safety. Recover after service/access restoration. |

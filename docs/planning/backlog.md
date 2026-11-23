@@ -4,11 +4,11 @@ This index records existing work; permanent contexts own scope and status.
 Execution plans live in `active/`, and completed evidence in `completed/`.
 See the [workflow](workflow.md).
 
-## Owner-requested import-day removal
+## Owner-requested same-date import replacement
 
 | Task context | Status |
 | --- | --- |
-| [IOP-243 — Remove an imported day and import it again](items/IOP-243-import-day-removal.md) | Blocked; awaiting acceptance of Proposed ADR-0040 before implementation |
+| [IOP-243 — Confirm and replace an existing reporting date](items/IOP-243-import-day-removal.md) | Completed locally; publication pending |
 
 ## Schedule planning preview
 

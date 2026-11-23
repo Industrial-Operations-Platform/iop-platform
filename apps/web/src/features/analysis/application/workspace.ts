@@ -28,7 +28,7 @@ export interface AnalysisGateway {
   profile(): Promise<ProfileResult>;
   saveProfile(profile: ProfileResult): Promise<ProfileResult>;
   history(): Promise<ImportSummary[]>;
-  upload(filename: string, bytes: ArrayBuffer): Promise<ImportReview>;
+  upload(filename: string, bytes: ArrayBuffer, replacesImportId?: string): Promise<ImportReview>;
   review(id: string, recover: boolean): Promise<ImportReview>;
   originalUrl(id: string): string;
 }
@@ -77,6 +77,17 @@ export class AnalysisWorkspace {
     this.reportCache.clear();
     this.pendingReports.clear();
     this.reportRevision = undefined;
+  }
+
+  /** An uncertain mutation can still have committed; refresh cached reports in either case. */
+  async importFile(filename: string, bytes: ArrayBuffer, replacesImportId?: string): Promise<ImportReview> {
+    try {
+      return replacesImportId === undefined
+        ? await this.gateway.upload(filename, bytes)
+        : await this.gateway.upload(filename, bytes, replacesImportId);
+    } finally {
+      this.invalidateReports();
+    }
   }
 
   cachedReport(selection: ReportRequest): Report | undefined {

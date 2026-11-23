@@ -2,7 +2,9 @@ import { locale, t } from "../../../../localization/i18n";
 import { useState } from "react";
 import {
   Alert,
+  Actions,
   Button,
+  Dialog,
   Field,
   Input,
   Panel,
@@ -100,23 +102,26 @@ function ImportFiles({
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<unknown>();
   const [review, setReview] = useState<ImportReview | null>(null);
+  const [replacement, setReplacement] = useState<ImportSummary | null>(null);
   const date = file ? previewReportingDate(file.name) : null;
   const duplicate = date
-    ? history.find((h) => h.reportingDate === date && h.outcome === "succeeded")
+    ? history.find((h) => h.reportingDate === date && h.outcome === "succeeded" && !h.supersededByImportId)
     : undefined;
   const invalidSize =
     !!file && (file.size === 0 || file.size > 5 * 1024 * 1024);
   const canUpload =
-    !!file && !!date && confirmed && !invalidSize && !duplicate && !pending;
-  const upload = async () => {
+    !!file && !!date && confirmed && !invalidSize && !pending;
+  const upload = async (replacesImportId?: string) => {
     if (!file || !canUpload) return;
+    setReplacement(null);
     setPending(true);
     setError(undefined);
     setReview(null);
     try {
-      const result = await application.gateway.upload(
+      const result = await application.importFile(
         file.name,
         await file.arrayBuffer(),
+        replacesImportId,
       );
       setReview(result);
       if (result.outcome === "succeeded") {
@@ -141,7 +146,10 @@ function ImportFiles({
       setError(e);
     } finally {
       setPending(false);
-      if (recover) onImported();
+      if (recover) {
+        application.invalidateReports();
+        onImported();
+      }
     }
   };
   return (
@@ -150,7 +158,7 @@ function ImportFiles({
         <h2>{t("Add a daily CSV")}</h2>
         <p>
           {t(
-            "Files and accepted rows persist in the database. An existing reporting date cannot be replaced. ",
+            "Files and accepted rows persist in the database. Importing an existing reporting date asks for confirmation before replacing its current data.",
           )}
         </p>
         <p>
@@ -161,7 +169,8 @@ function ImportFiles({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            void upload();
+            if (duplicate) setReplacement(duplicate);
+            else void upload();
           }}
         >
           <Field>
@@ -176,6 +185,7 @@ function ImportFiles({
                 setConfirmed(false);
                 setReview(null);
                 setError(undefined);
+                setReplacement(null);
               }}
             />
           </Field>
@@ -202,7 +212,7 @@ function ImportFiles({
                   <Input
                     type="checkbox"
                     checked={confirmed}
-                    disabled={pending || !!duplicate}
+                    disabled={pending}
                     onChange={(e) => setConfirmed(e.target.checked)}
                   />
                   {t("Confirm reporting date: ")}
@@ -214,7 +224,7 @@ function ImportFiles({
                   {t("This reporting date already has an accepted file:")}{" "}
                   {duplicate.originalFilename}
                   {t(
-                    ". Review the existing import; uploading it again would not add data. ",
+                    ". Import this file to confirm replacement of that day's data. ",
                   )}
                   <Button
                     variant="secondary"
@@ -312,6 +322,18 @@ function ImportFiles({
           </TableViewport>
         )}
       </Panel>
+      {replacement && (
+        <Dialog title={t("Replace this reporting date?")} onClose={() => setReplacement(null)} busy={pending}>
+          <p>{t("The reporting date {0} already has accepted data.", [replacement.reportingDate])}</p>
+          <p>{t("Existing file: {0} ({1} admitted rows).", [replacement.originalFilename,
+            replacement.admittedRecordCount?.toLocaleString(locale()) ?? t("Unknown")])}</p>
+          <p>{t("Replace its data with the selected CSV? If the new file cannot be imported, the current data stays in place.")}</p>
+          <Actions>
+            <Button variant="secondary" disabled={pending} onClick={() => setReplacement(null)}>{t("Cancel")}</Button>
+            <Button disabled={pending} onClick={() => void upload(replacement.importId)}>{t("Replace data")}</Button>
+          </Actions>
+        </Dialog>
+      )}
     </>
   );
 }

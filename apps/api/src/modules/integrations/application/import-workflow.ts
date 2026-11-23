@@ -7,7 +7,7 @@ import {
 
 export interface ImportGateway<Publication> {
   validateFilename(filename: string): void;
-  receive(actor: string, filename: string, bytes: Uint8Array): Promise<string>;
+  receive(actor: string, filename: string, bytes: Uint8Array, replacesImportId?: string): Promise<string>;
   prepare(
     filename: string,
     bytes: Uint8Array,
@@ -35,6 +35,7 @@ export class ImportWorkflow<Publication> {
     actor: string,
     filename: string,
     bytes: Uint8Array,
+    replacesImportId?: string,
   ): Promise<BatchStatus> {
     if (this.busy) throw new ImportBusyError();
     this.busy = true;
@@ -42,7 +43,9 @@ export class ImportWorkflow<Publication> {
     let id: string | undefined;
     try {
       this.gateway.validateFilename(filename);
-      id = await this.gateway.receive(actor, filename, bytes);
+      id = replacesImportId === undefined
+        ? await this.gateway.receive(actor, filename, bytes)
+        : await this.gateway.receive(actor, filename, bytes, replacesImportId);
       const prepared = this.gateway.prepare(filename, bytes);
       if (prepared.publication === null)
         await this.gateway.reject(actor, id, prepared.inspection);

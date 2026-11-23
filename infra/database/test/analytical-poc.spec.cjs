@@ -908,7 +908,7 @@ test("real browser imports, analyzes file and history, reviews failures, switche
       await pw(page.locator('.analysis-import-counts strong').nth(1)).toHaveText(count);
       await pw(page.locator('.analysis-kpis')).toHaveCount(0);
     }
-    // Current administration prevents a known duplicate before another upload.
+    // Known dates require explicit confirmation before any replacement upload.
     await input.setInputFiles(join(__dirname, '../../../fixtures/analytical-poc/valid/Hitliste-20260701.csv'));
     await pw(page.getByRole('alert')).toContainText('already has an accepted file');
     await pw(button('Import CSV')).toBeDisabled();

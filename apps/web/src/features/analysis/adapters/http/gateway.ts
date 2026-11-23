@@ -43,12 +43,13 @@ export class HttpAnalysisGateway implements AnalysisGateway {
   history() {
     return api<Schemas["ImportSummaryDto"][]>("/imports");
   }
-  upload(filename: string, bytes: ArrayBuffer) {
+  upload(filename: string, bytes: ArrayBuffer, replacesImportId?: string) {
     return api<Schemas["ImportReviewDto"]>(
       "/imports",
       new Blob([bytes]),
       undefined,
       filename,
+      replacesImportId,
     );
   }
   review(id: string, recover: boolean) {

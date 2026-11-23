@@ -147,10 +147,14 @@ LAN or internet; remote deployment requires HTTPS and secure cookies.
 
 1. Switch to **Administration → Data administration → Import files**, select
    `Hitliste-YYYYMMDD.csv`, confirm the displayed reporting date and press **Import CSV**.
-   Input is UTF-16 LE with BOM, semicolon-separated, at most 5 MiB. Existing reporting
-   dates cannot be replaced. Review errors, duplicates and interrupted outcomes.
-2. Review the import outcome, saved/rejected counts and diagnostics. Known accepted
-   dates block another upload; the server also rejects duplicate races. Use **Data analysis**
+   Input is UTF-16 LE with BOM, semicolon-separated, at most 5 MiB. For an existing
+   date, confirm **Replace data** to atomically use the new file. Cancel keeps the
+   current data; invalid input or a failed publication also preserves it. Today's
+   date can be imported and replaced before day end.
+2. Review the import outcome, saved/rejected counts and diagnostics. Original files
+   remain in history as **Superseded import**. A stale confirmation cannot replace a
+   newer version: refresh history and confirm the current file. Unconfirmed duplicate
+   uploads are still rejected. Use **Data analysis**
    to return to reports and select the desired month or comparison months.
 3. Start in **Executive Overview**, then choose Halle, Bereich, equipment, errors or daily/monthly.
    Group by any source field; change the measure and day/week/month period. Filter
@@ -342,7 +346,7 @@ npm run demo:start
 
 Cleanup is atomic; fixture reload is a separate phase. A reload failure is reported
 as incomplete and does not claim that reset rolled back. Inspect history before
-retrying; successful dates continue to reject duplicates. After an uncertain commit,
+retrying; unconfirmed duplicates are rejected. After an uncertain commit,
 start the host and inspect the registered target's history before any repeat reset.
 There is no automatic replay, volume removal or production backup/restore claim.
 

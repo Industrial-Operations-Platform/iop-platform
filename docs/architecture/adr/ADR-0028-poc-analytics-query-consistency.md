@@ -26,6 +26,11 @@ These are project design judgments, not measured performance claims.
 
 ## Decision
 
+Accepted [ADR-0040](ADR-0040-import-day-withdrawal.md) extends this contract for
+confirmed replacement: fingerprint and read only active publications while retaining
+superseded manifests/facts for explicit historical inspection. Each replacement
+uses a new import identity and invalidates current revisions/caches.
+
 OIP owns API-local query contracts and reads only its own persisted publications
 and facts on the authorized ADR-0026 handle. Production receiving storage must
 retain an immutable publication manifest even for zero-fact successful imports:

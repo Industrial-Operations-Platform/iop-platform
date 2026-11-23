@@ -4,6 +4,7 @@ import { evaluateSiteAccess } from "../../../users-rbac";
 import { AnalysisCalendar } from "../../domain/analysis-calendar";
 import { exactTotal } from "../../domain/values";
 import { scopeTuple, digest } from "./analytics";
+import { activeImport } from "./active-import";
 import { assert, type MappingDecision, type SourceCandidate, type ParetoSelection, type CanonicalPareto } from "../../../assets/domain/enrichment";
 async function authorize(tx: SiteTransaction, source: ImportSource, permissions: string[] = ["analytics.read", "assets.read"]) {
   if (tx.context.organizationId !== source.organizationId || tx.context.siteId !== source.siteId) throw new SiteAccessDeniedError();
@@ -59,7 +60,7 @@ export async function canonicalSourceCandidates(tx: SiteTransaction, source: Imp
     }
   }
   const r = await tx.query(`WITH grouped AS (SELECT payload->>'sourceArea' AS area,payload->>'sourceEquipmentReference' AS code,count(*)::text AS records FROM oip.facts
- WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ($4='' OR strpos(lower(concat_ws(' ',payload->>'sourceArea',payload->>'sourceEquipmentReference')),lower($4))>0)
+ WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.facts")} AND ($4='' OR strpos(lower(concat_ws(' ',payload->>'sourceArea',payload->>'sourceEquipmentReference')),lower($4))>0)
  AND ($5='' AND $6='' OR (payload->>'sourceArea' COLLATE "C",payload->>'sourceEquipmentReference' COLLATE "C")>($5 COLLATE "C",$6 COLLATE "C")) GROUP BY 1,2) SELECT area,code,records FROM grouped ORDER BY area COLLATE "C",code COLLATE "C" LIMIT 31`, [...scopeTuple(source), search, area, code]);
   const candidates: SourceCandidate[] = r.rows.slice(0, 30).map(r => ({
       sourceId: source.sourceId,
@@ -80,7 +81,7 @@ export async function canonicalAssetPareto(tx: SiteTransaction, source: ImportSo
   const r = await tx.query(`WITH selected AS MATERIALIZED (
  SELECT f.*,l.asset_id,coalesce(l.state,'unprepared') AS link_state,coalesce(l.revision_key,'unprepared') AS link_revision FROM oip.facts f LEFT JOIN oip.canonical_asset_links l
  USING(organization_id,site_id,source_id,import_id,source_record_number)
- WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3 AND f.reporting_date>=$4::date AND f.reporting_date<$5::date AND NOT(extract(isodow FROM f.reporting_date)::integer=ANY($6::integer[]))
+ WHERE f.organization_id=$1 AND f.site_id=$2 AND f.source_id=$3 AND ${activeImport("f")} AND f.reporting_date>=$4::date AND f.reporting_date<$5::date AND NOT(extract(isodow FROM f.reporting_date)::integer=ANY($6::integer[]))
  ), groups AS (SELECT asset_id,sum(reported_frequency)::text AS frequency,sum(accumulated_alarm_seconds)::text AS seconds,count(*)::text AS records FROM selected WHERE link_state='mapped' GROUP BY asset_id),
  states AS (SELECT link_state,count(*)::text AS count FROM selected GROUP BY link_state)
  SELECT coalesce((SELECT jsonb_agg(g ORDER BY ${metric}::numeric DESC,asset_id) FROM (SELECT * FROM groups ORDER BY ${metric}::numeric DESC,asset_id LIMIT $7) g),'[]'::jsonb) AS groups,
@@ -88,7 +89,7 @@ export async function canonicalAssetPareto(tx: SiteTransaction, source: ImportSo
  (SELECT jsonb_build_object('frequency',coalesce(sum(reported_frequency),0)::text,'seconds',coalesce(sum(accumulated_alarm_seconds),0)::text,'records',count(*)::text,'mappedFrequency',coalesce(sum(reported_frequency) FILTER(WHERE link_state='mapped'),0)::text,'mappedSeconds',coalesce(sum(accumulated_alarm_seconds) FILTER(WHERE link_state='mapped'),0)::text,'mappedRecords',count(*) FILTER(WHERE link_state='mapped')::text) FROM selected) AS totals,
  coalesce((SELECT jsonb_object_agg(link_state,count) FROM states),'{}'::jsonb) AS states,
  coalesce((SELECT jsonb_agg(link_revision ORDER BY link_revision) FROM (SELECT DISTINCT link_revision FROM selected) revisions),'[]'::jsonb) AS links,
- coalesce((SELECT jsonb_agg(jsonb_build_object('date',reporting_date::text,'id',import_id::text) ORDER BY reporting_date) FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND reporting_date>=$4::date AND reporting_date<$5::date),'[]'::jsonb) AS dates`, [...scopeTuple(source), selection.from, selection.toExclusive, calendar.excludedWeekdays, selection.limit ?? 50]);
+ coalesce((SELECT jsonb_agg(jsonb_build_object('date',reporting_date::text,'id',import_id::text) ORDER BY reporting_date) FROM oip.publications WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport("oip.publications")} AND reporting_date>=$4::date AND reporting_date<$5::date),'[]'::jsonb) AS dates`, [...scopeTuple(source), selection.from, selection.toExclusive, calendar.excludedWeekdays, selection.limit ?? 50]);
   const row = r.rows[0],
     t = row.totals as Record<string, string>,
     totals = {

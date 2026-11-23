@@ -170,6 +170,25 @@ export class OipReceiver implements ImportPublication<PublicationInput> {
     await this.audit?.(tx,{subjectType:"oip-publication",id:batch.importId,action:"published",revision:1,beforeRevision:0,state:"published",beforeState:""});
     return rows.length;
   }
+  async supersede(tx: SiteTransaction, prior: BatchStatus, replacement: BatchStatus): Promise<void> {
+    const s = this.source;
+    if (tx.context.organizationId !== s.organizationId || tx.context.siteId !== s.siteId ||
+      prior.sourceId !== s.sourceId || replacement.sourceId !== s.sourceId ||
+      replacement.replacesImportId !== prior.importId || prior.reportingDate !== replacement.reportingDate ||
+      prior.outcome !== 'succeeded' || prior.supersededByImportId)
+      throw new AnalyticsError('invalid_publication');
+    await tx.query(`INSERT INTO oip.publication_supersessions
+      (organization_id,site_id,source_id,reporting_date,replaced_import_id,replacement_import_id,superseded_by)
+      VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+    [s.organizationId,s.siteId,s.sourceId,prior.reportingDate,prior.importId,replacement.importId,tx.context.userId]);
+  }
+  async supersededBy(tx: SiteTransaction, batch: BatchStatus): Promise<string | null> {
+    const s = this.source;
+    const result = await tx.query(`SELECT replacement_import_id::text AS id FROM oip.publication_supersessions
+      WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND replaced_import_id=$4`,
+    [s.organizationId,s.siteId,s.sourceId,batch.importId]);
+    return typeof result.rows[0]?.id === 'string' ? result.rows[0].id : null;
+  }
   async inspect(
     tx: SiteTransaction,
     batch: BatchStatus,

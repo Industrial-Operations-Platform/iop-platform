@@ -20,6 +20,10 @@ import type {
 } from "../src/features/analysis/domain/models";
 
 jest.mock("../src/design/components/components.css", () => ({}));
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function () { this.open = true; };
+  HTMLDialogElement.prototype.close = function () { this.open = false; };
+});
 const review: ImportReview = {
   importId: "file",
   rawId: "raw",
@@ -128,7 +132,7 @@ test("confirms the file date, resets confirmation on changes and presents author
   ).not.toBeInTheDocument();
 });
 
-test("known successful date claims block upload and open existing inspection", async () => {
+test("known successful dates require explicit replacement confirmation and cancellation sends nothing", async () => {
   const { gateway } = setup([
     { ...review, receivedAt: "2026-07-02T00:00:00Z", submittedBy: "admin" },
   ]);
@@ -143,6 +147,30 @@ test("known successful date claims block upload and open existing inspection", a
   await screen.findByRole("heading", { name: "Import complete" });
   expect(gateway.review).toHaveBeenCalledWith("file", false);
   expect(gateway.upload).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByLabelText("Confirm reporting date: 2026-07-01"));
+  fireEvent.click(screen.getByRole("button", { name: "Import CSV" }));
+  const dialog = screen.getByRole("dialog", { name: "Replace this reporting date?" });
+  expect(dialog).toHaveTextContent("2026-07-01");
+  expect(dialog).toHaveTextContent("10 admitted rows");
+  fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+  expect(gateway.upload).not.toHaveBeenCalled();
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Import CSV" }));
+  fireEvent.click(screen.getByRole("button", { name: "Replace data" }));
+  await waitFor(() => expect(gateway.upload).toHaveBeenCalledWith(
+    "Hitliste-20260701.csv", expect.any(ArrayBuffer), "file"));
+});
+
+test("confirmation retains the displayed import identity when history changes and ignores superseded imports", async () => {
+  const first = { ...review, receivedAt: "2026-07-02T00:00:00Z", submittedBy: "admin" };
+  const { gateway, refreshHistory } = setup([first]);
+  selectFile();
+  fireEvent.click(screen.getByLabelText("Confirm reporting date: 2026-07-01"));
+  fireEvent.click(screen.getByRole("button", { name: "Import CSV" }));
+  refreshHistory([{ ...first, importId: "new-current" }, { ...first, supersededByImportId: "new-current" }]);
+  fireEvent.click(screen.getByRole("button", { name: "Replace data" }));
+  await waitFor(() => expect(gateway.upload).toHaveBeenCalledWith(
+    "Hitliste-20260701.csv", expect.any(ArrayBuffer), "file"));
 });
 
 test("successful import clears the file selection before refreshed history and allows the next file", async () => {

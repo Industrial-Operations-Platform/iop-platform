@@ -6,6 +6,15 @@ import {locatorRefinementsGerman} from "./locator-refinements-de";
 import {locatorGerman} from "./locator-de";
 import {integrationGerman} from './integrations-de';
 export const german: Readonly<Record<string, string>> = {
+  "Files and accepted rows persist in the database. Importing an existing reporting date asks for confirmation before replacing its current data.": "Dateien und übernommene Zeilen bleiben in der Datenbank gespeichert. Beim erneuten Import eines vorhandenen Berichtsdatums wird vor dem Ersetzen der aktuellen Daten eine Bestätigung angefordert.",
+  ". Import this file to confirm replacement of that day's data.": ". Importieren Sie diese Datei, um das Ersetzen der Daten dieses Tages zu bestätigen.",
+  "Replace this reporting date?": "Dieses Berichtsdatum ersetzen?",
+  "The reporting date {0} already has accepted data.": "Für das Berichtsdatum {0} sind bereits Daten vorhanden.",
+  "Existing file: {0} ({1} admitted rows).": "Vorhandene Datei: {0} ({1} übernommene Zeilen).",
+  "Replace its data with the selected CSV? If the new file cannot be imported, the current data stays in place.": "Daten durch die ausgewählte CSV-Datei ersetzen? Wenn die neue Datei nicht importiert werden kann, bleiben die aktuellen Daten erhalten.",
+  "Replace data": "Daten ersetzen",
+  "Superseded import": "Ersetzter Import",
+  "This file was replaced by a later import. Its original data remains available for review and is excluded from current analysis.": "Diese Datei wurde durch einen späteren Import ersetzt. Ihre Originaldaten bleiben zur Prüfung verfügbar und sind von der aktuellen Analyse ausgeschlossen.",
   "Find equipment": "Betriebsmittel suchen",
   "Unclassified": "Nicht zugeordnet",
   "Search imported equipment by code, then open its existing Daily / monthly analysis.": "Importierte Betriebsmittel nach Kennzeichen suchen und die bestehende Tages- / Monatsanalyse öffnen.",

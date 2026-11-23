@@ -93,6 +93,7 @@ export function SourceFiles({
           {files.map((x) => (
             <option key={x.importId} value={x.importId}>
               {x.originalFilename} · {x.reportingDate}
+              {x.supersededByImportId ? ` · ${t("Superseded import")}` : ""}
             </option>
           ))}
         </Select>

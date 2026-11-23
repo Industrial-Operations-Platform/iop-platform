@@ -4,6 +4,7 @@ import { evaluateSiteAccess } from '../../../users-rbac';
 import { sitePersonProfile } from '../../../users-rbac/adapters/postgres/site-people';
 import { AnalyticsError } from '../../domain/analytics';
 import { exactTotal } from '../../domain/values';
+import { activeImport } from './active-import';
 
 /** Original source messages for an exact source tuple; this read never infers equipment kinds. */
 export async function equipmentMessageEvidence(
@@ -20,7 +21,7 @@ export async function equipmentMessageEvidence(
     throw new AnalyticsError('invalid_selection');
   const result = await tx.query(`WITH matching AS MATERIALIZED (
       SELECT import_id,source_record_number,reporting_date,payload->>'sourceMessageText' AS message FROM oip.facts
-      WHERE organization_id=$1 AND site_id=$2 AND source_id=$3
+      WHERE organization_id=$1 AND site_id=$2 AND source_id=$3 AND ${activeImport('oip.facts')}
       AND payload->>'sourceArea'=$4 AND payload->>'sourceEquipmentReference'=$5
     ), page AS (SELECT * FROM matching ORDER BY reporting_date DESC,import_id,source_record_number LIMIT 30)
     SELECT (SELECT count(*)::text FROM matching) AS total,

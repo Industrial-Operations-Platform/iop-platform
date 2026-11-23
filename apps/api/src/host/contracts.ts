@@ -27,6 +27,8 @@ export class SwitchUserDto {
   @ApiProperty() userId!: string;
 }
 export class ImportSummaryDto {
+  @ApiPropertyOptional({ type: String, nullable: true }) replacesImportId?: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true }) supersededByImportId?: string | null;
   @ApiProperty() importId!: string;
   @ApiProperty() originalFilename!: string;
   @ApiProperty() reportingDate!: string;
@@ -47,6 +49,8 @@ export class DiagnosticDto {
   @ApiPropertyOptional() reason?: string;
 }
 export class ImportReviewDto {
+  @ApiPropertyOptional({ type: String, nullable: true }) replacesImportId?: string | null;
+  @ApiPropertyOptional({ type: String, nullable: true }) supersededByImportId?: string | null;
   @ApiProperty() importId!: string;
   @ApiProperty() rawId!: string;
   @ApiProperty() sourceId!: string;
