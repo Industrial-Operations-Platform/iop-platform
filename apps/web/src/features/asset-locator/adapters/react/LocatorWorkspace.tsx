@@ -58,7 +58,12 @@ export function LocatorWorkspace({ application, profile, onAsset, onProblem, ini
         setLoading(false);
     }
   };
-  useEffect(() => { mounted.current = true; void load(); return () => { mounted.current = false; requestNumber.current++; }; }, [application, homeVisit]);
+  useEffect(() => {
+    mounted.current = true;
+    if (!initialSceneId && !initialAssetId) showOverview();
+    void load();
+    return () => { mounted.current = false; requestNumber.current++; };
+  }, [application, homeVisit]);
   const open = async (id: string, componentId = '', editing = false, focus = false) => {
     const token = ++requestNumber.current;
     setLoading(true);
@@ -141,7 +146,18 @@ export function LocatorWorkspace({ application, profile, onAsset, onProblem, ini
     return () => { active = false; clearTimeout(timer); };
   }, [application, tab, assetSearch, unplaced, initialAssetId]);
   const update = (content: Content) => { if (!canEdit) return; setDraft(content); setDirty(true); setMessage(''); };
-  const home = () => { setEditingModel(false); setFocusRequest(undefined); requestNumber.current++; setDetail(undefined); setDraft(undefined); setHistory(undefined); setSelected(''); setDirty(false); setPlacing(''); setTrace(false); setTraceStart(undefined); setLoading(false); };
+  const backToList = () => {
+    requestNumber.current++;
+    setDetail(undefined); setDraft(undefined); setHistory(undefined); setSelected('');
+    setEditingModel(false); setFocusRequest(undefined); setDirty(false); setNote('');
+    setPlacing(''); setTrace(false); setTraceStart(undefined);
+    setError(''); setMessage(''); setLoading(false);
+  };
+  const showOverview = () => {
+    backToList();
+    setTab('overview'); setGroup(''); setSceneSearch('');
+    setAssetSearch(''); setUnplaced(false); setResults(undefined); setAssetLookup('');
+  };
   const act = async (work: () => Promise<void>) => {
     setPending(true);
     setError('');
@@ -158,7 +174,7 @@ export function LocatorWorkspace({ application, profile, onAsset, onProblem, ini
     }
   };
   const initialize = () => canManage && act(async () => { const result = await application.bootstrap(); await load(); setMessage(`${result.created} ${t('provisional scenes created. Existing scene edits were preserved.')}`); });
-  const newScene = () => { if (!canManage) return; home(); setEditingModel(true); const scene: Scene = { id: 'draft-' + application.newId(), revision: 0, authorId: '', createdAt: '', updatedAt: '', content: emptyContent() }; setDetail({ scene, assets: [], problems: { items: [], coverage: [] } }); setDraft(scene.content); setDirty(true); };
+  const newScene = () => { if (!canManage) return; backToList(); setEditingModel(true); const scene: Scene = { id: 'draft-' + application.newId(), revision: 0, authorId: '', createdAt: '', updatedAt: '', content: emptyContent() }; setDetail({ scene, assets: [], problems: { items: [], coverage: [] } }); setDraft(scene.content); setDirty(true); };
   const add = (at?: {
     x: number;
     y: number;
@@ -207,8 +223,33 @@ export function LocatorWorkspace({ application, profile, onAsset, onProblem, ini
   const problemAssets = useMemo(() => new Set(detail?.problems.items.map(p => p.assetId) ?? []), [detail?.problems]);
   const visibleScenes = useMemo(() => scenes.filter(s => (!group || s.content.group === group) && (!sceneSearch || [s.content.name, s.content.group].some(v => v.toLowerCase().includes(sceneSearch.toLowerCase())))), [scenes, group, sceneSearch]);
   const preview = useMemo(() => detail && draft ? { ...detail.scene, content: draft } : undefined, [detail?.scene, draft]);
+  const listLabel = tab === 'search' ? t('Asset search') : t('Plant overview');
+  const discardLabel = dirty ? ' ' + t('(discard draft)') : '';
+  const trail = detail ? [
+    { label: listLabel + discardLabel, onSelect: backToList },
+    ...(tab === 'overview' && group ? [{ label: group + discardLabel, onSelect: backToList }] : []),
+    { label: detail.scene.content.name },
+  ] : undefined;
   return <div className="locator-fields">
-  <SectionHeading section="Asset Locator" view={detail ? detail.scene.content.name : tab === 'search' ? 'Asset search' : 'Plant overview'} onHome={home} description="Versioned 3D schematic layouts and explicitly registered asset placements." actions={<Actions><RefreshButton busy={loading || pending} onClick={() => detail ? void open(detail.scene.id, selected, editingModel) : void load()}/>{detail && canManage && <Button variant="secondary" aria-pressed={editingModel} disabled={pending || dirty} onClick={() => { setEditingModel(value => !value); setPlacing(''); setTrace(false); setTraceStart(undefined); }}>{t(editingModel ? 'Finish editing' : 'Edit model')}</Button>}{!detail && canManage && <AddButton label={t("Create scene")} onClick={newScene} disabled={pending}/>}</Actions>}/>
+  <SectionHeading section="Asset Locator" view={detail ? detail.scene.content.name : listLabel}
+    trail={trail} onHome={showOverview}
+    description="Versioned 3D schematic layouts and explicitly registered asset placements."
+    actions={<Actions>
+      {detail && <>
+        <Button variant="secondary" onClick={backToList} disabled={pending}>
+          {tab === 'search' ? t('Back to asset search') : t('Back to overview')}{discardLabel}
+        </Button>
+        <Button variant="secondary" onClick={showOverview} disabled={pending}>
+          {t('All scenes')}{discardLabel}
+        </Button>
+      </>}
+      <RefreshButton busy={loading || pending} onClick={() => detail ? void open(detail.scene.id, selected, editingModel) : void load()}/>
+      {detail && canManage && <Button variant="secondary" aria-pressed={editingModel} disabled={pending || dirty}
+        onClick={() => { setEditingModel(value => !value); setPlacing(''); setTrace(false); setTraceStart(undefined); }}>
+        {t(editingModel ? 'Finish editing' : 'Edit model')}
+      </Button>}
+      {!detail && canManage && <AddButton label={t("Create scene")} onClick={newScene} disabled={pending}/>}
+    </Actions>}/>
   {error && <Alert>{error}</Alert>}{message && <p role="status">{message}</p>}{loading && <p role="status">{t("Loading locator\u2026")}</p>}
   <div className="locator-readiness"><strong>{t("Physical calibration pending.")}</strong>{t(" Area references are WinCC schematics, including independent sections. Whole-plant alignment, dimensions, elevations and exact sensor positions still require survey. Problem markers show reported evidence, never live health.")}</div>
   {!detail && <><ViewNavigation items={[{ id: 'overview', label: 'Plant overview' }, { id: 'search', label: 'Asset search' }]} label={t("Asset Locator views")} selected={tab} onSelect={id => setTab(String(id))}/>
@@ -237,7 +278,7 @@ export function LocatorWorkspace({ application, profile, onAsset, onProblem, ini
   {detail.problems.coverage.map(c => <p key={t(c.kind)} className="locator-muted">{t(c.kind)}{t(" evidence: ")}{t(c.status)}</p>)}
    </Panel></div>
    {canEdit ? <Disclosure summary="Scene details and private reference" open={detail.scene.revision === 0}><Panel><fieldset disabled={pending || !canEdit} className="locator-fields"><FieldRow><Field>{t("Scene name")}<Input value={draft.name} maxLength={160} onChange={e => update({ ...draft, name: e.target.value })}/></Field><Field>{t("Group")}<Input value={draft.group} maxLength={160} onChange={e => update({ ...draft, group: e.target.value })}/></Field></FieldRow><Field>{t("Configured location")}<Select value={draft.locationId} onChange={e => update({ ...draft, locationId: e.target.value })}><option value="">{t("Mapping pending")}</option>{context.locations.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}</Select></Field><Field>{t("Private reference")}<Select value={draft.referenceId} onChange={e => update({ ...draft, referenceId: e.target.value, calibration: 'pending', surveyNote: '', components: [] })}><option value="">{t("No reference \u2014 synthetic / manually authored")}</option>{context.references.filter(r => r.kind === 'schematic').map(r => <option key={r.id} value={r.id}>{r.group}{t(" / ")}{r.name}</option>)}</Select></Field><Field>{t("Description")}<Textarea value={draft.description} maxLength={4000} onChange={e => update({ ...draft, description: e.target.value })}/></Field><Field>{t("Calibration evidence")}<Textarea value={draft.surveyNote} maxLength={2000} onChange={e => update({ ...draft, surveyNote: e.target.value })}/></Field><Field>{t("Calibration state")}<Select value={draft.calibration} onChange={e => update({ ...draft, calibration: e.target.value as Content['calibration'] })}><option value="pending">{t("Pending physical calibration")}</option><option value="surveyed" disabled={!draft.surveyNote.trim()}>{t("Survey evidence recorded")}</option></Select></Field></fieldset>{canEdit && showGuide && draft.referenceId && <img className="locator-reference" src={referenceUrl(draft.referenceId)} alt="Original private schematic reference"/>}</Panel></Disclosure> : <Disclosure summary="Scene details"><Panel><p>{draft.description}</p><p>{draft.group} · {t(draft.calibration === 'pending' ? 'Pending physical calibration' : 'Survey evidence recorded')}</p></Panel></Disclosure>}
-   <Panel>{canEdit && <Field>{t("Revision note")}<Input value={note} maxLength={2000} onChange={e => setNote(e.target.value)} placeholder={t("Describe the geometry, mapping or survey change")} disabled={pending}/></Field>}<Actions>{canEdit && <Button disabled={pending || !dirty || !note.trim()} onClick={() => canEdit && act(async () => { const saved = await application.save({ id: detail.scene.revision === 0 ? '' : detail.scene.id, expectedRevision: detail.scene.revision, note, content: draft }); await open(saved.id, selected, true); const page = await application.query(); setScenes(page.scenes); setMessage(t('Scene revision saved.')); })}>{t("Save scene revision")}</Button>}<Button variant="secondary" onClick={home} disabled={pending}>{t("Back to overview")}{dirty ? ' ' + t('(discard draft)') : ''}</Button>{detail.scene.revision > 0 && <Button variant="secondary" disabled={pending} onClick={() => act(async () => setHistory(await application.history(detail.scene.id)))}>{t("Revision history")}</Button>}</Actions>{dirty && <p className="locator-muted">{t("Unsaved draft changes.")}</p>}</Panel>
+   <Panel>{canEdit && <Field>{t("Revision note")}<Input value={note} maxLength={2000} onChange={e => setNote(e.target.value)} placeholder={t("Describe the geometry, mapping or survey change")} disabled={pending}/></Field>}<Actions>{canEdit && <Button disabled={pending || !dirty || !note.trim()} onClick={() => canEdit && act(async () => { const saved = await application.save({ id: detail.scene.revision === 0 ? '' : detail.scene.id, expectedRevision: detail.scene.revision, note, content: draft }); await open(saved.id, selected, true); const page = await application.query(); setScenes(page.scenes); setMessage(t('Scene revision saved.')); })}>{t("Save scene revision")}</Button>}{detail.scene.revision > 0 && <Button variant="secondary" disabled={pending} onClick={() => act(async () => setHistory(await application.history(detail.scene.id)))}>{t("Revision history")}</Button>}</Actions>{dirty && <p className="locator-muted">{t("Unsaved draft changes.")}</p>}</Panel>
    {history && <Panel><h2>{t("Immutable revision history")}</h2><ul>{history.revisions.map(r => <li key={r.scene.revision}>{t("Revision ")}{r.scene.revision}{t(" \u2014 ")}{r.at}{t(" \u2014 ")}{r.note}{t("(")}{r.actorId}{t(")")}</li>)}</ul>{history.nextBefore > 0 && <Button variant="secondary" onClick={() => act(async () => { const next = await application.history(detail.scene.id, history.nextBefore); setHistory({ revisions: [...history.revisions, ...next.revisions], nextBefore: next.nextBefore }); })}>{t("Load earlier revisions")}</Button>}</Panel>}
   </>}
  </div>;

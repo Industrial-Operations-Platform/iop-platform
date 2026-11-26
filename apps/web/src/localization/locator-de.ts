@@ -18,6 +18,8 @@ export const locatorGerman: Readonly<Record<string, string>> = {
   'Asset Locator views': 'Asset-Locator-Ansichten',
   'Asset record': 'Anlagenakte',
   'Back to overview': 'Zurück zur Übersicht',
+  'Back to asset search': 'Zurück zur Anlagensuche',
+  'All scenes': 'Alle Szenen',
   '(discard draft)': '(Entwurf verwerfen)',
   'Calibration evidence': 'Kalibrierungsnachweis',
   'Calibration state': 'Kalibrierungsstatus',
