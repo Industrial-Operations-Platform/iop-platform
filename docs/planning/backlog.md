@@ -31,7 +31,7 @@ See the [workflow](workflow.md).
 | Task context | Status |
 | --- | --- |
 | [IOP-211 — Locator equipment models and administrator-owned editing](items/IOP-211-locator-models-and-access.md) | Completed; published through develop |
-| [IOP-245 — Return from Locator scenes to groups and overview](items/IOP-245-locator-return-navigation.md) | Completed; publication to origin approved |
+| [IOP-245 — Return from Locator scenes to groups and overview](items/IOP-245-locator-return-navigation.md) | Completed; integrated into develop and published to origin |
 
 ## Owner-authorized independent completion — 2026-10-14
 

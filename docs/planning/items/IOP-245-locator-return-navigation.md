@@ -1,6 +1,7 @@
 # IOP-245 — Return from Locator scenes to groups and overview
 
-Status: Completed locally; remote publication approved. Authorized by the owner's 2026-11-26 report that entering a
+Status: Completed; integrated into develop and published to origin. Authorized by
+the owner's 2026-11-26 report that entering a
 scene hides the return path and clicking Asset Locator in the sidebar does not
 restore the overview.
 
@@ -25,5 +26,5 @@ browser-history architecture or deployment changes are included.
 [Execution evidence](../completed/IOP-245-locator-return-navigation-plan.md).
 On 2026-11-26 the owner approved merging `fix/IOP-245-locator-return-navigation`
 into develop and pushing both branches to origin.
-[Publication execution](../active/IOP-245-publication-plan.md).
+[Verified publication](../completed/IOP-245-publication-plan.md).
 Service activation remains outside this increment.
