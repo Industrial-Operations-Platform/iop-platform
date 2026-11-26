@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { LocatorWorkspace } from '../src/features/asset-locator/adapters/react/LocatorWorkspace';
 import { LocatorApplication, type Gateway } from '../src/features/asset-locator/application/locator';
 import { duplicateComponent, moveComponent, type Component, type Content, type Context, type Scene, type Reference } from '../src/features/asset-locator/domain/models';
@@ -188,4 +188,105 @@ test('reader overview uses geometry-only tiles without private catalog, image pr
   expect(screen.queryByRole('button', { name: 'Create scene' })).toBeNull();
   expect(screen.queryByRole('button', { name: 'Synchronize imported reference scenes' })).toBeNull();
   expect(screen.queryByText(/Private source catalog/)).toBeNull();
+});
+
+function navigationFixture() {
+  const fixture = harness(false);
+  const other: Scene = { ...scene, id: 'scene-b', content: { ...content, name: 'Other area', group: 'Other group' } };
+  (fixture.gateway.query as jest.Mock).mockResolvedValue({ scenes: [scene, other], total: 2 });
+  return fixture;
+}
+
+test.each(['Back to overview', 'Fixture group', 'Plant overview'])('%s returns above the viewer with the original group and search intact', async action => {
+  const { application, gateway } = navigationFixture();
+  render(<IdentityRoot><LocatorWorkspace profile="team-leader" application={application}/></IdentityRoot>);
+  await screen.findByRole('option', { name: 'Fixture group' });
+  fireEvent.change(screen.getByLabelText('Source group'), { target: { value: 'Fixture group' } });
+  fireEvent.change(screen.getByLabelText('Scene search'), { target: { value: 'Test' } });
+  fireEvent.click(screen.getByRole('button', { name: /^Test area Fixture group/ }));
+  const breadcrumb = within(screen.getByRole('navigation', { name: 'Breadcrumb' }));
+  await breadcrumb.findByRole('button', { name: 'Back to overview' });
+  expect(breadcrumb.getByText('Test area')).toHaveAttribute('aria-current', 'page');
+  fireEvent.click(breadcrumb.getByRole('button', { name: action }));
+  expect(screen.getByLabelText('Source group')).toHaveValue('Fixture group');
+  expect(screen.getByLabelText('Scene search')).toHaveValue('Test');
+  expect(screen.queryByRole('button', { name: /^Other area Other group/ })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: /^Test area Fixture group/ }));
+  fireEvent.click(await breadcrumb.findByRole('button', { name: 'All scenes' }));
+  expect(screen.getByLabelText('Source group')).toHaveValue('');
+  expect(screen.getByLabelText('Scene search')).toHaveValue('');
+  expect(screen.getByRole('button', { name: /^Other area Other group/ })).toBeVisible();
+  expect(gateway.save).not.toHaveBeenCalled();
+  await act(async () => {});
+});
+
+test('module heading returns from an asset placement to all scenes while Back retains asset search', async () => {
+  const { application, gateway } = navigationFixture();
+  render(<IdentityRoot><LocatorWorkspace profile="team-leader" application={application}/></IdentityRoot>);
+  fireEvent.click(await screen.findByRole('button', { name: 'Asset search' }));
+  fireEvent.change(screen.getByLabelText('Registered asset code or name'), { target: { value: 'A' } });
+  fireEvent.click(screen.getByLabelText('Unplaced assets only'));
+  const placement = 'Test area / Source sensor A — provisional';
+  fireEvent.click(await screen.findByRole('button', { name: placement }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Back to asset search' }));
+  expect(screen.getByLabelText('Registered asset code or name')).toHaveValue('A');
+  expect(screen.getByLabelText('Unplaced assets only')).toBeChecked();
+  fireEvent.click(screen.getByRole('button', { name: placement }));
+  await screen.findByRole('button', { name: 'Back to asset search' });
+  fireEvent.click(screen.getByRole('button', { name: 'Asset Locator' }));
+  expect(screen.getByLabelText('Source group')).toHaveValue('');
+  expect(screen.getByRole('button', { name: /^Other area Other group/ })).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'Asset search' }));
+  expect(screen.getByLabelText('Registered asset code or name')).toHaveValue('');
+  expect(screen.getByLabelText('Unplaced assets only')).not.toBeChecked();
+  expect(gateway.save).not.toHaveBeenCalled();
+  await act(async () => {});
+});
+
+test('sidebar home visit closes the scene and clears the previous group and search', async () => {
+  const { application } = navigationFixture();
+  const view = render(<IdentityRoot><LocatorWorkspace application={application} homeVisit={1}/></IdentityRoot>);
+  await screen.findByRole('option', { name: 'Fixture group' });
+  fireEvent.change(screen.getByLabelText('Source group'), { target: { value: 'Fixture group' } });
+  fireEvent.change(screen.getByLabelText('Scene search'), { target: { value: 'Test' } });
+  fireEvent.click(screen.getByRole('button', { name: /^Test area Fixture group/ }));
+  await screen.findByRole('button', { name: 'Back to overview' });
+  view.rerender(<IdentityRoot><LocatorWorkspace application={application} homeVisit={2}/></IdentityRoot>);
+  await screen.findByRole('button', { name: /^Other area Other group/ });
+  expect(screen.getByLabelText('Source group')).toHaveValue('');
+  expect(screen.getByLabelText('Scene search')).toHaveValue('');
+  expect(screen.queryByRole('button', { name: 'Back to overview' })).toBeNull();
+  await act(async () => {});
+});
+
+test.each([false, true])('sidebar home rejects a late scene response after %s exact-asset entry', async exactAsset => {
+  const { application, gateway } = navigationFixture();
+  let finish!: (value: Awaited<ReturnType<Gateway['detail']>>) => void;
+  (gateway.detail as jest.Mock).mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
+  const view = render(<IdentityRoot><LocatorWorkspace application={application} initialAssetId={exactAsset ? 'asset-a' : ''} homeVisit={1}/></IdentityRoot>);
+  if (!exactAsset) fireEvent.click(await screen.findByRole('button', { name: /^Test area Fixture group/ }));
+  await waitFor(() => expect(gateway.detail).toHaveBeenCalledWith('scene-a'));
+  view.rerender(<IdentityRoot><LocatorWorkspace application={application} initialAssetId="" homeVisit={2}/></IdentityRoot>);
+  await screen.findByRole('button', { name: /^Other area Other group/ });
+  await act(async () => { finish({ scene, assets: [], problems: { items: [], coverage: [] } }); });
+  expect(screen.getByRole('button', { name: /^Other area Other group/ })).toBeVisible();
+  expect(screen.queryByRole('button', { name: 'Back to overview' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Source sensor A — sensor' })).toBeNull();
+});
+
+test('top return actions explicitly discard an unsaved model draft without saving', async () => {
+  const { application, gateway } = harness();
+  render(<IdentityRoot><LocatorWorkspace profile="administrator" application={application} initialSceneId="scene-a"/></IdentityRoot>);
+  fireEvent.click(await screen.findByRole('button', { name: 'Edit model' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Source sensor A — sensor' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Move right' }));
+  const breadcrumb = within(screen.getByRole('navigation', { name: 'Breadcrumb' }));
+  expect(breadcrumb.getByRole('button', { name: 'All scenes (discard draft)' })).toBeVisible();
+  fireEvent.click(breadcrumb.getByRole('button', { name: 'Back to overview (discard draft)' }));
+  expect(screen.queryByText('Unsaved draft changes.')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: /^Test area Fixture group/ }));
+  expect(await screen.findByRole('button', { name: 'Back to overview' })).toBeVisible();
+  expect(screen.queryByRole('button', { name: 'Finish editing' })).toBeNull();
+  expect(gateway.save).not.toHaveBeenCalled();
+  await act(async () => {});
 });

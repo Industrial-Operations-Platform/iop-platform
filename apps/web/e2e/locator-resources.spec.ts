@@ -2,12 +2,12 @@ import { expect, test, type Page } from "@playwright/test";
 import { installDesktopConsistencyFixture } from "./desktop-consistency-fixture";
 import type { Scene } from "../src/features/asset-locator/domain/models";
 
-async function installLocatorFixture(page: Page, canManage: boolean, appearance: 'light' | 'dark' = 'light') {
+async function installLocatorFixture(page: Page, canManage: boolean, appearance: 'light' | 'dark' = 'light', language: 'en' | 'de' = 'en') {
   const base = await installDesktopConsistencyFixture(page);
   const referenceRequests: string[] = [], searches: unknown[] = [];
   const scenes: Scene[] = Array.from({ length: 71 }, (_, index) => ({
     id: `area-${index}`, revision: 1, authorId: "admin", createdAt: "2026-10-20T12:00:00Z", updatedAt: "2026-10-20T12:00:00Z",
-    content: { name: `Assembly area ${String(index).padStart(2, "0")}`, group: "Assembly", locationId: "assembly", referenceId: `reference-${index}`, description: "Synthetic schematic", calibration: "pending", surveyNote: "", components: index ? [] : [
+    content: { name: `Assembly area ${String(index).padStart(2, "0")}`, group: index === 70 ? "Packing" : "Assembly", locationId: "assembly", referenceId: `reference-${index}`, description: "Synthetic schematic", calibration: "pending", surveyNote: "", components: index ? [] : [
       { id: "sensor-a", kind: "sensor", label: "Guard sensor", x: .4, y: .4, elevation: null, rotation: 0, width: .02, depth: .02, height: .04, assetId: "", verification: "provisional", note: "" },
       { id: "conveyor-a", kind: "conveyor", label: "Assembly conveyor", x: .6, y: .6, elevation: null, rotation: 0, width: .2, depth: .04, height: .02, assetId: "", verification: "provisional", note: "" },
       { id: "curve-a", kind: "curve", label: "Quarter-turn conveyor", x: .25, y: .45, elevation: null, rotation: 0, width: .2, depth: .4, height: .02, assetId: "", verification: "provisional", note: "" },
@@ -21,16 +21,16 @@ async function installLocatorFixture(page: Page, canManage: boolean, appearance:
       return route.fulfill({ contentType: "image/png", body: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==", "base64") });
     }
     const input = route.request().postDataJSON();
-    if (path.endsWith("/context")) return route.fulfill({ json: { canManage, referenceDimensions: scenes.map(scene => ({ id: scene.content.referenceId, width: 4096, height: 2048 })), references: canManage ? scenes.map(scene => ({ id: scene.content.referenceId, name: scene.content.name, group: "Assembly", width: 4096, height: 2048, kind: "schematic" })) : [], locations: [{ id: "assembly", label: "Assembly", parentId: "" }], componentCatalog: [{ kind: "sensor", width: .02, depth: .02, height: .04 }], coordinateSystem: "image-local normalized", globalCalibration: "pending" } });
+    if (path.endsWith("/context")) return route.fulfill({ json: { canManage, referenceDimensions: scenes.map(scene => ({ id: scene.content.referenceId, width: 4096, height: 2048 })), references: canManage ? scenes.map(scene => ({ id: scene.content.referenceId, name: scene.content.name, group: scene.content.group, width: 4096, height: 2048, kind: "schematic" })) : [], locations: [{ id: "assembly", label: "Assembly", parentId: "" }], componentCatalog: [{ kind: "sensor", width: .02, depth: .02, height: .04 }], coordinateSystem: "image-local normalized", globalCalibration: "pending" } });
     if (path.endsWith("/query")) return route.fulfill({ json: { scenes, total: scenes.length } });
     if (path.endsWith("/detail")) return route.fulfill({ json: { scene: scenes.find(scene => scene.id === input.id), assets: [], problems: { items: [], coverage: [] } } });
     if (path.endsWith("/search")) { searches.push(input); return route.fulfill({ json: { results: [], problems: { items: [], coverage: [] }, total: 0, limit: 200 } }); }
     throw new Error(`Unexpected Locator fixture request ${path}`);
   });
   await page.emulateMedia({ colorScheme: appearance, reducedMotion: "reduce" });
-  await page.addInitScript(value => { localStorage.setItem("iop.language", "en"); localStorage.setItem("iop.appearance", value); }, appearance);
+  await page.addInitScript(value => { localStorage.setItem("iop.language", value.language); localStorage.setItem("iop.appearance", value.appearance); }, { appearance, language });
   await page.goto("/");
-  await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("button", { name: "Asset Locator", exact: true }).click();
+  await page.getByRole("navigation", { name: language === 'de' ? 'Hauptnavigation' : 'Main navigation', exact: true }).getByRole("button", { name: "Asset Locator", exact: true }).click();
   return { ...base, referenceRequests, searches };
 }
 
@@ -54,6 +54,63 @@ const viewports = [
   { name: "desktop", width: 1440, height: 900 },
   { name: "mobile", width: 390, height: 844 },
 ];
+
+for (const scenario of [
+  { name: 'desktop English', width: 1440, height: 900, language: 'en', appearance: 'light', canManage: false },
+  { name: 'mobile English', width: 390, height: 844, language: 'en', appearance: 'light', canManage: true },
+  { name: 'mobile German dark', width: 390, height: 844, language: 'de', appearance: 'dark', canManage: false },
+] as const) {
+  test(`Locator return navigation preserves groups and sidebar opens all scenes on ${scenario.name}`, async ({ page }, info) => {
+    await page.setViewportSize(scenario);
+    const fixture = await installLocatorFixture(page, scenario.canManage, scenario.appearance, scenario.language);
+    const main = page.getByRole('main');
+    const german = scenario.language === 'de';
+    const group = main.getByRole('combobox', { name: german ? 'Vorlagengruppe' : 'Source group', exact: true });
+    const search = main.getByLabel(german ? 'Szene suchen' : 'Scene search', { exact: true });
+    const breadcrumb = main.getByRole('navigation', { name: german ? 'Navigationspfad' : 'Breadcrumb', exact: true });
+    const back = main.getByRole('button', { name: german ? 'Zurück zur Übersicht' : 'Back to overview', exact: true });
+    const all = main.getByRole('button', { name: german ? 'Alle Szenen' : 'All scenes', exact: true });
+    const cards = main.locator('.locator-scene-card');
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await expect(cards).toHaveCount(71);
+    await group.selectOption('Assembly');
+    await search.fill('area 00');
+    await expect(cards).toHaveCount(1);
+    await cards.first().click();
+    await expect(back).toBeVisible();
+    await expect(main.locator('.locator-canvas canvas')).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(back).toBeInViewport();
+    await expect(all).toBeInViewport();
+    await expect(breadcrumb.getByRole('button', { name: 'Assembly', exact: true })).toBeVisible();
+    await expect(breadcrumb.locator('[aria-current="page"]')).toHaveText('Assembly area 00');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.screenshot({ path: info.outputPath('locator-return-navigation.png') });
+    await back.click();
+    await expect(group).toHaveValue('Assembly');
+    await expect(search).toHaveValue('area 00');
+    await expect(cards).toHaveCount(1);
+    await cards.first().click();
+    await all.click();
+    await expect(group).toHaveValue('');
+    await expect(search).toHaveValue('');
+    await expect(cards).toHaveCount(71);
+    await group.selectOption('Packing');
+    await expect(cards).toHaveCount(1);
+    await cards.first().click();
+    await expect(back).toBeVisible();
+    await page.getByRole('navigation', { name: german ? 'Hauptnavigation' : 'Main navigation', exact: true }).getByRole('button', { name: 'Asset Locator', exact: true }).click();
+    await expect(group).toHaveValue('');
+    await expect(search).toHaveValue('');
+    await expect(cards).toHaveCount(71);
+    await expect(back).toHaveCount(0);
+    expect(fixture.referenceRequests).toEqual([]);
+    expect(fixture.searches).toEqual([]);
+    expect(fixture.unexpectedRequests).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+}
 
 for (const viewport of viewports) {
   for (const appearance of ['light', 'dark'] as const) {
